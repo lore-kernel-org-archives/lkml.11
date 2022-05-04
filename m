@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A932C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D887C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353951AbiEDQxc (ORCPT
+        id S1353963AbiEDQxg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51044 "EHLO
+        Wed, 4 May 2022 12:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353731AbiEDQwL (ORCPT
+        with ESMTP id S1353746AbiEDQwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:11 -0400
+        Wed, 4 May 2022 12:52:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D2647053;
-        Wed,  4 May 2022 09:48:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37C247383;
+        Wed,  4 May 2022 09:48:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C3A1B8279F;
-        Wed,  4 May 2022 16:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EB0C385BD;
-        Wed,  4 May 2022 16:48:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96246B82553;
+        Wed,  4 May 2022 16:48:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309B4C385A4;
+        Wed,  4 May 2022 16:48:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682908;
-        bh=yd24OcPBlVIUgxJ+YzdgSDislzfz6tX0jHWJ+szSPI8=;
+        s=korg; t=1651682912;
+        bh=XFgNyRslClTV0rrP3goGZV9aGZ2Y8CKS/AcF5V7U3OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sXJt1j5kuQv5ALCD9/V8GFdWA17rWLN1zbH/0mlSMWwWSSmVSMz94YN3YFgIifquL
-         cl8kQvA+kJilK0ZUttR9660Crc3AP9sOJLxV696PTBlk2ir3ZdnMsTLLlUea0rzkz/
-         iHdlBnMmhYV3I01yiswY6z4J8OYPsfaHkosLxH8M=
+        b=p7VXIXkiWAkvNrtGQLxgQmAn4CR7uBdTKBsILVhu/0AoexAt/VbZYOxdZZ4ssvhA3
+         k70NSqwpEpScXp6LlM8D1FUORlWmK/FLvI3gm8P9PGyIK613tAAGz3XeugbBnRXHU/
+         RLBZtA/aFK4jxmMc0ibHexjStxpodh6i+rjMw6CU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Wang Qing <wangqing@vivo.com>
-Subject: [PATCH 5.4 26/84] arch_topology: Do not set llc_sibling if llc_id is invalid
-Date:   Wed,  4 May 2022 18:44:07 +0200
-Message-Id: <20220504152929.640436437@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH 5.4 18/84] usb: typec: ucsi: Fix role swapping
+Date:   Wed,  4 May 2022 18:43:59 +0200
+Message-Id: <20220504152929.070520635@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -49,35 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
+commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
 
-When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
-will set llc_sibling 0xff(...), this is misleading.
+All attempts to swap the roles timed out because the
+completion was done without releasing the port lock. Fixing
+that by releasing the lock before starting to wait for the
+completion.
 
-Don't set llc_sibling(default 0) if we don't know the cache topology.
-
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Wang Qing <wangqing@vivo.com>
-Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
+Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
+Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/arch_topology.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -457,7 +457,7 @@ void update_siblings_masks(unsigned int
- 	for_each_online_cpu(cpu) {
- 		cpu_topo = &cpu_topology[cpu];
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -748,14 +748,18 @@ ucsi_dr_swap(const struct typec_capabili
+ 	if (ret < 0)
+ 		goto out_unlock;
  
--		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
-+		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
- 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
- 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
- 		}
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
+-		ret = -ETIMEDOUT;
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	return 0;
+ 
+ out_unlock:
+ 	mutex_unlock(&con->lock);
+ 
+-	return ret < 0 ? ret : 0;
++	return ret;
+ }
+ 
+ static int
+@@ -780,11 +784,13 @@ ucsi_pr_swap(const struct typec_capabili
+ 	if (ret < 0)
+ 		goto out_unlock;
+ 
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
+-		ret = -ETIMEDOUT;
+-		goto out_unlock;
+-	}
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	mutex_lock(&con->lock);
+ 
+ 	/* Something has gone wrong while swapping the role */
+ 	if (con->status.pwr_op_mode != UCSI_CONSTAT_PWR_OPMODE_PD) {
 
 
