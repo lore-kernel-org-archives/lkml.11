@@ -2,175 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0159C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378376AbiEDU4M (ORCPT
+        id S1378379AbiEDU4k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43470 "EHLO
+        Wed, 4 May 2022 16:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235480AbiEDU4I (ORCPT
+        with ESMTP id S1357266AbiEDU4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:56:08 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF37351322
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:52:29 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id h10-20020a056830400a00b00605e92cc450so1669780ots.11
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:52:29 -0700 (PDT)
+        Wed, 4 May 2022 16:56:34 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B563515A6;
+        Wed,  4 May 2022 13:52:57 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id j6so5110149ejc.13;
+        Wed, 04 May 2022 13:52:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=78wyRzQ5DjH1PDbOlX/8S7WrCIMcVv9/em5vGahsukg=;
-        b=YgyaI1cI6Edppv1Nw1S69ew6QG83NjUZuk7w4r5CMEtxbAvDepHEyY2tn0PEsfkuMd
-         Tbc17mHoFbigVTi0bwFaKfZlbcUgF3UmtE3r+d+c9eexCImdGDI0GB0r9NWAijnA8Lgf
-         2yOfJK5AZrjqVWmR9qnBwjP/vy2a4IPaWDYppr9K1jOQm9T+bVKvulEuxYwwETbW8plI
-         BniC5yZGQ5jDOjCVLUKaswOYhEYsPmMhsvzwSXwm7hOdgvKlrckYY2sJNpbeYMXUd7ux
-         36odESCpczA0CYi3LT1ZYlzo7UDE5fhBBOZp6t9xBD32+n1XRl2Y7ovD8CBd6i8DfgfW
-         q3cg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=pRe2tTAP4iLVD9RQ1l2haGJ7VnUp8txM+9KQIOzBu28=;
+        b=jILl5MWmUcKv0gRrOEGVXQoMprsX6370Dpkgt5Gb6buyuJg/ZvaC2KanQpr95fUdC5
+         UvKWiCaITL8lsYFF5ONDpgubS/9ThEle+ooWtsY4Fx4Ui6VIfovfQec+SQih7RZsljCq
+         atbMUdd8/iW0Dv4Sobelt7Me5zPNywDn/PB0wLbmDVnG1AggdVP8O9ZVGyB1kM9f7HdN
+         Um9VQRIGzVsKCD6PqVvkByd2VEkmn8bzOVUSLg8HnCJGp0HbxWnQpZP/Lx4ejndyyKDC
+         deU+oM7GjcvGCDZkjbJB5HMlzUMPqryXKCHp9XiJI3cZoWHC1EBzoZ1osAngBZat2lNm
+         lHvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=78wyRzQ5DjH1PDbOlX/8S7WrCIMcVv9/em5vGahsukg=;
-        b=VO/fLfnssZIjumhqs91oiSQG8sA/Sn03UKIOijmQCPT7OFvSoyRgm8p8Lv49IYCYQn
-         047AFvjYbnlZdxiEv0rScJcONrQY+1Fm5nOIVZSvYVbEEweXiLrluvSVij3x4GJH1DPl
-         ULq2Wy3izdebifltFwDtAA0pWkORD9TFlswRdkDh8ck2TBD5fko+bhW28hBfN7Z5UXfT
-         FpqkaQEO7tnmrePibR3fBDchA/6WDvI1hkwhkfHDZPIEnlxf7TXU0a6WPbqiaU12VDHw
-         9v4vuXRukNKDSNBwgEliT9DtHV0xJA1Yf+ehscMYuUQvsRbMK3yzbwoL9JW+88OmysLt
-         b3ww==
-X-Gm-Message-State: AOAM530DCLaFMV5ftCdmJy0Tw4rr0DJ2Ar9NulSJsOLWYc/6LK7KfK13
-        7PnFTaH4bFlde8dBczpB7m/1Ww==
-X-Google-Smtp-Source: ABdhPJxUJ6MQIvvvAVaWWkl4Rl/PdSMgsm4x6cwgJCUgJ1pXfcxcmeWi5Y98W/GpkYdYpUxHtDG2WQ==
-X-Received: by 2002:a9d:6ac7:0:b0:605:a666:5c06 with SMTP id m7-20020a9d6ac7000000b00605a6665c06mr8175321otq.15.1651697549339;
-        Wed, 04 May 2022 13:52:29 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id q23-20020a05683031b700b0060603221234sm5520468ots.4.2022.05.04.13.52.28
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=pRe2tTAP4iLVD9RQ1l2haGJ7VnUp8txM+9KQIOzBu28=;
+        b=WMC4Dm/xwpmtncCCbHcUwwYMfN9fOL4K35dvMqeMTMJIVZGIn5otPRR8gFNiaJSAKB
+         eL8KjzloRYS0osL+5B1ryfZXoH7Io8n/J4daGy9PixQ7fNF/WEod7Wh0bHld/PTLAVW7
+         8LGm2A7bzd+FW8PaKAeIkV4AaJLT81cJlkKYtEoZWTtdxR++JZl/kGnH2PaAGCD8iw60
+         7M7V2kftqxx6aYmaQRD7YWlyXCoey/MN4jOFd5ZkCTr0r0FFAjwoIV+QDsnyCQ+eTLNk
+         xgwD7fKlMuEcyV2yuneGt3MtJLGGajiIwPK5OQXROT2zqvtA4cTIncoq1tTfj2LgE/Yu
+         cESg==
+X-Gm-Message-State: AOAM533Sm7vhU6V4KQOu/7x5bBxgwqHcGDfcIk5ojNe1D66OWX6PVOrY
+        IE+BC0fqDkwNNRokOheMviw=
+X-Google-Smtp-Source: ABdhPJzUPx5ca3YpEtyRn/Ia/vQI0/QOeBYo6/fu7vmJIzscOdsk6y5HMvEUfYIdkeTSLTjLrQf50Q==
+X-Received: by 2002:a17:907:7247:b0:6f4:ed49:cd3f with SMTP id ds7-20020a170907724700b006f4ed49cd3fmr418987ejc.172.1651697575554;
+        Wed, 04 May 2022 13:52:55 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id ml13-20020a170906cc0d00b006f3ef214e08sm6052832ejb.110.2022.05.04.13.52.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 13:52:28 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: [PATCH 2/2] ARM: dts: qcom: msm8974-sony: Enable LPG
-Date:   Wed,  4 May 2022 13:54:11 -0700
-Message-Id: <20220504205411.1510667-2-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220504205411.1510667-1-bjorn.andersson@linaro.org>
-References: <20220504205411.1510667-1-bjorn.andersson@linaro.org>
+        Wed, 04 May 2022 13:52:55 -0700 (PDT)
+Message-ID: <6272e7a7.1c69fb81.dae8f.70aa@mx.google.com>
+X-Google-Original-Message-ID: <YnLnpZhibOjDxC4g@Ansuel-xps.>
+Date:   Wed, 4 May 2022 22:52:53 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH v3 1/2] dt-bindings: mtd: partitions: Document new
+ partition-dynamic nodes
+References: <20220429124825.21477-1-ansuelsmth@gmail.com>
+ <20220429124825.21477-2-ansuelsmth@gmail.com>
+ <b2d90156-f29d-88a0-58b8-7fb32c08c837@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <b2d90156-f29d-88a0-58b8-7fb32c08c837@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both Castor and Honami has RGB LEDs driven by the PM8941 LPG, define
-these.
+On Wed, May 04, 2022 at 10:39:14PM +0200, Rafał Miłecki wrote:
+> On 29.04.2022 14:48, Ansuel Smith wrote:
+> > Document new partition-dynamic nodes used to provide an OF node for
+> > partition registred at runtime by parsers. This is required for nvmem
+> > system to declare and detect nvmem-cells.
+> > 
+> > With these special partitions, the reg / offset is not required.
+> > The node name must be in the form of "partition name"-dynamic.
+> > If the partition can't be displayed using the node name, it's possible
+> > to use the label binding that will be used instead of the node name.
+> > The node name or the label binding is used to match the partition
+> > allocated by the parser at runtime and the parser will provide reg
+> > and offset of the mtd.
+> > 
+> > NVMEM will use the data from the parser and provide the NVMEM cells
+> > declared in the DTS, "connecting" the dynamic partition with a
+> > static declaration of cells in them.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >   .../mtd/partitions/partition-dynamic.yaml     | 56 +++++++++++++++++++
+> >   .../mtd/partitions/qcom,smem-part.yaml        |  4 ++
+> >   2 files changed, 60 insertions(+)
+> >   create mode 100644 Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml b/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
+> > new file mode 100644
+> > index 000000000000..e0efa58e4fac
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
+> > @@ -0,0 +1,56 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/mtd/partitions/partition-dynamic.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Dynamic Partition
+> 
+> I'm not native but that "Dynamic Partition" sounds pretty natural and
+> I'm wondering if you shouldn't make that binding dynamic-partition.yaml
+> 
+> Any natives to comment on this? :)
+> 
+>
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- .../dts/qcom-msm8974-sony-xperia-rhine.dtsi   | 30 +++++++++++++++++++
- ...-msm8974pro-sony-xperia-shinano-castor.dts | 30 +++++++++++++++++++
- 2 files changed, 60 insertions(+)
+The naming for the file is used to keep the standard of
+[parser]-partition.yaml. Agree that we should find a better naming for
+all of this.
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-index 1d21de46f85c..9891d0d40945 100644
---- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-@@ -3,6 +3,7 @@
- #include "qcom-pm8841.dtsi"
- #include "qcom-pm8941.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
- 
- / {
-@@ -172,6 +173,35 @@ gpio_keys_pin_a: gpio-keys-active {
- 	};
- };
- 
-+&pm8941_lpg {
-+	status = "okay";
-+
-+	qcom,power-source = <1>;
-+
-+	rgb-led {
-+		color = <LED_COLOR_ID_RGB>;
-+		function = LED_FUNCTION_STATUS;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		led@1 {
-+			reg = <7>;
-+			color = <LED_COLOR_ID_RED>;
-+		};
-+
-+		led@2 {
-+			reg = <6>;
-+			color = <LED_COLOR_ID_GREEN>;
-+		};
-+
-+		led@3 {
-+			reg = <5>;
-+			color = <LED_COLOR_ID_BLUE>;
-+		};
-+	};
-+};
-+
- &pm8941_wled {
- 	status = "okay";
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-index 9bd8faea61a5..da1593192306 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-@@ -3,6 +3,7 @@
- #include "qcom-pm8841.dtsi"
- #include "qcom-pm8941.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
- 
- / {
-@@ -288,6 +289,35 @@ lcd_dcdc_en_pin_a: lcd-dcdc-en-active {
- 
- };
- 
-+&pm8941_lpg {
-+	status = "okay";
-+
-+	qcom,power-source = <1>;
-+
-+	rgb-led {
-+		color = <LED_COLOR_ID_RGB>;
-+		function = LED_FUNCTION_STATUS;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		led@1 {
-+			reg = <7>;
-+			color = <LED_COLOR_ID_RED>;
-+		};
-+
-+		led@2 {
-+			reg = <6>;
-+			color = <LED_COLOR_ID_GREEN>;
-+		};
-+
-+		led@3 {
-+			reg = <5>;
-+			color = <LED_COLOR_ID_BLUE>;
-+		};
-+	};
-+};
-+
- &rpm_requests {
- 	pm8941-regulators {
- 		compatible = "qcom,rpm-pm8941-regulators";
+> > +description: |
+> > +  This binding describes a single flash partition that is dynamically allocated
+> > +  by a dedicated parser that is not a fixed-partition parser.
+> > +
+> > +  A dynamic partition require the node ending with the "-dynamic" tag and if the
+> > +  dynamic partition name can't be displayed using the node name, the label
+> > +  properties can be used. The node name or the label have to match the dynamic
+> > +  partition allocated by the parser.
+> > +
+> > +  These special partition definition can be used to give a dynamic partition
+> > +  an OF node to declare NVMEM cells. An example is declaring the partition
+> > +  label and all the NVMEM cells in it. The parser will detect the correct reg
+> > +  and offset and the NVMEM will register the cells in it based on the data
+> > +  extracted by the parser.
+> > +
+> > +maintainers:
+> > +  - Ansuel Smith <ansuelsmth@gmail.com>
+> > +
+> > +properties:
+> > +  label:
+> > +    description: The label / name for the partition assigned by the parser at
+> > +      runtime. This is needed for sybsystem like NVMEM to define cells and
+> > +      register with this OF node.
+> > +
+> > +additionalProperties: true
+> > +
+> > +examples:
+> > +  - |
+> > +    flash {
+> > +      partitions {
+> > +        compatible = "qcom,smem-part";
+> > +
+> > +        art-dynamic {
+> > +          compatible = "nvmem-cells";
+> > +          #address-cells = <1>;
+> > +          #size-cells = <1>;
+> > +          label = "0:art";
+> > +
+> > +          macaddr_art_0: macaddr@0 {
+> > +            reg = <0x0 0x6>;
+> > +          };
+> > +
+> > +          macaddr_art_6: macaddr@6 {
+> > +            reg = <0x6 0x6>;
+> > +          };
+> > +        };
+> > +      };
+> > +    };
+> 
+> I see that we need a property (like "label") for storing partition name
+> as it may contain characters not allowed in $nodename.
+> 
+> Is there a reason to play with all that foo-dynamic $nodename then? With
+> fallback from "label" to extracting foo from *-dynamic pattern?
+> 
+
+Honestly the "-dynamic" thing is to correctly handle this ""strange""
+Documentation. At times using the pattern caused tons of problems with
+pattern so I had this bright idea of using the suffix "-dynamic" to
+cleary differentiate these special partition from fixed one.
+
+> Could we just be lazy, keep things simple and require "label" property?
+> 
+
+This is problematic to correctly assign a patternProperties to any user
+or this parser.
+
+> Then we could e.g. require $nodename to be pattern ^partition-[0-9a-f]+$
+> It's what leds-gpio.yaml does for reference.
+> 
+
+Mhhh ok I can totally make this change. My concern is that someone would
+get confused thinking they are fixed partition declared on top of the
+parser. But yhea this can also work... It's really a similar
+implementation of what I already to with dynamic. If you want I can do
+this change and send a v4.
+
+> Example:
+> 
+> partitions {
+> 	compatible = "foo";
+> 
+> 	partition-1 {
+> 		label = "bootloader";
+> 	};
+> 
+> 	partition-2 {
+> 		label = "0:art";
+> 	};
+> };
+
 -- 
-2.35.1
-
+	Ansuel
