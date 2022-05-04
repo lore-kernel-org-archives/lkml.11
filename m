@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBB6C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F484C4707E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358045AbiEDRUU (ORCPT
+        id S1358075AbiEDRUY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
+        Wed, 4 May 2022 13:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355959AbiEDREs (ORCPT
+        with ESMTP id S1355938AbiEDREr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051C64F46F;
-        Wed,  4 May 2022 09:53:36 -0700 (PDT)
+        Wed, 4 May 2022 13:04:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280014FC50;
+        Wed,  4 May 2022 09:53:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB645617DE;
-        Wed,  4 May 2022 16:53:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BF11C385AA;
-        Wed,  4 May 2022 16:53:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE932B827AC;
+        Wed,  4 May 2022 16:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E6A4C385A5;
+        Wed,  4 May 2022 16:53:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683215;
-        bh=Ar5oqbUC5hoxxIpXqcghvo8zzA6Nwxw+7dgjprTBSD0=;
+        s=korg; t=1651683213;
+        bh=mmNb0QQ6+Ixfyf+1ANzPjL3xuEFqItZxzDmgCCM79dA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkxnUdjeM8A8zAV/HaP6nz/gI4YumFtbvowdjodK+iRFBZiBjgSaeIv6kzFc6nLEH
-         Z678/X9DpI50FM9xFNpG+4lj04q2sl9hdOY1SPul7nnOP2ijmu7STERQ60Li/1xW/L
-         bHBsgyRhzQGrMIPrTi7AZFTFlA2ww4bbQGsKO+Kk=
+        b=UMhjjl8EtzJYpjAMp5uDeIrLdDs6E6p6ME1zkfpRN1ZkteKtZWINlvk7ruF/jBfD4
+         XM/p/M05sODC/jaLkEikWtPwRhoKK6uGVQII2TnU4WrGV+RcYMeb7Pc7f4Ydf9Ah/1
+         Ela3WeBlnG3PX6adVy/8smuWxxHZMEDMprce0SJ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 080/177] net: dsa: Add missing of_node_put() in dsa_port_link_register_of
-Date:   Wed,  4 May 2022 18:44:33 +0200
-Message-Id: <20220504153100.227369061@linuxfoundation.org>
+Subject: [PATCH 5.15 078/177] pinctrl: stm32: Do not call stm32_gpio_get() for edge triggered IRQs in EOI
+Date:   Wed,  4 May 2022 18:44:31 +0200
+Message-Id: <20220504153100.054423299@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,37 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit fc06b2867f4cea543505acfb194c2be4ebf0c7d3 ]
+[ Upstream commit e74200ebf7c4f6a7a7d1be9f63833ddba251effa ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
-of_node_put() will check for NULL value.
+The stm32_gpio_get() should only be called for LEVEL triggered interrupts,
+skip calling it for EDGE triggered interrupts altogether to avoid wasting
+CPU cycles in EOI handler. On this platform, EDGE triggered interrupts are
+the majority and LEVEL triggered interrupts are the exception no less, and
+the CPU cycles are not abundant.
 
-Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+To: linux-gpio@vger.kernel.org
+Link: https://lore.kernel.org/r/20220415215410.498349-1-marex@denx.de
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/port.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pinctrl/stm32/pinctrl-stm32.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 616330a16d31..63e88de96393 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -1201,8 +1201,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
- 			if (ds->ops->phylink_mac_link_down)
- 				ds->ops->phylink_mac_link_down(ds, port,
- 					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-+			of_node_put(phy_np);
- 			return dsa_port_phylink_register(dp);
- 		}
-+		of_node_put(phy_np);
- 		return 0;
- 	}
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+index 8934b4878fa8..2c78af0aac57 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -311,6 +311,10 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
+ 	struct stm32_gpio_bank *bank = d->domain->host_data;
+ 	int level;
  
++	/* Do not access the GPIO if this is not LEVEL triggered IRQ. */
++	if (!(bank->irq_type[d->hwirq] & IRQ_TYPE_LEVEL_MASK))
++		return;
++
+ 	/* If level interrupt type then retrig */
+ 	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
+ 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
 -- 
 2.35.1
 
