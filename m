@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15378C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358771AbiEDRlg (ORCPT
+        id S1356844AbiEDRkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        Wed, 4 May 2022 13:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355496AbiEDRKW (ORCPT
+        with ESMTP id S1356738AbiEDRJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:10:22 -0400
+        Wed, 4 May 2022 13:09:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEAE4B1C1;
-        Wed,  4 May 2022 09:57:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F0018E15;
+        Wed,  4 May 2022 09:55:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1242CB827A7;
-        Wed,  4 May 2022 16:57:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFF2EC385A4;
-        Wed,  4 May 2022 16:57:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B67DB8278E;
+        Wed,  4 May 2022 16:55:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D071C385A4;
+        Wed,  4 May 2022 16:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683438;
-        bh=zz26hhqDq8pETqvsCjaNHUXGZEqIHwexiYIsyKCbkNw=;
+        s=korg; t=1651683328;
+        bh=Ug3fk8Vt8Pk8CQvWev9QH73Z1POTQgfDaPxABlOgu54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mKeYi1BUuWy4a297vwJaLMgQ0KpqOXm4OzvkAJF92kxAJ1wRT0sY8Dp7Cw3++uLcX
-         Ibhn5tOX9U8Eorh0MUm24b2bonZqfFLD3tM8iM6QmyxCWNHgERecUIEC85cBFmQmkN
-         POhpeEbERsupnzyEGt4qir+/KI2PMFqI+QIMxWF0=
+        b=VJ0ruzKHGT+b2BRqpZyp6KmFBjHbLphvZgQeMqYaMDmT5oRpV13+8zBSZfiX2maNG
+         IUAYcNSyjGAdURo/wJ4JxDbfUk2/UlmoiPX1EXN0lYGT9lyXA9wkeZvyuo4l/0WuF9
+         TxpVNDq5I9TqdLzz+u9Xs4pca2f7jo5wmfNCZi/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 118/225] net: hns3: add return value for mailbox handling in PF
-Date:   Wed,  4 May 2022 18:45:56 +0200
-Message-Id: <20220504153121.045608626@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 007/225] USB: serial: option: add support for Cinterion MV32-WA/MV32-WB
+Date:   Wed,  4 May 2022 18:44:05 +0200
+Message-Id: <20220504153110.922940512@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,100 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit c59d606296842409a6e5a4828235b0bd46b12bc4 ]
+commit b4a64ed6e7b857317070fcb9d87ff5d4a73be3e8 upstream.
 
-Currently, there are some querying mailboxes sent from VF to PF,
-and VF will wait the PF's handling result. For mailbox
-HCLGE_MBX_GET_QID_IN_PF and HCLGE_MBX_GET_RSS_KEY, it may fail
-when the input parameter is invalid, but the prototype of their
-handler function is void. In this case, PF always return success
-to VF, which may cause the VF get incorrect result.
+Add support for Cinterion device MV32-WA/MV32-WB. MV32-WA PID is
+0x00F1, and MV32-WB PID is 0x00F2.
 
-Fixes it by adding return value for these function.
+Test evidence as below:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
+D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00f1 Rev=05.04
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00F1 USB Mobile Broadband
+S:  SerialNumber=78ada8c4
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
 
-Fixes: 63b1279d9905 ("net: hns3: check queue id range before using")
-Fixes: 532cfc0df1e4 ("net: hns3: add a check for index in hclge_get_rss_key()")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
+D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00f2 Rev=05.04
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00F2 USB Mobile Broadband
+S:  SerialNumber=cdd06a78
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+
+Interface 0&1: MBIM, 2:Modem, 3: GNSS, 4: NMEA, 5: Diag
+GNSS port don't use serial driver.
+
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Link: https://lore.kernel.org/r/20220414074434.5699-1-slark_xiao@163.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 22 ++++++++++---------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 53f939923c28..7998ca617a92 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -594,9 +594,9 @@ static int hclge_set_vf_mtu(struct hclge_vport *vport,
- 	return hclge_set_vport_mtu(vport, mtu);
- }
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -432,6 +432,8 @@ static void option_instat_callback(struc
+ #define CINTERION_PRODUCT_CLS8			0x00b0
+ #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
+ #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
++#define CINTERION_PRODUCT_MV32_WA		0x00f1
++#define CINTERION_PRODUCT_MV32_WB		0x00f2
  
--static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
--				     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--				     struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
-+				    struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+				    struct hclge_respond_to_vf_msg *resp_msg)
- {
- 	struct hnae3_handle *handle = &vport->nic;
- 	struct hclge_dev *hdev = vport->back;
-@@ -606,17 +606,18 @@ static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
- 	if (queue_id >= handle->kinfo.num_tqps) {
- 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
- 			queue_id, mbx_req->mbx_src_vfid);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
- 	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
- 	resp_msg->len = sizeof(qid_in_pf);
-+	return 0;
- }
- 
--static void hclge_get_rss_key(struct hclge_vport *vport,
--			      struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--			      struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_rss_key(struct hclge_vport *vport,
-+			     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+			     struct hclge_respond_to_vf_msg *resp_msg)
- {
- #define HCLGE_RSS_MBX_RESP_LEN	8
- 	struct hclge_dev *hdev = vport->back;
-@@ -634,13 +635,14 @@ static void hclge_get_rss_key(struct hclge_vport *vport,
- 		dev_warn(&hdev->pdev->dev,
- 			 "failed to get the rss hash key, the index(%u) invalid !\n",
- 			 index);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	memcpy(resp_msg->data,
- 	       &rss_cfg->rss_hash_key[index * HCLGE_RSS_MBX_RESP_LEN],
- 	       HCLGE_RSS_MBX_RESP_LEN);
- 	resp_msg->len = HCLGE_RSS_MBX_RESP_LEN;
-+	return 0;
- }
- 
- static void hclge_link_fail_parse(struct hclge_dev *hdev, u8 link_fail_code)
-@@ -816,10 +818,10 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 					"VF fail(%d) to set mtu\n", ret);
- 			break;
- 		case HCLGE_MBX_GET_QID_IN_PF:
--			hclge_get_queue_id_in_pf(vport, req, &resp_msg);
-+			ret = hclge_get_queue_id_in_pf(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_RSS_KEY:
--			hclge_get_rss_key(vport, req, &resp_msg);
-+			ret = hclge_get_rss_key(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_LINK_MODE:
- 			hclge_get_link_mode(vport, req);
--- 
-2.35.1
-
+ /* Olivetti products */
+ #define OLIVETTI_VENDOR_ID			0x0b3c
+@@ -1969,6 +1971,10 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
+ 	  .driver_info = RSVD(0)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
++	  .driver_info = RSVD(3)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
++	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD100),
+ 	  .driver_info = RSVD(4) },
+ 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD120),
 
 
