@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E08EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357513AbiEDRbk (ORCPT
+        id S1357542AbiEDRbs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
+        Wed, 4 May 2022 13:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356889AbiEDRJs (ORCPT
+        with ESMTP id S1356920AbiEDRJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECB245780;
-        Wed,  4 May 2022 09:56:17 -0700 (PDT)
+        Wed, 4 May 2022 13:09:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD99447386;
+        Wed,  4 May 2022 09:56:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEA42616F8;
-        Wed,  4 May 2022 16:56:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48786C385A4;
-        Wed,  4 May 2022 16:56:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84E25B8279C;
+        Wed,  4 May 2022 16:56:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DDA3C385A5;
+        Wed,  4 May 2022 16:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683376;
-        bh=OQ1b/bKeJ5Eyf13DeI9WkK5aBxJe3mgx/Xvg+t6wOEQ=;
+        s=korg; t=1651683384;
+        bh=XXe5e6LTOiqCf7n9YpwIDSJ2KM10tPHdgipwNToxAwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TnKLsFHliZgVYYJKS3SlQtGy6EFUdJDSbcSAk7JMzsnAXRkDa3F+chDDgnt7Q5sPG
-         soB/SeIaS2gMK6iQqjFqdNw/89/vBWbdwdBzoPtWnNaXmNyKju2PC5nw6N7HJJ9f6q
-         Bh7CjBy4gxXGWE89apxsxmPcU3Lm+b52VeyessN4=
+        b=Q8bHGCVCgfyagBkT+LYPwhk1CvuAmrGNRt4pq0657O5fur0MTjH2xybBZZNJJqy5X
+         qo6tcNquEm7DqKnmbCybOQgI1gDYpr5RiKpdRPBv4LNEtwnDI6MoFxKhxzusmHDNPs
+         US2MBINe6mgemGz15VB+97ElcTswFBoTidqQ8z7I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 047/225] hex2bin: make the function hex_to_bin constant-time
-Date:   Wed,  4 May 2022 18:44:45 +0200
-Message-Id: <20220504153114.304876345@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 056/225] cpufreq: qcom-hw: fix the race between LMH worker and cpuhp
+Date:   Wed,  4 May 2022 18:44:54 +0200
+Message-Id: <20220504153115.159210170@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,91 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
+[ Upstream commit 5e4f009da6be563984ba4db4ef4f32529e9aeb90 ]
 
-The function hex2bin is used to load cryptographic keys into device
-mapper targets dm-crypt and dm-integrity.  It should take constant time
-independent on the processed data, so that concurrently running
-unprivileged code can't infer any information about the keys via
-microarchitectural convert channels.
+The driver would disable the worker when cpu is being put offline, but
+it happens closer to the end of cpufreq_offline(). The function
+qcom_lmh_dcvs_poll() can be running in parallel with this, when
+policy->cpus already has been updated. Read policy->related_cpus
+instead.
 
-This patch changes the function hex_to_bin so that it contains no
-branches and no memory accesses.
+[   37.122433] ------------[ cut here ]------------
+[   37.127225] WARNING: CPU: 0 PID: 187 at drivers/base/arch_topology.c:180 topology_update_thermal_pressure+0xec/0x100
+[   37.138098] Modules linked in:
+[   37.141279] CPU: 0 PID: 187 Comm: kworker/0:3 Tainted: G S                5.17.0-rc6-00389-g37c83d0b8710-dirty #713
+[   37.158306] Workqueue: events qcom_lmh_dcvs_poll
+[   37.163095] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   37.170278] pc : topology_update_thermal_pressure+0xec/0x100
+[   37.176131] lr : topology_update_thermal_pressure+0x20/0x100
+[   37.181977] sp : ffff800009b6bce0
+[   37.185402] x29: ffff800009b6bce0 x28: ffffd87abe92b000 x27: ffff04bd7292e205
+[   37.192792] x26: ffffd87abe930af8 x25: ffffd87abe94e4c8 x24: 0000000000000000
+[   37.200180] x23: ffff04bb01177018 x22: ffff04bb011770c0 x21: ffff04bb01177000
+[   37.207567] x20: ffff04bb0a419000 x19: 00000000000c4e00 x18: 0000000000000000
+[   37.214954] x17: 000000040044ffff x16: 004000b2b5503510 x15: 0000006aaa1326d2
+[   37.222333] x14: 0000000000000232 x13: 0000000000000001 x12: 0000000000000040
+[   37.229718] x11: ffff04bb00400000 x10: 968f57bd39f701c8 x9 : ffff04bb0acc8674
+[   37.237095] x8 : fefefefefefefeff x7 : 0000000000000018 x6 : ffffd87abd90092c
+[   37.244478] x5 : 0000000000000016 x4 : 0000000000000000 x3 : 0000000000000100
+[   37.251852] x2 : ffff04bb0a419020 x1 : 0000000000000100 x0 : 0000000000000100
+[   37.259235] Call trace:
+[   37.261771]  topology_update_thermal_pressure+0xec/0x100
+[   37.267266]  qcom_lmh_dcvs_poll+0xbc/0x154
+[   37.271505]  process_one_work+0x288/0x69c
+[   37.275654]  worker_thread+0x74/0x470
+[   37.279450]  kthread+0xfc/0x100
+[   37.282712]  ret_from_fork+0x10/0x20
+[   37.286417] irq event stamp: 74
+[   37.289664] hardirqs last  enabled at (73): [<ffffd87abdd78af4>] _raw_spin_unlock_irq+0x44/0x80
+[   37.298632] hardirqs last disabled at (74): [<ffffd87abdd71fc0>] __schedule+0x710/0xa10
+[   37.306885] softirqs last  enabled at (58): [<ffffd87abcc90410>] _stext+0x410/0x588
+[   37.314778] softirqs last disabled at (51): [<ffffd87abcd1bf68>] __irq_exit_rcu+0x158/0x174
+[   37.323386] ---[ end trace 0000000000000000 ]---
 
-Note that this shouldn't cause performance degradation because the size
-of the new function is the same as the size of the old function (on
-x86-64) - and the new function causes no branch misprediction penalties.
-
-I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
-i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
-sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
-powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
-no branches in the generated code.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kernel.h |    2 +-
- lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
- 2 files changed, 26 insertions(+), 8 deletions(-)
+ drivers/cpufreq/qcom-cpufreq-hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -280,7 +280,7 @@ static inline char *hex_byte_pack_upper(
- 	return buf;
- }
- 
--extern int hex_to_bin(char ch);
-+extern int hex_to_bin(unsigned char ch);
- extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
- extern char *bin2hex(char *dst, const void *src, size_t count);
- 
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -22,15 +22,33 @@ EXPORT_SYMBOL(hex_asc_upper);
-  *
-  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
-  * input.
-+ *
-+ * This function is used to load cryptographic keys, so it is coded in such a
-+ * way that there are no conditions or memory accesses that depend on data.
-+ *
-+ * Explanation of the logic:
-+ * (ch - '9' - 1) is negative if ch <= '9'
-+ * ('0' - 1 - ch) is negative if ch >= '0'
-+ * we "and" these two values, so the result is negative if ch is in the range
-+ *	'0' ... '9'
-+ * we are only interested in the sign, so we do a shift ">> 8"; note that right
-+ *	shift of a negative value is implementation-defined, so we cast the
-+ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
-+ *	the range '0' ... '9', 0 otherwise
-+ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
-+ *	in the range '0' ... '9', 0 otherwise
-+ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
-+ *	... '9', -1 otherwise
-+ * the next line is similar to the previous one, but we need to decode both
-+ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
-+ *	lowercase to uppercase
-  */
--int hex_to_bin(char ch)
-+int hex_to_bin(unsigned char ch)
+diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
+index 740518d8ae16..dc0d5f84d863 100644
+--- a/drivers/cpufreq/qcom-cpufreq-hw.c
++++ b/drivers/cpufreq/qcom-cpufreq-hw.c
+@@ -277,7 +277,7 @@ static unsigned int qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
+ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
  {
--	if ((ch >= '0') && (ch <= '9'))
--		return ch - '0';
--	ch = tolower(ch);
--	if ((ch >= 'a') && (ch <= 'f'))
--		return ch - 'a' + 10;
--	return -1;
-+	unsigned char cu = ch & 0xdf;
-+	return -1 +
-+		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
-+		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
- }
- EXPORT_SYMBOL(hex_to_bin);
- 
+ 	struct cpufreq_policy *policy = data->policy;
+-	int cpu = cpumask_first(policy->cpus);
++	int cpu = cpumask_first(policy->related_cpus);
+ 	struct device *dev = get_cpu_device(cpu);
+ 	unsigned long freq_hz, throttled_freq;
+ 	struct dev_pm_opp *opp;
+-- 
+2.35.1
+
 
 
