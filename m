@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93437C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357007AbiEDRi1 (ORCPT
+        id S1351816AbiEDRic (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
+        Wed, 4 May 2022 13:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356839AbiEDRJp (ORCPT
+        with ESMTP id S1356854AbiEDRJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:45 -0400
+        Wed, 4 May 2022 13:09:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685ED4093D;
-        Wed,  4 May 2022 09:55:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11832CE39;
+        Wed,  4 May 2022 09:56:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D920A616B8;
-        Wed,  4 May 2022 16:55:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F5CC385A5;
-        Wed,  4 May 2022 16:55:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1987617DE;
+        Wed,  4 May 2022 16:56:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23220C385AA;
+        Wed,  4 May 2022 16:56:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683355;
-        bh=d9FRUiv783dU/wMy58x9p6NFoSQWCkLOfWCusjCDE3g=;
+        s=korg; t=1651683360;
+        bh=HYJR58QEHHoSYs3l8IRgOcIy5CFAG2cxLrnEXmuFJVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwYEDfMAnpmRSMr9WUnlvAt0qtEfzua/ETnUm2h9URgMXplw6CP7gV53VYVl0rxtF
-         7TTpIf/fJmMFcF/nUbOhzfx4AhIyIAgz0JoIoWr72gW+7ZYjDb64IOIiLBERQoVb2p
-         vYtTpk3KOD6v8hmzficbepvVMyeh4UmPTYb93E30=
+        b=guqSvtVkuvafm6bYenYJG5oCKaFrGSBvLFgh5rpJjopTpkeR02NSESBv4ro9BiK6F
+         0nutNYsEcqT2nbH7z5tPXaGO741QUqwl/wUKPr/s2NezfeUCSlYyGvuMbJgG1L1kH8
+         E0TsebAAciUClyv3dD/6O0pRHFLFSCVkvKfmbneM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.17 028/225] usb: dwc3: pci: add support for the Intel Meteor Lake-P
-Date:   Wed,  4 May 2022 18:44:26 +0200
-Message-Id: <20220504153112.808856424@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Wang Qing <wangqing@vivo.com>
+Subject: [PATCH 5.17 039/225] arch_topology: Do not set llc_sibling if llc_id is invalid
+Date:   Wed,  4 May 2022 18:44:37 +0200
+Message-Id: <20220504153113.670016499@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,44 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Wang Qing <wangqing@vivo.com>
 
-commit 973e0f7a847ef13ade840d4c30729ce329a66895 upstream.
+commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
 
-This patch adds the necessary PCI IDs for Intel Meteor Lake-P
-devices.
+When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
+will set llc_sibling 0xff(...), this is misleading.
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220425103518.44028-1-heikki.krogerus@linux.intel.com
+Don't set llc_sibling(default 0) if we don't know the cache topology.
+
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/base/arch_topology.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -44,6 +44,8 @@
- #define PCI_DEVICE_ID_INTEL_ADLM		0x54ee
- #define PCI_DEVICE_ID_INTEL_ADLS		0x7ae1
- #define PCI_DEVICE_ID_INTEL_RPLS		0x7a61
-+#define PCI_DEVICE_ID_INTEL_MTLP		0x7ec1
-+#define PCI_DEVICE_ID_INTEL_MTL			0x7e7e
- #define PCI_DEVICE_ID_INTEL_TGL			0x9a15
- #define PCI_DEVICE_ID_AMD_MR			0x163a
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -645,7 +645,7 @@ void update_siblings_masks(unsigned int
+ 	for_each_online_cpu(cpu) {
+ 		cpu_topo = &cpu_topology[cpu];
  
-@@ -421,6 +423,12 @@ static const struct pci_device_id dwc3_p
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_RPLS),
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
- 
-+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTLP),
-+	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+
-+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTL),
-+	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL),
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
- 
+-		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
++		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
+ 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
+ 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
+ 		}
 
 
