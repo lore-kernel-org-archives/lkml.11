@@ -2,134 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F55C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76033C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376604AbiEDSNa (ORCPT
+        id S1357985AbiEDSNy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        Wed, 4 May 2022 14:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376826AbiEDSNT (ORCPT
+        with ESMTP id S1376717AbiEDSN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:13:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 956BB7FF6B
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651685474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=joehKCGQgUtB5bm9SSiCyxnpdmxIgMPc6V/OebR+v8M=;
-        b=C5AJcstFFPYdyUe4tcA3IjnrYqT0Da2LH/jURefGvwUlSmJIa5FGlhs0tzRL9FuYff83pv
-        dLqHaund8jr5GXOD8Qv60Z6fjTpKINe72Qf3l6vTjUDdf9yk/q24po34dNjCm5hSlvOnFy
-        0ZDLKs0BkRonXrcBbe+Xb0C/+zf8XZc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-393-rk43vzTnOBWIVmvA9gJnVw-1; Wed, 04 May 2022 13:31:11 -0400
-X-MC-Unique: rk43vzTnOBWIVmvA9gJnVw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8CE0E380451D;
-        Wed,  4 May 2022 17:31:09 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.16.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 45A0A111DCF2;
-        Wed,  4 May 2022 17:31:09 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id 094EC220463; Wed,  4 May 2022 13:31:09 -0400 (EDT)
-Date:   Wed, 4 May 2022 13:31:08 -0400
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Bernd Schubert <bschubert@ddn.com>
-Cc:     Dharmendra Hans <dharamhans87@gmail.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-fsdevel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org, Dharmendra Singh <dsingh@ddn.com>
-Subject: Re: [PATCH v4 1/3] FUSE: Implement atomic lookup + create
-Message-ID: <YnK4XIk0M3Dx5RP+@redhat.com>
-References: <20220502102521.22875-1-dharamhans87@gmail.com>
- <20220502102521.22875-2-dharamhans87@gmail.com>
- <YnGIUOP2BezDAb1k@redhat.com>
- <CACUYsyGoX+o19u41cZyF92eDBO-9rFN_EEWBvWBGrEMuNn29Mw@mail.gmail.com>
- <YnKR9CFYPXT1bM1F@redhat.com>
- <8003098d-6b17-5cdf-866d-06fefdf1ca31@ddn.com>
+        Wed, 4 May 2022 14:13:28 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646CB5B89D;
+        Wed,  4 May 2022 10:32:38 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id C07BC1C0BCC; Wed,  4 May 2022 19:32:36 +0200 (CEST)
+Date:   Wed, 4 May 2022 19:32:36 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH V4 0/4] Add PM8350C PMIC PWM support for backlight
+Message-ID: <20220504173236.GA8725@duo.ucw.cz>
+References: <1645509309-16142-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
 Content-Disposition: inline
-In-Reply-To: <8003098d-6b17-5cdf-866d-06fefdf1ca31@ddn.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+In-Reply-To: <1645509309-16142-1-git-send-email-quic_c_skakit@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:46:27PM +0200, Bernd Schubert wrote:
-> 
-> 
-> On 5/4/22 16:47, Vivek Goyal wrote:
-> 
-> > Ok, naming is little confusing. I think we will have to put it in
-> > commit message and where you define FUSE_ATOMIC_CREATE that what's
-> > the difference between FUSE_CREATE and FUSE_ATOMIC_CREATE. This is
-> > ATOMIC w.r.t what?
-> > 
-> > May be atomic here means that "lookup + create + open" is a single operation.
-> > But then even FUSE_CREATE is atomic because "creat + open" is a single
-> > operation.
-> > 
-> > In fact FUSE_CREATE does lookup anyway and returns all the information
-> > in fuse_entry_out.
-> > 
-> > IIUC, only difference between FUSE_CREATE and FUSE_ATOMIC_CREATE is that
-> > later also carries information in reply whether file was actually created
-> > or not (FOPEN_FILE_CREATED). This will be set if file did not exist
-> > already and it was created indeed. Is that right?
-> > 
-> > I see FOPEN_FILE_CREATED is being used to avoid calling
-> > fuse_dir_changed(). That sounds like a separate optimization and probably
-> > should be in a separate patch.
-> > 
-> > IOW, I think this patch should be broken in to multiple pieces. First
-> > piece seems to be avoiding lookup() and given the way it is implemented,
-> > looks like we can avoid lookup() even by using existing FUSE_CREATE
-> > command. We don't necessarily need FUSE_ATOMIC_CREATE. Is that right?
-> 
-> The initial non-published patches had that, but I had actually asked not to
-> go that route, because I'm scared that some user space file system
-> implementations might get broken.
 
-> Right now there is always a lookup before
-> fuse_create_open() and when the resulting dentry is positive
-> fuse_create_open/FUSE_CREATE is bypassed. I.e. user space implementations
-> didn't need to handle existing files.
+--azLHFNyN32YCQGCU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hmm..., So if dentry is positive, we will call FUSE_OPEN instead in 
-current code.
+Hi!
 
-Now with this change, we will call FUSE_CREATE and file could still
-be present. If it is a shared filesystem, file could be created by
-another client anyway after lookup() completed and returned a non-existent
-file. So server can still get FUSE_CREATE and file could be there.
+> This series depends on [1], which adds driver for Qualcomm LPG.
+>=20
+> [1]
+> https://patchwork.kernel.org/project/linux-arm-msm/list/?series=3D615848
 
-But I understand that risk of regression is not zero. 
+Thank you, I added 1 and 2 of the series.
 
-Given we are going to implement FUSE_CREATE_EXT in the same patch
-series, I guess we could fix it easily by switching to FUSE_CREATE_EXT.
+Best regards,
+								Pavel
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
 
-So that's my take. I will be willing to take this chance. Until and
-unless ofcourse Miklos disagrees. :-)
+--azLHFNyN32YCQGCU
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks
-Vivek
+-----BEGIN PGP SIGNATURE-----
 
-> Out of the sudden user space
-> implementations might need to handle it and some of them might get broken
-> with that kernel update. I guess even a single broken user space
-> implementation would count as regression.
-> So I had asked to change the patch to require a user space flag.
-> 
-> -- Bernd
-> 
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYnK4tAAKCRAw5/Bqldv6
+8jYeAJ9Fzqbb3LiztndHby6NFpeqAvotPQCfUsKmBx9AzEGthW+cMnk/R5xefY4=
+=/ZCF
+-----END PGP SIGNATURE-----
 
+--azLHFNyN32YCQGCU--
