@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44690C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65757C35294
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357186AbiEDROy (ORCPT
+        id S1357372AbiEDRPA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        Wed, 4 May 2022 13:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355224AbiEDREN (ORCPT
+        with ESMTP id S1355201AbiEDREM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3DC4EA07;
-        Wed,  4 May 2022 09:52:51 -0700 (PDT)
+        Wed, 4 May 2022 13:04:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF014E3B8;
+        Wed,  4 May 2022 09:52:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC50EB827A0;
-        Wed,  4 May 2022 16:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C94FC385AA;
-        Wed,  4 May 2022 16:52:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA701B827AB;
+        Wed,  4 May 2022 16:52:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760E2C385A4;
+        Wed,  4 May 2022 16:52:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683161;
-        bh=/ORMeW9VdrfrZbrInu4dInEhj+vzKcGEl2Q1Sgw3Yvc=;
+        s=korg; t=1651683166;
+        bh=j9fGvGTJIWWMls+EO3uh4k7EJ/UNIJzX+68+UCC0GGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ba4OfiWIEfTkeB9PRWuf1F5TU39IWAtgeTh7yDpIumnADphYvLZCNAty2zGvrqkJQ
-         a31IChtwIeHSgy7vMfyq/icUorEIAYO4bnqbVY4wbV/d1Zg4i+kJZpNa/a34Bk3Oxh
-         drKcJWDgu3wqJvRwf5E83mgVlhertpsjI4H4Vlg0=
+        b=kNdKtSC0SNjgUlQNLdHQRrNY/ThtkecunJKHD+XoIzaiF4RqAhP0C+RaWynAfMgef
+         efObYVY2Zr44M52OCn1FyZnxYLXGYESQl/T5lIIGJlsBdhlfIjncWsIgQIzwyepxL8
+         HpVvZwmxlMnISjycnht5W+L6cRWBXh6mYT6ws8YE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 013/177] iio: dac: ad5446: Fix read_raw not returning set value
-Date:   Wed,  4 May 2022 18:43:26 +0200
-Message-Id: <20220504153054.676623001@linuxfoundation.org>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jack Pham <quic_jackp@quicinc.com>
+Subject: [PATCH 5.15 018/177] usb: typec: ucsi: Fix reuse of completion structure
+Date:   Wed,  4 May 2022 18:43:31 +0200
+Message-Id: <20220504153054.996787420@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,33 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
+commit e25adcca917d7e4cdc1dc6444d0692ffda7594bf upstream.
 
-read_raw should return the un-scaled value.
+The role swapping completion variable is reused, so it needs
+to be reinitialised every time. Otherwise it will be marked
+as done after the first time it's used and completing
+immediately.
 
-Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Link: https://lore.kernel.org/linux-usb/20220325203959.GA19752@jackp-linux.qualcomm.com/
+Fixes: 6df475f804e6 ("usb: typec: ucsi: Start using struct typec_operations")
+Cc: stable@vger.kernel.org
+Reported-and-suggested-by: Jack Pham <quic_jackp@quicinc.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220405134824.68067-2-heikki.krogerus@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5446.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/typec/ucsi/ucsi.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/iio/dac/ad5446.c
-+++ b/drivers/iio/dac/ad5446.c
-@@ -178,7 +178,7 @@ static int ad5446_read_raw(struct iio_de
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -955,6 +955,8 @@ static int ucsi_dr_swap(struct typec_por
+ 	     role == TYPEC_HOST))
+ 		goto out_unlock;
  
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		*val = st->cached_val;
-+		*val = st->cached_val >> chan->scan_type.shift;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = st->vref_mv;
++	reinit_completion(&con->complete);
++
+ 	command = UCSI_SET_UOR | UCSI_CONNECTOR_NUMBER(con->num);
+ 	command |= UCSI_SET_UOR_ROLE(role);
+ 	command |= UCSI_SET_UOR_ACCEPT_ROLE_SWAPS;
+@@ -991,6 +993,8 @@ static int ucsi_pr_swap(struct typec_por
+ 	if (cur_role == role)
+ 		goto out_unlock;
+ 
++	reinit_completion(&con->complete);
++
+ 	command = UCSI_SET_PDR | UCSI_CONNECTOR_NUMBER(con->num);
+ 	command |= UCSI_SET_PDR_ROLE(role);
+ 	command |= UCSI_SET_PDR_ACCEPT_ROLE_SWAPS;
 
 
