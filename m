@@ -2,90 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CDCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350791AbiEDUjA (ORCPT
+        id S1378191AbiEDUjE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        Wed, 4 May 2022 16:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378215AbiEDUiz (ORCPT
+        with ESMTP id S1378165AbiEDUiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:38:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4967910AE;
-        Wed,  4 May 2022 13:35:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D5A3617C2;
-        Wed,  4 May 2022 20:35:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01837C385A4;
-        Wed,  4 May 2022 20:35:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651696516;
-        bh=bJRyH7ULrk10ZA3h6kGwKy07DPEceBSb2lm+GNXVszA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EqVDqgAVsZUswaGXGLhqGJIWvFMh2yJJ9EMg+Cd6PW2dCD/GtIMx61KB+kOCAsBCv
-         s+CDZ4aIB+DJlVtY7pRjhueN8ghQ0OklQYyHo1ZSFpWwrmgNKhXkgbbxPu0zetO8dX
-         etQBQunI7+k/PfJWsc69MJyZKgKjQeOZWSHzSgj8ODX3faMQ5+2BBewZbjoNUW4ZZe
-         0oCAceloRzKC0xY55uzsc0QBg5qZxZ1NRBikcgXgm4ze3wi+nqqH5/lXKctxkfBKTD
-         a6tycxfgTWYGu9d+DauGFsovbChOWX1+jgLF666XqjWlAuYj5bup4eUIvvG879+Fj5
-         wDf3Uwo5Fl0KQ==
-Date:   Wed, 4 May 2022 21:35:11 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
-Subject: Re: [PATCH 0/6] regulator: core: Add support for external outputs
-Message-ID: <YnLjf6H4xJBCPwe7@sirena.org.uk>
-References: <20220504065041.6718-1-zev@bewilderbeest.net>
- <YnJ37QysSaa+gAps@sirena.org.uk>
- <YnLh23QbnO1MHoVL@hatter.bewilderbeest.net>
+        Wed, 4 May 2022 16:38:51 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5684BB1C
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:35:14 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id k2so3513004wrd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Kj6gvTW508ioZB9vcsmBa5dLyYw96Kxg9vwOPe1U7nc=;
+        b=ZgdbVjocHD1S3M+lP8I4gH6GE2rr3avbmlNrIjk2/LFKV1MqKier3SIMbVlIHRTDan
+         vdqKRepi5sP97IeC7HIy5liqihPb9OVfLTqUaeTx92WoS2k1wCMka0qf9kkzNUW0l0cx
+         BAmYYLHeCV2rj2Qd3V6sL8ZIA71qB3Fa4G3bC8Z4oEI0sjGzNquuLw2GCdvmLKBHJ+Hf
+         zdc/yM0nQiCO5YgyFMK6+Q1J5wv+7QxVDpfatED7jKxqnAK4AJUha/KGw/gLEpjAuETa
+         EIbi/8UV1zNuR/iBM8m0k9TC8xpydg2uOxhD+lYhdNbDFSvZNG8pesj1n7qDAPsmVbrI
+         gVOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Kj6gvTW508ioZB9vcsmBa5dLyYw96Kxg9vwOPe1U7nc=;
+        b=4vuAtgMntefOgHOWF6NEBQPwBvmorF25pXpLy64RVGiDHzRAUUCoN82jhUK+gYkaUv
+         MeilDv+HWjuiPslT37McmV+SV9491S145SA3InkNREA3aX0k0PpdlYfwwwdDPS34n6xj
+         Hgk+n48+hDF2VTxYweI5OlgvMFmSNRaHJQWfRHNntvAzjtKybPkXsbTzFa68v59aBOlQ
+         I0DeyP01FHdsLLP1RrDMQ+4XWK6qCWD+5VjvXhGnGssc//6OyqrioOgI9nO3UgucULye
+         k4UOR1UGAe+dzm8D9VnvQyaZ+HawntIiaaYqH0DgT7Ugwd2nhKOnEvhrlf1PTiCROiVp
+         QN3w==
+X-Gm-Message-State: AOAM530aRuMnD7P4sj27EaBR3ltjHEMt4GgY6jnWfEC2bGI5d2/96bPC
+        bfWXTfKmQu+ixe7y7FWUxZiP7w==
+X-Google-Smtp-Source: ABdhPJyHwjBb3mBRYup5T5Ul0WqJx3T9zZ3OHhmfsSdK2MfyRNs1CmC2GTuBHMEQSuFPmjaaCSlndQ==
+X-Received: by 2002:adf:f0cb:0:b0:20a:ef39:d42b with SMTP id x11-20020adff0cb000000b0020aef39d42bmr18219145wro.8.1651696512891;
+        Wed, 04 May 2022 13:35:12 -0700 (PDT)
+Received: from henark71.. ([109.77.36.132])
+        by smtp.gmail.com with ESMTPSA id l20-20020adfc794000000b0020c5253d8dfsm13330101wrg.43.2022.05.04.13.35.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 13:35:12 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     krzk+dt@kernel.org, palmer@dabbelt.com, robh+dt@kernel.org
+Cc:     conor.dooley@microchip.com, Cyril.Jean@microchip.com,
+        daire.mcnamara@microchip.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, palmer@rivosinc.com, arnd@arndb.de,
+        heiko@sntech.de, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: [PATCH v4 1/8] riscv: dts: microchip: remove icicle memory clocks
+Date:   Wed,  4 May 2022 21:30:45 +0100
+Message-Id: <20220504203051.1210355-2-mail@conchuod.ie>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504203051.1210355-1-mail@conchuod.ie>
+References: <20220504203051.1210355-1-mail@conchuod.ie>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="XYm94gjSzzGQjMIN"
-Content-Disposition: inline
-In-Reply-To: <YnLh23QbnO1MHoVL@hatter.bewilderbeest.net>
-X-Cookie: Mother is the invention of necessity.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Conor Dooley <conor.dooley@microchip.com>
 
---XYm94gjSzzGQjMIN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The clock properties in the icicle kit's memory entries cause dtbs_check
+errors:
+arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dtb: /: memory@80000000: 'clocks' does not match any of the regexes: 'pinctrl-[0-9]+'
 
-On Wed, May 04, 2022 at 01:28:11PM -0700, Zev Weiss wrote:
+Get rid of the clocks to avoid the errors.
 
-> To some extent that was an additional (maybe excessive) protective measure
-> against regulators ending up userspace-controllable when they shouldn't be,
-> since I had previously gotten the impression that there was some concern
-> about that possibility.
+Reported-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
+Fixes: 5b28df37d311 ("riscv: dts: microchip: update peripherals in icicle kit device tree")
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts | 2 --
+ 1 file changed, 2 deletions(-)
 
-The problem there is that userspace shouldn't be controlling the
-regulator, it should be controlling the things using the regulator so
-that whatever happens is coordinated with the rest of the management of
-the device.
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index 3392153dd0f1..c71d6aa6137a 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -32,14 +32,12 @@ cpus {
+ 	ddrc_cache_lo: memory@80000000 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x80000000 0x0 0x2e000000>;
+-		clocks = <&clkcfg CLK_DDRC>;
+ 		status = "okay";
+ 	};
+ 
+ 	ddrc_cache_hi: memory@1000000000 {
+ 		device_type = "memory";
+ 		reg = <0x10 0x0 0x0 0x40000000>;
+-		clocks = <&clkcfg CLK_DDRC>;
+ 		status = "okay";
+ 	};
+ };
+-- 
+2.36.0
 
---XYm94gjSzzGQjMIN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJy434ACgkQJNaLcl1U
-h9B+0wf+MttKvXRTWyy3xdto1WZ8sMfsgppWpCGoAtjEOxvGLCL0xnKZr2SBfuCW
-otMNp+5vMZHRUHpZ5QrA4BPc6JAulfRNzMbYZni1P4ZjXx+40BG4+JnfXlro/S13
-kQFAjFNCj0MVg8/0LM7yH4j30LR3MjQsWWM8I8Y9rWzhGccQP8oMQA2wB3Qjaivl
-BoLQaeWtp+QgPPnSXZAc8vE+15sDeIekEW+jBlOKGXsurcvt3kl6zP5iyBKQmClz
-GmlHtASv08JdX31IvTIYhasfWUMFdUTn8EFoOOViJ5grd28F60JPrlk/pDIFClof
-22AepX2debpd1tfqc9xn8Vajk87XRg==
-=P2u8
------END PGP SIGNATURE-----
-
---XYm94gjSzzGQjMIN--
