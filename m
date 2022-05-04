@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBC4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 607D4C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358365AbiEDReS (ORCPT
+        id S1358483AbiEDRec (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        Wed, 4 May 2022 13:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357193AbiEDRKB (ORCPT
+        with ESMTP id S1355854AbiEDRIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:10:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C283649687;
-        Wed,  4 May 2022 09:57:08 -0700 (PDT)
+        Wed, 4 May 2022 13:08:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE84D517EF;
+        Wed,  4 May 2022 09:54:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29415B82795;
-        Wed,  4 May 2022 16:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECCEC385AA;
-        Wed,  4 May 2022 16:57:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54005617DE;
+        Wed,  4 May 2022 16:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2186C385A4;
+        Wed,  4 May 2022 16:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683425;
-        bh=mG562RSlp1GIUX/9eUaCxfRcLCFqQjtL0AeviNxO6YI=;
+        s=korg; t=1651683278;
+        bh=pH8kHLg29q84DA3lAKF1knzAlPKUewGQtsmALlQhDkw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wUGLi26LHU0kTTOKVfOB7NA4OCV6qhpCKG7vAImDa1a686WZC4mJ+ispZTowARuaY
-         o8SqeX0llHbkqUU8PDb5YaUOG7UuePgk4dHxdUgrA3xrzUdutbbyjDmToqJmoVvznj
-         /6Qxbt1MSytv9g1/lb9MNKcefI5gDfJu5no/2Hl0=
+        b=vZ+7BeYAlPHdnlzNgC7qPe+tcOz9IRzGJ0j/Mdum+OMtQltGTr6pTY+871Gy6yY4l
+         c0r6NhMZ18xPK4Y8TidQMZm0oN0kuBWU99JfByTlsYqrgbNNsO+R0VkjjSKwnLAbQW
+         8moYuBYy9EhvAbffbO6IkQRdF56+4bAVbEpt8Mz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 091/225] ARM: dts: am3517-evm: Fix misc pinmuxing
-Date:   Wed,  4 May 2022 18:45:29 +0200
-Message-Id: <20220504153118.996220529@linuxfoundation.org>
+Subject: [PATCH 5.15 131/177] ksmbd: increment reference count of parent fp
+Date:   Wed,  4 May 2022 18:45:24 +0200
+Message-Id: <20220504153104.887434253@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,151 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 942da3af32b2288e674736eb159d1fc676261691 ]
+[ Upstream commit 8510a043d334ecdf83d4604782f288db6bf21d60 ]
 
-The bootloader for the AM3517 has previously done much of the pin
-muxing, but as the bootloader is moving more and more to a model
-based on the device tree, it may no longer automatically mux the
-pins, so it is necessary to add the pinmuxing to the Linux device
-trees so the respective peripherals can remain functional.
+Add missing increment reference count of parent fp in
+ksmbd_lookup_fd_inode().
 
-Fixes: 6ed1d7997561 ("ARM: dts: am3517-evm: Add support for UI board and Audio")
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Message-Id: <20220226214820.747847-1-aford173@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/am3517-evm.dts  | 45 +++++++++++++++++++++++++++----
- arch/arm/boot/dts/am3517-som.dtsi |  9 +++++++
- 2 files changed, 49 insertions(+), 5 deletions(-)
+ fs/ksmbd/smb2pdu.c   | 2 ++
+ fs/ksmbd/vfs_cache.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/am3517-evm.dts b/arch/arm/boot/dts/am3517-evm.dts
-index 0d2fac98ce7d..c8b80f156ec9 100644
---- a/arch/arm/boot/dts/am3517-evm.dts
-+++ b/arch/arm/boot/dts/am3517-evm.dts
-@@ -161,6 +161,8 @@ pwm11: dmtimer-pwm@11 {
- 
- 	/* HS USB Host PHY on PORT 1 */
- 	hsusb1_phy: hsusb1_phy {
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&hsusb1_rst_pins>;
- 		compatible = "usb-nop-xceiv";
- 		reset-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>; /* gpio_57 */
- 		#phy-cells = <0>;
-@@ -168,7 +170,9 @@ hsusb1_phy: hsusb1_phy {
- };
- 
- &davinci_emac {
--	     status = "okay";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&ethernet_pins>;
-+	status = "okay";
- };
- 
- &davinci_mdio {
-@@ -193,6 +197,8 @@ dpi_out: endpoint {
- };
- 
- &i2c2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c2_pins>;
- 	clock-frequency = <400000>;
- 	/* User DIP swithes [1:8] / User LEDS [1:2] */
- 	tca6416: gpio@21 {
-@@ -205,6 +211,8 @@ tca6416: gpio@21 {
- };
- 
- &i2c3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c3_pins>;
- 	clock-frequency = <400000>;
- };
- 
-@@ -223,6 +231,8 @@ &mmc3 {
- };
- 
- &usbhshost {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&hsusb1_pins>;
- 	port1-mode = "ehci-phy";
- };
- 
-@@ -231,8 +241,35 @@ &usbhsehci {
- };
- 
- &omap3_pmx_core {
--	pinctrl-names = "default";
--	pinctrl-0 = <&hsusb1_rst_pins>;
-+
-+	ethernet_pins: pinmux_ethernet_pins {
-+		pinctrl-single,pins = <
-+			OMAP3_CORE1_IOPAD(0x21fe, PIN_INPUT | MUX_MODE0) /* rmii_mdio_data */
-+			OMAP3_CORE1_IOPAD(0x2200, MUX_MODE0) /* rmii_mdio_clk */
-+			OMAP3_CORE1_IOPAD(0x2202, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd0 */
-+			OMAP3_CORE1_IOPAD(0x2204, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd1 */
-+			OMAP3_CORE1_IOPAD(0x2206, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_crs_dv */
-+			OMAP3_CORE1_IOPAD(0x2208, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_rxer */
-+			OMAP3_CORE1_IOPAD(0x220a, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd0 */
-+			OMAP3_CORE1_IOPAD(0x220c, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd1 */
-+			OMAP3_CORE1_IOPAD(0x220e, PIN_OUTPUT_PULLDOWN |MUX_MODE0) /* rmii_txen */
-+			OMAP3_CORE1_IOPAD(0x2210, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_50mhz_clk */
-+		>;
-+	};
-+
-+	i2c2_pins: pinmux_i2c2_pins {
-+		pinctrl-single,pins = <
-+			OMAP3_CORE1_IOPAD(0x21be, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_scl */
-+			OMAP3_CORE1_IOPAD(0x21c0, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_sda */
-+		>;
-+	};
-+
-+	i2c3_pins: pinmux_i2c3_pins {
-+		pinctrl-single,pins = <
-+			OMAP3_CORE1_IOPAD(0x21c2, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_scl */
-+			OMAP3_CORE1_IOPAD(0x21c4, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_sda */
-+		>;
-+	};
- 
- 	leds_pins: pinmux_leds_pins {
- 		pinctrl-single,pins = <
-@@ -300,8 +337,6 @@ OMAP3_CORE1_IOPAD(0x20ba, PIN_OUTPUT | MUX_MODE4)	/* gpmc_ncs6.gpio_57 */
- };
- 
- &omap3_pmx_core2 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&hsusb1_pins>;
- 
- 	hsusb1_pins: pinmux_hsusb1_pins {
- 		pinctrl-single,pins = <
-diff --git a/arch/arm/boot/dts/am3517-som.dtsi b/arch/arm/boot/dts/am3517-som.dtsi
-index 8b669e2eafec..f7b680f6c48a 100644
---- a/arch/arm/boot/dts/am3517-som.dtsi
-+++ b/arch/arm/boot/dts/am3517-som.dtsi
-@@ -69,6 +69,8 @@ nand@0,0 {
- };
- 
- &i2c1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c1_pins>;
- 	clock-frequency = <400000>;
- 
- 	s35390a: s35390a@30 {
-@@ -179,6 +181,13 @@ bluetooth {
- 
- &omap3_pmx_core {
- 
-+	i2c1_pins: pinmux_i2c1_pins {
-+		pinctrl-single,pins = <
-+			OMAP3_CORE1_IOPAD(0x21ba, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_scl */
-+			OMAP3_CORE1_IOPAD(0x21bc, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_sda */
-+		>;
-+	};
-+
- 	wl12xx_buffer_pins: pinmux_wl12xx_buffer_pins {
- 		pinctrl-single,pins = <
- 			OMAP3_CORE1_IOPAD(0x2156, PIN_OUTPUT | MUX_MODE4)  /* mmc1_dat7.gpio_129 */
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index 192d8308afc2..a9fdb47c2791 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -5768,8 +5768,10 @@ static int set_rename_info(struct ksmbd_work *work, struct ksmbd_file *fp,
+ 	if (parent_fp) {
+ 		if (parent_fp->daccess & FILE_DELETE_LE) {
+ 			pr_err("parent dir is opened with delete access\n");
++			ksmbd_fd_put(work, parent_fp);
+ 			return -ESHARE;
+ 		}
++		ksmbd_fd_put(work, parent_fp);
+ 	}
+ next:
+ 	return smb2_rename(work, fp, user_ns, rename_info,
+diff --git a/fs/ksmbd/vfs_cache.c b/fs/ksmbd/vfs_cache.c
+index 29c1db66bd0f..8b873d92d785 100644
+--- a/fs/ksmbd/vfs_cache.c
++++ b/fs/ksmbd/vfs_cache.c
+@@ -497,6 +497,7 @@ struct ksmbd_file *ksmbd_lookup_fd_inode(struct inode *inode)
+ 	list_for_each_entry(lfp, &ci->m_fp_list, node) {
+ 		if (inode == file_inode(lfp->filp)) {
+ 			atomic_dec(&ci->m_count);
++			lfp = ksmbd_fp_get(lfp);
+ 			read_unlock(&ci->m_lock);
+ 			return lfp;
+ 		}
 -- 
 2.35.1
 
