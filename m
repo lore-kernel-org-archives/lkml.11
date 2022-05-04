@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB52FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80439C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355834AbiEDRMe (ORCPT
+        id S1355568AbiEDRMk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
+        Wed, 4 May 2022 13:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354572AbiEDQ6w (ORCPT
+        with ESMTP id S1354452AbiEDRA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:58:52 -0400
+        Wed, 4 May 2022 13:00:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD512BE5;
-        Wed,  4 May 2022 09:50:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1FA4BFF1;
+        Wed,  4 May 2022 09:52:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C59661720;
-        Wed,  4 May 2022 16:50:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 611BCC385A4;
-        Wed,  4 May 2022 16:50:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A58561852;
+        Wed,  4 May 2022 16:52:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3703C385A4;
+        Wed,  4 May 2022 16:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683028;
-        bh=HY6g3a2YqxarSW+yXg6O1VC2q4lgiVbKF4W9sWwGzdo=;
+        s=korg; t=1651683135;
+        bh=tSw8xM9a6f1U+wpCg+E1lnJk6d+d0qTv4HVG5LNkj/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zaTamPKZPPLtzHhKJrI2hXzg9c3SQGUl+417X73sXD5CaRQ3bAdnuwHakW2Dqgu15
-         8sigOraE5hls2S5O/I6DaUay7a7b1eafNXWWEKxcR5+/xaEo24Il4/CTAkOc2o6Uum
-         GiwF7PbQ1ZW8OrQ7PWKvOqoZb/+zVjolIPhrCwNc=
+        b=2Vspvvx/ILU5j44DyznFbRuut8M5cxT0ZAYUWe+ynF/oU7Tj5tn+fqDzTsaUyrorD
+         9iD7r+oUnMua9m1jQ+F+ieP7N+epme+kC3pFKLZ7AXIapAT1pLMX4+RzxNK3VYqWhl
+         rlJnGzFqeFEd4C/ZUNzVFD6j28v/nGL//4Cwnl7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH 5.10 019/129] usb: typec: ucsi: Fix role swapping
-Date:   Wed,  4 May 2022 18:43:31 +0200
-Message-Id: <20220504153022.838977126@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 118/129] tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
+Date:   Wed,  4 May 2022 18:45:10 +0200
+Message-Id: <20220504153030.715325998@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,67 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
+commit 06d5afd4d640eea67f5623e76cd5fc03359b7f3c upstream.
 
-All attempts to swap the roles timed out because the
-completion was done without releasing the port lock. Fixing
-that by releasing the lock before starting to wait for the
-completion.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.5.2 describes that the signal octet in
+convergence layer type 2 can be either one or two bytes. The length is
+encoded in the EA bit. This is set 1 for the last byte in the sequence.
+gsmtty_modem_update() handles this correctly but gsm_dlci_data_output()
+fails to set EA to 1. There is no case in which we encode two signal octets
+as there is no case in which we send out a break signal.
+Therefore, always set the EA bit to 1 for the signal octet to fix this.
 
-Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
-Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-5-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -937,14 +937,18 @@ static int ucsi_dr_swap(struct typec_por
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
--		ret = -ETIMEDOUT;
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	return 0;
- 
- out_unlock:
- 	mutex_unlock(&con->lock);
- 
--	return ret < 0 ? ret : 0;
-+	return ret;
- }
- 
- static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
-@@ -975,11 +979,13 @@ static int ucsi_pr_swap(struct typec_por
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
--		ret = -ETIMEDOUT;
--		goto out_unlock;
--	}
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	mutex_lock(&con->lock);
- 
- 	/* Something has gone wrong while swapping the role */
- 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -818,7 +818,7 @@ static int gsm_dlci_data_output(struct g
+ 			break;
+ 		case 2:	/* Unstructed with modem bits.
+ 		Always one byte as we never send inline break data */
+-			*dp++ = gsm_encode_modem(dlci);
++			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
+ 			break;
+ 		}
+ 		WARN_ON(kfifo_out_locked(&dlci->fifo, dp , len, &dlci->lock) != len);
 
 
