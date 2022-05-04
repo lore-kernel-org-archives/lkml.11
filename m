@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0637C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DEE6C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354213AbiEDQx4 (ORCPT
+        id S1354384AbiEDQyU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        Wed, 4 May 2022 12:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353804AbiEDQwa (ORCPT
+        with ESMTP id S1353828AbiEDQwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FAF741618;
-        Wed,  4 May 2022 09:48:40 -0700 (PDT)
+        Wed, 4 May 2022 12:52:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F76C47385;
+        Wed,  4 May 2022 09:48:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEE556177E;
-        Wed,  4 May 2022 16:48:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8326C385BE;
-        Wed,  4 May 2022 16:48:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADACC6174B;
+        Wed,  4 May 2022 16:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0400FC385A5;
+        Wed,  4 May 2022 16:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682919;
-        bh=KsqWvYLVRjlEAJbhnz+ONW7lnehp7LuvzpxldtWlav8=;
+        s=korg; t=1651682921;
+        bh=H1GWMSx8QPe81iew5Blai1zIxy7NOOTXxmEgd/t/FOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BkkHV3BjynWI9Zxonbf8IpWmDOc0q03pOb2WxSR4Pr3+t8bPCDkYV6+b3UHJ9JqCo
-         Jy9XWzmcpWazxOHaV8wWeLoEoMrkTk8lEBsKkRD3jflKX1RzGeY8t5QKo+W47t2AlW
-         x8S+FOod1yPWGwS2bIszdxwchy4DTn7mM7Lho9D8=
+        b=oMIQTW+CASQE4IpdN0AaZNGk5GBIOCJJRNzOqZ3qYA0buPfbNshO3EJf740kewR4H
+         xJC/6TaO8+0hsX0UMcZd1iv2K3NIGLNVUA7z2vYkExa7rySELeT87UoxhthTmuxXcc
+         5RXinMOzQ0b94YCv3oPFV2rliJB9s4hj1sd4W6ek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
-Subject: [PATCH 5.4 29/84] video: fbdev: udlfb: properly check endpoint type
-Date:   Wed,  4 May 2022 18:44:10 +0200
-Message-Id: <20220504152929.823123508@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 39/84] ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
+Date:   Wed,  4 May 2022 18:44:20 +0200
+Message-Id: <20220504152930.601883654@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,90 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit aaf7dbe07385e0b8deb7237eca2a79926bbc7091 ]
+[ Upstream commit 0e486fe341fabd8e583f3d601a874cd394979c45 ]
 
-syzbot reported warning in usb_submit_urb, which is caused by wrong
-endpoint type.
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC and is expected to be set to 12MHz. Previously
+this was mapped using pre-common clock API calls in the audio machine
+driver but the conversion to the common clock framework broke that so
+describe things in the DT instead.
 
-This driver uses out bulk endpoint for communication, so
-let's check if this endpoint is present and bail out early if not.
-
-Fail log:
-
-usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-WARNING: CPU: 0 PID: 4822 at drivers/usb/core/urb.c:493 usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
-Modules linked in:
-CPU: 0 PID: 4822 Comm: kworker/0:3 Tainted: G        W         5.13.0-syzkaller #0
-...
-Workqueue: usb_hub_wq hub_event
-RIP: 0010:usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
-...
-Call Trace:
- dlfb_submit_urb+0x89/0x160 drivers/video/fbdev/udlfb.c:1969
- dlfb_set_video_mode+0x21f0/0x2950 drivers/video/fbdev/udlfb.c:315
- dlfb_ops_set_par+0x2a3/0x840 drivers/video/fbdev/udlfb.c:1110
- dlfb_usb_probe.cold+0x113e/0x1f4a drivers/video/fbdev/udlfb.c:1732
- usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
-
-Fixes: 88e58b1a42f8 ("Staging: add udlfb driver")
-Reported-and-tested-by: syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220404102806.581374-2-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/udlfb.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/at91sam9g20ek_common.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index e269b1391e14..8e8af408998e 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1650,8 +1650,9 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 	const struct device_attribute *attr;
- 	struct dlfb_data *dlfb;
- 	struct fb_info *info;
--	int retval = -ENOMEM;
-+	int retval;
- 	struct usb_device *usbdev = interface_to_usbdev(intf);
-+	struct usb_endpoint_descriptor *out;
- 
- 	/* usb initialization */
- 	dlfb = kzalloc(sizeof(*dlfb), GFP_KERNEL);
-@@ -1665,6 +1666,12 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 	dlfb->udev = usb_get_dev(usbdev);
- 	usb_set_intfdata(intf, dlfb);
- 
-+	retval = usb_find_common_endpoints(intf->cur_altsetting, NULL, &out, NULL, NULL);
-+	if (retval) {
-+		dev_err(&intf->dev, "Device should have at lease 1 bulk endpoint!\n");
-+		goto error;
-+	}
+diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+index bda22700110c..287566e09a67 100644
+--- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
++++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+@@ -217,6 +217,12 @@ i2c-gpio-0 {
+ 		wm8731: wm8731@1b {
+ 			compatible = "wm8731";
+ 			reg = <0x1b>;
 +
- 	dev_dbg(&intf->dev, "console enable=%d\n", console);
- 	dev_dbg(&intf->dev, "fb_defio enable=%d\n", fb_defio);
- 	dev_dbg(&intf->dev, "shadow enable=%d\n", shadow);
-@@ -1674,6 +1681,7 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 	if (!dlfb_parse_vendor_descriptor(dlfb, intf)) {
- 		dev_err(&intf->dev,
- 			"firmware not recognized, incompatible device?\n");
-+		retval = -ENODEV;
- 		goto error;
- 	}
++			/* PCK0 at 12MHz */
++			clocks = <&pmc PMC_TYPE_SYSTEM 8>;
++			clock-names = "mclk";
++			assigned-clocks = <&pmc PMC_TYPE_SYSTEM 8>;
++			assigned-clock-rates = <12000000>;
+ 		};
+ 	};
  
-@@ -1687,8 +1695,10 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 
- 	/* allocates framebuffer driver structure, not framebuffer memory */
- 	info = framebuffer_alloc(0, &dlfb->udev->dev);
--	if (!info)
-+	if (!info) {
-+		retval = -ENOMEM;
- 		goto error;
-+	}
- 
- 	dlfb->info = info;
- 	info->par = dlfb;
 -- 
 2.35.1
 
