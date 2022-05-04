@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A81C38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBEBC38A02
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382841AbiEDXGj (ORCPT
+        id S1383111AbiEDXGw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        Wed, 4 May 2022 19:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380243AbiEDW7w (ORCPT
+        with ESMTP id S1380391AbiEDW76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:52 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF7E56F82
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:05 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id u8-20020a170903124800b0015195a5826cso1377506plh.4
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:05 -0700 (PDT)
+        Wed, 4 May 2022 18:59:58 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F465715B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:19 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d11b6259adso24158297b3.19
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=MNZdk2aHSD0+/6jdlwq8oD++DPnxxVbOOlc8/sNiKFA=;
-        b=ZKIxJhXhvZd4cu4L7JuNvGEuDMhzKvxLPk/FNK22bZ//xghJdK/P4zAhVxs9XYW09h
-         XXzIRVlrqtbFXhbPaE7M0ieMY0tPptOFVgo+t9ysWX5H3pUEwiW0Yg1BWJR9VoFejRIg
-         EP2lEB4zFyAzUoNpsfKZVbbuBemBHJClQ6fYpzxZdoI0N5fcKUYXn8y0CrnbJxzLAbqv
-         zttcGSEMEyzfZ+1ETbYc6OVasMsQfsJu0iuYwuvxUIHyPUN+4yJBfb7TZVE4YJbTPjgk
-         3qQ9mYbICDMsiucBh/8IXaBMol6sQmIaxPIqoqhH22nzyToM3UNJ4Bq//TtJswqNnQ83
-         NG+g==
+        bh=oRrFo0pRNZVILdspoViulKa/Kh2FDJcS73izUxhLGmY=;
+        b=k2rIWeHIqvV0DT5rMRSOj6MOWmKrEwqfRcpOyG7Ik3GQWcc2lNosTwRJZvCT6LQozl
+         xNQjT+ZfwfnQ4pnva4b1Zf2DuX/N83DMDBo2jg28lsCMCHAIAfuCBX463V5CcB/7ttbg
+         j8//LlGvafe7gwS7MLudTk3yMN0E50NC9GwRjUPxaLlf+xZmWVNNFY9yHpiMo/UTx3Z3
+         7ylJyyFDoFIYk6CMdHKvequfBBF34bkO6WU5LfZkp6dTVVqSeaJs+ZSlyxbvk9hnWpx7
+         7RSm35ci7m9cl1rcvZ53SJKMSCQqTbqV1AtQeyYY39yd1/FBjL3U3SsyD3+XKcSm+87u
+         VxRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=MNZdk2aHSD0+/6jdlwq8oD++DPnxxVbOOlc8/sNiKFA=;
-        b=aHhtsfCnN2KJepCKTCWwKMiE9hjlyv3HbwHwYe0xvty5z6KhFT6Gp37monXyUaQ+fQ
-         ocJGiK1xarh/zB/OUPGsQ86oBxtuXnJ44+A/VuXLiVOSmdVFq0/11FTSQnh2MoFxt/Ts
-         ka18jgu6e3eHfzqvZSm6FeB3AlZ96e6NeWyYLGDj+upQ9Aq0o/Ce0NXv7r4iBhI7XvoJ
-         La4qJs+qrBJpjc0TeU6mH6oFfiRolkiQ0MD23nX4+CVrGwtog3XEFc/ucHf7DTjlJPG5
-         9w1wWr5eg0Y/5kHrYkcQWfKL4tCQfg+hUoCyrRacdZAwzh65Q1TABvyn5FmYWGb/GdrS
-         SHoA==
-X-Gm-Message-State: AOAM533A2xsyBPnGGoJjg1BUBco2OsgbwSPz1GHD8eYkHeFFNEKBK/KZ
-        pZZ+V/SQEh3PInLeI75ohaxng7iPd70=
-X-Google-Smtp-Source: ABdhPJwSHCMREXRH2Tvkn6eXDT23uVtw8KQn1QdMWGkH/AvP5uBScHKAz1RmshpKZNvUz9o9NjUGOTkV1zE=
+        bh=oRrFo0pRNZVILdspoViulKa/Kh2FDJcS73izUxhLGmY=;
+        b=CTs4y5LFnYLNuvEJpUtiJFzHElksd2hT5vaOHXoOdCkw1gfuvUQ8J1BbjjdGohAIxZ
+         FlQX5mmGusWuZG+LsgMhs/P9RW9wXlsgerc6MX/bOHqIWnPL8UH/kO973aPFHxGorKM9
+         AVxTIsnP4rhj905y7A7br0D5nGuG3ISv6gLyQShNogmgmhlPuEyr5xRa6URDMfjwpPpL
+         jVoazlDXzb+QUKvtKsFYogbQmcjdck3uoErbksVRH6Ll1/GYNuHxp/Ms8IWXDtQwZUia
+         dkaWt/7dPBCYDW0I5MIyBKlHkah7+hNCidwYdudh6+BhVInpSo4PT/BmCKNKsF1z05Cz
+         KN1A==
+X-Gm-Message-State: AOAM531akrv4HX38r3SdhNf9UMD+F809c+VqQtENjvRytCSZw/dZ1zWe
+        0TZnQVhgXtN7xsvFnlgOttQ0QnpAwqw=
+X-Google-Smtp-Source: ABdhPJwL/k1Z8mD2VLbPMHprO/qXM6XugJPt7p/rBXgIE/C+OijDU5EPQ6HP1ytmgvEAnPsCKs3X0u9EOO8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:215:b0:15e:cae9:7622 with SMTP id
- r21-20020a170903021500b0015ecae97622mr4283626plh.28.1651704755765; Wed, 04
- May 2022 15:52:35 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a5b:4c9:0:b0:64a:2c09:cddb with SMTP id
+ u9-20020a5b04c9000000b0064a2c09cddbmr2949888ybp.296.1651704766159; Wed, 04
+ May 2022 15:52:46 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:53 +0000
+Date:   Wed,  4 May 2022 22:48:59 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-108-seanjc@google.com>
+Message-Id: <20220504224914.1654036-114-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 107/128] KVM: selftests: Convert s390x/diag318_test_handler
- away from VCPU_ID
+Subject: [PATCH 113/128] KVM: selftests: Convert kvm_page_table_test away from
+ reliance on vcpu_id
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -70,51 +70,203 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert diag318_test_handler to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of passing around vCPU IDs.  Note, this is
-a "functional" change in the sense that the test now creates a vCPU with
-vcpu_id==0 instead of vcpu_id==6.  The non-zero VCPU_ID was 100% arbitrary
-and added little to no validation coverage.  If testing non-zero vCPU IDs
-is desirable for generic tests, that can be done in the future by tweaking
-the VM creation helpers.
+Reference vCPUs by their 'struct kvm_vcpu' object in kvm_page_table_test
+instead of by their ID.  This moves selftests one step closer towards
+taking a 'struct kvm_vcpu *' instead of VM+vcpu_id for vCPU helpers.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/lib/s390x/diag318_test_handler.c       | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ .../selftests/kvm/kvm_page_table_test.c       | 62 +++++++------------
+ 1 file changed, 21 insertions(+), 41 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c b/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c
-index 86b9e611ad87..21c31fe10c1a 100644
---- a/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c
-+++ b/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c
-@@ -8,8 +8,6 @@
- #include "test_util.h"
- #include "kvm_util.h"
+diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
+index 76031be195fa..b577b5999c95 100644
+--- a/tools/testing/selftests/kvm/kvm_page_table_test.c
++++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
+@@ -46,11 +46,6 @@ static const char * const test_stage_string[] = {
+ 	"KVM_ADJUST_MAPPINGS",
+ };
  
--#define VCPU_ID	6
+-struct vcpu_args {
+-	int vcpu_id;
+-	bool vcpu_write;
+-};
 -
- #define ICPT_INSTRUCTION	0x04
- #define IPA0_DIAG		0x8300
- 
-@@ -27,14 +25,15 @@ static void guest_code(void)
-  */
- static uint64_t diag318_handler(void)
- {
-+	struct kvm_vcpu *vcpu;
+ struct test_args {
  	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	uint64_t reg;
- 	uint64_t diag318_info;
+ 	uint64_t guest_test_virt_mem;
+@@ -60,7 +55,7 @@ struct test_args {
+ 	uint64_t large_num_pages;
+ 	uint64_t host_pages_per_lpage;
+ 	enum vm_mem_backing_src_type src_type;
+-	struct vcpu_args vcpu_args[KVM_MAX_VCPUS];
++	struct kvm_vcpu *vcpus[KVM_MAX_VCPUS];
+ };
  
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	vcpu_run(vm, VCPU_ID);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	vcpu_run(vm, vcpu->id);
-+	run = vcpu->run;
+ /*
+@@ -92,17 +87,13 @@ static uint64_t guest_test_phys_mem;
+  */
+ static uint64_t guest_test_virt_mem = DEFAULT_GUEST_TEST_MEM;
  
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
- 		    "DIAGNOSE 0x0318 instruction was not intercepted");
+-static void guest_code(int vcpu_id)
++static void guest_code(bool do_write)
+ {
+ 	struct test_args *p = &test_args;
+-	struct vcpu_args *vcpu_args = &p->vcpu_args[vcpu_id];
+ 	enum test_stage *current_stage = &guest_test_stage;
+ 	uint64_t addr;
+ 	int i, j;
+ 
+-	/* Make sure vCPU args data structure is not corrupt */
+-	GUEST_ASSERT(vcpu_args->vcpu_id == vcpu_id);
+-
+ 	while (true) {
+ 		addr = p->guest_test_virt_mem;
+ 
+@@ -123,7 +114,7 @@ static void guest_code(int vcpu_id)
+ 		 */
+ 		case KVM_CREATE_MAPPINGS:
+ 			for (i = 0; i < p->large_num_pages; i++) {
+-				if (vcpu_args->vcpu_write)
++				if (do_write)
+ 					*(uint64_t *)addr = 0x0123456789ABCDEF;
+ 				else
+ 					READ_ONCE(*(uint64_t *)addr);
+@@ -193,17 +184,15 @@ static void guest_code(int vcpu_id)
+ 
+ static void *vcpu_worker(void *data)
+ {
+-	int ret;
+-	struct vcpu_args *vcpu_args = data;
+ 	struct kvm_vm *vm = test_args.vm;
+-	int vcpu_id = vcpu_args->vcpu_id;
+-	struct kvm_run *run;
++	struct kvm_vcpu *vcpu = data;
++	bool do_write = !(vcpu->id % 2);
+ 	struct timespec start;
+ 	struct timespec ts_diff;
+ 	enum test_stage stage;
++	int ret;
+ 
+-	vcpu_args_set(vm, vcpu_id, 1, vcpu_id);
+-	run = vcpu_state(vm, vcpu_id);
++	vcpu_args_set(vm, vcpu->id, 1, do_write);
+ 
+ 	while (!READ_ONCE(host_quit)) {
+ 		ret = sem_wait(&test_stage_updated);
+@@ -213,15 +202,15 @@ static void *vcpu_worker(void *data)
+ 			return NULL;
+ 
+ 		clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+-		ret = _vcpu_run(vm, vcpu_id);
++		ret = _vcpu_run(vm, vcpu->id);
+ 		ts_diff = timespec_elapsed(start);
+ 
+ 		TEST_ASSERT(ret == 0, "vcpu_run failed: %d\n", ret);
+-		TEST_ASSERT(get_ucall(vm, vcpu_id, NULL) == UCALL_SYNC,
++		TEST_ASSERT(get_ucall(vm, vcpu->id, NULL) == UCALL_SYNC,
+ 			    "Invalid guest sync status: exit_reason=%s\n",
+-			    exit_reason_str(run->exit_reason));
++			    exit_reason_str(vcpu->run->exit_reason));
+ 
+-		pr_debug("Got sync event from vCPU %d\n", vcpu_id);
++		pr_debug("Got sync event from vCPU %d\n", vcpu->id);
+ 		stage = READ_ONCE(*current_stage);
+ 
+ 		/*
+@@ -230,7 +219,7 @@ static void *vcpu_worker(void *data)
+ 		 */
+ 		pr_debug("vCPU %d has completed stage %s\n"
+ 			 "execution time is: %ld.%.9lds\n\n",
+-			 vcpu_id, test_stage_string[stage],
++			 vcpu->id, test_stage_string[stage],
+ 			 ts_diff.tv_sec, ts_diff.tv_nsec);
+ 
+ 		ret = sem_post(&test_stage_completed);
+@@ -250,7 +239,6 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ {
+ 	int ret;
+ 	struct test_params *p = arg;
+-	struct vcpu_args *vcpu_args;
+ 	enum vm_mem_backing_src_type src_type = p->src_type;
+ 	uint64_t large_page_size = get_backing_src_pagesz(src_type);
+ 	uint64_t guest_page_size = vm_guest_mode_params[mode].page_size;
+@@ -260,7 +248,6 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 	uint64_t alignment;
+ 	void *host_test_mem;
+ 	struct kvm_vm *vm;
+-	int vcpu_id;
+ 
+ 	/* Align up the test memory size */
+ 	alignment = max(large_page_size, guest_page_size);
+@@ -269,7 +256,8 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 	/* Create a VM with enough guest pages */
+ 	guest_num_pages = test_mem_size / guest_page_size;
+ 	vm = __vm_create_with_vcpus(mode, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
+-				    guest_num_pages, 0, guest_code, NULL);
++				    guest_num_pages, 0, guest_code,
++				    test_args.vcpus);
+ 
+ 	/* Align down GPA of the testing memslot */
+ 	if (!p->phys_offset)
+@@ -292,12 +280,6 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 	test_args.host_pages_per_lpage = large_page_size / host_page_size;
+ 	test_args.src_type = src_type;
+ 
+-	for (vcpu_id = 0; vcpu_id < KVM_MAX_VCPUS; vcpu_id++) {
+-		vcpu_args = &test_args.vcpu_args[vcpu_id];
+-		vcpu_args->vcpu_id = vcpu_id;
+-		vcpu_args->vcpu_write = !(vcpu_id % 2);
+-	}
+-
+ 	/* Add an extra memory slot with specified backing src type */
+ 	vm_userspace_mem_region_add(vm, src_type, guest_test_phys_mem,
+ 				    TEST_MEM_SLOT_INDEX, guest_num_pages, 0);
+@@ -363,12 +345,11 @@ static void vcpus_complete_new_stage(enum test_stage stage)
+ 
+ static void run_test(enum vm_guest_mode mode, void *arg)
+ {
+-	int ret;
+ 	pthread_t *vcpu_threads;
+ 	struct kvm_vm *vm;
+-	int vcpu_id;
+ 	struct timespec start;
+ 	struct timespec ts_diff;
++	int ret, i;
+ 
+ 	/* Create VM with vCPUs and make some pre-initialization */
+ 	vm = pre_init_before_test(mode, arg);
+@@ -379,10 +360,9 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	host_quit = false;
+ 	*current_stage = KVM_BEFORE_MAPPINGS;
+ 
+-	for (vcpu_id = 0; vcpu_id < nr_vcpus; vcpu_id++) {
+-		pthread_create(&vcpu_threads[vcpu_id], NULL, vcpu_worker,
+-			       &test_args.vcpu_args[vcpu_id]);
+-	}
++	for (i = 0; i < nr_vcpus; i++)
++		pthread_create(&vcpu_threads[i], NULL, vcpu_worker,
++			       test_args.vcpus[i]);
+ 
+ 	vcpus_complete_new_stage(*current_stage);
+ 	pr_info("Started all vCPUs successfully\n");
+@@ -424,13 +404,13 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 
+ 	/* Tell the vcpu thread to quit */
+ 	host_quit = true;
+-	for (vcpu_id = 0; vcpu_id < nr_vcpus; vcpu_id++) {
++	for (i = 0; i < nr_vcpus; i++) {
+ 		ret = sem_post(&test_stage_updated);
+ 		TEST_ASSERT(ret == 0, "Error in sem_post");
+ 	}
+ 
+-	for (vcpu_id = 0; vcpu_id < nr_vcpus; vcpu_id++)
+-		pthread_join(vcpu_threads[vcpu_id], NULL);
++	for (i = 0; i < nr_vcpus; i++)
++		pthread_join(vcpu_threads[i], NULL);
+ 
+ 	ret = sem_destroy(&test_stage_updated);
+ 	TEST_ASSERT(ret == 0, "Error in sem_destroy");
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
