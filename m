@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD616C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9C0C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359416AbiEDRtN (ORCPT
+        id S1359557AbiEDRtU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
+        Wed, 4 May 2022 13:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357565AbiEDRPG (ORCPT
+        with ESMTP id S1357581AbiEDRPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0FD55215;
+        Wed, 4 May 2022 13:15:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A725521B;
         Wed,  4 May 2022 09:58:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8927B827AB;
-        Wed,  4 May 2022 16:58:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5420FC385AA;
-        Wed,  4 May 2022 16:58:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B443617A6;
+        Wed,  4 May 2022 16:58:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46940C385A5;
+        Wed,  4 May 2022 16:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683522;
-        bh=xCx+GlsVxmY/H4CVNQZ7axuhJ5gW967unc+iX5+XCBQ=;
+        s=korg; t=1651683524;
+        bh=3TzXMKvd6eC55mqijotQiI6jDkYbdylBFY4G2KQvp5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTClmVMpU/FJHQorRUwU7RrYDzEkRJBUVnLAZFuDJnOgk2Y0I2xYp3YL/kMnMOEUV
-         jTryNLTiF27Dhb9GO5qERSdP9QzNzI7ZCbsSoEsGHdV9P3HwDJM5oPJuZCZfQBgcHt
-         UPOFH+1VvFkS375RWvxE5mbI2aIThQ6KCgNxZI9U=
+        b=RNn6tCc/kVSoSo9Ia8eSQJTYOAoXak4rpVKNNmJrbJqWiseUzPawjzo7yPQYCzKrv
+         zWQcjaCIR/2tAzgLMdfllqcQcn6AK3zib9cNJI1JEhHINFFGCLQh3AvWRQjmmCMrDH
+         1cn0NLNeGqfF0wHkbClk6+wHu94Cs3eIsVkeNBQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.17 197/225] ARM: dts: imx8mm-venice-gw{71xx,72xx,73xx}: fix OTG controller OC mode
-Date:   Wed,  4 May 2022 18:47:15 +0200
-Message-Id: <20220504153127.764599625@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        Mika Kahola <mika.kahola@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Filippo Falezza <filippo.falezza@outlook.it>,
+        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: [PATCH 5.17 186/225] drm/i915: Check EDID for HDR static metadata when choosing blc
+Date:   Wed,  4 May 2022 18:47:04 +0200
+Message-Id: <20220504153126.956417972@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,81 +55,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Harvey <tharvey@gateworks.com>
+From: Jouni Högander <jouni.hogander@intel.com>
 
-commit 4c79865f3e8a2db93ec1e844509edfebe5a6ae56 upstream.
+commit c05d8332f5d23fa3b521911cbe55a2b67fb21248 upstream.
 
-The GW71xx, GW72xx and GW73xx boards have USB1 routed to a USB OTG
-connectors and USB2 routed to a USB hub.
+We have now seen panel (XMG Core 15 e21 laptop) advertizing support
+for Intel proprietary eDP backlight control via DPCD registers, but
+actually working only with legacy pwm control.
 
-The OTG connector has a over-currently protection with an active-low
-pin and the USB1 to HUB connection has no over-current protection (as
-the HUB itself implements this for its downstream ports).
+This patch adds panel EDID check for possible HDR static metadata and
+Intel proprietary eDP backlight control is used only if that exists.
+Missing HDR static metadata is ignored if user specifically asks for
+Intel proprietary eDP backlight control via enable_dpcd_backlight
+parameter.
 
-Add proper dt nodes to specify the over-current pin polarity for USB1
-and disable over-current protection for USB2.
+v2 :
+- Ignore missing HDR static metadata if Intel proprietary eDP
+  backlight control is forced via i915.enable_dpcd_backlight
+- Printout info message if panel is missing HDR static metadata and
+  support for Intel proprietary eDP backlight control is detected
 
-Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
+Fixes: 4a8d79901d5b ("drm/i915/dp: Enable Intel's HDR backlight interface (only SDR for now)")
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5284
+Cc: Lyude Paul <lyude@redhat.com>
+Cc: Mika Kahola <mika.kahola@intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Filippo Falezza <filippo.falezza@outlook.it>
 Cc: stable@vger.kernel.org
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Jouni Högander <jouni.hogander@intel.com>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220413082826.120634-1-jouni.hogander@intel.com
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+(cherry picked from commit b4b157577cb1de13bee8bebc3576f1de6799a921)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi |    2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi |    2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi |    2 ++
- 3 files changed, 6 insertions(+)
+ drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c |   34 +++++++++++++-----
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-@@ -103,12 +103,14 @@
+--- a/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c
++++ b/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c
+@@ -97,6 +97,14 @@
  
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
+ #define INTEL_EDP_BRIGHTNESS_OPTIMIZATION_1                            0x359
+ 
++enum intel_dp_aux_backlight_modparam {
++	INTEL_DP_AUX_BACKLIGHT_AUTO = -1,
++	INTEL_DP_AUX_BACKLIGHT_OFF = 0,
++	INTEL_DP_AUX_BACKLIGHT_ON = 1,
++	INTEL_DP_AUX_BACKLIGHT_FORCE_VESA = 2,
++	INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL = 3,
++};
++
+ /* Intel EDP backlight callbacks */
+ static bool
+ intel_dp_aux_supports_hdr_backlight(struct intel_connector *connector)
+@@ -126,6 +134,24 @@ intel_dp_aux_supports_hdr_backlight(stru
+ 		return false;
+ 	}
+ 
++	/*
++	 * If we don't have HDR static metadata there is no way to
++	 * runtime detect used range for nits based control. For now
++	 * do not use Intel proprietary eDP backlight control if we
++	 * don't have this data in panel EDID. In case we find panel
++	 * which supports only nits based control, but doesn't provide
++	 * HDR static metadata we need to start maintaining table of
++	 * ranges for such panels.
++	 */
++	if (i915->params.enable_dpcd_backlight != INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL &&
++	    !(connector->base.hdr_sink_metadata.hdmi_type1.metadata_type &
++	      BIT(HDMI_STATIC_METADATA_TYPE1))) {
++		drm_info(&i915->drm,
++			 "Panel is missing HDR static metadata. Possible support for Intel HDR backlight interface is not used. If your backlight controls don't work try booting with i915.enable_dpcd_backlight=%d. needs this, please file a _new_ bug report on drm/i915, see " FDO_BUG_URL " for details.\n",
++			 INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL);
++		return false;
++	}
++
+ 	panel->backlight.edp.intel.sdr_uses_aux =
+ 		tcon_cap[2] & INTEL_EDP_SDR_TCON_BRIGHTNESS_AUX_CAP;
+ 
+@@ -413,14 +439,6 @@ static const struct intel_panel_bl_funcs
+ 	.get = intel_dp_aux_vesa_get_backlight,
  };
  
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	status = "okay";
- };
- 
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-@@ -139,12 +139,14 @@
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-@@ -166,12 +166,14 @@
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
- 
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
+-enum intel_dp_aux_backlight_modparam {
+-	INTEL_DP_AUX_BACKLIGHT_AUTO = -1,
+-	INTEL_DP_AUX_BACKLIGHT_OFF = 0,
+-	INTEL_DP_AUX_BACKLIGHT_ON = 1,
+-	INTEL_DP_AUX_BACKLIGHT_FORCE_VESA = 2,
+-	INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL = 3,
+-};
+-
+ int intel_dp_aux_init_backlight_funcs(struct intel_connector *connector)
+ {
+ 	struct drm_device *dev = connector->base.dev;
 
 
