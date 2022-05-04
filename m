@@ -2,64 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4549CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45880C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349659AbiEDMcI (ORCPT
+        id S1349524AbiEDMcS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
+        Wed, 4 May 2022 08:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349540AbiEDMb0 (ORCPT
+        with ESMTP id S1349591AbiEDMcF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:31:26 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755543057C;
-        Wed,  4 May 2022 05:27:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PZuKIQ/6fK2IF1ChGatGwypGtSEXFs4ELDYnkndY5IA=; b=maCXYfqxQcIAeIpSEEUckTK/Gh
-        9RmGwa2dJij1h6xjkyT6dM4vxy/mLyNHyOVKz5dFk7w8WNW5AF2/0Y6MMXgtlkmTkAJrU2uNJwMPL
-        5arS7OpcRx/us5/qh2DOVguB7IzMMvM7mLHngt9e/vVsFy0eVBR/gsaTGkr2WE75p/Is=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nmE6T-001Cvd-OR; Wed, 04 May 2022 14:27:37 +0200
-Date:   Wed, 4 May 2022 14:27:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/2] net: phy:
- genphy_c45_baset1_an_config_aneg: do no set unknown configuration
-Message-ID: <YnJxOXcSVGW+g0ZP@lunn.ch>
-References: <20220504110655.1470008-1-o.rempel@pengutronix.de>
- <20220504110655.1470008-2-o.rempel@pengutronix.de>
+        Wed, 4 May 2022 08:32:05 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1614B30576;
+        Wed,  4 May 2022 05:28:27 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id be20so1489353edb.12;
+        Wed, 04 May 2022 05:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v8deg2KLDPfn0MYLkDdTzpE851zZE5QzG2ocaiOOkBo=;
+        b=CLTbKxWNFX6edptI+ZvYTsXKN81abpGJmTLXmBFKatFJax0iYOADG2PnCoD+/l2VwA
+         UTy4Ng6y6ptMNezJx/4XMUPYUJJAgvMWuzzmTwKFUkUFIv0epgIVsL5U70nxYIz5LwV8
+         9vLpv8YKG7TBGlUdUrHoQepDCvzZ5DUa/+BDwy47FwDS3i51ok/Tt02EAJqjMRZNaENm
+         ShehKHGJTI+EyGYgS18O4GjAc5u5IupRKsMIKrUQrkAB4wPzCW9lNk7iRpUpUH5Wfcfb
+         9yS/5g40xIJ3BzqRgHvgaMZizwhDizJR7u/JqyDu7rPhRUDbK3hdCWguH9WRf5NZc98J
+         aTKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v8deg2KLDPfn0MYLkDdTzpE851zZE5QzG2ocaiOOkBo=;
+        b=PysMEXJWWHjDUD95vJyF6QHbkd3RAc9aVEsaW7Vuo7b1dy01NHA/tpkEjVhaMnn1Cj
+         32y2IHUTJMA2rB9ZF6FaejCti8+XJO0p3kL/rYsV7Vg2Ov5TFDlw6Pv5fxWB4s9kDJn3
+         4o92VrIOdQ1wOI12/S7sz2ZVKi6aPplcl/q5I95HXFHmBh8C49uuyo7W+UsWVLxZVmLe
+         0NvIAxz31orGHINTD4kIWaJ+gupBpq18VFGMraZotwTNofQETK5pjQJHxlc6fhOaC62Q
+         +2oqvAY3Wfnp93PdwIq9bA3qNThWBFXLnMqbl01thTPr/Y3uIgVVnoNim99vWHqDr9ab
+         W07A==
+X-Gm-Message-State: AOAM531CJW38L8Fie+kXIiI0hqWqqr9KKgC2PedHv2RZsyE32gdRU+gA
+        Knq2e4mc9b8O2lDaAhZs96s=
+X-Google-Smtp-Source: ABdhPJx78kwFzBXfvJvi8YwuMRvR0iUjeHn1QZnqQXHsSFpeV5QrHysEmB7yI8b1v+iASOqFaO2LQA==
+X-Received: by 2002:aa7:d459:0:b0:427:bd8f:61f8 with SMTP id q25-20020aa7d459000000b00427bd8f61f8mr16374482edr.157.1651667305522;
+        Wed, 04 May 2022 05:28:25 -0700 (PDT)
+Received: from localhost.localdomain (185-177-124-12.hosted-by-worldstream.net. [185.177.124.12])
+        by smtp.gmail.com with ESMTPSA id ig1-20020a1709072e0100b006f3ef214e7asm5688693ejc.224.2022.05.04.05.28.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 05:28:25 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        Ikjoon Jang <ikjn@chromium.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Sam Shih <sam.shih@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 00/13] Mediatek MT6735 main clock and reset drivers
+Date:   Wed,  4 May 2022 16:25:48 +0400
+Message-Id: <20220504122601.335495-1-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504110655.1470008-2-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 01:06:54PM +0200, Oleksij Rempel wrote:
-> Do not change default master/slave autoneg configuration if no
-> changes was requested.
-> 
-> Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-Hi Oleksij
+This series adds support for the main clock and reset controllers on the
+Mediatek MT6735 SoC:
+- apmixedsys (global PLLs)
+- topckgen (global divisors and muxes)
+- infracfg (gates and resets for internal components)
+- pericfg (gates and resets for peripherals)
 
-I'm i right in saying 3da8ffd8545f is only in net-next?
+MT6735 has other more specialized clock controllers, support for which is
+not included in this series:
+- imgsys (camera)
+- mmsys (display)
+- vdecsys (video decoder)
+- audsys (audio)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Some symbols in common objects are exported to get the drivers to compile
+as modules, and mtk_unregister_reset_controller() is implemented to allow
+for unregistering reset controllers in the infracfg and pericfg drivers
+when unloading them.
 
-    Andrew
+Yassine Oudjana (13):
+  dt-bindings: clock: Add Mediatek MT6735 clock bindings
+  dt-bindings: reset: Add MT6735 reset bindings
+  dt-bindings: arm: mediatek: Add MT6735 clock controller compatibles
+  clk: composite: Export clk_unregister_composite
+  clk: mediatek: Export mtk_free_clk_data
+  clk: mediatek: Add driver for MT6735 apmixedsys
+  clk: mediatek: Add driver for MT6735 topckgen
+  clk: mediatek: gate: Export mtk_clk_register_gates_with_dev
+  clk: mediatek: reset: Export mtk_register_reset_controller symbols
+  clk: mediatek: reset: Return mtk_reset pointer on register
+  clk: mediatek: reset: Implement mtk_unregister_reset_controller() API
+  clk: mediatek: Add driver for MT6735 infracfg
+  clk: mediatek: Add driver for MT6735 pericfg
+
+ .../arm/mediatek/mediatek,infracfg.yaml       |    8 +-
+ .../arm/mediatek/mediatek,pericfg.yaml        |    1 +
+ .../bindings/clock/mediatek,apmixedsys.yaml   |    4 +-
+ .../bindings/clock/mediatek,topckgen.yaml     |    4 +-
+ MAINTAINERS                                   |   16 +
+ drivers/clk/clk-composite.c                   |    1 +
+ drivers/clk/mediatek/Kconfig                  |   28 +
+ drivers/clk/mediatek/Makefile                 |    4 +
+ drivers/clk/mediatek/clk-gate.c               |    1 +
+ drivers/clk/mediatek/clk-mt6735-apmixed.c     |  274 ++++
+ drivers/clk/mediatek/clk-mt6735-infracfg.c    |  265 ++++
+ drivers/clk/mediatek/clk-mt6735-pericfg.c     |  360 +++++
+ drivers/clk/mediatek/clk-mt6735-topckgen.c    | 1159 +++++++++++++++++
+ drivers/clk/mediatek/clk-mtk.c                |    1 +
+ drivers/clk/mediatek/clk-mtk.h                |    8 +-
+ drivers/clk/mediatek/reset.c                  |   31 +-
+ .../clock/mediatek,mt6735-apmixedsys.h        |   16 +
+ .../clock/mediatek,mt6735-infracfg.h          |   25 +
+ .../clock/mediatek,mt6735-pericfg.h           |   37 +
+ .../clock/mediatek,mt6735-topckgen.h          |   79 ++
+ .../reset/mediatek,mt6735-infracfg.h          |   31 +
+ .../reset/mediatek,mt6735-pericfg.h           |   31 +
+ 22 files changed, 2366 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-apmixed.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-infracfg.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-pericfg.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-topckgen.c
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-infracfg.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-pericfg.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-topckgen.h
+ create mode 100644 include/dt-bindings/reset/mediatek,mt6735-infracfg.h
+ create mode 100644 include/dt-bindings/reset/mediatek,mt6735-pericfg.h
+
+-- 
+2.36.0
+
