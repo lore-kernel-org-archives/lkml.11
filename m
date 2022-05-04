@@ -2,184 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 374F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 02:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B65C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 02:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237150AbiEDCFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 22:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        id S245227AbiEDCHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 22:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344015AbiEDCCn (ORCPT
+        with ESMTP id S243167AbiEDCHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 22:02:43 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9BC2610B;
-        Tue,  3 May 2022 18:58:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651629532; x=1683165532;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SfFRyNG4hERL+TTomH08jiy/yMmdir6j259/R+4NcYg=;
-  b=KXHFtCFAw1/YNdZS5bSmXPkpPbq1Ttr6ag/99PSHTabw2v+00+Tz0VK8
-   2UTFkcEv1sxw6sOM0UwC5C/OyxXAGdG3EJ2VS62cU6YMqWZi9Y3eEpEUi
-   KsdISC+kGoGPMXd72f35yC0FJWzCa+zBAbvLBNyy/p0I/O77taN08jBK6
-   U=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 03 May 2022 18:58:51 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 18:58:51 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 3 May 2022 18:58:51 -0700
-Received: from [10.50.60.188] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 3 May 2022
- 18:58:48 -0700
-Message-ID: <c2ede158-3c50-9de5-653f-607377a01992@quicinc.com>
-Date:   Wed, 4 May 2022 07:28:43 +0530
+        Tue, 3 May 2022 22:07:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A203FDC5
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 19:03:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651629815; x=1683165815;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=SaDiayL72AA9TGo8je0ypoIe2eI0QEYm3nLs7LcNJss=;
+  b=UTJdB494wPqEEHuoyAa5y1MFy1vYgotkRYhvJWBdmowIaArj2uavyDJ0
+   3S2H/tNb5fDXdt9MTG9aDqIMHd/CjbbjCnatZbxSooAwTKMNLh6xdVdpf
+   gLPQTwWhvTeGLkAwGbzDEMUlRQ/inN2aUhKfaXHj6Ing8B25cCGWSl7og
+   0Kw55hTuamkiIVSF5xVmSbrfPd6ZqX0TQbSoj9IClV1ZSrQHa6CYqFJ5z
+   HBRd5nR1jmDTXEQfMZEbPNlPAAG1SmN/iI2x5SjrAv2gSQJ7w26vFniPX
+   aIhhf9uD0wuXDg2FzhRclf3WuqWV27wppKAGnQY9OI2wccVXqd26YwQZZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="330626272"
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="330626272"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 19:03:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="692969961"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 03 May 2022 19:03:34 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nm4MX-000Axn-Fr;
+        Wed, 04 May 2022 02:03:33 +0000
+Date:   Wed, 4 May 2022 10:02:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [norov:gup 45/48] lib/bitmap.c:1570:17: error: initializing
+ 'unsigned long *' with an expression of type 'const unsigned long *'
+ discards qualifiers
+Message-ID: <202205041022.rYfACmSF-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 2/2] soc: qcom: llcc: Add sc8180x and sc8280xp
- configurations
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20220502215406.612967-1-bjorn.andersson@linaro.org>
- <20220502215406.612967-3-bjorn.andersson@linaro.org>
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-In-Reply-To: <20220502215406.612967-3-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/2022 3:24 AM, Bjorn Andersson wrote:
-> Add LLCC configuration data for the SC8180X and SC8280XP platforms,
-> based on the downstream tables.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->
-> Changs since v1:
-> - Updated tables according to documentation - thanks Sai!
->
->   drivers/soc/qcom/llcc-qcom.c       | 60 ++++++++++++++++++++++++++++++
->   include/linux/soc/qcom/llcc-qcom.h |  2 +
->   2 files changed, 62 insertions(+)
->
-> diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-> index 85ba8209b182..4b143cf7b4ce 100644
-> --- a/drivers/soc/qcom/llcc-qcom.c
-> +++ b/drivers/soc/qcom/llcc-qcom.c
-> @@ -130,6 +130,50 @@ static const struct llcc_slice_config sc7280_data[] =  {
->   	{ LLCC_MODPE,    29, 64,  1, 1, 0x3f, 0x0, 0, 0, 0, 1, 0, 0},
->   };
->   
-> +static const struct llcc_slice_config sc8180x_data[] = {
-> +	{ LLCC_CPUSS,    1, 6144,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 1 },
-> +	{ LLCC_VIDSC0,   2, 512,   2, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_VIDSC1,   3, 512,   2, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_AUDIO,    6, 1024,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_MDMHPGRW, 7, 3072,  1, 1, 0x3ff, 0xc00, 0, 0, 0, 1, 0 },
-> +	{ LLCC_MDM,      8, 3072,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_MODHW,    9, 1024,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_CMPT,     10, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_GPUHTW,   11, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_GPU,      12, 5120, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_MMUHWT,   13, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 0, 1 },
-> +	{ LLCC_CMPTDMA,  15, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_DISP,     16, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_VIDFW,    17, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_MDMHPFX,  20, 1024, 2, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_MDMPNG,   21, 1024, 0, 1, 0xc,   0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_AUDHW,    22, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_NPU,      23, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_WLHW,     24, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_MODPE,    29, 512,  1, 1, 0xc,   0x0,   0, 0, 0, 1, 0 },
-> +	{ LLCC_APTCM,    30, 512,  3, 1, 0x0,   0x1,   1, 0, 0, 1, 0 },
-> +	{ LLCC_WRCACHE,  31, 128,  1, 1, 0xfff, 0x0,   0, 0, 0, 0, 0 },
-> +};
-> +
-> +static const struct llcc_slice_config sc8280xp_data[] = {
-> +	{ LLCC_CPUSS,    1,  6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 1, 0 },
-> +	{ LLCC_VIDSC0,   2,  512,  3, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_AUDIO,    6,  1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0, 0 },
-> +	{ LLCC_CMPT,     10, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0, 0 },
-> +	{ LLCC_GPUHTW,   11, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_GPU,      12, 4096, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 1 },
-> +	{ LLCC_MMUHWT,   13, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_DISP,     16, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_AUDHW,    22, 2048, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_DRE,      26, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_CVP,      28, 512,  3, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_APTCM,    30, 1024, 3, 1, 0x0,   0x1, 1, 0, 0, 1, 0, 0 },
-> +	{ LLCC_WRCACHE,  31, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_CVPFW,    32, 512,  1, 0, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_CPUSS1,   33, 2048, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
-> +	{ LLCC_CPUHWT,   36, 512,  1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1, 0 },
-> +};
-> +
->   static const struct llcc_slice_config sdm845_data[] =  {
->   	{ LLCC_CPUSS,    1,  2816, 1, 0, 0xffc, 0x2,   0, 0, 1, 1, 1 },
->   	{ LLCC_VIDSC0,   2,  512,  2, 1, 0x0,   0x0f0, 0, 0, 1, 1, 0 },
-> @@ -276,6 +320,20 @@ static const struct qcom_llcc_config sc7280_cfg = {
->   	.reg_offset	= llcc_v1_2_reg_offset,
->   };
->   
-> +static const struct qcom_llcc_config sc8180x_cfg = {
-> +	.sct_data	= sc8180x_data,
-> +	.size		= ARRAY_SIZE(sc8180x_data),
-> +	.need_llcc_cfg	= true,
-> +	.reg_offset	= llcc_v1_2_reg_offset,
-> +};
-> +
-> +static const struct qcom_llcc_config sc8280xp_cfg = {
-> +	.sct_data	= sc8280xp_data,
-> +	.size		= ARRAY_SIZE(sc8280xp_data),
-> +	.need_llcc_cfg	= true,
-> +	.reg_offset	= llcc_v1_2_reg_offset,
-> +};
-> +
->   static const struct qcom_llcc_config sdm845_cfg = {
->   	.sct_data	= sdm845_data,
->   	.size		= ARRAY_SIZE(sdm845_data),
-> @@ -741,6 +799,8 @@ static int qcom_llcc_probe(struct platform_device *pdev)
->   static const struct of_device_id qcom_llcc_of_match[] = {
->   	{ .compatible = "qcom,sc7180-llcc", .data = &sc7180_cfg },
->   	{ .compatible = "qcom,sc7280-llcc", .data = &sc7280_cfg },
-> +	{ .compatible = "qcom,sc8180x-llcc", .data = &sc8180x_cfg },
-> +	{ .compatible = "qcom,sc8280xp-llcc", .data = &sc8280xp_cfg },
->   	{ .compatible = "qcom,sdm845-llcc", .data = &sdm845_cfg },
->   	{ .compatible = "qcom,sm6350-llcc", .data = &sm6350_cfg },
->   	{ .compatible = "qcom,sm8150-llcc", .data = &sm8150_cfg },
-> diff --git a/include/linux/soc/qcom/llcc-qcom.h b/include/linux/soc/qcom/llcc-qcom.h
-> index 0bc21ee58fac..9ed5384c5ca1 100644
-> --- a/include/linux/soc/qcom/llcc-qcom.h
-> +++ b/include/linux/soc/qcom/llcc-qcom.h
-> @@ -29,6 +29,8 @@
->   #define LLCC_AUDHW       22
->   #define LLCC_NPU         23
->   #define LLCC_WLHW        24
-> +#define LLCC_PIMEM       25
-> +#define LLCC_DRE         26
->   #define LLCC_CVP         28
->   #define LLCC_MODPE       29
->   #define LLCC_APTCM       30
+Hi Yury,
 
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+FYI, the error/warning still remains.
 
-(Note: LLCC_PIMEM isn't used now, but I guess doesn't hurt much to be included in header)
+tree:   https://github.com/norov/linux gup
+head:   c96226d23c745b114dc041e0d8d0c272b280c71a
+commit: f1cbd19c47bf73d532ff30571601c7ede57d5f82 [45/48] lib: add bitmap_{from,to}_arr64
+config: mips-randconfig-r015-20220501 (https://download.01.org/0day-ci/archive/20220504/202205041022.rYfACmSF-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/norov/linux/commit/f1cbd19c47bf73d532ff30571601c7ede57d5f82
+        git remote add norov https://github.com/norov/linux
+        git fetch --no-tags norov gup
+        git checkout f1cbd19c47bf73d532ff30571601c7ede57d5f82
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-Thanks,
-Sai
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> lib/bitmap.c:1570:17: error: initializing 'unsigned long *' with an expression of type 'const unsigned long *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+           unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
+                          ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   lib/bitmap.c:1575:22: warning: shift count >= width of type [-Wshift-count-overflow]
+                           *buf |= *bitmap++ << 32;
+                                             ^  ~~
+   1 warning and 1 error generated.
+
+
+vim +1570 lib/bitmap.c
+
+  1561	
+  1562	/**
+  1563	 * bitmap_to_arr64 - copy the contents of bitmap to a u64 array of bits
+  1564	 *	@buf: array of u64 (in host byte order), the dest bitmap
+  1565	 *	@bitmap: array of unsigned longs, the source bitmap
+  1566	 *	@nbits: number of bits in @bitmap
+  1567	 */
+  1568	void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
+  1569	{
+> 1570		unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
