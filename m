@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C3BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354608AbiEDRre (ORCPT
+        id S1356264AbiEDRrj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        Wed, 4 May 2022 13:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356264AbiEDRNk (ORCPT
+        with ESMTP id S1356745AbiEDROF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:13:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFF54BFDD;
-        Wed,  4 May 2022 09:57:55 -0700 (PDT)
+        Wed, 4 May 2022 13:14:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B453B75;
+        Wed,  4 May 2022 09:58:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7976361920;
-        Wed,  4 May 2022 16:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF4FC385A4;
-        Wed,  4 May 2022 16:57:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23F01618E8;
+        Wed,  4 May 2022 16:58:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1E4C385AF;
+        Wed,  4 May 2022 16:58:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683462;
-        bh=eYtxATOhzuJEhHqHBa1TTh1+uYflDzuJ0v2jmBeLP1g=;
+        s=korg; t=1651683493;
+        bh=lZSgcARiKu563cMVPF9TLhAYaBQcnyIOkxgPX0ZQyPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=urq9tNjieitvA6512pSdlJlzTusnZl0MysfECgsCYxEgyl9zl9kVWpSlaIvbcMNv6
-         JM2+3nrieQCYiwQWdqY/upHpeuSaMfMRvx/W3O+E8g0CveW9I6xeqMSKMhNhIIN9/t
-         uplsbfa7NFtjTpATxouteJGMN0QRNgCs2XXnPxrs=
+        b=UIAonYcqcjz9dO3vVTkQOVVA4faMdQfVuDuG1nqYcH0dG+lB37NyNl1Q/XgEjR4/X
+         tB62SyHqG5wF4TxV9Fd6QEOPCYyBefN2hJLweP8AW45nSsuTDvA3G5F2OCUN1ALcLY
+         x0ql/x85ET8IDWE29dvZ99mEYG3J4INAnnLjff34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Doug Porter <dsp@fb.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 124/225] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
-Date:   Wed,  4 May 2022 18:46:02 +0200
-Message-Id: <20220504153121.494192883@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Jin <hongyu.jin@unisoc.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Chao Yu <chao@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 168/225] erofs: fix use-after-free of on-stack io[]
+Date:   Wed,  4 May 2022 18:46:46 +0200
+Message-Id: <20220504153125.086107183@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -53,143 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Hongyu Jin <hongyu.jin@unisoc.com>
 
-[ Upstream commit 4bfe744ff1644fbc0a991a2677dc874475dd6776 ]
+[ Upstream commit 60b30050116c0351b90154044345c1b53ae1f323 ]
 
-I had this bug sitting for too long in my pile, it is time to fix it.
+The root cause is the race as follows:
+Thread #1                              Thread #2(irq ctx)
 
-Thanks to Doug Porter for reminding me of it!
+z_erofs_runqueue()
+  struct z_erofs_decompressqueue io_A[];
+  submit bio A
+  z_erofs_decompress_kickoff(,,1)
+                                       z_erofs_decompressqueue_endio(bio A)
+                                       z_erofs_decompress_kickoff(,,-1)
+                                       spin_lock_irqsave()
+                                       atomic_add_return()
+  io_wait_event()	-> pending_bios is already 0
+  [end of function]
+                                       wake_up_locked(io_A[]) // crash
 
-We had various attempts in the past, including commit
-0cbe6a8f089e ("tcp: remove SOCK_QUEUE_SHRUNK"),
-but the issue is that TCP stack currently only generates
-EPOLLOUT from input path, when tp->snd_una has advanced
-and skb(s) cleaned from rtx queue.
+Referenced backtrace in kernel 5.4:
 
-If a flow has a big RTT, and/or receives SACKs, it is possible
-that the notsent part (tp->write_seq - tp->snd_nxt) reaches 0
-and no more data can be sent until tp->snd_una finally advances.
+[   10.129422] Unable to handle kernel paging request at virtual address eb0454a4
+[   10.364157] CPU: 0 PID: 709 Comm: getprop Tainted: G        WC O      5.4.147-ab09225 #1
+[   11.556325] [<c01b33b8>] (__wake_up_common) from [<c01b3300>] (__wake_up_locked+0x40/0x48)
+[   11.565487] [<c01b3300>] (__wake_up_locked) from [<c044c8d0>] (z_erofs_vle_unzip_kickoff+0x6c/0xc0)
+[   11.575438] [<c044c8d0>] (z_erofs_vle_unzip_kickoff) from [<c044c854>] (z_erofs_vle_read_endio+0x16c/0x17c)
+[   11.586082] [<c044c854>] (z_erofs_vle_read_endio) from [<c06a80e8>] (clone_endio+0xb4/0x1d0)
+[   11.595428] [<c06a80e8>] (clone_endio) from [<c04a1280>] (blk_update_request+0x150/0x4dc)
+[   11.604516] [<c04a1280>] (blk_update_request) from [<c06dea28>] (mmc_blk_cqe_complete_rq+0x144/0x15c)
+[   11.614640] [<c06dea28>] (mmc_blk_cqe_complete_rq) from [<c04a5d90>] (blk_done_softirq+0xb0/0xcc)
+[   11.624419] [<c04a5d90>] (blk_done_softirq) from [<c010242c>] (__do_softirq+0x184/0x56c)
+[   11.633419] [<c010242c>] (__do_softirq) from [<c01051e8>] (irq_exit+0xd4/0x138)
+[   11.641640] [<c01051e8>] (irq_exit) from [<c010c314>] (__handle_domain_irq+0x94/0xd0)
+[   11.650381] [<c010c314>] (__handle_domain_irq) from [<c04fde70>] (gic_handle_irq+0x50/0xd4)
+[   11.659641] [<c04fde70>] (gic_handle_irq) from [<c0101b70>] (__irq_svc+0x70/0xb0)
 
-What is needed is to also check if POLLOUT needs to be generated
-whenever tp->snd_nxt is advanced, from output path.
-
-This bug triggers more often after an idle period, as
-we do not receive ACK for at least one RTT. tcp_notsent_lowat
-could be a fraction of what CWND and pacing rate would allow to
-send during this RTT.
-
-In a followup patch, I will remove the bogus call
-to tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED)
-from tcp_check_space(). Fact that we have decided to generate
-an EPOLLOUT does not mean the application has immediately
-refilled the transmit queue. This optimistic call
-might have been the reason the bug seemed not too serious.
-
-Tested:
-
-200 ms rtt, 1% packet loss, 32 MB tcp_rmem[2] and tcp_wmem[2]
-
-$ echo 500000 >/proc/sys/net/ipv4/tcp_notsent_lowat
-$ cat bench_rr.sh
-SUM=0
-for i in {1..10}
-do
- V=`netperf -H remote_host -l30 -t TCP_RR -- -r 10000000,10000 -o LOCAL_BYTES_SENT | egrep -v "MIGRATED|Bytes"`
- echo $V
- SUM=$(($SUM + $V))
-done
-echo SUM=$SUM
-
-Before patch:
-$ bench_rr.sh
-130000000
-80000000
-140000000
-140000000
-140000000
-140000000
-130000000
-40000000
-90000000
-110000000
-SUM=1140000000
-
-After patch:
-$ bench_rr.sh
-430000000
-590000000
-530000000
-450000000
-450000000
-350000000
-450000000
-490000000
-480000000
-460000000
-SUM=4680000000  # This is 410 % of the value before patch.
-
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Doug Porter <dsp@fb.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Hongyu Jin <hongyu.jin@unisoc.com>
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Link: https://lore.kernel.org/r/20220401115527.4935-1-hongyu.jin.cn@gmail.com
+Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h     |  1 +
- net/ipv4/tcp_input.c  | 12 +++++++++++-
- net/ipv4/tcp_output.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ fs/erofs/zdata.c | 12 ++++--------
+ fs/erofs/zdata.h |  2 +-
+ 2 files changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 9f459e8f1689..40c05972178b 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -620,6 +620,7 @@ void tcp_synack_rtt_meas(struct sock *sk, struct request_sock *req);
- void tcp_reset(struct sock *sk, struct sk_buff *skb);
- void tcp_skb_mark_lost_uncond_verify(struct tcp_sock *tp, struct sk_buff *skb);
- void tcp_fin(struct sock *sk);
-+void tcp_check_space(struct sock *sk);
+diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
+index 423bc1a61da5..a1b48bcafe63 100644
+--- a/fs/erofs/zdata.c
++++ b/fs/erofs/zdata.c
+@@ -1073,12 +1073,9 @@ static void z_erofs_decompress_kickoff(struct z_erofs_decompressqueue *io,
  
- /* tcp_timer.c */
- void tcp_init_xmit_timers(struct sock *);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index bfe4112e000c..525bf37c0fdb 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5437,7 +5437,17 @@ static void tcp_new_space(struct sock *sk)
- 	INDIRECT_CALL_1(sk->sk_write_space, sk_stream_write_space, sk);
- }
+ 	/* wake up the caller thread for sync decompression */
+ 	if (sync) {
+-		unsigned long flags;
+-
+-		spin_lock_irqsave(&io->u.wait.lock, flags);
+ 		if (!atomic_add_return(bios, &io->pending_bios))
+-			wake_up_locked(&io->u.wait);
+-		spin_unlock_irqrestore(&io->u.wait.lock, flags);
++			complete(&io->u.done);
++
+ 		return;
+ 	}
  
--static void tcp_check_space(struct sock *sk)
-+/* Caller made space either from:
-+ * 1) Freeing skbs in rtx queues (after tp->snd_una has advanced)
-+ * 2) Sent skbs from output queue (and thus advancing tp->snd_nxt)
-+ *
-+ * We might be able to generate EPOLLOUT to the application if:
-+ * 1) Space consumed in output/rtx queues is below sk->sk_sndbuf/2
-+ * 2) notsent amount (tp->write_seq - tp->snd_nxt) became
-+ *    small enough that tcp_stream_memory_free() decides it
-+ *    is time to generate EPOLLOUT.
-+ */
-+void tcp_check_space(struct sock *sk)
- {
- 	/* pairs with tcp_poll() */
- 	smp_mb();
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 257780f93305..0b5eab685154 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -82,6 +82,7 @@ static void tcp_event_new_data_sent(struct sock *sk, struct sk_buff *skb)
+@@ -1224,7 +1221,7 @@ jobqueue_init(struct super_block *sb,
+ 	} else {
+ fg_out:
+ 		q = fgq;
+-		init_waitqueue_head(&fgq->u.wait);
++		init_completion(&fgq->u.done);
+ 		atomic_set(&fgq->pending_bios, 0);
+ 	}
+ 	q->sb = sb;
+@@ -1428,8 +1425,7 @@ static void z_erofs_runqueue(struct super_block *sb,
+ 		return;
  
- 	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPORIGDATASENT,
- 		      tcp_skb_pcount(skb));
-+	tcp_check_space(sk);
- }
+ 	/* wait until all bios are completed */
+-	io_wait_event(io[JQ_SUBMIT].u.wait,
+-		      !atomic_read(&io[JQ_SUBMIT].pending_bios));
++	wait_for_completion_io(&io[JQ_SUBMIT].u.done);
  
- /* SND.NXT, if window was not shrunk or the amount of shrunk was less than one
+ 	/* handle synchronous decompress queue in the caller context */
+ 	z_erofs_decompress_queue(&io[JQ_SUBMIT], pagepool);
+diff --git a/fs/erofs/zdata.h b/fs/erofs/zdata.h
+index e043216b545f..800b11c53f57 100644
+--- a/fs/erofs/zdata.h
++++ b/fs/erofs/zdata.h
+@@ -97,7 +97,7 @@ struct z_erofs_decompressqueue {
+ 	z_erofs_next_pcluster_t head;
+ 
+ 	union {
+-		wait_queue_head_t wait;
++		struct completion done;
+ 		struct work_struct work;
+ 	} u;
+ };
 -- 
 2.35.1
 
