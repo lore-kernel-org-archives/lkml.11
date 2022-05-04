@@ -2,39 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51739C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F003BC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376530AbiEDSIl (ORCPT
+        id S1376464AbiEDSJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        Wed, 4 May 2022 14:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376494AbiEDSHu (ORCPT
+        with ESMTP id S1376874AbiEDSI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:07:50 -0400
+        Wed, 4 May 2022 14:08:58 -0400
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566BB6FA02;
-        Wed,  4 May 2022 10:23:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383BE73054;
+        Wed,  4 May 2022 10:24:31 -0700 (PDT)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 99C7C1C0BAA; Wed,  4 May 2022 19:23:08 +0200 (CEST)
-Date:   Wed, 4 May 2022 19:23:07 +0200
+        id 094F61C0BBB; Wed,  4 May 2022 19:24:30 +0200 (CEST)
+Date:   Wed, 4 May 2022 19:24:29 +0200
 From:   Pavel Machek <pavel@ucw.cz>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, vkuznets@redhat.com,
-        decui@microsoft.com, drawat.floss@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        deller@gmx.de, dri-devel@lists.freedesktop.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH 0/4] Remove support for Hyper-V 2008 and 2008R2/Win7
-Message-ID: <20220504172307.GB1623@bug>
-References: <1651509391-2058-1-git-send-email-mikelley@microsoft.com>
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
+        patrick@stwcx.xyz, andy.shevchenko@gmail.com,
+        openbmc@lists.ozlabs.org, joel@jms.id.au
+Subject: Re: [PATCH v3 3/4] leds: pca955x: Optimize probe led selection
+Message-ID: <20220504172429.GF1623@bug>
+References: <20220411162033.39613-1-eajames@linux.ibm.com>
+ <20220411162033.39613-4-eajames@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1651509391-2058-1-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <20220411162033.39613-4-eajames@linux.ibm.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -42,34 +39,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi!
 
-> Linux code for running as a Hyper-V guest includes special cases for the
-> first released versions of Hyper-V: 2008 and 2008R2/Windows 7. These
-> versions were very thinly used for running Linux guests when first
-> released more than 12 years ago, and they are now out of support
-> (except for extended security updates). As initial versions, they
-> lack the performance features needed for effective production usage
-> of Linux guests. In total, there's no need to continue to support
-> the latest Linux kernels on these versions of Hyper-V.
-> 
-> Simplify the code for running on Hyper-V by removing the special
-> cases. This includes removing the negotiation of the VMbus protocol
-> versions for 2008 and 2008R2, and the special case code based on
-> those VMbus protocol versions. Changes are in the core VMbus code and
-> several drivers for synthetic VMbus devices.
+> Previously, the probe function might do up to 32 reads and writes
+> to the same 4 registers to program the led selection. Reduce this to
+> a maximum of 8 operations by accumulating the changes to the led
+> selection and comparing with the previous value to write the
+> selection if different.
 
-> 2008 and 2008R2, so if the broader Linux kernel community surfaces
-> a reason why this clean-up should not be done now, we can wait.
-> But I think we want to eventually stop carrying around this extra
-> baggage, and based on discussions with the Hyper-V team within
-> Microsoft, we're already past the point that it has any value.
-
-Normal way to do such deprecations is to put printks in first, then hide it
-under config option noone sets, and wait for year or so if anyone complains.
-
-We can't really remove code that is in use.
+We have regmap APIs. You are free to use them if you really care about
+those few reads. Reimplementing them by hand is not acceptable. How big is 
+the seedup here?
 
 Best regards,
-									Pavel
+								Pavel
+
+> @@ -554,6 +556,15 @@ static int pca955x_probe(struct i2c_client *client)
+>  	init_data.devname_mandatory = false;
+>  	init_data.devicename = "pca955x";
+>  
+> +	nls = pca955x_num_led_regs(chip->bits);
+> +	for (i = 0; i < nls; ++i) {
+> +		err = pca955x_read_ls(pca955x, i, &ls1[i]);
+> +		if (err)
+> +			return err;
+> +
+> +		ls2[i] = ls1[i];
+> +	}
+> +
+>  	for (i = 0; i < chip->bits; i++) {
+>  		pca955x_led = &pca955x->leds[i];
+>  		pca955x_led->led_num = i;
+> @@ -624,6 +634,14 @@ static int pca955x_probe(struct i2c_client *client)
+>  		}
+>  	}
+>  
+> +	for (i = 0; i < nls; ++i) {
+> +		if (ls1[i] != ls2[i]) {
+> +			err = pca955x_write_ls(pca955x, i, ls2[i]);
+> +			if (err)
+> +				return err;
+> +		}
+> +	}
+> +
+>  	/* PWM0 is used for half brightness or 50% duty cycle */
+>  	err = pca955x_write_pwm(pca955x, 0, 255 - LED_HALF);
+>  	if (err)
+
 -- 
 (english) http://www.livejournal.com/~pavelmachek
 (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
