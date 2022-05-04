@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C3AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD616C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359338AbiEDRs6 (ORCPT
+        id S1359416AbiEDRtN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
+        Wed, 4 May 2022 13:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357466AbiEDRPD (ORCPT
+        with ESMTP id S1357565AbiEDRPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E705D54F84;
-        Wed,  4 May 2022 09:58:36 -0700 (PDT)
+        Wed, 4 May 2022 13:15:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0FD55215;
+        Wed,  4 May 2022 09:58:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14641B827A9;
-        Wed,  4 May 2022 16:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFFBC385A4;
-        Wed,  4 May 2022 16:58:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8927B827AB;
+        Wed,  4 May 2022 16:58:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5420FC385AA;
+        Wed,  4 May 2022 16:58:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683512;
-        bh=YZK3UpV4c8YazR2b40tUH2JL2rStNLtVLCBp2JIEX9I=;
+        s=korg; t=1651683522;
+        bh=xCx+GlsVxmY/H4CVNQZ7axuhJ5gW967unc+iX5+XCBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fXIZXqaTHKbnxRhckFT3iO5AXltO2E+lN/GWHdHIS+S+T646AH2pHa/aASx3cIIHm
-         0LMHPJYnuZBQ8eK7dJpA7rw6/d1iv4VHnbd7k0G9KPObBx5usiATVl55Z5dDzyClQA
-         YIGCpZ2T6LPChzbR09pIirDlkRux229IvhXCh8bY=
+        b=uTClmVMpU/FJHQorRUwU7RrYDzEkRJBUVnLAZFuDJnOgk2Y0I2xYp3YL/kMnMOEUV
+         jTryNLTiF27Dhb9GO5qERSdP9QzNzI7ZCbsSoEsGHdV9P3HwDJM5oPJuZCZfQBgcHt
+         UPOFH+1VvFkS375RWvxE5mbI2aIThQ6KCgNxZI9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 175/225] selftest/vm: verify mmap addr in mremap_test
-Date:   Wed,  4 May 2022 18:46:53 +0200
-Message-Id: <20220504153125.927307796@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.17 197/225] ARM: dts: imx8mm-venice-gw{71xx,72xx,73xx}: fix OTG controller OC mode
+Date:   Wed,  4 May 2022 18:47:15 +0200
+Message-Id: <20220504153127.764599625@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -53,109 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+From: Tim Harvey <tharvey@gateworks.com>
 
-[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
+commit 4c79865f3e8a2db93ec1e844509edfebe5a6ae56 upstream.
 
-Avoid calling mmap with requested addresses that are less than the
-system's mmap_min_addr.  When run as root, mmap returns EACCES when
-trying to map addresses < mmap_min_addr.  This is not one of the error
-codes for the condition to retry the mmap in the test.
+The GW71xx, GW72xx and GW73xx boards have USB1 routed to a USB OTG
+connectors and USB2 routed to a USB hub.
 
-Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
-addr > vm.mmap_min_addr.
+The OTG connector has a over-currently protection with an active-low
+pin and the USB1 to HUB connection has no over-current protection (as
+the HUB itself implements this for its downstream ports).
 
-Add a munmap call after an alignment check as the mappings are retained
-after the retry and can reach the vm.max_map_count sysctl.
+Add proper dt nodes to specify the over-current pin polarity for USB1
+and disable over-current protection for USB2.
 
-Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
-Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/vm/mremap_test.c | 41 +++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi |    2 ++
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi |    2 ++
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi |    2 ++
+ 3 files changed, 6 insertions(+)
 
-diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
-index 7c0b0617b9f8..9a518fee6306 100644
---- a/tools/testing/selftests/vm/mremap_test.c
-+++ b/tools/testing/selftests/vm/mremap_test.c
-@@ -6,6 +6,7 @@
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
+@@ -103,12 +103,14 @@
  
- #include <errno.h>
- #include <stdlib.h>
-+#include <stdio.h>
- #include <string.h>
- #include <sys/mman.h>
- #include <time.h>
-@@ -63,6 +64,35 @@ enum {
- 	.expect_failure = should_fail				\
- }
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
  
-+/* Returns mmap_min_addr sysctl tunable from procfs */
-+static unsigned long long get_mmap_min_addr(void)
-+{
-+	FILE *fp;
-+	int n_matched;
-+	static unsigned long long addr;
-+
-+	if (addr)
-+		return addr;
-+
-+	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
-+	if (fp == NULL) {
-+		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		exit(KSFT_SKIP);
-+	}
-+
-+	n_matched = fscanf(fp, "%llu", &addr);
-+	if (n_matched != 1) {
-+		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		fclose(fp);
-+		exit(KSFT_SKIP);
-+	}
-+
-+	fclose(fp);
-+	return addr;
-+}
-+
- /*
-  * Returns the start address of the mapping on success, else returns
-  * NULL on failure.
-@@ -71,8 +101,15 @@ static void *get_source_mapping(struct config c)
- {
- 	unsigned long long addr = 0ULL;
- 	void *src_addr = NULL;
-+	unsigned long long mmap_min_addr;
-+
-+	mmap_min_addr = get_mmap_min_addr();
-+
- retry:
- 	addr += c.src_alignment;
-+	if (addr < mmap_min_addr)
-+		goto retry;
-+
- 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
- 			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
- 			-1, 0);
-@@ -90,8 +127,10 @@ static void *get_source_mapping(struct config c)
- 	 * alignment in the tests.
- 	 */
- 	if (((unsigned long long) src_addr & (c.src_alignment - 1)) ||
--			!((unsigned long long) src_addr & c.src_alignment))
-+			!((unsigned long long) src_addr & c.src_alignment)) {
-+		munmap(src_addr, c.region_size);
- 		goto retry;
-+	}
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	status = "okay";
+ };
  
- 	if (!src_addr)
- 		goto error;
--- 
-2.35.1
-
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
+@@ -139,12 +139,14 @@
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	vbus-supply = <&reg_usb_otg2_vbus>;
+ 	status = "okay";
+ };
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
+@@ -166,12 +166,14 @@
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	vbus-supply = <&reg_usb_otg2_vbus>;
+ 	status = "okay";
+ };
 
 
