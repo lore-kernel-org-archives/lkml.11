@@ -2,206 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76315C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A90C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346431AbiEDImM (ORCPT
+        id S1346460AbiEDIme (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        Wed, 4 May 2022 04:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233343AbiEDImJ (ORCPT
+        with ESMTP id S1346442AbiEDImc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:42:09 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54BD1EC5E;
-        Wed,  4 May 2022 01:38:31 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so4607011pju.2;
-        Wed, 04 May 2022 01:38:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=N8whqiXCDudhxPgHYW7myFUbj5FdlX84aTgM+lwpxQc=;
-        b=EjMhZsAd1ZYS3pjiIcMWQts+7329LJLRtKr3sRyCRDZhEDtj1gOtrXgip2keeX+AcU
-         QwOlNZCTmxkNoBHpVj6Q7CP9YQ/Kb52y7J3FChGWcAZ7R6yjV/VXAMdZSFhNxh3oRqZa
-         OWI5nobcDrpTiSRawunLUc3C2OOa+y0ge6xDlK6iAqm19mGYOYADGFvZ6QAWJSud2n2E
-         L29ck9I9VSVdV5TM36wt/vnpR4VWxffPuTOXtHXyFuDrwoFIhkET04EeKBMXtvUzsKAx
-         k34M9+YPum5Wnjkf5CZKGjYscE4SKByrDM8aCa+s3egksgzrJ1Ytk66TztKu8iB3sIU1
-         dBnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N8whqiXCDudhxPgHYW7myFUbj5FdlX84aTgM+lwpxQc=;
-        b=Y+2yAHZCJeBbEWTeDNoSvZM9spcavr6T5Hb6mDa4WCs/sL7+9dOGwp82NbepdT/l3U
-         D28sUoJXrUcC2GkVZEP7MebG4oJKV3BMUFt4M0W2TaDyIlVzS1bZVVoW/euE0H1OUtaF
-         wG0hUZHLMnoxe8J8UYJE2LFqrgPmyTm+uy6gqY6NMQMUWufSdNbDYGucx+oxKOy3QhaP
-         vcHVMTiSR6guS+ZIk/C0Wvrj2NvO1lHiSIJtYU+sW0mWKi+0FKOq2ObxyM1FZ2q0nOPl
-         mowuSTZvNzo4DTmtfKVA7XJblL35x/L4tewPoTpsosrN+JoRKAgaGFnkEnd2gVuF+qgK
-         S/pg==
-X-Gm-Message-State: AOAM532LTblam8UbKIEV1PEo+iQYooHhTnEWr5VAUzgUO7PqVaMGkviM
-        mv4OxGoX9WDyxpCvsuwC9mA=
-X-Google-Smtp-Source: ABdhPJxcFVjZohTgju6+Dy9Mq0QAz/vz1Hn0Yp88nR+3wQfP0tWVaB4N3OrnpG1Odvmj3pudVCCn8w==
-X-Received: by 2002:a17:90a:ec02:b0:1dc:3b8d:38e5 with SMTP id l2-20020a17090aec0200b001dc3b8d38e5mr9340621pjy.134.1651653511278;
-        Wed, 04 May 2022 01:38:31 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id u18-20020a170902e21200b0015e8d4eb23esm7286998plb.136.2022.05.04.01.38.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 01:38:30 -0700 (PDT)
-Date:   Wed, 4 May 2022 17:38:28 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        device-mapper development <dm-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mike Snitzer <msnitzer@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Milan Broz <gmazyland@gmail.com>, Jason@zx2c4.com
-Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
-Message-ID: <YnI7hE4cIfjsdKSF@antec>
-References: <alpine.LRH.2.02.2204241648270.17244@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wh+Z+OKH3jRttWGHbWSQq2wVMtdnA=ntDiadZu=VxAC7w@mail.gmail.com>
- <alpine.LRH.2.02.2204250723120.26714@file01.intranet.prod.int.rdu2.redhat.com>
+        Wed, 4 May 2022 04:42:32 -0400
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894891EECA
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:38:56 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220504083855euoutp02efa181ace52fb2c1985ab705016c330f~r2iO84Vz60546405464euoutp02K
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 08:38:55 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220504083855euoutp02efa181ace52fb2c1985ab705016c330f~r2iO84Vz60546405464euoutp02K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651653535;
+        bh=v2Q1geij+EWsHkQOd0OOlbY8cvBwMNkdetroYG7uZJg=;
+        h=Date:Subject:To:CC:From:In-Reply-To:References:From;
+        b=YW9QSpF+LY5814YFBYaAFZ0J6CeHjAUOz5P2wSJlydoyiZmFle2mWnPRkwea7tmoa
+         PuAJchCGGyRk2HZHY64SAzqA9BC+ub53NXme9jdknXzpOGmLXsUQv6jViqj7AtGIed
+         dMxJxMk3qBPQZQa8OPTlG4deVAylgeUlmYevK9HE=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220504083854eucas1p10fc4f0885aa39652e7f66eedb7c8b3b7~r2iOaQegh0678506785eucas1p1F;
+        Wed,  4 May 2022 08:38:54 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 66.C2.10260.E9B32726; Wed,  4
+        May 2022 09:38:54 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220504083854eucas1p27a878ea3b3c156361b1985e011e789d7~r2iOAxaSx2524025240eucas1p2_;
+        Wed,  4 May 2022 08:38:54 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220504083854eusmtrp24bc4a1c830349bf68a4ceea515e48c11~r2iN-TlXb3001530015eusmtrp2j;
+        Wed,  4 May 2022 08:38:54 +0000 (GMT)
+X-AuditID: cbfec7f5-bf3ff70000002814-d4-62723b9e95b5
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 62.3E.09522.E9B32726; Wed,  4
+        May 2022 09:38:54 +0100 (BST)
+Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220504083854eusmtip13d9e6e9508fba46e708446cb1e14ed62~r2iN0ADCm1508715087eusmtip1I;
+        Wed,  4 May 2022 08:38:54 +0000 (GMT)
+Received: from [192.168.8.130] (106.210.248.170) by CAMSVWEXC01.scsc.local
+        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+        Wed, 4 May 2022 09:38:51 +0100
+Message-ID: <622d87eb-f189-a2f0-281e-a0d4c1a04293@samsung.com>
+Date:   Wed, 4 May 2022 10:38:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.2204250723120.26714@file01.intranet.prod.int.rdu2.redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+        Thunderbird/91.8.1
+Subject: Re: [PATCH 05/16] nvme: zns: Allow ZNS drives that have
+ non-power_of_2 zone size
+Content-Language: en-US
+To:     Bart Van Assche <bvanassche@acm.org>, <jaegeuk@kernel.org>,
+        <axboe@kernel.dk>, <snitzer@kernel.org>, <hch@lst.de>,
+        <mcgrof@kernel.org>, <naohiro.aota@wdc.com>, <sagi@grimberg.me>,
+        <damien.lemoal@opensource.wdc.com>, <dsterba@suse.com>,
+        <johannes.thumshirn@wdc.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-btrfs@vger.kernel.org>,
+        <clm@fb.com>, <gost.dev@samsung.com>, <chao@kernel.org>,
+        <linux-f2fs-devel@lists.sourceforge.net>, <josef@toxicpanda.com>,
+        <jonathan.derrick@linux.dev>, <agk@redhat.com>,
+        <kbusch@kernel.org>, <kch@nvidia.com>,
+        <linux-nvme@lists.infradead.org>, <dm-devel@redhat.com>,
+        <jiangbo.365@bytedance.com>, <linux-fsdevel@vger.kernel.org>,
+        <matias.bjorling@wdc.com>, <linux-block@vger.kernel.org>
+From:   Pankaj Raghav <p.raghav@samsung.com>
+In-Reply-To: <1e3afa38-0652-0a6a-045c-79a0b9c19f30@acm.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [106.210.248.170]
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sf1CTZRzved937152zXtBkuekK26VpxIUYvZcphHQ+Z5xUZwJmUVD3kOU
+        jbUx0lADAe9cCAOZxCiHScoAmTIEhqC2jiG/mjCgtUJDoHTChANOfpjGftjx3+f7/Xw/3+/n
+        89xD4T715GoqWZzGSsXCFAHJIxpM8+ag05ulCa/bjwYhXacJR9VDBSQ6NTmPoy5VD4aKCr7j
+        osUeM45aHWUcdHMuC0Pa6jYMjerUOMq7PkmgfxW3lno5wzh6NByCioyDAI0NqDHUagtEfSOV
+        XNT34zbU0tpBIEvz9yTSnBvjIuWxWRxZlWMAFbbrOaj2/gMC3bD5h/kzlv73mcc3akimMNvB
+        Zcy3LhGMpUfO1FUdJ5kzmSqc0Vd8w1wpn8aYK79nksyJbAfJGHJvc5gHVwdIRlc/QDBK/SUO
+        M133wofeu3hvJ7Ipyems9LWtX/D2lo5PAYmWOGDNrsUyQQOuAF4UpDdCRYWBUAAe5UNXAni5
+        fIHrLmYAPKb/08NMA1jTksV5Kvnb0YW7ifMANud8i/0/lVvi8BTNAJ4vriMVgKL49FZoOhfg
+        VBP0y7DAft+1iU97w47SUcKJn6Pj4Cl1N+nEK+lPYbOtw9XHaT9oG9W4dvrSxRhsVY64TuP0
+        TRw+mbFynQdIej3MOs51CrzozVCjmiXd4nUwt3GR68YvwuzLZZ7UL8GT1n7MjQ/DC6ZurhuP
+        8uCAJsONI2FJVaEn8kpob6/3zDwPnxg0Hm0GHLMuuvxAOgfAAoPOFRgumcjvTnHPvAvbfpgg
+        3O0V0Drh7bazAhY1lOBK8Ip62VOol0VWL0ugXpagHBBVwI+Vy0RJrCxUzH4VLBOKZHJxUvCe
+        VFEdWPrYXY/bZ5tApX0q2AgwChgBpHCBLz/iJ0mCDz9RePBrVpoaL5WnsDIj8KcIgR9/T/JF
+        oQ+dJExj97OshJU+ZTHKa3UmturNwDv3tsxz+hQWfpjGL38h12oeDe8VzeVcN8g+2VB8cEd1
+        VPpwqONq3OB8d/oI7VvGjz8UvGbur5jmkAMhPdHypi/PGvXjv9EbIy1hn0cm3k3cHl70rIUq
+        vbOlzVK1wX7C1PhWzcevXlM1jU3GTkb1SzqJqLWH/ni4I+ZhzMSvvdr8k0PP5Grv5e3cF3i0
+        9vSsNTYnL+5aAl5/VyuwdcZ/FNQXe2Rn+KYP3kgfXDBHrNtvmBFJPzu7NuTnLvk2r4Vib+Oq
+        XnXG7sWKR8ObJsY5ksNlv6h0LalaxTD9nnKoxhJwJO1ix75+Xdg/obejixpLpiOmxLpdGWfK
+        L0S/4797TYBtu4CQ7RWGrMelMuF/CvwJpUcEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrFKsWRmVeSWpSXmKPExsVy+t/xu7rzrIuSDA7fE7BYf+oYs8Xqu/1s
+        FtM+/GS2OD31LJPFpP4Z7Ba/z55nttj7bjarxYUfjUwWK1cfZbJ4sn4Ws0XPgQ8sFn+77gHF
+        Wh4yW/x5aGgx6dA1RounV2cxWey9pW1x6fEKdotLi9wt9uw9yWJxedccNov5y56yW0xo+8ps
+        cWPCU0aLicc3s1qse/2exeLELWkHaY/LV7w9/p1Yw+Yxsfkdu8f5extZPC6fLfXYtKqTzWNh
+        w1Rmj81L6j12L/jM5LH7ZgObR2/zOzaPna33WT3e77vK5rF+y1UWjwmbN7J6fN4kFyAYpWdT
+        lF9akqqQkV9cYqsUbWhhpGdoaaFnZGKpZ2hsHmtlZKqkb2eTkpqTWZZapG+XoJcx881HxoKV
+        LBU3mtcxNTBuY+5i5OSQEDCRePbuNJDNxSEksJRRYv3Kw6wQCRmJT1c+skPYwhJ/rnWxQRR9
+        ZJRYd/cyI4Szi1HiyeXjTF2MHBy8AnYSx5YpgDSwCKhI9L96DTaIV0BQ4uTMJywgtqhAhMSD
+        3WfB4sIC0RK7bp0EizMLiEvcejKfCWSmiMAUJom9Ex6DncQscIFZ4v+XG+wQ2z4wSqw53MoM
+        so1NQEuisRPsPE4Ba4n5U7+yQUzSlGjd/psdwpaXaN46G+pPZYnJN64wQdi1Eq/u72acwCg6
+        C8mBs5AcMgvJqFlIRi1gZFnFKJJaWpybnltsqFecmFtcmpeul5yfu4kRmOi2Hfu5eQfjvFcf
+        9Q4xMnEwHmKU4GBWEuF1XlqQJMSbklhZlVqUH19UmpNafIjRFBhKE5mlRJPzgak2ryTe0MzA
+        1NDEzNLA1NLMWEmc17OgI1FIID2xJDU7NbUgtQimj4mDU6qBSVAilemPr2j52pmLFi7XsNpy
+        iHn21/UKftuWXVmtLcfCwGrxp4Dv6mIHxoWLInzFlTbsE3xftUV1+92AHcsd2p7cX3s8TWqq
+        8sXPMtJXG5TshUyv739kY6q7+pi80sVX91mb/qotVQ/Tv6Js+fborV/5DWl7T07QTG/7l/Po
+        nPfb+C93lprc9+N6v6xrrd3BXcs8ty/YmxkbcC79qUeSJaO56HJBlUOHwqTjJxicffp50YSX
+        B9imvfR80ResNlv37kx3lgP+xZt/saxaOa163itL+7sa4tsqzXrM+xlCS1U3Vjz3ffNEu+7O
+        ucWNR9j6Y8vc/m794Srtt/WBisvqvb+ZVERmGLV6/FR60zLXarYSS3FGoqEWc1FxIgBxSFeX
+        /QMAAA==
+X-CMS-MailID: 20220504083854eucas1p27a878ea3b3c156361b1985e011e789d7
+X-Msg-Generator: CA
+X-RootMTR: 20220427160301eucas1p147d0dced70946e20dd2dd046b94b8224
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220427160301eucas1p147d0dced70946e20dd2dd046b94b8224
+References: <20220427160255.300418-1-p.raghav@samsung.com>
+        <CGME20220427160301eucas1p147d0dced70946e20dd2dd046b94b8224@eucas1p1.samsung.com>
+        <20220427160255.300418-6-p.raghav@samsung.com>
+        <1e3afa38-0652-0a6a-045c-79a0b9c19f30@acm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 08:07:48AM -0400, Mikulas Patocka wrote:
- 
-> From: Mikulas Patocka <mpatocka@redhat.com>
+
+On 2022-05-03 18:50, Bart Van Assche wrote:
+> On 4/27/22 09:02, Pankaj Raghav wrote:
+>> -    sector &= ~(ns->zsze - 1);
+>> +    sector = rounddown(sector, ns->zsze);
 > 
-> The function hex2bin is used to load cryptographic keys into device mapper
-> targets dm-crypt and dm-integrity. It should take constant time
-> independent on the processed data, so that concurrently running
-> unprivileged code can't infer any information about the keys via
-> microarchitectural convert channels.
+> The above change breaks 32-bit builds since ns->zsze is 64 bits wide and
+> since rounddown() uses the C division operator instead of div64_u64().
 > 
-> This patch changes the function hex_to_bin so that it contains no branches
-> and no memory accesses.
+Good catch. I don't see any generic helper for rounddown that will work
+for both 32 bits and 64 bits. Maybe I will open code the rounddown logic
+here so that it works for both 32 and 64 bits.
+> Thanks,
 > 
-> Note that this shouldn't cause performance degradation because the size of
-> the new function is the same as the size of the old function (on x86-64) -
-> and the new function causes no branch misprediction penalties.
-> 
-> I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
-> i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
-> sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
-> powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are no
-> branches in the generated code.
-> 
-> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> Cc: stable@vger.kernel.org
-> 
-> ---
->  include/linux/kernel.h |    2 +-
->  lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
->  2 files changed, 26 insertions(+), 8 deletions(-)
-> 
-> Index: linux-2.6/lib/hexdump.c
-> ===================================================================
-> --- linux-2.6.orig/lib/hexdump.c	2022-04-24 18:51:20.000000000 +0200
-> +++ linux-2.6/lib/hexdump.c	2022-04-25 13:15:26.000000000 +0200
-> @@ -22,15 +22,33 @@ EXPORT_SYMBOL(hex_asc_upper);
->   *
->   * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
->   * input.
-> + *
-> + * This function is used to load cryptographic keys, so it is coded in such a
-> + * way that there are no conditions or memory accesses that depend on data.
-> + *
-> + * Explanation of the logic:
-> + * (ch - '9' - 1) is negative if ch <= '9'
-> + * ('0' - 1 - ch) is negative if ch >= '0'
-> + * we "and" these two values, so the result is negative if ch is in the range
-> + *	'0' ... '9'
-> + * we are only interested in the sign, so we do a shift ">> 8"; note that right
-> + *	shift of a negative value is implementation-defined, so we cast the
-> + *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
-> + *	the range '0' ... '9', 0 otherwise
-> + * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
-> + *	in the range '0' ... '9', 0 otherwise
-> + * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
-> + *	... '9', -1 otherwise
-> + * the next line is similar to the previous one, but we need to decode both
-> + *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
-> + *	lowercase to uppercase
->   */
-> -int hex_to_bin(char ch)
-> +int hex_to_bin(unsigned char ch)
->  {
-> -	if ((ch >= '0') && (ch <= '9'))
-> -		return ch - '0';
-> -	ch = tolower(ch);
-> -	if ((ch >= 'a') && (ch <= 'f'))
-> -		return ch - 'a' + 10;
-> -	return -1;
-> +	unsigned char cu = ch & 0xdf;
-> +	return -1 +
-> +		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
-> +		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
->  }
->  EXPORT_SYMBOL(hex_to_bin);
-
-Hello,
-
-Just a heads up it seems this patch is causing some instability with crypto self
-tests on OpenRISC when using a PREEMPT kernel (no SMP).
-
-This was reported by Jason A. Donenfeld as it came up in wireguard testing.
-
-I am trying to figure out if this is an OpenRISC PREEMPT issue or something
-else.
-
-The warning I am seeing is a bit random but looks something like the
-following:
-
-    [    0.164000] Freeing initrd memory: 1696K
-    [    0.188000] xor: measuring software checksum speed
-    [    0.196000]    8regs           :  1343 MB/sec
-    [    0.204000]    8regs_prefetch  :  1347 MB/sec
-    [    0.212000]    32regs          :  1335 MB/sec
-    [    0.220000]    32regs_prefetch :  1277 MB/sec
-    [    0.220000] xor: using function: 8regs_prefetch (1347 MB/sec)
-    [    0.252000] SARU running 25519 tests
-    [    0.424000] curve25519 self-test 5: FAIL
-    [    0.496000] curve25519 self-test 7: FAIL
-    [    1.744000] curve25519 self-test 45: FAIL
-    [    3.448000] ------------[ cut here ]------------
-    [    3.448000] WARNING: CPU: 0 PID: 1 at lib/crypto/curve25519.c:19 curve25519_init+0x38/0x50
-    [    3.448000] CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0-rc4+ #758
-    [    3.448000] Call trace:
-    [    3.448000] [<(ptrval)>] ? __warn+0xe0/0x114
-    [    3.448000] [<(ptrval)>] ? curve25519_init+0x38/0x50
-    [    3.448000] [<(ptrval)>] ? warn_slowpath_fmt+0x5c/0x94
-    [    3.448000] [<(ptrval)>] ? curve25519_init+0x0/0x50
-    [    3.452000] [<(ptrval)>] ? curve25519_init+0x38/0x50
-    [    3.452000] [<(ptrval)>] ? do_one_initcall+0x98/0x328
-    [    3.452000] [<(ptrval)>] ? proc_register+0x4c/0x284
-    [    3.452000] [<(ptrval)>] ? ignore_unknown_bootoption+0x0/0x8
-    [    3.452000] [<(ptrval)>] ? kernel_init_freeable+0x1fc/0x2a8
-    [    3.452000] [<(ptrval)>] ? ignore_unknown_bootoption+0x0/0x8
-    [    3.452000] [<(ptrval)>] ? kernel_init+0x0/0x164
-    [    3.452000] [<(ptrval)>] ? kernel_init+0x28/0x164
-    [    3.452000] [<(ptrval)>] ? schedule_tail+0x18/0xac
-    [    3.452000] [<(ptrval)>] ? ret_from_fork+0x1c/0x9c
-    [    3.452000] ---[ end trace 0000000000000000 ]---
-    [    3.452000] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
-    [    3.464000] printk: console [ttyS0] disabled
-    [    3.464000] 90000000.serial: ttyS0 at MMIO 0x90000000 (irq = 2, base_baud = 1250000) is a 16550A
-
-Example config: https://xn--4db.cc/cCRlQ1AE
-
-The self-test iteration number that fails is always a bit different.  I am
-still in progress of investigating this and will not have a lot of time new the
-next few days.  If anything ring's a bell let me know.
-
--Stafford
+> Bart.
