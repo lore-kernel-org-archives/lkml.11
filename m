@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB386C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358895AbiEDW2e (ORCPT
+        id S1359379AbiEDWbY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
+        Wed, 4 May 2022 18:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358817AbiEDW2b (ORCPT
+        with ESMTP id S235763AbiEDWbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:28:31 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3651FA76
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:24:53 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id p12so2240547pfn.0
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qvo1dzGzL2JmCNjYZk1fNrTcxUgcm4KOWzurldTYI3s=;
-        b=gK03qTKIXewQFhPyvT47pEbIcdipk3r2FH2iFUMyT+KEiD/2rHJLN7rbUJq7v/HZMw
-         r4EUmyTvIeET2LHKdQhORxf/vAo5/3E+/V6CmKSWJkDmvhaMbydTNjEgvfMO271wKD7A
-         4/BvxyEA2KR1JDzk88Ui7WAUpU18dAk1bcdpPdVkePfdjUsoR9k+tUvAi2CvEgPkEvd3
-         iWL/4IADtrrnj8Y38qG0gLcdQP8eb/EnCH3qsYNciZCGkxRxC7DDwj3d15AegUnFWtEv
-         P1XSQ5vMJ8rav/dxEJ4SWmyQIdLzqprROriIJCV3AK9bRoDgHbU88ymG8rB/6iN759XO
-         I0ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qvo1dzGzL2JmCNjYZk1fNrTcxUgcm4KOWzurldTYI3s=;
-        b=Spj2VNHEnRyr+uZgU+Crfis6pj3fNP3EIXKHGjaH8JLcw9THBw3eB7F8Dtk31bsRmk
-         OdrxSsodhSJhIMkfB6Zf8pPZORl2s20ah1V9+LqnF/qKZ5o8qW0KqZngRxy3mAZ6qFoy
-         tsaErZEcIijbw/56AbPoLtTsx8E+H9zargywQh/Yy21VV7yEJfOoY+66dTRC+VEYuXOk
-         HSU9xGeB/NiHYy/yQZS90jk7fd2QKvCjGa/ltZiCFE0yt8YBvtpdUZI5FPiLm9gyUAaH
-         Kr++c4KjASwwCa0+qroZaDhKy7H6sx5n7L0l4ajQQ+oZbThNtLChmHDvydWEJ8NviZSA
-         vRDw==
-X-Gm-Message-State: AOAM531V3bn+N04plpAemve1afjozVtboR9XCzBT2ZAq49PBSc+N5Upo
-        /WzMMWlB1EYOnyUZ1BhizoUEfHSrIwU=
-X-Google-Smtp-Source: ABdhPJwFc5JLjAEky7LScOnRsmDKdESGn+FrABNggxtJwcgl3s8HkaiqtnUdTAsUBOwMcsKhZM3YeQ==
-X-Received: by 2002:a65:4787:0:b0:39d:96b7:bfaa with SMTP id e7-20020a654787000000b0039d96b7bfaamr20027629pgs.495.1651703092915;
-        Wed, 04 May 2022 15:24:52 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id r7-20020a17090b050700b001d2bff34228sm3862102pjz.9.2022.05.04.15.24.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 15:24:52 -0700 (PDT)
-Date:   Thu, 5 May 2022 07:24:50 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     openrisc@lists.librecores.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] openrisc: remove bogus nops and shutdowns
-Message-ID: <YnL9MuVLtiGWD2EV@antec>
-References: <20220504110911.283525-1-Jason@zx2c4.com>
+        Wed, 4 May 2022 18:31:21 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABD9DD9
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651703262; x=1683239262;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xA/ReZLxpV3abEjRxRaBNedXUbcOk+NboegvAbPipMs=;
+  b=iZLco2kfOCCpfV0gnDX7aS2278OyxVCTxTaRT2xNriEd7UbSyoPjwJRQ
+   TkRRKFVXgO2kpWLV6FCM1L3nBEwnYxLl1VTj7agbvwwqWSBf+Cw+8yoQd
+   Yy+JAIkEHJppZ44pEWoWXKkgQTueIcttq3B1uVGGvgPVZTUshoV6dW2WX
+   uxpe5zHLKWLKCge/KR/mcqAxSt5xemIVTWHnzrvQbTYC0FAMtZ/mh1ddY
+   OzZgAvp8Q6WJJ1Kb7FDCAwyxl6B1gv14wJMrhybHZkTw0i2pdQNEGZ4xc
+   gsEzE+3m9gL0NhbTO9OZtoYp+JKIaJGZsrJwrPT2ZZ4yC4+w4Hh0XbK+v
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="268071158"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="268071158"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:27:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="599736299"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 04 May 2022 15:27:40 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmNT9-000BqV-Sn;
+        Wed, 04 May 2022 22:27:39 +0000
+Date:   Thu, 5 May 2022 06:27:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hawking Zhang <Hawking.Zhang@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Wenhui Sheng <Wenhui.Sheng@amd.com>
+Subject: [agd5f:drm-next 429/460]
+ drivers/gpu/drm/amd/amdgpu/gfx_v11_0.c:1945:6: warning: no previous
+ prototype for 'gfx_v11_0_rlc_stop'
+Message-ID: <202205050625.OzD5MeoT-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504110911.283525-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 01:09:11PM +0200, Jason A. Donenfeld wrote:
-> Nop 42 is some leftover debugging thing by the looks of it. Nop 1 will
-> shut down the simulator, which isn't what we want, since it makes it
-> possible to handle errors.
+tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
+head:   d6ffefccf7f04eefddc8e8aa35fb4afe05a42e0c
+commit: 3d879e81f0f9ed5d33b5eda0fe5226c884bb8073 [429/460] drm/amdgpu: add init support for GFX11 (v2)
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220505/202205050625.OzD5MeoT-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
+        git fetch --no-tags agd5f drm-next
+        git checkout 3d879e81f0f9ed5d33b5eda0fe5226c884bb8073
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
 
-Do you mean impossible to handler errors?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Cc: Stafford Horne <shorne@gmail.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+All warnings (new ones prefixed by >>):
 
-This looks good to me, I didn't add these debug's I think we can remove them.
+>> drivers/gpu/drm/amd/amdgpu/gfx_v11_0.c:1945:6: warning: no previous prototype for 'gfx_v11_0_rlc_stop' [-Wmissing-prototypes]
+    1945 | void gfx_v11_0_rlc_stop(struct amdgpu_device *adev)
+         |      ^~~~~~~~~~~~~~~~~~
 
--Stafford
 
-> ---
->  arch/openrisc/mm/fault.c | 5 -----
->  1 file changed, 5 deletions(-)
-> 
-> diff --git a/arch/openrisc/mm/fault.c b/arch/openrisc/mm/fault.c
-> index 80bb66ad42f6..860da58d7509 100644
-> --- a/arch/openrisc/mm/fault.c
-> +++ b/arch/openrisc/mm/fault.c
-> @@ -223,8 +223,6 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long address,
->  	{
->  		const struct exception_table_entry *entry;
->  
-> -		__asm__ __volatile__("l.nop 42");
-> -
->  		if ((entry = search_exception_tables(regs->pc)) != NULL) {
->  			/* Adjust the instruction pointer in the stackframe */
->  			regs->pc = entry->fixup;
-> @@ -252,9 +250,6 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long address,
->  	 */
->  
->  out_of_memory:
-> -	__asm__ __volatile__("l.nop 42");
-> -	__asm__ __volatile__("l.nop 1");
-> -
->  	mmap_read_unlock(mm);
->  	if (!user_mode(regs))
->  		goto no_context;
-> -- 
-> 2.35.1
-> 
+vim +/gfx_v11_0_rlc_stop +1945 drivers/gpu/drm/amd/amdgpu/gfx_v11_0.c
+
+  1944	
+> 1945	void gfx_v11_0_rlc_stop(struct amdgpu_device *adev)
+  1946	{
+  1947		u32 tmp = RREG32_SOC15(GC, 0, regRLC_CNTL);
+  1948	
+  1949		tmp = REG_SET_FIELD(tmp, RLC_CNTL, RLC_ENABLE_F32, 0);
+  1950		WREG32_SOC15(GC, 0, regRLC_CNTL, tmp);
+  1951	}
+  1952	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
