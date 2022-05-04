@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F6CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E002C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359653AbiEDRti (ORCPT
+        id S1359601AbiEDRtb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
+        Wed, 4 May 2022 13:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357665AbiEDRPK (ORCPT
+        with ESMTP id S1357590AbiEDRPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B394B55353;
-        Wed,  4 May 2022 09:58:50 -0700 (PDT)
+        Wed, 4 May 2022 13:15:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026D04C784;
+        Wed,  4 May 2022 09:58:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3445ECE2625;
-        Wed,  4 May 2022 16:58:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59836C385AF;
-        Wed,  4 May 2022 16:58:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFE17B82552;
+        Wed,  4 May 2022 16:58:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C053C385B4;
+        Wed,  4 May 2022 16:58:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683503;
-        bh=XtYdCKKZ7/RbwsonQHN6VD23oGwc3Zi25SgQJ6Oj4q8=;
+        s=korg; t=1651683496;
+        bh=5Fyt8PIl9Tm/kQ97Paxju00cUKDSEXus9E0e1XkLY2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W4IulEXbWmjtpLT+MDAFwQgOCIM4YZJoDoyD/7whpghmMZRkMAKcKhIegzsjPTH2v
-         aW4TM0agUIzZ5Trg/sby7xAIwom/fK6/oWN5XEK3yko1bhhO8ilvgTTA9VT9c4WZ5N
-         A+qHBwgiV9WFhHH6SujJi1ZEGQ7tunvH1mf5yXrE=
+        b=PEwpl7pHRKTIkkfw6EpBnZhsqHpID9H8sEMBg8si+/4zUw2vg6H3iPCSSskdwzTPx
+         u+Kw83VMkSiTjNYiM+VHpd3tcCyrJHIbVIJlhN9ZwnVIDvkBjr6t8HYmHXiXTnbXnH
+         oHfyczObB1gDojZXFQUrWy7JG2ECV5WW5blQX7Bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 170/225] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
-Date:   Wed,  4 May 2022 18:46:48 +0200
-Message-Id: <20220504153125.412043593@linuxfoundation.org>
+Subject: [PATCH 5.17 154/225] Revert "ibmvnic: Add ethtool private flag for driver-defined queue limits"
+Date:   Wed,  4 May 2022 18:46:32 +0200
+Message-Id: <20220504153123.817733990@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,49 +50,255 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Dany Madden <drt@linux.ibm.com>
 
-[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
+[ Upstream commit aeaf59b78712c7a1827c76f086acff4f586e072f ]
 
-The first "if" condition in __memcpy_flushcache is supposed to align the
-"dest" variable to 8 bytes and copy data up to this alignment.  However,
-this condition may misbehave if "size" is greater than 4GiB.
+This reverts commit 723ad916134784b317b72f3f6cf0f7ba774e5dae
 
-The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
-arguments to unsigned int and selects the smaller one.  However, the
-cast truncates high bits in "size" and it results in misbehavior.
+When client requests channel or ring size larger than what the server
+can support the server will cap the request to the supported max. So,
+the client would not be able to successfully request resources that
+exceed the server limit.
 
-For example:
-
-	suppose that size == 0x100000001, dest == 0x200000002
-	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
-	...
-	dest += 0x1;
-
-so we copy just one byte "and" dest remains unaligned.
-
-This patch fixes the bug by replacing unsigned with size_t.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 723ad9161347 ("ibmvnic: Add ethtool private flag for driver-defined queue limits")
+Signed-off-by: Dany Madden <drt@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220427235146.23189-1-drt@linux.ibm.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/lib/usercopy_64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 129 ++++++++---------------------
+ drivers/net/ethernet/ibm/ibmvnic.h |   6 --
+ 2 files changed, 35 insertions(+), 100 deletions(-)
 
-diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
-index 0402a749f3a0..0ae6cf804197 100644
---- a/arch/x86/lib/usercopy_64.c
-+++ b/arch/x86/lib/usercopy_64.c
-@@ -119,7 +119,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index b4804ce63151..a4428a7d0f35 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -3209,13 +3209,8 @@ static void ibmvnic_get_ringparam(struct net_device *netdev,
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
  
- 	/* cache copy and flush to align dest */
- 	if (!IS_ALIGNED(dest, 8)) {
--		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
-+		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
+-	if (adapter->priv_flags & IBMVNIC_USE_SERVER_MAXES) {
+-		ring->rx_max_pending = adapter->max_rx_add_entries_per_subcrq;
+-		ring->tx_max_pending = adapter->max_tx_entries_per_subcrq;
+-	} else {
+-		ring->rx_max_pending = IBMVNIC_MAX_QUEUE_SZ;
+-		ring->tx_max_pending = IBMVNIC_MAX_QUEUE_SZ;
+-	}
++	ring->rx_max_pending = adapter->max_rx_add_entries_per_subcrq;
++	ring->tx_max_pending = adapter->max_tx_entries_per_subcrq;
+ 	ring->rx_mini_max_pending = 0;
+ 	ring->rx_jumbo_max_pending = 0;
+ 	ring->rx_pending = adapter->req_rx_add_entries_per_subcrq;
+@@ -3230,23 +3225,21 @@ static int ibmvnic_set_ringparam(struct net_device *netdev,
+ 				 struct netlink_ext_ack *extack)
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+-	int ret;
  
- 		memcpy((void *) dest, (void *) source, len);
- 		clean_cache_range((void *) dest, len);
+-	ret = 0;
++	if (ring->rx_pending > adapter->max_rx_add_entries_per_subcrq  ||
++	    ring->tx_pending > adapter->max_tx_entries_per_subcrq) {
++		netdev_err(netdev, "Invalid request.\n");
++		netdev_err(netdev, "Max tx buffers = %llu\n",
++			   adapter->max_rx_add_entries_per_subcrq);
++		netdev_err(netdev, "Max rx buffers = %llu\n",
++			   adapter->max_tx_entries_per_subcrq);
++		return -EINVAL;
++	}
++
+ 	adapter->desired.rx_entries = ring->rx_pending;
+ 	adapter->desired.tx_entries = ring->tx_pending;
+ 
+-	ret = wait_for_reset(adapter);
+-
+-	if (!ret &&
+-	    (adapter->req_rx_add_entries_per_subcrq != ring->rx_pending ||
+-	     adapter->req_tx_entries_per_subcrq != ring->tx_pending))
+-		netdev_info(netdev,
+-			    "Could not match full ringsize request. Requested: RX %d, TX %d; Allowed: RX %llu, TX %llu\n",
+-			    ring->rx_pending, ring->tx_pending,
+-			    adapter->req_rx_add_entries_per_subcrq,
+-			    adapter->req_tx_entries_per_subcrq);
+-	return ret;
++	return wait_for_reset(adapter);
+ }
+ 
+ static void ibmvnic_get_channels(struct net_device *netdev,
+@@ -3254,14 +3247,8 @@ static void ibmvnic_get_channels(struct net_device *netdev,
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 
+-	if (adapter->priv_flags & IBMVNIC_USE_SERVER_MAXES) {
+-		channels->max_rx = adapter->max_rx_queues;
+-		channels->max_tx = adapter->max_tx_queues;
+-	} else {
+-		channels->max_rx = IBMVNIC_MAX_QUEUES;
+-		channels->max_tx = IBMVNIC_MAX_QUEUES;
+-	}
+-
++	channels->max_rx = adapter->max_rx_queues;
++	channels->max_tx = adapter->max_tx_queues;
+ 	channels->max_other = 0;
+ 	channels->max_combined = 0;
+ 	channels->rx_count = adapter->req_rx_queues;
+@@ -3274,22 +3261,11 @@ static int ibmvnic_set_channels(struct net_device *netdev,
+ 				struct ethtool_channels *channels)
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+-	int ret;
+ 
+-	ret = 0;
+ 	adapter->desired.rx_queues = channels->rx_count;
+ 	adapter->desired.tx_queues = channels->tx_count;
+ 
+-	ret = wait_for_reset(adapter);
+-
+-	if (!ret &&
+-	    (adapter->req_rx_queues != channels->rx_count ||
+-	     adapter->req_tx_queues != channels->tx_count))
+-		netdev_info(netdev,
+-			    "Could not match full channels request. Requested: RX %d, TX %d; Allowed: RX %llu, TX %llu\n",
+-			    channels->rx_count, channels->tx_count,
+-			    adapter->req_rx_queues, adapter->req_tx_queues);
+-	return ret;
++	return wait_for_reset(adapter);
+ }
+ 
+ static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
+@@ -3297,43 +3273,32 @@ static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
+ 	struct ibmvnic_adapter *adapter = netdev_priv(dev);
+ 	int i;
+ 
+-	switch (stringset) {
+-	case ETH_SS_STATS:
+-		for (i = 0; i < ARRAY_SIZE(ibmvnic_stats);
+-				i++, data += ETH_GSTRING_LEN)
+-			memcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);
++	if (stringset != ETH_SS_STATS)
++		return;
+ 
+-		for (i = 0; i < adapter->req_tx_queues; i++) {
+-			snprintf(data, ETH_GSTRING_LEN, "tx%d_packets", i);
+-			data += ETH_GSTRING_LEN;
++	for (i = 0; i < ARRAY_SIZE(ibmvnic_stats); i++, data += ETH_GSTRING_LEN)
++		memcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);
+ 
+-			snprintf(data, ETH_GSTRING_LEN, "tx%d_bytes", i);
+-			data += ETH_GSTRING_LEN;
++	for (i = 0; i < adapter->req_tx_queues; i++) {
++		snprintf(data, ETH_GSTRING_LEN, "tx%d_packets", i);
++		data += ETH_GSTRING_LEN;
+ 
+-			snprintf(data, ETH_GSTRING_LEN,
+-				 "tx%d_dropped_packets", i);
+-			data += ETH_GSTRING_LEN;
+-		}
++		snprintf(data, ETH_GSTRING_LEN, "tx%d_bytes", i);
++		data += ETH_GSTRING_LEN;
+ 
+-		for (i = 0; i < adapter->req_rx_queues; i++) {
+-			snprintf(data, ETH_GSTRING_LEN, "rx%d_packets", i);
+-			data += ETH_GSTRING_LEN;
++		snprintf(data, ETH_GSTRING_LEN, "tx%d_dropped_packets", i);
++		data += ETH_GSTRING_LEN;
++	}
+ 
+-			snprintf(data, ETH_GSTRING_LEN, "rx%d_bytes", i);
+-			data += ETH_GSTRING_LEN;
++	for (i = 0; i < adapter->req_rx_queues; i++) {
++		snprintf(data, ETH_GSTRING_LEN, "rx%d_packets", i);
++		data += ETH_GSTRING_LEN;
+ 
+-			snprintf(data, ETH_GSTRING_LEN, "rx%d_interrupts", i);
+-			data += ETH_GSTRING_LEN;
+-		}
+-		break;
++		snprintf(data, ETH_GSTRING_LEN, "rx%d_bytes", i);
++		data += ETH_GSTRING_LEN;
+ 
+-	case ETH_SS_PRIV_FLAGS:
+-		for (i = 0; i < ARRAY_SIZE(ibmvnic_priv_flags); i++)
+-			strcpy(data + i * ETH_GSTRING_LEN,
+-			       ibmvnic_priv_flags[i]);
+-		break;
+-	default:
+-		return;
++		snprintf(data, ETH_GSTRING_LEN, "rx%d_interrupts", i);
++		data += ETH_GSTRING_LEN;
+ 	}
+ }
+ 
+@@ -3346,8 +3311,6 @@ static int ibmvnic_get_sset_count(struct net_device *dev, int sset)
+ 		return ARRAY_SIZE(ibmvnic_stats) +
+ 		       adapter->req_tx_queues * NUM_TX_STATS +
+ 		       adapter->req_rx_queues * NUM_RX_STATS;
+-	case ETH_SS_PRIV_FLAGS:
+-		return ARRAY_SIZE(ibmvnic_priv_flags);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -3400,26 +3363,6 @@ static void ibmvnic_get_ethtool_stats(struct net_device *dev,
+ 	}
+ }
+ 
+-static u32 ibmvnic_get_priv_flags(struct net_device *netdev)
+-{
+-	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+-
+-	return adapter->priv_flags;
+-}
+-
+-static int ibmvnic_set_priv_flags(struct net_device *netdev, u32 flags)
+-{
+-	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+-	bool which_maxes = !!(flags & IBMVNIC_USE_SERVER_MAXES);
+-
+-	if (which_maxes)
+-		adapter->priv_flags |= IBMVNIC_USE_SERVER_MAXES;
+-	else
+-		adapter->priv_flags &= ~IBMVNIC_USE_SERVER_MAXES;
+-
+-	return 0;
+-}
+-
+ static const struct ethtool_ops ibmvnic_ethtool_ops = {
+ 	.get_drvinfo		= ibmvnic_get_drvinfo,
+ 	.get_msglevel		= ibmvnic_get_msglevel,
+@@ -3433,8 +3376,6 @@ static const struct ethtool_ops ibmvnic_ethtool_ops = {
+ 	.get_sset_count         = ibmvnic_get_sset_count,
+ 	.get_ethtool_stats	= ibmvnic_get_ethtool_stats,
+ 	.get_link_ksettings	= ibmvnic_get_link_ksettings,
+-	.get_priv_flags		= ibmvnic_get_priv_flags,
+-	.set_priv_flags		= ibmvnic_set_priv_flags,
+ };
+ 
+ /* Routines for managing CRQs/sCRQs  */
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index 8f5cefb932dd..1310c861bf83 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -41,11 +41,6 @@
+ 
+ #define IBMVNIC_RESET_DELAY 100
+ 
+-static const char ibmvnic_priv_flags[][ETH_GSTRING_LEN] = {
+-#define IBMVNIC_USE_SERVER_MAXES 0x1
+-	"use-server-maxes"
+-};
+-
+ struct ibmvnic_login_buffer {
+ 	__be32 len;
+ 	__be32 version;
+@@ -883,7 +878,6 @@ struct ibmvnic_adapter {
+ 	struct ibmvnic_control_ip_offload_buffer ip_offload_ctrl;
+ 	dma_addr_t ip_offload_ctrl_tok;
+ 	u32 msg_enable;
+-	u32 priv_flags;
+ 
+ 	/* Vital Product Data (VPD) */
+ 	struct ibmvnic_vpd *vpd;
 -- 
 2.35.1
 
