@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D448C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE7BC4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376367AbiEDRyT (ORCPT
+        id S1376395AbiEDRyY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        Wed, 4 May 2022 13:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357709AbiEDRPL (ORCPT
+        with ESMTP id S1357589AbiEDRPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DD455371;
-        Wed,  4 May 2022 09:58:54 -0700 (PDT)
+        Wed, 4 May 2022 13:15:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960B555223;
+        Wed,  4 May 2022 09:58:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2ECFDB827A5;
-        Wed,  4 May 2022 16:58:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD3FFC385AF;
-        Wed,  4 May 2022 16:58:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 122F8618F9;
+        Wed,  4 May 2022 16:58:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B79FC385A4;
+        Wed,  4 May 2022 16:58:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683532;
-        bh=nGLJ71aZM7M+usue7fy/bT1qAY3btYDEdT4Yeh0Ev5U=;
+        s=korg; t=1651683502;
+        bh=pUKhKiCMnYRgc5/EaLlA4UpUZolj//9SEQQIpczjhQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wsc7E1aTnLV+J/2b4PLxM8vRucXwApLovOJI9CvzKXSYDfTGmtu3jSJ/EnTKZOiFu
-         Q8R5datEYemLur3UlUJY++YGJ6jZwuER16bKMtTiG0V+NndRnfhRC3YSWXTt85bdey
-         ZIOsdOBpKu+INL6l4uxXV4fv0M3QW/cACfm80qEI=
+        b=XNmM1dJJNSR9sJt6ljf5jWd47yVUB+hZ2Roerl98zyH6v3C+NKse7pzw1NroZAiPp
+         s4Gmy50HwzQqBGmsvd322GFOyAQW38VpRozvw0Ljt4KRzkxSE3jioyKgIzgXLKtO5F
+         e/8bO8fAq8oKq+oT0KRjTWD2UT0M0IxGlRtcRAgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Joao Moreira <joao@overdrivepizza.com>
-Subject: [PATCH 5.17 190/225] thermal: int340x: Fix attr.show callback prototype
-Date:   Wed,  4 May 2022 18:47:08 +0200
-Message-Id: <20220504153127.239181450@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 150/225] gfs2: No short reads or writes upon glock contention
+Date:   Wed,  4 May 2022 18:46:28 +0200
+Message-Id: <20220504153123.487325685@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,46 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit d0f6cfb2bd165b0aa307750e07e03420859bd554 upstream.
+[ Upstream commit 296abc0d91d8b65d42224dd33452ace14491ad08 ]
 
-Control Flow Integrity (CFI) instrumentation of the kernel noticed that
-the caller, dev_attr_show(), and the callback, odvp_show(), did not have
-matching function prototypes, which would cause a CFI exception to be
-raised. Correct the prototype by using struct device_attribute instead
-of struct kobj_attribute.
+Commit 00bfe02f4796 ("gfs2: Fix mmap + page fault deadlocks for buffered
+I/O") changed gfs2_file_read_iter() and gfs2_file_buffered_write() to
+allow dropping the inode glock while faulting in user buffers.  When the
+lock was dropped, a short result was returned to indicate that the
+operation was interrupted.
 
-Reported-and-tested-by: Joao Moreira <joao@overdrivepizza.com>
-Link: https://lore.kernel.org/lkml/067ce8bd4c3968054509831fa2347f4f@overdrivepizza.com/
-Fixes: 006f006f1e5c ("thermal/int340x_thermal: Export OEM vendor variables")
-Cc: 5.8+ <stable@vger.kernel.org> # 5.8+
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As pointed out by Linus (see the link below), this behavior is broken
+and the operations should always re-acquire the inode glock and resume
+the operation instead.
+
+Link: https://lore.kernel.org/lkml/CAHk-=whaz-g_nOOoo8RRiWNjnv2R+h6_xk2F1J4TuSRxk1MtLw@mail.gmail.com/
+Fixes: 00bfe02f4796 ("gfs2: Fix mmap + page fault deadlocks for buffered I/O")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/gfs2/file.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -67,7 +67,7 @@ static int evaluate_odvp(struct int3400_
- struct odvp_attr {
- 	int odvp;
- 	struct int3400_thermal_priv *priv;
--	struct kobj_attribute attr;
-+	struct device_attribute attr;
- };
- 
- static ssize_t data_vault_read(struct file *file, struct kobject *kobj,
-@@ -271,7 +271,7 @@ static int int3400_thermal_run_osc(acpi_
- 	return result;
- }
- 
--static ssize_t odvp_show(struct kobject *kobj, struct kobj_attribute *attr,
-+static ssize_t odvp_show(struct device *dev, struct device_attribute *attr,
- 			 char *buf)
- {
- 	struct odvp_attr *odvp_attr;
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index fdc7eda0437a..fa071d738c78 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -991,8 +991,6 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 		if (leftover != window_size) {
+ 			if (gfs2_holder_queued(&gh))
+ 				goto retry_under_glock;
+-			if (written)
+-				goto out_uninit;
+ 			goto retry;
+ 		}
+ 	}
+@@ -1069,8 +1067,6 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 			from->count = min(from->count, window_size - leftover);
+ 			if (gfs2_holder_queued(gh))
+ 				goto retry_under_glock;
+-			if (read && !(iocb->ki_flags & IOCB_DIRECT))
+-				goto out_uninit;
+ 			goto retry;
+ 		}
+ 	}
+-- 
+2.35.1
+
 
 
