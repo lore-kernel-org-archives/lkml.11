@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E459C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD759C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355084AbiEDREH (ORCPT
+        id S1355361AbiEDRER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
+        Wed, 4 May 2022 13:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354579AbiEDQ6x (ORCPT
+        with ESMTP id S1354608AbiEDQ6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32A518E30;
-        Wed,  4 May 2022 09:50:35 -0700 (PDT)
+        Wed, 4 May 2022 12:58:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D511FCC9;
+        Wed,  4 May 2022 09:50:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E99C61794;
-        Wed,  4 May 2022 16:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AFCCC385A4;
-        Wed,  4 May 2022 16:50:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AA20B82792;
+        Wed,  4 May 2022 16:50:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D118C385A5;
+        Wed,  4 May 2022 16:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683034;
-        bh=/1lHACNg12AF4maJVK5N1PfVNsb8YTHvHFzRsME3Q0U=;
+        s=korg; t=1651683044;
+        bh=Q0Kg/EArx821a5Fy8d/3If2cJ8xy+zC5AZDlUXUfY4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2T6/ktK/NSazSUMp9+hl5leGOZyX9f1hweQm5BMVoPgPoHQ+81CfTmuvzC/9fQT+L
-         4YgRfGGuc9Mkho+wONagPlPYFyheTUWA1BoR+BgLt2Lei9sF9tq8r6Y4U4Z2wAhJB2
-         MQrpT7QnUzQx30MLdzr8CnGoh+tNK8sTiAVE9dtA=
+        b=NMPAbiInIlGU2BJy4IOVg89jmWTenxY9sTdovHUCngY1P9H+Ud2dj4mVJG2UbnYJc
+         4uYcQLb/mP7WhyBHzKfDU/eEa6eB99gd0syYXrO2bPz1cj/wY46aMq6+C+eDTl9YDU
+         7Z4fsF5tNJOSkFAH47OEOlpj5uiNGFPgW889E5z8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 015/129] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
-Date:   Wed,  4 May 2022 18:43:27 +0200
-Message-Id: <20220504153022.494786909@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 5.10 035/129] riscv: patch_text: Fixup last cpu should be master
+Date:   Wed,  4 May 2022 18:43:47 +0200
+Message-Id: <20220504153024.031128517@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,42 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
+commit 8ec1442953c66a1d8462cccd8c20b7ba561f5915 upstream.
 
-When the driver fails to enable the regulator 'vid', we will get the
-following splat:
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   79.967570] Call Trace:
-[   79.967773]  <TASK>
-[   79.967951]  regulator_put+0x1f/0x30
-[   79.968254]  devres_release_group+0x319/0x3d0
-[   79.968608]  i2c_device_probe+0x766/0x940
-
-Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
-regulator.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Fixes: 043cb41a85de ("riscv: introduce interfaces to patch kernel code")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/magnetometer/ak8975.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/kernel/patch.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -389,6 +389,7 @@ static int ak8975_power_on(const struct
- 	if (ret) {
- 		dev_warn(&data->client->dev,
- 			 "Failed to enable specified Vid supply\n");
-+		regulator_disable(data->vdd);
- 		return ret;
- 	}
+--- a/arch/riscv/kernel/patch.c
++++ b/arch/riscv/kernel/patch.c
+@@ -100,7 +100,7 @@ static int patch_text_cb(void *data)
+ 	struct patch_insn *patch = data;
+ 	int ret = 0;
  
+-	if (atomic_inc_return(&patch->cpu_count) == 1) {
++	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
+ 		ret =
+ 		    patch_text_nosync(patch->addr, &patch->insn,
+ 					    GET_INSN_LENGTH(patch->insn));
 
 
