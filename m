@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68640C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359365AbiEDRkA (ORCPT
+        id S1359779AbiEDRk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        Wed, 4 May 2022 13:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356795AbiEDRJo (ORCPT
+        with ESMTP id S1356727AbiEDRJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2FC1D31B;
-        Wed,  4 May 2022 09:55:36 -0700 (PDT)
+        Wed, 4 May 2022 13:09:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D180717E35;
+        Wed,  4 May 2022 09:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 879A2B8279A;
-        Wed,  4 May 2022 16:55:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3761BC385AA;
-        Wed,  4 May 2022 16:55:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2BBC618BB;
+        Wed,  4 May 2022 16:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C9E3C385AF;
+        Wed,  4 May 2022 16:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683334;
-        bh=kZKq3ZishqK+X0zTlISgnwHroEnNga+xVwSdyqmmg1Q=;
+        s=korg; t=1651683327;
+        bh=SDuyrBXIG1Ux4g+tRXchQPstQixndqbbbbN6bKOU6zI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AlSNrCuzZ4TiF0c9GdBOBMvGgL0HWvdyb8xJ+5iMUBqT/eZW+Xqljs3McHSawOY1N
-         W02PHyO8Xjc/OCO3HHDDKtg2B1Tj+H5hogDcv6sEH+FR7LbTXw+RizURXVyrK5n7HU
-         X3dXcvP0uLCZlGD+9TftpfG3gsmZ3c5ixXf1I47o=
+        b=jZCJdtB6RGdEkMGdChAlLBnfG9lcMPV/cVtctplwFSE6EGJlDJAWlg+HM4RS2uTSv
+         PT+BQNpGz2oASK8WoZbJy9V/i7em7Ce0KYOXmVLI+zVXeEyu92QJevkt27g3RfCOVb
+         AgkxtT1EEWGCQ6mappomrZEIIcqDjFK0SQLt+hRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH 5.17 021/225] usb: typec: ucsi: Fix role swapping
-Date:   Wed,  4 May 2022 18:44:19 +0200
-Message-Id: <20220504153112.215490080@linuxfoundation.org>
+        stable@vger.kernel.org, Bruno Thomsen <bruno.thomsen@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 006/225] USB: serial: cp210x: add PIDs for Kamstrup USB Meter Reader
+Date:   Wed,  4 May 2022 18:44:04 +0200
+Message-Id: <20220504153110.822126341@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,67 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Bruno Thomsen <bruno.thomsen@gmail.com>
 
-commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
+commit 35a923a0b329c343e9e81d79518e2937eba06fcd upstream.
 
-All attempts to swap the roles timed out because the
-completion was done without releasing the port lock. Fixing
-that by releasing the lock before starting to wait for the
-completion.
+Wireless reading of water and heat meters using 868 MHz wM-Bus mode C1.
 
-Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
-Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
+The two different product IDs allow detection of dongle antenna
+solution:
+- Internal antenna
+- External antenna using SMA connector
+
+https://www.kamstrup.com/en-en/water-solutions/water-meter-reading/usb-meter-reader
+
+Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
+Link: https://lore.kernel.org/r/20220414081202.5591-1-bruno.thomsen@gmail.com
 Cc: stable@vger.kernel.org
-Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ drivers/usb/serial/cp210x.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -958,14 +958,18 @@ static int ucsi_dr_swap(struct typec_por
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
--		ret = -ETIMEDOUT;
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	return 0;
- 
- out_unlock:
- 	mutex_unlock(&con->lock);
- 
--	return ret < 0 ? ret : 0;
-+	return ret;
- }
- 
- static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
-@@ -996,11 +1000,13 @@ static int ucsi_pr_swap(struct typec_por
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
--		ret = -ETIMEDOUT;
--		goto out_unlock;
--	}
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	mutex_lock(&con->lock);
- 
- 	/* Something has gone wrong while swapping the role */
- 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
+--- a/drivers/usb/serial/cp210x.c
++++ b/drivers/usb/serial/cp210x.c
+@@ -194,6 +194,8 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x16DC, 0x0015) }, /* W-IE-NE-R Plein & Baus GmbH CML Control, Monitoring and Data Logger */
+ 	{ USB_DEVICE(0x17A8, 0x0001) }, /* Kamstrup Optical Eye/3-wire */
+ 	{ USB_DEVICE(0x17A8, 0x0005) }, /* Kamstrup M-Bus Master MultiPort 250D */
++	{ USB_DEVICE(0x17A8, 0x0101) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Int Ant) */
++	{ USB_DEVICE(0x17A8, 0x0102) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Ext Ant) */
+ 	{ USB_DEVICE(0x17F4, 0xAAAA) }, /* Wavesense Jazz blood glucose meter */
+ 	{ USB_DEVICE(0x1843, 0x0200) }, /* Vaisala USB Instrument Cable */
+ 	{ USB_DEVICE(0x18EF, 0xE00F) }, /* ELV USB-I2C-Interface */
 
 
