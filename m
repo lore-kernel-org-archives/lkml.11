@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A75C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC2B3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355482AbiEDRHq (ORCPT
+        id S1355276AbiEDRHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
+        Wed, 4 May 2022 13:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355537AbiEDRAO (ORCPT
+        with ESMTP id S1355569AbiEDRAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D363D4B84F;
-        Wed,  4 May 2022 09:51:49 -0700 (PDT)
+        Wed, 4 May 2022 13:00:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1504B85E;
+        Wed,  4 May 2022 09:51:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EEA0B827AA;
-        Wed,  4 May 2022 16:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE404C385A5;
-        Wed,  4 May 2022 16:51:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB970617D4;
+        Wed,  4 May 2022 16:51:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144D0C385A5;
+        Wed,  4 May 2022 16:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683104;
-        bh=xM5Gy52mF7BEsiFWmHdJksaZ8bgXdg0D7bEd5jt04ko=;
+        s=korg; t=1651683096;
+        bh=AFIzawQbysXjYjCtcBjeB4t+pADeckbAOSyCAuGBxw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1MksxrBuooV15Z9iogsO6HOfQKTcgzVwEOHQ6u1tb6lSQZZZkEYRHw+538rw1UBmy
-         T1xzZgH4m6oSRKY6MalLVU1p+uxut17ZEgidsmXi8HLmSLFmGykkE6mRZVr17Xv3hH
-         A1sPYYUGMUQ9HENnHvDXvBIfEbr0EGjKhAynQIqk=
+        b=uliJHoVw607CbJEvzL57rhqffRNF1wM6USb6BYKGymtJuqJWGT8xTTik6C/gWcRE/
+         SLMn6J6VWFKbrFuHA50ryIpjkBuFYYC0l/00YkYYXKoDtCqJsAplDQYsaG48PrbdIb
+         KEk3Z++vZcEtxUDeGkFhNkiSq9pscmkz7MSgfXS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang1.zhang@intel.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 108/129] kasan: prevent cpu_quarantine corruption when CPU offline and cache shrink occur at same time
-Date:   Wed,  4 May 2022 18:45:00 +0200
-Message-Id: <20220504153029.633200099@linuxfoundation.org>
+        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 088/129] net: phy: marvell10g: fix return value on error
+Date:   Wed,  4 May 2022 18:44:40 +0200
+Message-Id: <20220504153027.986477931@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -54,53 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+From: Baruch Siach <baruch.siach@siklu.com>
 
-commit 31fa985b4196f8a66f027672e9bf2b81fea0417c upstream.
+[ Upstream commit 0ed9704b660b259b54743cad8a84a11148f60f0a ]
 
-kasan_quarantine_remove_cache() is called in kmem_cache_shrink()/
-destroy().  The kasan_quarantine_remove_cache() call is protected by
-cpuslock in kmem_cache_destroy() to ensure serialization with
-kasan_cpu_offline().
+Return back the error value that we get from phy_read_mmd().
 
-However the kasan_quarantine_remove_cache() call is not protected by
-cpuslock in kmem_cache_shrink().  When a CPU is going offline and cache
-shrink occurs at same time, the cpu_quarantine may be corrupted by
-interrupt (per_cpu_remove_cache operation).
-
-So add a cpu_quarantine offline flags check in per_cpu_remove_cache().
-
-[akpm@linux-foundation.org: add comment, per Zqiang]
-
-Link: https://lkml.kernel.org/r/20220414025925.2423818-1-qiang1.zhang@intel.com
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+Reviewed-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kasan/quarantine.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/phy/marvell10g.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/kasan/quarantine.c
-+++ b/mm/kasan/quarantine.c
-@@ -299,6 +299,13 @@ static void per_cpu_remove_cache(void *a
- 	struct qlist_head *q;
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index b1bb9b8e1e4e..2b64318efdba 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -650,7 +650,7 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
  
- 	q = this_cpu_ptr(&cpu_quarantine);
-+	/*
-+	 * Ensure the ordering between the writing to q->offline and
-+	 * per_cpu_remove_cache.  Prevent cpu_quarantine from being corrupted
-+	 * by interrupt.
-+	 */
-+	if (READ_ONCE(q->offline))
-+		return;
- 	qlist_move_cache(q, &to_free, cache);
- 	qlist_free_all(&to_free, cache);
- }
+ 	cssr1 = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_CSSR1);
+ 	if (cssr1 < 0)
+-		return val;
++		return cssr1;
+ 
+ 	/* If the link settings are not resolved, mark the link down */
+ 	if (!(cssr1 & MV_PCS_CSSR1_RESOLVED)) {
+-- 
+2.35.1
+
 
 
