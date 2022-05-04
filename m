@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28885C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFADC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354580AbiEDRAu (ORCPT
+        id S1354620AbiEDRBF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        Wed, 4 May 2022 13:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353942AbiEDQyz (ORCPT
+        with ESMTP id S1354054AbiEDQy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8EF249909;
-        Wed,  4 May 2022 09:49:45 -0700 (PDT)
+        Wed, 4 May 2022 12:54:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A4A49912;
+        Wed,  4 May 2022 09:49:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36CA2617B6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 339606179D;
+        Wed,  4 May 2022 16:49:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BE16C385A4;
         Wed,  4 May 2022 16:49:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F990C385AF;
-        Wed,  4 May 2022 16:49:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682984;
-        bh=9vZ4s2S3OkqcFoWeX3a+FHD4PzlE9/XUKS4qPEXLkgI=;
+        s=korg; t=1651682985;
+        bh=/ORMeW9VdrfrZbrInu4dInEhj+vzKcGEl2Q1Sgw3Yvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pm3wUWek3cArxXqiuRl580GLKmiXVPglTQrh2h3BatnFVoVi4cW73d+6QMNd2IYQh
-         qPKGgWv7RQ1H3GVsoqexh8mp5DQ0rOyQtYTJTWQMeVERAFJcbN6PGwKGIpSCykFIRw
-         UY7xZmwGGI6IaSwuMPBqxQXSSdq9fTUmTLRWKSfU=
+        b=Jj35su75pQQmLfz3iyGlxUrn7yo+Ha+gFcGyytQbZJ6cp0rcU545auARWT0hv2Fca
+         g8hwqwhdIVsV19MouC2a2Ju7Yl/r0jHDw6MkOYbDxs+qZJ7ViLGnAx+Bdke1sX5q3P
+         FZ1mjZAyAUi9+gURlMehXhpnvTUkDOFZj9/tbdT4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
+        stable@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 013/129] iio: dac: ad5592r: Fix the missing return value.
-Date:   Wed,  4 May 2022 18:43:25 +0200
-Message-Id: <20220504153022.370039832@linuxfoundation.org>
+Subject: [PATCH 5.10 014/129] iio: dac: ad5446: Fix read_raw not returning set value
+Date:   Wed,  4 May 2022 18:43:26 +0200
+Message-Id: <20220504153022.437640260@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,34 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
+commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+read_raw should return the un-scaled value.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
+Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5592r-base.c |    2 +-
+ drivers/iio/dac/ad5446.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -523,7 +523,7 @@ static int ad5592r_alloc_channels(struct
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -178,7 +178,7 @@ static int ad5446_read_raw(struct iio_de
  
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
- 	}
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		*val = st->cached_val;
++		*val = st->cached_val >> chan->scan_type.shift;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = st->vref_mv;
 
 
