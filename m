@@ -2,60 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE437C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC37DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379547AbiEDW4Y (ORCPT
+        id S1359805AbiEDW4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
+        Wed, 4 May 2022 18:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379469AbiEDWyI (ORCPT
+        with ESMTP id S1379485AbiEDWyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:54:08 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE0B6B;
-        Wed,  4 May 2022 15:50:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VCDZUHE_1651704626;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VCDZUHE_1651704626)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 05 May 2022 06:50:27 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     tytso@mit.edu
-Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] fs: Remove duplicated include in inode.c
-Date:   Thu,  5 May 2022 06:50:25 +0800
-Message-Id: <20220504225025.44753-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 4 May 2022 18:54:12 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8047264F6
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:34 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f4dfd09d7fso24516417b3.0
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=G2bckr8dzy/VpMTALQzDwVbtP/BZXFx63tXxVXAvLBY=;
+        b=BrDqCBXd9hHHGusLXGgzJHeRY9VMkolLcSa6S05adud2BGld2gVU+AUIf0ootTyHxO
+         eszMDj68mLaaQtjgew8B+zPep6hXxko491KqVS6rA4zLigv8SCuq6yWqUl0iKeHujp3b
+         sGyeTFzoaFBnK6+u+8j1+CsuzZdAMM1Zpssh9Jd8D5bPzBJOgopWcg45+pRhpQQZvaq0
+         ZQAWBF+rFFwA/0PSIyExy/afq+3yf16J9zPiX04LulnFjyHncxZ+ZiRhpmSwd4m9FfrZ
+         w2AUJn8SlvwXTFJR4Fdmv/JsvmoD9fBOhtfWrbUzTouee+tYGy/henU4Elr2zD44+oyr
+         h/Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=G2bckr8dzy/VpMTALQzDwVbtP/BZXFx63tXxVXAvLBY=;
+        b=kEzpSZle3pd7I6dCfY3VTo7q3EJzQtXUmlJOyQcbRxRK1yovctT1H+bLMoVmiFVD2L
+         LIKkbBRedp4BO25GbeA0XHQ+bWNPsmqVf46f7jDnGG9RtYq0v1WozUD+OfvwHmb5RZm1
+         AkGy/0MEowD6VWK9YwC3ajpd6iruxSTZb+1Qfr82R2kIkFQDZg2WEh86RBAmlYqlVD92
+         L3zfDAsNtxqCwWErVWu3l/XxdqmfP6NOpLnOJx5R3OV9i0/RKno/us97vZaiBXV1T8Qr
+         22In9VpsO5orHlTUfj8pEGagwbU4zXv8R34cdDp80XCb/y+Ct0ks0X6t6fInF9w7SCnl
+         TXUg==
+X-Gm-Message-State: AOAM5336tlEQdKc9yIfjvZA+hpAqOAeeS1kJd9QjitMO3rbdiRyGmhhu
+        RLW1UUPuO8xid6TtXk8XMIjbuE7vHLE=
+X-Google-Smtp-Source: ABdhPJxT/tsWqHDDRzAP8Y4BfSRDxOHh7HCIH/9+qICwO8fydYXcrrSW0oAi7zbyVDQk2t6nuIUfESKFCNM=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a25:9f90:0:b0:624:521e:d4a5 with SMTP id
+ u16-20020a259f90000000b00624521ed4a5mr19240052ybq.230.1651704633637; Wed, 04
+ May 2022 15:50:33 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Wed,  4 May 2022 22:47:42 +0000
+In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
+Message-Id: <20220504224914.1654036-37-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220504224914.1654036-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH 036/128] KVM: selftests: Rename vm_create_without_vcpus() => vm_create()
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Andrew Jones <drjones@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix following includecheck warning:
-./fs/ext4/inode.c: linux/dax.h is included more than once.
+Rename vm_create_without_vcpus() to vm_create() so that it's not
+misconstrued as helper that creates a VM that can never have vCPUs, as
+opposed to a helper that "just" creates a VM without vCPUs added at time
+zero.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- fs/ext4/inode.c | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c     | 2 +-
+ tools/testing/selftests/kvm/dirty_log_test.c               | 2 +-
+ tools/testing/selftests/kvm/hardware_disable_test.c        | 2 +-
+ tools/testing/selftests/kvm/include/kvm_util_base.h        | 2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c                 | 4 ++--
+ tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c | 2 +-
+ tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c       | 2 +-
+ 7 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 987ea77e672d..60d909a528d1 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -41,7 +41,6 @@
- #include <linux/bitops.h>
- #include <linux/iomap.h>
- #include <linux/iversion.h>
--#include <linux/dax.h>
+diff --git a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
+index b4b0fa5d7c21..4dc04a12f527 100644
+--- a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
++++ b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
+@@ -76,7 +76,7 @@ int main(void)
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
  
- #include "ext4_jbd2.h"
- #include "xattr.h"
+-	vm = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 	ucall_init(vm, NULL);
+ 
+ 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init);
+diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
+index 74dcac0c22c5..aa7eb01ad25f 100644
+--- a/tools/testing/selftests/kvm/dirty_log_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_test.c
+@@ -677,7 +677,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
+ 
+ 	pr_info("Testing guest mode: %s\n", vm_guest_mode_string(mode));
+ 
+-	vm = vm_create_without_vcpus(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
++	vm = vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
+ 
+ 	log_mode_create_vm_done(vm);
+ 	vm_vcpu_add_default(vm, vcpuid, guest_code);
+diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
+index 32837207fe4e..299862a85b8d 100644
+--- a/tools/testing/selftests/kvm/hardware_disable_test.c
++++ b/tools/testing/selftests/kvm/hardware_disable_test.c
+@@ -104,7 +104,7 @@ static void run_test(uint32_t run)
+ 	for (i = 0; i < VCPU_NUM; i++)
+ 		CPU_SET(i, &cpu_set);
+ 
+-	vm  = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
++	vm  = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 
+ 	pr_debug("%s: [%d] start vcpus\n", __func__, run);
+ 	for (i = 0; i < VCPU_NUM; ++i) {
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 0110c415cd8c..48a4000222c1 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -629,7 +629,7 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 				    uint32_t vcpuids[]);
+ 
+ /* Create a default VM without any vcpus. */
+-struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages);
++struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t pages);
+ 
+ /*
+  * Create a VM with a single vCPU with reasonable defaults and @extra_mem_pages
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index aa93b37bc5cf..632912aeaeb9 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -262,7 +262,7 @@ struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
+ 	return vm;
+ }
+ 
+-struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
++struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t pages)
+ {
+ 	struct kvm_vm *vm;
+ 
+@@ -327,7 +327,7 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
+ 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
+ 
+-	vm = vm_create_without_vcpus(mode, pages);
++	vm = vm_create(mode, pages);
+ 
+ 	for (i = 0; i < nr_vcpus; ++i) {
+ 		uint32_t vcpuid = vcpuids ? vcpuids[i] : i;
+diff --git a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
+index 269033af43ce..d80b0a408937 100644
+--- a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
++++ b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
+@@ -340,7 +340,7 @@ static void test_pmu_config_disable(void (*guest_code)(void))
+ 	if (!(r & KVM_PMU_CAP_DISABLE))
+ 		return;
+ 
+-	vm = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 
+ 	cap.cap = KVM_CAP_PMU_CAPABILITY;
+ 	cap.args[0] = KVM_PMU_CAP_DISABLE;
+diff --git a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
+index 4c5775a8de6a..6bc13cf17220 100644
+--- a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
++++ b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
+@@ -86,7 +86,7 @@ static struct kvm_vm *create_vm(void)
+ 	uint64_t extra_pg_pages = vcpu_pages / PTES_PER_MIN_PAGE * N_VCPU;
+ 	uint64_t pages = DEFAULT_GUEST_PHY_PAGES + vcpu_pages + extra_pg_pages;
+ 
+-	return vm_create_without_vcpus(VM_MODE_DEFAULT, pages);
++	return vm_create(VM_MODE_DEFAULT, pages);
+ }
+ 
+ static void add_x86_vcpu(struct kvm_vm *vm, uint32_t vcpuid, bool bsp_code)
 -- 
-2.20.1.7.g153144c
+2.36.0.464.gb9c8b46e94-goog
 
