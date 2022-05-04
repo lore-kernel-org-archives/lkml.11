@@ -2,84 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3437FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F44C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348224AbiEDKli (ORCPT
+        id S1348236AbiEDKlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48388 "EHLO
+        Wed, 4 May 2022 06:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348200AbiEDKl3 (ORCPT
+        with ESMTP id S1348207AbiEDKlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:41:29 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA62D28E0F;
-        Wed,  4 May 2022 03:37:53 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651660672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lzcPu6GZE6ZiaZyABqJBDH3V4kDcq2cOcg6QCnZEcyw=;
-        b=ovf/Csmq3jTKaCHL/duZUMzM92UA3ybQPuPS/yR4hQyfMAMiBVXU2uBCn6ChoPSyXAfSo9
-        bJjhZS94xj7/+QmApH28oJm11Br3PWNSOxp1bUXPqx0rKKdknFjls32DU4SjFa6h2mC9FG
-        q+7A5c8xCM1uB60EOvOpVDYCGB+3oW7z4fhOZPG0gkHa//xQgwJAnB9xjOQo5rt++R0SpH
-        m3vrDOqhmxFOjkWIraav8Qi6m439Z9DQ1Hn/IY5cMJrQm2FnbzXAZlSiy/4krl1VYmxGXF
-        thd/N4iuIhQtjYbGFsrQuRI05DW6z/ZpBhjKJJkcCwB2D2NBsXJyx114mB8ULQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651660672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lzcPu6GZE6ZiaZyABqJBDH3V4kDcq2cOcg6QCnZEcyw=;
-        b=BC/5VsG6lYSZc3t+ojfusr5IIyCrAsxHoz70LVlfMswd0nu2Kajh4YcdNrqzUc0s9vB/WZ
-        ovNrwvd3WjLTtJCw==
-To:     Tony Luck <tony.luck@intel.com>, hdegoede@redhat.com,
-        markgross@kernel.org
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        jithu.joseph@intel.com, ashok.raj@intel.com, tony.luck@intel.com,
-        rostedt@goodmis.org, dan.j.williams@intel.com,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
-        ravi.v.shankar@intel.com
-Subject: Re: [PATCH v5 04/10] platform/x86/intel/ifs: Read IFS firmware image
-In-Reply-To: <20220428153849.295779-5-tony.luck@intel.com>
-References: <20220422200219.2843823-1-tony.luck@intel.com>
- <20220428153849.295779-1-tony.luck@intel.com>
- <20220428153849.295779-5-tony.luck@intel.com>
-Date:   Wed, 04 May 2022 12:37:52 +0200
-Message-ID: <87wnf1k2gv.ffs@tglx>
+        Wed, 4 May 2022 06:41:32 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63EF289BF
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 03:37:56 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id bq30so1604144lfb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 03:37:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hXrHNwJC3BAV97iHU4og2HGxITVvzbeFV0KAKwYw/nI=;
+        b=QTTdNNHxLgnl1v1dobnNNIk2xfsStVyPHrDEqovPV2KjeX8NQrpD0xCiZDb/x3oQFO
+         LwKab/3vcamG1Nv6zhbuJiDlW4+pPxM3ynh8drc2LqBHXvAv6MztHHfeE/ns5yaBcZ0m
+         ulSKV5CPTLVaKIjvaQVWxxIlfzvJRF/Uh2rF3/Bix5DaZoaJmUrMOtxjQHotAWoS9C0C
+         yMc45JdckmSKuo9Qs4Xc/Y8Snz1ODJbFq2UBiN04hBiv9SeOHOW79fhgHqQIlsLUpy76
+         6YLE3CxLBLsbYrToQL/1cLrNt7caLUc0XrHTiBAF90VQDXWsOGw5Vphlk7rIPgDPcGVl
+         Jseg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hXrHNwJC3BAV97iHU4og2HGxITVvzbeFV0KAKwYw/nI=;
+        b=M3h9XcVGjGW9umJjC19/ocGG01YP7MS9qAq2azYwglz8VYUwRMtOwgPGWhMOVWQo5j
+         RjrLQkr1bBPj2VLUljzKLAOP77hU559d/URQQ6QoE36mcgAht1xWWc0aWkz1ZoQc46Nb
+         WTF/Z9F2AC8+0iz6vVo0CvV2AYByDpZBPb91UGCgCIOhdqiA12/nmoNYeCfmrIYDM93h
+         P09oudnHqV35ByANLYIRDCFaKyzf4CWWA40I1IFNsVpP/mBm5oPGIRyukgpsYKFQ4ye9
+         ia5X4z7og1IIa6WvNlAUfwXFZitvj8agi7D23fJdJ1ef4R3CN7ZLbLOjlRBUDFoaP9iC
+         YbLA==
+X-Gm-Message-State: AOAM533wnZ5MaFVpYvgrjTJH77vIDAwHYMVKc7yZZ0+C6GGMSEzWskJz
+        A7e1vvzkJLJR30pdINS5m4ydYpKaQUOS4h58bLisOA==
+X-Google-Smtp-Source: ABdhPJyvrZpc1dvJUHpgzPqhSF7EzFjSFbIrL2BjM/E8E9i49RX6cCpueU1FHEwqnwkLycU6waf9TfwywbIR9IY7q7k=
+X-Received: by 2002:a05:6512:5cb:b0:472:f7e:a5f5 with SMTP id
+ o11-20020a05651205cb00b004720f7ea5f5mr13185193lfo.358.1651660675327; Wed, 04
+ May 2022 03:37:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220425105339.3515368-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220425105339.3515368-1-chi.minghao@zte.com.cn>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 4 May 2022 12:37:18 +0200
+Message-ID: <CAPDyKFporsmucBfHWN4vuBTmGNFKM028K6AWZu9k2rAb2cfZRw@mail.gmail.com>
+Subject: Re: [PATCH] mmc: block: use kobj_to_dev()
+To:     cgel.zte@gmail.com
+Cc:     axboe@kernel.dk, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28 2022 at 08:38, Tony Luck wrote:
-> +/*
-> + * Load ifs image. Before loading ifs module, the ifs image must be located
-> + * in /lib/firmware/intel/ifs and named as {family/model/stepping}.{testname}.
-> + */
-> +void ifs_load_firmware(struct device *dev)
-> +{
-> +	const struct firmware *fw;
-> +	char scan_path[32];
-> +	int ret;
-> +
-> +	snprintf(scan_path, sizeof(scan_path), "intel/ifs/%02x-%02x-%02x.scan",
-> +		 boot_cpu_data.x86, boot_cpu_data.x86_model, boot_cpu_data.x86_stepping);
-> +
-> +	ret = request_firmware_direct(&fw, scan_path, dev);
-> +	if (ret) {
-> +		dev_err(dev, "ifs file %s load failed\n", scan_path);
-> +		return;
+On Mon, 25 Apr 2022 at 12:53, <cgel.zte@gmail.com> wrote:
+>
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+>
+> Use kobj_to_dev() instead of open-coding it.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-Why is this not returning an error to the caller?
+Applied for next, thanks!
 
-Thanks,
+Kind regards
+Uffe
 
-        tglx
+
+> ---
+>  drivers/mmc/core/block.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+> index b35e7a95798b..983151b7296d 100644
+> --- a/drivers/mmc/core/block.c
+> +++ b/drivers/mmc/core/block.c
+> @@ -330,7 +330,7 @@ static struct attribute *mmc_disk_attrs[] = {
+>  static umode_t mmc_disk_attrs_is_visible(struct kobject *kobj,
+>                 struct attribute *a, int n)
+>  {
+> -       struct device *dev = container_of(kobj, struct device, kobj);
+> +       struct device *dev = kobj_to_dev(kobj);
+>         struct mmc_blk_data *md = mmc_blk_get(dev_to_disk(dev));
+>         umode_t mode = a->mode;
+>
+> --
+> 2.25.1
+>
+>
