@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354138AbiEDQ6C (ORCPT
+        id S1352333AbiEDQ6J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
+        Wed, 4 May 2022 12:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354505AbiEDQyb (ORCPT
+        with ESMTP id S1354477AbiEDQy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4210947385;
-        Wed,  4 May 2022 09:49:42 -0700 (PDT)
+        Wed, 4 May 2022 12:54:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDE3496AB;
+        Wed,  4 May 2022 09:49:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4785B827A0;
-        Wed,  4 May 2022 16:49:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BCAC385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22F1D61776;
         Wed,  4 May 2022 16:49:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D8E7C385A5;
+        Wed,  4 May 2022 16:49:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682979;
-        bh=C3Yvy/qzZwrx37raEwVDeS3Z2P4nQvqPOYKe2HSqq5s=;
+        s=korg; t=1651682978;
+        bh=OnHd+iM9+U75aQLQYqmxAydtm/M0+cZAxonGj4OGNkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzkMGtWyyePC2/sccrPMdS+GAZXR/YqZsEMP4u422PBcweNz9Uk+4T6g/1d82qUKo
-         SC6XjegujByw14fHwJxVKztFpjtZ5kJwV0BSut29rTako7feT93o+gFAI/41GXi24r
-         kPkfm5B+P9JP60q8lIkvRqxOQe6zP/j35kRLb1yo=
+        b=RnAnDyBSzrh1rfEU/w6oh+N8NquJgDokqefBR5jQCtfyLpIXvEzlW1wa2uIycX4Rc
+         HhrU8WnwnsIn4qhNhkct4hsva5xJVXAfqDrTgmx9jqoE7Ny+XC4tXnes2JOgQpfPFd
+         Bm3ETRsygYmfvpb5YEBUyryexpjDnLtdKowfx/m0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 72/84] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Wed,  4 May 2022 18:44:53 +0200
-Message-Id: <20220504152933.080098207@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.4 81/84] tty: n_gsm: fix wrong command frame length field encoding
+Date:   Wed,  4 May 2022 18:45:02 +0200
+Message-Id: <20220504152933.868027343@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,53 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
+commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
 
-There is a deadlock in rr_close(), which is shown below:
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
+be made up from type, length and value. Looking for example in chapter
+5.4.6.3.5 at the description for the encoding of a flow control on command
+it becomes obvious, that the type and length field is always present
+whereas the value may be zero bytes long. The current implementation omits
+the length field if the value is not present. This is wrong.
+Correct this by always sending the length in gsm_control_transmit().
+So far only the modem status command (MSC) has included a value and encoded
+its length directly. Therefore, also change gsmtty_modem_update().
 
-   (Thread 1)                |      (Thread 2)
-                             | rr_open()
-rr_close()                   |  add_timer()
- spin_lock_irqsave() //(1)   |  (wait a time)
- ...                         | rr_timer()
- del_timer_sync()            |  spin_lock_irqsave() //(2)
- (wait timer to stop)        |  ...
-
-We hold rrpriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need rrpriv->lock in position (2) of thread 2.
-As a result, rr_close() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hippi/rrunner.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/n_gsm.c |   23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index a4b3fce69ecd..6016e182f008 100644
---- a/drivers/net/hippi/rrunner.c
-+++ b/drivers/net/hippi/rrunner.c
-@@ -1346,7 +1346,9 @@ static int rr_close(struct net_device *dev)
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1302,11 +1302,12 @@ static void gsm_control_response(struct
  
- 	rrpriv->fw_running = 0;
+ static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
+ {
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
++	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+ 	if (msg == NULL)
+ 		return;
+-	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
+-	memcpy(msg->data + 1, ctrl->data, ctrl->len);
++	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
++	msg->data[1] = (ctrl->len << 1) | EA;
++	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+ 	gsm_data_queue(gsm->dlci[0], msg);
+ }
  
-+	spin_unlock_irqrestore(&rrpriv->lock, flags);
- 	del_timer_sync(&rrpriv->timer);
-+	spin_lock_irqsave(&rrpriv->lock, flags);
+@@ -2883,19 +2884,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
  
- 	writel(0, &regs->TxPi);
- 	writel(0, &regs->IpRxPi);
--- 
-2.35.1
-
+ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
+ {
+-	u8 modembits[5];
++	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+ 	int len = 2;
+ 
+-	if (brk)
++	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
++	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
++	if (brk) {
++		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
+-
+-	modembits[0] = len << 1 | EA;		/* Data bytes */
+-	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
+-	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
+-	if (brk)
+-		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
+-	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
++	}
++	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
+ 	if (ctrl == NULL)
+ 		return -ENOMEM;
+ 	return gsm_control_wait(dlci->gsm, ctrl);
 
 
