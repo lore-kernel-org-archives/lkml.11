@@ -2,79 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E8BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350043AbiEDM4O (ORCPT
+        id S1345035AbiEDM4j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
+        Wed, 4 May 2022 08:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237921AbiEDM4L (ORCPT
+        with ESMTP id S236375AbiEDM4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:56:11 -0400
-X-Greylist: delayed 901 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 05:52:35 PDT
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25F452AE12
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:52:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=0j/hv
-        WPupqrJGaOCk9faAVdYLcHHclCHbuBk/wL09eE=; b=XKXx2GJzfal9rxPRPgbfQ
-        1/robgERR1lNwK3ndSt6c+kbjEqn6m8tyRqe8yKVCAUPSu4wQ6drHUVyos7whsxy
-        3AFuhqCosXFTwzcqmjn1GnW0km6lUAiKXIe+nUNDrOcpD0reS/lfvJSmxaaMWmg7
-        kwyM6ZWcBsB0ThHHG8xkHs=
-Received: from localhost.localdomain (unknown [120.204.77.149])
-        by smtp14 (Coremail) with SMTP id EsCowABnJ_tKc3JikTI+Aw--.4038S4;
-        Wed, 04 May 2022 20:37:05 +0800 (CST)
-From:   lizhe <sensor1010@163.com>
-To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
-        prudo@redhat.com
-Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        lizhe <sensor1010@163.com>
-Subject: [PATCH] kernel/crash_core.c : Remove redundant checks for ck_cmdline is NULL
-Date:   Wed,  4 May 2022 05:36:23 -0700
-Message-Id: <20220504123623.36852-1-sensor1010@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 4 May 2022 08:56:35 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9DF2AE12;
+        Wed,  4 May 2022 05:52:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651668779; x=1683204779;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TAR0OSTmgPalp1GT6kqlq85T8vW4wKavBhWP3MJ2K2A=;
+  b=dHgtXRnpPjjVlbRuYsjwUesITQQlcyEAnpWwSqK8E3QnR3mvzJAk3x94
+   Hu9ol/3/ksX4ORH3dx2tVizgJRR0+gz8k9VyzFP6adFTdT1874uzhCCgL
+   53vkHKHmzs182tA6TySkrYpLdZubHRjf2xAKlqVuHhKUfiznQLBI0p3bL
+   JDOPsS/V9HQqtff/dd6WG2GAYw7LUiTRlIsMTZkesDf5ELsNhunkvacAQ
+   ECQ32eEAIs892VDOTYhsDJ6WQ3GEzNERyp1SuQgTXHuaBZveF0/YDEiil
+   IJWEZ0ENBVozZ3mkQphKUS0r8IIOwTRbrwRo64fW2SnagoJs9alYZNg/a
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="292946346"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="292946346"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 05:52:58 -0700
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="734387769"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 05:52:52 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nmEUq-00Bssm-FU;
+        Wed, 04 May 2022 15:52:48 +0300
+Date:   Wed, 4 May 2022 15:52:48 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tan Jui Nee <jui.nee.tan@intel.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH v4 5/8] mfd: lpc_ich: Add support for pinctrl in non-ACPI
+ system
+Message-ID: <YnJ3IJoJtqjvFmBB@smile.fi.intel.com>
+References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+ <20220131151346.45792-6-andriy.shevchenko@linux.intel.com>
+ <YgvaqBB8fNVWp1lN@google.com>
+ <YgveyspHVXCp2ul+@smile.fi.intel.com>
+ <YgvjDy1R06IC8FE5@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowABnJ_tKc3JikTI+Aw--.4038S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW5Kr1rCw4xCrWxArWUXFW7CFg_yoWxXrX_W3
-        y7Krn2qr15Aw1j9r18ZayfWrWUKa10va9a9a43trW2va47trn5G343JFn0yrnxC397Cr17
-        Gws7Jrnrt3yakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_sqWUUUUUU==
-X-Originating-IP: [120.204.77.149]
-X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/xtbBohH2q1aEEK-VzAAAsa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgvjDy1R06IC8FE5@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When ck_cmdline is NULL. The last three lines of
-this function(get_last_crashkernel()) are equivalent to :
-	if (!NULL)
-		return NULL;
+On Tue, Feb 15, 2022 at 05:29:51PM +0000, Lee Jones wrote:
+> On Tue, 15 Feb 2022, Andy Shevchenko wrote:
+> > On Tue, Feb 15, 2022 at 04:54:00PM +0000, Lee Jones wrote:
+> > > On Mon, 31 Jan 2022, Andy Shevchenko wrote:
 
-	return NULL;
-This is obviously a redundant check
+> > Thank you for the review, my answers below.
 
-Signed-off-by: lizhe <sensor1010@163.com>
----
- kernel/crash_core.c | 3 ---
- 1 file changed, 3 deletions(-)
+...
 
-diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 256cf6db573c..c232f01a2c54 100644
---- a/kernel/crash_core.c
-+++ b/kernel/crash_core.c
-@@ -222,9 +222,6 @@ static __init char *get_last_crashkernel(char *cmdline,
- 		p = strstr(p+1, name);
- 	}
- 
--	if (!ck_cmdline)
--		return NULL;
--
- 	return ck_cmdline;
- }
- 
+> > > > +static struct resource apl_gpio_resources[APL_GPIO_NR_DEVICES][2] = {
+> > > > +	[APL_GPIO_NORTH] = {
+> > > > +		DEFINE_RES_MEM(APL_GPIO_NORTH_OFFSET, 0x1000),
+> > > 
+> > > Are these 0x1000's being over-written in lpc_ich_init_pinctrl()?
+> > > 
+> > > If so, why pre-initialise?
+> > 
+> > You mean to pre-initialize the offsets, but leave the length to be added
+> > in the function? It can be done, but it feels inconsistent, since we would
+> > have offsets and lengths in different places for the same thingy. That said,
+> > I prefer current way for the sake of consistency.
+> 
+> Don't you over-write this entry entirely?
+> 
+>   for (i = 0; i < ARRAY_SIZE(apl_gpio_devices); i++) {
+>         struct resource *mem = &apl_gpio_resources[i][0];
+> 
+>         /* Fill MEM resource */
+>         mem->start += base.start;
+>         mem->end += base.start;
+>         mem->flags = base.flags;
+>   }
+> 
+> Oh wait, you're just adding the base value to the offsets.
+> 
+> In which case that comment is also confusing!
+
+I have realised that in current form it has a bug (*), so I re-do a bit the way
+that comment stays and the actual actions will be to *fill* the resource.
+
+*) unbinding and binding back will bring us to the completely wrong resources.
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
