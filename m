@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB57C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357393AbiEDR1p (ORCPT
+        id S1354119AbiEDR1v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
+        Wed, 4 May 2022 13:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355233AbiEDRHx (ORCPT
+        with ESMTP id S1355768AbiEDRIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:07:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BD9517FB;
-        Wed,  4 May 2022 09:54:30 -0700 (PDT)
+        Wed, 4 May 2022 13:08:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74D651E5D;
+        Wed,  4 May 2022 09:54:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9F47B82792;
-        Wed,  4 May 2022 16:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B171C385A5;
-        Wed,  4 May 2022 16:54:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E6561852;
+        Wed,  4 May 2022 16:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E698C385A5;
+        Wed,  4 May 2022 16:54:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683267;
-        bh=EQYtsU7y1/iFH99A+gYDzQJA01vWiQVZBTuGGozh31Y=;
+        s=korg; t=1651683272;
+        bh=uU32vsAIlQhNOwiz7baeDmqduhS8jWk8Pq/Li7uhVgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t2QKqbVYdCs+es+rI4Hu7T2QM+furNVzAK0HD1uaShHgA58D0JX/3JOZjlp/zrKhw
-         v6D9l/FjyjZEeUXU0Bme3uiRXlZCtjuJx+sOXsVJiQE5ogSIA7xltoUQlajwITt0tv
-         qhrNFejdJG+6BNdIVpeMijr7bxGEttfXD55DnaMQ=
+        b=loGFp8N1zl16aS2O2slP2NLm6Z+oA9woLfHTQoJUMa82d7GQA0Hx22ZHrwMvcqT8z
+         176GBZCwvPhyOL5pUVsMxHlsEUld4wcS52Iu2gHV4IkTiBKPLsu18Rj7AaWdob1hmo
+         y2g581J/WrBq7KRsRPnSlCfb0ybMMnyPJ7Inc9Qg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Christensen <drc@linux.vnet.ibm.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 117/177] bnx2x: fix napi API usage sequence
-Date:   Wed,  4 May 2022 18:45:10 +0200
-Message-Id: <20220504153103.659925278@linuxfoundation.org>
+Subject: [PATCH 5.15 138/177] selftest/vm: verify mmap addr in mremap_test
+Date:   Wed,  4 May 2022 18:45:31 +0200
+Message-Id: <20220504153105.576914812@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,150 +53,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-[ Upstream commit af68656d66eda219b7f55ce8313a1da0312c79e1 ]
+[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
 
-While handling PCI errors (AER flow) driver tries to
-disable NAPI [napi_disable()] after NAPI is deleted
-[__netif_napi_del()] which causes unexpected system
-hang/crash.
+Avoid calling mmap with requested addresses that are less than the
+system's mmap_min_addr.  When run as root, mmap returns EACCES when
+trying to map addresses < mmap_min_addr.  This is not one of the error
+codes for the condition to retry the mmap in the test.
 
-System message log shows the following:
-=======================================
-[ 3222.537510] EEH: Detected PCI bus error on PHB#384-PE#800000 [ 3222.537511] EEH: This PCI device has failed 2 times in the last hour and will be permanently disabled after 5 failures.
-[ 3222.537512] EEH: Notify device drivers to shutdown [ 3222.537513] EEH: Beginning: 'error_detected(IO frozen)'
-[ 3222.537514] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
-bnx2x->error_detected(IO frozen)
-[ 3222.537516] bnx2x: [bnx2x_io_error_detected:14236(eth14)]IO error detected [ 3222.537650] EEH: PE#800000 (PCI 0384:80:00.0): bnx2x driver reports:
-'need reset'
-[ 3222.537651] EEH: PE#800000 (PCI 0384:80:00.1): Invoking
-bnx2x->error_detected(IO frozen)
-[ 3222.537651] bnx2x: [bnx2x_io_error_detected:14236(eth13)]IO error detected [ 3222.537729] EEH: PE#800000 (PCI 0384:80:00.1): bnx2x driver reports:
-'need reset'
-[ 3222.537729] EEH: Finished:'error_detected(IO frozen)' with aggregate recovery state:'need reset'
-[ 3222.537890] EEH: Collect temporary log [ 3222.583481] EEH: of node=0384:80:00.0 [ 3222.583519] EEH: PCI device/vendor: 168e14e4 [ 3222.583557] EEH: PCI cmd/status register: 00100140 [ 3222.583557] EEH: PCI-E capabilities and status follow:
-[ 3222.583744] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.583892] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.583893] EEH: PCI-E 20: 00000000 [ 3222.583893] EEH: PCI-E AER capability register set follows:
-[ 3222.584079] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.584230] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.584378] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.584416] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.584416] EEH: of node=0384:80:00.1 [ 3222.584454] EEH: PCI device/vendor: 168e14e4 [ 3222.584491] EEH: PCI cmd/status register: 00100140 [ 3222.584492] EEH: PCI-E capabilities and status follow:
-[ 3222.584677] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.584825] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.584826] EEH: PCI-E 20: 00000000 [ 3222.584826] EEH: PCI-E AER capability register set follows:
-[ 3222.585011] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.585160] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.585309] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.585347] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.586872] RTAS: event: 5, Type: Platform Error (224), Severity: 2 [ 3222.586873] EEH: Reset without hotplug activity [ 3224.762767] EEH: Beginning: 'slot_reset'
-[ 3224.762770] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
-bnx2x->slot_reset()
-[ 3224.762771] bnx2x: [bnx2x_io_slot_reset:14271(eth14)]IO slot reset initializing...
-[ 3224.762887] bnx2x 0384:80:00.0: enabling device (0140 -> 0142) [ 3224.768157] bnx2x: [bnx2x_io_slot_reset:14287(eth14)]IO slot reset
---> driver unload
+Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
+addr > vm.mmap_min_addr.
 
-Uninterruptible tasks
-=====================
-crash> ps | grep UN
-     213      2  11  c000000004c89e00  UN   0.0       0      0  [eehd]
-     215      2   0  c000000004c80000  UN   0.0       0      0
-[kworker/0:2]
-    2196      1  28  c000000004504f00  UN   0.1   15936  11136  wickedd
-    4287      1   9  c00000020d076800  UN   0.0    4032   3008  agetty
-    4289      1  20  c00000020d056680  UN   0.0    7232   3840  agetty
-   32423      2  26  c00000020038c580  UN   0.0       0      0
-[kworker/26:3]
-   32871   4241  27  c0000002609ddd00  UN   0.1   18624  11648  sshd
-   32920  10130  16  c00000027284a100  UN   0.1   48512  12608  sendmail
-   33092  32987   0  c000000205218b00  UN   0.1   48512  12608  sendmail
-   33154   4567  16  c000000260e51780  UN   0.1   48832  12864  pickup
-   33209   4241  36  c000000270cb6500  UN   0.1   18624  11712  sshd
-   33473  33283   0  c000000205211480  UN   0.1   48512  12672  sendmail
-   33531   4241  37  c00000023c902780  UN   0.1   18624  11648  sshd
+Add a munmap call after an alignment check as the mappings are retained
+after the retry and can reach the vm.max_map_count sysctl.
 
-EEH handler hung while bnx2x sleeping and holding RTNL lock
-===========================================================
-crash> bt 213
-PID: 213    TASK: c000000004c89e00  CPU: 11  COMMAND: "eehd"
-  #0 [c000000004d477e0] __schedule at c000000000c70808
-  #1 [c000000004d478b0] schedule at c000000000c70ee0
-  #2 [c000000004d478e0] schedule_timeout at c000000000c76dec
-  #3 [c000000004d479c0] msleep at c0000000002120cc
-  #4 [c000000004d479f0] napi_disable at c000000000a06448
-                                        ^^^^^^^^^^^^^^^^
-  #5 [c000000004d47a30] bnx2x_netif_stop at c0080000018dba94 [bnx2x]
-  #6 [c000000004d47a60] bnx2x_io_slot_reset at c0080000018a551c [bnx2x]
-  #7 [c000000004d47b20] eeh_report_reset at c00000000004c9bc
-  #8 [c000000004d47b90] eeh_pe_report at c00000000004d1a8
-  #9 [c000000004d47c40] eeh_handle_normal_event at c00000000004da64
-
-And the sleeping source code
-============================
-crash> dis -ls c000000000a06448
-FILE: ../net/core/dev.c
-LINE: 6702
-
-   6697  {
-   6698          might_sleep();
-   6699          set_bit(NAPI_STATE_DISABLE, &n->state);
-   6700
-   6701          while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
-* 6702                  msleep(1);
-   6703          while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
-   6704                  msleep(1);
-   6705
-   6706          hrtimer_cancel(&n->timer);
-   6707
-   6708          clear_bit(NAPI_STATE_DISABLE, &n->state);
-   6709  }
-
-EEH calls into bnx2x twice based on the system log above, first through
-bnx2x_io_error_detected() and then bnx2x_io_slot_reset(), and executes
-the following call chains:
-
-bnx2x_io_error_detected()
-  +-> bnx2x_eeh_nic_unload()
-       +-> bnx2x_del_all_napi()
-            +-> __netif_napi_del()
-
-bnx2x_io_slot_reset()
-  +-> bnx2x_netif_stop()
-       +-> bnx2x_napi_disable()
-            +->napi_disable()
-
-Fix this by correcting the sequence of NAPI APIs usage,
-that is delete the NAPI after disabling it.
-
-Fixes: 7fa6f34081f1 ("bnx2x: AER revised")
-Reported-by: David Christensen <drc@linux.vnet.ibm.com>
-Tested-by: David Christensen <drc@linux.vnet.ibm.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Link: https://lore.kernel.org/r/20220426153913.6966-1-manishc@marvell.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ tools/testing/selftests/vm/mremap_test.c | 41 +++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index bdd4e420f869..553f3de93957 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -14158,10 +14158,6 @@ static int bnx2x_eeh_nic_unload(struct bnx2x *bp)
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index 0624d1bd71b5..2b3b4f15185f 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -6,6 +6,7 @@
  
- 	/* Stop Tx */
- 	bnx2x_tx_disable(bp);
--	/* Delete all NAPI objects */
--	bnx2x_del_all_napi(bp);
--	if (CNIC_LOADED(bp))
--		bnx2x_del_all_napi_cnic(bp);
- 	netdev_reset_tc(bp->dev);
+ #include <errno.h>
+ #include <stdlib.h>
++#include <stdio.h>
+ #include <string.h>
+ #include <sys/mman.h>
+ #include <time.h>
+@@ -64,6 +65,35 @@ enum {
+ 	.expect_failure = should_fail				\
+ }
  
- 	del_timer_sync(&bp->timer);
-@@ -14266,6 +14262,11 @@ static pci_ers_result_t bnx2x_io_slot_reset(struct pci_dev *pdev)
- 		bnx2x_drain_tx_queues(bp);
- 		bnx2x_send_unload_req(bp, UNLOAD_RECOVERY);
- 		bnx2x_netif_stop(bp, 1);
-+		bnx2x_del_all_napi(bp);
++/* Returns mmap_min_addr sysctl tunable from procfs */
++static unsigned long long get_mmap_min_addr(void)
++{
++	FILE *fp;
++	int n_matched;
++	static unsigned long long addr;
 +
-+		if (CNIC_LOADED(bp))
-+			bnx2x_del_all_napi_cnic(bp);
++	if (addr)
++		return addr;
 +
- 		bnx2x_free_irq(bp);
++	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
++	if (fp == NULL) {
++		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		exit(KSFT_SKIP);
++	}
++
++	n_matched = fscanf(fp, "%llu", &addr);
++	if (n_matched != 1) {
++		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		fclose(fp);
++		exit(KSFT_SKIP);
++	}
++
++	fclose(fp);
++	return addr;
++}
++
+ /*
+  * Returns the start address of the mapping on success, else returns
+  * NULL on failure.
+@@ -72,8 +102,15 @@ static void *get_source_mapping(struct config c)
+ {
+ 	unsigned long long addr = 0ULL;
+ 	void *src_addr = NULL;
++	unsigned long long mmap_min_addr;
++
++	mmap_min_addr = get_mmap_min_addr();
++
+ retry:
+ 	addr += c.src_alignment;
++	if (addr < mmap_min_addr)
++		goto retry;
++
+ 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
+ 			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
+ 			-1, 0);
+@@ -91,8 +128,10 @@ static void *get_source_mapping(struct config c)
+ 	 * alignment in the tests.
+ 	 */
+ 	if (((unsigned long long) src_addr & (c.src_alignment - 1)) ||
+-			!((unsigned long long) src_addr & c.src_alignment))
++			!((unsigned long long) src_addr & c.src_alignment)) {
++		munmap(src_addr, c.region_size);
+ 		goto retry;
++	}
  
- 		/* Report UNLOAD_DONE to MCP */
+ 	if (!src_addr)
+ 		goto error;
 -- 
 2.35.1
 
