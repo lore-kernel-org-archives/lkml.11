@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A32C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E69C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358371AbiEDRaP (ORCPT
+        id S1358423AbiEDRaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        Wed, 4 May 2022 13:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356760AbiEDRJl (ORCPT
+        with ESMTP id S1356763AbiEDRJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E817E6354;
-        Wed,  4 May 2022 09:55:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E26A18E2B;
+        Wed,  4 May 2022 09:55:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C352B82792;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E235B617D5;
         Wed,  4 May 2022 16:55:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACC3C385A4;
-        Wed,  4 May 2022 16:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34B98C385A5;
+        Wed,  4 May 2022 16:55:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683330;
-        bh=n9Q/W/occ0bb07vn7HK5qwDHGDLUQo+K6rMhV1GBuo8=;
+        s=korg; t=1651683331;
+        bh=9E39mHLbOPtkiWOEOKFy56IbZL3g5wvMyD0A5kF6R7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0REyl/uWvNRLngLs59+DHV71bKP3fAiycDWJauSOh5Sx9VTUSoFdwakcuimuy3Eu
-         Qgkl9iRTVKOwQyS76/8GGmIU1dBbNxXtSg6BF5fxzA1Uda/mNNWe2ULV5kXNvNXbOZ
-         3KbrV2b2wSOsd/EUp5UpzZ9EkHGT9ED04PG927BY=
+        b=W6z051L+RsxOeNgthxEwD3IcEBYJPy9RbK9qqobnaGAjW3a6FHcJVUi/RD5TscSi7
+         XTA5+hB6EjyMKkG7dUefzK/8l/HMzaX4QSjiyZ0E94k5vVPcyN1hkhCZDlE//5XC+h
+         F6W6at5AjmEUdj5gc0x9Px6EMQfFPbfjOcGJIvuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>
-Subject: [PATCH 5.17 009/225] usb: xhci: tegra:Fix PM usage reference leak of tegra_xusb_unpowergate_partitions
-Date:   Wed,  4 May 2022 18:44:07 +0200
-Message-Id: <20220504153111.114797832@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 5.17 018/225] usb: misc: fix improper handling of refcount in uss720_probe()
+Date:   Wed,  4 May 2022 18:44:16 +0200
+Message-Id: <20220504153111.913625937@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,42 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: zhangqilong <zhangqilong3@huawei.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 8771039482d965bdc8cefd972bcabac2b76944a8 upstream.
+commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
 
-pm_runtime_get_sync will increment pm usage counter
-even it failed. Forgetting to putting operation will
-result in reference leak here. We fix it by replacing
-it with pm_runtime_resume_and_get to keep usage counter
-balanced.
+usb_put_dev shouldn't be called when uss720_probe succeeds because of
+priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
+before destroy_priv in uss720_disconnect because usb_put_dev is in
+destroy_priv.
 
-Fixes: 41a7426d25fa ("usb: xhci: tegra: Unlink power domain devices")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-Link: https://lore.kernel.org/r/20220319023822.145641-1-zhangqilong3@huawei.com
+Fix this by moving priv->usbdev = NULL after usb_put_dev.
+
+Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-tegra.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/misc/uss720.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/usb/host/xhci-tegra.c
-+++ b/drivers/usb/host/xhci-tegra.c
-@@ -1034,13 +1034,13 @@ static int tegra_xusb_unpowergate_partit
- 	int rc;
+--- a/drivers/usb/misc/uss720.c
++++ b/drivers/usb/misc/uss720.c
+@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kr
  
- 	if (tegra->use_genpd) {
--		rc = pm_runtime_get_sync(tegra->genpd_dev_ss);
-+		rc = pm_runtime_resume_and_get(tegra->genpd_dev_ss);
- 		if (rc < 0) {
- 			dev_err(dev, "failed to enable XUSB SS partition\n");
- 			return rc;
- 		}
+ 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
+ 	usb_put_dev(priv->usbdev);
++	priv->usbdev = NULL;
+ 	kfree(priv);
+ }
  
--		rc = pm_runtime_get_sync(tegra->genpd_dev_host);
-+		rc = pm_runtime_resume_and_get(tegra->genpd_dev_host);
- 		if (rc < 0) {
- 			dev_err(dev, "failed to enable XUSB Host partition\n");
- 			pm_runtime_put_sync(tegra->genpd_dev_ss);
+@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_inter
+ 	parport_announce_port(pp);
+ 
+ 	usb_set_intfdata(intf, pp);
+-	usb_put_dev(usbdev);
+ 	return 0;
+ 
+ probe_abort:
+@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb
+ 	usb_set_intfdata(intf, NULL);
+ 	if (pp) {
+ 		priv = pp->private_data;
+-		priv->usbdev = NULL;
+ 		priv->pp = NULL;
+ 		dev_dbg(&intf->dev, "parport_remove_port\n");
+ 		parport_remove_port(pp);
 
 
