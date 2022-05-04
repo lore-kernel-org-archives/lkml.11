@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F484C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D539C4707F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358075AbiEDRUY (ORCPT
+        id S1358145AbiEDRUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        Wed, 4 May 2022 13:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355938AbiEDREr (ORCPT
+        with ESMTP id S1355915AbiEDREr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280014FC50;
-        Wed,  4 May 2022 09:53:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC374F9C1;
+        Wed,  4 May 2022 09:53:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE932B827AC;
-        Wed,  4 May 2022 16:53:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E6A4C385A5;
-        Wed,  4 May 2022 16:53:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3F14617A6;
+        Wed,  4 May 2022 16:53:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B619C385A5;
+        Wed,  4 May 2022 16:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683213;
-        bh=mmNb0QQ6+Ixfyf+1ANzPjL3xuEFqItZxzDmgCCM79dA=;
+        s=korg; t=1651683211;
+        bh=pQ3Yw4POrLOhpFozFUH7xQA/LIIUjO4ffdWoR5CouSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMhjjl8EtzJYpjAMp5uDeIrLdDs6E6p6ME1zkfpRN1ZkteKtZWINlvk7ruF/jBfD4
-         XM/p/M05sODC/jaLkEikWtPwRhoKK6uGVQII2TnU4WrGV+RcYMeb7Pc7f4Ydf9Ah/1
-         Ela3WeBlnG3PX6adVy/8smuWxxHZMEDMprce0SJ8=
+        b=zHUdolSjom4+TTPPtLZtZcfhiqJZMWEKZ5jF62YL2MODzPIR6uQ3TumjRlBMDCZiS
+         MvferLGHPrrMOGomk48OC4ydNdQwKfd7bEM0jHP2jlByoY/lpBO9onFsuqDxXccFPi
+         kSJw2o+tY7/0rQj2ZtWvHwn4u4b7c0H/FtEkkFuI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 078/177] pinctrl: stm32: Do not call stm32_gpio_get() for edge triggered IRQs in EOI
-Date:   Wed,  4 May 2022 18:44:31 +0200
-Message-Id: <20220504153100.054423299@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 053/177] arm64: dts: imx8qm: Correct SCU clock controllers compatible property
+Date:   Wed,  4 May 2022 18:44:06 +0200
+Message-Id: <20220504153057.759606331@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -55,47 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit e74200ebf7c4f6a7a7d1be9f63833ddba251effa ]
+[ Upstream commit dd2737fab4a6ce9ba4eb84842bedbd87d55241a6 ]
 
-The stm32_gpio_get() should only be called for LEVEL triggered interrupts,
-skip calling it for EDGE triggered interrupts altogether to avoid wasting
-CPU cycles in EOI handler. On this platform, EDGE triggered interrupts are
-the majority and LEVEL triggered interrupts are the exception no less, and
-the CPU cycles are not abundant.
+The fsl,scu.txt dt-binding documentation explicitly mentions
+that the compatible string should be either "fsl,imx8qm-clock"
+or "fsl,imx8qxp-clock", followed by "fsl,scu-clk".  Also, i.MX8qm
+SCU clocks and i.MX8qxp SCU clocks are really not the same, so
+we have to set the compatible property according to SoC name.
+Let's correct the i.MX8qm clock controller's compatible property
+from
+"fsl,imx8qxp-clk", "fsl,scu-clk"
+to
+"fsl,imx8qm-clk", "fsl,scu-clk" .
 
-Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-To: linux-gpio@vger.kernel.org
-Link: https://lore.kernel.org/r/20220415215410.498349-1-marex@denx.de
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: f2180be18a63 ("arm64: dts: imx: add imx8qm common dts file")
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/stm32/pinctrl-stm32.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8qm.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 8934b4878fa8..2c78af0aac57 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -311,6 +311,10 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
- 	struct stm32_gpio_bank *bank = d->domain->host_data;
- 	int level;
+diff --git a/arch/arm64/boot/dts/freescale/imx8qm.dtsi b/arch/arm64/boot/dts/freescale/imx8qm.dtsi
+index aebbe2b84aa1..a143f38bc78b 100644
+--- a/arch/arm64/boot/dts/freescale/imx8qm.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8qm.dtsi
+@@ -155,7 +155,7 @@ pd: imx8qx-pd {
+ 		};
  
-+	/* Do not access the GPIO if this is not LEVEL triggered IRQ. */
-+	if (!(bank->irq_type[d->hwirq] & IRQ_TYPE_LEVEL_MASK))
-+		return;
-+
- 	/* If level interrupt type then retrig */
- 	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
- 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
+ 		clk: clock-controller {
+-			compatible = "fsl,imx8qxp-clk", "fsl,scu-clk";
++			compatible = "fsl,imx8qm-clk", "fsl,scu-clk";
+ 			#clock-cells = <2>;
+ 		};
+ 
 -- 
 2.35.1
 
