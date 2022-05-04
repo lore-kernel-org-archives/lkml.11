@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE63C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355647AbiEDRIY (ORCPT
+        id S1355664AbiEDRI1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        Wed, 4 May 2022 13:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355623AbiEDRAS (ORCPT
+        with ESMTP id S1355620AbiEDRAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:00:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40974BB8A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057994BB86;
         Wed,  4 May 2022 09:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53947B8279F;
-        Wed,  4 May 2022 16:51:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097E1C385A4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 499C3B827A1;
         Wed,  4 May 2022 16:51:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00681C385A5;
+        Wed,  4 May 2022 16:51:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683116;
-        bh=RgeZqrWmezN2DZR7KTsOqWVW++36tiwICGCSZVp8xps=;
+        s=korg; t=1651683114;
+        bh=puxZb8keBI0MxGWFKEJg7XUlq5HvNRAXuB4e6S/Tg5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dmF7LguNjgy2R7/ewbBX5O/1/1V6CIMXyio9x0mWGkhMNa6i5rzEeS2DcQPksmMiB
-         GZzImaL1GK4IHq9KAXIVolebNg2laVAyMtycroXvk5kVHjMzPq26S6GM0Kx0tMalF8
-         co5B+ervbkR0Sn7KweytNDtF4yjvLYbP1GtV5lJ4=
+        b=tDUq0vWP1TcLm0JKzDlUh05cztPNsgRztfeWt855S2G5VWUjhMGxsEaokQTsKCOXY
+         ppoAwP8LjqYkJBbLJpvfTL29opQXhq5LkTf88lHdhTJiyvyl8sDCSfd3uE4NQ02Gxz
+         qeOcVb8qPyhDWQoEDq+o72/C7a+CU4lDVn7u4ORk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Topi Miettinen <toiwoton@gmail.com>
-Subject: [PATCH 5.10 120/129] netfilter: nft_socket: only do sk lookups when indev is available
-Date:   Wed,  4 May 2022 18:45:12 +0200
-Message-Id: <20220504153030.950472872@linuxfoundation.org>
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 110/129] net: ethernet: stmmac: fix write to sgmii_adapter_base
+Date:   Wed,  4 May 2022 18:45:02 +0200
+Message-Id: <20220504153029.949744972@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,110 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-commit 743b83f15d4069ea57c3e40996bf4a1077e0cdc1 upstream.
+commit 5fd1fe4807f91ea0cca043114d929faa11bd4190 upstream.
 
-Check if the incoming interface is available and NFT_BREAK
-in case neither skb->sk nor input device are set.
+I made a mistake with the commit a6aaa0032424 ("net: ethernet: stmmac:
+fix altr_tse_pcs function when using a fixed-link"). I should have
+tested against both scenario of having a SGMII interface and one
+without.
 
-Because nf_sk_lookup_slow*() assume packet headers are in the
-'in' direction, use in postrouting is not going to yield a meaningful
-result.  Same is true for the forward chain, so restrict the use
-to prerouting, input and output.
+Without the SGMII PCS TSE adpater, the sgmii_adapter_base address is
+NULL, thus a write to this address will fail.
 
-Use in output work if a socket is already attached to the skb.
-
-Fixes: 554ced0a6e29 ("netfilter: nf_tables: add support for native socket matching")
-Reported-and-tested-by: Topi Miettinen <toiwoton@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: stable@vger.kernel.org
+Fixes: a6aaa0032424 ("net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220420152345.27415-1-dinguyen@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_socket.c |   52 ++++++++++++++++++++++++++++++++-------------
- 1 file changed, 38 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
---- a/net/netfilter/nft_socket.c
-+++ b/net/netfilter/nft_socket.c
-@@ -33,6 +33,32 @@ static void nft_socket_wildcard(const st
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -65,8 +65,9 @@ static void socfpga_dwmac_fix_mac_speed(
+ 	struct phy_device *phy_dev = ndev->phydev;
+ 	u32 val;
+ 
+-	writew(SGMII_ADAPTER_DISABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	if (sgmii_adapter_base)
++		writew(SGMII_ADAPTER_DISABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 
+ 	if (splitter_base) {
+ 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+@@ -88,10 +89,11 @@ static void socfpga_dwmac_fix_mac_speed(
+ 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
  	}
- }
  
-+static struct sock *nft_socket_do_lookup(const struct nft_pktinfo *pkt)
-+{
-+	const struct net_device *indev = nft_in(pkt);
-+	const struct sk_buff *skb = pkt->skb;
-+	struct sock *sk = NULL;
-+
-+	if (!indev)
-+		return NULL;
-+
-+	switch (nft_pf(pkt)) {
-+	case NFPROTO_IPV4:
-+		sk = nf_sk_lookup_slow_v4(nft_net(pkt), skb, indev);
-+		break;
-+#if IS_ENABLED(CONFIG_NF_TABLES_IPV6)
-+	case NFPROTO_IPV6:
-+		sk = nf_sk_lookup_slow_v6(nft_net(pkt), skb, indev);
-+		break;
-+#endif
-+	default:
-+		WARN_ON_ONCE(1);
-+		break;
+-	writew(SGMII_ADAPTER_ENABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+-	if (phy_dev)
++	if (phy_dev && sgmii_adapter_base) {
++		writew(SGMII_ADAPTER_ENABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
 +	}
-+
-+	return sk;
-+}
-+
- static void nft_socket_eval(const struct nft_expr *expr,
- 			    struct nft_regs *regs,
- 			    const struct nft_pktinfo *pkt)
-@@ -46,20 +72,7 @@ static void nft_socket_eval(const struct
- 		sk = NULL;
- 
- 	if (!sk)
--		switch(nft_pf(pkt)) {
--		case NFPROTO_IPV4:
--			sk = nf_sk_lookup_slow_v4(nft_net(pkt), skb, nft_in(pkt));
--			break;
--#if IS_ENABLED(CONFIG_NF_TABLES_IPV6)
--		case NFPROTO_IPV6:
--			sk = nf_sk_lookup_slow_v6(nft_net(pkt), skb, nft_in(pkt));
--			break;
--#endif
--		default:
--			WARN_ON_ONCE(1);
--			regs->verdict.code = NFT_BREAK;
--			return;
--		}
-+		sk = nft_socket_do_lookup(pkt);
- 
- 	if (!sk) {
- 		regs->verdict.code = NFT_BREAK;
-@@ -150,6 +163,16 @@ static int nft_socket_dump(struct sk_buf
- 	return 0;
  }
  
-+static int nft_socket_validate(const struct nft_ctx *ctx,
-+			       const struct nft_expr *expr,
-+			       const struct nft_data **data)
-+{
-+	return nft_chain_validate_hooks(ctx->chain,
-+					(1 << NF_INET_PRE_ROUTING) |
-+					(1 << NF_INET_LOCAL_IN) |
-+					(1 << NF_INET_LOCAL_OUT));
-+}
-+
- static struct nft_expr_type nft_socket_type;
- static const struct nft_expr_ops nft_socket_ops = {
- 	.type		= &nft_socket_type,
-@@ -157,6 +180,7 @@ static const struct nft_expr_ops nft_soc
- 	.eval		= nft_socket_eval,
- 	.init		= nft_socket_init,
- 	.dump		= nft_socket_dump,
-+	.validate	= nft_socket_validate,
- };
- 
- static struct nft_expr_type nft_socket_type __read_mostly = {
+ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
 
 
