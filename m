@@ -2,84 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB146C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DCAC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377541AbiEDU0f (ORCPT
+        id S1377967AbiEDU0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
+        Wed, 4 May 2022 16:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349645AbiEDU0d (ORCPT
+        with ESMTP id S1377969AbiEDU0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:26:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A3D4EDE1
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:22:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D001B612A8
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 20:22:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 256CEC385A4;
-        Wed,  4 May 2022 20:22:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651695776;
-        bh=Pvp/ayE3bEr1ThzltiOs0liNClPGDqGM57U4y3ZJCs4=;
-        h=Date:From:To:Subject:References:In-Reply-To:From;
-        b=Jb1H+umWfnfEpWqRV20Q4YhcGwRLYGWiL464vbh1AFJeLggogbh3DgfdhCRMeUThT
-         XNv5jkVDb09twhYv4kQ1HPTEvqpD1A9rDMXWas6eF0Jch8V8bWocjrGjgjvTI+7mDE
-         k7Y4wuNJ7sFd1PkbhH3cM6NHpPU1kH27+95u07THwk2LSvSKMFS64PEaeWAgBWwbUB
-         /5eZqJHkZ1yfcpEKtZl1G8IndjStS3uqXjjaoyGrAFWo2Peiti6Tcqz7VBE9BDTxu8
-         bqmYMdQzVyQ4v5wiU/pYIPJu5AEzmRtqdnpmupU4kAkDSIubdwgG8wWaPAPEOM0Vya
-         PG1KYfPHXeaQg==
-Date:   Wed, 4 May 2022 13:22:54 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Subject: Re: [PATCH 2/2 v2] f2fs: avoid to select pinned section during
- checkpoint=disable
-Message-ID: <YnLgnhiJtrutv8nw@google.com>
-References: <20220503203040.365028-1-jaegeuk@kernel.org>
- <20220503203040.365028-2-jaegeuk@kernel.org>
+        Wed, 4 May 2022 16:26:48 -0400
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B7E4F448;
+        Wed,  4 May 2022 13:23:11 -0700 (PDT)
+Received: by mail-oi1-f169.google.com with SMTP id n24so2324138oie.12;
+        Wed, 04 May 2022 13:23:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ySBOubiPulo913haM4WoQ1mv/TU5CEHMQ1toV9XVhMc=;
+        b=FCXUdLEbcOxpcjp7ADFVzzL2Gzc4xU1gZLDS/KjuhAimejAP23RYfyfr0XrNcUaWen
+         bkoIy8uojZhLQKS5WmbTRQTW6a2qtL1e10vhkQwhLC4ADIvLYIae3lgGw45upQZXuyhP
+         6nqxhafn8/W7XBCo07/91jRd6P5B9FKVQRR+KT0WQWTVRHIQRIibvfRTg0Afc7JWISKZ
+         zYHncbxKha3ocQJRo6n3GuNwunjQHu3eDc0I60MZUa0wO/IDt55qYSyEVjS9zBomB8hM
+         7ClopJjeMCnkJ7HC5JLq2uaBfepzUv4B6KLtW6XVvySbkcBFzGzwoE4W6m5/iTFoFbQE
+         W8Aw==
+X-Gm-Message-State: AOAM530iV1vlhHpOjEtzE/2q188qJr21NsRXkp1i/keuFMzuYj3xK4Mj
+        3HWGC4nz2CVT4jedV8vD1Q==
+X-Google-Smtp-Source: ABdhPJzACW6AvH0oEJr8UNPH9HL8vuoKqEyRonyCY12D3tqsWHQUGMaQ5zgSLXG56C5vPug6oW5P/A==
+X-Received: by 2002:a05:6808:d48:b0:326:2d1f:1c0f with SMTP id w8-20020a0568080d4800b003262d1f1c0fmr637501oik.43.1651695790838;
+        Wed, 04 May 2022 13:23:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id o14-20020a0568080f8e00b00325cda1ff8bsm4649538oiw.10.2022.05.04.13.23.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 13:23:10 -0700 (PDT)
+Received: (nullmailer pid 2163645 invoked by uid 1000);
+        Wed, 04 May 2022 20:23:09 -0000
+Date:   Wed, 4 May 2022 15:23:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Ezequiel Garcia <ezequiel@collabora.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: media: rockchip-vpu: Add RK3568 JPEG
+ compatible
+Message-ID: <YnLgrVJcdkYgNvEO@robh.at.kernel.org>
+References: <20220427224438.335327-1-frattaroli.nicolas@gmail.com>
+ <20220427224438.335327-2-frattaroli.nicolas@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220503203040.365028-2-jaegeuk@kernel.org>
+In-Reply-To: <20220427224438.335327-2-frattaroli.nicolas@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
-chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
-segment as a victim all the time, resulting in checkpoint=disable failure.
-Let's pick another one, if we fail to collect it.
+On Thu, Apr 28, 2022 at 12:44:36AM +0200, Nicolas Frattaroli wrote:
+> The RK3568 and RK3566 have a VPU node solely dedicated to JPEG
+> encoding. This patch adds a compatible for it, and also allows
+> the bindings to only come with a vepu interrupt.
 
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
----
-
- Change log from v1:
-  - keep sync condition to stop GC
-
- fs/f2fs/gc.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index 4d47723523c3..441190ab8593 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -1838,10 +1838,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
- 	if (gc_type == FG_GC)
- 		sbi->cur_victim_sec = NULL_SEGNO;
+Sounds like this might be more than just JPEG, so I'm assuming this will 
+get sent again.
  
--	if (sync)
--		goto stop;
--
--	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
-+	if ((!has_not_enough_free_secs(sbi, sec_freed, 0) || sync) && seg_freed)
- 		goto stop;
- 
- 	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
--- 
-2.36.0.464.gb9c8b46e94-goog
-
+> Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/media/rockchip-vpu.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+> index bacb60a34989..cd62b44c34c3 100644
+> --- a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+> +++ b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+> @@ -22,6 +22,7 @@ properties:
+>            - rockchip,rk3288-vpu
+>            - rockchip,rk3328-vpu
+>            - rockchip,rk3399-vpu
+> +          - rockchip,rk3568-jpeg-vepu
+>            - rockchip,px30-vpu
+>        - items:
+>            - const: rockchip,rk3188-vpu
+> @@ -40,6 +41,7 @@ properties:
+>    interrupt-names:
+>      oneOf:
+>        - const: vdpu
+> +      - const: vepu
+>        - items:
+>            - const: vepu
+>            - const: vdpu
+> -- 
+> 2.36.0
+> 
+> 
