@@ -2,92 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B77C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9520FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242162AbiEDOky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
+        id S1351404AbiEDOnI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 10:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351374AbiEDOkt (ORCPT
+        with ESMTP id S1351382AbiEDOnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:40:49 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371AE1FA62
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:37:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651675033; x=1683211033;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=x8yNkRPcszEI2c/X3ll8pl0xnbd8y7LswHd7vWavS3A=;
-  b=c5bwNua+pD7fmSX0Ryxmrpfh9IuIszybeUIq2svcSNc9JDqn9iotPR9J
-   w/LlCgv2jfKVwjQBhxMhCCPWlh+/kpMMZOBRSJ2+Exg29VKRDyUsm77mn
-   e1qfiN9UfKoNyr0MeJpBRJGgguAvpLYlTuLPvK0ZaFmW2txXNPZOqUP6j
-   r0BqWhjrjEUIjKsdJABKGHVMUwQcJXdCSo7P7zIdz0MQ1Hb76a7xTcPyl
-   O/OZRwvaZoJH/uhJau5TzEplBfPgFEGFvT2bRtDUG3T82P+ik/X3rq5Wo
-   pFjYoy8+py1VENLMK28Cz+4Ch7ZEMdmSF3F5/+3TAmjLe6v5deqlAnRmI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="354218779"
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="354218779"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 07:37:10 -0700
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="734423264"
-Received: from yanc1-mobl.ccr.corp.intel.com (HELO [10.255.30.223]) ([10.255.30.223])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 07:37:08 -0700
-Message-ID: <16365887-3034-c4b8-da91-eee6a9f976b2@linux.intel.com>
-Date:   Wed, 4 May 2022 22:37:07 +0800
+        Wed, 4 May 2022 10:43:05 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F3341306;
+        Wed,  4 May 2022 07:39:28 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id j6so3262797ejc.13;
+        Wed, 04 May 2022 07:39:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BT8BrcD290OhlXLzO/WMuO9iyvHDkVdQoNtwipl/it8=;
+        b=f8YKGkv96KqipMGRLRAqtvYuQU5pcL6bmvh6APgrpuajxzd6KJ1Yi0yaw0Vqv5XqpG
+         AIPrhM5kOXh4mzvaKjBInTE6626gSl/2PBj7QwowFxDd9WZVH/ya8UQGvaooKmhbSGSk
+         fJpuhfxPEUPMjW2r9EY6iUJy+Fz18cUlByOEqfMVBLhwriao+eUMc0+x1aggqNjt3Itz
+         /xAAIYm4ebEfc0sXMnU8cC9gmFgVcTdU3Ww4ivSjWKep2YKEx9lVl2zjhaAfAlbVd7ml
+         t1c2Zo8pwu7pelWphHS1o8zr+rY8uvTk+omRxkkxQD2DZQDnZJ8FJg6zIpabPB68A7NF
+         bdLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BT8BrcD290OhlXLzO/WMuO9iyvHDkVdQoNtwipl/it8=;
+        b=3WaZ4mcIziG/QUpsect0G59F76i1tFAlMf0n3EyKBteu9gyyS1XWs7ZCozknHkAU6B
+         jIUxPFhXGM5C0QAE60yEJRtbWjmuqKxERCV5+iS88aDl620O9psXwvWgbZOoMI7t5jUQ
+         ngOnV4UgScWMZUq33fkcPtw+wKAHyD7lEe9AfO7J/SOD3vyT/slA7W6oHYOzwe9H31Bv
+         9mKaABsP3juV99roWsDtOaVFOUFWmQjZWIPMlq/uGSBW/QM6LTZC5xqKcvvTt+POXaAe
+         jVaNR9KosHVsVTZIyNLNnCFCUBDgokoMydUKz25KPedYsCZIJmBSy/oYXr1XidfLOPjw
+         lY7w==
+X-Gm-Message-State: AOAM530Zem37HGQ6IP8ZswrEb8MJlQx9UmHSwVLm/xLdbE/C/nVoNo/J
+        GA5kvD/Zj0ZjMI8nKhJL3eMUVLXnwPOj/mnEptWD1T/P+Q1A9u0M
+X-Google-Smtp-Source: ABdhPJzsXYIbUziV7EZsdqDOx8PlyMdpdiCWKdFtijm7TBxU9VjomPcWn0uGzn+kX6jz25hLou3tgpos6MBaauoe5is=
+X-Received: by 2002:a17:907:6e04:b0:6f4:d6f3:c72a with SMTP id
+ sd4-20020a1709076e0400b006f4d6f3c72amr1151943ejc.636.1651675167204; Wed, 04
+ May 2022 07:39:27 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/5] iommu/vt-d: Set SNP bit only in second-level page
- table entries
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220501112434.874236-1-baolu.lu@linux.intel.com>
- <20220501112434.874236-3-baolu.lu@linux.intel.com>
- <20220502130546.GI8364@nvidia.com>
- <74172660-e9e9-6589-7755-50bcd8b0aca6@linux.intel.com>
- <20220504133142.GE49344@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220504133142.GE49344@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn>
+ <20220504133612.604304-4-Qing-wu.Li@leica-geosystems.com.cn>
+ <CAHp75VeseZ2ChtbafmbgVavS4KvCvrQ4+XSRkeiJSyqr8__dSw@mail.gmail.com> <AM9PR06MB7844E8FE0EDF712C769271DAD7C39@AM9PR06MB7844.eurprd06.prod.outlook.com>
+In-Reply-To: <AM9PR06MB7844E8FE0EDF712C769271DAD7C39@AM9PR06MB7844.eurprd06.prod.outlook.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 4 May 2022 16:38:51 +0200
+Message-ID: <CAHp75VfEK_TXXA3NdGgjis7duHgoDo4aSOZntdO0wEGLw0sQ7g@mail.gmail.com>
+Subject: Re: [PATCH V3 3/5] iio: accel: sca3300: modified to support multi chips
+To:     LI Qingwu <qing-wu.li@leica-geosystems.com.cn>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/4 21:31, Jason Gunthorpe wrote:
-> On Wed, May 04, 2022 at 03:25:50PM +0800, Baolu Lu wrote:
->> Hi Jason,
->>
->> On 2022/5/2 21:05, Jason Gunthorpe wrote:
->>> On Sun, May 01, 2022 at 07:24:31PM +0800, Lu Baolu wrote:
->>>> The SNP bit is only valid for second-level PTEs. Setting this bit in the
->>>> first-level PTEs has no functional impact because the Intel IOMMU always
->>>> ignores the same bit in first-level PTEs. Anyway, let's check the page
->>>> table type before setting SNP bit in PTEs to make the code more readable.
->>> Shouldn't this be tested before setting force_snooping and not during
->>> every map?
->>
->> The check is in the following patch. This just makes sure that SNP is
->> only set in second-level page table entries.
-> 
-> I think you should add a 2nd flag to indicate 'set SNP bit in PTEs'
-> and take care of computing that flag in the enforce_no_snoop function
+On Wed, May 4, 2022 at 4:35 PM LI Qingwu
+<qing-wu.li@leica-geosystems.com.cn> wrote:
+> > From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Sent: Wednesday, May 4, 2022 10:20 PM
+> > On Wed, May 4, 2022 at 3:36 PM LI Qingwu
+> > <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
-Yours looks better. Will add it in the next version.
+...
 
-> Jason
+> > > +struct sca3300_chip_info {
+> > > +       const struct iio_chan_spec *channels;
+> > > +       const int (*accel_scale_table)[2];
+> > > +       const int *accel_scale_modes_map;
+> > > +       const unsigned long *scan_masks;
+> > > +       const int *avail_modes_table;
+> > > +       const int *freq_modes_map;
+> > > +       const int *freq_table;
+> > > +       const u8 num_accel_scales;
+> > > +       const u8 num_avail_modes;
+> > > +       const u8 num_channels;
+> > > +       const u8 num_freqs;
+> > > +       const u8 chip_id;
+> >
+> > Why do you have const qualifier on all members?  The last one is
+> > understandable, but the rest, esp. pointers should be justified.
+> Because I thought it was static and has fix value for each chip, unacceptable for you?
 
-Best regards,
-baolu
+But why const qualifier? What is the point of it for example for u8
+members if the entire object is qualified as const below in the same
+patch?
 
+On top of that, please explain what in your opinion the "const ...
+*foo" gives us, and what we will lose if we remove the "const" part
+out of them.
+
+> > > +       const char *name;
+> > > +};
+
+-- 
+With Best Regards,
+Andy Shevchenko
