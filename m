@@ -2,120 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7737C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9634C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350895AbiEDN6P (ORCPT
+        id S1350952AbiEDN70 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
+        Wed, 4 May 2022 09:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350879AbiEDN6M (ORCPT
+        with ESMTP id S1350942AbiEDN7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:58:12 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE1E3EAAF
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:54:35 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id v4so1739321ljd.10
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P6qBDyeH+xgHUpsPjtNSn4a+2fKviODgV+T0tGLuQ9A=;
-        b=mCRJ1b3PXw/ulWo14ia9eEiZPHjm61FsyhyDgEVG4vvTVfpmqIAwbaoEFGAQ2zHE+h
-         /9Sgv/8RW9fG0f0wO+mhs5Kik2TWTth5zKhfbzY5aa1ZRk0dkwkfO12awx9Z9TiwEimE
-         7nySmI8yrqkVTl/r2L0h5OP1hYh2zITPxg1SA053LIkij5JTydHaB2+2b9sNdmllCrPZ
-         GmYHC51j0U9cedgfK80PyEKmJZMUxuUfAFl51+XcL/eJCNyQfAJ8W9j9KQOkx8VBIywq
-         VFdNV+wXI4J0MFVOlecSC3YT0HzbATVkhVdwWv0ZUHUMZFdE7YGNeJiO6RDaVBYMi4g2
-         S1PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P6qBDyeH+xgHUpsPjtNSn4a+2fKviODgV+T0tGLuQ9A=;
-        b=QBJN4UsQUSyAaWfpwwF6p19aO9x8Oe3Uo1AJGfAh/jKIlTHlF2ISJ9il2J/Zg32NE3
-         MZ32+otU4HalkAyHWidAWQSjj8kndHOtPv4mkakpEZ0htKOuKbsqjkmicJPYlRT58cbf
-         6MlR4b+P7H52MbmpaLvnik5q9igwotb9hZxCgLlcPYOm/n4LvvVIIIbPle0yP9jND5YC
-         b91+N6pQPV6XpwDiWZrYhv0F/uAZR5q+lJYFr5SQ/9oxbQQo1vh2/YkokrZbezCOrWot
-         bjFqLWUUwyLVqOBpsSoQ2UnXgfUEwCRJ/BXInYn4A2s7cfQMgXH3SPts+ghP2Ly4xEpQ
-         6oFQ==
-X-Gm-Message-State: AOAM533lE7JEMBT0FpEl+OOQugfs9AVBJZmbatsjuBaxCCmHy45Amr7g
-        O0hnp6W0rr6jfERXmXgBtLHWzP2w/dg2XdQld7mUcw==
-X-Google-Smtp-Source: ABdhPJxKhCPqCSviNHhQ8pe+/xyLvakb0eNhls2zQBTccZ5aI+9uMHMHOEZZc1iIBMBsL9xfWv5ofeR+hFcZrlCFMCI=
-X-Received: by 2002:a05:651c:a12:b0:250:5abe:4ec4 with SMTP id
- k18-20020a05651c0a1200b002505abe4ec4mr7890315ljq.4.1651672473916; Wed, 04 May
- 2022 06:54:33 -0700 (PDT)
+        Wed, 4 May 2022 09:59:11 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948471F615;
+        Wed,  4 May 2022 06:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651672535; x=1683208535;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hziUNVmt++nnYBmzUV09YMbcy639ADbCMZfzePTO9CI=;
+  b=c0V//KqhGytQpO0yQch1VkVmLHU51alGYZFYTHuOlHjq3tLfmM/ZmavZ
+   CPFdLsIo8v3uIg1IGcef15aW5frjHhmeAsTdT6UiPfJ+CMDvzBeZEUelm
+   vlXDK5+u8w5aOx/VM89igzjqaZ7s5FdEVFhnTTKBeTH+8FQ/Twn0MZkSx
+   nyQvImgpHdPhn2E7AG1oNXStY86pY2p9vsaVpb2ANNDl+Ni7n/wbGKSXp
+   wfCtXNiFM3X7hR5Ydeznxq4aIZBrI1EpCBFKh+i/wVi2qH8pATkYtaquo
+   M5i+z3UQFmxzvbEKTQQEhBpWoBRVKe4AUAy1FX4Z3KL/uaQzrtbX9SwCf
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="247682196"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="247682196"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 06:55:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="568113838"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 04 May 2022 06:55:28 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id DE9801A5; Wed,  4 May 2022 16:55:29 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH v1 4/4] powerpc/52xx: Convert to use fwnode API
+Date:   Wed,  4 May 2022 16:44:49 +0300
+Message-Id: <20220504134449.64473-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
+References: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <20220422140902.1058101-1-icenowy@aosc.io> <BYAPR20MB2472BAA6CFEA5BD4B18D7D4EBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
-In-Reply-To: <BYAPR20MB2472BAA6CFEA5BD4B18D7D4EBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 4 May 2022 15:53:57 +0200
-Message-ID: <CAPDyKFoE5oqGL9VqArskbZRa0u5F2AUYSaPmvcJCujZz4_pDTg@mail.gmail.com>
-Subject: Re: [PATCH 08/12] mmc: sunxi: add support for R329 MMC controllers
-To:     icenowy@outlook.com
-Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Icenowy Zheng <icenowy@aosc.io>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 at 17:42, <icenowy@outlook.com> wrote:
->
-> From: Icenowy Zheng <icenowy@aosc.io>
->
-> The two MMC controllers in Allwinner R329 have a mixed feature set
-> comparing to the previous SoCs' ordinary MMC and eMMC controllers.
->
-> Add support for them.
->
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+We may convert the GPT driver to use fwnode API for the sake
+of consistency of the used APIs inside the driver.
 
-Please repost this (and the DT patch) to linux-mmc, so I can pick them
-up from the patch-tracker.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ arch/powerpc/platforms/52xx/mpc52xx_gpt.c | 47 +++++++++++------------
+ 1 file changed, 22 insertions(+), 25 deletions(-)
 
-Kind regards
-Uffe
+diff --git a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+index 0831f28345af..7006700aeaab 100644
+--- a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
++++ b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+@@ -53,10 +53,9 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/list.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
+ #include <linux/mutex.h>
+-#include <linux/of.h>
+-#include <linux/of_platform.h>
+-#include <linux/of_gpio.h>
+ #include <linux/kernel.h>
+ #include <linux/property.h>
+ #include <linux/slab.h>
+@@ -64,7 +63,7 @@
+ #include <linux/watchdog.h>
+ #include <linux/miscdevice.h>
+ #include <linux/uaccess.h>
+-#include <linux/module.h>
++
+ #include <asm/div64.h>
+ #include <asm/mpc52xx.h>
+ 
+@@ -235,18 +234,17 @@ static const struct irq_domain_ops mpc52xx_gpt_irq_ops = {
+ 	.xlate = mpc52xx_gpt_irq_xlate,
+ };
+ 
+-static void
+-mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
++static void mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt)
+ {
+ 	int cascade_virq;
+ 	unsigned long flags;
+ 	u32 mode;
+ 
+-	cascade_virq = irq_of_parse_and_map(node, 0);
+-	if (!cascade_virq)
++	cascade_virq = platform_get_irq(to_platform_device(gpt->dev), 0);
++	if (cascade_virq < 0)
+ 		return;
+ 
+-	gpt->irqhost = irq_domain_add_linear(node, 1, &mpc52xx_gpt_irq_ops, gpt);
++	gpt->irqhost = irq_domain_create_linear(dev_fwnode(gpt->dev), 1, &mpc52xx_gpt_irq_ops, gpt);
+ 	if (!gpt->irqhost) {
+ 		dev_err(gpt->dev, "irq_domain_add_linear() failed\n");
+ 		return;
+@@ -670,8 +668,7 @@ static int mpc52xx_gpt_wdt_init(void)
+ 	return err;
+ }
+ 
+-static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+-				 const u32 *period)
++static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+ {
+ 	u64 real_timeout;
+ 
+@@ -679,14 +676,14 @@ static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+ 	mpc52xx_gpt_wdt = gpt;
+ 
+ 	/* configure the wdt if the device tree contained a timeout */
+-	if (!period || *period == 0)
++	if (period == 0)
+ 		return 0;
+ 
+-	real_timeout = (u64) *period * 1000000000ULL;
++	real_timeout = (u64)period * 1000000000ULL;
+ 	if (mpc52xx_gpt_do_start(gpt, real_timeout, 0, 1))
+ 		dev_warn(gpt->dev, "starting as wdt failed\n");
+ 	else
+-		dev_info(gpt->dev, "watchdog set to %us timeout\n", *period);
++		dev_info(gpt->dev, "watchdog set to %us timeout\n", period);
+ 	return 0;
+ }
+ 
+@@ -697,8 +694,7 @@ static int mpc52xx_gpt_wdt_init(void)
+ 	return 0;
+ }
+ 
+-static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+-					const u32 *period)
++static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+ {
+ 	return 0;
+ }
+@@ -726,25 +722,26 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
+ 	dev_set_drvdata(&ofdev->dev, gpt);
+ 
+ 	mpc52xx_gpt_gpio_setup(gpt);
+-	mpc52xx_gpt_irq_setup(gpt, ofdev->dev.of_node);
++	mpc52xx_gpt_irq_setup(gpt);
+ 
+ 	mutex_lock(&mpc52xx_gpt_list_mutex);
+ 	list_add(&gpt->list, &mpc52xx_gpt_list);
+ 	mutex_unlock(&mpc52xx_gpt_list_mutex);
+ 
+ 	/* check if this device could be a watchdog */
+-	if (of_get_property(ofdev->dev.of_node, "fsl,has-wdt", NULL) ||
+-	    of_get_property(ofdev->dev.of_node, "has-wdt", NULL)) {
+-		const u32 *on_boot_wdt;
++	if (device_property_present(gpt->dev, "fsl,has-wdt") ||
++	    device_property_present(gpt->dev, "has-wdt")) {
++		u32 on_boot_wdt = 0;
++		int ret;
+ 
+ 		gpt->wdt_mode = MPC52xx_GPT_CAN_WDT;
+-		on_boot_wdt = of_get_property(ofdev->dev.of_node,
+-					      "fsl,wdt-on-boot", NULL);
+-		if (on_boot_wdt) {
++		ret = device_property_read_u32(gpt->dev, "fsl,wdt-on-boot", &on_boot_wdt);
++		if (ret) {
++			dev_info(gpt->dev, "can function as watchdog\n");
++		} else {
+ 			dev_info(gpt->dev, "used as watchdog\n");
+ 			gpt->wdt_mode |= MPC52xx_GPT_IS_WDT;
+-		} else
+-			dev_info(gpt->dev, "can function as watchdog\n");
++		}
+ 		mpc52xx_gpt_wdt_setup(gpt, on_boot_wdt);
+ 	}
+ 
+-- 
+2.35.1
 
-> ---
->  drivers/mmc/host/sunxi-mmc.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
-> index 0e8fbf4957d8..06934eef8be5 100644
-> --- a/drivers/mmc/host/sunxi-mmc.c
-> +++ b/drivers/mmc/host/sunxi-mmc.c
-> @@ -1207,6 +1207,15 @@ static const struct sunxi_mmc_cfg sun50i_a100_emmc_cfg = {
->         .needs_new_timings = true,
->  };
->
-> +static const struct sunxi_mmc_cfg sun50i_r329_cfg = {
-> +       .idma_des_size_bits = 13,
-> +       .idma_des_shift = 2,
-> +       .clk_delays = NULL,
-> +       .can_calibrate = true,
-> +       .mask_data0 = true,
-> +       .needs_new_timings = true,
-> +};
-> +
->  static const struct of_device_id sunxi_mmc_of_match[] = {
->         { .compatible = "allwinner,sun4i-a10-mmc", .data = &sun4i_a10_cfg },
->         { .compatible = "allwinner,sun5i-a13-mmc", .data = &sun5i_a13_cfg },
-> @@ -1218,6 +1227,7 @@ static const struct of_device_id sunxi_mmc_of_match[] = {
->         { .compatible = "allwinner,sun50i-a64-emmc", .data = &sun50i_a64_emmc_cfg },
->         { .compatible = "allwinner,sun50i-a100-mmc", .data = &sun50i_a100_cfg },
->         { .compatible = "allwinner,sun50i-a100-emmc", .data = &sun50i_a100_emmc_cfg },
-> +       { .compatible = "allwinner,sun50i-r329-mmc", .data = &sun50i_r329_cfg },
->         { /* sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(of, sunxi_mmc_of_match);
-> --
-> 2.35.1
->
