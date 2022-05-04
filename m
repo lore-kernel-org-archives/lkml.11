@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B3BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9DBC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358618AbiEDRiv (ORCPT
+        id S1358665AbiEDRi5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        Wed, 4 May 2022 13:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356843AbiEDRJp (ORCPT
+        with ESMTP id S1356835AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E2640A1E;
-        Wed,  4 May 2022 09:55:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6845C39B9F;
+        Wed,  4 May 2022 09:55:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1A0616F8;
-        Wed,  4 May 2022 16:55:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD10C385AA;
-        Wed,  4 May 2022 16:55:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDC80617D5;
+        Wed,  4 May 2022 16:55:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35FF0C385AA;
+        Wed,  4 May 2022 16:55:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683356;
-        bh=GYqdHF/kWbxCt6a86UWjM3QOO2fhmQgGD64+8+8qvrI=;
+        s=korg; t=1651683353;
+        bh=C4EKP94MvTGCniLFfvtIL0jrQ+e0SnOl2t7SXMLH+m0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wxndevaQjYAPC7wPE/YFoReh99w4A/be34cHyIlXkMvmmjXL8VuEOPehFaJMb9g/K
-         4b7VePrOMKn18dsdAM3RHtxuRqR5QnAd1AoLwQMYhapNOpIn+m/D+Bv13zpJ3TVuvn
-         UnwvCDQoU0aVOdrYv+4ajSUiLKt3QbMMuyFCtpe0=
+        b=H1uNbwiMuUNt9e8zA1shUUoEA01FF9rTNNjfLLoXT57v8DFeNs13cg/i4W+29vSIH
+         cyW7J6TQMyXmaixIx3G7nsTMzL72TKBD3h8YQyR4CJeYClkTDokt4YSerRp5JaTF7u
+         tNEy76rfHUOydUgWjpiJPLFotvGABZRVo7Wchdt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>
-Subject: [PATCH 5.17 029/225] usb: cdns3: Fix issue for clear halt endpoint
-Date:   Wed,  4 May 2022 18:44:27 +0200
-Message-Id: <20220504153112.887225733@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.17 026/225] usb: dwc3: core: Only handle soft-reset in DCTL
+Date:   Wed,  4 May 2022 18:44:24 +0200
+Message-Id: <20220504153112.653432169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,57 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawel Laszczak <pawell@cadence.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit b3fa25de31fb7e9afebe9599b8ff32eda13d7c94 upstream.
+commit f4fd84ae0765a80494b28c43b756a95100351a94 upstream.
 
-Path fixes bug which occurs during resetting endpoint in
-__cdns3_gadget_ep_clear_halt function. During resetting endpoint
-controller will change HW/DMA owned TRB. It set Abort flag in
-trb->control and will change trb->length field. If driver want
-to use the aborted trb it must update the changed field in
-TRB.
+Make sure not to set run_stop bit or link state change request while
+initiating soft-reset. Register read-modify-write operation may
+unintentionally start the controller before the initialization completes
+with its previous DCTL value, which can cause initialization failure.
 
-Fixes: 7733f6c32e36 ("usb: cdns3: Add Cadence USB3 DRD Driver")
-cc: <stable@vger.kernel.org>
-Acked-by: Peter Chen <peter.chen@kernel.org>
-Signed-off-by: Pawel Laszczak <pawell@cadence.com>
-Link: https://lore.kernel.org/r/20220329084605.4022-1-pawell@cadence.com
+Fixes: f59dcab17629 ("usb: dwc3: core: improve reset sequence")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/6aecbd78328f102003d40ccf18ceeebd411d3703.1650594792.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/cdns3/cdns3-gadget.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/cdns3/cdns3-gadget.c
-+++ b/drivers/usb/cdns3/cdns3-gadget.c
-@@ -2684,6 +2684,7 @@ int __cdns3_gadget_ep_clear_halt(struct
- 	struct usb_request *request;
- 	struct cdns3_request *priv_req;
- 	struct cdns3_trb *trb = NULL;
-+	struct cdns3_trb trb_tmp;
- 	int ret;
- 	int val;
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -276,7 +276,8 @@ static int dwc3_core_soft_reset(struct d
  
-@@ -2693,8 +2694,10 @@ int __cdns3_gadget_ep_clear_halt(struct
- 	if (request) {
- 		priv_req = to_cdns3_request(request);
- 		trb = priv_req->trb;
--		if (trb)
-+		if (trb) {
-+			trb_tmp = *trb;
- 			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
-+		}
- 	}
+ 	reg = dwc3_readl(dwc->regs, DWC3_DCTL);
+ 	reg |= DWC3_DCTL_CSFTRST;
+-	dwc3_writel(dwc->regs, DWC3_DCTL, reg);
++	reg &= ~DWC3_DCTL_RUN_STOP;
++	dwc3_gadget_dctl_write_safe(dwc, reg);
  
- 	writel(EP_CMD_CSTALL | EP_CMD_EPRST, &priv_dev->regs->ep_cmd);
-@@ -2709,7 +2712,7 @@ int __cdns3_gadget_ep_clear_halt(struct
- 
- 	if (request) {
- 		if (trb)
--			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
-+			*trb = trb_tmp;
- 
- 		cdns3_rearm_transfer(priv_ep, 1);
- 	}
+ 	/*
+ 	 * For DWC_usb31 controller 1.90a and later, the DCTL.CSFRST bit
 
 
