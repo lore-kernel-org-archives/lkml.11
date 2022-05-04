@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 729F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354091AbiEDQ4g (ORCPT
+        id S1354204AbiEDQ4j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        Wed, 4 May 2022 12:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354208AbiEDQx4 (ORCPT
+        with ESMTP id S1354274AbiEDQx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:56 -0400
+        Wed, 4 May 2022 12:53:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C738948394;
-        Wed,  4 May 2022 09:49:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AE6488AD;
+        Wed,  4 May 2022 09:49:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 561506176E;
-        Wed,  4 May 2022 16:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F20C385AA;
-        Wed,  4 May 2022 16:49:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ACA061701;
+        Wed,  4 May 2022 16:49:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A97D6C385A5;
+        Wed,  4 May 2022 16:49:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682952;
-        bh=g9pPF97d+RCHJOFXbQh0ZKnmjNdrs3ToH0uMgEVpXfs=;
+        s=korg; t=1651682958;
+        bh=vzEX6Tq9n68EdutGIw5T+UJNk47l/3TGbuch2cwKSbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FzgrRMhuP28y6cuukQMpwdmgZZbFuvSGE8DEtGIWH/2N1Mg9pPpGEZ56Bph1ZRJMc
-         sDclXVBAfWqshnksw/RlfPG/aAQWiGDzdo5BeW10TJbiAa91LVYvIDOH+u0D64dUiF
-         H6pEy8uFp5aglh6OKJj7gcXt9KlG67FAgw3dQ420=
+        b=gJxzKo1MWeeIn5Zz1VxQdkwGMf/5I4IiKelUWqrWT7OqTAXaAgxjgurckVU5ENzui
+         iRM4fY/mT6ODreu0GUXCwaXxCIHtsrd9zfu3J+IadEIBLXi/fSfHNI8w09z4c+3PJH
+         uGdgqB9XAyyV38/cc7CEvTz9Or/6CuioXR3U2JB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 71/84] cifs: destage any unwritten data to the server before calling copychunk_write
-Date:   Wed,  4 May 2022 18:44:52 +0200
-Message-Id: <20220504152932.993640135@linuxfoundation.org>
+Subject: [PATCH 5.4 60/84] clk: sunxi: sun9i-mmc: check return value after calling platform_get_resource()
+Date:   Wed,  4 May 2022 18:44:41 +0200
+Message-Id: <20220504152932.010530078@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,56 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
+[ Upstream commit f58ca215cda1975f77b2b762903684a3c101bec9 ]
 
-because the copychunk_write might cover a region of the file that has not yet
-been sent to the server and thus fail.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-A simple way to reproduce this is:
-truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
-
-the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
-the 'fcollapse 16k 24k' due to write-back caching.
-
-fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
-and it will fail serverside since the file is still 0b in size serverside
-until the writes have been destaged.
-To avoid this we must ensure that we destage any unwritten data to the
-server before calling COPYCHUNK_WRITE.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 7a6fca879f59 ("clk: sunxi: Add driver for A80 MMC config clocks/resets")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220421134308.2885094-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/clk/sunxi/clk-sun9i-mmc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index defee1d208d2..7985fe25850b 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -1643,9 +1643,17 @@ smb2_copychunk_range(const unsigned int xid,
- 	int chunks_copied = 0;
- 	bool chunk_sizes_updated = false;
- 	ssize_t bytes_written, total_bytes_written = 0;
-+	struct inode *inode;
+diff --git a/drivers/clk/sunxi/clk-sun9i-mmc.c b/drivers/clk/sunxi/clk-sun9i-mmc.c
+index 542b31d6e96d..636bcf2439ef 100644
+--- a/drivers/clk/sunxi/clk-sun9i-mmc.c
++++ b/drivers/clk/sunxi/clk-sun9i-mmc.c
+@@ -109,6 +109,8 @@ static int sun9i_a80_mmc_config_clk_probe(struct platform_device *pdev)
+ 	spin_lock_init(&data->lock);
  
- 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
- 
-+	/*
-+	 * We need to flush all unwritten data before we can send the
-+	 * copychunk ioctl to the server.
-+	 */
-+	inode = d_inode(trgtfile->dentry);
-+	filemap_write_and_wait(inode->i_mapping);
-+
- 	if (pcchunk == NULL)
- 		return -ENOMEM;
- 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!r)
++		return -EINVAL;
+ 	/* one clock/reset pair per word */
+ 	count = DIV_ROUND_UP((resource_size(r)), SUN9I_MMC_WIDTH);
+ 	data->membase = devm_ioremap_resource(&pdev->dev, r);
 -- 
 2.35.1
 
