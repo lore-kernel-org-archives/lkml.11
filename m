@@ -2,78 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB20C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348294AbiEDKmK (ORCPT
+        id S1348315AbiEDKmT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
+        Wed, 4 May 2022 06:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348249AbiEDKlz (ORCPT
+        with ESMTP id S1348362AbiEDKmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:41:55 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB23029CB6
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 03:38:14 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 17so1132504lji.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 03:38:14 -0700 (PDT)
+        Wed, 4 May 2022 06:42:06 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8A42AE11
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 03:38:27 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id h29so1608948lfj.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 03:38:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lD3vvXHAHJs3IRnQAHfphn1E2NtyGe633IfNU2pH9ck=;
-        b=QaNg+hrH0pWi1gegQLwIunoR96zQeWK405W/Y0DimAXEprgC6u6tNQyTc1XTqFVU4h
-         poyJ1hvGMfkGW4M4zzVcfyyiBE5x7enLur2bhx1BCk1vMfmmunpoJJvu62TgUJYs7EUN
-         rNETTUTSN7ekB6AXtT3O4rljzo4wb9v3QUMtEUUaODNLuI7ECb3F49YEvM+74VF7zM3W
-         m2cSjEjDZLt6B8o16XYHmC/R5xDBzmcf6Zi47MWoXmAq1hHZUYbz8bh+bRzkTgtz+jjX
-         CRGalEFuDBlXelp8sBL1sgXTzlbdfuBK0920R5Qh6l0w7CVfq4DSsVE7n1+PvvcN6ziO
-         PGQw==
+        bh=DYZZJ2RGWR4j938/XSjxsXX/60h4AxrLG5sI5Y987hY=;
+        b=fdzBEJ6SFRCb7lwT03+s2FLMl65CCztPC2XYsZgju7u64bW6VBtAKc6qb8q0t4IhWq
+         3Q+OdboG897r1ttwSDzTapKM2d5TryFr6PI8YqgF+ASvcbYqlXFFWBpCqX5wUZZL/Bbd
+         tLKOZyGvWTeK/fpUurJISfy7107/e5gPxTIW1lhKrDCj0YsqgTIYLErtB6MlRTYt4l60
+         oJHaKC5RU+pxgeBZMfl4IeP/Gp08t/+kHHUDI7Hx3/xzaesdZIfZszBFLNojscZ2Phlo
+         2GRN97TPy/ss2hMQuIHCp/5JDY1er1uxPrMgD5HHBMImXPYjXab88iUyU7P/rOka/M2Q
+         uJBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lD3vvXHAHJs3IRnQAHfphn1E2NtyGe633IfNU2pH9ck=;
-        b=pwcK7wETKTfwHGa/IIMGzvMvr8+ANvqdQyLKJq1SlbWphLymDuQgA8w4m0eeo8Ys3s
-         dQa4xUXeQ8hKI5uEfE+X41Oxypa68A/R5TSA50sibBso6v1IXlmnWnP29Nl0KF5hnct1
-         pdiXSgHt9OrentdJblHjtJtq3/QHZEyLOcc3vSGffMtdkXHcrZTF5YCdhoQq0WtpkcXG
-         5rsgH68P7rBZWibmw3YFhKocm+Q0Iz6fDBSBKJCp2LUDAeLS1XSwZx/414qTC9hzfXid
-         nzlTk2v1iZ9/iuI3nmeTPAnnBHeDxQXiYfAz4/SYwOz6JaaHuyPJRr+jiRTsaIraOYK+
-         kWew==
-X-Gm-Message-State: AOAM530xdVYhcaR22YiDogEpCH+992Vddec766i9ms2NO1CBaiTtbJdq
-        40ihmSSmkQklNTcyhhWwFGJQAzd7jOe9qkYYSgYTlQ==
-X-Google-Smtp-Source: ABdhPJy+kS6AXMWUkmQ6E/kbOxo9lyfYr8OK70af4kdLrlbjvuToWT0sZZJrsSDzfyNmt7IFspcd+yMVuBQcDDWWKHI=
-X-Received: by 2002:a05:651c:483:b0:24f:2ae0:61f3 with SMTP id
- s3-20020a05651c048300b0024f2ae061f3mr12397148ljc.229.1651660693223; Wed, 04
- May 2022 03:38:13 -0700 (PDT)
+        bh=DYZZJ2RGWR4j938/XSjxsXX/60h4AxrLG5sI5Y987hY=;
+        b=0Up5CUNVv5tD18CUWjbySkJRhGux0CDUjgLAbi9nKMZuhUFO1joWX68RC1Ye3bPSix
+         yqzkO7yGihGdFPJQ7RBSclncgyDtxv3h6r5LHyWvBJeUiy4QVA3vvcCuxXztw8Qzn5sm
+         IFXOn4aoT5r1MT86xBgrhNVe7Y6ByT4daJ657IonNvrICDcpDo6edWhyMORpUMuQrmak
+         xWAny/qhr0jnrRQlsQ4dhblApUa3Z11poAC4sPdkIyITX7sFDXCQeTWXJzLt8buEpe7m
+         q2jrWioozf5e9CTbw803jSsVt4dNmLvPcb4YMkE0Yk6N5nyZRoup3KHUKAkdLWDj1W8G
+         y7wA==
+X-Gm-Message-State: AOAM532GA8XCVAZyYsJLOEYvqrWWzssb/XTxx7/7yJiST6wuB67sdcih
+        3YxnCeFJNfTWTdlBuOn2Pa+WIAfoDzc+B/g+1mQt7g==
+X-Google-Smtp-Source: ABdhPJxjiemVetoJfIr6tRJ3te8pbVvcqd5V0ltf1SL2oo79ntfHWl46nNgx8/fVPMPOajXBx8ZGY+gKKpTJvr1k/Ds=
+X-Received: by 2002:a05:6512:5cb:b0:472:f7e:a5f5 with SMTP id
+ o11-20020a05651205cb00b004720f7ea5f5mr13186045lfo.358.1651660705671; Wed, 04
+ May 2022 03:38:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220428081817.35382-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220428081817.35382-1-krzysztof.kozlowski@linaro.org>
+References: <1651480665-14978-1-git-send-email-quic_rohiagar@quicinc.com> <1651480665-14978-3-git-send-email-quic_rohiagar@quicinc.com>
+In-Reply-To: <1651480665-14978-3-git-send-email-quic_rohiagar@quicinc.com>
 From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 4 May 2022 12:37:36 +0200
-Message-ID: <CAPDyKFrkkif0ABhe0_pZFBpWjMVoXETKZ7GpJUORR94LmbbaGg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: mmc: brcm,sdhci-brcmstb: correct number
- of reg entries
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Al Cooper <alcooperx@gmail.com>, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
+Date:   Wed, 4 May 2022 12:37:49 +0200
+Message-ID: <CAPDyKFoJcbbbUEMCX7QyfRLLYPjqnb6UL1QNv8jnh-pWa39EGA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] mmc: host/sdhci-msm: Add compatible string check for sdx65
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>
+Cc:     will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        adrian.hunter@intel.com, bhupesh.sharma@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Apr 2022 at 10:18, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+On Mon, 2 May 2022 at 10:38, Rohit Agarwal <quic_rohiagar@quicinc.com> wrote:
 >
-> The binding should not allow infinite number of 'reg' entries, so add
-> strict limit.
+> Add sdx65 SoC specific compatible string check inside qcom
+> 'sdhci-msm' controller driver.
 >
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 
 Applied for next, thanks!
 
@@ -82,22 +81,21 @@ Uffe
 
 
 > ---
->  Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/mmc/host/sdhci-msm.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml b/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml
-> index dccd5ad96981..54a0edab5f8c 100644
-> --- a/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml
-> @@ -31,7 +31,7 @@ properties:
->            - const: brcm,sdhci-brcmstb
->
->    reg:
-> -    minItems: 2
-> +    maxItems: 2
->
->    reg-names:
->      items:
+> diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
+> index fd8b4a9..65661ad 100644
+> --- a/drivers/mmc/host/sdhci-msm.c
+> +++ b/drivers/mmc/host/sdhci-msm.c
+> @@ -2453,6 +2453,7 @@ static const struct of_device_id sdhci_msm_dt_match[] = {
+>          */
+>         {.compatible = "qcom,qcs404-sdhci", .data = &sdhci_msm_v5_var},
+>         {.compatible = "qcom,sdx55-sdhci",  .data = &sdhci_msm_v5_var},
+> +       {.compatible = "qcom,sdx65-sdhci",  .data = &sdhci_msm_v5_var},
+>         {.compatible = "qcom,sdm630-sdhci", .data = &sdhci_msm_v5_var},
+>         {.compatible = "qcom,sm6125-sdhci", .data = &sdhci_msm_v5_var},
+>         {.compatible = "qcom,sm6350-sdhci", .data = &sdhci_msm_v5_var},
 > --
-> 2.32.0
+> 2.7.4
 >
