@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5335FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB3AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353966AbiEDRRZ (ORCPT
+        id S1352269AbiEDRRh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        Wed, 4 May 2022 13:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356058AbiEDREv (ORCPT
+        with ESMTP id S1356074AbiEDREw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D00250072;
-        Wed,  4 May 2022 09:53:43 -0700 (PDT)
+        Wed, 4 May 2022 13:04:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381845007F;
+        Wed,  4 May 2022 09:53:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0439BB827A1;
-        Wed,  4 May 2022 16:53:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0326C385AA;
-        Wed,  4 May 2022 16:53:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D107FB8278E;
+        Wed,  4 May 2022 16:53:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FFAC385AA;
+        Wed,  4 May 2022 16:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683220;
-        bh=1PxZCugPr4DxiBBU19KWct2wANpsU0yR63LGAuaYykk=;
+        s=korg; t=1651683223;
+        bh=zDziTLnsss2snsLkpWMuxnhSovQWKHnxQj50ZFeHjpI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rdQmuL4s92SZQew0SsoBI8hhW5cSf74djk1zYC3PJtbOiRUyY8ytdeT6z2w7YV6kS
-         xI3khVrJXbwDq1uZdMnGBQ8zU2E3nJFVN1e8327XzlcRPJHsQsz15j4FngK2JM4ar4
-         22c8MhoGrNW69Tl1aTQzdciFqtoGAi6eSNpvekGE=
+        b=s0KxEvr9E0QHfWQN/4U/lLrgNADzrOK+dSsf5wC4IeTZ020hvVuz6C+4nSUC/WcCT
+         N8RJbOJQ7WRuLnVAFJA18sYJmwrOZSWdsCk67DQ11Rq5R529OKGQdzE+7Miy+IW0Vd
+         cigBihkuZkONZatMtei5j6cQtJP8n/WKCCxhCS/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
-        Julian Anastasov <ja@ssi.bg>,
-        Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/177] ipvs: correctly print the memory size of ip_vs_conn_tab
-Date:   Wed,  4 May 2022 18:44:26 +0200
-Message-Id: <20220504153059.611149812@linuxfoundation.org>
+Subject: [PATCH 5.15 076/177] mtd: rawnand: Fix return value check of wait_for_completion_timeout
+Date:   Wed,  4 May 2022 18:44:29 +0200
+Message-Id: <20220504153059.888618092@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,36 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pengcheng Yang <yangpc@wangsu.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit eba1a872cb73314280d5448d934935b23e30b7ca ]
+[ Upstream commit 084c16ab423a8890121b902b405823bfec5b4365 ]
 
-The memory size of ip_vs_conn_tab changed after we use hlist
-instead of list.
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-Fixes: 731109e78415 ("ipvs: use hlist instead of list")
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-Acked-by: Julian Anastasov <ja@ssi.bg>
-Acked-by: Simon Horman <horms@verge.net.au>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220412083435.29254-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipvs/ip_vs_conn.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/nand/raw/sh_flctl.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
-index 2c467c422dc6..fb67f1ca2495 100644
---- a/net/netfilter/ipvs/ip_vs_conn.c
-+++ b/net/netfilter/ipvs/ip_vs_conn.c
-@@ -1495,7 +1495,7 @@ int __init ip_vs_conn_init(void)
- 	pr_info("Connection hash table configured "
- 		"(size=%d, memory=%ldKbytes)\n",
- 		ip_vs_conn_tab_size,
--		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
-+		(long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
- 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
- 		  sizeof(struct ip_vs_conn));
+diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_flctl.c
+index 13df4bdf792a..8f89e2d3d817 100644
+--- a/drivers/mtd/nand/raw/sh_flctl.c
++++ b/drivers/mtd/nand/raw/sh_flctl.c
+@@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 	dma_addr_t dma_addr;
+ 	dma_cookie_t cookie;
+ 	uint32_t reg;
+-	int ret;
++	int ret = 0;
++	unsigned long time_left;
  
+ 	if (dir == DMA_FROM_DEVICE) {
+ 		chan = flctl->chan_fifo0_rx;
+@@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 		goto out;
+ 	}
+ 
+-	ret =
++	time_left =
+ 	wait_for_completion_timeout(&flctl->dma_complete,
+ 				msecs_to_jiffies(3000));
+ 
+-	if (ret <= 0) {
++	if (time_left == 0) {
+ 		dmaengine_terminate_all(chan);
+ 		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
++		ret = -ETIMEDOUT;
+ 	}
+ 
+ out:
+@@ -441,7 +443,7 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 
+ 	dma_unmap_single(chan->device->dev, dma_addr, len, dir);
+ 
+-	/* ret > 0 is success */
++	/* ret == 0 is success */
+ 	return ret;
+ }
+ 
+@@ -465,7 +467,7 @@ static void read_fiforeg(struct sh_flctl *flctl, int rlen, int offset)
+ 
+ 	/* initiate DMA transfer */
+ 	if (flctl->chan_fifo0_rx && rlen >= 32 &&
+-		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE) > 0)
++		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE))
+ 			goto convert;	/* DMA success */
+ 
+ 	/* do polling transfer */
+@@ -524,7 +526,7 @@ static void write_ec_fiforeg(struct sh_flctl *flctl, int rlen,
+ 
+ 	/* initiate DMA transfer */
+ 	if (flctl->chan_fifo0_tx && rlen >= 32 &&
+-		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE) > 0)
++		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE))
+ 			return;	/* DMA success */
+ 
+ 	/* do polling transfer */
 -- 
 2.35.1
 
