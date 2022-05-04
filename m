@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F4FDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F080AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359364AbiEDRoH (ORCPT
+        id S1359143AbiEDRnz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
+        Wed, 4 May 2022 13:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355966AbiEDRI5 (ORCPT
+        with ESMTP id S1356013AbiEDRI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62652527C3;
-        Wed,  4 May 2022 09:54:46 -0700 (PDT)
+        Wed, 4 May 2022 13:08:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65763527D9;
+        Wed,  4 May 2022 09:54:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 391E361896;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8CCBB82552;
+        Wed,  4 May 2022 16:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F2AAC385AA;
         Wed,  4 May 2022 16:54:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 859E7C385B9;
-        Wed,  4 May 2022 16:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683285;
-        bh=qoLkNOpHDZegcIXVQDcuYOHTdqmMBOW+KEJuAQFdY5g=;
+        s=korg; t=1651683286;
+        bh=V0v9LxIcrNzOs2RS2t7EIxt9/eWLs0W0ZPrTycKHqTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MJZ1TTMlXyty+2KeAqNVyRQa4aCwPI76aOXSoQvEm8zkvINI1iEnks0wWqRc9kwmI
-         /subMRICFTtGCiEBjxlEyUtEWh6GX8Cg+SQ7E0H//3LrFulmUw8E20hkEhfK6y/ZUb
-         2E4e5oG74HfTuxikGH1zoV4/HmO3G8txaR+qBqDc=
+        b=xdVzsm1MUtba1j3ItHE5+x5mEQv18E9JJToyDEDNA4XOFoAWEFvOWqC6KhbjZzSte
+         GBbpB/afXAfuKqVRGBUZV16CnHlFRBx4IYsEPeTz79+I3Grm6aFijxOgBaSqK1ibvl
+         YdNvuAPwesllMOwmeX+lfSbvS9aaEreonQOtcyY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 128/177] ASoC: wm8731: Disable the regulator when probing fails
-Date:   Wed,  4 May 2022 18:45:21 +0200
-Message-Id: <20220504153104.570889166@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Sricharan R <quic_srichara@quicinc.com>,
+        Md Sadre Alam <quic_mdalam@quicinc.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.15 144/177] mtd: rawnand: qcom: fix memory corruption that causes panic
+Date:   Wed,  4 May 2022 18:45:37 +0200
+Message-Id: <20220504153106.166117829@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,90 +53,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Md Sadre Alam <quic_mdalam@quicinc.com>
 
-[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
+commit ba7542eb2dd5dfc75c457198b88986642e602065 upstream.
 
-When the driver fails during probing, the driver should disable the
-regulator, not just handle it in wm8731_hw_init().
+This patch fixes a memory corruption that occurred in the
+nand_scan() path for Hynix nand device.
 
-The following log reveals it:
+On boot, for Hynix nand device will panic at a weird place:
+| Unable to handle kernel NULL pointer dereference at virtual
+  address 00000070
+| [00000070] *pgd=00000000
+| Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+| Modules linked in:
+| CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-01473-g13ae1769cfb0
+  #38
+| Hardware name: Generic DT based system
+| PC is at nandc_set_reg+0x8/0x1c
+| LR is at qcom_nandc_command+0x20c/0x5d0
+| pc : [<c088b74c>]    lr : [<c088d9c8>]    psr: 00000113
+| sp : c14adc50  ip : c14ee208  fp : c0cc970c
+| r10: 000000a3  r9 : 00000000  r8 : 00000040
+| r7 : c16f6a00  r6 : 00000090  r5 : 00000004  r4 :c14ee040
+| r3 : 00000000  r2 : 0000000b  r1 : 00000000  r0 :c14ee040
+| Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM Segment none
+| Control: 10c5387d  Table: 8020406a  DAC: 00000051
+| Register r0 information: slab kmalloc-2k start c14ee000 pointer offset
+  64 size 2048
+| Process swapper/0 (pid: 1, stack limit = 0x(ptrval))
+| nandc_set_reg from qcom_nandc_command+0x20c/0x5d0
+| qcom_nandc_command from nand_readid_op+0x198/0x1e8
+| nand_readid_op from hynix_nand_has_valid_jedecid+0x30/0x78
+| hynix_nand_has_valid_jedecid from hynix_nand_init+0xb8/0x454
+| hynix_nand_init from nand_scan_with_ids+0xa30/0x14a8
+| nand_scan_with_ids from qcom_nandc_probe+0x648/0x7b0
+| qcom_nandc_probe from platform_probe+0x58/0xac
 
-[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   17.824467] Call Trace:
-[   17.824774]  <TASK>
-[   17.825040]  regulator_bulk_free+0x82/0xe0
-[   17.825514]  devres_release_group+0x319/0x3d0
-[   17.825882]  i2c_device_probe+0x766/0x940
-[   17.829198]  i2c_register_driver+0xb5/0x130
+The problem is that the nand_scan()'s qcom_nand_attach_chip callback
+is updating the nandc->max_cwperpage from 1 to 4 or 8 based on page size.
+This causes the sg_init_table of clear_bam_transaction() in the driver's
+qcom_nandc_command() to memset much more than what was initially
+allocated by alloc_bam_transaction().
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch will update nandc->max_cwperpage 1 to 4 or 8 based on page
+size in qcom_nand_attach_chip call back after freeing the previously
+allocated memory for bam txn as per nandc->max_cwperpage = 1 and then
+again allocating bam txn as per nandc->max_cwperpage = 4 or 8 based on
+page size in qcom_nand_attach_chip call back itself.
+
+Cc: stable@vger.kernel.org
+Fixes: 6a3cec64f18c ("mtd: rawnand: qcom: convert driver to nand_scan()")
+Reported-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Co-developed-by: Sricharan R <quic_srichara@quicinc.com>
+Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+Signed-off-by: Md Sadre Alam <quic_mdalam@quicinc.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/1650268107-5363-1-git-send-email-quic_mdalam@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/wm8731.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/mtd/nand/raw/qcom_nandc.c |   24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
-index dcee7b2bd3d7..859ebcec8383 100644
---- a/sound/soc/codecs/wm8731.c
-+++ b/sound/soc/codecs/wm8731.c
-@@ -602,7 +602,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 	ret = wm8731_reset(wm8731->regmap);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to issue reset: %d\n", ret);
--		goto err_regulator_enable;
-+		goto err;
- 	}
+--- a/drivers/mtd/nand/raw/qcom_nandc.c
++++ b/drivers/mtd/nand/raw/qcom_nandc.c
+@@ -2641,10 +2641,23 @@ static int qcom_nand_attach_chip(struct
+ 	ecc->engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
  
- 	/* Clear POWEROFF, keep everything else disabled */
-@@ -619,10 +619,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	mtd_set_ooblayout(mtd, &qcom_nand_ooblayout_ops);
++	/* Free the initially allocated BAM transaction for reading the ONFI params */
++	if (nandc->props->is_bam)
++		free_bam_transaction(nandc);
  
- 	regcache_mark_dirty(wm8731->regmap);
+ 	nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
+ 				     cwperpage);
  
--err_regulator_enable:
--	/* Regulators will be enabled by bias management */
--	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
++	/* Now allocate the BAM transaction based on updated max_cwperpage */
++	if (nandc->props->is_bam) {
++		nandc->bam_txn = alloc_bam_transaction(nandc);
++		if (!nandc->bam_txn) {
++			dev_err(nandc->dev,
++				"failed to allocate bam transaction\n");
++			return -ENOMEM;
++		}
++	}
++
+ 	/*
+ 	 * DATA_UD_BYTES varies based on whether the read/write command protects
+ 	 * spare data with ECC too. We protect spare data by default, so we set
+@@ -2945,17 +2958,6 @@ static int qcom_nand_host_init_and_regis
+ 	if (ret)
+ 		return ret;
+ 
+-	if (nandc->props->is_bam) {
+-		free_bam_transaction(nandc);
+-		nandc->bam_txn = alloc_bam_transaction(nandc);
+-		if (!nandc->bam_txn) {
+-			dev_err(nandc->dev,
+-				"failed to allocate bam transaction\n");
+-			nand_cleanup(chip);
+-			return -ENOMEM;
+-		}
+-	}
 -
-+err:
- 	return ret;
- }
- 
-@@ -766,21 +763,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
- 		ret = PTR_ERR(wm8731->regmap);
- 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
- 			ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	ret = wm8731_hw_init(&i2c->dev, wm8731);
- 	if (ret != 0)
--		return ret;
-+		goto err_regulator_enable;
- 
- 	ret = devm_snd_soc_register_component(&i2c->dev,
- 			&soc_component_dev_wm8731, &wm8731_dai, 1);
- 	if (ret != 0) {
- 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	return 0;
-+
-+err_regulator_enable:
-+	/* Regulators will be enabled by bias management */
-+	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
-+
-+	return ret;
- }
- 
- static int wm8731_i2c_remove(struct i2c_client *client)
--- 
-2.35.1
-
+ 	ret = mtd_device_parse_register(mtd, probes, NULL, NULL, 0);
+ 	if (ret)
+ 		nand_cleanup(chip);
 
 
