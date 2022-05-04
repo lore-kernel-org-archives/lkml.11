@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE134C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4712DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358712AbiEDRvW (ORCPT
+        id S1343891AbiEDRv1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
+        Wed, 4 May 2022 13:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356681AbiEDROD (ORCPT
+        with ESMTP id S1356949AbiEDROh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:03 -0400
+        Wed, 4 May 2022 13:14:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B53C53B4E;
-        Wed,  4 May 2022 09:58:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AD053E24;
+        Wed,  4 May 2022 09:58:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9D12617B7;
-        Wed,  4 May 2022 16:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FDBC385AA;
-        Wed,  4 May 2022 16:58:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66F4361926;
+        Wed,  4 May 2022 16:57:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B11FFC385A5;
+        Wed,  4 May 2022 16:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683490;
-        bh=U7F8eZYEpVTSmb/J39TUf2NGEuMLVkqIGrd2moRZY9U=;
+        s=korg; t=1651683475;
+        bh=FSy8OxLu6ImTtFkfpaaWWjsYOWcsYH05gS/6+cpnjGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CNVs4hv8sjWzhzseeNnkTXBC1eoSjP6UsFpCG8jxB358ymIQuu4hHqAa0uI7CoHWU
-         l5Ir8NGqTEo6mquYI5nb4Vyz6LAA5JDDCu/GU+RmqI8DY9EnJ/vs+jh4HUrdB93pfR
-         vsZkYVGqyE1rS0cyZN2CNTAS2+ZkBM4xgUwUIUMU=
+        b=X9cGs9OrrS0ppgCIU3M6I+6TaZ0f8Um5KFDJOp3TVqHtxQqWRyeKxRtrT7ilSkM1t
+         0ijRvGRLvAZZVltQoyUmg9mxomgc0Ag/7EhVSwej0SDQOOWaLNkPd2sgpuXW47ap0x
+         tAJ0Hq8VFoMERq2izSdS9G+Iz8521CmGu01CgB4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 165/225] arch: xtensa: platforms: Fix deadlock in rs_close()
-Date:   Wed,  4 May 2022 18:46:43 +0200
-Message-Id: <20220504153124.692859690@linuxfoundation.org>
+Subject: [PATCH 5.17 137/225] io_uring: check reserved fields for send/sendmsg
+Date:   Wed,  4 May 2022 18:46:15 +0200
+Message-Id: <20220504153122.491940346@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,84 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit eb5adc70754d26a260f8b42d39db42da0d0af500 ]
+[ Upstream commit 588faa1ea5eecb351100ee5d187b9be99210f70d ]
 
-There is a deadlock in rs_close(), which is shown
-below:
+We should check unused fields for non-zero and -EINVAL if they are set,
+making it consistent with other opcodes.
 
-   (Thread 1)              |      (Thread 2)
-                           | rs_open()
-rs_close()                 |  mod_timer()
- spin_lock_bh() //(1)      |  (wait a time)
- ...                       | rs_poll()
- del_timer_sync()          |  spin_lock() //(2)
- (wait timer to stop)      |  ...
-
-We hold timer_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need timer_lock in position (2) of thread 2.
-As a result, rs_close() will block forever.
-
-This patch deletes the redundant timer_lock in order to
-prevent the deadlock. Because there is no race condition
-between rs_close, rs_open and rs_poll.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Message-Id: <20220407154430.22387-1-duoming@zju.edu.cn>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Fixes: 0fa03c624d8f ("io_uring: add support for sendmsg()")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/platforms/iss/console.c | 8 --------
- 1 file changed, 8 deletions(-)
+ fs/io_uring.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
-index 81d7c7e8f7e9..10b79d3c74e0 100644
---- a/arch/xtensa/platforms/iss/console.c
-+++ b/arch/xtensa/platforms/iss/console.c
-@@ -36,24 +36,19 @@ static void rs_poll(struct timer_list *);
- static struct tty_driver *serial_driver;
- static struct tty_port serial_port;
- static DEFINE_TIMER(serial_timer, rs_poll);
--static DEFINE_SPINLOCK(timer_lock);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index fbba8342172a..107bce75131e 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4890,6 +4890,8 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  
- static int rs_open(struct tty_struct *tty, struct file * filp)
- {
--	spin_lock_bh(&timer_lock);
- 	if (tty->count == 1)
- 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
--	spin_unlock_bh(&timer_lock);
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->file_index))
++		return -EINVAL;
  
- 	return 0;
- }
- 
- static void rs_close(struct tty_struct *tty, struct file * filp)
- {
--	spin_lock_bh(&timer_lock);
- 	if (tty->count == 1)
- 		del_timer_sync(&serial_timer);
--	spin_unlock_bh(&timer_lock);
- }
- 
- 
-@@ -73,8 +68,6 @@ static void rs_poll(struct timer_list *unused)
- 	int rd = 1;
- 	unsigned char c;
- 
--	spin_lock(&timer_lock);
--
- 	while (simc_poll(0)) {
- 		rd = simc_read(0, &c, 1);
- 		if (rd <= 0)
-@@ -87,7 +80,6 @@ static void rs_poll(struct timer_list *unused)
- 		tty_flip_buffer_push(port);
- 	if (rd)
- 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
--	spin_unlock(&timer_lock);
- }
- 
- 
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	sr->len = READ_ONCE(sqe->len);
 -- 
 2.35.1
 
