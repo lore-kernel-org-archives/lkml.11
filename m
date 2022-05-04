@@ -2,63 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F670C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351008AbiEDOBy (ORCPT
+        id S1350857AbiEDOCT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48324 "EHLO
+        Wed, 4 May 2022 10:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351074AbiEDOBa (ORCPT
+        with ESMTP id S237763AbiEDOCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:01:30 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1040B43EEE;
-        Wed,  4 May 2022 06:57:14 -0700 (PDT)
+        Wed, 4 May 2022 10:02:16 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03890275F3
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:58:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651672634; x=1683208634;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=32DTrSFoB5STaJHIEVVCzkYM4SEkuLUEXAmueS3X3EM=;
-  b=gqeg60DssZMNFWEvyuQCw0W/iXy1fk51OdlNw+eEvDcUsGUNDEqxsGlp
-   HFO7gBmqSKiE1H632NXmKYfL4uhkrN3RwfK6C4ajqLDmOY2hQ6YDqNZwu
-   2FzORgxmLzZ5LyZ8BsWHSyfcCqRc3K3J6T7P60BQPmgWbu64gjxS+sKh+
-   4=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 04 May 2022 06:57:13 -0700
+  t=1651672721; x=1683208721;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=11770cKS+9CS+QLXwuNHlJ4PVZqEaAPkwZKE6duj5KU=;
+  b=kn60oK6Piy9cF8Npdqal5RMc40FvKwDyrhgHzFCeWS7Ka3csaJ2BoK3G
+   PZe5ci1ZX74lacVnRvvV1ncHxkr2mIVrm7MEZ+4EilItW3dZMoQMNS4Zx
+   qbOHW7hh1YdsdONbAj/orNZMM1tRswkFp2oxYdLiE2WBYS/tavjIP1GQu
+   8=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 04 May 2022 06:58:40 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 06:57:12 -0700
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 06:58:40 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 4 May 2022 06:56:52 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 4 May 2022 06:56:46 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH 2/2] pinctrl: qcom: sc7280: Add lpi pinctrl variant data structure for adsp based targets
-Date:   Wed, 4 May 2022 19:26:20 +0530
-Message-ID: <1651672580-18952-3-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651672580-18952-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1651672580-18952-1-git-send-email-quic_srivasam@quicinc.com>
+ 15.2.986.22; Wed, 4 May 2022 06:58:40 -0700
+Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 4 May 2022
+ 06:58:39 -0700
+Message-ID: <6dde7bb4-8931-ccdb-2677-930a1c6d6dab@quicinc.com>
+Date:   Wed, 4 May 2022 07:58:38 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] drm: drm_gem.h: Add explicit includes for
+ DEFINE_DRM_GEM_FOPS
+Content-Language: en-US
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <airlied@linux.ie>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>
+References: <1651262112-29664-1-git-send-email-quic_jhugo@quicinc.com>
+ <87y1zkq6vg.fsf@intel.com> <YnJJq6UdCVIWcH3G@phenom.ffwll.local>
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+In-Reply-To: <YnJJq6UdCVIWcH3G@phenom.ffwll.local>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
@@ -66,48 +64,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible string and lpi pinctrl variant data structure for adsp enabled
-sc7280 platforms.
+On 5/4/2022 3:38 AM, Daniel Vetter wrote:
+> On Mon, May 02, 2022 at 06:41:39PM +0300, Jani Nikula wrote:
+>> On Fri, 29 Apr 2022, Jeffrey Hugo <quic_jhugo@quicinc.com> wrote:
+>>> DEFINE_DRM_GEM_FOPS() references drm functions from other headers.  For
+>>> example drm_open() is defined in drm_file.h and drm_ioctl() is defined
+>>> in drm_ioctl.h.  Since drm_gem.h doesn't include these headers, it
+>>> relies on an implicit include from the .c file to have included these
+>>> required headers before DEFINE_DRM_GEM_FOPS() gets used.  Relying on
+>>> these implicit includes can cause build failures for new code that
+>>> doesn't know about these requirements, and can lead to future problems
+>>> if the headers ever get restructured as there will be a need to update
+>>> every downstream file that includes drm_gem.h.
+>>>
+>>> Lets fix this explicitly including the required headers in drm_gem.h so
+>>> that code that includes drm_gem.h does not need to worry about these
+>>> implicit dependencies.
+>>
+>> In the general case, I tend to agree, but in this specific instance I
+>> think I'd err on the side of fewer includes. I think the more likely
+>> outcome here is accumulating implicit dependencies on symbols from
+>> drm_file.h and drm_ioctl.h by including drm_gem.h only!
+>>
+>> I do think headers need to be self-contained, and we actually enforce
+>> this in i915 (see HDRTEST in drivers/gpu/drm/i915/Makefile), but not to
+>> the point of macro expansions.
+> 
+> Yeah we abuse macros in a bunch of places to untangle header dependencies,
+> so then going back and pulling in all the headers back in feels a bit
+> silly and defeats the point.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Fair enough.  I'll consider this NAK'd
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-index 2add9a4..c9e85d9 100644
---- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-@@ -134,6 +134,16 @@ static const struct lpi_function sc7280_functions[] = {
- 	LPI_FUNCTION(wsa_swr_data),
- };
- 
-+static const struct lpi_pinctrl_variant_data sc7280_adsp_lpi_data = {
-+	.pins = sc7280_lpi_pins,
-+	.npins = ARRAY_SIZE(sc7280_lpi_pins),
-+	.groups = sc7280_groups,
-+	.ngroups = ARRAY_SIZE(sc7280_groups),
-+	.functions = sc7280_functions,
-+	.nfunctions = ARRAY_SIZE(sc7280_functions),
-+	.is_clk_optional = false,
-+};
-+
- static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
- 	.pins = sc7280_lpi_pins,
- 	.npins = ARRAY_SIZE(sc7280_lpi_pins),
-@@ -149,6 +159,10 @@ static const struct of_device_id lpi_pinctrl_of_match[] = {
- 	       .compatible = "qcom,sc7280-lpass-lpi-pinctrl",
- 	       .data = &sc7280_lpi_data,
- 	},
-+	{
-+		.compatible = "qcom,sc7280-lpass-adsp-lpi-pinctrl",
-+		.data = &sc7280_adsp_lpi_data,
-+	},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, lpi_pinctrl_of_match);
--- 
-2.7.4
+I've been pondering alternate solutions, but haven't come up with any. 
+I guess, for now, the status quo will remain.
+
+> 
+> iow, I concur.
+> -Daniel
+> 
+>>
+>> BR,
+>> Jani.
+>>
+>>
+>>
+>>>
+>>> Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+>>> ---
+>>>   include/drm/drm_gem.h | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
+>>> index 9d7c61a..1cbe3d8 100644
+>>> --- a/include/drm/drm_gem.h
+>>> +++ b/include/drm/drm_gem.h
+>>> @@ -37,6 +37,8 @@
+>>>   #include <linux/kref.h>
+>>>   #include <linux/dma-resv.h>
+>>>   
+>>> +#include <drm/drm_file.h>
+>>> +#include <drm/drm_ioctl.h>
+>>>   #include <drm/drm_vma_manager.h>
+>>>   
+>>>   struct iosys_map;
+>>
+>> -- 
+>> Jani Nikula, Intel Open Source Graphics Center
+> 
 
