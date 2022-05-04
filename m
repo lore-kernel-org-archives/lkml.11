@@ -2,104 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E36C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351522AbiEDO4a (ORCPT
+        id S1351527AbiEDO5U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        Wed, 4 May 2022 10:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245006AbiEDO43 (ORCPT
+        with ESMTP id S245006AbiEDO5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:56:29 -0400
-X-Greylist: delayed 25244 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 07:52:51 PDT
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A521B120A9;
-        Wed,  4 May 2022 07:52:51 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id D5E7C419C2;
-        Wed,  4 May 2022 14:52:45 +0000 (UTC)
-Message-ID: <e0445aa6-0c96-b80d-154e-274be0c1a025@marcan.st>
-Date:   Wed, 4 May 2022 23:52:43 +0900
+        Wed, 4 May 2022 10:57:17 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA08919C35
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:53:37 -0700 (PDT)
+Received: from [192.168.1.107] ([37.4.249.94]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N33AR-1nycCJ2lsj-013PzA; Wed, 04 May 2022 16:53:02 +0200
+Message-ID: <60a0ad1e-92d5-5032-7672-3da9ea606348@i2se.com>
+Date:   Wed, 4 May 2022 16:53:01 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/4] MAINTAINERS: Add entries for Apple SoC cpufreq
- driver
-Content-Language: es-ES
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220504075153.185208-1-marcan@marcan.st>
- <20220504075153.185208-2-marcan@marcan.st>
- <20220504101750.wmuicq3dytnxrw5o@vireshk-i7>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <20220504101750.wmuicq3dytnxrw5o@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/3] staging: vchiq_arm: add reference to vchiq device in
+ vchiq_state
+Content-Language: en-US
+To:     Adrien Thierry <athierry@redhat.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220502183045.206519-1-athierry@redhat.com>
+ <20220502183045.206519-2-athierry@redhat.com>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20220502183045.206519-2-athierry@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:4cx/fI0q0KQihxnCwEmGDzKTjM9ADUWFfTLZ70HcPtSmBPtzahB
+ tzLsZgHMfnal8Gkulfc3wqdhrUtbyCt+x/LY2fmxFFGIJ5S/eJEKsXmkd32xqciBBYjxpgR
+ 0S7xAdvzXOcpEU2me8qm9YZoAo7qFrB82C2kdLMlkSTReFEQRqiJwx/yv6M6GfZa4xwDdTq
+ zM9dCAUSc/piWdx9EKCgg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:lOcrTv35cJQ=:RHlZO0yymYI3yjUoZtDKn+
+ ofNSiUS/KnFs0t/BNFDxNipWThxlBnVdoi3XwxbQn0oupM6HCW519Ptma1i5Z0g04oyGpxLvT
+ XregvIGc+RF6b/Cvg10bgHzuxf4pg+PzBBGQkWd+bNrbmlwtsSTkaJzFvvuYPkFI77/P5JFED
+ zPOCgWVvv4EjcVSEQT9qYQi/41s1nFQB1vi6NWEL9EXdRZHD5ps0DzvExam+6uoLgLWBn0lO3
+ R08+rxP67KfaR2oFL6ZHXvFuH1iOutci2fzQadt8FFoqd4TC23wEZJqGAC9hPIvCSROpAwcQT
+ QGE8EQrf/KN7feUFSXmmqL1Fut/NSL/0H8kG7cUWlpYGwKS8O/e3n33UDwjq3Bns2QHcSqtrf
+ xtcMlda88JzWNwXvs21KAcxgAXnD/Go96t8Bca9qGb9bgGgft8DMTWE93I+zTw/v43hhO6W+x
+ QbFtsa/FxQEjILqH510c0GsQduSd95iit/sfP/S7amXClId3yX8SiRVPrm2fioiqxktRuErP8
+ uQ8Vfjg7jvth3iI+2IWegWUw4VLOAwLt053ySVkR3TGkI6jslVtiGFol22u05K+Ye5Wb2fSew
+ DkOfFFymcfQ7og18CRe+TetTy4K+zf6E9G5nUsDJ2rzW/egKgs78xOWwbUUSeT8mnOOgXfWju
+ +2OSxrVIDnxKa2YyxhvRiuNLvfhWQjBv2LiLSUJ6cqB3gqsBmuCBSQ8BejWNh6V+dUdwyaBsC
+ 31acJXmjlojhvzto
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/05/2022 19.17, Viresh Kumar wrote:
-> On 04-05-22, 16:51, Hector Martin wrote:
->> Splitting this commit, as usual, to facilitate merges via the SoC tree.
->>
->> Signed-off-by: Hector Martin <marcan@marcan.st>
->> ---
->>  MAINTAINERS | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index edc96cdb85e8..39bfa478fe55 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -1835,6 +1835,7 @@ T:	git https://github.com/AsahiLinux/linux.git
->>  F:	Documentation/devicetree/bindings/arm/apple.yaml
->>  F:	Documentation/devicetree/bindings/arm/apple/*
->>  F:	Documentation/devicetree/bindings/clock/apple,nco.yaml
->> +F:	Documentation/devicetree/bindings/cpufreq/apple,soc-cpufreq.yaml
->>  F:	Documentation/devicetree/bindings/i2c/apple,i2c.yaml
->>  F:	Documentation/devicetree/bindings/interrupt-controller/apple,*
->>  F:	Documentation/devicetree/bindings/mailbox/apple,mailbox.yaml
->> @@ -1844,6 +1845,7 @@ F:	Documentation/devicetree/bindings/power/apple*
->>  F:	Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
->>  F:	arch/arm64/boot/dts/apple/
->>  F:	drivers/clk/clk-apple-nco.c
->> +F:	drivers/cpufreq/apple-soc-cpufreq.c
->>  F:	drivers/i2c/busses/i2c-pasemi-core.c
->>  F:	drivers/i2c/busses/i2c-pasemi-platform.c
->>  F:	drivers/irqchip/irq-apple-aic.c
-> 
-> This should be the last patch instead, or should at least be added
-> after the files are merged first. If someone checks out at this
-> commit, the files won't be available but still linked here.
+Hi Adrien,
 
-Isn't that backwards? If someone touches the files, we want them to be
-able to get_maintainer.pl, so the MAINTAINERS entries should come first.
-It doesn't really cause any issues if there are entries that point at
-files that don't exist yet, right?
+Am 02.05.22 um 20:30 schrieb Adrien Thierry:
+> Add a reference to the vchiq device in the vchiq_state structure. This
+> allows the device structure to be passed around, which will be useful in
+> order to get rid of the global g_dev structure.
 
-Though this is mostly a moot point because the purpose of splitting this
-out is so we can merge this one patch through the SoC tree, at which
-point the ordering isn't guaranteed (unless the whole series goes
-through SoC). It's a minor issue though; we've done it like this for
-other series and it hasn't caused anyone trouble.
+the patch looks good to me. It would be nice to mention that with adding 
+the device reference it would possible to introduce common kernel logging.
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+Best regards
+
+>
+> Signed-off-by: Adrien Thierry <athierry@redhat.com>
+> ---
+>   drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c | 2 +-
+>   .../staging/vc04_services/interface/vchiq_arm/vchiq_core.c    | 4 +++-
+>   .../staging/vc04_services/interface/vchiq_arm/vchiq_core.h    | 3 ++-
+>   3 files changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> index 0596ac61e286..e6e0737c85fc 100644
+> --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> @@ -519,7 +519,7 @@ int vchiq_platform_init(struct platform_device *pdev, struct vchiq_state *state)
+>   	*(char **)&g_fragments_base[i * g_fragments_size] = NULL;
+>   	sema_init(&g_free_fragments_sema, MAX_FRAGMENTS);
+>   
+> -	err = vchiq_init_state(state, vchiq_slot_zero);
+> +	err = vchiq_init_state(state, vchiq_slot_zero, dev);
+>   	if (err)
+>   		return err;
+>   
+> diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+> index 8f99272dbd6f..0d5c39d7c6e2 100644
+> --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+> +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+> @@ -2142,7 +2142,7 @@ vchiq_init_slots(void *mem_base, int mem_size)
+>   }
+>   
+>   int
+> -vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero)
+> +vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero, struct device *dev)
+>   {
+>   	struct vchiq_shared_state *local;
+>   	struct vchiq_shared_state *remote;
+> @@ -2169,6 +2169,8 @@ vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero)
+>   
+>   	memset(state, 0, sizeof(struct vchiq_state));
+>   
+> +	state->dev = dev;
+> +
+>   	/*
+>   	 * initialize shared state pointers
+>   	 */
+> diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h
+> index 82b7bd7b54b2..352017ff5309 100644
+> --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h
+> +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h
+> @@ -315,6 +315,7 @@ struct vchiq_slot_zero {
+>   };
+>   
+>   struct vchiq_state {
+> +	struct device *dev;
+>   	int id;
+>   	int initialised;
+>   	enum vchiq_connstate conn_state;
+> @@ -458,7 +459,7 @@ extern struct vchiq_slot_zero *
+>   vchiq_init_slots(void *mem_base, int mem_size);
+>   
+>   extern int
+> -vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero);
+> +vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero, struct device *dev);
+>   
+>   extern enum vchiq_status
+>   vchiq_connect_internal(struct vchiq_state *state, struct vchiq_instance *instance);
