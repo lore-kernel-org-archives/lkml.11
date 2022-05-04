@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53307C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345175AbiEDG5J (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
+        id S229690AbiEDG5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 02:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345085AbiEDG4g (ORCPT
+        with ESMTP id S1345111AbiEDG4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 02:56:36 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A2720F41
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30FC20BF5
         for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:53:01 -0700 (PDT)
 Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id DA0B3A11;
-        Tue,  3 May 2022 23:53:00 -0700 (PDT)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 5B216C64;
+        Tue,  3 May 2022 23:53:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
         s=thorn; t=1651647181;
-        bh=vCwgw617O/ewX8QDmnxBymU7T8PA39aGYTHp7lO2log=;
+        bh=T+pl3SJCSzXLJOiH4mZIAgFL9b9XXugAhhglLLH5nDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N4uL++YQpdaJ8unIiXshkYfNDpxH9arZNEdbkLa5RClvz581Uo7SaG97xVN7X6lJy
-         N/Y/cok5zegTItliQc4ngL+iVbY+QTtEgr8+Uk06OxHfN8AJUOn3h+YAQBx8ajLdXZ
-         ztz5vegJQp65Tw6gSLJ+EeD5mZxiq5OHPuhwV07I=
+        b=mX7+SrYAMIBw0ZLAA5ZzfrgVbR8MjFejgzDqwOnI8FCj2J1NgvmTaWjXI+clUMs0N
+         jR6qTIFaLnCw7hHAh74Z03lX/zB5GpyDTYCtkHc+Z170TfVPhO+XpLSTpxFWKm2z8K
+         qWSrjHbBxfJbard91MS1vaOx+QKoy65660GrjmCg=
 From:   Zev Weiss <zev@bewilderbeest.net>
 To:     Mark Brown <broonie@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>
 Cc:     Zev Weiss <zev@bewilderbeest.net>, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         openbmc@lists.ozlabs.org
-Subject: [PATCH 4/6] regulator: core: Add external-output support
-Date:   Tue,  3 May 2022 23:52:50 -0700
-Message-Id: <20220504065252.6955-4-zev@bewilderbeest.net>
+Subject: [PATCH 6/6] regulator: core: Add external-consumer driver
+Date:   Tue,  3 May 2022 23:52:52 -0700
+Message-Id: <20220504065252.6955-6-zev@bewilderbeest.net>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504065252.6955-1-zev@bewilderbeest.net>
 References: <20220504065252.6955-1-zev@bewilderbeest.net>
@@ -48,141 +47,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Regulators feeding external outputs (i.e. supplying devices we don't
-control) can be switched on and off by userspace via the 'state' sysfs
-attribute, which is now (conditionally) writable.  They are also not
-automatically disabled in regulator_late_cleanup(), since we have no
-way of knowing that they're not actually in use.
+An external consumer is a dummy device representing a device external
+to the system that is supplied by a regulator designated for external
+output.  It is purely a virtual placeholder to instantiate a regulator
+by calling regulator_get() on it from its probe function.
 
 Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 ---
- .../ABI/testing/sysfs-class-regulator         |  4 ++
- drivers/regulator/core.c                      | 41 ++++++++++++++++---
- drivers/regulator/of_regulator.c              |  2 +
- include/linux/regulator/machine.h             |  1 +
- 4 files changed, 43 insertions(+), 5 deletions(-)
+ drivers/regulator/Kconfig |  9 +++++++++
+ drivers/regulator/core.c  | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-regulator b/Documentation/ABI/testing/sysfs-class-regulator
-index 475b9a372657..1c0451730df2 100644
---- a/Documentation/ABI/testing/sysfs-class-regulator
-+++ b/Documentation/ABI/testing/sysfs-class-regulator
-@@ -23,6 +23,10 @@ Description:
- 		'unknown' means software cannot determine the state, or
- 		the reported state is invalid.
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index 5ef2306fce04..5ec390687a81 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -56,6 +56,15 @@ config REGULATOR_USERSPACE_CONSUMER
  
-+		For regulators supplying external outputs, 'enabled'
-+		or 'disabled' can be written to this file to turn the
-+		regulator on and off.
+ 	  If unsure, say no.
+ 
++config REGULATOR_EXTERNAL_CONSUMER
++	bool "External regulator consumer support"
++	help
++	  Some regulators supply devices that are entirely external to
++	  the system.  This driver provides a placeholder consumer
++	  representing such devices.
 +
- 		NOTE: this field can be used in conjunction with microvolts
- 		or microamps to determine configured regulator output levels.
- 
++	  If unsure, say no.
++
+ config REGULATOR_88PG86X
+ 	tristate "Marvell 88PG86X voltage regulators"
+ 	depends on I2C
 diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 9094bd8772e5..b7617926336f 100644
+index d873606eb41f..4f348b3d5290 100644
 --- a/drivers/regulator/core.c
 +++ b/drivers/regulator/core.c
-@@ -83,6 +83,8 @@ struct regulator_supply_alias {
+@@ -19,6 +19,7 @@
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/of.h>
++#include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/of_regulator.h>
+ #include <linux/regulator/consumer.h>
+@@ -6070,6 +6071,33 @@ static int regulator_summary_show(struct seq_file *s, void *data)
+ DEFINE_SHOW_ATTRIBUTE(regulator_summary);
+ #endif /* CONFIG_DEBUG_FS */
  
- static int _regulator_is_enabled(struct regulator_dev *rdev);
- static int _regulator_disable(struct regulator *regulator);
-+static int _regulator_do_enable(struct regulator_dev *rdev);
-+static int _regulator_do_disable(struct regulator_dev *rdev);
- static int _regulator_get_error_flags(struct regulator_dev *rdev, unsigned int *flags);
- static int _regulator_get_current_limit(struct regulator_dev *rdev);
- static unsigned int _regulator_get_mode(struct regulator_dev *rdev);
-@@ -667,7 +669,33 @@ static ssize_t state_show(struct device *dev,
- 
- 	return ret;
- }
--static DEVICE_ATTR_RO(state);
-+
-+static ssize_t state_store(struct device *dev, struct device_attribute *attr,
-+			   const char *buf, size_t count)
++#ifdef CONFIG_REGULATOR_EXTERNAL_CONSUMER
++static int regulator_external_output_probe(struct platform_device *pdev)
 +{
-+	struct regulator_dev *rdev = dev_get_drvdata(dev);
-+	bool enabled;
-+	ssize_t ret = 0;
++	struct regulator *reg;
 +
-+	if (sysfs_streq(buf, "enabled"))
-+		enabled = true;
-+	else if (sysfs_streq(buf, "disabled"))
-+		enabled = false;
-+	else
-+		return -EINVAL;
++	reg = devm_regulator_get_external(&pdev->dev, "vout");
++	if (IS_ERR(reg))
++		return PTR_ERR(reg);
 +
-+	regulator_lock(rdev);
-+	if (enabled != _regulator_is_enabled(rdev)) {
-+		if (enabled)
-+			ret = _regulator_do_enable(rdev);
-+		else
-+			ret = _regulator_do_disable(rdev);
-+	}
-+	regulator_unlock(rdev);
-+
-+	return ret ? : count;
++	return 0;
 +}
-+static DEVICE_ATTR_RW(state);
- 
- static ssize_t status_show(struct device *dev,
- 			   struct device_attribute *attr, char *buf)
-@@ -5051,8 +5079,11 @@ static umode_t regulator_attr_is_visible(struct kobject *kobj,
- 	if (attr == &dev_attr_opmode.attr)
- 		return ops->get_mode ? mode : 0;
- 
--	if (attr == &dev_attr_state.attr)
-+	if (attr == &dev_attr_state.attr) {
-+		if (!(rdev->constraints && rdev->constraints->external_output))
-+			mode &= ~0222;
- 		return (rdev->ena_pin || ops->is_enabled) ? mode : 0;
-+	}
- 
- 	if (attr == &dev_attr_status.attr)
- 		return ops->get_status ? mode : 0;
-@@ -6062,7 +6093,7 @@ static int regulator_late_cleanup(struct device *dev, void *data)
- 	struct regulation_constraints *c = rdev->constraints;
- 	int ret;
- 
--	if (c && c->always_on)
-+	if (c && (c->always_on || c->external_output))
- 		return 0;
- 
- 	if (!regulator_ops_is_valid(rdev, REGULATOR_CHANGE_STATUS))
-@@ -6114,8 +6145,8 @@ static void regulator_init_complete_work_function(struct work_struct *work)
- 
- 	/* If we have a full configuration then disable any regulators
- 	 * we have permission to change the status for and which are
--	 * not in use or always_on.  This is effectively the default
--	 * for DT and ACPI as they have full constraints.
-+	 * not in use, always_on, or external_output.  This is effectively
-+	 * the default for DT and ACPI as they have full constraints.
- 	 */
- 	class_for_each_device(&regulator_class, NULL, NULL,
- 			      regulator_late_cleanup);
-diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
-index f54d4f176882..f48e6ea2b97e 100644
---- a/drivers/regulator/of_regulator.c
-+++ b/drivers/regulator/of_regulator.c
-@@ -96,6 +96,8 @@ static int of_get_regulation_constraints(struct device *dev,
- 
- 	constraints->name = of_get_property(np, "regulator-name", NULL);
- 
-+	constraints->external_output = of_property_read_bool(np, "regulator-external-output");
 +
- 	if (!of_property_read_u32(np, "regulator-min-microvolt", &pval))
- 		constraints->min_uV = pval;
- 
-diff --git a/include/linux/regulator/machine.h b/include/linux/regulator/machine.h
-index 621b7f4a3639..a38e7db9f82e 100644
---- a/include/linux/regulator/machine.h
-+++ b/include/linux/regulator/machine.h
-@@ -219,6 +219,7 @@ struct regulation_constraints {
- 	unsigned over_voltage_detection:1; /* notify on over voltage */
- 	unsigned under_voltage_detection:1; /* notify on under voltage */
- 	unsigned over_temp_detection:1; /* notify on over temperature */
-+	unsigned external_output:1; /* output supplies only external devices */
- };
- 
- /**
++static const struct of_device_id reg_external_consumer_of_match_table[] = {
++	{ .compatible = "regulator-external-output" },
++	{ },
++};
++
++static struct platform_driver reg_external_consumer_driver = {
++	.driver = {
++		.name = "reg-external-consumer",
++		.of_match_table = reg_external_consumer_of_match_table,
++	},
++	.probe = regulator_external_output_probe,
++};
++builtin_platform_driver(reg_external_consumer_driver);
++#endif /* CONFIG_REGULATOR_EXTERNAL_CONSUMER */
++
+ static int __init regulator_init(void)
+ {
+ 	int ret;
 -- 
 2.36.0
 
