@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F807C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358875AbiEDRsN (ORCPT
+        id S1351926AbiEDRsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
+        Wed, 4 May 2022 13:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357204AbiEDROz (ORCPT
+        with ESMTP id S1357271AbiEDRO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76AC54682;
-        Wed,  4 May 2022 09:58:24 -0700 (PDT)
+        Wed, 4 May 2022 13:14:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD9C54697;
+        Wed,  4 May 2022 09:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6809B827B1;
-        Wed,  4 May 2022 16:58:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C9DBC385A5;
-        Wed,  4 May 2022 16:58:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B495161920;
+        Wed,  4 May 2022 16:58:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68702C385AF;
+        Wed,  4 May 2022 16:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683501;
-        bh=fkKBag7PPVPmosOz09eZsWq1ZvVA46uXSUgjhv12iXU=;
+        s=korg; t=1651683494;
+        bh=5Vle1qWJnQKV1VFtVFlv7ED24OJaCLIdTzacdmZoabs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V3KB8XtfZWOCSYKun/HSvdQMMU+V4T6h9x3GpNr1k6lJK1QWVQBk/3QeZ9l0vVbk3
-         EirQ9lpUNxYy9meqQYbKGAdENTGt63wCVxb6S8DTmlalNjPkFVFBepikL2OVqEb+LJ
-         cAf4sz7KaVSUd8Yhk/H7TR1lQPi/i3nmfNo1IUS4=
+        b=Kko1rdlAxwTFuAoNNVrN9Zg2G9En5BFNbveEnioVFU/HXUHIkk4VvuvlOzDREpjkI
+         6HfMoJ5+ogbUdeNJTCH+hPOjUaNiiEWjJB6ZSzomKQdTwi1XLpX9MBMt05mqYZ0Wdb
+         tLImYBqOfsh21Hn3KzBjc803ZDHawGDYlV5aA28s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 159/225] ASoC: rt711/5682: check if bus is active before deferred jack detection
-Date:   Wed,  4 May 2022 18:46:37 +0200
-Message-Id: <20220504153124.208111899@linuxfoundation.org>
+Subject: [PATCH 5.17 152/225] ixgbe: ensure IPsec VF<->PF compatibility
+Date:   Wed,  4 May 2022 18:46:30 +0200
+Message-Id: <20220504153123.651407660@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -53,72 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit 770f3d992a3f7330f801dfeee98429b2885c9fdb ]
+[ Upstream commit f049efc7f7cd2f3c419f55040928eaefb13b3636 ]
 
-This patch takes a defensive programming and paranoid approach in case
-the parent device (SoundWire) is pm_runtime resumed but the rt711
-device is not. In that case, during the attachment and initialization,
-a jack detection workqueue can be scheduled. Since the pm_runtime
-suspend routines will not be invoked, the sequence to cancel all
-deferred work is not executed, and the jack detection could happen
-after the bus stops operating, leading to a timeout.
+The VF driver can forward any IPsec flags and such makes the function
+is not extendable and prone to backward/forward incompatibility.
 
-This patch applies the same solution to rt5682, based on the
-similarities between codec drivers. The race condition with rt5682 was
-not detected experimentally though.
+If new software runs on VF, it won't know that PF configured something
+completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
 
-BugLink: https://github.com/thesofproject/linux/issues/3459
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220406192005.262996-1-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Shannon Nelson <snelson@pensando.io>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220427173152.443102-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682.c | 9 +++++++++
- sound/soc/codecs/rt711.c  | 7 +++++++
- 2 files changed, 16 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index c9ff9c89adf7..2b6c6d6b9771 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -1100,6 +1100,15 @@ void rt5682_jack_detect_handler(struct work_struct *work)
- 		return;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index e596e1a9fc75..69d11ff7677d 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+ 	/* Tx IPsec offload doesn't seem to work on this
+ 	 * device, so block these requests for now.
+ 	 */
+-	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
++	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
++	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
+ 		err = -EOPNOTSUPP;
+ 		goto err_out;
  	}
- 
-+	if (rt5682->is_sdw) {
-+		if (pm_runtime_status_suspended(rt5682->slave->dev.parent)) {
-+			dev_dbg(&rt5682->slave->dev,
-+				"%s: parent device is pm_runtime_status_suspended, skipping jack detection\n",
-+				__func__);
-+			return;
-+		}
-+	}
-+
- 	dapm = snd_soc_component_get_dapm(rt5682->component);
- 
- 	snd_soc_dapm_mutex_lock(dapm);
-diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
-index 6770825d037a..ea25fd58d43a 100644
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -245,6 +245,13 @@ static void rt711_jack_detect_handler(struct work_struct *work)
- 	if (!rt711->component->card->instantiated)
- 		return;
- 
-+	if (pm_runtime_status_suspended(rt711->slave->dev.parent)) {
-+		dev_dbg(&rt711->slave->dev,
-+			"%s: parent device is pm_runtime_status_suspended, skipping jack detection\n",
-+			__func__);
-+		return;
-+	}
-+
- 	reg = RT711_VERB_GET_PIN_SENSE | RT711_HP_OUT;
- 	ret = regmap_read(rt711->regmap, reg, &jack_status);
- 	if (ret < 0)
 -- 
 2.35.1
 
