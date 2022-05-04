@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08273C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D7ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379326AbiEDWyo (ORCPT
+        id S1379342AbiEDWyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        Wed, 4 May 2022 18:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379222AbiEDWxf (ORCPT
+        with ESMTP id S1379108AbiEDWxe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:53:35 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC525372E
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:49 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id bj12-20020a170902850c00b0015adf30aaccso1364177plb.15
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:49:49 -0700 (PDT)
+        Wed, 4 May 2022 18:53:34 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3558853A60
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:46 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id 16-20020a630010000000b003c5e4be54b2so1353483pga.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:49:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=zKnCLZBl0iKbuaUJ2c8P14+HTnYeKNOrT10EIR+YEXk=;
-        b=MmrNHNzQ+BmNHxua+Mydg7tD8a+0M4PzDyq1R5HsLSodMO/j6CTd/7xoM8r+nyVUzi
-         yuTF8+xUtDP/vwQgB/yIms7KZ4l91i4bTBEaak0o42hPhYexEaZ5+9UdHijDAQgQ5deP
-         yl9yTA4ajtsIwAFR/dOY4AU7/c7mHpUybR1QnQ55WV6xpGwX9ex3RzgM1+HhRNUWhxfj
-         L1qUqPO6MC9MU8m0fPnu3VcqEwlltKZkXX9StgQznXiU9eUNvpS7/9RDK4EHsEFBYO0p
-         GaERpEvTiBEPR0XR9zDyGHpFN3HNIum7kla2GKKaZdN53SPLi7S+yOl4w+NyRUIYGQPe
-         ZMag==
+        bh=vdoiFFuprO/80jj0608+r4h582qSuKW9UvQgFdb6/os=;
+        b=CsjkGavuxd04ZWo1ZEmta5wWdm/pj0mLLRl/UDLyTU8O2QEyi7tRbWFVMhnVAIl7xt
+         ACIEoFAD9zecvgfI1lsVBV9Pf76xixzdc10q3pyrU0kBQC4iecgB2bi0lHZIUCcJnooN
+         bxBCOqKk8OTY+24J5+YDPUJHWPtZ1rmJgtYF2WFZtH39X22WWPGh2CD5fLy1cwFkbtzv
+         4/p5j8bk9zf0mS5sNdVsqaZTOWHPZ5e/Tbt3vwV4jATm8OKPGfIM9kGeb+F9GHIgjvHY
+         zj1Km97NnqEf7sDgzs6N3/Fv0eotD911jTPSMagRghorE61tYRvSFp2J5ZnyXUOwa0X0
+         7iXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=zKnCLZBl0iKbuaUJ2c8P14+HTnYeKNOrT10EIR+YEXk=;
-        b=adEUyR3WNCTMZEDZPw4FmAuNta67U9v372M14zimGh4WKUvsV4YXG9gJxCyz/SFgf2
-         B0rzeCLO4mtSUMlA+AR9O/CJ8OQ0Yempnsj4gVd6MjGnkgWAbjIFccY2QQ0pfWdlnH2B
-         oNijx1Db3ajlffYD3pTKHBUQ+p44ExizlmPKBOEVovjXkusbrVhNQ3oG8xXGG4ASuerL
-         0v50sC1XSh2t+hIPQVsCznmmZXli0KWj2cEu1BhFsazKqLK6nHkP6l/0h00GAyDwEn5z
-         q9JdW0A+DvwAziGS3YrnnwowsXS3uDL3D2U897tHP6OVSMm/qTGDeBMW6KLb8XmC2sCA
-         hEMA==
-X-Gm-Message-State: AOAM531rAKzY6o9lhNfoMGGEw2tLHg1T8quCCfw0o/4SnzF89XX1X4iE
-        odZ8RJ/+6MLs0681KK4v06OVvxQU0RA=
-X-Google-Smtp-Source: ABdhPJzX9q1EH0NVpgVFri34UYpD+hyxfHrnn9pZ4155kGZTjgh2EWV1zLz8Tcx94vzs5yLdnN9Fc2LRKvs=
+        bh=vdoiFFuprO/80jj0608+r4h582qSuKW9UvQgFdb6/os=;
+        b=vpivWxtqyFTRa9cKUPUSv2iByoGuZCqrI1sP4vM1iRa2xIkT7LaaYvH4r4itNjRSFU
+         vStX6y8nnwSbM0NlB6vrqclOjjB3UIq190iPCvereUy5WU7nJvBgqJ+CcZLucUUT2zLD
+         C5O+QW4+DBCVz/hWbw3xVJd6TT8Ua/1H5gMRtxGjj2dba4eUdcn25+8HYE4aJBokJSzC
+         TniGP8R6xphwNsu3FolR/PlwuWU3t692UDyvv/n+nkUOBZD0JhBEDKeaV+HMtFMdYHRI
+         yPFU3TDVGfIGISfcT1lx/jZrQXVkcJP4ARXPXrooVDeTyAJdhHiCMGPEjHdZzjdDucm4
+         QcEw==
+X-Gm-Message-State: AOAM5310IzEk1b1YLw0xh2RyYp53v3QJnUGR3CAKpmyVvS3xSXF2Z/gM
+        +iL/boEeKoALES3egyC90/FKUWqeTOw=
+X-Google-Smtp-Source: ABdhPJww3I/HXN1k7DeKtvuR/EW+eiolzBbKVPYlhD1lhf7pINVhGjlhwBU6eBTna6N2UOeJ40sJ6tdmwiQ=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP id
- t16-20020a17090ae51000b001d9ee239fa1mr139773pjy.0.1651704589073; Wed, 04 May
- 2022 15:49:49 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:813:b0:50d:f198:287b with SMTP id
+ m19-20020a056a00081300b0050df198287bmr14969107pfk.68.1651704585477; Wed, 04
+ May 2022 15:49:45 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:16 +0000
+Date:   Wed,  4 May 2022 22:47:14 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-11-seanjc@google.com>
+Message-Id: <20220504224914.1654036-9-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 010/128] KVM: selftests: Add __vcpu_run() helper
+Subject: [PATCH 008/128] KVM: selftests: Split vcpu_set_nested_state() into
+ two helpers
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,109 +70,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add __vcpu_run() so that tests that want to avoid asserts on KVM_RUN
-failures don't need to open code the ioctl() call.
+Split vcpu_nested_state_set() into a wrapper that asserts, and an inner
+helper that does not.  Passing a bool is all kinds of awful as it's
+unintuitive for readers and requires returning an 'int' from a function
+that for most users can never return anything other than "success".
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/aarch64/vgic_init.c     | 6 ++----
- tools/testing/selftests/kvm/dirty_log_test.c        | 6 ++----
- tools/testing/selftests/kvm/include/kvm_util_base.h | 6 ++++++
- tools/testing/selftests/kvm/lib/kvm_util.c          | 6 ++----
- 4 files changed, 12 insertions(+), 12 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     |  6 ++++--
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 20 +++++++++----------
+ .../kvm/x86_64/vmx_set_nested_state_test.c    |  4 ++--
+ 3 files changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
-index 373c8005c2e7..9a153b2ea3de 100644
---- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
-+++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
-@@ -55,10 +55,8 @@ static void guest_code(void)
- static int run_vcpu(struct kvm_vm *vm, uint32_t vcpuid)
- {
- 	ucall_init(vm, NULL);
--	int ret = __vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
--	if (ret)
--		return -errno;
--	return 0;
-+
-+	return __vcpu_run(vm, vcpuid) ? -errno : 0;
- }
- 
- static struct vm_gic vm_gic_create_with_vcpus(uint32_t gic_dev_type, uint32_t nr_vcpus)
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index 01c01d40201f..5752486764c9 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -509,7 +509,7 @@ static void generate_random_array(uint64_t *guest_array, uint64_t size)
- 
- static void *vcpu_worker(void *data)
- {
--	int ret, vcpu_fd;
-+	int ret;
- 	struct kvm_vm *vm = data;
- 	uint64_t *guest_array;
- 	uint64_t pages_count = 0;
-@@ -517,8 +517,6 @@ static void *vcpu_worker(void *data)
- 						 + sizeof(sigset_t));
- 	sigset_t *sigset = (sigset_t *) &sigmask->sigset;
- 
--	vcpu_fd = vcpu_get_fd(vm, VCPU_ID);
--
- 	/*
- 	 * SIG_IPI is unblocked atomically while in KVM_RUN.  It causes the
- 	 * ioctl to return with -EINTR, but it is still pending and we need
-@@ -539,7 +537,7 @@ static void *vcpu_worker(void *data)
- 		generate_random_array(guest_array, TEST_PAGES_PER_LOOP);
- 		pages_count += TEST_PAGES_PER_LOOP;
- 		/* Let the guest dirty the random pages */
--		ret = ioctl(vcpu_fd, KVM_RUN, NULL);
-+		ret = __vcpu_run(vm, VCPU_ID);
- 		if (ret == -1 && errno == EINTR) {
- 			int sig = -1;
- 			sigwait(sigset, &sig);
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 4f18f03c537f..6b7a5297053e 100644
+index f6984b0c3816..314d971c1f06 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -208,6 +208,12 @@ vm_paddr_t addr_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva);
- struct kvm_run *vcpu_state(struct kvm_vm *vm, uint32_t vcpuid);
- void vcpu_run(struct kvm_vm *vm, uint32_t vcpuid);
- int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid);
-+
-+static inline int __vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
-+{
-+	return __vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
-+}
-+
- int vcpu_get_fd(struct kvm_vm *vm, uint32_t vcpuid);
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid);
- struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid);
+@@ -261,8 +261,10 @@ void vcpu_events_set(struct kvm_vm *vm, uint32_t vcpuid,
+ #ifdef __x86_64__
+ void vcpu_nested_state_get(struct kvm_vm *vm, uint32_t vcpuid,
+ 			   struct kvm_nested_state *state);
+-int vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+-			  struct kvm_nested_state *state, bool ignore_error);
++int __vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
++			    struct kvm_nested_state *state);
++void vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
++			   struct kvm_nested_state *state);
+ #endif
+ void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid);
+ 
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 7ac4516d764c..45895c9ca35a 100644
+index bab4ab297fcc..7b339f98070b 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1597,12 +1597,10 @@ void vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
+@@ -1826,22 +1826,22 @@ void vcpu_nested_state_get(struct kvm_vm *vm, uint32_t vcpuid,
+ 		ret, errno);
+ }
  
- int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
+-int vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+-			  struct kvm_nested_state *state, bool ignore_error)
++int __vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
++			    struct kvm_nested_state *state)
  {
--	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
- 	int rc;
+ 	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
  
--	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
- 	do {
--		rc = ioctl(vcpu->fd, KVM_RUN, NULL);
-+		rc = __vcpu_run(vm, vcpuid);
- 	} while (rc == -1 && errno == EINTR);
- 
- 	assert_on_unhandled_exception(vm, vcpuid);
-@@ -1627,7 +1625,7 @@ void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid)
  	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
  
- 	vcpu->state->immediate_exit = 1;
--	ret = ioctl(vcpu->fd, KVM_RUN, NULL);
-+	ret = __vcpu_run(vm, vcpuid);
- 	vcpu->state->immediate_exit = 0;
+-	ret = ioctl(vcpu->fd, KVM_SET_NESTED_STATE, state);
+-	if (!ignore_error) {
+-		TEST_ASSERT(ret == 0,
+-			"KVM_SET_NESTED_STATE failed, ret: %i errno: %i",
+-			ret, errno);
+-	}
++	return ioctl(vcpu->fd, KVM_SET_NESTED_STATE, state);
++}
  
- 	TEST_ASSERT(ret == -1 && errno == EINTR,
+-	return ret;
++void vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
++			   struct kvm_nested_state *state)
++{
++	int ret = __vcpu_nested_state_set(vm, vcpuid, state);
++
++	TEST_ASSERT(!ret, "KVM_SET_NESTED_STATE failed, ret: %i errno: %i", ret, errno);
+ }
+ #endif
+ 
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
+index 5827b9bae468..af3b60eb35ec 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
+@@ -29,7 +29,7 @@ bool have_evmcs;
+ 
+ void test_nested_state(struct kvm_vm *vm, struct kvm_nested_state *state)
+ {
+-	vcpu_nested_state_set(vm, VCPU_ID, state, false);
++	vcpu_nested_state_set(vm, VCPU_ID, state);
+ }
+ 
+ void test_nested_state_expect_errno(struct kvm_vm *vm,
+@@ -38,7 +38,7 @@ void test_nested_state_expect_errno(struct kvm_vm *vm,
+ {
+ 	int rv;
+ 
+-	rv = vcpu_nested_state_set(vm, VCPU_ID, state, true);
++	rv = __vcpu_nested_state_set(vm, VCPU_ID, state);
+ 	TEST_ASSERT(rv == -1 && errno == expected_errno,
+ 		"Expected %s (%d) from vcpu_nested_state_set but got rv: %i errno: %s (%d)",
+ 		strerror(expected_errno), expected_errno, rv, strerror(errno),
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
