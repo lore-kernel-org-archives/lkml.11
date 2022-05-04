@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A0DC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356024AbiEDREv (ORCPT
+        id S1355182AbiEDREL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
+        Wed, 4 May 2022 13:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354605AbiEDQ6y (ORCPT
+        with ESMTP id S1354584AbiEDQ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:58:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2F32314C;
-        Wed,  4 May 2022 09:50:48 -0700 (PDT)
+        Wed, 4 May 2022 12:58:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1C719039;
+        Wed,  4 May 2022 09:50:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E02A617BD;
-        Wed,  4 May 2022 16:50:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B74C385A4;
-        Wed,  4 May 2022 16:50:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9415B82554;
+        Wed,  4 May 2022 16:50:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 832A6C385A5;
+        Wed,  4 May 2022 16:50:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683046;
-        bh=humWjBXg5Qfpu/Xg7rjSgbiOYu3/AmTCV30mt2Nvlxk=;
+        s=korg; t=1651683035;
+        bh=LN4KYRcCDF5ZUy/Iuw4eM2izh6Ti+dL1/kE1TDFqV5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1NcIegnK9TrAg7GTU+RKDTQ5uk1aG4DzrHyAEJxQrcAfs5kjl9zUwej3cYwX6iDzX
-         JxFfYmmtfV7nfW/ZCLpW610x9J4BhYsYmxQoRoycav69haRtwIBnFnxyQkr5MiZqjo
-         dGxyOljmE8AzZj549JOEdjE5KfnHcwH+AnCS1I98=
+        b=CPssmFekfXRnQh/xKM8gfvcgvb4yKFHMmFSXwDu82unoVg7xfm60PO7+8fv8gs+dz
+         fbhnrerRSIbH2ezMmPtkUuBiFfnt4SV7rZh01GWM40a93jfzVR0WC04KtuBADX3ysR
+         0/chu7uqLyTTsQhbNVy1HEn8x3iZfXdZH1qNBNM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Rik van Riel <riel@surriel.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 037/129] iocost: dont reset the inuse weight of under-weighted debtors
-Date:   Wed,  4 May 2022 18:43:49 +0200
-Message-Id: <20220504153024.146447116@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Wang Qing <wangqing@vivo.com>
+Subject: [PATCH 5.10 031/129] arch_topology: Do not set llc_sibling if llc_id is invalid
+Date:   Wed,  4 May 2022 18:43:43 +0200
+Message-Id: <20220504153023.778112812@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -49,63 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Wang Qing <wangqing@vivo.com>
 
-commit 8c936f9ea11ec4e35e288810a7503b5c841a355f upstream.
+commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
 
-When an iocg is in debt, its inuse weight is owned by debt handling and
-should stay at 1. This invariant was broken when determining the amount of
-surpluses at the beginning of donation calculation - when an iocg's
-hierarchical weight is too low, the iocg is excluded from donation
-calculation and its inuse is reset to its active regardless of its
-indebtedness, triggering warnings like the following:
+When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
+will set llc_sibling 0xff(...), this is misleading.
 
- WARNING: CPU: 5 PID: 0 at block/blk-iocost.c:1416 iocg_kick_waitq+0x392/0x3a0
- ...
- RIP: 0010:iocg_kick_waitq+0x392/0x3a0
- Code: 00 00 be ff ff ff ff 48 89 4d a8 e8 98 b2 70 00 48 8b 4d a8 85 c0 0f 85 4a fe ff ff 0f 0b e9 43 fe ff ff 0f 0b e9 4d fe ff ff <0f> 0b e9 50 fe ff ff e8 a2 ae 70 00 66 90 0f 1f 44 00 00 55 48 89
- RSP: 0018:ffffc90000200d08 EFLAGS: 00010016
- ...
-  <IRQ>
-  ioc_timer_fn+0x2e0/0x1470
-  call_timer_fn+0xa1/0x2c0
- ...
+Don't set llc_sibling(default 0) if we don't know the cache topology.
 
-As this happens only when an iocg's hierarchical weight is negligible, its
-impact likely is limited to triggering the warnings. Fix it by skipping
-resetting inuse of under-weighted debtors.
-
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Reported-by: Rik van Riel <riel@surriel.com>
-Fixes: c421a3eb2e27 ("blk-iocost: revamp debt handling")
-Cc: stable@vger.kernel.org # v5.10+
-Link: https://lore.kernel.org/r/YmjODd4aif9BzFuO@slm.duckdns.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-iocost.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/base/arch_topology.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/block/blk-iocost.c
-+++ b/block/blk-iocost.c
-@@ -2257,7 +2257,17 @@ static void ioc_timer_fn(struct timer_li
- 				iocg->hweight_donating = hwa;
- 				iocg->hweight_after_donation = new_hwi;
- 				list_add(&iocg->surplus_list, &surpluses);
--			} else {
-+			} else if (!iocg->abs_vdebt) {
-+				/*
-+				 * @iocg doesn't have enough to donate. Reset
-+				 * its inuse to active.
-+				 *
-+				 * Don't reset debtors as their inuse's are
-+				 * owned by debt handling. This shouldn't affect
-+				 * donation calculuation in any meaningful way
-+				 * as @iocg doesn't have a meaningful amount of
-+				 * share anyway.
-+				 */
- 				TRACE_IOCG_PATH(inuse_shortage, iocg, &now,
- 						iocg->inuse, iocg->active,
- 						iocg->hweight_inuse, new_hwi);
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -515,7 +515,7 @@ void update_siblings_masks(unsigned int
+ 	for_each_online_cpu(cpu) {
+ 		cpu_topo = &cpu_topology[cpu];
+ 
+-		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
++		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
+ 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
+ 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
+ 		}
 
 
