@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13694C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0018C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379949AbiEDXBc (ORCPT
+        id S1352409AbiEDXDs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46190 "EHLO
+        Wed, 4 May 2022 19:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379253AbiEDW4B (ORCPT
+        with ESMTP id S1379411AbiEDW4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:56:01 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0897254F95
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:36 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id z16-20020a17090a015000b001dbc8da29a1so1316766pje.7
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:36 -0700 (PDT)
+        Wed, 4 May 2022 18:56:04 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACD054FAE
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:39 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id oo16-20020a17090b1c9000b001c6d21e8c04so3570433pjb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=4UqXgJ1N+O1732nnCut9eGm50c3LOJFUuzGS5VTvzCc=;
-        b=g75Qc+5tT+ipq0g/KauZR/B1NDrpklqnfhqaZrVa2vgIeQjGoJaa7F4MuA5M8rZeS5
-         czb1gtYVKItmCQOXBjrAuAeUWgyh+XCGgTLxZOkEWh5/0/ya0OX7nIchqfd8iJp4uqj1
-         tvAlsGWW3xSC+TX6FZ+WVT9DP1UIsmrjxUVwOE6TtwxEL/Re9GesrUxthi2QF2/zpkQ1
-         UgdlgqvfEg7heIHF7URGwDurl2hanXgx6kJwsEZ5c3GMeUo9m7FWvWwY9xh/nnpliVN+
-         HeIdayhkpuvVr8ysS35XKa5DNMvupGs/ey8CiAG2h6nU9RA/H56xKnlz7ekeVUBTsRwV
-         4TCQ==
+        bh=DA/fDPR7FY+ZNY50Im1yQgf+ht5FfAkOTNmE+ScZpZM=;
+        b=ZeeKreHJWVQz2m2UB7s7FHMq/p8SocWocBELKqSTgZxWUdVZH9FiVQC6OEUi4YzDsE
+         o7tBI44bdbRq2Syko+zPNST2pAXBZyhPKJUiMw1+7LMddY1EtWlstB7Ed+Ya22VFQllv
+         12kpynBaSIJVhJE58RFo2jeuFMLsRaXxKx2sKIBF9qByUxSF5X7Sv+jVN82lIMDzVZ2A
+         MVb+i2MAIf78Xc68hUkpheLlgxcYjWgKLLw7c7zlHIUvdPBuCbwkYOf+Nj0sm2g1FWEW
+         2OG9VQ1m2Oo38e3tamfFz+aCFUD0wOuRjR7HdSHYhp6n94vuU0d6DrvryyLEPCWntLn3
+         WJZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=4UqXgJ1N+O1732nnCut9eGm50c3LOJFUuzGS5VTvzCc=;
-        b=saFnEPNbPqnT0SF1pbFRrDO79dENWRCT8b4I1IP0evVQmuMGCchiiw9eyt1YpG3EGP
-         ligALOWQtyUBa0Ni19KD350IjWp7F0L41wdEps0fSvTblQ5SISS+Q18ssLqyGErYUyuR
-         GDmqjIM0QXgfZ7mXGmZQ16wqMGzCaSoNzCXrpRl+xhNBh/ukSbrNYhzVZodzu++g+PBy
-         bDltdjnNs3+qxRiSODRiCSWt9md6o4nk+Fuk9vI9oYuJ2Z0NrjD/y1Eg1YIiYsmIjac1
-         U0NLglHE7l1RnDUGPP3VOhLBLIBQhKDGdJUbDAzEagGGLXngvdgCHy0DgFzpoCH6dxo7
-         /ixg==
-X-Gm-Message-State: AOAM532T+s/8CCA2Ds1NKEMn8Pi3pCBLkLEHW2To4WdN8P6b/O1joyN9
-        vPXc/6oJaUbsJEbqe+g6Oq94ebhvwdA=
-X-Google-Smtp-Source: ABdhPJweA+Hj9/FvBFSO6zYznM6oDXf9XycZChPUCiQgs3V1loXdm6AGHTuTyeJ7VOAT2dZB6UXBxSjv+t0=
+        bh=DA/fDPR7FY+ZNY50Im1yQgf+ht5FfAkOTNmE+ScZpZM=;
+        b=sT4hY0/EXPDSogp3jFb2TisGetCc7TohEmMVZqqpPAq3eLpIe7DOrDwj1GRihuO4Oc
+         iCNVdQrE08H/74KzIbbMVP654EJ+TB2jBV3BmUo28VDw4l1AO39LlczbVIAW6Jp2mwuT
+         6J2syIVYUEm/DoZAoQJHBzsXbQfQYAtg8i7ke2SWD6ROBzCKrVy4KyvJADa8pBIskwdv
+         UFhhM6UesDuG8clr9LG/kkhCJBdZIDhVX0BnhfGVB7LUFt2i1Sv/0iMB3UG7hLL2gF4J
+         VLzl6wKu4sagvlvDG0x4Q4PDWNBMSmtBKvIsL3Blbb0EOjcfpLwpjaLVQZV8RK9t9TWX
+         vDVw==
+X-Gm-Message-State: AOAM5304VDNiAL/MV2YZ7yvKRxrz0Pyx8bPurgU0N6bmMNDb6YO4HMi1
+        fc9Qw18Z1a4U9bZNHVJLVzLpcFTESXs=
+X-Google-Smtp-Source: ABdhPJwsV64fqomnb3OF++XujEXwHIhvLv6CB3KXiPLjrWBUdu4SQX7+zwuxGApPxUwaO81GXGIRJY5BHHc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:10d0:b0:4f7:5af4:47b6 with SMTP id
- d16-20020a056a0010d000b004f75af447b6mr23392004pfu.6.1651704695696; Wed, 04
- May 2022 15:51:35 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:cf0a:b0:156:39c9:4c44 with SMTP id
+ i10-20020a170902cf0a00b0015639c94c44mr23849018plg.124.1651704698816; Wed, 04
+ May 2022 15:51:38 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:18 +0000
+Date:   Wed,  4 May 2022 22:48:20 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-73-seanjc@google.com>
+Message-Id: <20220504224914.1654036-75-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 072/128] KVM: selftests: Convert emulator_error_test away from VCPU_ID
+Subject: [PATCH 074/128] KVM: selftests: Add proper helper for advancing RIP
+ in debug_regs
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,196 +70,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert emulator_error_test to use vm_create_with_one_vcpu() and pass
-around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note,
-this is a "functional" change in the sense that the test now creates a vCPU
-with vcpu_id==0 instead of vcpu_id==5.  The non-zero VCPU_ID was 100%
-arbitrary and added little to no validation coverage.  If testing non-zero
-vCPU IDs is desirable for generic tests, that can be done in the future by
-tweaking the VM creation helpers.
-
-Opportunistically use vcpu_run() instead of _vcpu_run() with an open
-coded assert that KVM_RUN succeeded.
+Replace MOVE_RIP+SET_RIP with a proper helper, vcpu_skip_insn(), that is
+more descriptive, doesn't subtly access local variables, and provides
+type safety.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../kvm/x86_64/emulator_error_test.c          | 65 ++++++++-----------
- 1 file changed, 28 insertions(+), 37 deletions(-)
+ .../testing/selftests/kvm/x86_64/debug_regs.c | 25 ++++++++++---------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/emulator_error_test.c b/tools/testing/selftests/kvm/x86_64/emulator_error_test.c
-index aeb3850f81bd..6a2fe7a9f4a6 100644
---- a/tools/testing/selftests/kvm/x86_64/emulator_error_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/emulator_error_test.c
-@@ -11,7 +11,6 @@
- #include "kvm_util.h"
- #include "vmx.h"
- 
--#define VCPU_ID	   1
- #define MAXPHYADDR 36
- 
- #define MEM_REGION_GVA	0x0000123456789000
-@@ -27,14 +26,6 @@ static void guest_code(void)
- 	GUEST_DONE();
+diff --git a/tools/testing/selftests/kvm/x86_64/debug_regs.c b/tools/testing/selftests/kvm/x86_64/debug_regs.c
+index b999c9753fc3..487d0ae3e75f 100644
+--- a/tools/testing/selftests/kvm/x86_64/debug_regs.c
++++ b/tools/testing/selftests/kvm/x86_64/debug_regs.c
+@@ -65,19 +65,21 @@ static void guest_code(void)
  }
  
--static void run_guest(struct kvm_vm *vm)
--{
--	int rc;
--
--	rc = _vcpu_run(vm, VCPU_ID);
--	TEST_ASSERT(rc == 0, "vcpu_run failed: %d\n", rc);
--}
--
- /*
-  * Accessors to get R/M, REG, and Mod bits described in the SDM vol 2,
-  * figure 2-2 "Table Interpretation of ModR/M Byte (C8H)".
-@@ -56,9 +47,9 @@ static bool is_flds(uint8_t *insn_bytes, uint8_t insn_size)
- 	       GET_RM(insn_bytes[1]) != 0x5;
- }
- 
--static void process_exit_on_emulation_error(struct kvm_vm *vm)
-+static void process_exit_on_emulation_error(struct kvm_vcpu *vcpu)
- {
--	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+	struct kvm_run *run = vcpu->run;
- 	struct kvm_regs regs;
- 	uint8_t *insn_bytes;
- 	uint8_t insn_size;
-@@ -92,50 +83,49 @@ static void process_exit_on_emulation_error(struct kvm_vm *vm)
- 			 * contained an flds instruction that is 2-bytes in
- 			 * length (ie: no prefix, no SIB, no displacement).
- 			 */
--			vcpu_regs_get(vm, VCPU_ID, &regs);
-+			vcpu_regs_get(vcpu->vm, vcpu->id, &regs);
- 			regs.rip += 2;
--			vcpu_regs_set(vm, VCPU_ID, &regs);
-+			vcpu_regs_set(vcpu->vm, vcpu->id, &regs);
- 		}
- 	}
- }
- 
--static void do_guest_assert(struct kvm_vm *vm, struct ucall *uc)
-+static void do_guest_assert(struct ucall *uc)
- {
- 	TEST_FAIL("%s at %s:%ld", (const char *)uc->args[0], __FILE__,
- 		  uc->args[1]);
- }
- 
--static void check_for_guest_assert(struct kvm_vm *vm)
-+static void check_for_guest_assert(struct kvm_vcpu *vcpu)
- {
--	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
- 	struct ucall uc;
- 
--	if (run->exit_reason == KVM_EXIT_IO &&
--	    get_ucall(vm, VCPU_ID, &uc) == UCALL_ABORT) {
--		do_guest_assert(vm, &uc);
-+	if (vcpu->run->exit_reason == KVM_EXIT_IO &&
-+	    get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_ABORT) {
-+		do_guest_assert(&uc);
- 	}
- }
- 
--static void process_ucall_done(struct kvm_vm *vm)
-+static void process_ucall_done(struct kvm_vcpu *vcpu)
- {
--	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+	struct kvm_run *run = vcpu->run;
- 	struct ucall uc;
- 
--	check_for_guest_assert(vm);
-+	check_for_guest_assert(vcpu);
- 
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 		    "Unexpected exit reason: %u (%s)",
- 		    run->exit_reason,
- 		    exit_reason_str(run->exit_reason));
- 
--	TEST_ASSERT(get_ucall(vm, VCPU_ID, &uc) == UCALL_DONE,
-+	TEST_ASSERT(get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_DONE,
- 		    "Unexpected ucall command: %lu, expected UCALL_DONE (%d)",
- 		    uc.cmd, UCALL_DONE);
- }
- 
--static uint64_t process_ucall(struct kvm_vm *vm)
-+static uint64_t process_ucall(struct kvm_vcpu *vcpu)
- {
--	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+	struct kvm_run *run = vcpu->run;
- 	struct ucall uc;
- 
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
-@@ -143,14 +133,14 @@ static uint64_t process_ucall(struct kvm_vm *vm)
- 		    run->exit_reason,
- 		    exit_reason_str(run->exit_reason));
- 
--	switch (get_ucall(vm, VCPU_ID, &uc)) {
-+	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
- 	case UCALL_SYNC:
- 		break;
- 	case UCALL_ABORT:
--		do_guest_assert(vm, &uc);
-+		do_guest_assert(&uc);
- 		break;
- 	case UCALL_DONE:
--		process_ucall_done(vm);
-+		process_ucall_done(vcpu);
- 		break;
- 	default:
- 		TEST_ASSERT(false, "Unexpected ucall");
-@@ -167,6 +157,7 @@ int main(int argc, char *argv[])
- 	};
- 	struct kvm_cpuid_entry2 *entry;
- 	struct kvm_cpuid2 *cpuid;
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	uint64_t gpa, pte;
- 	uint64_t *hva;
-@@ -175,20 +166,20 @@ int main(int argc, char *argv[])
- 	/* Tell stdout not to buffer its content */
- 	setbuf(stdout, NULL);
- 
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--
- 	if (!kvm_check_cap(KVM_CAP_SMALLER_MAXPHYADDR)) {
- 		printf("module parameter 'allow_smaller_maxphyaddr' is not set.  Skipping test.\n");
- 		return 0;
- 	}
- 
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+ #define  CAST_TO_RIP(v)  ((unsigned long long)&(v))
+-#define  SET_RIP(v)  do {				\
+-		vcpu_regs_get(vm, vcpu->id, &regs);	\
+-		regs.rip = (v);				\
+-		vcpu_regs_set(vm, vcpu->id, &regs);	\
+-	} while (0)
+-#define  MOVE_RIP(v)  SET_RIP(regs.rip + (v));
 +
- 	cpuid = kvm_get_supported_cpuid();
++static void vcpu_skip_insn(struct kvm_vcpu *vcpu, int insn_len)
++{
++	struct kvm_regs regs;
++
++	vcpu_regs_get(vcpu->vm, vcpu->id, &regs);
++	regs.rip += insn_len;
++	vcpu_regs_set(vcpu->vm, vcpu->id, &regs);
++}
  
- 	entry = kvm_get_supported_cpuid_index(0x80000008, 0);
- 	entry->eax = (entry->eax & 0xffffff00) | MAXPHYADDR;
- 	set_cpuid(cpuid, entry);
+ int main(void)
+ {
+ 	struct kvm_guest_debug debug;
+ 	unsigned long long target_dr6, target_rip;
+ 	struct kvm_vcpu *vcpu;
+-	struct kvm_regs regs;
+ 	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+@@ -112,7 +114,7 @@ int main(void)
+ 		    "INT3: exit %d exception %d rip 0x%llx (should be 0x%llx)",
+ 		    run->exit_reason, run->debug.arch.exception,
+ 		    run->debug.arch.pc, CAST_TO_RIP(sw_bp));
+-	MOVE_RIP(1);
++	vcpu_skip_insn(vcpu, 1);
  
--	vcpu_set_cpuid(vm, VCPU_ID, cpuid);
-+	vcpu_set_cpuid(vm, vcpu->id, cpuid);
+ 	/* Test instruction HW BP over DR[0-3] */
+ 	for (i = 0; i < 4; i++) {
+@@ -134,7 +136,7 @@ int main(void)
+ 			    run->debug.arch.dr6, target_dr6);
+ 	}
+ 	/* Skip "nop" */
+-	MOVE_RIP(1);
++	vcpu_skip_insn(vcpu, 1);
  
- 	rc = kvm_check_cap(KVM_CAP_EXIT_ON_EMULATION_FAILURE);
- 	TEST_ASSERT(rc, "KVM_CAP_EXIT_ON_EMULATION_FAILURE is unavailable");
-@@ -203,14 +194,14 @@ int main(int argc, char *argv[])
- 	virt_map(vm, MEM_REGION_GVA, MEM_REGION_GPA, 1);
- 	hva = addr_gpa2hva(vm, MEM_REGION_GPA);
- 	memset(hva, 0, PAGE_SIZE);
--	pte = vm_get_page_table_entry(vm, VCPU_ID, MEM_REGION_GVA);
--	vm_set_page_table_entry(vm, VCPU_ID, MEM_REGION_GVA, pte | (1ull << 36));
-+	pte = vm_get_page_table_entry(vm, vcpu->id, MEM_REGION_GVA);
-+	vm_set_page_table_entry(vm, vcpu->id, MEM_REGION_GVA, pte | (1ull << 36));
+ 	/* Test data access HW BP over DR[0-3] */
+ 	for (i = 0; i < 4; i++) {
+@@ -156,15 +158,14 @@ int main(void)
+ 			    run->debug.arch.pc, CAST_TO_RIP(write_data),
+ 			    run->debug.arch.dr6, target_dr6);
+ 		/* Rollback the 4-bytes "mov" */
+-		MOVE_RIP(-7);
++		vcpu_skip_insn(vcpu, -7);
+ 	}
+ 	/* Skip the 4-bytes "mov" */
+-	MOVE_RIP(7);
++	vcpu_skip_insn(vcpu, 7);
  
--	run_guest(vm);
--	process_exit_on_emulation_error(vm);
--	run_guest(vm);
-+	vcpu_run(vm, vcpu->id);
-+	process_exit_on_emulation_error(vcpu);
-+	vcpu_run(vm, vcpu->id);
- 
--	TEST_ASSERT(process_ucall(vm) == UCALL_DONE, "Expected UCALL_DONE");
-+	TEST_ASSERT(process_ucall(vcpu) == UCALL_DONE, "Expected UCALL_DONE");
- 
- 	kvm_vm_free(vm);
- 
+ 	/* Test single step */
+ 	target_rip = CAST_TO_RIP(ss_start);
+ 	target_dr6 = 0xffff4ff0ULL;
+-	vcpu_regs_get(vm, vcpu->id, &regs);
+ 	for (i = 0; i < (sizeof(ss_size) / sizeof(ss_size[0])); i++) {
+ 		target_rip += ss_size[i];
+ 		memset(&debug, 0, sizeof(debug));
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
