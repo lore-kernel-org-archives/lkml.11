@@ -2,163 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE433C3527C
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B562C3527E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381604AbiEDXFU (ORCPT
+        id S1381667AbiEDXFZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
+        Wed, 4 May 2022 19:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379277AbiEDW6K (ORCPT
+        with ESMTP id S1379762AbiEDW6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:58:10 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB4D5469A;
-        Wed,  4 May 2022 15:52:06 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id r27so3077787iot.1;
-        Wed, 04 May 2022 15:52:06 -0700 (PDT)
+        Wed, 4 May 2022 18:58:24 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F235536A
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:09 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id s5-20020a17090aa10500b001d9a8e99e3aso1318963pjp.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qPy6cGZiVn9/0omaO+YfLe4SKbdSU3+fUcFNm6w49Kc=;
-        b=Z5e4PVqRZ3ZwoKj8x9aPrzkkAEc0QVBpouupChjpPGGs4ajRWKxB6FZqVsoR2YAGBt
-         eCzrjaFYsRh5fEZA7ef7WccYCWAerqmiVC1zHW6jHk0KfmPtLgnZ/ThACwcGsmkC4Kty
-         hzTHeyQDQTOmoVIIkT2H3HWXY5/v2bCbc89iuDJdLyDWaj1NKGnn9p/hyC81o/GTk46H
-         6d+OsQqZzSH2MElJy8Q/EL4ZXfRu06OY0w9Do835t34y/O23+meMHNRG/p7W6XT9rij8
-         pFLMC353sef/SqIO/cDIABK+IDr5lp1lDNQtuzoOtxfCbSrggYOFD4coy+ZvuFpJNlWy
-         X9vw==
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=vQ9RsiC3eVUA3hf/NGcV00vB3mSKkhczdPMQnZTeFtU=;
+        b=N9Thpx8WUYJimniuFToz9fHRfmFfDALDVHJU090OPHaVrsp/eMAmtsgvj5PEyGA3u+
+         3J7qqB8glDXlIFVLuM1w6yAdAmXt7jvND6NkcYkStqYIjBYiscw7GKUsN+k+2qbXswks
+         1Ork84yZBH18u8sMWJ81bhLC7CoQj7SyVKZbFBrGUr4Lk+/bvmEC8KFdyHNeZNxiWfvu
+         g8Bw82MZShySuSphEfMuCO9z/Y6G425ZwBw2H4mDI7ZpVOm/6X6WJCANRbYI9KWvI99S
+         5WCdNtKrdUlJkLwOx6GfM6Utx8s2PN/pkOQNqdLpaE/ewRw+FEN/sGz3PW+xxAM9RlOK
+         jnCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qPy6cGZiVn9/0omaO+YfLe4SKbdSU3+fUcFNm6w49Kc=;
-        b=cFmahDDmHHD9HCMz3BuqdTQznHQr3x5ARtqcnAByhRrN7LBq3qUlWU7sAlvKVebti5
-         RCaAZp0sE7dITU22bv4c4zvUMMIK+oqjqXGiu4M26qizGdfX13VStGKhqTD29Fjte9GE
-         pvqWnXSt6e8+8yovo57r2mTAiDnW/clYWwpUl5fT/uTWHcwQlmZ2pYP//xNUQ3oTyhQ7
-         rywXId35jX9EdozOnpMFRN+cvJIeR1TmL4VyRAO35OQB4hOtVt59e4LBUbVTK6NSZDDy
-         FJdV4cNmP7bTSSuQsO/4keO160RTVHSE925jujDN/vG1nJE1pRxNJjP29NCUgX4T5g7I
-         dXqw==
-X-Gm-Message-State: AOAM530dpB/vlGryv9clHPhF1YstvcdcNj+TdZZBSvBaDOLxTOl1ad9U
-        ENttdBVK9b5NGUsRJmIdOjA=
-X-Google-Smtp-Source: ABdhPJzSQVwE7Bb+9mGRgCfNyffXiYGtwDfkeBKWE6u3UzUmpHek9/hw9VzPJkOGmhwIFOTMJskXFA==
-X-Received: by 2002:a05:6638:144b:b0:321:589b:a8ea with SMTP id l11-20020a056638144b00b00321589ba8eamr10245216jad.296.1651704721781;
-        Wed, 04 May 2022 15:52:01 -0700 (PDT)
-Received: from xps8900.attlocal.net ([2600:1700:2442:6db0:94d4:5fe2:e117:e7c3])
-        by smtp.gmail.com with ESMTPSA id i25-20020a02b699000000b0032b608e2926sm66372jam.9.2022.05.04.15.52.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 15:52:01 -0700 (PDT)
-From:   frowand.list@gmail.com
-To:     Frank Rowand <frowand.list@gmail.com>,
-        David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>, Tim.Bird@sony.com,
-        Brendan Higgins <brendanhiggins@google.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, rmr167@gmail.com,
-        guillaume.tucker@collabora.com, dlatypov@google.com,
-        kernelci@groups.io, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] ktap_v2: change "version 1" to "version 2" in examples
-Date:   Wed,  4 May 2022 17:51:52 -0500
-Message-Id: <20220504225152.1451440-3-frowand.list@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220504225152.1451440-1-frowand.list@gmail.com>
-References: <20220504225152.1451440-1-frowand.list@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=vQ9RsiC3eVUA3hf/NGcV00vB3mSKkhczdPMQnZTeFtU=;
+        b=z6Sq+nddzhqzH2/8/GIIVI960nf65LwxtVJuShfwKlqA2kACJEX+XxPvTwV7fPoLY1
+         LYUHMXA/IqkMktKhT6Izk+tq2qVOp0bfkeIXyfMD8iLL1jDIXInth8ONLDYy4TDYT1QS
+         UflmDbyuXnn1E7FJ3RMHyVvX1vMSnoWWvpVjLQOSAvicYFb155+ZIevLd6cTg+stJ4JH
+         OF1fBQMd7Oedia/9W0CAvzQVe3pN6rFIqg6iw9gn0M666qkvx+VoeY3pPJjciKXsuXHR
+         ZQmkPYjdpQNE8e8fTqhRB4iq+00zc6nAd1qTr7Ea14RO/QOfhyZrqoHknD0ZnkLeJ4xC
+         k+IA==
+X-Gm-Message-State: AOAM531lcw3mLYFEDaXeF85LLLi8CTl2eA+O2IIJgsNvz9EorpukF1jX
+        FlLcLfAMEQBRDEUS3PJlBLqTpAAqLCI=
+X-Google-Smtp-Source: ABdhPJwA8ShvFxiqc7WhGGVgNxnLD6F7oHU90fI7RS3S+0mFk7NS0e/7pLV3AotDAlO9n7jIMv1LZuZ1clo=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a63:84c8:0:b0:3ab:180b:bb5a with SMTP id
+ k191-20020a6384c8000000b003ab180bbb5amr19675601pgd.308.1651704724155; Wed, 04
+ May 2022 15:52:04 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Wed,  4 May 2022 22:48:35 +0000
+In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
+Message-Id: <20220504224914.1654036-90-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220504224914.1654036-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH 089/128] KVM: selftests: Convert vgic_irq away from VCPU_ID
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Andrew Jones <drjones@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Rowand <frank.rowand@sony.com>
+Convert vgic_irq to use vm_create_with_one_vcpu() and pass around a
+'struct kvm_vcpu' object instead of passing around a vCPU ID (which is
+always the global VCPU_ID...).
 
-Change the "version line" in example output from
-"KTAP version 1" to "KTAP version 2".
+Opportunstically align the indentation for multiple functions'
+parameters.
 
-Change version that should be used by compliant tests from 1 to 2.
-
-Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- Documentation/dev-tools/ktap.rst | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ .../testing/selftests/kvm/aarch64/vgic_irq.c  | 30 ++++++++++---------
+ .../selftests/kvm/include/aarch64/vgic.h      |  6 ++--
+ .../testing/selftests/kvm/lib/aarch64/vgic.c  | 10 +++----
+ 3 files changed, 25 insertions(+), 21 deletions(-)
 
-diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
-index 37b5dc61bfb8..c78bb46a4430 100644
---- a/Documentation/dev-tools/ktap.rst
-+++ b/Documentation/dev-tools/ktap.rst
-@@ -39,6 +39,7 @@ version of the (K)TAP standard the result is compliant with.
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_irq.c b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
+index 87e41895b385..111170201e9b 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_irq.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
+@@ -22,7 +22,6 @@
  
- For example:
- - "KTAP version 1"
-+- "KTAP version 2"
- - "TAP version 13"
- - "TAP version 14"
+ #define GICD_BASE_GPA		0x08000000ULL
+ #define GICR_BASE_GPA		0x080A0000ULL
+-#define VCPU_ID			0
  
-@@ -46,7 +47,7 @@ Note that, in KTAP, subtests also begin with a version line, which denotes the
- start of the nested test results. This differs from TAP14, which uses a
- separate "Subtest" line.
+ /*
+  * Stores the user specified args; it's passed to the guest and to every test
+@@ -589,7 +588,8 @@ static void kvm_set_gsi_routing_irqchip_check(struct kvm_vm *vm,
+ }
  
--While, going forward, "KTAP version 1" should be used by compliant tests, it
-+While, going forward, "KTAP version 2" should be used by compliant tests, it
- is expected that most parsers and other tooling will accept the other versions
- listed here for compatibility with existing tests and frameworks.
+ static void kvm_irq_write_ispendr_check(int gic_fd, uint32_t intid,
+-			uint32_t vcpu, bool expect_failure)
++					struct kvm_vcpu *vcpu,
++					bool expect_failure)
+ {
+ 	/*
+ 	 * Ignore this when expecting failure as invalid intids will lead to
+@@ -659,15 +659,16 @@ static void kvm_routing_and_irqfd_check(struct kvm_vm *vm,
+ 		(tmp) < (uint64_t)(first) + (uint64_t)(num);			\
+ 		(tmp)++, (i)++)
  
-@@ -204,9 +205,9 @@ An example of a test with two nested subtests:
+-static void run_guest_cmd(struct kvm_vm *vm, int gic_fd,
+-		struct kvm_inject_args *inject_args,
+-		struct test_args *test_args)
++static void run_guest_cmd(struct kvm_vcpu *vcpu, int gic_fd,
++			  struct kvm_inject_args *inject_args,
++			  struct test_args *test_args)
+ {
+ 	kvm_inject_cmd cmd = inject_args->cmd;
+ 	uint32_t intid = inject_args->first_intid;
+ 	uint32_t num = inject_args->num;
+ 	int level = inject_args->level;
+ 	bool expect_failure = inject_args->expect_failure;
++	struct kvm_vm *vm = vcpu->vm;
+ 	uint64_t tmp;
+ 	uint32_t i;
  
- .. code-block:: none
+@@ -705,12 +706,12 @@ static void run_guest_cmd(struct kvm_vm *vm, int gic_fd,
+ 		break;
+ 	case KVM_WRITE_ISPENDR:
+ 		for (i = intid; i < intid + num; i++)
+-			kvm_irq_write_ispendr_check(gic_fd, i,
+-					VCPU_ID, expect_failure);
++			kvm_irq_write_ispendr_check(gic_fd, i, vcpu,
++						    expect_failure);
+ 		break;
+ 	case KVM_WRITE_ISACTIVER:
+ 		for (i = intid; i < intid + num; i++)
+-			kvm_irq_write_isactiver(gic_fd, i, VCPU_ID);
++			kvm_irq_write_isactiver(gic_fd, i, vcpu);
+ 		break;
+ 	default:
+ 		break;
+@@ -739,6 +740,7 @@ static void test_vgic(uint32_t nr_irqs, bool level_sensitive, bool eoi_split)
+ {
+ 	struct ucall uc;
+ 	int gic_fd;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	struct kvm_inject_args inject_args;
+ 	vm_vaddr_t args_gva;
+@@ -753,16 +755,16 @@ static void test_vgic(uint32_t nr_irqs, bool level_sensitive, bool eoi_split)
  
--	KTAP version 1
-+	KTAP version 2
- 	1..1
--	  KTAP version 1
-+	  KTAP version 2
- 	  1..2
- 	  ok 1 test_1
- 	  not ok 2 test_2
-@@ -217,11 +218,11 @@ An example format with multiple levels of nested testing:
+ 	print_args(&args);
  
- .. code-block:: none
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+ 	ucall_init(vm, NULL);
  
--	KTAP version 1
-+	KTAP version 2
- 	1..2
--	  KTAP version 1
-+	  KTAP version 2
- 	  1..2
--	    KTAP version 1
-+	    KTAP version 2
- 	    1..2
- 	    not ok 1 test_1
- 	    ok 2 test_2
-@@ -252,21 +253,21 @@ Example KTAP output
- --------------------
- .. code-block:: none
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
  
--	KTAP version 1
-+	KTAP version 2
- 	1..1
--	  KTAP version 1
-+	  KTAP version 2
- 	  1..3
--	    KTAP version 1
-+	    KTAP version 2
- 	    1..1
- 	    # test_1: initializing test_1
- 	    ok 1 test_1
- 	  ok 1 example_test_1
--	    KTAP version 1
-+	    KTAP version 2
- 	    1..2
- 	    ok 1 test_1 # SKIP test_1 skipped
- 	    ok 2 test_2
- 	  ok 2 example_test_2
--	    KTAP version 1
-+	    KTAP version 2
- 	    1..3
- 	    ok 1 test_1
- 	    # test_2: FAIL
+ 	/* Setup the guest args page (so it gets the args). */
+ 	args_gva = vm_vaddr_alloc_page(vm);
+ 	memcpy(addr_gva2hva(vm, args_gva), &args, sizeof(args));
+-	vcpu_args_set(vm, 0, 1, args_gva);
++	vcpu_args_set(vm, vcpu->id, 1, args_gva);
+ 
+ 	gic_fd = vgic_v3_setup(vm, 1, nr_irqs,
+ 			GICD_BASE_GPA, GICR_BASE_GPA);
+@@ -775,12 +777,12 @@ static void test_vgic(uint32_t nr_irqs, bool level_sensitive, bool eoi_split)
+ 		guest_irq_handlers[args.eoi_split][args.level_sensitive]);
+ 
+ 	while (1) {
+-		vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			kvm_inject_get_call(vm, &uc, &inject_args);
+-			run_guest_cmd(vm, gic_fd, &inject_args, &args);
++			run_guest_cmd(vcpu, gic_fd, &inject_args, &args);
+ 			break;
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("%s at %s:%ld\n\tvalues: %#lx, %#lx",
+diff --git a/tools/testing/selftests/kvm/include/aarch64/vgic.h b/tools/testing/selftests/kvm/include/aarch64/vgic.h
+index 4442081221a0..0ac6f05c63f9 100644
+--- a/tools/testing/selftests/kvm/include/aarch64/vgic.h
++++ b/tools/testing/selftests/kvm/include/aarch64/vgic.h
+@@ -8,6 +8,8 @@
+ 
+ #include <linux/kvm.h>
+ 
++#include "kvm_util.h"
++
+ #define REDIST_REGION_ATTR_ADDR(count, base, flags, index) \
+ 	(((uint64_t)(count) << 52) | \
+ 	((uint64_t)((base) >> 16) << 16) | \
+@@ -26,8 +28,8 @@ void kvm_arm_irq_line(struct kvm_vm *vm, uint32_t intid, int level);
+ int _kvm_arm_irq_line(struct kvm_vm *vm, uint32_t intid, int level);
+ 
+ /* The vcpu arg only applies to private interrupts. */
+-void kvm_irq_write_ispendr(int gic_fd, uint32_t intid, uint32_t vcpu);
+-void kvm_irq_write_isactiver(int gic_fd, uint32_t intid, uint32_t vcpu);
++void kvm_irq_write_ispendr(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu);
++void kvm_irq_write_isactiver(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu);
+ 
+ #define KVM_IRQCHIP_NUM_PINS	(1020 - 32)
+ 
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/vgic.c b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+index 61da345c48ac..0de9b0686498 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/vgic.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+@@ -127,8 +127,8 @@ void kvm_arm_irq_line(struct kvm_vm *vm, uint32_t intid, int level)
+ 	TEST_ASSERT(!ret, KVM_IOCTL_ERROR(KVM_IRQ_LINE, ret));
+ }
+ 
+-static void vgic_poke_irq(int gic_fd, uint32_t intid,
+-		uint32_t vcpu, uint64_t reg_off)
++static void vgic_poke_irq(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu,
++			  uint64_t reg_off)
+ {
+ 	uint64_t reg = intid / 32;
+ 	uint64_t index = intid % 32;
+@@ -141,7 +141,7 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
+ 
+ 	if (intid_is_private) {
+ 		/* TODO: only vcpu 0 implemented for now. */
+-		assert(vcpu == 0);
++		assert(vcpu->id == 0);
+ 		attr += SZ_64K;
+ 	}
+ 
+@@ -159,12 +159,12 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
+ 	kvm_device_attr_set(gic_fd, group, attr, &val);
+ }
+ 
+-void kvm_irq_write_ispendr(int gic_fd, uint32_t intid, uint32_t vcpu)
++void kvm_irq_write_ispendr(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu)
+ {
+ 	vgic_poke_irq(gic_fd, intid, vcpu, GICD_ISPENDR);
+ }
+ 
+-void kvm_irq_write_isactiver(int gic_fd, uint32_t intid, uint32_t vcpu)
++void kvm_irq_write_isactiver(int gic_fd, uint32_t intid, struct kvm_vcpu *vcpu)
+ {
+ 	vgic_poke_irq(gic_fd, intid, vcpu, GICD_ISACTIVER);
+ }
 -- 
-Frank Rowand <frank.rowand@sony.com>
+2.36.0.464.gb9c8b46e94-goog
 
