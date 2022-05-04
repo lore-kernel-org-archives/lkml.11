@@ -2,109 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D604C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350155AbiEDNGz (ORCPT
+        id S1350168AbiEDNH2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
+        Wed, 4 May 2022 09:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350140AbiEDNGq (ORCPT
+        with ESMTP id S237497AbiEDNH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:06:46 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8421B377E0;
-        Wed,  4 May 2022 06:03:09 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244A6Oxs016063;
-        Wed, 4 May 2022 15:02:41 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=thMF4CPlkTsnZstfuDPh8HVl0o2Yyz4DhhVhNaGVUps=;
- b=2qokIaFqOEp/FXAivRHLXQwfKtxNjCCZENfb4vNYvO/+VzMxONx79mBqLl3SMjLaGaGE
- mP3Fc9FLIUNTzD5ePCe9yefrHAKFfrEnrUnpKBC7KHFvjezEsLEkfGjys50xJHnUQklD
- HMP5KoJ5tuLTcP6OkKXwu4jgPIV1GQuhP2OJ9kzkAP+NMawrCgIcIZ1zsVyJcslKqsGr
- yLkDPyNW+i2TYAg1jxuTofrbZCLPUrUaZw7MczHBKKBHHE1Y1mGF2jTSyDMIsgEijErp
- 3TqNf2ZzhGT41UpLkR6VPTnXU0erM80zilESEUNqB+UxWN5pamwsmHuh/wM4ZuywMXmp Qg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frvf0m4ed-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 May 2022 15:02:41 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7DEE810002A;
-        Wed,  4 May 2022 15:02:40 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6A50B21FE9E;
-        Wed,  4 May 2022 15:02:40 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 15:02:39
- +0200
-From:   Valentin Caron <valentin.caron@foss.st.com>
-To:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/6] rtc: stm32: add alarm out and LSCO features.
-Date:   Wed, 4 May 2022 15:02:27 +0200
-Message-ID: <20220504130233.330983-1-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 4 May 2022 09:07:26 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877E2377E0
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:03:50 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651669429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qnTydrMS1ksmehjR1Sl6xajLYwWe+zoyDgYNW/GZj1w=;
+        b=RO2BH/TcggPsRNijCcOP8zR+Lo8UVQQ0WcBGQQ/AxGOcA/VecEAn7o+osJsn81GlCUVOB4
+        b8W0jiLwk8gz2TW1ST2HNCfZ9cnHW/o7t9BiKRVbUDTmP2VONzBwTuxCe8hS0EPtmnpljB
+        /BEQkR/pUkO8tEoEktLRKgbHv+aY+qdPFGu64mJwbLqiFKFA5OJV5S5K0eCO1gTDNv/+rh
+        2JLbGmvjfHY39k9xE19cA2WrCcC4QodI2NoXAhSnRvyAI3yULTj86MmNJMH4dMs70zMyRc
+        Kxuq9678kGZncg0zbeyhWcWHSh7Jf+IlEATiA0UNV+jW4YSEE/0/jere4EMztQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651669429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qnTydrMS1ksmehjR1Sl6xajLYwWe+zoyDgYNW/GZj1w=;
+        b=Eyd/snTxo2U0d7A7rEeZjUIVMAZ6f+1uWn05fdJ1zNJyUxFJyfUIRXpa6uolhIJsaU0SBF
+        lxshDIpJBoLXkADQ==
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Oscar Shiang <oscar0225@livemail.tw>
+Subject: Re: [patch v12 13/13] task isolation: only TIF_TASK_ISOL if task
+ isolation is enabled
+In-Reply-To: <YnF+lbxJXiQMbS/a@fuller.cnet>
+References: <20220315153132.717153751@fedora.localdomain>
+ <20220315153314.333646565@fedora.localdomain> <87zgk7x93h.ffs@tglx>
+ <YnF+lbxJXiQMbS/a@fuller.cnet>
+Date:   Wed, 04 May 2022 15:03:48 +0200
+Message-ID: <87k0b1jvpn.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-04_04,2022-05-04_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On STM32MP1x SOCs, RTC is able to output some signals on its own pins.
+On Tue, May 03 2022 at 16:12, Marcelo Tosatti wrote:
+> On Wed, Apr 27, 2022 at 09:45:54AM +0200, Thomas Gleixner wrote:
+> It seems to be inline with the remaining TIF_ bits:
+>
+>                 if (ti_work & _TIF_NOTIFY_RESUME)
+>                         tracehook_notify_resume(regs);
+>
+> +               if (ti_work & _TIF_TASK_ISOL)
+> +                       task_isol_exit_to_user_mode();
+> +
+>
+>
+> And there is even:
 
-This series add the possibility to select two of these signals on
-RTC pins :
- - LSCO (Low Speed Clock Output) that allow to output LSE clock on a pin.
-   On STM32MP1x Discovery boards this feature is used to generate a clock
-   to Wifi/Bluetooth module.
- - Alarm out that allow to send a pulse on a pin when alarm A of the RTC
-   expires.
+I know that the bit is defined, but that does still not make an argument.
 
-Amelie Delaunay (2):
-  dt-bindings: rtc: stm32: add st,lsco optional property to select
-    output
-  rtc: stm32: add Low Speed Clock Output (LSCO) support
+> By looking at the code, we see the sites where this bit is set are:
 
-Gabriel Fernandez (2):
-  ARM: dts: stm32: add RTC LSCO support on stm32mp157c-dk2
-  ARM: dts: stm32: add RTC LSCO support on stm32mp135f-dk
+Again. I'm able to read the patches myself.
 
-Valentin Caron (2):
-  dt-bindings: rtc: stm32: add alarm A out property to select output
-  rtc: stm32: add alarm A out feature
+> Would you prefer an explanation, in words, when these bits are set, when
+> they are cleared?
 
- .../devicetree/bindings/rtc/st,stm32-rtc.yaml |  37 +++
- arch/arm/boot/dts/stm32mp13-pinctrl.dtsi      |   6 +
- arch/arm/boot/dts/stm32mp135f-dk.dts          |   4 +
- arch/arm/boot/dts/stm32mp15-pinctrl.dtsi      |   6 +
- arch/arm/boot/dts/stm32mp157c-dk2.dts         |   7 +
- drivers/rtc/Kconfig                           |   1 +
- drivers/rtc/rtc-stm32.c                       | 210 ++++++++++++++++++
- include/dt-bindings/rtc/rtc-stm32.h           |  14 ++
- 8 files changed, 285 insertions(+)
- create mode 100644 include/dt-bindings/rtc/rtc-stm32.h
+No. The point is that contrary to TIF_NOTIFY_RESUME and other TIF bits,
+this is going to end up being sprinkled all over the place.
 
--- 
-2.25.1
+With the current vmstat quiesce that's limited, but it's bound to
+increase and spread simply because the whole thing has no semantics and
+it's all headed to be adhoc cure for the isolation itch of the day.
+
+Thanks,
+
+        tglx
 
