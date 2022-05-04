@@ -2,137 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A438AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348402AbiEDKmm (ORCPT
+        id S1346580AbiEDKnM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49202 "EHLO
+        Wed, 4 May 2022 06:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348286AbiEDKl4 (ORCPT
+        with ESMTP id S1348403AbiEDKnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:41:56 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573D82A250
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 03:38:16 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id bq30so1604144lfb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 03:38:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aIei54pOigWQK9+b+OkuEAgJl1aHkkUTvctdnQzlHt4=;
-        b=p0VO7qbsL7uF9M9/7ebYfqcO6JdNdD5a/QA5s064dT12fcvviR6wea5z8IkxOrVoyM
-         VUNhiDj4X8/+FW6HvzkKp4vdNUYxLuIbQdOD8ifURVedOD9eeCpxzCw/Ar2dVQxkU9BD
-         ilq0Y3MuGyvqnp/h8JvbkpxRXB5KpQormgYBo5GKUuM65GuRm/weR/HyQIZbBEbFMKND
-         98UrUCEeB4DlubfqxACY+6m4Q5W7ZQ1l/AFlX8nN7d3p1bg7N+qZpHEXeqS5ya924NVT
-         ofuwIaGzxEm48qe1Au0jlA7p/idKArtFirJ3dVGK5IX4rxR3S8AKzznF6y9Vu4kpbTKQ
-         GxjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aIei54pOigWQK9+b+OkuEAgJl1aHkkUTvctdnQzlHt4=;
-        b=kLRSPST6fWXiH+Djda9Lu25F6yBqaoLNnmcQXrCg1gVyKUqL0d7wwj95Fp3q44wmgf
-         pIR8FLIUEVtD+jnfH1fT5UAA/LJcY0XxLX1qGXbXaU93ehMPTbSnsDHgFKPHD12ljYEm
-         ED0/KlFJINmbDAZzxdxdr7ZxuJp61q7HFunQ5S5vgWCf7rWlQ8K3dRE7hXatYmQUshBk
-         pyMOgcWOXuYs8QQ4r0zBxpkBSl6HhBZnVNHtEnuVAel339ewF9cPo76YqHn335rEBrsg
-         ktAXvquZavOu3eDxYAdl3sUN9GYqr7LXW8rWb0TRA9r72SW2tLItOauTgAcE68e8kFRY
-         OVuA==
-X-Gm-Message-State: AOAM533g8Zk2/SGiJK00LkoOBOUhqeA3+xIhXP80N72fYGAZ9aoQDNtP
-        aA6NU5LktQJU8WmQ1AXQ30tdxgpkYRwKaH44lhURhw==
-X-Google-Smtp-Source: ABdhPJwqEGO9KRl5DaF0jB3TjhJs4ZD0v8c25IWGC8C18y+TB8EClCVVs9A9uZbWsFRWbQbkHeM1oxy1vrwUxo+HD+s=
-X-Received: by 2002:a05:6512:301:b0:471:ecd0:ea24 with SMTP id
- t1-20020a056512030100b00471ecd0ea24mr13515941lfp.71.1651660695871; Wed, 04
- May 2022 03:38:15 -0700 (PDT)
+        Wed, 4 May 2022 06:43:00 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A73E2A71C;
+        Wed,  4 May 2022 03:39:23 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:1b3c:6996:5378:f253]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nmCPg-0002qJ-9r; Wed, 04 May 2022 12:39:20 +0200
+Message-ID: <3bb21e7a-8937-d813-7273-f760b4e95cdb@leemhuis.info>
+Date:   Wed, 4 May 2022 12:39:13 +0200
 MIME-Version: 1.0
-References: <20220428081817.35382-1-krzysztof.kozlowski@linaro.org> <20220428081817.35382-2-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220428081817.35382-2-krzysztof.kozlowski@linaro.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 4 May 2022 12:37:39 +0200
-Message-ID: <CAPDyKFok+boJ5hHLduJbQ3AZjNWfWXB93=bem_s97yf=j3XRRw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dt-bindings: mmc: brcm,sdhci-brcmstb: cleanup example
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Al Cooper <alcooperx@gmail.com>, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: Regression: Extremely unstable connection on ax200
+Content-Language: en-US
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     Luca Coelho <luciano.coelho@intel.com>
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kyle McGrath <kyle.mcgrath@protonmail.com>,
+        s.viper.z@gmail.com, info@cgnetlink.com,
+        Udo Steinberg <udo@hypervisor.org>, golan.ben.ami@intel.com
+References: <031b72a5-907e-219f-7433-8de3641d7c01@leemhuis.info>
+In-Reply-To: <031b72a5-907e-219f-7433-8de3641d7c01@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651660763;7cc7c3fc;
+X-HE-SMSGID: 1nmCPg-0002qJ-9r
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Apr 2022 at 10:18, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> Cleanup indentation and order of entries in example DTS.  The most
-> important when reading the DTS are compatible and reg.  By convention
-> they are usually to first entries.  No functional change.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Hi, this is your Linux kernel regression tracker. Top-posting for once,
+to make this easily accessible to everyone.
 
-Applied for next, thanks!
+Iwlwifi maintainers, what happened regarding below regression report?
+Looks like it was ignored, is there a reason why? There are two other
+tickets reg. similar problems in bugzilla.kernel.org that look like they
+were mostly ignored as well:
 
-Kind regards
-Uffe
+https://bugzilla.kernel.org/show_bug.cgi?id=215635
+https://bugzilla.kernel.org/show_bug.cgi?id=215697
 
+Can anyone clarify what's up here? Are they all the same issue or are it
+different ones?
 
-> ---
->  .../bindings/mmc/brcm,sdhci-brcmstb.yaml       | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml b/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml
-> index 54a0edab5f8c..b672202fff4e 100644
-> --- a/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml
-> @@ -65,15 +65,15 @@ unevaluatedProperties: false
->  examples:
->    - |
->      mmc@84b0000 {
-> -      sd-uhs-sdr50;
-> -      sd-uhs-ddr50;
-> -      sd-uhs-sdr104;
-> -      sdhci,auto-cmd12;
->        compatible = "brcm,bcm7216-sdhci",
->                     "brcm,bcm7445-sdhci",
->                     "brcm,sdhci-brcmstb";
->        reg = <0x84b0000 0x260>, <0x84b0300 0x200>;
->        reg-names = "host", "cfg";
-> +      sd-uhs-sdr50;
-> +      sd-uhs-ddr50;
-> +      sd-uhs-sdr104;
-> +      sdhci,auto-cmd12;
->        interrupts = <0x0 0x26 0x4>;
->        interrupt-names = "sdio0_0";
->        clocks = <&scmi_clk 245>;
-> @@ -81,6 +81,11 @@ examples:
->      };
->
->      mmc@84b1000 {
-> +      compatible = "brcm,bcm7216-sdhci",
-> +                   "brcm,bcm7445-sdhci",
-> +                   "brcm,sdhci-brcmstb";
-> +      reg = <0x84b1000 0x260>, <0x84b1300 0x200>;
-> +      reg-names = "host", "cfg";
->        mmc-ddr-1_8v;
->        mmc-hs200-1_8v;
->        mmc-hs400-1_8v;
-> @@ -88,11 +93,6 @@ examples:
->        supports-cqe;
->        non-removable;
->        bus-width = <0x8>;
-> -      compatible = "brcm,bcm7216-sdhci",
-> -           "brcm,bcm7445-sdhci",
-> -            "brcm,sdhci-brcmstb";
-> -      reg = <0x84b1000 0x260>, <0x84b1300 0x200>;
-> -      reg-names = "host", "cfg";
->        interrupts = <0x0 0x27 0x4>;
->        interrupt-names = "sdio1_0";
->        clocks = <&scmi_clk 245>;
-> --
-> 2.32.0
->
+And could the reporters of those tickets (CCed) please clarify in the
+ticket if their problem still happens with the latest kernel (either
+5.17.y or mainline; 5.16.y is irrelevant now, as it's EOL)
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
+
+On 08.04.22 12:11, Thorsten Leemhuis wrote:
+> Hi, this is your Linux kernel regression tracker.
+> 
+> I noticed a regression report in bugzilla.kernel.org that afaics nobody
+> acted upon since it was reported about a week ago, that's why I decided
+> to forward it to the lists and all people that seemed to be relevant
+> here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=215789 :
+> 
+>>  Kyle McGrath 2022-04-01 14:05:34 UTC
+>>
+>> Created attachment 300678 [details]
+>> Log of iwlwifi on 5.17
+>>
+>> Recently I updated to the Fedora 36 beta, with the 5.17 kernel. Ever since, I've experienced excessive issues with my Intel AX200 wireless card. Every other aspect of my usage has remained the same (laptop and router both in the same location, same number of devices on the network, etc.)
+>>
+>> Before updating to 5.17, I was able to perform latency-sensitive tasks such as playing online games and use VoIP applications without issue, with acceptable latency. After updating to 5.17 it is at the point where I cannot have an enjoyable match due to constant ping spikes, often to the point where the game will "stutter" or "lock up" every 10 seconds or say, with excessively high ping to go along with this. My VoIP applications have similar issues with calls often being interrupted or distorted.
+>>
+>> I reverted to 5.16.16 and this has alleviated the issue for the time being. I've included journal output from both 5.17 and 5.16 and you can see there are several issues/errors which are not present on 5.16.
+>>
+>> Below is all I get from the journal for iwlwifi under 5.16. I've included 5.17 output as an attachment.
+>>
+>>
+>> Apr 01 01:18:06 tarsonis kernel: iwlwifi 0000:03:00.0: enabling device (0000 -> 0002)
+>> Apr 01 01:18:06 tarsonis kernel: iwlwifi 0000:03:00.0: api flags index 2 larger than supported by driver
+>> Apr 01 01:18:06 tarsonis kernel: iwlwifi 0000:03:00.0: TLV_FW_FSEQ_VERSION: FSEQ Version: 89.3.35.37
+>> Apr 01 01:18:06 tarsonis kernel: iwlwifi 0000:03:00.0: loaded firmware version 67.8f59b80b.0 cc-a0-67.ucode op_mode iwlmvm
+>> Apr 01 01:18:07 tarsonis kernel: iwlwifi 0000:03:00.0: Detected Intel(R) Wi-Fi 6 AX200 160MHz, REV=0x340
+>> Apr 01 01:18:07 tarsonis kernel: iwlwifi 0000:03:00.0: Detected RF HR B3, rfid=0x10a100
+>> Apr 01 01:18:07 tarsonis kernel: iwlwifi 0000:03:00.0: base HW address: e0:d4:e8:a5:98:21
+>> Apr 01 01:18:07 tarsonis kernel: iwlwifi 0000:03:00.0 wlp3s0: renamed from wlan0
+> 
+> 
+> Could somebody take a look into this? Or was this discussed somewhere
+> else already? Or even fixed?
+> 
+> Anyway, to get this tracked:
+> 
+> #regzbot introduced: v5.16..v5.17
+> #regzbot from: Kyle McGrath <kyle.mcgrath@protonmail.com>
+> #regzbot title: iwlwifi: Extremely unstable connection on ax200
+> #regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215789
+> 
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+> 
+> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+> reports on my table. I can only look briefly into most of them and lack
+> knowledge about most of the areas they concern. I thus unfortunately
+> will sometimes get things wrong or miss something important. I hope
+> that's not the case here; if you think it is, don't hesitate to tell me
+> in a public reply, it's in everyone's interest to set the public record
+> straight.
+> 
