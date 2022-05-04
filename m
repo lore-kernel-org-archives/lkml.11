@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85C3C35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D245BC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359290AbiEDRjt (ORCPT
+        id S1359312AbiEDRjz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        Wed, 4 May 2022 13:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356812AbiEDRJo (ORCPT
+        with ESMTP id S1356801AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB425205F4;
-        Wed,  4 May 2022 09:55:45 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F271E3C5;
+        Wed,  4 May 2022 09:55:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 977DDB8278E;
-        Wed,  4 May 2022 16:55:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43E55C385AF;
-        Wed,  4 May 2022 16:55:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B4A4B82552;
+        Wed,  4 May 2022 16:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BCF1C385A4;
+        Wed,  4 May 2022 16:55:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683343;
-        bh=8lm3thwt99G1i9oKsvxb5K2n7Qp9sOJOBnjoL2NNz4E=;
+        s=korg; t=1651683339;
+        bh=c8j9sThsQt1nXao1ztdPXjEAbh1QS7CoMekdvJqvNuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B3XLPkQyttT5oSOiFtjDXCVf4zMKNTi5SEY4bFJ8/+5J+99HKkMTSmqM6+vf/nH9Y
-         EiXy3Q1xgL1SU1fnsvJpuL34Hfju4UyJ68i8QEcTnFmThMXKqv6JvHKVr4BFw5qPb/
-         vL5PvXtxTFxgpOjh1XKBdgbz37cN/jgJSgmVJ/sI=
+        b=YBPic7mbUopE2qH2aI3oC/Fa5aNCHif9yfD7huv78xA80U77JYWf/g6WJLcgG3wbd
+         dMXyngAMFYsjoOdimkamZTwZez6EepfTx4d9XBaPkzCPPgj076uBxxrzzveQZPd27X
+         Qzm5iLpOQ4yOBFUIZ7BMiDnkC7ICtYm/eAafmopw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 008/225] USB: serial: option: add Telit 0x1057, 0x1058, 0x1075 compositions
-Date:   Wed,  4 May 2022 18:44:06 +0200
-Message-Id: <20220504153111.022630292@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.17 014/225] iio: scd4x: check return of scd4x_write_and_fetch
+Date:   Wed,  4 May 2022 18:44:12 +0200
+Message-Id: <20220504153111.533116882@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,46 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Tom Rix <trix@redhat.com>
 
-commit f32c5a0423400e01f4d7c607949fa3a1f006e8fa upstream.
+commit f50232193e61cf89a73130b5e843fef30763c428 upstream.
 
-Add support for the following Telit FN980 and FN990 compositions:
+Clang static analysis reports this problem
+scd4x.c:474:10: warning: The left operand of '==' is a
+  garbage value
+  if (val == 0xff) {
+      ~~~ ^
+val is only set from a successful call to scd4x_write_and_fetch()
+So check it's return.
 
-0x1057: tty, adb, rmnet, tty, tty, tty, tty, tty
-0x1058: tty, adb, tty, tty, tty, tty, tty
-0x1075: adb, tty
-
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Link: https://lore.kernel.org/r/20220406141408.580669-1-dnlplm@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 49d22b695cbb ("drivers: iio: chemical: Add support for Sensirion SCD4x CO2 sensor")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Link: https://lore.kernel.org/r/20220301025223.223223-1-trix@redhat.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/chemical/scd4x.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1219,6 +1219,10 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(0) | RSVD(1) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1056, 0xff),	/* Telit FD980 */
- 	  .driver_info = NCTRL(2) | RSVD(3) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1057, 0xff),	/* Telit FN980 */
-+	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1058, 0xff),	/* Telit FN980 (PCIe) */
-+	  .driver_info = NCTRL(0) | RSVD(1) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1060, 0xff),	/* Telit LN920 (rmnet) */
- 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1061, 0xff),	/* Telit LN920 (MBIM) */
-@@ -1235,6 +1239,8 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(2) | RSVD(3) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1073, 0xff),	/* Telit FN990 (ECM) */
- 	  .driver_info = NCTRL(0) | RSVD(1) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1075, 0xff),	/* Telit FN990 (PCIe) */
-+	  .driver_info = RSVD(0) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_ME910),
- 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(3) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_ME910_DUAL_MODEM),
+diff --git a/drivers/iio/chemical/scd4x.c b/drivers/iio/chemical/scd4x.c
+index 20d4e7584e92..37143b5526ee 100644
+--- a/drivers/iio/chemical/scd4x.c
++++ b/drivers/iio/chemical/scd4x.c
+@@ -471,12 +471,15 @@ static ssize_t calibration_forced_value_store(struct device *dev,
+ 	ret = scd4x_write_and_fetch(state, CMD_FRC, arg, &val, sizeof(val));
+ 	mutex_unlock(&state->lock);
+ 
++	if (ret)
++		return ret;
++
+ 	if (val == 0xff) {
+ 		dev_err(dev, "forced calibration has failed");
+ 		return -EINVAL;
+ 	}
+ 
+-	return ret ?: len;
++	return len;
+ }
+ 
+ static IIO_DEVICE_ATTR_RW(calibration_auto_enable, 0);
+-- 
+2.36.0
+
 
 
