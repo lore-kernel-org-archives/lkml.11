@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252BDC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD18C35295
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357098AbiEDROr (ORCPT
+        id S1357713AbiEDRPM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51400 "EHLO
+        Wed, 4 May 2022 13:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355085AbiEDREI (ORCPT
+        with ESMTP id S1355295AbiEDREQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318D74DF55;
-        Wed,  4 May 2022 09:52:42 -0700 (PDT)
+        Wed, 4 May 2022 13:04:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757874E392;
+        Wed,  4 May 2022 09:52:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBB8EB82792;
-        Wed,  4 May 2022 16:52:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBFFC385A5;
-        Wed,  4 May 2022 16:52:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47158617BE;
+        Wed,  4 May 2022 16:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90CB9C385AA;
+        Wed,  4 May 2022 16:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683160;
-        bh=9vZ4s2S3OkqcFoWeX3a+FHD4PzlE9/XUKS4qPEXLkgI=;
+        s=korg; t=1651683170;
+        bh=Exter9JfEyqxzaKEQ7kAEKeLUzK+9ANC15n6zUEY+oU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QHiIybnI2C29u4sqamlPxNHAndYGfUnteVESd4hgdfM9LkjBHBBhawDWoXKtgOF+v
-         7XMIvmzq5UghN92rQR0SEIHCjnY+SEVU3tmQW0tlwF3voMg5TEYQLAOQRqG9IrQOcG
-         1B73h0dbJKTp5wa4GLr4gjXKlqOzrfjKdS7/E3Qs=
+        b=RaJnfb0JP9NWqVfYfkJSwdKP/Ns0L2H1WX3Zyyt4p3YPN4voMN1xvU4F+ofKEFwe7
+         KeGFsN67rbQoYBbFbKIvfyyiRi0qth5QwaEgTfmhsEAbmwd+4WgspBuWSraCPh2lPu
+         Su9PkL0yFW30BAw6WMO+8Fwp0VitDnX4qZZZR0bw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 012/177] iio: dac: ad5592r: Fix the missing return value.
-Date:   Wed,  4 May 2022 18:43:25 +0200
-Message-Id: <20220504153054.620947004@linuxfoundation.org>
+        stable@vger.kernel.org, Hemant Kumar <quic_hemantk@quicinc.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.15 035/177] bus: mhi: host: pci_generic: Add missing poweroff() PM callback
+Date:   Wed,  4 May 2022 18:43:48 +0200
+Message-Id: <20220504153056.110873955@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,34 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
+commit e64d5fa5044f225ac87d96a7e4be11389999c4c6 upstream.
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+During hibernation process, once thaw() stage completes, the MHI endpoint
+devices will be in M0 state post recovery. After that, the devices will be
+powered down so that the system can enter the target sleep state. During
+this stage, the PCI core will put the devices in D3hot. But this transition
+is allowed by the MHI spec. The devices can only enter D3hot when it is in
+M3 state.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+So for fixing this issue, let's add the poweroff() callback that will get
+executed before putting the system in target sleep state during
+hibernation. This callback will power down the device properly so that it
+could be restored during restore() or thaw() stage.
+
+Cc: stable@vger.kernel.org
+Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
+Reported-by: Hemant Kumar <quic_hemantk@quicinc.com>
+Suggested-by: Hemant Kumar <quic_hemantk@quicinc.com>
+Link: https://lore.kernel.org/r/20220405125907.5644-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5592r-base.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bus/mhi/pci_generic.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -523,7 +523,7 @@ static int ad5592r_alloc_channels(struct
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
- 
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
- 	}
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -1045,6 +1045,7 @@ static const struct dev_pm_ops mhi_pci_p
+ 	.resume = mhi_pci_resume,
+ 	.freeze = mhi_pci_freeze,
+ 	.thaw = mhi_pci_restore,
++	.poweroff = mhi_pci_freeze,
+ 	.restore = mhi_pci_restore,
+ #endif
+ };
 
 
