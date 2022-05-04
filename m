@@ -2,91 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53EB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347120AbiEDJ0y (ORCPT
+        id S1347146AbiEDJ1D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 05:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        Wed, 4 May 2022 05:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239093AbiEDJ0v (ORCPT
+        with ESMTP id S1347132AbiEDJ07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 05:26:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D44920BF4
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 02:23:16 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nmBDx-0006Us-V7; Wed, 04 May 2022 11:23:10 +0200
-Message-ID: <79c7891a-9a68-a111-094d-be9804071a9e@pengutronix.de>
-Date:   Wed, 4 May 2022 11:23:06 +0200
+        Wed, 4 May 2022 05:26:59 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36B9222B3;
+        Wed,  4 May 2022 02:23:22 -0700 (PDT)
+Date:   Wed, 04 May 2022 09:23:19 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651656201;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SQfRKkuA+gg5hPv7T2/toRrf4g4UW+FY4GNmDfcAxgs=;
+        b=Wd6XbBXI3Ua0NKD/sDHk/1LnD9zIUWK5thYXZ3XFsPTNy8BTG7gX/NgKkfNe8b89QXPinK
+        5qsO25zMP9ZcYaV862okEiTNb5PLRCfhC5iNkGQX1fSuOgDO4KFcaHcbNZlK7ry7wHioGH
+        OS37EVcqoUc1yProKiF+kLhVw8C+B+Xt00hyIZGccuvx4+f/n08nMe1dqjFUOS7/lKpJbA
+        qAVEtjmp9SzvG5A89UrOr5qtwCjuhtYMEJrVHidAqcl2e274N69ef2vG42fw3v2jNBFWw0
+        EGnhmF1Iz9hMl2JskY1BQs7OV9BmExFreYXQ/D7kchOC8kNqETn5w7TcTkEsYg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651656201;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SQfRKkuA+gg5hPv7T2/toRrf4g4UW+FY4GNmDfcAxgs=;
+        b=zp3vbFARq25ZxZy5a0bCFer51vu5vi5I2ojsDTZQbnk+OPY8dnf4rYnUBxM8WKKIVlS/Jt
+        Xe3rqAJ0bzbXrRBQ==
+From:   "tip-bot2 for Sandipan Das" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] kvm: x86/cpuid: Fix CPUID leaf 0xA
+Cc:     Vasant Hegde <vasant.hegde@amd.com>,
+        Sandipan Das <sandipan.das@amd.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: =?utf-8?q?=3C54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9=2E16505?=
+ =?utf-8?q?15382=2Egit=2Esandipan=2Edas=40amd=2Ecom=3E?=
+References: =?utf-8?q?=3C54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9=2E165051?=
+ =?utf-8?q?5382=2Egit=2Esandipan=2Edas=40amd=2Ecom=3E?=
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH V2] nvmem: add driver handling U-Boot environment
- variables
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Tom Rini <trini@konsulko.com>, linux-mtd@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        u-boot@lists.denx.de, devicetree@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-References: <20220503165658.13932-1-zajec5@gmail.com>
-Content-Language: en-US
-In-Reply-To: <20220503165658.13932-1-zajec5@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Message-ID: <165165619987.4207.6901845175738337241.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Rafał,
+The following commit has been merged into the perf/core branch of tip:
 
-On 03.05.22 18:56, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> U-Boot stores its setup as environment variables. It's a list of
-> key-value pairs stored on flash device with a custom header.
-> 
-> This commit adds an NVMEM driver that:
-> 1. Provides NVMEM access to environment vars binary data
-> 2. Extracts variables as NVMEM cells
-> 
-> It can be used for:
-> 1. Accessing env variables from user-space
+Commit-ID:     202c3484768bce3f077efbbcc1eaa9cac8010093
+Gitweb:        https://git.kernel.org/tip/202c3484768bce3f077efbbcc1eaa9cac8010093
+Author:        Sandipan Das <sandipan.das@amd.com>
+AuthorDate:    Thu, 21 Apr 2022 11:16:59 +05:30
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Wed, 04 May 2022 11:18:27 +02:00
 
-Is this already possible? The only interface I know of is the /nvmem
-file in sysfs, but that one is not per cell, but per device.
+kvm: x86/cpuid: Fix CPUID leaf 0xA
 
-> +	label = of_get_property(np->parent, "label", NULL);
-> +	if (!label)
-> +		label = np->parent->name;
-> +
-> +	priv->mtd = get_mtd_device_nm(label);
-> +	if (IS_ERR(priv->mtd)) {
-> +		dev_err(dev, "Failed to find \"%s\" MTD device: %ld\n", label, PTR_ERR(priv->mtd));
-> +		return PTR_ERR(priv->mtd);
-> +	}
+On some x86 processors, CPUID leaf 0xA provides information
+on Architectural Performance Monitoring features. It
+advertises a PMU version which Qemu uses to determine the
+availability of additional MSRs to manage the PMCs.
 
-I am trying to make sense of this using the binding, but I can't.
-Do you have an example device tree fragment?
+Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
+the same, the kernel constructs return values based on the
+x86_pmu_capability irrespective of the vendor.
 
-Cheers,
-Ahmad
+This leaf and the additional MSRs are not supported on AMD
+processors. If PerfMonV2 is detected, the PMU version is
+set to 2 and guest startup breaks because of an attempt to
+access a non-existent MSR. Return zeros to avoid this.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
+Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9.1650515382.git.sandipan.das@amd.com
+---
+ arch/x86/kvm/cpuid.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index b24ca7f..ae1d963 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -887,6 +887,12 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+ 		union cpuid10_eax eax;
+ 		union cpuid10_edx edx;
+ 
++		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
++		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
++			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
++			break;
++		}
++
+ 		perf_get_x86_pmu_capability(&cap);
+ 
+ 		/*
