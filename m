@@ -2,128 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB035C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADB2C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357739AbiEDRZE (ORCPT
+        id S1357834AbiEDRZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53584 "EHLO
+        Wed, 4 May 2022 13:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355353AbiEDRER (ORCPT
+        with ESMTP id S1355338AbiEDRER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6854ECD2;
-        Wed,  4 May 2022 09:52:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60BDC61701;
-        Wed,  4 May 2022 16:52:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD934C385B0;
-        Wed,  4 May 2022 16:52:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683173;
-        bh=k/8Oplo43mu4djVxDNVjz+6avtQ/vUQIAwVKTqLIjg8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YU2iKinG6wDAIk5tunmpLCvlIHuW1k4cp8jO4bNM7oqazxZlpCmHxFuOddhXsU1am
-         mr5NrULtZP/nYdytnLMdBUIRpRupu5E89oAoY42/tSz4+7noxKWTOzeNegIANlzTR1
-         4Yc+mZua7vYo1vnen+gk/ZDnmuYg27lo37NPvSVQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.15 038/177] pinctrl: samsung: fix missing GPIOLIB on ARM64 Exynos config
-Date:   Wed,  4 May 2022 18:43:51 +0200
-Message-Id: <20220504153056.337925290@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193EA4ECC6
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:52:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Wrv4ckpmdc6hcosmcP/WgGLNgUcSbkfbftqqeOhaNJw=; b=uTm6BCN1kLGurDPc9rj8bkHeA/
+        Q4eInIJmIAdSjPAHw/GWYzLhyOZIENEpYg34wIT/hmQJdY+qqyxWoyJfeAcktb/blbmNvNkvwG2hq
+        1IORJp2CSyFUwYxho/OIzACTLric3nwrGpTt/4cSDTbvnEA4LJIlULCfKG5KSo+A1oz0N96CLwVOi
+        JP0oiY5fpQ4P8WVsK7KNYYtVqlazxLUyI9FAJSTgUbiDDshdwklGf50WXqXuCvev0GTHC+Y2Qk44U
+        uvBydUBAE9H7HvtSbyZ1iRkMz4vEjwJdAz8VinC+IijQ7OLfe2+nGVrTughwicrE0TtsQmSnr274N
+        ufLkZTlA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nmIEu-00GkUC-Uc; Wed, 04 May 2022 16:52:36 +0000
+Date:   Wed, 4 May 2022 17:52:36 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Michel Lespinasse <walken.cr@gmail.com>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Liam Howlett <liam.howlett@oracle.com>, hannes@cmpxchg.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Davidlohr Bueso <dave@stgolabs.net>, David <david@redhat.com>
+Subject: Re: Memory allocation on speculative fastpaths
+Message-ID: <YnKvVFWY8+WGIMf0@casper.infradead.org>
+References: <20220503155913.GA1187610@paulmck-ThinkPad-P17-Gen-1>
+ <YnFSfc8BR8CadOtw@dhcp22.suse.cz>
+ <20220503163905.GM1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YnF0RyBaBSC1mdKo@casper.infradead.org>
+ <CAL36u31s_4TYPRtAzbGUpQVw2ButNv3vtKLhBkfJAhFSfcNDSg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL36u31s_4TYPRtAzbGUpQVw2ButNv3vtKLhBkfJAhFSfcNDSg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Wed, May 04, 2022 at 01:20:39AM -0700, Michel Lespinasse wrote:
+> (for context, this came up during a discussion of speculative page
+> faults implementation details)
+> 
+> On Tue, May 3, 2022 at 11:28 AM Matthew Wilcox <willy@infradead.org> wrote:
+> > Johannes (I think it was?) made the point to me that if we have another
+> > task very slowly freeing memory, a task in this path can take advantage
+> > of that other task's hard work and never go into reclaim.  So the
+> > approach we should take is:
+> >
+> > p4d_alloc(GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN);
+> > pud_alloc(GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN);
+> > pmd_alloc(GFP_NOWAIT | __GFP_NOMEMALLOC | __GFP_NOWARN);
+> >
+> > if (failure) {
+> >   rcu_read_unlock();
+> >   do_reclaim();
+> >   return FAULT_FLAG_RETRY;
+> > }
+> 
+> I don't think this works. The problem with allocating page tables is
+> not just that it may break an rcu-locked code section; you also need
+> the code inserting the new page tables into the mm's page table tree
+> to synchronize with any munmap() that may be concurrently running. RCU
+> isn't sufficient here, and we would need a proper lock when wiring new
+> page tables (current code relies on mmap lock for this).
 
-commit ac875df4d854ab13d9c4af682a1837a1214fecec upstream.
+Hmm, so what you're saying is that we could see:
 
-The Samsung pinctrl drivers depend on OF_GPIO, which is part of GPIOLIB.
-ARMv7 Exynos platform selects GPIOLIB and Samsung pinctrl drivers. ARMv8
-Exynos selects only the latter leading to possible wrong configuration
-on ARMv8 build:
+CPU 0					CPU 1
 
-  WARNING: unmet direct dependencies detected for PINCTRL_EXYNOS
-    Depends on [n]: PINCTRL [=y] && OF_GPIO [=n] && (ARCH_EXYNOS [=y] || ARCH_S5PV210 || COMPILE_TEST [=y])
-    Selected by [y]:
-    - ARCH_EXYNOS [=y]
+rcu_read_lock()
+p4d_alloc()
+pud_alloc()
+					mmap_write_lock
+					pmd_free
+					pud_free
+					p4d_free
+					mmap_write_unlock
+pmd_alloc()
 
-Always select the GPIOLIB from the Samsung pinctrl drivers to fix the
-issue.  This requires removing of OF_GPIO dependency (to avoid recursive
-dependency), so add dependency on OF for COMPILE_TEST cases.
+... and now CPU 0 has stored a newly allocated PMD into a PUD that will
+be freed by RCU.
 
-Reported-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
-Fixes: eed6b3eb20b9 ("arm64: Split out platform options to separate Kconfig")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220420141407.470955-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/mach-exynos/Kconfig    |    1 -
- drivers/pinctrl/samsung/Kconfig |   11 ++++-------
- 2 files changed, 4 insertions(+), 8 deletions(-)
+Good catch, but fortunately we don't have to solve it right now because
+we decided on Monday to not pursue this approach.
 
---- a/arch/arm/mach-exynos/Kconfig
-+++ b/arch/arm/mach-exynos/Kconfig
-@@ -18,7 +18,6 @@ menuconfig ARCH_EXYNOS
- 	select EXYNOS_PMU
- 	select EXYNOS_SROM
- 	select EXYNOS_PM_DOMAINS if PM_GENERIC_DOMAINS
--	select GPIOLIB
- 	select HAVE_ARM_ARCH_TIMER if ARCH_EXYNOS5
- 	select HAVE_ARM_SCU if SMP
- 	select HAVE_S3C2410_I2C if I2C
---- a/drivers/pinctrl/samsung/Kconfig
-+++ b/drivers/pinctrl/samsung/Kconfig
-@@ -4,14 +4,13 @@
- #
- config PINCTRL_SAMSUNG
- 	bool
--	depends on OF_GPIO
-+	select GPIOLIB
- 	select PINMUX
- 	select PINCONF
- 
- config PINCTRL_EXYNOS
- 	bool "Pinctrl common driver part for Samsung Exynos SoCs"
--	depends on OF_GPIO
--	depends on ARCH_EXYNOS || ARCH_S5PV210 || COMPILE_TEST
-+	depends on ARCH_EXYNOS || ARCH_S5PV210 || (COMPILE_TEST && OF)
- 	select PINCTRL_SAMSUNG
- 	select PINCTRL_EXYNOS_ARM if ARM && (ARCH_EXYNOS || ARCH_S5PV210)
- 	select PINCTRL_EXYNOS_ARM64 if ARM64 && ARCH_EXYNOS
-@@ -26,12 +25,10 @@ config PINCTRL_EXYNOS_ARM64
- 
- config PINCTRL_S3C24XX
- 	bool "Samsung S3C24XX SoC pinctrl driver"
--	depends on OF_GPIO
--	depends on ARCH_S3C24XX || COMPILE_TEST
-+	depends on ARCH_S3C24XX || (COMPILE_TEST && OF)
- 	select PINCTRL_SAMSUNG
- 
- config PINCTRL_S3C64XX
- 	bool "Samsung S3C64XX SoC pinctrl driver"
--	depends on OF_GPIO
--	depends on ARCH_S3C64XX || COMPILE_TEST
-+	depends on ARCH_S3C64XX || (COMPILE_TEST && OF)
- 	select PINCTRL_SAMSUNG
+> > ... but all this is now moot since the approach we agreed to yesterday
+> > is:
+> >
+> > rcu_read_lock();
+> > vma = vma_lookup();
+> > if (down_read_trylock(&vma->sem)) {
+> >         rcu_read_unlock();
+> > } else {
+> >         rcu_read_unlock();
+> >         mmap_read_lock(mm);
+> >         vma = vma_lookup();
+> >         down_read(&vma->sem);
+> > }
+> >
+> > ... and we then execute the page table allocation under the protection of
+> > the vma->sem.
+> >
+> > At least, that's what I think we agreed to yesterday.
+> 
+> I don't remember discussing any of this yesterday. As I remember it,
+> the discussion was about having one large RCU section vs several small
+> ones linked by sequence count checks to verify the validity of the vma
+> at the start of each RCU section.
 
+That was indeed what we started out discussing, but Michal and others
+wanted to explore locking the VMA as a first step.  This approach
+doesn't suffer from the same problem as the write side is:
 
+	mmap_write_lock()
+	vma = vma_lookup();
+	down_write(&vma->sem);
+	... tear down page tables ...
+	up_write(&vma->sem);
+	rcu_free(vma);
+	mmap_write_unlock();
+
+So when tearing down the page tables, if the fault is on this VMA, it
+will block until the fault has released the VMA read lock.  If it's on
+another VMA, the page table teardown will not tear down any page tables
+which are partially covered by any VMA.
+
+Or have I missed something else?
