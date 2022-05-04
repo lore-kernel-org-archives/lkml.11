@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C46C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354287AbiEDQ46 (ORCPT
+        id S1354218AbiEDQ5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
+        Wed, 4 May 2022 12:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354408AbiEDQyU (ORCPT
+        with ESMTP id S1353949AbiEDQxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2BE4924B;
-        Wed,  4 May 2022 09:49:28 -0700 (PDT)
+        Wed, 4 May 2022 12:53:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F5B47ADF;
+        Wed,  4 May 2022 09:48:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F26F7B827A9;
-        Wed,  4 May 2022 16:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A41C385B1;
-        Wed,  4 May 2022 16:49:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C7D161744;
+        Wed,  4 May 2022 16:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978AFC385A4;
+        Wed,  4 May 2022 16:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682966;
-        bh=5E/l/N1Kx3Pl2s6qM0ow1LbGNNft0GWY5gRu3tHdUaU=;
+        s=korg; t=1651682935;
+        bh=IiuLVqn+41hK/TvtV51P7ny7tLaJWsoNCR7nCU1SY98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SPiu3FmNXxR/z0S5IhKKp833lK+Lq0iABlpm3VXYr+r2edM15bKEuCDDFeqw9e2VV
-         lL6DO4QEcqRL1Vmv5UdDcyQ+EiTLyfHuzNcMecXkrMoEv0vlNLAxIG5Zw/CX3RrsSz
-         3dXslraPZr2/TxW2P92wZV5hHrk9nOA7338nLwTQ=
+        b=NoKmu9sgw/VyqHKJnSr3jTJCJ11YYYQSO9sdQDXTmXGjy349/HpLoDHhon19cVB+F
+         MxbIZR167MJib02cRlbwVXVA9McIeYA6cwVzM7H1OlKluE8l30RJWO4QwznaUAmv5G
+         EX9ygmDY2HaMoczZq3jT66N6QcwL66tH9Ykl16h4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Doug Porter <dsp@fb.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Xiaobing Luo <luoxiaobing0926@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 58/84] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
-Date:   Wed,  4 May 2022 18:44:39 +0200
-Message-Id: <20220504152931.892966382@linuxfoundation.org>
+Subject: [PATCH 5.4 54/84] cpufreq: fix memory leak in sun50i_cpufreq_nvmem_probe
+Date:   Wed,  4 May 2022 18:44:35 +0200
+Message-Id: <20220504152931.594492818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -53,143 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Xiaobing Luo <luoxiaobing0926@gmail.com>
 
-[ Upstream commit 4bfe744ff1644fbc0a991a2677dc874475dd6776 ]
+[ Upstream commit 1aa24a8f3b5133dae4bc1e57427e345445f3e902 ]
 
-I had this bug sitting for too long in my pile, it is time to fix it.
+--------------------------------------------
+unreferenced object 0xffff000010742a00 (size 128):
+  comm "swapper/0", pid 1, jiffies 4294902015 (age 1187.652s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000b4dfebaa>] __kmalloc+0x338/0x474
+    [<00000000d6e716db>] sun50i_cpufreq_nvmem_probe+0xc4/0x36c
+    [<000000007d6082a0>] platform_probe+0x98/0x11c
+    [<00000000c990f549>] really_probe+0x234/0x5a0
+    [<000000002d9fecc6>] __driver_probe_device+0x194/0x224
+    [<00000000cf0b94fa>] driver_probe_device+0x64/0x13c
+    [<00000000f238e4cf>] __device_attach_driver+0xf8/0x180
+    [<000000006720e418>] bus_for_each_drv+0xf8/0x160
+    [<00000000df4f14f6>] __device_attach+0x174/0x29c
+    [<00000000782002fb>] device_initial_probe+0x20/0x30
+    [<00000000c2681b06>] bus_probe_device+0xfc/0x110
+    [<00000000964cf3bd>] device_add+0x5f0/0xcd0
+    [<000000004b9264e3>] platform_device_add+0x198/0x390
+    [<00000000fa82a9d0>] platform_device_register_full+0x178/0x210
+    [<000000009a5daf13>] sun50i_cpufreq_init+0xf8/0x168
+    [<000000000377cc7c>] do_one_initcall+0xe4/0x570
+--------------------------------------------
 
-Thanks to Doug Porter for reminding me of it!
+if sun50i_cpufreq_get_efuse failed, then opp_tables leak.
 
-We had various attempts in the past, including commit
-0cbe6a8f089e ("tcp: remove SOCK_QUEUE_SHRUNK"),
-but the issue is that TCP stack currently only generates
-EPOLLOUT from input path, when tp->snd_una has advanced
-and skb(s) cleaned from rtx queue.
-
-If a flow has a big RTT, and/or receives SACKs, it is possible
-that the notsent part (tp->write_seq - tp->snd_nxt) reaches 0
-and no more data can be sent until tp->snd_una finally advances.
-
-What is needed is to also check if POLLOUT needs to be generated
-whenever tp->snd_nxt is advanced, from output path.
-
-This bug triggers more often after an idle period, as
-we do not receive ACK for at least one RTT. tcp_notsent_lowat
-could be a fraction of what CWND and pacing rate would allow to
-send during this RTT.
-
-In a followup patch, I will remove the bogus call
-to tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED)
-from tcp_check_space(). Fact that we have decided to generate
-an EPOLLOUT does not mean the application has immediately
-refilled the transmit queue. This optimistic call
-might have been the reason the bug seemed not too serious.
-
-Tested:
-
-200 ms rtt, 1% packet loss, 32 MB tcp_rmem[2] and tcp_wmem[2]
-
-$ echo 500000 >/proc/sys/net/ipv4/tcp_notsent_lowat
-$ cat bench_rr.sh
-SUM=0
-for i in {1..10}
-do
- V=`netperf -H remote_host -l30 -t TCP_RR -- -r 10000000,10000 -o LOCAL_BYTES_SENT | egrep -v "MIGRATED|Bytes"`
- echo $V
- SUM=$(($SUM + $V))
-done
-echo SUM=$SUM
-
-Before patch:
-$ bench_rr.sh
-130000000
-80000000
-140000000
-140000000
-140000000
-140000000
-130000000
-40000000
-90000000
-110000000
-SUM=1140000000
-
-After patch:
-$ bench_rr.sh
-430000000
-590000000
-530000000
-450000000
-450000000
-350000000
-450000000
-490000000
-480000000
-460000000
-SUM=4680000000  # This is 410 % of the value before patch.
-
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Doug Porter <dsp@fb.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: f328584f7bff ("cpufreq: Add sun50i nvmem based CPU scaling driver")
+Signed-off-by: Xiaobing Luo <luoxiaobing0926@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h     |  1 +
- net/ipv4/tcp_input.c  | 12 +++++++++++-
- net/ipv4/tcp_output.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/cpufreq/sun50i-cpufreq-nvmem.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index b686a21a8593..9237362e5606 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -603,6 +603,7 @@ void tcp_synack_rtt_meas(struct sock *sk, struct request_sock *req);
- void tcp_reset(struct sock *sk);
- void tcp_skb_mark_lost_uncond_verify(struct tcp_sock *tp, struct sk_buff *skb);
- void tcp_fin(struct sock *sk);
-+void tcp_check_space(struct sock *sk);
+diff --git a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+index 2deed8d8773f..75e1bf3a08f7 100644
+--- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c
++++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+@@ -98,8 +98,10 @@ static int sun50i_cpufreq_nvmem_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
- /* tcp_timer.c */
- void tcp_init_xmit_timers(struct sock *);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index c0fcfa296468..f84047aec63c 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5230,7 +5230,17 @@ static void tcp_new_space(struct sock *sk)
- 	sk->sk_write_space(sk);
- }
+ 	ret = sun50i_cpufreq_get_efuse(&speed);
+-	if (ret)
++	if (ret) {
++		kfree(opp_tables);
+ 		return ret;
++	}
  
--static void tcp_check_space(struct sock *sk)
-+/* Caller made space either from:
-+ * 1) Freeing skbs in rtx queues (after tp->snd_una has advanced)
-+ * 2) Sent skbs from output queue (and thus advancing tp->snd_nxt)
-+ *
-+ * We might be able to generate EPOLLOUT to the application if:
-+ * 1) Space consumed in output/rtx queues is below sk->sk_sndbuf/2
-+ * 2) notsent amount (tp->write_seq - tp->snd_nxt) became
-+ *    small enough that tcp_stream_memory_free() decides it
-+ *    is time to generate EPOLLOUT.
-+ */
-+void tcp_check_space(struct sock *sk)
- {
- 	if (sock_flag(sk, SOCK_QUEUE_SHRUNK)) {
- 		sock_reset_flag(sk, SOCK_QUEUE_SHRUNK);
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 139e962d1aef..67493ec6318a 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -81,6 +81,7 @@ static void tcp_event_new_data_sent(struct sock *sk, struct sk_buff *skb)
+ 	snprintf(name, MAX_NAME_LEN, "speed%d", speed);
  
- 	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPORIGDATASENT,
- 		      tcp_skb_pcount(skb));
-+	tcp_check_space(sk);
- }
- 
- /* SND.NXT, if window was not shrunk or the amount of shrunk was less than one
 -- 
 2.35.1
 
