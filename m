@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E002C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C53C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359601AbiEDRtb (ORCPT
+        id S1359624AbiEDRte (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        Wed, 4 May 2022 13:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357590AbiEDRPH (ORCPT
+        with ESMTP id S1357623AbiEDRPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026D04C784;
-        Wed,  4 May 2022 09:58:45 -0700 (PDT)
+        Wed, 4 May 2022 13:15:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EBA55233;
+        Wed,  4 May 2022 09:58:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFE17B82552;
-        Wed,  4 May 2022 16:58:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C053C385B4;
-        Wed,  4 May 2022 16:58:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 219ADCE28B9;
+        Wed,  4 May 2022 16:58:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F7DCC385B1;
+        Wed,  4 May 2022 16:58:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683496;
-        bh=5Fyt8PIl9Tm/kQ97Paxju00cUKDSEXus9E0e1XkLY2s=;
+        s=korg; t=1651683523;
+        bh=BKUXDLzplQ5j6VjlLJEEr3gBKq6Qoso3pd32RExTUsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PEwpl7pHRKTIkkfw6EpBnZhsqHpID9H8sEMBg8si+/4zUw2vg6H3iPCSSskdwzTPx
-         u+Kw83VMkSiTjNYiM+VHpd3tcCyrJHIbVIJlhN9ZwnVIDvkBjr6t8HYmHXiXTnbXnH
-         oHfyczObB1gDojZXFQUrWy7JG2ECV5WW5blQX7Bs=
+        b=01BMEdh+W2sh+nUpH/VAFvt0aT3uQ7mr6RFFc5InfbJ94QL1v5FP2ASIlAnuCR+fv
+         ptMW2FI2qNaqpbMIPWuv/DlmF5FdXqY+KPC4TYZ/gxe+WlqG6xpfQtkbDjJ+e2r5ph
+         1zewA6GXw4vBgZWJ9XVm/TxLf4RMEj3I4xTtHtf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 154/225] Revert "ibmvnic: Add ethtool private flag for driver-defined queue limits"
-Date:   Wed,  4 May 2022 18:46:32 +0200
-Message-Id: <20220504153123.817733990@linuxfoundation.org>
+        stable@vger.kernel.org, Michele Ballabio <ballabio.m@gmail.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 185/225] drm/amdgpu: dont runtime suspend if there are displays attached (v3)
+Date:   Wed,  4 May 2022 18:47:03 +0200
+Message-Id: <20220504153126.888301268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,257 +50,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dany Madden <drt@linux.ibm.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit aeaf59b78712c7a1827c76f086acff4f586e072f ]
+commit f95af4a9236695caed24fe6401256bb974e8f2a7 upstream.
 
-This reverts commit 723ad916134784b317b72f3f6cf0f7ba774e5dae
+We normally runtime suspend when there are displays attached if they
+are in the DPMS off state, however, if something wakes the GPU
+we send a hotplug event on resume (in case any displays were connected
+while the GPU was in suspend) which can cause userspace to light
+up the displays again soon after they were turned off.
 
-When client requests channel or ring size larger than what the server
-can support the server will cap the request to the supported max. So,
-the client would not be able to successfully request resources that
-exceed the server limit.
+Prior to
+commit 087451f372bf76 ("drm/amdgpu: use generic fb helpers instead of setting up AMD own's."),
+the driver took a runtime pm reference when the fbdev emulation was
+enabled because we didn't implement proper shadowing support for
+vram access when the device was off so the device never runtime
+suspended when there was a console bound.  Once that commit landed,
+we now utilize the core fb helper implementation which properly
+handles the emulation, so runtime pm now suspends in cases where it did
+not before.  Ultimately, we need to sort out why runtime suspend in not
+working in this case for some users, but this should restore similar
+behavior to before.
 
-Fixes: 723ad9161347 ("ibmvnic: Add ethtool private flag for driver-defined queue limits")
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220427235146.23189-1-drt@linux.ibm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+v2: move check into runtime_suspend
+v3: wake ups -> wakeups in comment, retain pm_runtime behavior in
+    runtime_idle callback
+
+Fixes: 087451f372bf76 ("drm/amdgpu: use generic fb helpers instead of setting up AMD own's.")
+Link: https://lore.kernel.org/r/20220403132322.51c90903@darkstar.example.org/
+Tested-by: Michele Ballabio <ballabio.m@gmail.com>
+Reviewed-by: Evan Quan <evan.quan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 129 ++++++++---------------------
- drivers/net/ethernet/ibm/ibmvnic.h |   6 --
- 2 files changed, 35 insertions(+), 100 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |  105 +++++++++++++++++++++-----------
+ 1 file changed, 70 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index b4804ce63151..a4428a7d0f35 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3209,13 +3209,8 @@ static void ibmvnic_get_ringparam(struct net_device *netdev,
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2348,6 +2348,71 @@ static int amdgpu_pmops_restore(struct d
+ 	return amdgpu_device_resume(drm_dev, true);
+ }
  
--	if (adapter->priv_flags & IBMVNIC_USE_SERVER_MAXES) {
--		ring->rx_max_pending = adapter->max_rx_add_entries_per_subcrq;
--		ring->tx_max_pending = adapter->max_tx_entries_per_subcrq;
--	} else {
--		ring->rx_max_pending = IBMVNIC_MAX_QUEUE_SZ;
--		ring->tx_max_pending = IBMVNIC_MAX_QUEUE_SZ;
--	}
-+	ring->rx_max_pending = adapter->max_rx_add_entries_per_subcrq;
-+	ring->tx_max_pending = adapter->max_tx_entries_per_subcrq;
- 	ring->rx_mini_max_pending = 0;
- 	ring->rx_jumbo_max_pending = 0;
- 	ring->rx_pending = adapter->req_rx_add_entries_per_subcrq;
-@@ -3230,23 +3225,21 @@ static int ibmvnic_set_ringparam(struct net_device *netdev,
- 				 struct netlink_ext_ack *extack)
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--	int ret;
- 
--	ret = 0;
-+	if (ring->rx_pending > adapter->max_rx_add_entries_per_subcrq  ||
-+	    ring->tx_pending > adapter->max_tx_entries_per_subcrq) {
-+		netdev_err(netdev, "Invalid request.\n");
-+		netdev_err(netdev, "Max tx buffers = %llu\n",
-+			   adapter->max_rx_add_entries_per_subcrq);
-+		netdev_err(netdev, "Max rx buffers = %llu\n",
-+			   adapter->max_tx_entries_per_subcrq);
-+		return -EINVAL;
++static int amdgpu_runtime_idle_check_display(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct drm_device *drm_dev = pci_get_drvdata(pdev);
++	struct amdgpu_device *adev = drm_to_adev(drm_dev);
++
++	if (adev->mode_info.num_crtc) {
++		struct drm_connector *list_connector;
++		struct drm_connector_list_iter iter;
++		int ret = 0;
++
++		/* XXX: Return busy if any displays are connected to avoid
++		 * possible display wakeups after runtime resume due to
++		 * hotplug events in case any displays were connected while
++		 * the GPU was in suspend.  Remove this once that is fixed.
++		 */
++		mutex_lock(&drm_dev->mode_config.mutex);
++		drm_connector_list_iter_begin(drm_dev, &iter);
++		drm_for_each_connector_iter(list_connector, &iter) {
++			if (list_connector->status == connector_status_connected) {
++				ret = -EBUSY;
++				break;
++			}
++		}
++		drm_connector_list_iter_end(&iter);
++		mutex_unlock(&drm_dev->mode_config.mutex);
++
++		if (ret)
++			return ret;
++
++		if (amdgpu_device_has_dc_support(adev)) {
++			struct drm_crtc *crtc;
++
++			drm_for_each_crtc(crtc, drm_dev) {
++				drm_modeset_lock(&crtc->mutex, NULL);
++				if (crtc->state->active)
++					ret = -EBUSY;
++				drm_modeset_unlock(&crtc->mutex);
++				if (ret < 0)
++					break;
++			}
++		} else {
++			mutex_lock(&drm_dev->mode_config.mutex);
++			drm_modeset_lock(&drm_dev->mode_config.connection_mutex, NULL);
++
++			drm_connector_list_iter_begin(drm_dev, &iter);
++			drm_for_each_connector_iter(list_connector, &iter) {
++				if (list_connector->dpms ==  DRM_MODE_DPMS_ON) {
++					ret = -EBUSY;
++					break;
++				}
++			}
++
++			drm_connector_list_iter_end(&iter);
++
++			drm_modeset_unlock(&drm_dev->mode_config.connection_mutex);
++			mutex_unlock(&drm_dev->mode_config.mutex);
++		}
++		if (ret)
++			return ret;
 +	}
 +
- 	adapter->desired.rx_entries = ring->rx_pending;
- 	adapter->desired.tx_entries = ring->tx_pending;
- 
--	ret = wait_for_reset(adapter);
--
--	if (!ret &&
--	    (adapter->req_rx_add_entries_per_subcrq != ring->rx_pending ||
--	     adapter->req_tx_entries_per_subcrq != ring->tx_pending))
--		netdev_info(netdev,
--			    "Could not match full ringsize request. Requested: RX %d, TX %d; Allowed: RX %llu, TX %llu\n",
--			    ring->rx_pending, ring->tx_pending,
--			    adapter->req_rx_add_entries_per_subcrq,
--			    adapter->req_tx_entries_per_subcrq);
--	return ret;
-+	return wait_for_reset(adapter);
- }
- 
- static void ibmvnic_get_channels(struct net_device *netdev,
-@@ -3254,14 +3247,8 @@ static void ibmvnic_get_channels(struct net_device *netdev,
++	return 0;
++}
++
+ static int amdgpu_pmops_runtime_suspend(struct device *dev)
  {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+@@ -2360,6 +2425,10 @@ static int amdgpu_pmops_runtime_suspend(
+ 		return -EBUSY;
+ 	}
  
--	if (adapter->priv_flags & IBMVNIC_USE_SERVER_MAXES) {
--		channels->max_rx = adapter->max_rx_queues;
--		channels->max_tx = adapter->max_tx_queues;
++	ret = amdgpu_runtime_idle_check_display(dev);
++	if (ret)
++		return ret;
++
+ 	/* wait for all rings to drain before suspending */
+ 	for (i = 0; i < AMDGPU_MAX_RINGS; i++) {
+ 		struct amdgpu_ring *ring = adev->rings[i];
+@@ -2469,41 +2538,7 @@ static int amdgpu_pmops_runtime_idle(str
+ 		return -EBUSY;
+ 	}
+ 
+-	if (amdgpu_device_has_dc_support(adev)) {
+-		struct drm_crtc *crtc;
+-
+-		drm_for_each_crtc(crtc, drm_dev) {
+-			drm_modeset_lock(&crtc->mutex, NULL);
+-			if (crtc->state->active)
+-				ret = -EBUSY;
+-			drm_modeset_unlock(&crtc->mutex);
+-			if (ret < 0)
+-				break;
+-		}
+-
 -	} else {
--		channels->max_rx = IBMVNIC_MAX_QUEUES;
--		channels->max_tx = IBMVNIC_MAX_QUEUES;
+-		struct drm_connector *list_connector;
+-		struct drm_connector_list_iter iter;
+-
+-		mutex_lock(&drm_dev->mode_config.mutex);
+-		drm_modeset_lock(&drm_dev->mode_config.connection_mutex, NULL);
+-
+-		drm_connector_list_iter_begin(drm_dev, &iter);
+-		drm_for_each_connector_iter(list_connector, &iter) {
+-			if (list_connector->dpms ==  DRM_MODE_DPMS_ON) {
+-				ret = -EBUSY;
+-				break;
+-			}
+-		}
+-
+-		drm_connector_list_iter_end(&iter);
+-
+-		drm_modeset_unlock(&drm_dev->mode_config.connection_mutex);
+-		mutex_unlock(&drm_dev->mode_config.mutex);
 -	}
 -
-+	channels->max_rx = adapter->max_rx_queues;
-+	channels->max_tx = adapter->max_tx_queues;
- 	channels->max_other = 0;
- 	channels->max_combined = 0;
- 	channels->rx_count = adapter->req_rx_queues;
-@@ -3274,22 +3261,11 @@ static int ibmvnic_set_channels(struct net_device *netdev,
- 				struct ethtool_channels *channels)
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--	int ret;
+-	if (ret == -EBUSY)
+-		DRM_DEBUG_DRIVER("failing to power off - crtc active\n");
++	ret = amdgpu_runtime_idle_check_display(dev);
  
--	ret = 0;
- 	adapter->desired.rx_queues = channels->rx_count;
- 	adapter->desired.tx_queues = channels->tx_count;
- 
--	ret = wait_for_reset(adapter);
--
--	if (!ret &&
--	    (adapter->req_rx_queues != channels->rx_count ||
--	     adapter->req_tx_queues != channels->tx_count))
--		netdev_info(netdev,
--			    "Could not match full channels request. Requested: RX %d, TX %d; Allowed: RX %llu, TX %llu\n",
--			    channels->rx_count, channels->tx_count,
--			    adapter->req_rx_queues, adapter->req_tx_queues);
--	return ret;
-+	return wait_for_reset(adapter);
- }
- 
- static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
-@@ -3297,43 +3273,32 @@ static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- 	struct ibmvnic_adapter *adapter = netdev_priv(dev);
- 	int i;
- 
--	switch (stringset) {
--	case ETH_SS_STATS:
--		for (i = 0; i < ARRAY_SIZE(ibmvnic_stats);
--				i++, data += ETH_GSTRING_LEN)
--			memcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);
-+	if (stringset != ETH_SS_STATS)
-+		return;
- 
--		for (i = 0; i < adapter->req_tx_queues; i++) {
--			snprintf(data, ETH_GSTRING_LEN, "tx%d_packets", i);
--			data += ETH_GSTRING_LEN;
-+	for (i = 0; i < ARRAY_SIZE(ibmvnic_stats); i++, data += ETH_GSTRING_LEN)
-+		memcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);
- 
--			snprintf(data, ETH_GSTRING_LEN, "tx%d_bytes", i);
--			data += ETH_GSTRING_LEN;
-+	for (i = 0; i < adapter->req_tx_queues; i++) {
-+		snprintf(data, ETH_GSTRING_LEN, "tx%d_packets", i);
-+		data += ETH_GSTRING_LEN;
- 
--			snprintf(data, ETH_GSTRING_LEN,
--				 "tx%d_dropped_packets", i);
--			data += ETH_GSTRING_LEN;
--		}
-+		snprintf(data, ETH_GSTRING_LEN, "tx%d_bytes", i);
-+		data += ETH_GSTRING_LEN;
- 
--		for (i = 0; i < adapter->req_rx_queues; i++) {
--			snprintf(data, ETH_GSTRING_LEN, "rx%d_packets", i);
--			data += ETH_GSTRING_LEN;
-+		snprintf(data, ETH_GSTRING_LEN, "tx%d_dropped_packets", i);
-+		data += ETH_GSTRING_LEN;
-+	}
- 
--			snprintf(data, ETH_GSTRING_LEN, "rx%d_bytes", i);
--			data += ETH_GSTRING_LEN;
-+	for (i = 0; i < adapter->req_rx_queues; i++) {
-+		snprintf(data, ETH_GSTRING_LEN, "rx%d_packets", i);
-+		data += ETH_GSTRING_LEN;
- 
--			snprintf(data, ETH_GSTRING_LEN, "rx%d_interrupts", i);
--			data += ETH_GSTRING_LEN;
--		}
--		break;
-+		snprintf(data, ETH_GSTRING_LEN, "rx%d_bytes", i);
-+		data += ETH_GSTRING_LEN;
- 
--	case ETH_SS_PRIV_FLAGS:
--		for (i = 0; i < ARRAY_SIZE(ibmvnic_priv_flags); i++)
--			strcpy(data + i * ETH_GSTRING_LEN,
--			       ibmvnic_priv_flags[i]);
--		break;
--	default:
--		return;
-+		snprintf(data, ETH_GSTRING_LEN, "rx%d_interrupts", i);
-+		data += ETH_GSTRING_LEN;
- 	}
- }
- 
-@@ -3346,8 +3311,6 @@ static int ibmvnic_get_sset_count(struct net_device *dev, int sset)
- 		return ARRAY_SIZE(ibmvnic_stats) +
- 		       adapter->req_tx_queues * NUM_TX_STATS +
- 		       adapter->req_rx_queues * NUM_RX_STATS;
--	case ETH_SS_PRIV_FLAGS:
--		return ARRAY_SIZE(ibmvnic_priv_flags);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -3400,26 +3363,6 @@ static void ibmvnic_get_ethtool_stats(struct net_device *dev,
- 	}
- }
- 
--static u32 ibmvnic_get_priv_flags(struct net_device *netdev)
--{
--	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--
--	return adapter->priv_flags;
--}
--
--static int ibmvnic_set_priv_flags(struct net_device *netdev, u32 flags)
--{
--	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--	bool which_maxes = !!(flags & IBMVNIC_USE_SERVER_MAXES);
--
--	if (which_maxes)
--		adapter->priv_flags |= IBMVNIC_USE_SERVER_MAXES;
--	else
--		adapter->priv_flags &= ~IBMVNIC_USE_SERVER_MAXES;
--
--	return 0;
--}
--
- static const struct ethtool_ops ibmvnic_ethtool_ops = {
- 	.get_drvinfo		= ibmvnic_get_drvinfo,
- 	.get_msglevel		= ibmvnic_get_msglevel,
-@@ -3433,8 +3376,6 @@ static const struct ethtool_ops ibmvnic_ethtool_ops = {
- 	.get_sset_count         = ibmvnic_get_sset_count,
- 	.get_ethtool_stats	= ibmvnic_get_ethtool_stats,
- 	.get_link_ksettings	= ibmvnic_get_link_ksettings,
--	.get_priv_flags		= ibmvnic_get_priv_flags,
--	.set_priv_flags		= ibmvnic_set_priv_flags,
- };
- 
- /* Routines for managing CRQs/sCRQs  */
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 8f5cefb932dd..1310c861bf83 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -41,11 +41,6 @@
- 
- #define IBMVNIC_RESET_DELAY 100
- 
--static const char ibmvnic_priv_flags[][ETH_GSTRING_LEN] = {
--#define IBMVNIC_USE_SERVER_MAXES 0x1
--	"use-server-maxes"
--};
--
- struct ibmvnic_login_buffer {
- 	__be32 len;
- 	__be32 version;
-@@ -883,7 +878,6 @@ struct ibmvnic_adapter {
- 	struct ibmvnic_control_ip_offload_buffer ip_offload_ctrl;
- 	dma_addr_t ip_offload_ctrl_tok;
- 	u32 msg_enable;
--	u32 priv_flags;
- 
- 	/* Vital Product Data (VPD) */
- 	struct ibmvnic_vpd *vpd;
--- 
-2.35.1
-
+ 	pm_runtime_mark_last_busy(dev);
+ 	pm_runtime_autosuspend(dev);
 
 
