@@ -2,125 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D31C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 515FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344553AbiEDSbu (ORCPT
+        id S1376974AbiEDScm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        Wed, 4 May 2022 14:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376867AbiEDSbg (ORCPT
+        with ESMTP id S1376832AbiEDScd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:31:36 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5644166C81
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:06:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651687560; x=1683223560;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=i4VjohVRk6C9yOQqqNaki7TT3jcWJWu2LsakiJgdnaY=;
-  b=MX94HyOutKDJQhTDL7VcnF6HYV+ufiUnHRWxaV05eVlc7R3b55Ti6lyU
-   +DTUL3EvthkG7uwJG2DRgqQ5BGJJqli1Q7MRk+vR5qWcB5XuF10ukB6kd
-   ToSIvHSFYWRwryZit4P4QpIgsWFT1Wu14iD7c9Gb9lX9rPqI8pZdm+nT3
-   NTAbTdzVJMQkR722KR2/BQYLxaFHJHRKclaILce/HAka1jpnv5NrCsClM
-   2cRxg/wIaqPSd9rmdJTq9Mm6PX2X71foqJt/XeE1KvppaH+16/Fiah8MY
-   cBTWGGmZUm2t1pJVAWMxCuJ338OIU4Bv7CRKmwaCSciqxpSbUGmsTLDJy
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="247756642"
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="247756642"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 11:05:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="536949285"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 04 May 2022 11:05:19 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmJNG-000BgJ-Le;
-        Wed, 04 May 2022 18:05:18 +0000
-Date:   Thu, 5 May 2022 02:04:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [masahiroy:lto-cleanup-wip 53/61] scripts/mod/modpost.c:2311:52:
- error: 'struct symbol' has no member named 'is_gpl'
-Message-ID: <202205050152.9MufMAJv-lkp@intel.com>
+        Wed, 4 May 2022 14:32:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AD5A6929C
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:07:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651687674;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=U2oH/67Q6J//FOI1Qnr6N8qBEkny2Ova2tLym2RSN54=;
+        b=GxsA/7uM8kcB05HIGd/ls4KhLU6b4UXNEwCR57zwBMOZoBSEBOSnFA8A8yxVd8dCmRtNJI
+        VCoFum36fRx4QfiE8VEPaIqRWPHnAahmNuZT1OJJFPbsHPWwHpj/K86Mj8clvECJSOav3y
+        g9p38VkIOh22eQPdZ5Olt3zZjDAQznA=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-479-unIkFAOXPbiXbNbY3QTpWw-1; Wed, 04 May 2022 14:07:53 -0400
+X-MC-Unique: unIkFAOXPbiXbNbY3QTpWw-1
+Received: by mail-qv1-f72.google.com with SMTP id j1-20020a0cf9c1000000b0045abd139f01so836261qvo.23
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 11:07:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U2oH/67Q6J//FOI1Qnr6N8qBEkny2Ova2tLym2RSN54=;
+        b=kgJNSIJTlV+Q0Y3FsuYJYHMZC4CAxRtyq9VxS1qyb1Y15UK+pPC7GZDoToRrclk9ip
+         285qDvRvBhCsS7eTLQNGBgxjjldyS8WME4BCOB4wOHg3zk23Jro8XJKgs+ukDEXejfM1
+         mtQf01z9Vb5qMzGe0475ZWLM3AGFiqQFKo5a5lVM3YYzk8RXR2gaJSnS14A1Yh7eey5S
+         IBcw+pW7+kO/EyGyA6+7LmJiZ4TrgDI3UbK5GYhavcNCy2q48v7acURyOJ9ICuZDy9dN
+         cm0QXmZuj0uNfrevaIR7yK2p0v58jAYFlkI4fL3VjtjgxGikqDLmGgceITdDijIClpm3
+         LjeA==
+X-Gm-Message-State: AOAM533Qmjr2jCeOE+8PkL01WHHK29TzQv1BQbdowSoChBev2NMYHGzs
+        1mS3k12cvUjDDYkkwdYVAqyV5oeMu1iuTvN/U67omsguH+XcWNXIaFme5oIahSWKZvJlfBEt7r7
+        iuQ7nR3CvtyF6N/qVpyItWE1x
+X-Received: by 2002:a05:620a:c86:b0:69f:c7cb:935a with SMTP id q6-20020a05620a0c8600b0069fc7cb935amr15045718qki.229.1651687672269;
+        Wed, 04 May 2022 11:07:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzzq8xseyCKLx3yTn4pbs5KU3Ozho0NQF62zufox08OSuR9+Q1nSdIEfs+h6LEGhzXTAvrcyA==
+X-Received: by 2002:a05:620a:c86:b0:69f:c7cb:935a with SMTP id q6-20020a05620a0c8600b0069fc7cb935amr15045693qki.229.1651687672022;
+        Wed, 04 May 2022 11:07:52 -0700 (PDT)
+Received: from treble.attlocal.net ([2600:1700:6e32:6c00::c])
+        by smtp.gmail.com with ESMTPSA id k16-20020ac84790000000b002f39b99f6c1sm7581297qtq.91.2022.05.04.11.07.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 11:07:51 -0700 (PDT)
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: Update Josh Poimboeuf's email address
+Date:   Wed,  4 May 2022 11:07:45 -0700
+Message-Id: <1abc3de4b00dc6f915ac975a2ec29ed545d96dc4.1651687652.git.jpoimboe@redhat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git lto-cleanup-wip
-head:   63a6c25309d336a3bc7185d4fa17fc9e64485d95
-commit: 14beda2dc5aff83f69fd5ecf83309250c5c03d79 [53/61] kbuild: embed symbol versions at final link of vmlinux or modules
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220505/202205050152.9MufMAJv-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git/commit/?id=14beda2dc5aff83f69fd5ecf83309250c5c03d79
-        git remote add masahiroy https://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
-        git fetch --no-tags masahiroy lto-cleanup-wip
-        git checkout 14beda2dc5aff83f69fd5ecf83309250c5c03d79
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 prepare
+Change to my kernel.org email address.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ MAINTAINERS | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-All errors (new ones prefixed by >>):
-
-   arch/x86/um/user-offsets.c:17:6: warning: no previous prototype for 'foo' [-Wmissing-prototypes]
-      17 | void foo(void)
-         |      ^~~
-   scripts/mod/modpost.c: In function 'add_exported_symversions':
->> scripts/mod/modpost.c:2311:52: error: 'struct symbol' has no member named 'is_gpl'
-    2311 |                            sym->name, sym->crc, sym->is_gpl ? "_gpl" : "");
-         |                                                    ^~
-   make[2]: *** [scripts/Makefile.host:112: scripts/mod/modpost.o] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1194: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +2311 scripts/mod/modpost.c
-
-  2287	
-  2288	/* Record CRCs for exported symbols */
-  2289	static void add_exported_symversions(struct buffer *buf, struct module *mod)
-  2290	{
-  2291		struct symbol *sym;
-  2292	
-  2293		if (!modversions)
-  2294			return;
-  2295	
-  2296		buf_printf(buf,
-  2297			   "\n"
-  2298			   "#include <linux/symversion.h>\n"
-  2299			   "\n");
-  2300	
-  2301		list_for_each_entry(sym, &mod->exported_symbols, list) {
-  2302			if (!sym->crc_valid) {
-  2303				warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
-  2304				     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
-  2305				     sym->name, mod->name, mod->is_vmlinux ? "" : ".ko",
-  2306				     sym->name);
-  2307				continue;
-  2308			}
-  2309	
-  2310			buf_printf(buf, "SYMBOL_CRC(%s, 0x%08x, \"%s\");\n",
-> 2311				   sym->name, sym->crc, sym->is_gpl ? "_gpl" : "");
-  2312		}
-  2313	}
-  2314	
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index edc96cdb85e8..1e1a2264792d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7499,7 +7499,7 @@ F:	Documentation/hwmon/f71805f.rst
+ F:	drivers/hwmon/f71805f.c
+ 
+ FADDR2LINE
+-M:	Josh Poimboeuf <jpoimboe@redhat.com>
++M:	Josh Poimboeuf <jpoimboe@kernel.org>
+ S:	Maintained
+ F:	scripts/faddr2line
+ 
+@@ -11348,7 +11348,7 @@ F:	drivers/mmc/host/litex_mmc.c
+ N:	litex
+ 
+ LIVE PATCHING
+-M:	Josh Poimboeuf <jpoimboe@redhat.com>
++M:	Josh Poimboeuf <jpoimboe@kernel.org>
+ M:	Jiri Kosina <jikos@kernel.org>
+ M:	Miroslav Benes <mbenes@suse.cz>
+ M:	Petr Mladek <pmladek@suse.com>
+@@ -14224,7 +14224,7 @@ F:	lib/objagg.c
+ F:	lib/test_objagg.c
+ 
+ OBJTOOL
+-M:	Josh Poimboeuf <jpoimboe@redhat.com>
++M:	Josh Poimboeuf <jpoimboe@kernel.org>
+ M:	Peter Zijlstra <peterz@infradead.org>
+ S:	Supported
+ F:	tools/objtool/
+@@ -18792,7 +18792,7 @@ F:	include/dt-bindings/reset/starfive-jh7100.h
+ 
+ STATIC BRANCH/CALL
+ M:	Peter Zijlstra <peterz@infradead.org>
+-M:	Josh Poimboeuf <jpoimboe@redhat.com>
++M:	Josh Poimboeuf <jpoimboe@kernel.org>
+ M:	Jason Baron <jbaron@akamai.com>
+ R:	Steven Rostedt <rostedt@goodmis.org>
+ R:	Ard Biesheuvel <ardb@kernel.org>
+@@ -21444,7 +21444,7 @@ F:	arch/x86/kernel/apic/x2apic_uv_x.c
+ F:	arch/x86/platform/uv/
+ 
+ X86 STACK UNWINDING
+-M:	Josh Poimboeuf <jpoimboe@redhat.com>
++M:	Josh Poimboeuf <jpoimboe@kernel.org>
+ M:	Peter Zijlstra <peterz@infradead.org>
+ S:	Supported
+ F:	arch/x86/include/asm/unwind*.h
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
