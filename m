@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2B6C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355447AbiEDRNB (ORCPT
+        id S1355942AbiEDRNI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
+        Wed, 4 May 2022 13:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354328AbiEDRA3 (ORCPT
+        with ESMTP id S1354466AbiEDRCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96D04C795;
-        Wed,  4 May 2022 09:52:17 -0700 (PDT)
+        Wed, 4 May 2022 13:02:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370FB4CD6B;
+        Wed,  4 May 2022 09:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B7B617A6;
-        Wed,  4 May 2022 16:52:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC66C385AA;
-        Wed,  4 May 2022 16:52:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2041FB82552;
+        Wed,  4 May 2022 16:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD70C385A5;
+        Wed,  4 May 2022 16:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683133;
-        bh=7/Vx+R0dJUPhokOvKQ8yLZNNSGISyIWK0qTfgSU1yeU=;
+        s=korg; t=1651683137;
+        bh=qH3JgpvYRFgkCgh016EPkIru8QSUXjk+ltVqA/8dK2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2lt7zMHR6ppWmaPVkeAWkL9b9n9UsgbUdmMHtpGsZficMs9ob5zsdYTXFJF31+Sf
-         17+qo2p3q2OJc4/SDmyfhIwpwUSN9ttqQ2oTdKn1MDuZgQqoKcp/fCXBzfv/jTrfyw
-         TXv7K1BgZjdy3BUY+1NP6OJt4rltpWD3g1p0NeDE=
+        b=lMkAcEPpF44bUfbJXjWeI5oRu/PrMdjBV5dd5swizaIMGUAuWNAWoAd6BxwsHLxZY
+         IQQnw5m4GlOkIFLWwsuYLYlNaJTBpvN/EBUxSIgy6KHd6qF8mKloB2tW+g8eIWS9z+
+         HG1sqOPqDC/p5w57ITgOy3U+X9JDwlob7j71pGaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 116/129] tty: n_gsm: fix decoupled mux resource
-Date:   Wed,  4 May 2022 18:45:08 +0200
-Message-Id: <20220504153030.561668678@linuxfoundation.org>
+Subject: [PATCH 5.10 125/129] tty: n_gsm: fix wrong command frame length field encoding
+Date:   Wed,  4 May 2022 18:45:17 +0200
+Message-Id: <20220504153031.445962178@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,146 +50,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 1ec92e9742774bf42614fceea3bf6b50c9409225 upstream.
+commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
 
-The active mux instances are managed in the gsm_mux array and via mux_get()
-and mux_put() functions separately. This gives a very loose coupling
-between the actual instance and the gsm_mux array which manages it. It also
-results in unnecessary lockings which makes it prone to failures. And it
-creates a race condition if more than the maximum number of mux instances
-are requested while the user changes the parameters of an active instance.
-The user may loose ownership of the current mux instance in this case.
-Fix this by moving the gsm_mux array handling to the mux allocation and
-deallocation functions.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
+be made up from type, length and value. Looking for example in chapter
+5.4.6.3.5 at the description for the encoding of a flow control on command
+it becomes obvious, that the type and length field is always present
+whereas the value may be zero bytes long. The current implementation omits
+the length field if the value is not present. This is wrong.
+Correct this by always sending the length in gsm_control_transmit().
+So far only the modem status command (MSC) has included a value and encoded
+its length directly. Therefore, also change gsmtty_modem_update().
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-3-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   63 +++++++++++++++++++++++++++++++---------------------
- 1 file changed, 38 insertions(+), 25 deletions(-)
+ drivers/tty/n_gsm.c |   23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2070,18 +2070,6 @@ static void gsm_cleanup_mux(struct gsm_m
- 	/* Finish outstanding timers, making sure they are done */
- 	del_timer_sync(&gsm->t2_timer);
+@@ -1297,11 +1297,12 @@ static void gsm_control_response(struct
  
--	spin_lock(&gsm_mux_lock);
--	for (i = 0; i < MAX_MUX; i++) {
--		if (gsm_mux[i] == gsm) {
--			gsm_mux[i] = NULL;
--			break;
--		}
--	}
--	spin_unlock(&gsm_mux_lock);
--	/* open failed before registering => nothing to do */
--	if (i == MAX_MUX)
--		return;
--
- 	/* Free up any link layer users */
- 	for (i = 0; i < NUM_DLCI; i++)
- 		if (gsm->dlci[i])
-@@ -2105,7 +2093,6 @@ static void gsm_cleanup_mux(struct gsm_m
- static int gsm_activate_mux(struct gsm_mux *gsm)
+ static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
  {
- 	struct gsm_dlci *dlci;
--	int i = 0;
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
++	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+ 	if (msg == NULL)
+ 		return;
+-	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
+-	memcpy(msg->data + 1, ctrl->data, ctrl->len);
++	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
++	msg->data[1] = (ctrl->len << 1) | EA;
++	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+ 	gsm_data_queue(gsm->dlci[0], msg);
+ }
  
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	init_waitqueue_head(&gsm->event);
-@@ -2117,18 +2104,6 @@ static int gsm_activate_mux(struct gsm_m
- 	else
- 		gsm->receive = gsm1_receive;
+@@ -2882,19 +2883,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
  
--	spin_lock(&gsm_mux_lock);
--	for (i = 0; i < MAX_MUX; i++) {
--		if (gsm_mux[i] == NULL) {
--			gsm->num = i;
--			gsm_mux[i] = gsm;
--			break;
--		}
--	}
--	spin_unlock(&gsm_mux_lock);
--	if (i == MAX_MUX)
--		return -EBUSY;
+ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
+ {
+-	u8 modembits[5];
++	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+ 	int len = 2;
+ 
+-	if (brk)
++	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
++	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
++	if (brk) {
++		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
 -
- 	dlci = gsm_dlci_alloc(gsm, 0);
- 	if (dlci == NULL)
+-	modembits[0] = len << 1 | EA;		/* Data bytes */
+-	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
+-	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
+-	if (brk)
+-		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
+-	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
++	}
++	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
+ 	if (ctrl == NULL)
  		return -ENOMEM;
-@@ -2144,6 +2119,15 @@ static int gsm_activate_mux(struct gsm_m
-  */
- static void gsm_free_mux(struct gsm_mux *gsm)
- {
-+	int i;
-+
-+	for (i = 0; i < MAX_MUX; i++) {
-+		if (gsm == gsm_mux[i]) {
-+			gsm_mux[i] = NULL;
-+			break;
-+		}
-+	}
-+	mutex_destroy(&gsm->mutex);
- 	kfree(gsm->txframe);
- 	kfree(gsm->buf);
- 	kfree(gsm);
-@@ -2163,12 +2147,20 @@ static void gsm_free_muxr(struct kref *r
- 
- static inline void mux_get(struct gsm_mux *gsm)
- {
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&gsm_mux_lock, flags);
- 	kref_get(&gsm->ref);
-+	spin_unlock_irqrestore(&gsm_mux_lock, flags);
- }
- 
- static inline void mux_put(struct gsm_mux *gsm)
- {
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&gsm_mux_lock, flags);
- 	kref_put(&gsm->ref, gsm_free_muxr);
-+	spin_unlock_irqrestore(&gsm_mux_lock, flags);
- }
- 
- static inline unsigned int mux_num_to_base(struct gsm_mux *gsm)
-@@ -2189,6 +2181,7 @@ static inline unsigned int mux_line_to_n
- 
- static struct gsm_mux *gsm_alloc_mux(void)
- {
-+	int i;
- 	struct gsm_mux *gsm = kzalloc(sizeof(struct gsm_mux), GFP_KERNEL);
- 	if (gsm == NULL)
- 		return NULL;
-@@ -2218,6 +2211,26 @@ static struct gsm_mux *gsm_alloc_mux(voi
- 	gsm->mtu = 64;
- 	gsm->dead = true;	/* Avoid early tty opens */
- 
-+	/* Store the instance to the mux array or abort if no space is
-+	 * available.
-+	 */
-+	spin_lock(&gsm_mux_lock);
-+	for (i = 0; i < MAX_MUX; i++) {
-+		if (!gsm_mux[i]) {
-+			gsm_mux[i] = gsm;
-+			gsm->num = i;
-+			break;
-+		}
-+	}
-+	spin_unlock(&gsm_mux_lock);
-+	if (i == MAX_MUX) {
-+		mutex_destroy(&gsm->mutex);
-+		kfree(gsm->txframe);
-+		kfree(gsm->buf);
-+		kfree(gsm);
-+		return NULL;
-+	}
-+
- 	return gsm;
- }
- 
+ 	return gsm_control_wait(dlci->gsm, ctrl);
 
 
