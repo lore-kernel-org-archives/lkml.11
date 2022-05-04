@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDE0C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A03C3527B
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356664AbiEDRat (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39216 "EHLO
+        id S235921AbiEDRam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356796AbiEDRJo (ORCPT
+        with ESMTP id S1356807AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202391D326;
-        Wed,  4 May 2022 09:55:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E4B1E3F4;
+        Wed,  4 May 2022 09:55:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 837F1B82795;
-        Wed,  4 May 2022 16:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E7F1C385AF;
-        Wed,  4 May 2022 16:55:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAE94B82795;
+        Wed,  4 May 2022 16:55:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43222C385AF;
+        Wed,  4 May 2022 16:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683336;
-        bh=syvbfAMOEbim3F1NblPad85qNNOn39u3qZiZAyUDIdY=;
+        s=korg; t=1651683341;
+        bh=vNutgZLg99oCceQySVS0XrEC6vcgEAMD8t8e62pH2v4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YPL0fLsjFSg9n75m686DLMEVV8iHC8giQRgx8pWG/TzZsUkp/aC4EVLRJP5tKWJCG
-         H0mS2IWTOStB6zH57PCGWuBdrBS3h+bZGXNsxmJ5LMo7oMnDNPNnJcZbsnYQvxHTrC
-         6e4ku9O8MOwvaxHQPO/t8MECKZLNg4ammG9XmDyI=
+        b=BnYqe59qdx737bOQSjUPN/1zcv/iTALfvzWOsameRbZNLP/XzU6kUO2sgUv31Q23O
+         VAVlo/bNwZTzo7TPnVvxCO1Uv4VkDnR7roVxHfQzztipHQTAsbPAwRCjSKx4gVCmyZ
+         fsPad2wuShpo5yWJFJo9mTVf2tLE04vp72iQaaeA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.17 011/225] xhci: stop polling roothubs after shutdown
-Date:   Wed,  4 May 2022 18:44:09 +0200
-Message-Id: <20220504153111.278638853@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.17 016/225] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
+Date:   Wed,  4 May 2022 18:44:14 +0200
+Message-Id: <20220504153111.708620255@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,49 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Henry Lin <henryl@nvidia.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit dc92944a014cd6a6f6c94299aaa36164dd2c238a upstream.
+commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
 
-While rebooting, XHCI controller and its bus device will be shut down
-in order by .shutdown callback. Stopping roothubs polling in
-xhci_shutdown() can prevent XHCI driver from accessing port status
-after its bus device shutdown.
+When the driver fails to enable the regulator 'vid', we will get the
+following splat:
 
-Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
-polling, XHCI driver may access PCIe BAR register for port status after
-parent PCIe root port driver is shutdown and cause PCIe bus error.
+[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   79.967570] Call Trace:
+[   79.967773]  <TASK>
+[   79.967951]  regulator_put+0x1f/0x30
+[   79.968254]  devres_release_group+0x319/0x3d0
+[   79.968608]  i2c_device_probe+0x766/0x940
 
-[check shared hcd exist before stopping its roothub polling -Mathias]
+Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
+regulator.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Henry Lin <henryl@nvidia.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-3-mathias.nyman@linux.intel.com
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/iio/magnetometer/ak8975.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -778,6 +778,17 @@ void xhci_shutdown(struct usb_hcd *hcd)
- 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
- 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -416,6 +416,7 @@ static int ak8975_power_on(const struct
+ 	if (ret) {
+ 		dev_warn(&data->client->dev,
+ 			 "Failed to enable specified Vid supply\n");
++		regulator_disable(data->vdd);
+ 		return ret;
+ 	}
  
-+	/* Don't poll the roothubs after shutdown. */
-+	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
-+			__func__, hcd->self.busnum);
-+	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
-+	del_timer_sync(&hcd->rh_timer);
-+
-+	if (xhci->shared_hcd) {
-+		clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
-+		del_timer_sync(&xhci->shared_hcd->rh_timer);
-+	}
-+
- 	spin_lock_irq(&xhci->lock);
- 	xhci_halt(xhci);
- 	/* Workaround for spurious wakeups at shutdown with HSW */
 
 
