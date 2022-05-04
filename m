@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7149AC4707F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D94C352A7
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358956AbiEDRfc (ORCPT
+        id S1359268AbiEDRfz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40512 "EHLO
+        Wed, 4 May 2022 13:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357320AbiEDRKG (ORCPT
+        with ESMTP id S1356972AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:10:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3254A932;
-        Wed,  4 May 2022 09:57:15 -0700 (PDT)
+        Wed, 4 May 2022 13:09:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599CC47552;
+        Wed,  4 May 2022 09:56:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73474618D7;
-        Wed,  4 May 2022 16:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C600DC385A5;
-        Wed,  4 May 2022 16:57:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 114F5B82737;
+        Wed,  4 May 2022 16:56:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAFCC385A4;
+        Wed,  4 May 2022 16:56:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683434;
-        bh=fiEjsMwi+sx83CopIVwfDXjNiCaih6WW+Reo85LpXa0=;
+        s=korg; t=1651683404;
+        bh=vZgK6Y9PLhjhFdFkYNeKjuquI8/FQ9aIPBNEBrVREaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KuA83JlATmvj+/jJjzJURhnjuffKtc02qLVBuKh9OJcQnTCh9oK8gdqnFD0HwfknM
-         crRAOuQj+gLk4EVNLGCmg5cO5jE6C8kR2CFYjeQtg4cv3g+yEVY5eD11AF8mhxZJOG
-         NBiItB2OVBuuBhZTkxl4NkTQ4/79n1TuCZqg4IME=
+        b=FJHOABncIv1ezM4Et75KGOMDb1IRIEmbxWt+g1IPx5VP8SvtWVGhC28pch9mPV8UH
+         iK17QHvhaim6gqVbqxYWe1h8IrPOjPBf7b0D8xzgPBRCpX9s8I+MocyuAc9tpST8tb
+         KxksHYmOB54yAYKOPXUcffWJ507n8GcMUaL+6BYw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 085/225] phy: mapphone-mdm6600: Fix PM error handling in phy_mdm6600_probe
-Date:   Wed,  4 May 2022 18:45:23 +0200
-Message-Id: <20220504153118.619333350@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Giraudon <ggiraudon@prism19.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 075/225] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
+Date:   Wed,  4 May 2022 18:45:13 +0200
+Message-Id: <20220504153118.060255320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,44 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Guillaume Giraudon <ggiraudon@prism19.com>
 
-[ Upstream commit d644e0d79829b1b9a14beedbdb0dc1256fc3677d ]
+[ Upstream commit 962dd65e575dde950ef0844568edc37cfb39f302 ]
 
-The pm_runtime_enable will increase power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable(). And use pm_runtime_dont_use_autosuspend() to
-undo pm_runtime_use_autosuspend()
-In the PM Runtime docs:
-    Drivers in ->remove() callback should undo the runtime PM changes done
-    in ->probe(). Usually this means calling pm_runtime_disable(),
-    pm_runtime_dont_use_autosuspend() etc.
+The labels for lines 61 through 84 on the periphs-banks were offset by 2.
+2 lines are missing in the BOOT GPIO lines (contains 14, should be 16)
+Added 2 empty entries in BOOT to realigned the rest of GPIO labels
+to match the Banana Pi M5 schematics.
 
-We should do this in error handling.
+(Thanks to Neil Armstrong for the heads up on the position of the missing pins)
 
-Fixes: f7f50b2a7b05 ("phy: mapphone-mdm6600: Add runtime PM support for n_gsm on USB suspend")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220301024615.31899-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 976e920183e4 ("arm64: dts: meson-sm1: add Banana PI BPI-M5 board dts")
+Signed-off-by: Guillaume Giraudon <ggiraudon@prism19.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220411144427.874-1-ggiraudon@prism19.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/motorola/phy-mapphone-mdm6600.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/motorola/phy-mapphone-mdm6600.c b/drivers/phy/motorola/phy-mapphone-mdm6600.c
-index 5172971f4c36..3cd4d51c247c 100644
---- a/drivers/phy/motorola/phy-mapphone-mdm6600.c
-+++ b/drivers/phy/motorola/phy-mapphone-mdm6600.c
-@@ -629,7 +629,8 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
- cleanup:
- 	if (error < 0)
- 		phy_mdm6600_device_power_off(ddata);
--
-+	pm_runtime_disable(ddata->dev);
-+	pm_runtime_dont_use_autosuspend(ddata->dev);
- 	return error;
- }
- 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+index 5751c48620ed..cadba194b149 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+@@ -437,6 +437,7 @@ &gpio {
+ 		"",
+ 		"eMMC_RST#", /* BOOT_12 */
+ 		"eMMC_DS", /* BOOT_13 */
++		"", "",
+ 		/* GPIOC */
+ 		"SD_D0_B", /* GPIOC_0 */
+ 		"SD_D1_B", /* GPIOC_1 */
 -- 
 2.35.1
 
