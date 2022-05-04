@@ -2,144 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357780AbiEDULJ (ORCPT
+        id S1357948AbiEDULs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
+        Wed, 4 May 2022 16:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230295AbiEDULH (ORCPT
+        with ESMTP id S230295AbiEDULq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:11:07 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD411205E8;
-        Wed,  4 May 2022 13:07:30 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id i19so4940263eja.11;
-        Wed, 04 May 2022 13:07:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7lSSNpXXfR9Qy/9yZmZMditNWGkfTBxEtIAkXYQaMHY=;
-        b=DwrZPfkdvYwiBurT5FmmNntdTqHrVcc8lePpYW6+Ntes+tTNLEObFTfQJrJYVQTl5A
-         BJ+jQ6xn7udqIMO2MjGbtuOgMursdwv//eRcXUBeC0RjImLY78VJCOCnVJBcp2GUrjTr
-         4TUcKyKXcNUpqnn5WU8bRPUj6VMOdL5pI3scjr+2zSYIBvbg2sZfVcG88vFh5OkSe36A
-         sMfw1WtJe3tIipPmStwJQwzyRJISt9Y3Z8vkL2MplGRahYAd8JqVeGq8b4D6VqiAuqGq
-         k0l2x0ebEVOeHfzui4wu2UmbxvRqb2es+mmk4mOsaPDrRlxMatTClQgctgei0RB0Voch
-         5zrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7lSSNpXXfR9Qy/9yZmZMditNWGkfTBxEtIAkXYQaMHY=;
-        b=yWc5Au9lAvJHeGNs9FKWjqUvrmQNvntWCFpZ5xy8AA8SXO38fwcTxGvEzEdkTw1AFd
-         f7YZpYTrCvIEXURncBSX2dbOa2PIOVK78t9zAlRgCzmJ4Cbk4dg5yBH4h0BtGgK7i8km
-         O3hDSaqYvkxJi29yZwY4gDIe/gvwJ1ODqYYxHtlhwHZmDA1JmeBTLfC8q8dZzXWynvIr
-         QJc3bjfPosV3lDPIRA1FtkzzRWYhHU9nGJuHyHksq1YrY3nFjp0SipNZWpracIlmN+W4
-         Fw68XyLCn0nxJmGpGbOx1nfSucnYmcfL+kNfB2OOEjCYVc1eDvHlcQTVzsWW6ktnHP5H
-         pLvQ==
-X-Gm-Message-State: AOAM533f0V53oYcAIWjKxwqw3In9NO8nHw6Z+9yjEIVBBrOaj+MSoAp7
-        UI+3NSCczgXGmon2Tx3E1+8=
-X-Google-Smtp-Source: ABdhPJzlGXzx5m76HwjZ3ekvNPEQriouGOD8PegIt5LcRvA/OXYGxxHNoM74Oe4PeDvJgXSnhTVgRw==
-X-Received: by 2002:a17:906:9b8a:b0:6f3:fcc9:f863 with SMTP id dd10-20020a1709069b8a00b006f3fcc9f863mr22090808ejc.672.1651694849219;
-        Wed, 04 May 2022 13:07:29 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e2fsm6164979ejc.149.2022.05.04.13.07.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 13:07:28 -0700 (PDT)
-Date:   Wed, 4 May 2022 23:07:26 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [Patch net-next v13 07/13] net: dsa: microchip: add LAN937x SPI
- driver
-Message-ID: <20220504200726.pn7y73gt7wc2dpsg@skbuf>
-References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
- <20220504151755.11737-8-arun.ramadoss@microchip.com>
+        Wed, 4 May 2022 16:11:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC91220E9
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:08:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 099636156B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 20:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E35D0C385AE;
+        Wed,  4 May 2022 20:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651694888;
+        bh=hP6DONQx8HT3ciq95qC7cLt2aYlwi23SKeG+VbaD1mM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TF4t+dOV6Kb8lkG8GJVR1PoreKUgXBn1VlnhrosNyEUKEbZ2MTsmJ+gYBjVpiXxzU
+         Co9ZOCrpB4hXv7plOP34gvW0o7zI+bFt5qo+Kskv+ZtZ6fDPkT4zuVAUoZ13hS2C8A
+         daRPV2DIU6FPf6wqxyGgAuXWGDR38+AXruvoORNQ6F1E1CMLT3NgiKbG4grAT2zfe/
+         vNue9Hrsixh9TsMHC5NUd7vzr6d5IbkDzfWWDDd7i2oWheN23VVKbNuHBrMRzFcGPQ
+         f4+B9l3P20s2k7J2aADAwQ274Q1C3JV1HceRzSzR5qJkUSRgiB0yLf5fW9z9LhLAqu
+         Ta725knLj9gDg==
+From:   SeongJae Park <sj@kernel.org>
+To:     akpm@linux-foundation.org, willy@infradead.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        SeongJae Park <sj@kernel.org>
+Subject: [PATCH for mm-unstable 1/3] mm/vmscan: Use folio_test_transhuge() for THP check
+Date:   Wed,  4 May 2022 20:07:56 +0000
+Message-Id: <20220504200758.314478-2-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220504200758.314478-1-sj@kernel.org>
+References: <20220504200758.314478-1-sj@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504151755.11737-8-arun.ramadoss@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 08:47:49PM +0530, Arun Ramadoss wrote:
-> This patch add the SPI driver for the LAN937x switches. It uses the
-> lan937x_main.c and lan937x_dev.c functions.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
->  drivers/net/dsa/microchip/Makefile      |   1 +
->  drivers/net/dsa/microchip/ksz_common.h  |   1 +
->  drivers/net/dsa/microchip/lan937x_dev.c |   7 +
->  drivers/net/dsa/microchip/lan937x_spi.c | 236 ++++++++++++++++++++++++
->  4 files changed, 245 insertions(+)
->  create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
-> 
-> diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-> index d32ff38dc240..28d8eb62a795 100644
-> --- a/drivers/net/dsa/microchip/Makefile
-> +++ b/drivers/net/dsa/microchip/Makefile
-> @@ -10,3 +10,4 @@ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
->  obj-$(CONFIG_NET_DSA_MICROCHIP_LAN937X)		+= lan937x.o
->  lan937x-objs := lan937x_dev.o
->  lan937x-objs += lan937x_main.o
-> +lan937x-objs += lan937x_spi.o
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index 5671f580948d..fd9e0705d2d2 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -151,6 +151,7 @@ void ksz_switch_remove(struct ksz_device *dev);
->  int ksz8_switch_register(struct ksz_device *dev);
->  int ksz9477_switch_register(struct ksz_device *dev);
->  int lan937x_switch_register(struct ksz_device *dev);
-> +int lan937x_check_device_id(struct ksz_device *dev);
->  
->  void ksz_update_port_member(struct ksz_device *dev, int port);
->  void ksz_init_mib_timer(struct ksz_device *dev);
-> diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
-> index 3f1797cc1d16..f430a8711775 100644
-> --- a/drivers/net/dsa/microchip/lan937x_dev.c
-> +++ b/drivers/net/dsa/microchip/lan937x_dev.c
-> @@ -386,8 +386,15 @@ static int lan937x_mdio_register(struct ksz_device *dev)
->  
->  static int lan937x_switch_init(struct ksz_device *dev)
->  {
-> +	int ret;
-> +
->  	dev->ds->ops = &lan937x_switch_ops;
->  
-> +	/* Check device tree */
-> +	ret = lan937x_check_device_id(dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
+Commit 22bf1b68e572 ("vmscan: remove remaining uses of page in
+shrink_page_list") on 'mm-unstable' replaces 'PageTransHuge()' with
+'folio_test_large()' instead of 'folio_test_transhuge()'.  This results
+in below build error when 'CONFIG_TRANSPARENT_HUGEPAGE' is unset.
 
-Can't this be called from lan937x_spi_probe() directly, why do you need
-to go through lan937x_switch_register() first?
+      CC      mm/vmscan.o
+    In file included from <command-line>:
+    In function ‘can_split_folio’,
+        inlined from ‘shrink_page_list’ at .../linux/mm/vmscan.c:1719:11:
+    .../linux/include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_178’ declared with attribute error: BUILD_BUG failed
+      352 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+          |                                      ^
+    .../linux/include/linux/compiler_types.h:333:4: note: in definition of macro ‘__compiletime_assert’
+      333 |    prefix ## suffix();    \
+          |    ^~~~~~
+    .../linux/include/linux/compiler_types.h:352:2: note: in expansion of macro ‘_compiletime_assert’
+      352 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+          |  ^~~~~~~~~~~~~~~~~~~
+    .../linux/include/linux/build_bug.h:39:37: note: in expansion of macro ‘compiletime_assert’
+       39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+          |                                     ^~~~~~~~~~~~~~~~~~
+    .../linux/include/linux/build_bug.h:59:21: note: in expansion of macro ‘BUILD_BUG_ON_MSG’
+       59 | #define BUILD_BUG() BUILD_BUG_ON_MSG(1, "BUILD_BUG failed")
+          |                     ^~~~~~~~~~~~~~~~
+    .../linux/include/linux/huge_mm.h:351:2: note: in expansion of macro ‘BUILD_BUG’
+      351 |  BUILD_BUG();
+          |  ^~~~~~~~~
 
->  	dev->port_mask = (1 << dev->port_cnt) - 1;
->  
->  	dev->ports = devm_kzalloc(dev->dev,
+This commit fixes the issue by replacing the check to use
+'folio_test_transhuge()'.
+
+Fixes: 22bf1b68e572 ("vmscan: remove remaining uses of page in shrink_page_list")
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ mm/vmscan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 40cda196d802..5a0f081a7be5 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1714,7 +1714,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 					goto keep_locked;
+ 				if (folio_maybe_dma_pinned(folio))
+ 					goto keep_locked;
+-				if (folio_test_large(folio)) {
++				if (folio_test_transhuge(folio)) {
+ 					/* cannot split folio, skip it */
+ 					if (!can_split_folio(folio, NULL))
+ 						goto activate_locked;
+-- 
+2.25.1
+
