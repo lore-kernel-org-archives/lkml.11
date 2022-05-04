@@ -2,99 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352934AbiEDP7Y (ORCPT
+        id S1352809AbiEDP7q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
+        Wed, 4 May 2022 11:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352928AbiEDP7T (ORCPT
+        with ESMTP id S1352928AbiEDP7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:59:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939E113D28;
-        Wed,  4 May 2022 08:55:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 371E161777;
-        Wed,  4 May 2022 15:55:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC9ECC385A5;
-        Wed,  4 May 2022 15:55:40 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="JYkvInkD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651679739;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6yyJ0k9BpvAv3H7drBawcClMMXzihm3exQEpiGY4xDM=;
-        b=JYkvInkDkMu4DwG+axf7VkN0haw5B9+vh2KIgA9FtRpMP/P+uj58tA0EY5CX5HZi9hXxsC
-        yWmjh1j06JEiIt+t8K2rzYnNZs8GWZr5Bq0IUPfY+awCBsG28xNUJ5LA1l1sYLDV5pRLRS
-        4ijeE3RUiOvxmrqyP/rF9609ptPild0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bf1403c7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 4 May 2022 15:55:38 +0000 (UTC)
-Date:   Wed, 4 May 2022 17:55:35 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Filipe Manana <fdmanana@suse.com>, linux-crypto@vger.kernel.org
-Subject: Re: [patch 3/3] x86/fpu: Make FPU protection more robust
-Message-ID: <YnKh96isoB7jiFrv@zx2c4.com>
-References: <20220501192740.203963477@linutronix.de>
- <20220501193102.704267030@linutronix.de>
- <Ym/sHqKqmLOJubgE@zn.tnic>
- <87k0b4lydr.ffs@tglx>
- <YnDwjjdiSQ5Yml6E@hirez.programming.kicks-ass.net>
- <87fslpjomx.ffs@tglx>
+        Wed, 4 May 2022 11:59:41 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C327613D56;
+        Wed,  4 May 2022 08:56:04 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l7so3761423ejn.2;
+        Wed, 04 May 2022 08:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/MaG3ZRxc4+H0WC1x/YbpPIHfpEZGPdrdbB0R6rZ248=;
+        b=l85EWaFhKcWG+iEl6rrGnGCY5Z/crEoYwQzItVzAOzLGH1/pgHDyYECey8ScXdDXE1
+         n65+6TOfcYygLcOacv98c8wCphaSSVkRVF8oEBq4yhlWWizwq/NfPJOMFg8Nt99tsGcX
+         yxaAjJvv5XBmLHR022ucyQ36+vF/haWAgT0NZBxR9pIwneBvbqR2kueO412rO53RdTLk
+         tgpKcRBxxg4yXgE47Q9z7L7bVmgbsxkAfoxOg9ELUfKxhKIkh+Y5SCciLwneWVEOvamG
+         1LA6l6RRSbmUmPMrpJD3Ca9E9gA0jxiECssD2CjjnH8rLfkuSRk3fUmzJK7vePoB6dbt
+         QGow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/MaG3ZRxc4+H0WC1x/YbpPIHfpEZGPdrdbB0R6rZ248=;
+        b=iGwEWVibSdstU+8wMxIfYXSIbE4YkChIozM2bCiBHEGQGeZb8KU67uCw7uyWyRp/PE
+         dwAf8sHd005dNtQDIGphjVE23v8TXwG3bgx+mNS1GMxI7ZN528jjN8+0KBcuYKUdgvRA
+         cllMzczkSBZLVYCHB2Nlw8+tCUscRlvSHl4z2y1jcbygZA0xhUQ92xank4YEMXi64DBZ
+         UwveSk3WN98l7IX9xjXIV1ipZCU2v2Zk+/3DnOWezVBxioCKkBSleZH6p6MRY7LHCUo4
+         EXFVyeNkArrzBTISzX+naLMCPjiPZLyXN2OVUWZPUy76ulBVi6HSuzSRFsaoVu+m1vgn
+         41Hw==
+X-Gm-Message-State: AOAM531oM98uP/XfMl4WREhehczQM7eKr39Jrp+no341r2HkgiCtmUQ0
+        AVM9Dfq8mVCLaD1Rpg0s+wrM0WcXnqML8R+C6HE=
+X-Google-Smtp-Source: ABdhPJyuYBhJj9i6UkwxP4bpUHxcD+QUaErFF4VF/CmTnhrV4i0EhEIHGYVA9FLAQNnprizp2Z6JLR6wMNW70SZyAHw=
+X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id
+ d9-20020a1709063ce900b006efa8aaab46mr21027830ejh.579.1651679762802; Wed, 04
+ May 2022 08:56:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87fslpjomx.ffs@tglx>
+References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+ <20220308205016.2c0112ad@md1za8fc.ad001.siemens.net> <YnJ0tdGTzTRYEISn@smile.fi.intel.com>
+ <20220504171007.2f641098@md1za8fc.ad001.siemens.net>
+In-Reply-To: <20220504171007.2f641098@md1za8fc.ad001.siemens.net>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 4 May 2022 17:55:26 +0200
+Message-ID: <CAHp75Vfh5DbiGQ4NLv+hhYyRx5wDbMjFmgO5sNZ7864ipRrDHg@mail.gmail.com>
+Subject: Re: [PATCH v4 0/8] platform/x86: introduce p2sb_bar() helper
+To:     Henning Schild <henning.schild@siemens.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tan Jui Nee <jui.nee.tan@intel.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-edac@vger.kernel.org, linux-i2c <linux-i2c@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Wed, May 4, 2022 at 5:10 PM Henning Schild
+<henning.schild@siemens.com> wrote:
+> Am Wed, 4 May 2022 15:42:29 +0300
+> schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:
+> > On Tue, Mar 08, 2022 at 08:50:16PM +0100, Henning Schild wrote:
 
-On Wed, May 04, 2022 at 05:36:38PM +0200, Thomas Gleixner wrote:
-> But the only use case which utilizes FPU from hard interrupt context is
-> the random generator via add_randomness_...().
-> 
-> I did a benchmark of these functions, which invoke blake2s_update()
-> three times in a row, on a SKL-X and a ZEN3. The generic code and the
-> FPU accelerated code are pretty much on par vs. execution time of the
-> algorithm itself plus/minus noise.
+...
+
+> > Can we have your formal Tested-by tag?
 >
-> IOW, using the FPU blindly for this kind of computations is not
-> necessarily a good plan. I have no idea how these things are analyzed
-> and evaluated if at all. Maybe the crypto people can shed some light on
-> this.
+> Sure. I will just put it here for you to take.
+>
+> Tested-by: Henning Schild <henning.schild@siemens.com>
 
-drivers/net/wireguard/{noise,cookie}.c makes pretty heavy use of BLAKE2s
-in hot paths where the FPU is already being used for other algorithms,
-and so there the save/restore is worth it (assuming restore finally
-works lazily). In benchmarks, the SIMD code made a real difference.
+Thank you!
 
-But this presumably regards mix_pool_bytes() in the RNG. If it turns out
-that supporting the FPU in hard IRQ context is a major PITA, and the RNG
-is the only thing making use of it, then sure, drop hard IRQ context
-support for it. However... This may be unearthing a larger bug.
-Sebastian and I put in a decent amount of work during 5.18 to remove all
-calls to mix_pool_bytes() (and hence to blake2s_compress()) from
-add_interrupt_randomness(). Have a look:
+> Let me know if you need it in another shape or form.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/tree/drivers/char/random.c#n1289
+Form is okay, just would be nice if you can retest what I have in the
+branch as an updated version.
 
-It now accumulates in some per-CPU buffer, and then every 64 interrupts
-a worker runs that does the actual mix_pool_bytes() from kthread
-context.
-
-So the question is: what is still hitting mix_pool_bytes() from hard IRQ
-context? I'll investigate a bit and see.
-
-Jason
+--
+With Best Regards,
+Andy Shevchenko
