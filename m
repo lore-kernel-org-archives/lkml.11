@@ -2,42 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E980C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA982C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344702AbiEDR2E (ORCPT
+        id S1357035AbiEDR2N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
+        Wed, 4 May 2022 13:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355756AbiEDRIu (ORCPT
+        with ESMTP id S1356091AbiEDRJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93133515A5;
-        Wed,  4 May 2022 09:54:32 -0700 (PDT)
+        Wed, 4 May 2022 13:09:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC40B52B02;
+        Wed,  4 May 2022 09:54:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BBBCB827A5;
-        Wed,  4 May 2022 16:54:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD6EC385A4;
-        Wed,  4 May 2022 16:54:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF20DB827A9;
+        Wed,  4 May 2022 16:54:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A9AC385A5;
+        Wed,  4 May 2022 16:54:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683269;
-        bh=bRQrtA7Sj1ZggibkRz6ZFK9KJkXGdhVaf5iHCb6wSws=;
+        s=korg; t=1651683289;
+        bh=tdbDFul+h7mHIZGjR6d9RK6uqNXvSudKR0hDLEN0/i8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXY4ksjVQkqH97LIz4owDIvDmY777u3yRqnXpOa/t/zCijpG8fiqjKicaj+O5RxST
-         MHvCiwD/yyIkwqdwzmEwKY/UYQ7s0ZLAE5a6+BlIEqlr/Bdtwl7RgfUCB/Uz05hQeB
-         1Rfw1c5RvodkQjnwqeHdmw1KXxUr9WCawQ7JjHSQ=
+        b=c1F3vRRt/wFf8oBlygRyovfa5X5Xpl1UNnLr6zPSQdvbn2ccCTudssr6su7YrUjxw
+         FPY3IIbwHIUzJyFeNoxf/DoZjne0eAqrCj6iA4EOHLFxLogQqQh8+PnnlD64WIQi0P
+         YRXFMOdGmaXzjRfzGV64HEMZjLjD/twHgmnfJPyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 119/177] gfs2: Prevent endless loops in gfs2_file_buffered_write
-Date:   Wed,  4 May 2022 18:45:12 +0200
-Message-Id: <20220504153103.816946873@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 155/177] perf symbol: Pass is_kallsyms to symbols__fixup_end()
+Date:   Wed,  4 May 2022 18:45:48 +0200
+Message-Id: <20220504153107.284095273@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,56 +63,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-[ Upstream commit 554c577cee95bdc1d03d9f457e57dc96eb791845 ]
+commit 838425f2defe5262906b698752d28fd2fca1aac2 upstream.
 
-Currently, instead of performing a short write,
-iomap_file_buffered_write will fail when part of its iov iterator cannot
-be read.  In contrast, gfs2_file_buffered_write will loop around if it
-can read part of the iov iterator, so we can end up in an endless loop.
+The symbol fixup is necessary for symbols in kallsyms since they don't
+have size info.  So we use the next symbol's address to calculate the
+size.  Now it's also used for user binaries because sometimes they miss
+size for hand-written asm functions.
 
-This should be fixed in iomap_file_buffered_write (and also
-generic_perform_write), but this comes a bit late in the 5.16
-development cycle, so work around it in the filesystem by
-trimming the iov iterator to the known-good size for now.
+There's a arch-specific function to handle kallsyms differently but
+currently it cannot distinguish kallsyms from others.  Pass this
+information explicitly to handle it properly.  Note that those arch
+functions will be moved to the generic function so I didn't added it to
+the arch-functions.
 
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-s390@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Link: https://lore.kernel.org/r/20220416004048.1514900-2-namhyung@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/gfs2/file.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/perf/util/symbol-elf.c |    2 +-
+ tools/perf/util/symbol.c     |    7 ++++---
+ tools/perf/util/symbol.h     |    2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index 247b8d95b5ef..97e2793e22d7 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -1021,6 +1021,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 	struct gfs2_sbd *sdp = GFS2_SB(inode);
- 	struct gfs2_holder *statfs_gh = NULL;
- 	size_t prev_count = 0, window_size = 0;
-+	size_t orig_count = iov_iter_count(from);
- 	size_t read = 0;
- 	ssize_t ret;
+--- a/tools/perf/util/symbol-elf.c
++++ b/tools/perf/util/symbol-elf.c
+@@ -1290,7 +1290,7 @@ dso__load_sym_internal(struct dso *dso,
+ 	 * For misannotated, zeroed, ASM function sizes.
+ 	 */
+ 	if (nr > 0) {
+-		symbols__fixup_end(&dso->symbols);
++		symbols__fixup_end(&dso->symbols, false);
+ 		symbols__fixup_duplicate(&dso->symbols);
+ 		if (kmap) {
+ 			/*
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -217,7 +217,8 @@ again:
+ 	}
+ }
  
-@@ -1065,6 +1066,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 	if (inode == sdp->sd_rindex)
- 		gfs2_glock_dq_uninit(statfs_gh);
+-void symbols__fixup_end(struct rb_root_cached *symbols)
++void symbols__fixup_end(struct rb_root_cached *symbols,
++			bool is_kallsyms __maybe_unused)
+ {
+ 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
+ 	struct symbol *curr, *prev;
+@@ -1456,7 +1457,7 @@ int __dso__load_kallsyms(struct dso *dso
+ 	if (kallsyms__delta(kmap, filename, &delta))
+ 		return -1;
  
-+	from->count = orig_count - read;
- 	if (should_fault_in_pages(ret, from, &prev_count, &window_size)) {
- 		size_t leftover;
+-	symbols__fixup_end(&dso->symbols);
++	symbols__fixup_end(&dso->symbols, true);
+ 	symbols__fixup_duplicate(&dso->symbols);
  
-@@ -1072,6 +1074,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 		leftover = fault_in_iov_iter_readable(from, window_size);
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
-+			from->count = min(from->count, window_size - leftover);
- 			if (!gfs2_holder_queued(gh)) {
- 				if (read)
- 					goto out_uninit;
--- 
-2.35.1
-
+ 	if (dso->kernel == DSO_SPACE__KERNEL_GUEST)
+@@ -1648,7 +1649,7 @@ int dso__load_bfd_symbols(struct dso *ds
+ #undef bfd_asymbol_section
+ #endif
+ 
+-	symbols__fixup_end(&dso->symbols);
++	symbols__fixup_end(&dso->symbols, false);
+ 	symbols__fixup_duplicate(&dso->symbols);
+ 	dso->adjust_symbols = 1;
+ 
+--- a/tools/perf/util/symbol.h
++++ b/tools/perf/util/symbol.h
+@@ -192,7 +192,7 @@ void __symbols__insert(struct rb_root_ca
+ 		       bool kernel);
+ void symbols__insert(struct rb_root_cached *symbols, struct symbol *sym);
+ void symbols__fixup_duplicate(struct rb_root_cached *symbols);
+-void symbols__fixup_end(struct rb_root_cached *symbols);
++void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms);
+ void maps__fixup_end(struct maps *maps);
+ 
+ typedef int (*mapfn_t)(u64 start, u64 len, u64 pgoff, void *data);
 
 
