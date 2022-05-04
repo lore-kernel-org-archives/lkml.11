@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1406BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357239AbiEDR27 (ORCPT
+        id S1357326AbiEDR3E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
+        Wed, 4 May 2022 13:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356238AbiEDRJG (ORCPT
+        with ESMTP id S1356307AbiEDRJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CE652E7E;
-        Wed,  4 May 2022 09:55:01 -0700 (PDT)
+        Wed, 4 May 2022 13:09:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EBB532DB;
+        Wed,  4 May 2022 09:55:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6222B827A4;
-        Wed,  4 May 2022 16:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E781C385A4;
-        Wed,  4 May 2022 16:54:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2E4261899;
+        Wed,  4 May 2022 16:55:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D0FC385AA;
+        Wed,  4 May 2022 16:55:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683298;
-        bh=+pd8bGsS0zR0hJwb5IFgrU+qEToXC0YbxDwkOVysbwI=;
+        s=korg; t=1651683302;
+        bh=7pBfGO7jJD7TSXKhPud04PKEnIWy2lecZmL2TL3JfC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iHzR3+V3C/b4u27j+Au1Qpb5ZvDzGpjESzcG9Fe3L+3FtojSiU7qkJNEFijdZzXaY
-         wrFzGhIuXeKms3Fg/0LajAUiNWOYgunvcl5pLmOYyEayAAvvBADhIQX6AJnSq3MJtG
-         zatTgB/6tUxBU1/6M9hTQVf4ACxwn1mb122NOjFE=
+        b=D/gJkHr7qUwFSaEjq1VWmAcj+p1V8cRnuzPJiEs1HVoMTciy05vj2vA7njOH5kp76
+         mYm/WC8edXaHP3OintIEjGzfWeBdD/ISO1d/y3RwWLCS3sNmosADyiWXBYB0Tx5qWi
+         fYFrgYz2fGGOsOyVFxnEazNRd5rZYRes1b5UUcDU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH 5.15 152/177] ARM: dts: at91: sama7g5ek: enable pull-up on flexcom3 console lines
-Date:   Wed,  4 May 2022 18:45:45 +0200
-Message-Id: <20220504153106.964060853@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.15 167/177] tty: n_gsm: fix wrong command frame length field encoding
+Date:   Wed,  4 May 2022 18:46:00 +0200
+Message-Id: <20220504153108.497103113@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,37 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 3f7ce6d7091765ed6c67c5d78aa364b9d17e3aab upstream.
+commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
 
-Flexcom3 is used as board console serial. There are no pull-ups on these
-lines on the board. This means that if a cable is not connected (that has
-pull-ups included), stray characters could appear on the console as the
-floating pins voltage levels are interpreted as incoming characters.
-To avoid this problem, enable the internal pull-ups on these lines.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
+be made up from type, length and value. Looking for example in chapter
+5.4.6.3.5 at the description for the encoding of a flow control on command
+it becomes obvious, that the type and length field is always present
+whereas the value may be zero bytes long. The current implementation omits
+the length field if the value is not present. This is wrong.
+Correct this by always sending the length in gsm_control_transmit().
+So far only the modem status command (MSC) has included a value and encoded
+its length directly. Therefore, also change gsmtty_modem_update().
 
-Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220307113827.2419331-1-eugen.hristev@microchip.com
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/at91-sama7g5ek.dts |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |   23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
---- a/arch/arm/boot/dts/at91-sama7g5ek.dts
-+++ b/arch/arm/boot/dts/at91-sama7g5ek.dts
-@@ -403,7 +403,7 @@
- 	pinctrl_flx3_default: flx3_default {
- 		pinmux = <PIN_PD16__FLEXCOM3_IO0>,
- 			 <PIN_PD17__FLEXCOM3_IO1>;
--		bias-disable;
-+		bias-pull-up;
- 	};
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1302,11 +1302,12 @@ static void gsm_control_response(struct
  
- 	pinctrl_flx4_default: flx4_default {
+ static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
+ {
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
++	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+ 	if (msg == NULL)
+ 		return;
+-	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
+-	memcpy(msg->data + 1, ctrl->data, ctrl->len);
++	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
++	msg->data[1] = (ctrl->len << 1) | EA;
++	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+ 	gsm_data_queue(gsm->dlci[0], msg);
+ }
+ 
+@@ -2889,19 +2890,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
+ 
+ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
+ {
+-	u8 modembits[5];
++	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+ 	int len = 2;
+ 
+-	if (brk)
++	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
++	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
++	if (brk) {
++		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
+-
+-	modembits[0] = len << 1 | EA;		/* Data bytes */
+-	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
+-	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
+-	if (brk)
+-		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
+-	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
++	}
++	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
+ 	if (ctrl == NULL)
+ 		return -ENOMEM;
+ 	return gsm_control_wait(dlci->gsm, ctrl);
 
 
