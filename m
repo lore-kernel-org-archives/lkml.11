@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2847C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 336E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345765AbiEDRGW (ORCPT
+        id S1355367AbiEDRG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        Wed, 4 May 2022 13:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355032AbiEDQ7h (ORCPT
+        with ESMTP id S1355081AbiEDQ7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:37 -0400
+        Wed, 4 May 2022 12:59:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C444F49256;
-        Wed,  4 May 2022 09:51:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED244A926;
+        Wed,  4 May 2022 09:51:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A7B617BE;
-        Wed,  4 May 2022 16:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A04BC385A5;
-        Wed,  4 May 2022 16:51:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21CCF617C4;
+        Wed,  4 May 2022 16:51:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69E9DC385A5;
+        Wed,  4 May 2022 16:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683072;
-        bh=oOMJHf8M4puZp7SwS8w6iN5e33gggym1pDN1VfHle1c=;
+        s=korg; t=1651683075;
+        bh=xG1lQ+LrCv/eV86Q3zTDlmVyPFXvs4Wf6IbC1ycDdac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bNYYSlYvloASe3RTk/zQgRUYtJ7QGAjlwGz5FM2tIEub2/aIjimv2jhDsvqBwfZui
-         kcgc2kY1ZKpsqq1bgzGHtO0x+pQFPDaHhy0L2cNlHT9FZVkEgwaFd+KCRSKnGcG0XS
-         m+/Ze+wJ1QCLXs+oeixKfP4uvypHW31GPTV05HFk=
+        b=oGJumyqwsg+dDCI/i232mbKuF3yf9vCmBXj0A4tJNpB5NsNJ7jNc8VCyr/6tN5Y9O
+         bisbKl0W2hMAhaBH7B6feOJQ0ykK/p6W1Eq9W9KLWXbfi+NI4e3KNE9NGBoFnxPEjZ
+         56M/dkdys6qd5fAOmLCk/FWQgNEJgvCXZ0W145k0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 076/129] net: hns3: modify the return code of hclge_get_ring_chain_from_mbx
-Date:   Wed,  4 May 2022 18:44:28 +0200
-Message-Id: <20220504153027.221242910@linuxfoundation.org>
+Subject: [PATCH 5.10 079/129] net/smc: sync err code when tcp connection was refused
+Date:   Wed,  4 May 2022 18:44:31 +0200
+Message-Id: <20220504153027.392669539@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,38 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit 48009e9972974c52a5f649f761862dd67bce3d13 ]
+[ Upstream commit 4e2e65e2e56c6ceb4ea1719360080c0af083229e ]
 
-Currently, function hclge_get_ring_chain_from_mbx will return -ENOMEM if
-ring_num is bigger than HCLGE_MBX_MAX_RING_CHAIN_PARAM_NUM. It is better to
-return -EINVAL for the invalid parameter case.
+In the current implementation, when TCP initiates a connection
+to an unavailable [ip,port], ECONNREFUSED will be stored in the
+TCP socket, but SMC will not. However, some apps (like curl) use
+getsockopt(,,SO_ERROR,,) to get the error information, which makes
+them miss the error message and behave strangely.
 
-So this patch fixes it by return -EINVAL in this abnormal branch.
-
-Fixes: 5d02a58dae60 ("net: hns3: fix for buffer overflow smatch warning")
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/smc/af_smc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 5d3996767256..2ea347b822db 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -173,7 +173,7 @@ static int hclge_get_ring_chain_from_mbx(
- 	ring_num = req->msg.ring_num;
- 
- 	if (ring_num > HCLGE_MBX_MAX_RING_CHAIN_PARAM_NUM)
--		return -ENOMEM;
-+		return -EINVAL;
- 
- 	for (i = 0; i < ring_num; i++) {
- 		if (req->msg.param[i].tqp_index >= vport->nic.kinfo.rss_size) {
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 1b98f3241150..35db3260e8d5 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1057,6 +1057,8 @@ static void smc_connect_work(struct work_struct *work)
+ 		smc->sk.sk_state = SMC_CLOSED;
+ 		if (rc == -EPIPE || rc == -EAGAIN)
+ 			smc->sk.sk_err = EPIPE;
++		else if (rc == -ECONNREFUSED)
++			smc->sk.sk_err = ECONNREFUSED;
+ 		else if (signal_pending(current))
+ 			smc->sk.sk_err = -sock_intr_errno(timeo);
+ 		sock_put(&smc->sk); /* passive closing */
 -- 
 2.35.1
 
