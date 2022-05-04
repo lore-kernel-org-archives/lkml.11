@@ -2,90 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E948FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ABAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350299AbiEDNK2 (ORCPT
+        id S1350231AbiEDNKy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
+        Wed, 4 May 2022 09:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350326AbiEDNKH (ORCPT
+        with ESMTP id S241311AbiEDNKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:10:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02259403FD
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:06:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 886AC618CC
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7A5FC385A4;
-        Wed,  4 May 2022 13:06:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651669570;
-        bh=dnmH5WsMczQ058TyPUXueeJIA4Rl1nxkTJuqpWN88fg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t2HZpKjcw5cXF85ECYNoseK1TqjpP0u5iJcZ6SyxDz+sw9bTD3rE/sZ3UfHwzhKSX
-         poYd27FmZovchz2DB/FeLieZ82BsepvvEFhF3rEUBpI3mKU6yjeDe4ZsFWckZaSMAp
-         7zMOfvp8rtSYu+ecQquuWJTtmXRrdTSte53SIDjGMGO2qIhdTV6Nj+Nili+G8NWO1g
-         bfOESBtBPm2ud6P3TDaXPsu0vceOlbdxKb7bk9Ua1351Hfr9lyueYgBBEUpolH9+dh
-         gEcIGGiawL7000X4f9oR4x6MBFVFF+IWNRSxslFa1xecpHcygj3AHaZFHW1JHhaneK
-         9s29mTGXUeW1w==
-Date:   Wed, 4 May 2022 14:06:05 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        openbmc@lists.ozlabs.org
-Subject: Re: [PATCH 4/6] regulator: core: Add external-output support
-Message-ID: <YnJ6Pbmv9G3cy62n@sirena.org.uk>
-References: <20220504065252.6955-1-zev@bewilderbeest.net>
- <20220504065252.6955-4-zev@bewilderbeest.net>
+        Wed, 4 May 2022 09:10:34 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D78E403F8;
+        Wed,  4 May 2022 06:06:39 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VCC0O7J_1651669595;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VCC0O7J_1651669595)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 04 May 2022 21:06:36 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     sfrench@samba.org
+Cc:     linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] cifs: Return true/false (not 1/0) from bool functions
+Date:   Wed,  4 May 2022 21:06:34 +0800
+Message-Id: <20220504130634.101239-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="MgdOf/e57b7o062W"
-Content-Disposition: inline
-In-Reply-To: <20220504065252.6955-4-zev@bewilderbeest.net>
-X-Cookie: Mother is the invention of necessity.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Return boolean values ("true" or "false") instead of 1 or 0 from bool
+functions. This fixes the following warnings from coccicheck:
 
---MgdOf/e57b7o062W
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+./fs/cifs/file.c:4764:9-10: WARNING: return of 0/1 in function
+cifs_release_folio() with return type bool
 
-On Tue, May 03, 2022 at 11:52:50PM -0700, Zev Weiss wrote:
-> Regulators feeding external outputs (i.e. supplying devices we don't
-> control) can be switched on and off by userspace via the 'state' sysfs
-> attribute, which is now (conditionally) writable.  They are also not
-> automatically disabled in regulator_late_cleanup(), since we have no
-> way of knowing that they're not actually in use.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ fs/cifs/file.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-No, this is an abstraction failure.  Enabling and disabling a regulator
-is something that should be handled in consumer drivers, just as with
-every other use case there's no reason why the regulator should be
-offering direct control to userspace.  Putting this directly in the
-regulator will cause problems as soon as you for example have multiple
-outputs supplied from a single regulator and can't be integrated with
-any other control mechanisms.
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index 580a847aa8b5..a9123cefd84f 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -4761,7 +4761,7 @@ static int cifs_write_begin(struct file *file, struct address_space *mapping,
+ static bool cifs_release_folio(struct folio *folio, gfp_t gfp)
+ {
+ 	if (folio_test_private(folio))
+-		return 0;
++		return false;
+ 	if (folio_test_fscache(folio)) {
+ 		if (current_is_kswapd() || !(gfp & __GFP_FS))
+ 			return false;
+-- 
+2.20.1.7.g153144c
 
---MgdOf/e57b7o062W
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJyejwACgkQJNaLcl1U
-h9B6SAf+K0NM4GhP/wUxHWZLOu4RT872T+i8mSfQlF7aIQvREU4jlHJQrg/zkzm3
-8HjhQQzPn+wKz7WEZwgL8N4HgZ9lzNIQYukpJBiGv60QgFlc1lbq7i9J6SX8LNjy
-0QZLgcQYjOSIXV6ZMLCn/K8d/D4fS+Lt47REvp/KsxOH3T1U7/ISNrrrUVb3C8p0
-bJS2vZ8rUwfSAjPQa/D/SBUeC8WLn5CFskonP492okTiAGKGZn35dTghvEuiQgOT
-UH7DipdelxmAALYu3SxxFjfv9dBNELXzLcjtlR0snY2P6mkNbsZnombeWcx2McG3
-Pu6RpgoJ/MUlEgDp9XzmY4wXeadGpQ==
-=M4o/
------END PGP SIGNATURE-----
-
---MgdOf/e57b7o062W--
