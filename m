@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC810C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7306DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353684AbiEDQxT (ORCPT
+        id S1353046AbiEDQxY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        Wed, 4 May 2022 12:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353732AbiEDQwL (ORCPT
+        with ESMTP id S1353735AbiEDQwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:52:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4079947056;
-        Wed,  4 May 2022 09:48:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0795647068;
+        Wed,  4 May 2022 09:48:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB2061771;
-        Wed,  4 May 2022 16:48:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A49C385A5;
-        Wed,  4 May 2022 16:48:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99AE961771;
+        Wed,  4 May 2022 16:48:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7BE1C385AA;
+        Wed,  4 May 2022 16:48:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682909;
-        bh=gdTM5hy+TRGp+10HhYbWtMpiP8eyq3P5BofsxZqDWhw=;
+        s=korg; t=1651682911;
+        bh=9E39mHLbOPtkiWOEOKFy56IbZL3g5wvMyD0A5kF6R7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=amt5omZQdWiIKtPsPMLx30OD2CeoG/96679BE9UFlG30W5lAyEuwLcPmOpEA/dxh9
-         ZsHxeCjX1Bwb5SBhW4E6EoXST10qz0VCNZn2ifHrUXjhuoit4/HMLUd0xDAG/PU3ls
-         yd/V3GmF/o5bUD2h5gyQSytvtp0F1dQO6EuEV4RY=
+        b=SfqJK91F/YwS7hhUynWLhE+qpQxFF1z5eg+MOIc72P/OJq02DBH9lWAhh1YmAG0fD
+         DfsXZTcs4t/iNlhcINYPlS8I3KnPN9SYA4Wq5nLRITXrR/rjmZk49n+v65Dw5ax59W
+         mcFLyBo3qgITZAonwW1a25IVygIBlPBT99Lr5vvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 27/84] hex2bin: make the function hex_to_bin constant-time
-Date:   Wed,  4 May 2022 18:44:08 +0200
-Message-Id: <20220504152929.700822760@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 5.4 17/84] usb: misc: fix improper handling of refcount in uss720_probe()
+Date:   Wed,  4 May 2022 18:43:58 +0200
+Message-Id: <20220504152929.009802977@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -49,91 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
+commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
 
-The function hex2bin is used to load cryptographic keys into device
-mapper targets dm-crypt and dm-integrity.  It should take constant time
-independent on the processed data, so that concurrently running
-unprivileged code can't infer any information about the keys via
-microarchitectural convert channels.
+usb_put_dev shouldn't be called when uss720_probe succeeds because of
+priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
+before destroy_priv in uss720_disconnect because usb_put_dev is in
+destroy_priv.
 
-This patch changes the function hex_to_bin so that it contains no
-branches and no memory accesses.
+Fix this by moving priv->usbdev = NULL after usb_put_dev.
 
-Note that this shouldn't cause performance degradation because the size
-of the new function is the same as the size of the old function (on
-x86-64) - and the new function causes no branch misprediction penalties.
-
-I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
-i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
-sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
-powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
-no branches in the generated code.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/kernel.h |    2 +-
- lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
- 2 files changed, 26 insertions(+), 8 deletions(-)
+ drivers/usb/misc/uss720.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -627,7 +627,7 @@ static inline char *hex_byte_pack_upper(
- 	return buf;
+--- a/drivers/usb/misc/uss720.c
++++ b/drivers/usb/misc/uss720.c
+@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kr
+ 
+ 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
+ 	usb_put_dev(priv->usbdev);
++	priv->usbdev = NULL;
+ 	kfree(priv);
  }
  
--extern int hex_to_bin(char ch);
-+extern int hex_to_bin(unsigned char ch);
- extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
- extern char *bin2hex(char *dst, const void *src, size_t count);
+@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_inter
+ 	parport_announce_port(pp);
  
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -21,15 +21,33 @@ EXPORT_SYMBOL(hex_asc_upper);
-  *
-  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
-  * input.
-+ *
-+ * This function is used to load cryptographic keys, so it is coded in such a
-+ * way that there are no conditions or memory accesses that depend on data.
-+ *
-+ * Explanation of the logic:
-+ * (ch - '9' - 1) is negative if ch <= '9'
-+ * ('0' - 1 - ch) is negative if ch >= '0'
-+ * we "and" these two values, so the result is negative if ch is in the range
-+ *	'0' ... '9'
-+ * we are only interested in the sign, so we do a shift ">> 8"; note that right
-+ *	shift of a negative value is implementation-defined, so we cast the
-+ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
-+ *	the range '0' ... '9', 0 otherwise
-+ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
-+ *	in the range '0' ... '9', 0 otherwise
-+ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
-+ *	... '9', -1 otherwise
-+ * the next line is similar to the previous one, but we need to decode both
-+ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
-+ *	lowercase to uppercase
-  */
--int hex_to_bin(char ch)
-+int hex_to_bin(unsigned char ch)
- {
--	if ((ch >= '0') && (ch <= '9'))
--		return ch - '0';
--	ch = tolower(ch);
--	if ((ch >= 'a') && (ch <= 'f'))
--		return ch - 'a' + 10;
--	return -1;
-+	unsigned char cu = ch & 0xdf;
-+	return -1 +
-+		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
-+		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
- }
- EXPORT_SYMBOL(hex_to_bin);
+ 	usb_set_intfdata(intf, pp);
+-	usb_put_dev(usbdev);
+ 	return 0;
  
+ probe_abort:
+@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb
+ 	usb_set_intfdata(intf, NULL);
+ 	if (pp) {
+ 		priv = pp->private_data;
+-		priv->usbdev = NULL;
+ 		priv->pp = NULL;
+ 		dev_dbg(&intf->dev, "parport_remove_port\n");
+ 		parport_remove_port(pp);
 
 
