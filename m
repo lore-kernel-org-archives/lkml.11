@@ -2,41 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D25C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AE6C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353909AbiEDRKt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        id S234875AbiEDRK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355739AbiEDRAW (ORCPT
+        with ESMTP id S1355790AbiEDRAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CFA4BFEB;
-        Wed,  4 May 2022 09:52:07 -0700 (PDT)
+        Wed, 4 May 2022 13:00:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4ECD4C414;
+        Wed,  4 May 2022 09:52:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67B21B82792;
-        Wed,  4 May 2022 16:52:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC6CC385A5;
-        Wed,  4 May 2022 16:52:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A3EFB827A1;
+        Wed,  4 May 2022 16:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E03F2C385A4;
+        Wed,  4 May 2022 16:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683124;
-        bh=KZH1xWGTiQHhQuXbaqY8LRDPK3sJj3yy35T3wSnDssM=;
+        s=korg; t=1651683123;
+        bh=lxOCNLhoXuv1p/yYbOt/qn66HbF114gIdpkYgvRyQOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=19cVr0Bc/V57uvzpYYh8vtg8kaDt1uojMMwOKDcVGem8hhSrw/SrAYWdXhtDT5VBw
-         beM6hQkSEd0vOKBwQNmHBdCcRzhrZNPp8bUm6SdPFYhB4bpuGghfIhULhP84SqZAm7
-         d1XdVwRF6tVjpNOCiQ5eRR7LYsomZ4GfE/Z0ZEvA=
+        b=ByThSz51YQJeoKp3V3/apWHP8kEXspZgbCXW/bb5roYfo64bzWtNg3wXuBfEfnb81
+         4DBpa4uBnd51gRLBRBtq9vEIdm4lnyGZ+F4q+8APh1hKNKOaHCcdehORKIdNaDHJxA
+         V/WSEgevkZFoBtwI8lX7dJaUQRfO95bU1OWBGokI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 115/129] tty: n_gsm: fix restart handling via CLD command
-Date:   Wed,  4 May 2022 18:45:07 +0200
-Message-Id: <20220504153030.492380591@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 114/129] perf symbol: Update symbols__fixup_end()
+Date:   Wed,  4 May 2022 18:45:06 +0200
+Message-Id: <20220504153030.353188622@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -48,165 +62,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-commit aa371e96f05dcb36a88298f5cb70aa7234d5e8b8 upstream.
+commit 8799ebce84d672aae1dc3170510f6a3e66f96b11 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.8.2 states that both sides will revert to
-the non-multiplexed mode via a close-down message (CLD). The usual program
-flow is as following:
-- start multiplex mode by sending AT+CMUX to the mobile
-- establish the control channel (DLCI 0)
-- establish user channels (DLCI >0)
-- terminate user channels
-- send close-down message (CLD)
-- revert to AT protocol (i.e. leave multiplexed mode)
+Now arch-specific functions all do the same thing.  When it fixes the
+symbol address it needs to check the boundary between the kernel image
+and modules.  For the last symbol in the previous region, it cannot
+know the exact size as it's discarded already.  Thus it just uses a
+small page size (4096) and rounds it up like the last symbol.
 
-The AT protocol is out of scope of the n_gsm driver. However,
-gsm_disconnect() sends CLD if gsm_config() detects that the requested
-parameters require the mux protocol to restart. The next immediate action
-is to start the mux protocol by opening DLCI 0 again. Any responder side
-which handles CLD commands correctly forces us to fail at this point
-because AT+CMUX needs to be sent to the mobile to start the mux again.
-Therefore, remove the CLD command in this phase and keep both sides in
-multiplexed mode.
-Remove the gsm_disconnect() function as it become unnecessary and merge the
-remaining parts into gsm_cleanup_mux() to handle the termination order and
-locking correctly.
-
-Fixes: 71e077915396 ("tty: n_gsm: do not send/receive in ldisc close path")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-2-daniel.starke@siemens.com
+Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-s390@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Link: https://lore.kernel.org/r/20220416004048.1514900-3-namhyung@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   68 +++++++++++++++-------------------------------------
- 1 file changed, 20 insertions(+), 48 deletions(-)
+ tools/perf/util/symbol.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2040,49 +2040,35 @@ static void gsm_error(struct gsm_mux *gs
- 	gsm->io_error++;
- }
- 
--static int gsm_disconnect(struct gsm_mux *gsm)
--{
--	struct gsm_dlci *dlci = gsm->dlci[0];
--	struct gsm_control *gc;
--
--	if (!dlci)
--		return 0;
--
--	/* In theory disconnecting DLCI 0 is sufficient but for some
--	   modems this is apparently not the case. */
--	gc = gsm_control_send(gsm, CMD_CLD, NULL, 0);
--	if (gc)
--		gsm_control_wait(gsm, gc);
--
--	del_timer_sync(&gsm->t2_timer);
--	/* Now we are sure T2 has stopped */
--
--	gsm_dlci_begin_close(dlci);
--	wait_event_interruptible(gsm->event,
--				dlci->state == DLCI_CLOSED);
--
--	if (signal_pending(current))
--		return -EINTR;
--
--	return 0;
--}
--
- /**
-  *	gsm_cleanup_mux		-	generic GSM protocol cleanup
-  *	@gsm: our mux
-+ *	@disc: disconnect link?
-  *
-  *	Clean up the bits of the mux which are the same for all framing
-  *	protocols. Remove the mux from the mux table, stop all the timers
-  *	and then shut down each device hanging up the channels as we go.
-  */
- 
--static void gsm_cleanup_mux(struct gsm_mux *gsm)
-+static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- {
- 	int i;
- 	struct gsm_dlci *dlci = gsm->dlci[0];
- 	struct gsm_msg *txq, *ntxq;
- 
- 	gsm->dead = true;
-+	mutex_lock(&gsm->mutex);
-+
-+	if (dlci) {
-+		if (disc && dlci->state != DLCI_CLOSED) {
-+			gsm_dlci_begin_close(dlci);
-+			wait_event(gsm->event, dlci->state == DLCI_CLOSED);
-+		}
-+		dlci->dead = true;
-+	}
-+
-+	/* Finish outstanding timers, making sure they are done */
-+	del_timer_sync(&gsm->t2_timer);
- 
- 	spin_lock(&gsm_mux_lock);
- 	for (i = 0; i < MAX_MUX; i++) {
-@@ -2096,13 +2082,7 @@ static void gsm_cleanup_mux(struct gsm_m
- 	if (i == MAX_MUX)
- 		return;
- 
--	del_timer_sync(&gsm->t2_timer);
--	/* Now we are sure T2 has stopped */
--	if (dlci)
--		dlci->dead = true;
--
- 	/* Free up any link layer users */
--	mutex_lock(&gsm->mutex);
- 	for (i = 0; i < NUM_DLCI; i++)
- 		if (gsm->dlci[i])
- 			gsm_dlci_release(gsm->dlci[i]);
-@@ -2304,19 +2284,11 @@ static int gsm_config(struct gsm_mux *gs
- 
- 	/*
- 	 * Close down what is needed, restart and initiate the new
--	 * configuration
-+	 * configuration. On the first time there is no DLCI[0]
-+	 * and closing or cleaning up is not necessary.
- 	 */
--
--	if (need_close || need_restart) {
--		int ret;
--
--		ret = gsm_disconnect(gsm);
--
--		if (ret)
--			return ret;
--	}
--	if (need_restart)
--		gsm_cleanup_mux(gsm);
-+	if (need_close || need_restart)
-+		gsm_cleanup_mux(gsm, true);
- 
- 	gsm->initiator = c->initiator;
- 	gsm->mru = c->mru;
-@@ -2425,7 +2397,7 @@ static void gsmld_detach_gsm(struct tty_
- 	WARN_ON(tty != gsm->tty);
- 	for (i = 1; i < NUM_DLCI; i++)
- 		tty_unregister_device(gsm_tty_driver, base + i);
--	gsm_cleanup_mux(gsm);
-+	gsm_cleanup_mux(gsm, false);
- 	tty_kref_put(gsm->tty);
- 	gsm->tty = NULL;
- }
-@@ -2531,7 +2503,7 @@ static int gsmld_open(struct tty_struct
- 
- 	ret = gsmld_attach_gsm(tty, gsm);
- 	if (ret != 0) {
--		gsm_cleanup_mux(gsm);
-+		gsm_cleanup_mux(gsm, false);
- 		mux_put(gsm);
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -217,8 +217,8 @@ again:
  	}
- 	return ret;
+ }
+ 
+-void symbols__fixup_end(struct rb_root_cached *symbols,
+-			bool is_kallsyms __maybe_unused)
++/* Update zero-sized symbols using the address of the next symbol */
++void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms)
+ {
+ 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
+ 	struct symbol *curr, *prev;
+@@ -232,8 +232,29 @@ void symbols__fixup_end(struct rb_root_c
+ 		prev = curr;
+ 		curr = rb_entry(nd, struct symbol, rb_node);
+ 
+-		if (prev->end == prev->start || prev->end != curr->start)
+-			arch__symbols__fixup_end(prev, curr);
++		/*
++		 * On some architecture kernel text segment start is located at
++		 * some low memory address, while modules are located at high
++		 * memory addresses (or vice versa).  The gap between end of
++		 * kernel text segment and beginning of first module's text
++		 * segment is very big.  Therefore do not fill this gap and do
++		 * not assign it to the kernel dso map (kallsyms).
++		 *
++		 * In kallsyms, it determines module symbols using '[' character
++		 * like in:
++		 *   ffffffffc1937000 T hdmi_driver_init  [snd_hda_codec_hdmi]
++		 */
++		if (prev->end == prev->start) {
++			/* Last kernel/module symbol mapped to end of page */
++			if (is_kallsyms && (!strchr(prev->name, '[') !=
++					    !strchr(curr->name, '[')))
++				prev->end = roundup(prev->end + 4096, 4096);
++			else
++				prev->end = curr->start;
++
++			pr_debug4("%s sym:%s end:%#" PRIx64 "\n",
++				  __func__, prev->name, prev->end);
++		}
+ 	}
+ 
+ 	/* Last entry */
 
 
