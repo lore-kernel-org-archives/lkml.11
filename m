@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF746C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 285B2C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354613AbiEDQ6y (ORCPT
+        id S1354879AbiEDQ73 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
+        Wed, 4 May 2022 12:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353772AbiEDQwj (ORCPT
+        with ESMTP id S1353934AbiEDQxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DBB47573;
-        Wed,  4 May 2022 09:48:48 -0700 (PDT)
+        Wed, 4 May 2022 12:53:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF4247AD0;
+        Wed,  4 May 2022 09:48:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 556ECB82553;
-        Wed,  4 May 2022 16:48:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD827C385A5;
-        Wed,  4 May 2022 16:48:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CD9961744;
+        Wed,  4 May 2022 16:48:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A91F5C385A4;
+        Wed,  4 May 2022 16:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682926;
-        bh=Q9CsuP3nha7SVOaCVYQQPn34IWlxKcJIUkjE8vjF9hU=;
+        s=korg; t=1651682932;
+        bh=deIqDv/0Rt/scr+yTil7UlSkLsq1Meot7xNX2NjZ+m8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W+fflOmMkTeFH4gHahKgNMOFzLGqxaED9gmZhmRfMRccUYTFhIaEjWWrxvkeCl6V0
-         +0Elfl9eqTU7xQKuKzSo0pO0R10llkQI+pcNWn9msS7/36xa16oJ+m+iRj97srQ/AA
-         csIoh73Rq4+u8OhXwgjIMMXx7pG9ecTCI9cjufcc=
+        b=OgkjNjJItPEO3bcCeg7VrO5T5KMDPJUpq5zAOMhxhvgq1+YlqbVsc1fg3bDy9flae
+         SOdgM6nMnyeCA/UxRX7Z5uSv4W8SFh0RAEVdav17+mMNzcP/qH0j4fvmk1XmbGU5/t
+         TUgpeYXCOzinZ8FsiB/PG+3yNC1Mz7JVuVATjhgk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 32/84] mtd: rawnand: fix ecc parameters for mt7622
-Date:   Wed,  4 May 2022 18:44:13 +0200
-Message-Id: <20220504152930.050231211@linuxfoundation.org>
+Subject: [PATCH 5.4 43/84] ARM: dts: am3517-evm: Fix misc pinmuxing
+Date:   Wed,  4 May 2022 18:44:24 +0200
+Message-Id: <20220504152930.858173332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,97 +50,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuanhong Guo <gch981213@gmail.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 9fe4e0d3cbfe90152137963cc024ecb63db6e8e6 ]
+[ Upstream commit 942da3af32b2288e674736eb159d1fc676261691 ]
 
-According to the datasheet, mt7622 only has 5 ECC capabilities instead
-of 7, and the decoding error register is arranged  as follows:
-+------+---------+---------+---------+---------+
-| Bits |  19:15  |  14:10  |   9:5   |   4:0   |
-+------+---------+---------+---------+---------+
-| Name | ERRNUM3 | ERRNUM2 | ERRNUM1 | ERRNUM0 |
-+------+---------+---------+---------+---------+
-This means err_mask should be 0x1f instead of 0x3f and the number of
-bits shifted in mtk_ecc_get_stats should be 5 instead of 8.
+The bootloader for the AM3517 has previously done much of the pin
+muxing, but as the bootloader is moving more and more to a model
+based on the device tree, it may no longer automatically mux the
+pins, so it is necessary to add the pinmuxing to the Linux device
+trees so the respective peripherals can remain functional.
 
-This commit introduces err_shift for the difference in this register
-and fix other existing parameters.
-
-Public MT7622 reference manual can be found on [0] and the info this
-commit is based on is from page 656 and page 660.
-
-[0]: https://wiki.banana-pi.org/Banana_Pi_BPI-R64#Documents
-
-Fixes: 98dea8d71931 ("mtd: nand: mtk: Support MT7622 NAND flash controller.")
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220402160315.919094-1-gch981213@gmail.com
+Fixes: 6ed1d7997561 ("ARM: dts: am3517-evm: Add support for UI board and Audio")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Message-Id: <20220226214820.747847-1-aford173@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/mtk_ecc.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/am3517-evm.dts  | 45 +++++++++++++++++++++++++++----
+ arch/arm/boot/dts/am3517-som.dtsi |  9 +++++++
+ 2 files changed, 49 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/mtk_ecc.c b/drivers/mtd/nand/raw/mtk_ecc.c
-index 74595b644b7c..57fa7807cd7d 100644
---- a/drivers/mtd/nand/raw/mtk_ecc.c
-+++ b/drivers/mtd/nand/raw/mtk_ecc.c
-@@ -43,6 +43,7 @@
+diff --git a/arch/arm/boot/dts/am3517-evm.dts b/arch/arm/boot/dts/am3517-evm.dts
+index a1fd3e63e86e..3db30ce134b9 100644
+--- a/arch/arm/boot/dts/am3517-evm.dts
++++ b/arch/arm/boot/dts/am3517-evm.dts
+@@ -160,6 +160,8 @@ pwm11: dmtimer-pwm@11 {
  
- struct mtk_ecc_caps {
- 	u32 err_mask;
-+	u32 err_shift;
- 	const u8 *ecc_strength;
- 	const u32 *ecc_regs;
- 	u8 num_ecc_strength;
-@@ -76,7 +77,7 @@ static const u8 ecc_strength_mt2712[] = {
+ 	/* HS USB Host PHY on PORT 1 */
+ 	hsusb1_phy: hsusb1_phy {
++		pinctrl-names = "default";
++		pinctrl-0 = <&hsusb1_rst_pins>;
+ 		compatible = "usb-nop-xceiv";
+ 		reset-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>; /* gpio_57 */
+ 		#phy-cells = <0>;
+@@ -167,7 +169,9 @@ hsusb1_phy: hsusb1_phy {
  };
  
- static const u8 ecc_strength_mt7622[] = {
--	4, 6, 8, 10, 12, 14, 16
-+	4, 6, 8, 10, 12
+ &davinci_emac {
+-	     status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&ethernet_pins>;
++	status = "okay";
  };
  
- enum mtk_ecc_regs {
-@@ -221,7 +222,7 @@ void mtk_ecc_get_stats(struct mtk_ecc *ecc, struct mtk_ecc_stats *stats,
- 	for (i = 0; i < sectors; i++) {
- 		offset = (i >> 2) << 2;
- 		err = readl(ecc->regs + ECC_DECENUM0 + offset);
--		err = err >> ((i % 4) * 8);
-+		err = err >> ((i % 4) * ecc->caps->err_shift);
- 		err &= ecc->caps->err_mask;
- 		if (err == ecc->caps->err_mask) {
- 			/* uncorrectable errors */
-@@ -449,6 +450,7 @@ EXPORT_SYMBOL(mtk_ecc_get_parity_bits);
- 
- static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
- 	.err_mask = 0x3f,
-+	.err_shift = 8,
- 	.ecc_strength = ecc_strength_mt2701,
- 	.ecc_regs = mt2701_ecc_regs,
- 	.num_ecc_strength = 20,
-@@ -459,6 +461,7 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
- 
- static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
- 	.err_mask = 0x7f,
-+	.err_shift = 8,
- 	.ecc_strength = ecc_strength_mt2712,
- 	.ecc_regs = mt2712_ecc_regs,
- 	.num_ecc_strength = 23,
-@@ -468,10 +471,11 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
+ &davinci_mdio {
+@@ -192,6 +196,8 @@ dpi_out: endpoint {
  };
  
- static const struct mtk_ecc_caps mtk_ecc_caps_mt7622 = {
--	.err_mask = 0x3f,
-+	.err_mask = 0x1f,
-+	.err_shift = 5,
- 	.ecc_strength = ecc_strength_mt7622,
- 	.ecc_regs = mt7622_ecc_regs,
--	.num_ecc_strength = 7,
-+	.num_ecc_strength = 5,
- 	.ecc_mode_shift = 4,
- 	.parity_bits = 13,
- 	.pg_irq_sel = 0,
+ &i2c2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins>;
+ 	clock-frequency = <400000>;
+ 	/* User DIP swithes [1:8] / User LEDS [1:2] */
+ 	tca6416: gpio@21 {
+@@ -204,6 +210,8 @@ tca6416: gpio@21 {
+ };
+ 
+ &i2c3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c3_pins>;
+ 	clock-frequency = <400000>;
+ };
+ 
+@@ -222,6 +230,8 @@ &mmc3 {
+ };
+ 
+ &usbhshost {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb1_pins>;
+ 	port1-mode = "ehci-phy";
+ };
+ 
+@@ -230,8 +240,35 @@ &usbhsehci {
+ };
+ 
+ &omap3_pmx_core {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb1_rst_pins>;
++
++	ethernet_pins: pinmux_ethernet_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21fe, PIN_INPUT | MUX_MODE0) /* rmii_mdio_data */
++			OMAP3_CORE1_IOPAD(0x2200, MUX_MODE0) /* rmii_mdio_clk */
++			OMAP3_CORE1_IOPAD(0x2202, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd0 */
++			OMAP3_CORE1_IOPAD(0x2204, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd1 */
++			OMAP3_CORE1_IOPAD(0x2206, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_crs_dv */
++			OMAP3_CORE1_IOPAD(0x2208, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_rxer */
++			OMAP3_CORE1_IOPAD(0x220a, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd0 */
++			OMAP3_CORE1_IOPAD(0x220c, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd1 */
++			OMAP3_CORE1_IOPAD(0x220e, PIN_OUTPUT_PULLDOWN |MUX_MODE0) /* rmii_txen */
++			OMAP3_CORE1_IOPAD(0x2210, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_50mhz_clk */
++		>;
++	};
++
++	i2c2_pins: pinmux_i2c2_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21be, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_scl */
++			OMAP3_CORE1_IOPAD(0x21c0, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_sda */
++		>;
++	};
++
++	i2c3_pins: pinmux_i2c3_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21c2, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_scl */
++			OMAP3_CORE1_IOPAD(0x21c4, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_sda */
++		>;
++	};
+ 
+ 	leds_pins: pinmux_leds_pins {
+ 		pinctrl-single,pins = <
+@@ -299,8 +336,6 @@ OMAP3_CORE1_IOPAD(0x20ba, PIN_OUTPUT | MUX_MODE4)	/* gpmc_ncs6.gpio_57 */
+ };
+ 
+ &omap3_pmx_core2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb1_pins>;
+ 
+ 	hsusb1_pins: pinmux_hsusb1_pins {
+ 		pinctrl-single,pins = <
+diff --git a/arch/arm/boot/dts/am3517-som.dtsi b/arch/arm/boot/dts/am3517-som.dtsi
+index 8b669e2eafec..f7b680f6c48a 100644
+--- a/arch/arm/boot/dts/am3517-som.dtsi
++++ b/arch/arm/boot/dts/am3517-som.dtsi
+@@ -69,6 +69,8 @@ nand@0,0 {
+ };
+ 
+ &i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
+ 	clock-frequency = <400000>;
+ 
+ 	s35390a: s35390a@30 {
+@@ -179,6 +181,13 @@ bluetooth {
+ 
+ &omap3_pmx_core {
+ 
++	i2c1_pins: pinmux_i2c1_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21ba, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_scl */
++			OMAP3_CORE1_IOPAD(0x21bc, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_sda */
++		>;
++	};
++
+ 	wl12xx_buffer_pins: pinmux_wl12xx_buffer_pins {
+ 		pinctrl-single,pins = <
+ 			OMAP3_CORE1_IOPAD(0x2156, PIN_OUTPUT | MUX_MODE4)  /* mmc1_dat7.gpio_129 */
 -- 
 2.35.1
 
