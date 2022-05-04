@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2284FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46180C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347319AbiEDRDe (ORCPT
+        id S1354973AbiEDRDl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        Wed, 4 May 2022 13:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354597AbiEDQ6y (ORCPT
+        with ESMTP id S1354576AbiEDQ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:58:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1C71EECF;
-        Wed,  4 May 2022 09:50:44 -0700 (PDT)
+        Wed, 4 May 2022 12:58:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C3118E15;
+        Wed,  4 May 2022 09:50:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53DD0617BD;
-        Wed,  4 May 2022 16:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A17CC385AA;
-        Wed,  4 May 2022 16:50:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 235846179D;
+        Wed,  4 May 2022 16:50:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0E0C385A5;
+        Wed,  4 May 2022 16:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683043;
-        bh=+J6mkW7g7FZT8T1bJ9fP3KdetTDCgArgqcBdHrc4ShY=;
+        s=korg; t=1651683033;
+        bh=4QKeYGFyuX8Lgug/SAeFGpeUU2oQDWxhq6HgOSzsGzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dpxJGPDje5iDDKJQJvdzneBXOHIkLJRksauD7x82UYx8q8n2QZ3i/WaazynUP6Xyl
-         +QvexhRAocqftmWzXna4oGdgWvwqaJ6P+YechbPvdGPd0DflG2onHHlkNbBc4iDEaU
-         SRUgTLUt31iRGbuyckN1mGo8dq7EtsdNMyEB4bS0=
+        b=Ywhw2qVCWH5wgKBbCfSKMQ49uUqN1RMZ0abChdN5RR7/HYvqI5+1QMtu7im103BMW
+         NwWyhSprPCUWAnbBpQkMjmndCDENiBl/t3MUpnxOa9TlbKMIYBVP/fkb+d+KPwh9dW
+         j454z9eAxN54U2fkr/XHmW3GiVOUfG43hwdAbJP8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 034/129] hex2bin: fix access beyond string end
-Date:   Wed,  4 May 2022 18:43:46 +0200
-Message-Id: <20220504153023.967318541@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.10 024/129] usb: dwc3: core: Only handle soft-reset in DCTL
+Date:   Wed,  4 May 2022 18:43:36 +0200
+Message-Id: <20220504153023.199211062@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,48 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit e4d8a29997731b3bb14059024b24df9f784288d0 upstream.
+commit f4fd84ae0765a80494b28c43b756a95100351a94 upstream.
 
-If we pass too short string to "hex2bin" (and the string size without
-the terminating NUL character is even), "hex2bin" reads one byte after
-the terminating NUL character.  This patch fixes it.
+Make sure not to set run_stop bit or link state change request while
+initiating soft-reset. Register read-modify-write operation may
+unintentionally start the controller before the initialization completes
+with its previous DCTL value, which can cause initialization failure.
 
-Note that hex_to_bin returns -1 on error and hex2bin return -EINVAL on
-error - so we can't just return the variable "hi" or "lo" on error.
-This inconsistency may be fixed in the next merge window, but for the
-purpose of fixing this bug, we just preserve the existing behavior and
-return -1 and -EINVAL.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Fixes: b78049831ffe ("lib: add error checking to hex2bin")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: f59dcab17629 ("usb: dwc3: core: improve reset sequence")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/6aecbd78328f102003d40ccf18ceeebd411d3703.1650594792.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/hexdump.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/usb/dwc3/core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -63,10 +63,13 @@ EXPORT_SYMBOL(hex_to_bin);
- int hex2bin(u8 *dst, const char *src, size_t count)
- {
- 	while (count--) {
--		int hi = hex_to_bin(*src++);
--		int lo = hex_to_bin(*src++);
-+		int hi, lo;
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -275,7 +275,8 @@ static int dwc3_core_soft_reset(struct d
  
--		if ((hi < 0) || (lo < 0))
-+		hi = hex_to_bin(*src++);
-+		if (unlikely(hi < 0))
-+			return -EINVAL;
-+		lo = hex_to_bin(*src++);
-+		if (unlikely(lo < 0))
- 			return -EINVAL;
+ 	reg = dwc3_readl(dwc->regs, DWC3_DCTL);
+ 	reg |= DWC3_DCTL_CSFTRST;
+-	dwc3_writel(dwc->regs, DWC3_DCTL, reg);
++	reg &= ~DWC3_DCTL_RUN_STOP;
++	dwc3_gadget_dctl_write_safe(dwc, reg);
  
- 		*dst++ = (hi << 4) | lo;
+ 	/*
+ 	 * For DWC_usb31 controller 1.90a and later, the DCTL.CSFRST bit
 
 
