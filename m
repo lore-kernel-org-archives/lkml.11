@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E196C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC64BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348079AbiEDRKP (ORCPT
+        id S1355569AbiEDRLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
+        Wed, 4 May 2022 13:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355641AbiEDRAT (ORCPT
+        with ESMTP id S1355221AbiEDQ7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:19 -0400
+        Wed, 4 May 2022 12:59:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E644BB96;
-        Wed,  4 May 2022 09:51:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7AB49275;
+        Wed,  4 May 2022 09:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A228D617A6;
-        Wed,  4 May 2022 16:51:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F17C385A4;
-        Wed,  4 May 2022 16:51:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F7D617BE;
+        Wed,  4 May 2022 16:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E223C385A4;
+        Wed,  4 May 2022 16:51:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683118;
-        bh=bk8oiHo7fAjLCDCB+GgK+zQPJnwtXBeitJ/3OLXIcW4=;
+        s=korg; t=1651683082;
+        bh=EhPme3Fm74FYoNwPGq+P4J38yUvRFTbwq3ETX9RbL5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tLFPcbfLakokdhPhOs2vV855XKojdSES34R3eUiYJf6DGsUeaVprX4uHutIntmmCf
-         oXc2vMrTy4vsDxFd3OMkf+TJW8HTFEc5PMyF2mh0Zn7e7js95bz1K19MfQPenazrCi
-         rquMDkZ0QATMjx8AW+B0JvjUm5rXzsHBrlSxntao=
+        b=oPHZ+NlX73R61FC92X5PufMEKGE3xcBZ0Iw6BI/D+W0ucoK6UQ4AK84prRMjAQGDM
+         AjWZCq00DMuH+5LI+isLFH8Ia27vWBt+4149vzhe5jPG/t6/cBDqnEEFjstn3Fp8Ud
+         Bs+wZx5jjXc7C19OAjlE88Vdo5lR+Ln7TBKBCJ6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 122/129] tty: n_gsm: fix wrong DLCI release order
-Date:   Wed,  4 May 2022 18:45:14 +0200
-Message-Id: <20220504153031.140574826@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 073/129] arm64: dts: imx8mn-ddr4-evk: Describe the 32.768 kHz PMIC clock
+Date:   Wed,  4 May 2022 18:44:25 +0200
+Message-Id: <20220504153027.018404656@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -48,35 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Fabio Estevam <festevam@denx.de>
 
-commit deefc58bafb4841df7f0a0d85d89a1c819db9743 upstream.
+[ Upstream commit 0310b5aa0656a94102344f1e9ae2892e342a665d ]
 
-The current DLCI release order starts with the control channel followed by
-the user channels. Reverse this order to keep the control channel open
-until all user channels have been released.
+The ROHM BD71847 PMIC has a 32.768 kHz clock.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-9-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Describe the PMIC clock to fix the following boot errors:
+
+bd718xx-clk bd71847-clk.1.auto: No parent clk found
+bd718xx-clk: probe of bd71847-clk.1.auto failed with error -22
+
+Based on the same fix done for imx8mm-evk as per commit
+a6a355ede574 ("arm64: dts: imx8mm-evk: Add 32.768 kHz clock to PMIC")
+
+Fixes: 3e44dd09736d ("arm64: dts: imx8mn-ddr4-evk: Add rohm,bd71847 PMIC support")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2073,8 +2073,8 @@ static void gsm_cleanup_mux(struct gsm_m
- 	/* Finish outstanding timers, making sure they are done */
- 	del_timer_sync(&gsm->t2_timer);
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
+index 7dfee715a2c4..d8ce217c6016 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
+@@ -59,6 +59,10 @@ pmic@4b {
+ 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
+ 		rohm,reset-snvs-powered;
  
--	/* Free up any link layer users */
--	for (i = 0; i < NUM_DLCI; i++)
-+	/* Free up any link layer users and finally the control channel */
-+	for (i = NUM_DLCI - 1; i >= 0; i--)
- 		if (gsm->dlci[i])
- 			gsm_dlci_release(gsm->dlci[i]);
- 	mutex_unlock(&gsm->mutex);
++		#clock-cells = <0>;
++		clocks = <&osc_32k 0>;
++		clock-output-names = "clk-32k-out";
++
+ 		regulators {
+ 			buck1_reg: BUCK1 {
+ 				regulator-name = "buck1";
+-- 
+2.35.1
+
 
 
