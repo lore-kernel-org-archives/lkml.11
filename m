@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8B1C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D603AC4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358793AbiEDRQO (ORCPT
+        id S1358237AbiEDRPr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
+        Wed, 4 May 2022 13:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355782AbiEDREm (ORCPT
+        with ESMTP id S1355589AbiEDREb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EBC4990C;
-        Wed,  4 May 2022 09:53:23 -0700 (PDT)
+        Wed, 4 May 2022 13:04:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4054EDFE;
+        Wed,  4 May 2022 09:53:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEACCB827AC;
-        Wed,  4 May 2022 16:53:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766EFC385A5;
-        Wed,  4 May 2022 16:53:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7873861852;
+        Wed,  4 May 2022 16:53:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3652C385B1;
+        Wed,  4 May 2022 16:53:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683201;
-        bh=kPLz94WvLTpi4nn5bI9RZUlYwgXMZk6o7VGKl86N18I=;
+        s=korg; t=1651683187;
+        bh=5GWk5saE8ROutlKatYR8WyVxS3TvtOnNOKqy6FRw5l8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lE7Og0WfdLYCti3fBza8jqt5dmhRvPuG1sq8j0qKEQGFlCMj65UmGMJq8u6Lpsh2r
-         CH/mOmZ3FKz3PRCy2lGv0I2+1vWLHGOYBpix8rBpvlnnDvFNJ6kNvLr78SV9KkFeTj
-         B1X9Nvlu6uuUozSUnMSb2RbDcY7+wrC82oeqJTQc=
+        b=h8BBGiN06BFMaoRbFE2hOK4IaU/RvgkeNFnD5VFHd0VFhtlmZ6N5iFKge2BTAX3RC
+         dSnKQB0M2Dg6a0DTI4PGulYHIrDk6/qXPaY1YCt6vVURaAeNGb5DANyzsf0Cfpe6bx
+         cAdklCP2VpNC8341v1xcYii9CnSwiwS/3HExMB7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ajay Kathat <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        stable@vger.kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 066/177] ARM: dts: at91: fix pinctrl phandles
-Date:   Wed,  4 May 2022 18:44:19 +0200
-Message-Id: <20220504153058.970518474@linuxfoundation.org>
+Subject: [PATCH 5.15 052/177] xsk: Fix l2fwd for copy mode + busy poll combo
+Date:   Wed,  4 May 2022 18:44:05 +0200
+Message-Id: <20220504153057.659319163@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,76 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 0c640d9544d0109da3889d71ae77301e556db977 ]
+[ Upstream commit 8de8b71b787f38983d414d2dba169a3bfefa668a ]
 
-Commit bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all
-gpios") introduces pinctrl phandles for pins used by individual
-controllers to avoid failures due to commit 2ab73c6d8323 ("gpio:
-Support GPIO controllers without pin-ranges"). For SPI controllers
-available on SAMA5D4 and SAMA5D3 some of the pins are defined in
-SoC specific dtsi on behalf of pinctrl-0. Adding extra pinctrl phandles
-on board specific dts also on behalf of pinctrl-0 overwrite the pinctrl-0
-phandle specified in SoC specific dtsi. Thus add the board specific
-pinctrl to pinctrl-1.
+While checking AF_XDP copy mode combined with busy poll, strange
+results were observed. rxdrop and txonly scenarios worked fine, but
+l2fwd broke immediately.
 
-Fixes: bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all gpios")
-Depends-on: 5c8b49852910 ("ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name")
-Reported-by: Ajay Kathat <ajay.kathat@microchip.com>
-Co-developed-by: Ajay Kathat <ajay.kathat@microchip.com>
-Signed-off-by: Ajay Kathat <ajay.kathat@microchip.com>
-Tested-by: Ajay Kathat <ajay.kathat@microchip.com>
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220331141323.194355-2-claudiu.beznea@microchip.com
+After a deeper look, it turned out that for l2fwd, Tx side was exiting
+early due to xsk_no_wakeup() returning true and in the end
+xsk_generic_xmit() was never called. Note that AF_XDP Tx in copy mode
+is syscall steered, so the current behavior is broken.
+
+Txonly scenario only worked due to the fact that
+sk_mark_napi_id_once_xdp() was never called - since Rx side is not in
+the picture for this case and mentioned function is called in
+xsk_rcv_check(), sk::sk_napi_id was never set, which in turn meant that
+xsk_no_wakeup() was returning false (see the sk->sk_napi_id >=
+MIN_NAPI_ID check in there).
+
+To fix this, prefer busy poll in xsk_sendmsg() only when zero copy is
+enabled on a given AF_XDP socket. By doing so, busy poll in copy mode
+would not exit early on Tx side and eventually xsk_generic_xmit() will
+be called.
+
+Fixes: a0731952d9cd ("xsk: Add busy-poll support for {recv,send}msg()")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220406155804.434493-1-maciej.fijalkowski@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91-sama5d3_xplained.dts | 8 ++++----
- arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ net/xdp/xsk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d3_xplained.dts b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-index d72c042f2850..a49c2966b41e 100644
---- a/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-@@ -57,8 +57,8 @@ slot@0 {
- 			};
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 426e287431d2..444ad0bc0908 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -655,7 +655,7 @@ static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len
+ 	if (sk_can_busy_loop(sk))
+ 		sk_busy_loop(sk, 1); /* only support non-blocking sockets */
  
- 			spi0: spi@f0004000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi0_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi0_cs>;
- 				cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
- 				status = "okay";
- 			};
-@@ -171,8 +171,8 @@ slot@0 {
- 			};
+-	if (xsk_no_wakeup(sk))
++	if (xs->zc && xsk_no_wakeup(sk))
+ 		return 0;
  
- 			spi1: spi@f8008000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi1_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioC 25 0>;
- 				status = "okay";
- 			};
-diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-index accb92cfac44..e519d2747936 100644
---- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-@@ -81,8 +81,8 @@ usart4: serial@fc010000 {
- 			};
- 
- 			spi1: spi@fc018000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi1_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioB 21 0>;
- 				status = "okay";
- 			};
+ 	pool = xs->pool;
 -- 
 2.35.1
 
