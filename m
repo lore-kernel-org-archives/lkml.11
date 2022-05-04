@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F04C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 043E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378895AbiEDVsO (ORCPT
+        id S1378887AbiEDVtW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        Wed, 4 May 2022 17:49:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378877AbiEDVsH (ORCPT
+        with ESMTP id S1378909AbiEDVtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:48:07 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9970532E7
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=nnLXKYzsn4Ff0H53e/iYWG4pt2fEuSs3Y0Owjo05quQ=; b=rAsWAKrg/BnsEj+sAFL9zDKNzj
-        hycwa5qwZygumLrMwKD/S+OiNu7+Yz+Dbt4bx4+NKHGc0rOdAq/RFrexskpjkW5T9/7nsTBCwZfEM
-        9EvPXDvEPG0s4fDupLglTDTRiqXhukfN7f/+gDEzMNuL+roIbSVkKAHBxTBXOYCqb8yQzKulD+fF8
-        EDWCM4CfZ5ykkEQJOwGRWQ7He2cAmCpJJK4gUFET9kjHEGoH8Gv+gIETUY51zeuDloTrVh4ADB4VU
-        16/8ig2MuowRWAingduT4D+ZrOsle3Aa9WwOKxjWn9BR01RCcv3lKSIAZymkP4MRSTZpH2WIUa2l6
-        Hs1Q7/Pg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nmMn6-00GyNr-6H; Wed, 04 May 2022 21:44:12 +0000
-Date:   Wed, 4 May 2022 22:44:12 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        linux-kernel@vger.kernel.org
-Subject: Wait for mutex to become unlocked
-Message-ID: <YnLzrGlBNCmCPLmS@casper.infradead.org>
+        Wed, 4 May 2022 17:49:01 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277D52DEC;
+        Wed,  4 May 2022 14:45:23 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id B99F11F41850
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651700722;
+        bh=Z7NLVHuEUzvqWLpcaKnXuMWP4ACDh+2QKtdBRgPicLc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=L491H02D+stl9mpJt8KqtKfQIdnAWesP8IEqv2bdhouKHphRLWr+qGK9FCWkd+goz
+         4Fnk969QWT+ahqTdlJ+k8Kj4ZYns29cFez5hXpYJOyJQZt7xNuTHsefd+E7YbrSnar
+         xqqlLvp9/ZdtCD+0vEwPnOsBpbrSVdmCforbPdCQr+ow272x4C5L1+Q/xCVzUZUbIQ
+         V5ArZLlOksM0ycMMm260iwFbizDJTMsIG6Mj1pmg93r8QniLfyBW9uOucJJ0g45NpD
+         rjzt4D9UVtEGZl9/RWxjlXaYjQtBv9l4NDbCNXqr4sE0dxFNonEqsnpUeYjWexwPS0
+         sZrRiVLaSLgJQ==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v2] arm64: dts: mt8192: Follow binding order for SCP registers
+Date:   Wed,  4 May 2022 17:45:16 -0400
+Message-Id: <20220504214516.2957504-1-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paul, Liam and I were talking about some code we intend to write soon
-and realised there's a missing function in the mutex & rwsem API.
-We're intending to use it for an rwsem, but I think it applies equally
-to mutexes.
+The dt-binding for SCP documents the reg-names order as sram, cfg,
+l1tcm. Update the SCP node on the mt8192 devicetree to follow that
+order, which gets rid of a dtbs_check warning. This doesn't change any
+behavior since the SCP driver accesses the memory regions through the
+names anyway.
 
-The customer has a low priority task which wants to read /proc/pid/smaps
-of a higher priority task.  Today, everything is awful; smaps acquires
-mmap_sem read-only, is preempted, then the high-pri task calls mmap()
-and the down_write(mmap_sem) blocks on the low-pri task.  Then all the
-other threads in the high-pri task block on the mmap_sem as they take
-page faults because we don't want writers to starve.
+Fixes: c63556ec6bfe ("arm64: dts: mt8192: Add SCP node")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-The approach we're looking at is to allow RCU lookup of VMAs, and then
-take a per-VMA rwsem for read.  Because we're under RCU protection,
-that looks a bit like this:
+---
 
-	rcu_read_lock();
-	vma = vma_lookup();
-	if (down_read_trylock(&vma->sem)) {
-		rcu_read_unlock();
-	} else {
-		rcu_read_unlock();
-		down_read(&mm->mmap_sem);
-		vma = vma_lookup();
-		down_read(&vma->sem);
-		up_read(&mm->mmap_sem);
-	}
+Changes in v2:
+- Added missing Fixes tag
 
-(for clarity, I've skipped the !vma checks; don't take this too literally)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-So this is Good.  For the vast majority of cases, we avoid taking the
-mmap read lock and the problem will appear much less often.  But we can
-do Better with a new API.  You see, for this case, we don't actually
-want to acquire the mmap_sem; we're happy to spin a bit, but there's no
-point in spinning waiting for the writer to finish when we can sleep.
-I'd like to write this code:
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 26dbe9ecc528..733aec2e7f77 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -699,9 +699,9 @@ spi7: spi@1101e000 {
+ 		scp: scp@10500000 {
+ 			compatible = "mediatek,mt8192-scp";
+ 			reg = <0 0x10500000 0 0x100000>,
+-			      <0 0x10700000 0 0x8000>,
+-			      <0 0x10720000 0 0xe0000>;
+-			reg-names = "sram", "l1tcm", "cfg";
++			      <0 0x10720000 0 0xe0000>,
++			      <0 0x10700000 0 0x8000>;
++			reg-names = "sram", "cfg", "l1tcm";
+ 			interrupts = <GIC_SPI 435 IRQ_TYPE_LEVEL_HIGH 0>;
+ 			clocks = <&infracfg CLK_INFRA_SCPSYS>;
+ 			clock-names = "main";
+-- 
+2.36.0
 
-again:
-	rcu_read_lock();
-	vma = vma_lookup();
-	if (down_read_trylock(&vma->sem)) {
-		rcu_read_unlock();
-	} else {
-		rcu_read_unlock();
-		rwsem_wait_read(&mm->mmap_sem);
-		goto again;
-	}
-
-That is, rwsem_wait_read() puts the thread on the rwsem's wait queue,
-and wakes it up without giving it the lock.  Now this thread will never
-be able to block any thread that tries to acquire mmap_sem for write.
-
-Similarly, it may make sense to add rwsem_wait_write() and mutex_wait().
-Perhaps also mutex_wait_killable() and mutex_wait_interruptible()
-(the combinatoric explosion is a bit messy; I don't know that it makes
-sense to do the _nested, _io variants).
-
-Does any of this make sense?
