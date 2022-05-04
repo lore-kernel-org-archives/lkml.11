@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8510AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60A7C352A1
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357500AbiEDRPE (ORCPT
+        id S1357960AbiEDRPe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
+        Wed, 4 May 2022 13:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355257AbiEDREO (ORCPT
+        with ESMTP id S1355474AbiEDRE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:14 -0400
+        Wed, 4 May 2022 13:04:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2414EA1A;
-        Wed,  4 May 2022 09:52:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A6A4EDD6;
+        Wed,  4 May 2022 09:53:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59396617C3;
-        Wed,  4 May 2022 16:52:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6DB3C385AA;
-        Wed,  4 May 2022 16:52:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7805E617A6;
+        Wed,  4 May 2022 16:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDBC2C385AF;
+        Wed,  4 May 2022 16:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683172;
-        bh=ErSJhNxNhAjFQyo0IYu55uUHakx8l73TBNY52bN65po=;
+        s=korg; t=1651683182;
+        bh=4QKeYGFyuX8Lgug/SAeFGpeUU2oQDWxhq6HgOSzsGzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cUuyE70H1KNkqRfNxtP7cIcdINKr0peVHWYmxYZHYwBkjG5T8Fi088NpnwFDZ3/6Q
-         ca3rVHyB4Fxd69u4ZyIzGJe9o7ltZEtNZQwjJ6QMkzrytnjBiKgcWYJftODDp+H+r4
-         cxM2hb2AFQE++tM784UPOOSwnQ93h875AzP92iYQ=
+        b=grmLqi+MyoIxH7qM0BpdEElu85xev/zMq7rCVbVFFzZTDnuSQ8Okb9mGDRE15sO3M
+         92aXehYT4Nwrh5hf9fKZ9YdWCXmJ6OVnp3xrtpc1cPT6SOGsZN84m2GYTf8fSCgOW9
+         wXEaFUm3uT1sZH+KaWnJJRatB0AXQ2e/Mr4VSLcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
-        Johan Hovold <johan@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.15 037/177] arm64: dts: imx8mm-venice: fix spi2 pin configuration
-Date:   Wed,  4 May 2022 18:43:50 +0200
-Message-Id: <20220504153056.262481379@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.15 024/177] usb: dwc3: core: Only handle soft-reset in DCTL
+Date:   Wed,  4 May 2022 18:43:37 +0200
+Message-Id: <20220504153055.339503532@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,62 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit dc900431337f5f861e3cc47ec5be5a69db40ee34 upstream.
+commit f4fd84ae0765a80494b28c43b756a95100351a94 upstream.
 
-Due to what looks like a copy-paste error, the ECSPI2_MISO pad is not
-muxed for SPI mode and causes reads from a slave-device connected to the
-SPI header to always return zero.
+Make sure not to set run_stop bit or link state change request while
+initiating soft-reset. Register read-modify-write operation may
+unintentionally start the controller before the initialization completes
+with its previous DCTL value, which can cause initialization failure.
 
-Configure the ECSPI2_MISO pad for SPI mode on the gw71xx, gw72xx and
-gw73xx families of boards that got this wrong.
-
-Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
-Cc: stable@vger.kernel.org      # 5.12
-Cc: Tim Harvey <tharvey@gateworks.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Acked-by: Tim Harvey <tharvey@gateworks.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: f59dcab17629 ("usb: dwc3: core: improve reset sequence")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/6aecbd78328f102003d40ccf18ceeebd411d3703.1650594792.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi |    2 +-
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi |    2 +-
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi |    2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/dwc3/core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-@@ -166,7 +166,7 @@
- 		fsl,pins = <
- 			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
- 			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0xd6
--			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
-+			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0xd6
- 			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0xd6
- 		>;
- 	};
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-@@ -231,7 +231,7 @@
- 		fsl,pins = <
- 			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
- 			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0xd6
--			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
-+			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0xd6
- 			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0xd6
- 		>;
- 	};
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-@@ -280,7 +280,7 @@
- 		fsl,pins = <
- 			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
- 			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0xd6
--			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0xd6
-+			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0xd6
- 			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0xd6
- 		>;
- 	};
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -275,7 +275,8 @@ static int dwc3_core_soft_reset(struct d
+ 
+ 	reg = dwc3_readl(dwc->regs, DWC3_DCTL);
+ 	reg |= DWC3_DCTL_CSFTRST;
+-	dwc3_writel(dwc->regs, DWC3_DCTL, reg);
++	reg &= ~DWC3_DCTL_RUN_STOP;
++	dwc3_gadget_dctl_write_safe(dwc, reg);
+ 
+ 	/*
+ 	 * For DWC_usb31 controller 1.90a and later, the DCTL.CSFRST bit
 
 
