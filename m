@@ -2,77 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F20AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378977AbiEDWba (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
+        id S236825AbiEDWbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 18:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245110AbiEDWbV (ORCPT
+        with ESMTP id S1358817AbiEDWbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:31:21 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B441837E
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:27:43 -0700 (PDT)
+        Wed, 4 May 2022 18:31:22 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7A71839F;
+        Wed,  4 May 2022 15:27:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651703263; x=1683239263;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=boC9Ra/3hAUVYGsNwGu1M/furVga6JLszjqJK0CsnWA=;
-  b=G1m8X64TXhZBOjUju7F7YLJ66z3qbaXcq3Iam/6odlwXuj1BjAjlx1RQ
-   Y7O7OsFh5zW3mhq8hwGJYUBFPBcQ+xo6DxHPYoqeZ96QuW3u9NmSai6t2
-   AHGGzLubl5dATnodyAxc1MioyHn6br0waeHju4EQPvN9BWMsjF3cX5Eq0
-   mq3QFcuaMW/iby3/jurrEwyz+nypEosRlki5GheSPQrqeUg+e0DA+0gEe
-   qoA8EmkCUY/H001LqZcyU1WuAnF/b5u6Q3XWoeUCMYRLEVsjJ8d7oUqxm
-   6HwT7IN2QBRgftHiMGk0t35r14IfpYhWUdfPRgJZPwBldjM7Rkb8ksMpG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="247825471"
+  t=1651703264; x=1683239264;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Vj0dF0rneHeDuVaqq9G7vHZ4CjgqcvP5nCZmY9HAp6M=;
+  b=fxOL8T+yv9FhuHWniZDPEi4GkTv4kZFJdqhDj6oqxPehKrBLfVvR1BaX
+   LN3LsoaOmhyVPy6CLXMBj7oLPCCaWSx5+IlAtfhKBaCTh3+iLnDMZdu3M
+   9pCGF7Gcmd7EbLHarwbRl3U4Ulo1kQaPcgPcAwSmFoDmD80Sq/ZR2GaHX
+   FeDJq0OkGFViIXRGllR3hMcs2oR468xq++0/q8nZo1sh0/+XVW8WrQaF9
+   WcS3UpJt8HCUSpojovHus93N1Gyvd5QZ6O6G+04XDNwk4kbRBpIt0GcEK
+   DME5nEp8HyyiTifTo8lg3aLQ1oZ6JvSQuckDvM09SIoGjd2E2O73bOIYp
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="354354275"
 X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="247825471"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:27:43 -0700
+   d="scan'208";a="354354275"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:27:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="584979467"
+   d="scan'208";a="568311611"
 Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 04 May 2022 15:27:41 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 04 May 2022 15:27:41 -0700
 Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nmNTA-000Bqa-Mj;
+        id 1nmNTA-000BqY-LW;
         Wed, 04 May 2022 22:27:40 +0000
-Date:   Thu, 5 May 2022 06:27:05 +0800
+Date:   Thu, 5 May 2022 06:26:58 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Jack Xiao <Jack.Xiao@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Subject: [agd5f:drm-next 375/460] include/linux/kern_levels.h:5:25: warning:
- format '%ld' expects argument of type 'long int', but argument 2 has type
- 'size_t' {aka 'unsigned int'}
-Message-ID: <202205050614.sRcY9JVz-lkp@intel.com>
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>
+Cc:     kbuild-all@lists.01.org, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-security-module@vger.kernel.org,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v3 2/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <202205050636.VNgSDFVz-lkp@intel.com>
+References: <20220504125404.v3.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220504125404.v3.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   d6ffefccf7f04eefddc8e8aa35fb4afe05a42e0c
-commit: 32de57e9ef59b6f646849a8bd615b7c978a4fa6d [375/460] drm/amdgpu/mes: manage mes doorbell allocation
-config: parisc-buildonly-randconfig-r004-20220501 (https://download.01.org/0day-ci/archive/20220505/202205050614.sRcY9JVz-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
+Hi Matthias,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on device-mapper-dm/for-next]
+[also build test WARNING on song-md/md-next kees/for-next/pstore linus/master v5.18-rc5 next-20220504]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220505-035620
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm.git for-next
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220505/202205050636.VNgSDFVz-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 32de57e9ef59b6f646849a8bd615b7c978a4fa6d
+        # https://github.com/intel-lab-lkp/linux/commit/56f912dcbb302f9a7e6694493529abd4e3f337af
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220505-035620
+        git checkout 56f912dcbb302f9a7e6694493529abd4e3f337af
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash security/loadpin/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
@@ -81,69 +100,56 @@ All warnings (new ones prefixed by >>):
 
    In file included from include/linux/kernel.h:29,
                     from include/linux/cpumask.h:10,
-                    from include/linux/smp.h:13,
-                    from include/linux/lockdep.h:14,
-                    from include/linux/mutex.h:17,
-                    from include/linux/kernfs.h:11,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from drivers/gpu/drm/amd/amdgpu/amdgpu_irq.h:27,
-                    from drivers/gpu/drm/amd/amdgpu/amdgpu_mes.h:27,
-                    from drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:24:
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c: In function 'amdgpu_mes_doorbell_init':
->> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from security/loadpin/loadpin.c:12:
+   security/loadpin/loadpin.c: In function 'init_loadpin_securityfs':
+>> include/linux/kern_levels.h:5:25: warning: format '%d' expects argument of type 'int', but argument 2 has type 'long int' [-Wformat=]
        5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
          |                         ^~~~~~
    include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
      418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
          |                         ^~~~
-   include/drm/drm_print.h:494:9: note: in expansion of macro 'printk'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
+   include/linux/printk.h:489:9: note: in expansion of macro 'printk'
+     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
          |         ^~~~~~
-   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
-      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
+      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
          |                         ^~~~~~~~
-   include/drm/drm_print.h:494:22: note: in expansion of macro 'KERN_INFO'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |                      ^~~~~
-   include/drm/drm_print.h:498:9: note: in expansion of macro '_DRM_PRINTK'
-     498 |         _DRM_PRINTK(, INFO, fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:131:9: note: in expansion of macro 'DRM_INFO'
-     131 |         DRM_INFO("max_doorbell_slices=%ld\n", doorbell_process_limit);
-         |         ^~~~~~~~
-   At top level:
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:105:12: warning: 'amdgpu_mes_doorbell_init' defined but not used [-Wunused-function]
-     105 | static int amdgpu_mes_doorbell_init(struct amdgpu_device *adev)
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:90:13: warning: 'amdgpu_mes_queue_doorbell_free' defined but not used [-Wunused-function]
-      90 | static void amdgpu_mes_queue_doorbell_free(struct amdgpu_device *adev,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:59:12: warning: 'amdgpu_mes_queue_doorbell_get' defined but not used [-Wunused-function]
-      59 | static int amdgpu_mes_queue_doorbell_get(struct amdgpu_device *adev,
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:51:13: warning: 'amdgpu_mes_free_process_doorbells' defined but not used [-Wunused-function]
-      51 | static void amdgpu_mes_free_process_doorbells(struct amdgpu_device *adev,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:39:12: warning: 'amdgpu_mes_alloc_process_doorbells' defined but not used [-Wunused-function]
-      39 | static int amdgpu_mes_alloc_process_doorbells(struct amdgpu_device *adev,
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:489:16: note: in expansion of macro 'KERN_ERR'
+     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~
+   security/loadpin/loadpin.c:413:17: note: in expansion of macro 'pr_err'
+     413 |                 pr_err("LoadPin: could not create securityfs dir: %d\n",
+         |                 ^~~~~~
+>> include/linux/kern_levels.h:5:25: warning: format '%d' expects argument of type 'int', but argument 2 has type 'long int' [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:489:9: note: in expansion of macro 'printk'
+     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
+      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
+         |                         ^~~~~~~~
+   include/linux/printk.h:489:16: note: in expansion of macro 'KERN_ERR'
+     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~
+   security/loadpin/loadpin.c:421:17: note: in expansion of macro 'pr_err'
+     421 |                 pr_err("LoadPin: could not create securityfs entry 'dm-verity': %d\n",
+         |                 ^~~~~~
 
 
 vim +5 include/linux/kern_levels.h
 
-314ba3520e513a7 Joe Perches 2012-07-30  4  
-04d2c8c83d0e3ac Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
-04d2c8c83d0e3ac Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
-04d2c8c83d0e3ac Joe Perches 2012-07-30  7  
-
-:::::: The code at line 5 was first introduced by commit
-:::::: 04d2c8c83d0e3ac5f78aeede51babb3236200112 printk: convert the format for KERN_<LEVEL> to a 2 byte pattern
-
-:::::: TO: Joe Perches <joe@perches.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+314ba3520e513a Joe Perches 2012-07-30  4  
+04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
+04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
+04d2c8c83d0e3a Joe Perches 2012-07-30  7  
 
 -- 
 0-DAY CI Kernel Test Service
