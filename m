@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3850C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76185C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356469AbiEDRWd (ORCPT
+        id S1356413AbiEDRWh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
+        Wed, 4 May 2022 13:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355863AbiEDREp (ORCPT
+        with ESMTP id S1355819AbiEDREn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA934F45D;
-        Wed,  4 May 2022 09:53:28 -0700 (PDT)
+        Wed, 4 May 2022 13:04:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9414A4992B;
+        Wed,  4 May 2022 09:53:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 149C361505;
-        Wed,  4 May 2022 16:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7C7C385A4;
-        Wed,  4 May 2022 16:53:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1509A616F8;
+        Wed,  4 May 2022 16:53:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55454C385AF;
+        Wed,  4 May 2022 16:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683207;
-        bh=3hVsmT5G8vgBYDvAK4nk4B5RhbZAjeVci/nVWw3xb8c=;
+        s=korg; t=1651683204;
+        bh=6Va1t0xMrqkOyI+YVYgcsaBtCpt0QomG1pI3tWZkQTg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zbaqlqboai8q944AaQn6smfAEhDepQGsMmqC4V/cSalg4CGxoUw953K2p9nV6Nee+
-         f2VPcwansU0bFWQsSS4a6ANr/mVRis6p5TO/ZpE5mybA89AFDXSwMptnsftzpieMMb
-         YZYfnTYlyRxBFylGRRrlwyuGRcQk1mCRmyaEzWEE=
+        b=ZdWcbBYxLk3ye8H7/EaAVigXalKasgYZfPSxBg0xrwGjl7CFaE11+kEuYSRCniWOz
+         kX1/T2t7OCUP4zvI5l/bXAWrHN8cYoWz69yJAv2D+F8mjNHK5a28qMhntNgQQemD7e
+         DEibafLaQP2FPqZAm56j4MxnZDl6G01F+YJsUXqU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 059/177] phy: samsung: exynos5250-sata: fix missing device put in probe error paths
-Date:   Wed,  4 May 2022 18:44:12 +0200
-Message-Id: <20220504153058.294836259@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Adam Ford <aford173@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Peng Fan <peng.fan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 056/177] arm64: dts: imx8mn: Fix SAI nodes
+Date:   Wed,  4 May 2022 18:44:09 +0200
+Message-Id: <20220504153058.039257167@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,74 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 5c8402c4db45dd55c2c93c8d730f5dfa7c78a702 ]
+[ Upstream commit 574518b7ccbaef74cb89eb1a1a0da88afa1e0113 ]
 
-The actions of of_find_i2c_device_by_node() in probe function should be
-reversed in error paths by putting the reference to obtained device.
+The most specific compatible string element should be "fsl,imx8mn-sai"
+on i.MX8M Nano, fix it from current "fsl,imx8mm-sai" (two Ms, likely
+due to copy-paste error from i.MX8M Mini).
 
-Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220407091857.230386-2-krzysztof.kozlowski@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 9e9860069725f ("arm64: dts: imx8mn: Add SAI nodes")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Adam Ford <aford173@gmail.com>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: Peng Fan <peng.fan@nxp.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+To: linux-arm-kernel@lists.infradead.org
+Reviewed-by: Adam Ford <aford173@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/samsung/phy-exynos5250-sata.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mn.dtsi | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
-index 6c305a3fe187..595adba5fb8f 100644
---- a/drivers/phy/samsung/phy-exynos5250-sata.c
-+++ b/drivers/phy/samsung/phy-exynos5250-sata.c
-@@ -196,20 +196,21 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 	sata_phy->phyclk = devm_clk_get(dev, "sata_phyctrl");
- 	if (IS_ERR(sata_phy->phyclk)) {
- 		dev_err(dev, "failed to get clk for PHY\n");
--		return PTR_ERR(sata_phy->phyclk);
-+		ret = PTR_ERR(sata_phy->phyclk);
-+		goto put_dev;
- 	}
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn.dtsi b/arch/arm64/boot/dts/freescale/imx8mn.dtsi
+index da6c942fb7f9..6d6cbd4c83b8 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mn.dtsi
+@@ -263,7 +263,7 @@ spba2: spba-bus@30000000 {
+ 				ranges;
  
- 	ret = clk_prepare_enable(sata_phy->phyclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable source clk\n");
--		return ret;
-+		goto put_dev;
- 	}
+ 				sai2: sai@30020000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30020000 0x10000>;
+ 					interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI2_IPG>,
+@@ -277,7 +277,7 @@ sai2: sai@30020000 {
+ 				};
  
- 	sata_phy->phy = devm_phy_create(dev, NULL, &exynos_sata_phy_ops);
- 	if (IS_ERR(sata_phy->phy)) {
--		clk_disable_unprepare(sata_phy->phyclk);
- 		dev_err(dev, "failed to create PHY\n");
--		return PTR_ERR(sata_phy->phy);
-+		ret = PTR_ERR(sata_phy->phy);
-+		goto clk_disable;
- 	}
+ 				sai3: sai@30030000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30030000 0x10000>;
+ 					interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI3_IPG>,
+@@ -291,7 +291,7 @@ sai3: sai@30030000 {
+ 				};
  
- 	phy_set_drvdata(sata_phy->phy, sata_phy);
-@@ -217,11 +218,18 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 	phy_provider = devm_of_phy_provider_register(dev,
- 					of_phy_simple_xlate);
- 	if (IS_ERR(phy_provider)) {
--		clk_disable_unprepare(sata_phy->phyclk);
--		return PTR_ERR(phy_provider);
-+		ret = PTR_ERR(phy_provider);
-+		goto clk_disable;
- 	}
+ 				sai5: sai@30050000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30050000 0x10000>;
+ 					interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI5_IPG>,
+@@ -307,7 +307,7 @@ sai5: sai@30050000 {
+ 				};
  
- 	return 0;
-+
-+clk_disable:
-+	clk_disable_unprepare(sata_phy->phyclk);
-+put_dev:
-+	put_device(&sata_phy->client->dev);
-+
-+	return ret;
- }
+ 				sai6: sai@30060000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x30060000  0x10000>;
+ 					interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI6_IPG>,
+@@ -364,7 +364,7 @@ spdif1: spdif@30090000 {
+ 				};
  
- static const struct of_device_id exynos_sata_phy_of_match[] = {
+ 				sai7: sai@300b0000 {
+-					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
+ 					reg = <0x300b0000 0x10000>;
+ 					interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
+ 					clocks = <&clk IMX8MN_CLK_SAI7_IPG>,
 -- 
 2.35.1
 
