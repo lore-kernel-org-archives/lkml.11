@@ -2,137 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 274D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351036AbiEDOCo (ORCPT
+        id S1351041AbiEDOC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50316 "EHLO
+        Wed, 4 May 2022 10:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350700AbiEDOCl (ORCPT
+        with ESMTP id S1349009AbiEDOCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:02:41 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0616427B08
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:59:05 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id h10so2506552ybc.4
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:59:04 -0700 (PDT)
+        Wed, 4 May 2022 10:02:53 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000DE41338
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:59:16 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so3265557wms.3
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:59:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SPZZPIZ3tMBmU2J1+dZLu8mQ0Ktfd9UqnJWzWh7GFsY=;
-        b=LRu+SOgpWQ2b+0XE6XdI/GPR0EVOYpYkODREs06fm4JhpU/+whc8uYsRe84PoV/JSE
-         ZPYr0vcwK13wBePNL3HhRS1K5KCawgiM+8nA3JodO3TFcvqxV/SXUB6XsDpnbMmKrl/O
-         UwA2935dhr1JZ5IYE7VJe+x5YlZKUuTtthD6ZyullhDMhoGCelzR7b+dyGOKwbpY8+Tl
-         RweTMuhP01HvNGL4Iux7lkE+85f7iPo/miEVmHQz9pI4KJfovUn2gIuynUdyEaLBRKaA
-         ujGpZ1FPiKdjVCRW8uSeCvuoFeYdMaQr3Xp7ltKPvVz9kuiXOYxJwAk3C8iXVlnNOxgF
-         Hv+g==
+        bh=mFqD13h4DdEbrcwcMZezbebSSUTg4ODI3AEZjhdBnJo=;
+        b=C3gJIISQGKpGwD5Uo4+zbm+rTWry5xThpDoIGPNlp5cbWX32T1RNUtN1amj3QDVh1B
+         TCXS2oZJxLVDuAKZdB7JPd+jsuqFUraet3XEvALiNc3PUzb37XfAI/8F5Jc5TG7sTVkc
+         lhZI5ESvf6mMWgoj9jtkABu0WCdcNgFZrbfuvryasULrHZGkiI+nqgLa8SoaBm8Zyyzs
+         eu8ttQotSzZ+olfMRwXlzEcQIoo8h1e76N8Co88HyBPpa/FKHEOE8Pce0+4CRMxQR2qw
+         9GSKy/bthfIHmvKrVPPcsN4L3VnYYKpMZSFYvSXKU2L5/Mdihghe8ByyPIVsWJ4gldla
+         atSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SPZZPIZ3tMBmU2J1+dZLu8mQ0Ktfd9UqnJWzWh7GFsY=;
-        b=4Yo2jUVaPx6AhtT4qkQyuZFH0OTr2pv3zmKBdW4bSwaVq/q/tCn0xU5Y45sMO6iaET
-         aUymTydDIaV1gDNpKw/bhmHhWCLYUgdfTzta9kVJQlt6ip+hTzTXdRDwptBwna45lO1o
-         mEdJPMrbiMwRtwX/Xp9cELWJ5FXfgndXnxkpy6VreFhYMOtebLc/Odv/Fd2vFG7I8uzb
-         koQ9WJg3QGsNdwa1Jr1EXNH7Ud+iN0PhV/U30/jpij1u1qmIkvJw/42hfRsWZJ34yl1Z
-         UHjoKX5lw4iY7kN0lZWt6jrCYpqrzfB4gEzIS0kDm8T92ihT60uuAC1WNXcCo6fpcomf
-         wi9Q==
-X-Gm-Message-State: AOAM530FHOnElFJBNvzapF9iO87GaiKI3IOXYXH4fUugN/bRj3QjOPLB
-        VDv7lUmQXG58daza2biyvnDm/H3ThFN7iAmD5UkZ8aKhic8=
-X-Google-Smtp-Source: ABdhPJwFdnRNBegT96HZOCc6rf5V5GfnGTph+kAaVdv0O4+9BngcElxeohXGSrJ+jPxr8dcRqOpnRK6wxVA02Kq9C40=
-X-Received: by 2002:a25:c1c3:0:b0:648:e9af:111f with SMTP id
- r186-20020a25c1c3000000b00648e9af111fmr19203938ybf.168.1651672743992; Wed, 04
- May 2022 06:59:03 -0700 (PDT)
+        bh=mFqD13h4DdEbrcwcMZezbebSSUTg4ODI3AEZjhdBnJo=;
+        b=P+v9ZpmDZPY+lqd0mSxXlU8svpXc9DVvcxseTesFtXAU/roxW4fTQdVHsyaGEkFvKf
+         mjx2HjZRGIR3aPpC6/n7coztCSM4aMci14Mq/HsAu9J3IebjpiKMSW4Xbu00NbT85kHL
+         tr8NDq7FWfMKlFFfgd7nAeSAH/Ak8p4hoycJAYlwHjU5Z7FBGr5ov4f3PDr9FnVk1KOy
+         rOFEqdjb8nx7dam8qytOkHuxYHQLpF9+09jY1WDd7BC1jZg016JgurXz/02I9b1Aq5Bp
+         fOHfMGxd0v3p+TeY6DCaDcN42BT1OWqNnBuFUAsZxMp7iurVPYPkEmMQ/lJ7walrK3e/
+         oSaA==
+X-Gm-Message-State: AOAM532TIdOU//LkaJUo3Gd1rnwPUGKP4H73CElbCtfS9ZXQYdtko9HQ
+        XC5BA4voEOadJTgMlxyGau8npccb2fAvKr+0yHitAQ==
+X-Google-Smtp-Source: ABdhPJyl78M9m8Ok2I2KXHYCTWh5Tm0JqrbFxuW8XjLXJ+r+TmWyE1aOYBRGGrp5HAGImVd4KosxmdZIs3IshZNQqsY=
+X-Received: by 2002:a1c:a301:0:b0:392:9bc5:203c with SMTP id
+ m1-20020a1ca301000000b003929bc5203cmr7762038wme.67.1651672755125; Wed, 04 May
+ 2022 06:59:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220504070941.2798233-1-elver@google.com> <CABVgOSnkROn18i62+M9ZfRVLO=E28Eiv7oF_RJV+14Ld73axLw@mail.gmail.com>
- <CANpmjNPKyGUV4fXui5hEwc9+4y70kP_XgSnHbPObWBGyDeccYA@mail.gmail.com> <CABVgOSkLGryZeWVXdfBDkQKWvSkYTk2LWx+yC9J+4FYQpn2bpQ@mail.gmail.com>
-In-Reply-To: <CABVgOSkLGryZeWVXdfBDkQKWvSkYTk2LWx+yC9J+4FYQpn2bpQ@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 4 May 2022 15:58:27 +0200
-Message-ID: <CANpmjNNHwpmVnrbRcibyu7F7r3cU9p_+ZHGTx=GGB7Y8LfVxGg@mail.gmail.com>
-Subject: Re: [PATCH -kselftest/kunit] kcsan: test: use new suite_{init,exit} support
-To:     David Gow <davidgow@google.com>
-Cc:     kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>
+References: <20220503041757.2365696-1-irogers@google.com> <20220503041757.2365696-5-irogers@google.com>
+ <b94f3863-c690-e0f7-5cde-18fbf24143e5@intel.com> <CAP-5=fWfs2td9nZLGdEBD+C5s=upa_7SORab8tQ7qH=jX--F7w@mail.gmail.com>
+ <1e13c738-3460-ef7f-8b4b-5169e16b0b06@intel.com>
+In-Reply-To: <1e13c738-3460-ef7f-8b4b-5169e16b0b06@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 4 May 2022 06:59:01 -0700
+Message-ID: <CAP-5=fWEdLV6Jf5q=MSQyVSL0Q3-KxSvCWgXGjhexezx9AJAdA@mail.gmail.com>
+Subject: Re: [PATCH v5 4/6] perf cpumap: Handle dummy maps as empty in subset
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 4 May 2022 at 15:54, David Gow <davidgow@google.com> wrote:
+On Wed, May 4, 2022 at 5:54 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
 >
-> On Wed, May 4, 2022 at 9:48 PM Marco Elver <elver@google.com> wrote:
+> On 3/05/22 17:03, Ian Rogers wrote:
+> > On Tue, May 3, 2022 at 12:43 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+> >>
+> >> On 3/05/22 07:17, Ian Rogers wrote:
+> >>> perf_cpu_map__empty is true for empty and dummy maps. Make is_subset
+> >>> respect that.
+> >>
+> >> As I wrote before, I am not keen on this because it prevents -1, as a
+> >> valid 3rd parameter to perf_event_open(), from being represented
+> >> in merged evsel cpu maps.
+> >>
+> >> Why do you want this?
 > >
-> > On Wed, 4 May 2022 at 15:43, David Gow <davidgow@google.com> wrote:
-> > >
-> > > On Wed, May 4, 2022 at 3:09 PM Marco Elver <elver@google.com> wrote:
-> > > >
-> > > > Use the newly added suite_{init,exit} support for suite-wide init and
-> > > > cleanup. This avoids the unsupported method by which the test used to do
-> > > > suite-wide init and cleanup (avoiding issues such as missing TAP
-> > > > headers, and possible future conflicts).
-> > > >
-> > > > Signed-off-by: Marco Elver <elver@google.com>
-> > > > ---
-> > > > This patch should go on the -kselftest/kunit branch, where this new
-> > > > support currently lives, including a similar change to the KFENCE test.
-> > > > ---
-> > >
-> > > Thanks! This is working for me. I ran it as a builtin using kunit_tool
-> > > under (I had to add an x86_64-smp architecture), then use:
-> > > ./tools/testing/kunit/kunit.py run --arch=x86_64-smp
-> > > --kconfig_add=CONFIG_KCSAN=y --kconfig_add=CONFIG_DEBUG_KERNEL=y
-> > > --timeout 900 'kcsan'
-> > >
-> > > To add the x86_64 smp architecture, I added a file
-> > > ./tools/testing/kunit/qemu_configs/x86_64-smp.py, which was a copy of
-> > > x86_64.py but with 'CONFIG_SMP=y' added to XXXX and '-smp 16' added to
-> > > YYYY.
+> > Thanks Adrian, could you give me a test case (command line) where the
+> > differing dummy and empty behavior matters?
 >
-> (Whoops, forgot to copy this in properly: XXXX was 'kconfig' and YYYY
-> was 'extra_qemu_params'.)
+> perf record --per-thread -e intel_pt// uname
 >
-> The x86_64-smp.py file ends up looking like this:
-> ---8<---
-> from ..qemu_config import QemuArchParams
+> With patchset "perf intel-pt: Better support for perf record --cpu"
+> the above will have (assuming 8-CPUs):
+>         user_requested_cpus = {-1}
+>         intel_pt evsel->cpus = {-1}
+>         text_poke dummy evsel->cpus = {0-7}
+> which when merged would result in:
+>         before this patch: all_cpus = {-1-7}
+>         after this patch:  all_cpus = {0-7}
 >
-> QEMU_ARCH = QemuArchParams(linux_arch='x86_64',
->                           kconfig='''
-> CONFIG_SERIAL_8250=y
-> CONFIG_SERIAL_8250_CONSOLE=y
-> CONFIG_SMP=y
->                           ''',
->                           qemu_arch='x86_64',
->                           kernel_path='arch/x86/boot/bzImage',
->                           kernel_command_line='console=ttyS0',
->                           extra_qemu_params=['-smp 16'])
-> ---8<---
-> > > It took about 10 minutes on my system, so the default 5 minute timeout
-> > > definitely wasn't enough.
-> >
-> > The trick to reduce the KCSAN test time is to set
-> > CONFIG_KCSAN_REPORT_ONCE_IN_MS=100 or lower. So should you consider a
-> > special KUnit config, I'd add that.
-> >
->
-> Ah: it might be worth adding a dedicated kcsan .kunitconfig, in which
-> case this would be helpful. It'd also need the SMP qemu config above
-> before it's particularly useful, and 16 was a randomly-picked number
-> of CPUs -- not sure if there's a better default.
->
-> If you're likely to use it, though, we can definitely add it in. I'm
-> sure there'll eventually be other uses for an SMP config under
-> kunit_tool, too.
+> The absence of -1 will mean that the intel_pt event does not get
+> mmapped.
 
-I currently have some other frankenscript to run it, but I wouldn't
-mind just using kunit_tool to do so. So having real SMP support there
-would be very useful.
+Thanks, so what's the right fix? To make this work we should:
+ - remove language of dummy being a singular cpu_map
+ - change perf_cpu_map__empty to be something like
+perf_cpu_map__empty_or_just_dummy
+ - change cpu_map__is_dummy to be something llike cpu_map__singular_dummy
+ - add tests on cpu map code for things like the evlist affiinity
+iterator as I'm not clear what will happen when it encounters a -1 CPU
+Note, I'm proposing changing function names rather than implementation
+behavior, as we don't have enough tests to give me confidence that
+changing the existing behavior wouldn't break something. For example,
+--per-thread mode was recently broken:
+https://lore.kernel.org/lkml/e1ce0d93-88cc-af79-e67e-d3c79d166ca6@gmail.com/
+Do we also need to fix up parse events for software events (e.g.
+faults) where the cpu map is empty but really should be dummy? This
+will likely need a propagate fix as during the parsing propagation
+user_requested_cpus is empty and we want to keep dummy cpu maps, not
+overwrite them with empty.
+
+I see a fair amount of clean up here, which isn't bad. My assumed
+alternative was that the intel_pt code could look for dummy cpu maps
+on the evsels, but then why have dummy cpu maps at all and just use
+empty throughout the code base? We could also add a flag to the evlist
+to say whether any evsel cpu maps contain a dummy/empty map. API wise
+I'm tempted to say that the dummy CPU map should be removed and empty
+just used in its place (less is more, keep it simple).
+
+Something that would help with clarity, I think, would be to land the fix in:
+https://lore.kernel.org/lkml/20220503041757.2365696-3-irogers@google.com/
+as currently all_cpus contains cpus not in the evsel cpu maps, but are
+residue from when the evsels were parsed.
 
 Thanks,
--- Marco
+Ian
+
+> >                                             Normally cpus/own_cpus are
+> > set to null during parsing. They may get replaced with
+> > user_requested_cpus:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/evlist.c?h=perf/core#n44
+> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/evlist.c?h=perf/core#n45
+> > (should it be on line 45 that !empty is expected?)
+> >
+> > During merge the null/empty all_cpus drops this value, which doesn't
+> > matter as the behavior with empty is the same as dummy:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/evsel.c?h=perf/core#n119
+> >
+> > What's concerning me is the definition of empty:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/cpumap.c?h=perf/core#n279
+> > ```
+> > return map ? map->map[0].cpu == -1 : true;
+> > ```
+> > If the first entry can be -1 and there can be other CPUs merged after
+> > then that cpu map will be empty by the definition above. Perhaps it
+> > should be:
+> > ```
+> > return map ? (map->nr == 1 && map->map[0].cpu == -1) : true;
+> > ```
+> > but it seems you prefer:
+> > ```
+> > return (map == NULL) ? true : false;
+> > ```
+> >
+> > You'd asked what the behavior with a dummy is and clearly it is
+> > somewhat muddy. That is what this patch and unit test is trying to
+> > clean up.
+> >
+> > Thanks,
+> > Ian
+> >
+> >>>
+> >>> Signed-off-by: Ian Rogers <irogers@google.com>
+> >>> ---
+> >>>  tools/lib/perf/cpumap.c   |  4 ++--
+> >>>  tools/perf/tests/cpumap.c | 10 +++++++++-
+> >>>  2 files changed, 11 insertions(+), 3 deletions(-)
+> >>>
+> >>> diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
+> >>> index 384d5e076ee4..9c83675788c2 100644
+> >>> --- a/tools/lib/perf/cpumap.c
+> >>> +++ b/tools/lib/perf/cpumap.c
+> >>> @@ -322,9 +322,9 @@ struct perf_cpu perf_cpu_map__max(struct perf_cpu_map *map)
+> >>>  /** Is 'b' a subset of 'a'. */
+> >>>  bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu_map *b)
+> >>>  {
+> >>> -     if (a == b || !b)
+> >>> +     if (a == b || perf_cpu_map__empty(b))
+> >>>               return true;
+> >>> -     if (!a || b->nr > a->nr)
+> >>> +     if (perf_cpu_map__empty(a) || b->nr > a->nr)
+> >>>               return false;
+> >>>
+> >>>       for (int i = 0, j = 0; i < a->nr; i++) {
+> >>> diff --git a/tools/perf/tests/cpumap.c b/tools/perf/tests/cpumap.c
+> >>> index f94929ebb54b..d52b58395385 100644
+> >>> --- a/tools/perf/tests/cpumap.c
+> >>> +++ b/tools/perf/tests/cpumap.c
+> >>> @@ -128,13 +128,21 @@ static int test__cpu_map_merge(struct test_suite *test __maybe_unused, int subte
+> >>>       struct perf_cpu_map *a = perf_cpu_map__new("4,2,1");
+> >>>       struct perf_cpu_map *b = perf_cpu_map__new("4,5,7");
+> >>>       struct perf_cpu_map *c = perf_cpu_map__merge(a, b);
+> >>> +     struct perf_cpu_map *d = perf_cpu_map__dummy_new();
+> >>> +     struct perf_cpu_map *e = perf_cpu_map__merge(b, d);
+> >>>       char buf[100];
+> >>>
+> >>>       TEST_ASSERT_VAL("failed to merge map: bad nr", perf_cpu_map__nr(c) == 5);
+> >>>       cpu_map__snprint(c, buf, sizeof(buf));
+> >>>       TEST_ASSERT_VAL("failed to merge map: bad result", !strcmp(buf, "1-2,4-5,7"));
+> >>> -     perf_cpu_map__put(b);
+> >>> +
+> >>> +     TEST_ASSERT_VAL("failed to merge map: bad nr", perf_cpu_map__nr(e) == 3);
+> >>> +     cpu_map__snprint(e, buf, sizeof(buf));
+> >>> +     TEST_ASSERT_VAL("failed to merge map: bad result", !strcmp(buf, "4-5,7"));
+> >>> +
+> >>>       perf_cpu_map__put(c);
+> >>> +     perf_cpu_map__put(d);
+> >>> +     perf_cpu_map__put(e);
+> >>>       return 0;
+> >>>  }
+> >>>
+> >>
+>
