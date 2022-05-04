@@ -2,186 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB25C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA047C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379049AbiEDWpL (ORCPT
+        id S1379058AbiEDWpN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        Wed, 4 May 2022 18:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376474AbiEDWo7 (ORCPT
+        with ESMTP id S1377062AbiEDWpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:44:59 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD79548893;
-        Wed,  4 May 2022 15:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651704081; x=1683240081;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=vo98koW8xOZpXvkfJZ26bs6YvtqqcceUyFD7sOeeXGI=;
-  b=QARAiMKcBxMxlkyw4T73MEiVXW+ANS56eY0oZYG5t9YP1XT2TTUe6dpD
-   2XHKLbJsb8/bjbZhpw335BBAcRuArgCbzriJwBTrmj7fseynGcnhRZYVW
-   5s0J06AUDha6sKC2sY/6nxP+Xm5yM3v1g47NFDB3Tw+DozxXdJEyKPJGs
-   veh0F0MmYzYJODxOoUncxVx+G2fBkVykNqBtYu+JV7zGGAuYDWhB6m8R3
-   2i7mMujC/D8SnNNTOlNmTkYh1zRgl1wZdn1D+ejq/02I8KgCErrMQwLcZ
-   2+AyNQaiMTAZsuldSHLdPU7a8U/MdZ64tEs6Sz+x/23z2QKfkpVMYuHQJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267803170"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="267803170"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:41:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="549071723"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:41:20 -0700
-Date:   Wed, 4 May 2022 15:41:20 -0700 (PDT)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-cc:     dinguyen@kernel.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: misc: add bindings for Intel HPS
- Copy Engine
-In-Reply-To: <17407fe7-b11d-2ba8-acca-3e71cf1a3b2f@linaro.org>
-Message-ID: <alpine.DEB.2.22.394.2205041425230.2669897@rhweight-WRK1>
-References: <20220503194546.1287679-1-matthew.gerlach@linux.intel.com> <20220503194546.1287679-2-matthew.gerlach@linux.intel.com> <17407fe7-b11d-2ba8-acca-3e71cf1a3b2f@linaro.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Wed, 4 May 2022 18:45:04 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60AA4C43C;
+        Wed,  4 May 2022 15:41:24 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:54100)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmNgR-00EDP7-MV; Wed, 04 May 2022 16:41:23 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37004 helo=localhost.localdomain)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmNgP-00GI0k-Ia; Wed, 04 May 2022 16:41:23 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
+        mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
+        tj@kernel.org, linux-pm@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
+        "Eric W. Biederman" <ebiederm@xmission.com>, stable@vger.kernel.org
+Date:   Wed,  4 May 2022 17:40:50 -0500
+Message-Id: <20220504224058.476193-3-ebiederm@xmission.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+X-XM-SPF: eid=1nmNgP-00GI0k-Ia;;;mid=<20220504224058.476193-3-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+wjCEf0Th8yeh00J7nC1sO3s2+WBomL3Q=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH v3 03/11] ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+User mode linux is the last user of the PT_DTRACE flag.  Using the flag to indicate
+single stepping is a little confusing and worse changing tsk->ptrace without locking
+could potentionally cause problems.
 
+So use a thread info flag with a better name instead of flag in tsk->ptrace.
 
-On Wed, 4 May 2022, Krzysztof Kozlowski wrote:
+Remove the definition PT_DTRACE as uml is the last user.
 
-> On 03/05/2022 21:45, matthew.gerlach@linux.intel.com wrote:
->> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>
->> Add device tree bindings documentation for the Intel Hard
->> Processor System (HPS) Copy Engine.
->>
->> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->> ---
->>  .../bindings/misc/intel,hps-copy-engine.yaml  | 48 +++++++++++++++++++
->>  1 file changed, 48 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
->> new file mode 100644
->> index 000000000000..74e7da9002f4
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
->
-> Please find appropriate directory matching this hardware, not "misc". As
-> a fallback SoC related bindings end up in "soc".
+Cc: stable@vger.kernel.org
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+---
+ arch/um/include/asm/thread_info.h | 2 ++
+ arch/um/kernel/exec.c             | 2 +-
+ arch/um/kernel/process.c          | 2 +-
+ arch/um/kernel/ptrace.c           | 8 ++++----
+ arch/um/kernel/signal.c           | 4 ++--
+ include/linux/ptrace.h            | 1 -
+ 6 files changed, 10 insertions(+), 9 deletions(-)
 
-I thought misc seemed appropriate because it is a very specific IP block 
-in the FPGA connected to the HPS.  It does perform a simple DMA function; 
-so I considered putting it in the dma directory, but it also has some
-hand-shaking registers between the HPS and a host processor connected to the
-FPGA via PCIe; so I thought misc.  Since the HPS "soc" accesses the 
-component, I can put it in the "soc" directory, unless there is a better 
-suggestion.
+diff --git a/arch/um/include/asm/thread_info.h b/arch/um/include/asm/thread_info.h
+index 1395cbd7e340..c7b4b49826a2 100644
+--- a/arch/um/include/asm/thread_info.h
++++ b/arch/um/include/asm/thread_info.h
+@@ -60,6 +60,7 @@ static inline struct thread_info *current_thread_info(void)
+ #define TIF_RESTORE_SIGMASK	7
+ #define TIF_NOTIFY_RESUME	8
+ #define TIF_SECCOMP		9	/* secure computing */
++#define TIF_SINGLESTEP		10	/* single stepping userspace */
+ 
+ #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
+ #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
+@@ -68,5 +69,6 @@ static inline struct thread_info *current_thread_info(void)
+ #define _TIF_MEMDIE		(1 << TIF_MEMDIE)
+ #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
+ #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
++#define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
+ 
+ #endif
+diff --git a/arch/um/kernel/exec.c b/arch/um/kernel/exec.c
+index c85e40c72779..58938d75871a 100644
+--- a/arch/um/kernel/exec.c
++++ b/arch/um/kernel/exec.c
+@@ -43,7 +43,7 @@ void start_thread(struct pt_regs *regs, unsigned long eip, unsigned long esp)
+ {
+ 	PT_REGS_IP(regs) = eip;
+ 	PT_REGS_SP(regs) = esp;
+-	current->ptrace &= ~PT_DTRACE;
++	clear_thread_flag(TIF_SINGLESTEP);
+ #ifdef SUBARCH_EXECVE1
+ 	SUBARCH_EXECVE1(regs->regs);
+ #endif
+diff --git a/arch/um/kernel/process.c b/arch/um/kernel/process.c
+index 80504680be08..88c5c7844281 100644
+--- a/arch/um/kernel/process.c
++++ b/arch/um/kernel/process.c
+@@ -335,7 +335,7 @@ int singlestepping(void * t)
+ {
+ 	struct task_struct *task = t ? t : current;
+ 
+-	if (!(task->ptrace & PT_DTRACE))
++	if (!test_thread_flag(TIF_SINGLESTEP))
+ 		return 0;
+ 
+ 	if (task->thread.singlestep_syscall)
+diff --git a/arch/um/kernel/ptrace.c b/arch/um/kernel/ptrace.c
+index bfaf6ab1ac03..5154b27de580 100644
+--- a/arch/um/kernel/ptrace.c
++++ b/arch/um/kernel/ptrace.c
+@@ -11,7 +11,7 @@
+ 
+ void user_enable_single_step(struct task_struct *child)
+ {
+-	child->ptrace |= PT_DTRACE;
++	set_tsk_thread_flag(child, TIF_SINGLESTEP);
+ 	child->thread.singlestep_syscall = 0;
+ 
+ #ifdef SUBARCH_SET_SINGLESTEPPING
+@@ -21,7 +21,7 @@ void user_enable_single_step(struct task_struct *child)
+ 
+ void user_disable_single_step(struct task_struct *child)
+ {
+-	child->ptrace &= ~PT_DTRACE;
++	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
+ 	child->thread.singlestep_syscall = 0;
+ 
+ #ifdef SUBARCH_SET_SINGLESTEPPING
+@@ -120,7 +120,7 @@ static void send_sigtrap(struct uml_pt_regs *regs, int error_code)
+ }
+ 
+ /*
+- * XXX Check PT_DTRACE vs TIF_SINGLESTEP for singlestepping check and
++ * XXX Check TIF_SINGLESTEP for singlestepping check and
+  * PT_PTRACED vs TIF_SYSCALL_TRACE for syscall tracing check
+  */
+ int syscall_trace_enter(struct pt_regs *regs)
+@@ -144,7 +144,7 @@ void syscall_trace_leave(struct pt_regs *regs)
+ 	audit_syscall_exit(regs);
+ 
+ 	/* Fake a debug trap */
+-	if (ptraced & PT_DTRACE)
++	if (test_thread_flag(TIF_SINGLESTEP))
+ 		send_sigtrap(&regs->regs, 0);
+ 
+ 	if (!test_thread_flag(TIF_SYSCALL_TRACE))
+diff --git a/arch/um/kernel/signal.c b/arch/um/kernel/signal.c
+index 88cd9b5c1b74..ae4658f576ab 100644
+--- a/arch/um/kernel/signal.c
++++ b/arch/um/kernel/signal.c
+@@ -53,7 +53,7 @@ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+ 	unsigned long sp;
+ 	int err;
+ 
+-	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
++	if (test_thread_flag(TIF_SINGLESTEP) && (current->ptrace & PT_PTRACED))
+ 		singlestep = 1;
+ 
+ 	/* Did we come from a system call? */
+@@ -128,7 +128,7 @@ void do_signal(struct pt_regs *regs)
+ 	 * on the host.  The tracing thread will check this flag and
+ 	 * PTRACE_SYSCALL if necessary.
+ 	 */
+-	if (current->ptrace & PT_DTRACE)
++	if (test_thread_flag(TIF_SINGLESTEP))
+ 		current->thread.singlestep_syscall =
+ 			is_syscall(PT_REGS_IP(&current->thread.regs));
+ 
+diff --git a/include/linux/ptrace.h b/include/linux/ptrace.h
+index 15b3d176b6b4..4c06f9f8ef3f 100644
+--- a/include/linux/ptrace.h
++++ b/include/linux/ptrace.h
+@@ -30,7 +30,6 @@ extern int ptrace_access_vm(struct task_struct *tsk, unsigned long addr,
+ 
+ #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
+ #define PT_PTRACED	0x00000001
+-#define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
+ 
+ #define PT_OPT_FLAG_SHIFT	3
+ /* PT_TRACE_* event enable flags */
+-- 
+2.35.3
 
->
->> @@ -0,0 +1,48 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +# Copyright (C) 2022, Intel Corporation
->> +%YAML 1.2
->> +---
->> +$id: "http://devicetree.org/schemas/misc/intel,hps-copy-engine.yaml#"
->> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->> +
->> +title: Intel HPS Copy Engine
->> +
->> +maintainers:
->> +  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
->> +
->> +description: |
->> +  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
->> +  a bootable image from host memory to HPS DDR.  Additionally, there is a
->> +  register the HPS can use to indicate the state of booting the copied image as
->> +  well as a keep-a-live indication to the host.
->> +
->> +properties:
->> +  compatible:
->> +    items:
->
-> No "items", you have just one item.
-
-Got it.  I will change it in v3.
->
->> +      - const: intel,hps-copy-engine
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    agilex_hps_bridges: bus@80000000 {
->
-> Unused label...
-
-I will remove unused label in v3.
-
->
->> +        compatible = "simple-bus";
->> +        reg = <0x80000000 0x60000000>,
->> +              <0xf9000000 0x00100000>;
->> +        reg-names = "axi_h2f", "axi_h2f_lw";
->> +        #address-cells = <0x2>;
->
-> $ git grep address-cell
-> Do not use inconsistent coding. The same applies to your DTS.
-
-Is the inconsistency the use of '0x' in the values of #address-cells and 
-#size-cells, or is the consistency having different values for 
-#address-cells and #size-cells or both?
-
->
->> +        #size-cells = <0x1>;
->> +        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
->
-> Why do you even need the simple-bus above and cannot put the device
-> directly on the bus?
-
-On an Agilex chip, the HPS is connected to the FPGA via two bridges, 
-referred as the "HPS to FPGA bridge" and the "Lightweight HPS to FPGA 
-bridge".  An IP block in the FPGA could be connected to one or both of 
-these bridges.  I am anticipating device tree overlays being applied for 
-other IP blocks instantiated in the FPGA.
-
->
->> +
->> +        hps_cp_eng@0 {
->
-> No underscores in node names. Generic node name.
-
-I understand.  I am considering dma@0 for the generic node name.
-
->
->> +            compatible = "intel,hps-copy-engine";
->> +            reg = <0x00000000 0x00000000 0x00001000>;
->> +        };
->> +    };
->
->
-> Best regards,
-> Krzysztof
->
-
-Thank you for the review,
-Matthew
