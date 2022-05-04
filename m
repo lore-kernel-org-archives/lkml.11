@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 529A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356859AbiEDRWQ (ORCPT
+        id S1356976AbiEDRWW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51456 "EHLO
+        Wed, 4 May 2022 13:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356145AbiEDREz (ORCPT
+        with ESMTP id S1356141AbiEDREz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B05A506C7;
-        Wed,  4 May 2022 09:53:54 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E095044A;
+        Wed,  4 May 2022 09:53:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26760616F8;
-        Wed,  4 May 2022 16:53:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 675A6C385AA;
-        Wed,  4 May 2022 16:53:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00F90B8278E;
+        Wed,  4 May 2022 16:53:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E20C385AA;
+        Wed,  4 May 2022 16:53:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683233;
-        bh=dnzaqGXBBJIvI/n5Ws4cMPAF+KjiNExyNeJrmtj7ppc=;
+        s=korg; t=1651683230;
+        bh=JrrDOlBVAfWDdjJZys8Nl/UqHDzlTicg1HmdZAOETbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dIWNHpkCILo84mvGI369nQZezKc33UpMJNG66+XYkjjOhAjcPuV75EKLP/25i6l/G
-         Fu8vEhOA2DVMEI6WKzOTF8dNfGQmRoTDVPGPpdVQyiUMHcLn3aL1FotmGNPZCyve6S
-         P1wk90OD5DCN9+kPnW7UoTVv4oSUNym/xSAnQhb4=
+        b=g0UOJwuRjgabAa8HNaLagH4gs9FqDJ/DHdXpgl0dChhifIupC7RR9xSzBTRmUqthL
+         yq0LscY+OF/Vb5VorbSBfpfdDtE6rmLsGmP2rRSKsm45xR2XTwUQYANvUhbKsaVSSy
+         OdmbGAHx7rooAXiMZGhphK2mWCXf0FjpyCCWq3+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 086/177] tcp: ensure to use the most recently sent skb when filling the rate sample
-Date:   Wed,  4 May 2022 18:44:39 +0200
-Message-Id: <20220504153100.801021821@linuxfoundation.org>
+Subject: [PATCH 5.15 095/177] net: hns3: add validity check for message data length
+Date:   Wed,  4 May 2022 18:44:48 +0200
+Message-Id: <20220504153101.599292489@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -53,99 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pengcheng Yang <yangpc@wangsu.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit b253a0680ceadc5d7b4acca7aa2d870326cad8ad ]
+[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
 
-If an ACK (s)acks multiple skbs, we favor the information
-from the most recently sent skb by choosing the skb with
-the highest prior_delivered count. But in the interval
-between receiving ACKs, we send multiple skbs with the same
-prior_delivered, because the tp->delivered only changes
-when we receive an ACK.
+Add validity check for message data length in function
+hclge_send_mbx_msg(), avoid unexpected overflow.
 
-We used RACK's solution, copying tcp_rack_sent_after() as
-tcp_skb_sent_after() helper to determine "which packet was
-sent last?". Later, we will use tcp_skb_sent_after() instead
-in RACK.
-
-Fixes: b9f64820fb22 ("tcp: track data delivery rate for a TCP connection")
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Tested-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/1650422081-22153-1-git-send-email-yangpc@wangsu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h   |  6 ++++++
- net/ipv4/tcp_rate.c | 11 ++++++++---
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 31d384c3778a..71a9aeae693d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1026,6 +1026,7 @@ struct rate_sample {
- 	int  losses;		/* number of packets marked lost upon ACK */
- 	u32  acked_sacked;	/* number of packets newly (S)ACKed upon ACK */
- 	u32  prior_in_flight;	/* in flight before this ACK */
-+	u32  last_end_seq;	/* end_seq of most recently ACKed packet */
- 	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
- 	bool is_retrans;	/* is sample from retransmission? */
- 	bool is_ack_delayed;	/* is this (likely) a delayed ACK? */
-@@ -1148,6 +1149,11 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
- 		  bool is_sack_reneg, struct rate_sample *rs);
- void tcp_rate_check_app_limited(struct sock *sk);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index e30bf3027375..c256305a2212 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -93,6 +93,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
+ 	enum hclge_cmd_status status;
+ 	struct hclge_desc desc;
  
-+static inline bool tcp_skb_sent_after(u64 t1, u64 t2, u32 seq1, u32 seq2)
-+{
-+	return t1 > t2 || (t1 == t2 && after(seq1, seq2));
-+}
++	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
++		dev_err(&hdev->pdev->dev,
++			"msg data length(=%u) exceeds maximum(=%u)\n",
++			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
++		return -EMSGSIZE;
++	}
 +
- /* These functions determine how the current flow behaves in respect of SACK
-  * handling. SACK is negotiated with the peer, and therefore it can vary
-  * between different flows.
-diff --git a/net/ipv4/tcp_rate.c b/net/ipv4/tcp_rate.c
-index 0de693565963..6ab197928abb 100644
---- a/net/ipv4/tcp_rate.c
-+++ b/net/ipv4/tcp_rate.c
-@@ -73,26 +73,31 @@ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb)
-  *
-  * If an ACK (s)acks multiple skbs (e.g., stretched-acks), this function is
-  * called multiple times. We favor the information from the most recently
-- * sent skb, i.e., the skb with the highest prior_delivered count.
-+ * sent skb, i.e., the skb with the most recently sent time and the highest
-+ * sequence.
-  */
- void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
- 			    struct rate_sample *rs)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_skb_cb *scb = TCP_SKB_CB(skb);
-+	u64 tx_tstamp;
+ 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
  
- 	if (!scb->tx.delivered_mstamp)
- 		return;
- 
-+	tx_tstamp = tcp_skb_timestamp_us(skb);
- 	if (!rs->prior_delivered ||
--	    after(scb->tx.delivered, rs->prior_delivered)) {
-+	    tcp_skb_sent_after(tx_tstamp, tp->first_tx_mstamp,
-+			       scb->end_seq, rs->last_end_seq)) {
- 		rs->prior_delivered  = scb->tx.delivered;
- 		rs->prior_mstamp     = scb->tx.delivered_mstamp;
- 		rs->is_app_limited   = scb->tx.is_app_limited;
- 		rs->is_retrans	     = scb->sacked & TCPCB_RETRANS;
-+		rs->last_end_seq     = scb->end_seq;
- 
- 		/* Record send time of most recently ACKed packet: */
--		tp->first_tx_mstamp  = tcp_skb_timestamp_us(skb);
-+		tp->first_tx_mstamp  = tx_tstamp;
- 		/* Find the duration of the "send phase" of this window: */
- 		rs->interval_us = tcp_stamp_us_delta(tp->first_tx_mstamp,
- 						     scb->tx.first_tx_mstamp);
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
 -- 
 2.35.1
 
