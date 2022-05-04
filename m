@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD18C35295
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3040AC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357713AbiEDRPM (ORCPT
+        id S1357800AbiEDRPR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        Wed, 4 May 2022 13:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355295AbiEDREQ (ORCPT
+        with ESMTP id S1355357AbiEDRER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757874E392;
-        Wed,  4 May 2022 09:52:56 -0700 (PDT)
+        Wed, 4 May 2022 13:04:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D804ECD5;
+        Wed,  4 May 2022 09:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47158617BE;
-        Wed,  4 May 2022 16:52:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90CB9C385AA;
-        Wed,  4 May 2022 16:52:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20C54B827A9;
+        Wed,  4 May 2022 16:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCA9CC385A5;
+        Wed,  4 May 2022 16:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683170;
-        bh=Exter9JfEyqxzaKEQ7kAEKeLUzK+9ANC15n6zUEY+oU=;
+        s=korg; t=1651683177;
+        bh=touYmIpRMlAmSx5iLm7raW6VOjHJA2RLrzYNwqDKRrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RaJnfb0JP9NWqVfYfkJSwdKP/Ns0L2H1WX3Zyyt4p3YPN4voMN1xvU4F+ofKEFwe7
-         KeGFsN67rbQoYBbFbKIvfyyiRi0qth5QwaEgTfmhsEAbmwd+4WgspBuWSraCPh2lPu
-         Su9PkL0yFW30BAw6WMO+8Fwp0VitDnX4qZZZR0bw=
+        b=Rv82N9c4DoPGizo8YBukuPMjTd7iYg9Q3H/gyjNh+zksS6OQ3k5pPvF1QmjyZiwRO
+         QckHKsW8/J+IOKkOH0+0QV9i1MjI3wbC8Gh+RVT3l/+LwC4BOcppBz1mftmF8GWHCB
+         Wnrq+ESkxy9BmYS522VgWBoaE38OEN22CjomYZxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hemant Kumar <quic_hemantk@quicinc.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.15 035/177] bus: mhi: host: pci_generic: Add missing poweroff() PM callback
-Date:   Wed,  4 May 2022 18:43:48 +0200
-Message-Id: <20220504153056.110873955@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 029/177] serial: imx: fix overrun interrupts in DMA mode
+Date:   Wed,  4 May 2022 18:43:42 +0200
+Message-Id: <20220504153055.653170499@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,42 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Johan Hovold <johan@kernel.org>
 
-commit e64d5fa5044f225ac87d96a7e4be11389999c4c6 upstream.
+commit 3ee82c6e41f3d2212647ce0bc5a05a0f69097824 upstream.
 
-During hibernation process, once thaw() stage completes, the MHI endpoint
-devices will be in M0 state post recovery. After that, the devices will be
-powered down so that the system can enter the target sleep state. During
-this stage, the PCI core will put the devices in D3hot. But this transition
-is allowed by the MHI spec. The devices can only enter D3hot when it is in
-M3 state.
+Commit 76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is
+off") accidentally enabled overrun interrupts unconditionally when
+deferring DMA enable until after the receiver has been enabled during
+startup.
 
-So for fixing this issue, let's add the poweroff() callback that will get
-executed before putting the system in target sleep state during
-hibernation. This callback will power down the device properly so that it
-could be restored during restore() or thaw() stage.
+Fix this by using the DMA-initialised instead of DMA-enabled flag to
+determine whether overrun interrupts should be enabled.
 
-Cc: stable@vger.kernel.org
-Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
-Reported-by: Hemant Kumar <quic_hemantk@quicinc.com>
-Suggested-by: Hemant Kumar <quic_hemantk@quicinc.com>
-Link: https://lore.kernel.org/r/20220405125907.5644-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Note that overrun interrupts are already accounted for in
+imx_uart_clear_rx_errors() when using DMA since commit 41d98b5da92f
+("serial: imx-serial - update RX error counters when DMA is used").
+
+Fixes: 76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is off")
+Cc: stable@vger.kernel.org      # 4.17
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20220411081957.7846-1-johan@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/mhi/pci_generic.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/imx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -1045,6 +1045,7 @@ static const struct dev_pm_ops mhi_pci_p
- 	.resume = mhi_pci_resume,
- 	.freeze = mhi_pci_freeze,
- 	.thaw = mhi_pci_restore,
-+	.poweroff = mhi_pci_freeze,
- 	.restore = mhi_pci_restore,
- #endif
- };
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1438,7 +1438,7 @@ static int imx_uart_startup(struct uart_
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
+ 	ucr4 = imx_uart_readl(sport, UCR4) & ~(UCR4_OREN | UCR4_INVR);
+-	if (!sport->dma_is_enabled)
++	if (!dma_is_inited)
+ 		ucr4 |= UCR4_OREN;
+ 	if (sport->inverted_rx)
+ 		ucr4 |= UCR4_INVR;
 
 
