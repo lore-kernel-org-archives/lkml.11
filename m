@@ -2,131 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C325C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352898AbiEDP5n (ORCPT
+        id S1352906AbiEDP5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
+        Wed, 4 May 2022 11:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350669AbiEDP5d (ORCPT
+        with ESMTP id S1352867AbiEDP5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:57:33 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4D045AFC;
-        Wed,  4 May 2022 08:53:57 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244EghZO001510;
-        Wed, 4 May 2022 17:53:39 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=Q6KyqjPjjOTk3BmOK5hia+7CtTxIiidvABdtdvOQnNs=;
- b=ETmzha3D6ASiP/NoeMi/nftDnWTbYvh2iiVwr0qAy5McMFVYJKYkQ8MBAp/n0FKF5CxM
- yiC0AZiF+FdCvJadRFA3mNzZCon0LDLvFaN+KXocO42XevRNqRC8Y4VB7XVeUq2Q80XQ
- 3GVU9RHA5dYZ8wiX/iwqRZKDN6jJDqmotnvJQCoY+nwRoNjRLqjIUqySnzJ0sDOy9zos
- +YrXtfmFeVwxPJlDJ/SLvmszBSgzAswJnkM7iOPY2y+UjBuVZszyYHV3i7DNx7X6Mqlx
- JsIrLugWW/Z6y/QmEDrvPamAIWIiqDUlguumlk5VH8T/z8uGdOt3TthvAIxBlOJ6SCtl DQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frv0gecfp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 May 2022 17:53:38 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6A99210002A;
-        Wed,  4 May 2022 17:53:38 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 63AFE22A6E3;
-        Wed,  4 May 2022 17:53:38 +0200 (CEST)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 17:53:37
- +0200
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-To:     Vinod Koul <vkoul@kernel.org>,
+        Wed, 4 May 2022 11:57:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432A24614D;
+        Wed,  4 May 2022 08:54:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBBF8B82751;
+        Wed,  4 May 2022 15:53:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F8BC385AA;
+        Wed,  4 May 2022 15:53:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651679637;
+        bh=hK42V1qXW9Nw4EnqpcwFRHqPBSMsE7i8nQ7Y1H2QoT0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dYeDsO2bObVMEcwHDRrmcgXv+V9LVaJY5FUnS8ipZwc/8wbB9oE7w0T2cWk7dW8ZC
+         d5RHD8vMtM8ezIuMrevjbVUT779098e6XvSLnrIqnp3S80GGU6os4V6catUU3zKasD
+         i/GbbfvuHGrK3+5d40fS1S6PE88gJqqg9FLiNcOpuigybU5PHhIJsURXKASY2A9fm2
+         i9IQ2kwrMUQTR7xUVq5uXjlcSwyvIZclYMSaQmrqh8ODXR/Q8T9K8HL6rFNzOcCEz5
+         QHQfgglDhtRqz3p9TUwjl2lTF0wxAheYUTF0mhcYZITIzqsigLCFi2MGVA6EkWFIME
+         rDqAniHWcaqZQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0092C400B1; Wed,  4 May 2022 12:53:54 -0300 (-03)
+Date:   Wed, 4 May 2022 12:53:54 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     "Liang, Kan" <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <dmaengine@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [PATCH 1/3] dmaengine: stm32-mdma: remove GISR1 register
-Date:   Wed, 4 May 2022 17:53:20 +0200
-Message-ID: <20220504155322.121431-2-amelie.delaunay@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
-References: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH 1/7] perf vendor events intel: Update CLX events to v1.15
+Message-ID: <YnKhkv+BVT47Hph7@kernel.org>
+References: <20220428075730.797727-1-irogers@google.com>
+ <96b5c9f4-f0a0-0019-8059-3e833c95b011@linux.intel.com>
+ <YmqXGCMbBOLcd261@kernel.org>
+ <CAP-5=fWQMVVFZ=4WLWJkojZARHnmYp+AgTOodG_W=qqNZFw6iA@mail.gmail.com>
+ <YnKgvLxcRhu6i53j@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-04_04,2022-05-04_02,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnKgvLxcRhu6i53j@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GISR1 was described in a not up-to-date documentation when the stm32-mdma
-driver has been developed. This register has not been added in reference
-manual of STM32 SoC with MDMA, which have only 32 MDMA channels.
-So remove it from stm32-mdma driver.
+Em Wed, May 04, 2022 at 12:50:20PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Tue, May 03, 2022 at 12:47:25PM -0700, Ian Rogers escreveu:
+> > On Thu, Apr 28, 2022 at 6:31 AM Arnaldo Carvalho de Melo
+> > <acme@kernel.org> wrote:
+> > >
+> > > Em Thu, Apr 28, 2022 at 09:12:26AM -0400, Liang, Kan escreveu:
+> > > >
+> > > >
+> > > > On 4/28/2022 3:57 AM, Ian Rogers wrote:
+> > > > > Events are generated for CascadeLake Server v1.15 with
+> > > > > events from:
+> > > > > https://download.01.org/perfmon/CLX/
+> > > > >
+> > > > > Using the scripts at:
+> > > > > https://github.com/intel/event-converter-for-linux-perf/
+> > > > >
+> > > > > This change updates descriptions, adds INST_DECODED.DECODERS and
+> > > > > corrects a counter mask in UOPS_RETIRED.TOTAL_CYCLES.
+> > > > >
+> > > > > Signed-off-by: Ian Rogers<irogers@google.com>
+> > > >
+> > > > Thanks Ian. For the whole series,
+> > > >
+> > > > Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+> > >
+> > > Thanks, applied.
+> > >
+> > > - Arnaldo
+> > 
+> > Thanks Arnaldo, it looks like CLX was accidentally skipped.
+> 
+> Checking, I usually take these using b4...
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
----
- drivers/dma/stm32-mdma.c | 21 +++++----------------
- 1 file changed, 5 insertions(+), 16 deletions(-)
+Got it now, checked the other 6 patches are in.
 
-diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index 95e5831e490a..57f0eb8a18fc 100644
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -34,7 +34,6 @@
- #include "virt-dma.h"
- 
- #define STM32_MDMA_GISR0		0x0000 /* MDMA Int Status Reg 1 */
--#define STM32_MDMA_GISR1		0x0004 /* MDMA Int Status Reg 2 */
- 
- /* MDMA Channel x interrupt/status register */
- #define STM32_MDMA_CISR(x)		(0x40 + 0x40 * (x)) /* x = 0..62 */
-@@ -169,7 +168,7 @@
- 
- #define STM32_MDMA_MAX_BUF_LEN		128
- #define STM32_MDMA_MAX_BLOCK_LEN	65536
--#define STM32_MDMA_MAX_CHANNELS		63
-+#define STM32_MDMA_MAX_CHANNELS		32
- #define STM32_MDMA_MAX_REQUESTS		256
- #define STM32_MDMA_MAX_BURST		128
- #define STM32_MDMA_VERY_HIGH_PRIORITY	0x3
-@@ -1324,21 +1323,11 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
- 
- 	/* Find out which channel generates the interrupt */
- 	status = readl_relaxed(dmadev->base + STM32_MDMA_GISR0);
--	if (status) {
--		id = __ffs(status);
--	} else {
--		status = readl_relaxed(dmadev->base + STM32_MDMA_GISR1);
--		if (!status) {
--			dev_dbg(mdma2dev(dmadev), "spurious it\n");
--			return IRQ_NONE;
--		}
--		id = __ffs(status);
--		/*
--		 * As GISR0 provides status for channel id from 0 to 31,
--		 * so GISR1 provides status for channel id from 32 to 62
--		 */
--		id += 32;
-+	if (!status) {
-+		dev_dbg(mdma2dev(dmadev), "spurious it\n");
-+		return IRQ_NONE;
- 	}
-+	id = __ffs(status);
- 
- 	chan = &dmadev->chan[id];
- 	if (!chan) {
--- 
-2.25.1
+Thanks for pointing this out.
 
+- Arnaldo
