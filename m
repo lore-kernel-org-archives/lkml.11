@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C08B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354215AbiEDRhc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        id S235359AbiEDRhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356895AbiEDRJs (ORCPT
+        with ESMTP id S1356875AbiEDRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:48 -0400
+        Wed, 4 May 2022 13:09:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A57457A1;
-        Wed,  4 May 2022 09:56:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF37443C4;
+        Wed,  4 May 2022 09:56:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 930D6B82795;
-        Wed,  4 May 2022 16:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 430FCC385A5;
-        Wed,  4 May 2022 16:56:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EBEAB82795;
+        Wed,  4 May 2022 16:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A49C385AA;
+        Wed,  4 May 2022 16:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683377;
-        bh=nIzniZJexsRlDb8sDTkG/dBuuQQ3PkcJ8JvmKCdp6kc=;
+        s=korg; t=1651683371;
+        bh=64AJ4qdk/b55bLZ0FpkDpOa0tmr6z4FH7U3T6pElt1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KQ9OCY3vDviY1Jev3V960JML2o+gxzEMzxEUe2Vs1XbyKwbd250odyfm6brjuQjRK
-         h8jG3093/hqjZ8dKXGNYYL9SVBa1Xh7DBQAI86+6tI/LOBoKbCeJLLoF2oVe5jWyYP
-         lS2ROygU31ge87uq+l7EORck8KBlblgsCvB8+Xto=
+        b=ensa036+atoGZTJviQHo2iM1J12ZYwlz2Ng20RjMEC8li/gJHk8OtjDV6vCatxt+Y
+         FNyEnNoX5OEbniRLLLrjaJpTKAjjksXuuEnCFXLIoAh2PorKzfSeLiMlAOo9LHLY4G
+         PKfrGFsPYunNlrTGVDR8ydoLybOHJejFf6zSIXpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH 5.17 038/225] eeprom: at25: Use DMA safe buffers
-Date:   Wed,  4 May 2022 18:44:36 +0200
-Message-Id: <20220504153113.590909684@linuxfoundation.org>
+        stable@vger.kernel.org, Hemant Kumar <quic_hemantk@quicinc.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.17 042/225] bus: mhi: host: pci_generic: Add missing poweroff() PM callback
+Date:   Wed,  4 May 2022 18:44:40 +0200
+Message-Id: <20220504153113.904051485@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,155 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-commit 5b47b751b760ee1c74a51660fd096aa148a362cd upstream.
+commit e64d5fa5044f225ac87d96a7e4be11389999c4c6 upstream.
 
-Reading EEPROM fails with following warning:
+During hibernation process, once thaw() stage completes, the MHI endpoint
+devices will be in M0 state post recovery. After that, the devices will be
+powered down so that the system can enter the target sleep state. During
+this stage, the PCI core will put the devices in D3hot. But this transition
+is allowed by the MHI spec. The devices can only enter D3hot when it is in
+M3 state.
 
-[   16.357496] ------------[ cut here ]------------
-[   16.357529] fsl_spi b01004c0.spi: rejecting DMA map of vmalloc memory
-[   16.357698] WARNING: CPU: 0 PID: 371 at include/linux/dma-mapping.h:326 fsl_spi_cpm_bufs+0x2a0/0x2d8
-[   16.357775] CPU: 0 PID: 371 Comm: od Not tainted 5.16.11-s3k-dev-01743-g19beecbfe9d6-dirty #109
-[   16.357806] NIP:  c03fbc9c LR: c03fbc9c CTR: 00000000
-[   16.357825] REGS: e68d9b20 TRAP: 0700   Not tainted  (5.16.11-s3k-dev-01743-g19beecbfe9d6-dirty)
-[   16.357849] MSR:  00029032 <EE,ME,IR,DR,RI>  CR: 24002282  XER: 00000000
-[   16.357931]
-[   16.357931] GPR00: c03fbc9c e68d9be0 c26d06a0 00000039 00000001 c0d36364 c0e96428 00000027
-[   16.357931] GPR08: 00000001 00000000 00000023 3fffc000 24002282 100d3dd6 100a2ffc 00000000
-[   16.357931] GPR16: 100cd280 100b0000 00000000 aff54f7e 100d0000 100d0000 00000001 100cf328
-[   16.357931] GPR24: 100cf328 00000000 00000003 e68d9e30 c156b410 e67ab4c0 e68d9d38 c24ab278
-[   16.358253] NIP [c03fbc9c] fsl_spi_cpm_bufs+0x2a0/0x2d8
-[   16.358292] LR [c03fbc9c] fsl_spi_cpm_bufs+0x2a0/0x2d8
-[   16.358325] Call Trace:
-[   16.358336] [e68d9be0] [c03fbc9c] fsl_spi_cpm_bufs+0x2a0/0x2d8 (unreliable)
-[   16.358388] [e68d9c00] [c03fcb44] fsl_spi_bufs.isra.0+0x94/0x1a0
-[   16.358436] [e68d9c20] [c03fd970] fsl_spi_do_one_msg+0x254/0x3dc
-[   16.358483] [e68d9cb0] [c03f7e50] __spi_pump_messages+0x274/0x8a4
-[   16.358529] [e68d9ce0] [c03f9d30] __spi_sync+0x344/0x378
-[   16.358573] [e68d9d20] [c03fb52c] spi_sync+0x34/0x60
-[   16.358616] [e68d9d30] [c03b4dec] at25_ee_read+0x138/0x1a8
-[   16.358667] [e68d9e50] [c04a8fb8] bin_attr_nvmem_read+0x98/0x110
-[   16.358725] [e68d9e60] [c0204b14] kernfs_fop_read_iter+0xc0/0x1fc
-[   16.358774] [e68d9e80] [c0168660] vfs_read+0x284/0x410
-[   16.358821] [e68d9f00] [c016925c] ksys_read+0x6c/0x11c
-[   16.358863] [e68d9f30] [c00160e0] ret_from_syscall+0x0/0x28
-...
-[   16.359608] ---[ end trace a4ce3e34afef0cb5 ]---
-[   16.359638] fsl_spi b01004c0.spi: unable to map tx dma
+So for fixing this issue, let's add the poweroff() callback that will get
+executed before putting the system in target sleep state during
+hibernation. This callback will power down the device properly so that it
+could be restored during restore() or thaw() stage.
 
-This is due to the AT25 driver using buffers on stack, which is not
-possible with CONFIG_VMAP_STACK.
-
-As mentionned in kernel Documentation (Documentation/spi/spi-summary.rst):
-
-  - Follow standard kernel rules, and provide DMA-safe buffers in
-    your messages.  That way controller drivers using DMA aren't forced
-    to make extra copies unless the hardware requires it (e.g. working
-    around hardware errata that force the use of bounce buffering).
-
-Modify the driver to use a buffer located in the at25 device structure
-which is allocated via kmalloc during probe.
-
-Protect writes in this new buffer with the driver's mutex.
-
-Fixes: b587b13a4f67 ("[PATCH] SPI eeprom driver")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Link: https://lore.kernel.org/r/230a9486fc68ea0182df46255e42a51099403642.1648032613.git.christophe.leroy@csgroup.eu
+Cc: stable@vger.kernel.org
+Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
+Reported-by: Hemant Kumar <quic_hemantk@quicinc.com>
+Suggested-by: Hemant Kumar <quic_hemantk@quicinc.com>
+Link: https://lore.kernel.org/r/20220405125907.5644-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/eeprom/at25.c |   19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/bus/mhi/pci_generic.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/misc/eeprom/at25.c
-+++ b/drivers/misc/eeprom/at25.c
-@@ -31,6 +31,8 @@
-  */
- 
- #define	FM25_SN_LEN	8		/* serial number length */
-+#define EE_MAXADDRLEN	3		/* 24 bit addresses, up to 2 MBytes */
-+
- struct at25_data {
- 	struct spi_eeprom	chip;
- 	struct spi_device	*spi;
-@@ -39,6 +41,7 @@ struct at25_data {
- 	struct nvmem_config	nvmem_config;
- 	struct nvmem_device	*nvmem;
- 	u8 sernum[FM25_SN_LEN];
-+	u8 command[EE_MAXADDRLEN + 1];
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -1085,6 +1085,7 @@ static const struct dev_pm_ops mhi_pci_p
+ 	.resume = mhi_pci_resume,
+ 	.freeze = mhi_pci_freeze,
+ 	.thaw = mhi_pci_restore,
++	.poweroff = mhi_pci_freeze,
+ 	.restore = mhi_pci_restore,
+ #endif
  };
- 
- #define	AT25_WREN	0x06		/* latch the write enable */
-@@ -61,8 +64,6 @@ struct at25_data {
- 
- #define	FM25_ID_LEN	9		/* ID length */
- 
--#define EE_MAXADDRLEN	3		/* 24 bit addresses, up to 2 MBytes */
--
- /*
-  * Specs often allow 5ms for a page write, sometimes 20ms;
-  * it's important to recover from write timeouts.
-@@ -78,7 +79,6 @@ static int at25_ee_read(void *priv, unsi
- {
- 	struct at25_data *at25 = priv;
- 	char *buf = val;
--	u8			command[EE_MAXADDRLEN + 1];
- 	u8			*cp;
- 	ssize_t			status;
- 	struct spi_transfer	t[2];
-@@ -92,12 +92,15 @@ static int at25_ee_read(void *priv, unsi
- 	if (unlikely(!count))
- 		return -EINVAL;
- 
--	cp = command;
-+	cp = at25->command;
- 
- 	instr = AT25_READ;
- 	if (at25->chip.flags & EE_INSTR_BIT3_IS_ADDR)
- 		if (offset >= BIT(at25->addrlen * 8))
- 			instr |= AT25_INSTR_BIT3;
-+
-+	mutex_lock(&at25->lock);
-+
- 	*cp++ = instr;
- 
- 	/* 8/16/24-bit address is written MSB first */
-@@ -116,7 +119,7 @@ static int at25_ee_read(void *priv, unsi
- 	spi_message_init(&m);
- 	memset(t, 0, sizeof(t));
- 
--	t[0].tx_buf = command;
-+	t[0].tx_buf = at25->command;
- 	t[0].len = at25->addrlen + 1;
- 	spi_message_add_tail(&t[0], &m);
- 
-@@ -124,8 +127,6 @@ static int at25_ee_read(void *priv, unsi
- 	t[1].len = count;
- 	spi_message_add_tail(&t[1], &m);
- 
--	mutex_lock(&at25->lock);
--
- 	/*
- 	 * Read it all at once.
- 	 *
-@@ -152,7 +153,7 @@ static int fm25_aux_read(struct at25_dat
- 	spi_message_init(&m);
- 	memset(t, 0, sizeof(t));
- 
--	t[0].tx_buf = &command;
-+	t[0].tx_buf = at25->command;
- 	t[0].len = 1;
- 	spi_message_add_tail(&t[0], &m);
- 
-@@ -162,6 +163,8 @@ static int fm25_aux_read(struct at25_dat
- 
- 	mutex_lock(&at25->lock);
- 
-+	at25->command[0] = command;
-+
- 	status = spi_sync(at25->spi, &m);
- 	dev_dbg(&at25->spi->dev, "read %d aux bytes --> %d\n", len, status);
- 
 
 
