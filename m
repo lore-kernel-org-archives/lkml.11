@@ -2,99 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83018C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353863AbiEDUo5 (ORCPT
+        id S1378313AbiEDUpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60368 "EHLO
+        Wed, 4 May 2022 16:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378311AbiEDUov (ORCPT
+        with ESMTP id S1378292AbiEDUpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:44:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA845132D;
-        Wed,  4 May 2022 13:41:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C069CB82936;
-        Wed,  4 May 2022 20:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE7E9C385A5;
-        Wed,  4 May 2022 20:41:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651696868;
-        bh=Q5ZeVyHPlBwvUJJ9NjV3GKUL+y0ckrRNTyeyprzieIA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hXkix665SljJ3kbo2wwoLAwc9NEJVRfuS2UFJRvf+UkSxFXDkLmlsbICaTtk5wFFX
-         IB7DqQ52eSqnPVNVfxhscu3ltxqJSv0F3xkW+iEfV7k7CVjIk3hK39Hy8wOIkxKci3
-         0zF0ViipQubzEHwOvB370Jt3x3McLPHiQ6ygIbuF4Aj+kqQULf00P6p8z3EW1/CPrl
-         G2D0fd/ui7F6QrSrern7dCs+AtVktjaR5JsEPGWhWlXzkCNVG5QeTQne39fnXDqAkM
-         DLVsmhh4sO6DBKIi1Xu+JRsMgrn8Xqq1G6zI2vBZ/VBLJhEqssC0y36jMoeUZMN/0p
-         GwyaQFniQDibg==
-Date:   Wed, 4 May 2022 22:41:05 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     nsekhar@ti.com, brgl@bgdev.pl,
-        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] i2c: i2c-davinci: using pm_runtime_resume_and_get
- instead of pm_runtime_get_sync
-Message-ID: <YnLk4QoNqpauMg4a@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>, cgel.zte@gmail.com,
-        nsekhar@ti.com, brgl@bgdev.pl, linux-arm-kernel@lists.infradead.org,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220414090727.2542000-1-chi.minghao@zte.com.cn>
+        Wed, 4 May 2022 16:45:07 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C664151301
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:41:27 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-e93bbb54f9so2383117fac.12
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PD59mLgiqRcQ+Fdrqp/4fu8JOTZ22Tyt+kTZ89/+32Q=;
+        b=gZTt6iVe0MqN5tAT18d3FDms6ZM3dJC+I6gu+eXbyciKPXBvew3JMiPs4nmWBj7ONp
+         Zv3Tat9GZfq/7fd0hWECg+STtp/DvtMYXlxT0gtH+lrJvMJ2hHZp6rGRVfv16pvbdRs4
+         /CnOV6nQ0U0dfAO+A38ReGKui1P4LqBeBHdPs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=PD59mLgiqRcQ+Fdrqp/4fu8JOTZ22Tyt+kTZ89/+32Q=;
+        b=gi+mWbfIXGGZzJQI95RlPoSct/AALutQSItQsEqL77CMBi4JdTe482jxvIcbH1oWEG
+         iiXB60OewGrWL1e/U1KKM5RLuZ+tPEpp+9MEEKoySM4nzhoq4/H0hKQEID1CrkOtjK9l
+         TUfhBh4/9g4RRKaJwDPAndZbu6Eu5q/S+J0MFEG5iVn9gXd6szR3kURnuhL9RIShlXtR
+         IG7Lx6vjTxyEoagCEBVvsr/uoH8zlUdC3Ix3RXMpPP0pDaUfEUatefXUk29kZwlb38/w
+         WJIZypqYCqG0OruKnkxytxEz3/gYJobVwMFFgU1Be4fJElOXClkPboB1Uq3z+8O+gtTV
+         8yGQ==
+X-Gm-Message-State: AOAM530PSIsgz6jCBDnRSzPC6Q6lY4ayWqpIPxpEwtwbJ8cWv/x+qpMl
+        pLynpMnbCIW8zJxCmaVk14thcA==
+X-Google-Smtp-Source: ABdhPJzX2h54Mf+lB9LAOdZJfSv4ZTh9QATHRgnHg/LhXCRDP//6SMzYNM9czoritF2K6Pwn49FEkA==
+X-Received: by 2002:a05:6870:7093:b0:e6:210a:d98d with SMTP id v19-20020a056870709300b000e6210ad98dmr715466oae.68.1651696887015;
+        Wed, 04 May 2022 13:41:27 -0700 (PDT)
+Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
+        by smtp.gmail.com with ESMTPSA id t13-20020a9d66cd000000b0060603221270sm5486404otm.64.2022.05.04.13.41.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 13:41:26 -0700 (PDT)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+Date:   Wed, 4 May 2022 15:41:24 -0500
+From:   Justin Forbes <jforbes@fedoraproject.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.17 162/225] ASoC: Intel: sof_es8336: Add a quirk for
+ Huawei Matebook D15
+Message-ID: <YnLk9DLTZcVjTdK/@fedora64.linuxtx.org>
+References: <20220504153110.096069935@linuxfoundation.org>
+ <20220504153124.439720094@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="um7TN/yvFwwtqlmp"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220414090727.2542000-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220504153124.439720094@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 04, 2022 at 06:46:40PM +0200, Greg Kroah-Hartman wrote:
+> From: Mauro Carvalho Chehab <mchehab@kernel.org>
+> 
+> [ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
+> 
+> Based on experimental tests, Huawei Matebook D15 actually uses
+> both gpio0 and gpio1: the first one controls the speaker, while
+> the other one controls the headphone.
+> 
+> Also, the headset is mapped as MIC1, instead of MIC2.
+> 
+> So, add a quirk for it.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> Link: https://lore.kernel.org/r/d678aef9fc9a07aced611aa7cb8c9b800c649e5a.1649357263.git.mchehab@kernel.org
+> Signed-off-by: Mark Brown <broonie@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
 
---um7TN/yvFwwtqlmp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch is missing some dependencies and fails to build:
 
-On Thu, Apr 14, 2022 at 09:07:27AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
->=20
-> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-> pm_runtime_put_noidle. This change is just to simplify the code, no
-> actual functional changes.
->=20
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+sound/soc/intel/boards/sof_es8336.c:261:41: error: 'SOF_ES8336_HEADPHONE_GPIO' undeclared here (not in a function)
+  261 |                 .driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
 
-Applied to for-next, thanks!
+SOF_ES8336_HEADPHONE_GPIO was defined in upstream commit:
+6e1ff1459e008 ASoC: Intel: sof_es8336: support a separate gpio to control headphone
+which appeared with 5.18-rc4
 
+sound/soc/intel/boards/sof_es8336.c:262:41: error: 'SOC_ES8336_HEADSET_MIC1' undeclared here (not in a function)
+  262 |                                         SOC_ES8336_HEADSET_MIC1)
 
---um7TN/yvFwwtqlmp
-Content-Type: application/pgp-signature; name="signature.asc"
+SOC_ES8336_HEADSET_MIC1 was defined in upstream commit: 
+7c7bb2a059b22 ASoC: Intel: sof_es8336: add a quirk for headset at mic1 port
+which also appeared with 5.18-rc4
 
------BEGIN PGP SIGNATURE-----
+We either need to bring in these 2 commits or drop this one from the
+stable queue.
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy5NwACgkQFA3kzBSg
-KbYLfw/+Mr9FWFQUI1+rX3T6j8kqcWg9Z21nkUgf87gBGXr60jcDRotDPi+5C3mA
-7sJMheqJiST+F9HCnnitJzEqZjoSdqVicx1JSOORJ6jquFabS616paznmmVyuv5y
-XrCTTOMD4Latl2pX3ONhGaVnRrcVydGeOFwty/6BdMB1loluA0lrGVYcrLzWEK89
-c7wPXCziP8fhOorpYPrGJaeQDcojoiLbC58Rfa5LM/TqhvWsf9WRCzj6LI0tB5Yl
-g1TEaBuaDsNRXc3BFTNAd1HkruGXEhrPcuSUGWtuhrtcne+UjBXgOBi4sNHRQz+B
-rR9NV7MfR0vbV3yUsSRpX7C7AxyBJQ+E6Qm0okDmiEq1jn/gn+OBnooL+p4khonn
-k+wQUPVXEkWIlt4fWj7ndyD4xPWwqsG2LUoXqjqa9oL7vCOoYBqMB8V/SIFeXdOl
-2z3U8H/Bsxcar3dHsOlTz7o0lOUJUwgevtItcw0+AQ5sgjIkRcB+sEidAEahLeRF
-UburjF4n0fNKWvP5G8DNgTeGsB1iFSNDynknUTRuwHYxiQ47nHFTqKNNrIyke+kt
-P4yP21i5tQDHSDwrS+YOKsKMtoq1kBfT8aNhjbDCSRqpjHPAG8YNXPr0MhvizkDz
-E1dzPTwKQ4Jh4WffobtSJTgKAq1URe9mNBNiZTJzg0QT8KM1784=
-=V1tb
------END PGP SIGNATURE-----
+Justin
 
---um7TN/yvFwwtqlmp--
+>  sound/soc/intel/boards/sof_es8336.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+> index 28d7670b8f8f..b18951a8f309 100644
+> --- a/sound/soc/intel/boards/sof_es8336.c
+> +++ b/sound/soc/intel/boards/sof_es8336.c
+> @@ -252,6 +252,15 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
+>  					SOF_ES8336_TGL_GPIO_QUIRK |
+>  					SOF_ES8336_ENABLE_DMIC)
+>  	},
+> +	{
+> +		.callback = sof_es8336_quirk_cb,
+> +		.matches = {
+> +			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
+> +			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
+> +		},
+> +		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
+> +					SOC_ES8336_HEADSET_MIC1)
+> +	},
+>  	{}
+>  };
+>  
+> -- 
+> 2.35.1
+> 
+> 
+> 
