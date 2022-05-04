@@ -2,176 +2,380 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5880DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 720A4C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352253AbiEDPXo (ORCPT
+        id S1352297AbiEDPYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
+        Wed, 4 May 2022 11:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352227AbiEDPXc (ORCPT
+        with ESMTP id S1352296AbiEDPXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:23:32 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2075.outbound.protection.outlook.com [40.107.22.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E472443E2;
-        Wed,  4 May 2022 08:19:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IPcGFQ1uAxGuGx+A9AFqyvhrVoMGugXjNe2G1McFJf6SxtULIbeG/kEPp1flk2rCSEig+bllUcKeczXygFEFMmxeRVIyeZsvodsFPFYObEIg/j3bbN5/rzusmUjU+MgwIStQnlZ8xovG+ibi2q0V5pwYHa9KDoxbwWhBulruk5KgkiDxGbA9Dgbrl9qnzBLS0uBThGTlLSRRzfi5Z6xCok4TkJLNfdDBqHpZXFadgUwZEMTMmObWB8HyPubPdhIYMiDDZag4w8fbRPeUqkKLyfuU/q6vmR9UDnOM8p1CbT5KWs8JgB6o7MRqFBx1hLCCapWBlAP5HJFqjacXhWZs1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=syebumXPcAWGZvREzXE1vo+vzjah2K51G26GiAWeZwI=;
- b=FcjNUEKgS1Z53PtxvVXz7SmPlbOmoRRoVEXsVAJ82AH/Z5ZSnB2qIIEif3oqavq663GsOXZRb04HjscI4JcROEjBMSFYrMjtOO2V428UYlB42u7bONi12hsfIx5OGBZvhSTzUCYNUl5B/yWXZSEBqe1T1sVUOdaHgz9kQumGql1kQxQxpPoEvBcOXlSbLtQbeAsINepMQ0Vutah+Wz1bpiaStMETPWHC31OMYjGtWfHiOUfb2WUs6w5bxnV1zH9E5E0tpXkZtk7Kn6LX9LAuZDzLQ5sjar+ChmykQTV9dmyZiFZ+YOSVehGKShpAkFoHAfO5oaKC7Hjobl3BDb0Bvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=syebumXPcAWGZvREzXE1vo+vzjah2K51G26GiAWeZwI=;
- b=gJUJhxjIDfvNlblXpLSVTitsN84xqksRUKXR2zA2O6ReRMxiBOcvdFjTk7rdIsCF7kf8WndlQFT+U7Q906SRSFpAIpdlZYDYIUFhgor/FMYN2gCJ35bCh/FwzcVA5E6IlY/RM5LrfpOA4j6zzEzJzx4YDZBKQm1N01Ev0q8f9OBIB18RJFQlTqAlmrSgDrlLIjZNO5gQI0nqxLRkUO7IR9/zEpYWGeiLXWU/OoaiFPH/3DV35wTmwPLOsm6pt0vLimp6eyEzk/E1l4NpFnwi2g6t/O3kv1zJTpZy5yYHaWZMtKljnek5KzKi+pPtyal1QfYMqetw6/Yvijs2OCfrIw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:269::8)
- by AS8PR10MB5830.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:50a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.20; Wed, 4 May
- 2022 15:19:54 +0000
-Received: from PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::f4be:8b5d:4314:c2d8]) by PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::f4be:8b5d:4314:c2d8%4]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 15:19:53 +0000
-Date:   Wed, 4 May 2022 17:19:51 +0200
-From:   Henning Schild <henning.schild@siemens.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, Enrico Weigelt <lkml@metux.net>,
-        Gerd Haeussler <gerd.haeussler.ext@siemens.com>
-Subject: Re: [PATCH 0/2] simatic-ipc additions to p2sb apl lake gpio
-Message-ID: <20220504171951.0d569632@md1za8fc.ad001.siemens.net>
-In-Reply-To: <YnJ2tYjCpJi7yc4j@smile.fi.intel.com>
-References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
-        <20220308193522.26696-1-henning.schild@siemens.com>
-        <YnJ2tYjCpJi7yc4j@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.31; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS8PR04CA0141.eurprd04.prod.outlook.com
- (2603:10a6:20b:127::26) To PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:102:269::8)
+        Wed, 4 May 2022 11:23:49 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2067E44A09;
+        Wed,  4 May 2022 08:20:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651677610; x=1683213610;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LvWqqIHHriHmyFCRg3cnkbRVHkbqUk+UGne99ixefwE=;
+  b=cM+FqQ/TryG0C77Txmc4RRmN76ADZw6GgHRCD/WWQVSn1gWAAYJ2slvk
+   fdQrwDJ2hgCBnBP0nstXtYG6z4cXbcg5+7t3Po7xqRACffnkXCfhxHxAy
+   CIYPvWfzjCztYdwiqnfP8bj4TT/wsgVfAutui/RAkUfNc4Nb6i8vYfgVC
+   6gO13H0r5nMqv8rJ0b/7IfLOtd/RFUBHqahG1Uh6DoB7Qa0LSEng0/y88
+   hY2Xi2oVcK2yh5HwUAxVa+o+7QplrxjWYFz0oJf6T8FRe9cZe8pkDWLKJ
+   LUbXlXfvOj9hI2OpxE25YlhoVgSBXGmheC+Upc4OQ4WcQDxuEzXbiImIU
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="154805074"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:20:09 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 4 May 2022 08:20:04 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:19:50 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Vladimir Oltean" <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: [Patch net-next v13 06/13] net: dsa: microchip: add support for phy read and write
+Date:   Wed, 4 May 2022 20:47:48 +0530
+Message-ID: <20220504151755.11737-7-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220504151755.11737-1-arun.ramadoss@microchip.com>
+References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 03033f90-8828-4890-aad7-08da2de18a4b
-X-MS-TrafficTypeDiagnostic: AS8PR10MB5830:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR10MB58307B36FE7E6588F9E60F7185C39@AS8PR10MB5830.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4KgS6gtcFoU4vYoRtDz595gVgTeImKaU+53H+tIk0nfxvL0hh20qbpDXorTGU1P2R3HpcwYNdontgbZj6bEnsY3BCagXIF5llQ9OH0aFlauTYiDQijtgInWX7DeV8INdoA9RR1gSjQrjrtRYFRW6QbokxB2GLn79FYH6pYmO1HFbfnOLNawvmZYaBJ6g1doLCJN7Db43o4FdH/QWebPw4EQjAbPtOJUmun3B8Xo4iqLwEhPj1pYPs6SswDLlJpkus2Ul+33cLV+vtltEjoYr3FDgLZod7vHYg7EDDVPovOR1xMLR/5rhJhr0y2lJV4mxaC4uTc0UOsBYejAXW1JETRnIHVUxs1xTktOs+ugqP6ief7GKRR8S82QCNCQmB8/9zhF3sEnIt2QlOxN9AkP7H5MSTR3WXePrxMjUzugAekLwrruXbOk27wEeFmSGHgugGvf7sNSG5q8X1B6wujHZCdRzwFb+YO+wo5qaeYJ6CikSDZ0lZ4c9eWd61FuKVW9ecij7qb4U4W5qrernejpvTnfL6zWHP4wcP0g/YZM3SYBWV98cJULniBdoifSPVBAeGZU4RNFz4ChvqujR+EYHHIP6fIE8p+sVk9FR7Zl9/r6IA8be9hOX1My3HU5SclTbfZ5VpEmyISnT/oJhlW4ZsnEwuzp21g9muRJXmUnEIEe3H8lm/ZN8fOCxRdOGean54ctlHfDA++rAzEzrGzbN1IcFSD46oYYAW18viHmCjwk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(44832011)(2906002)(86362001)(1076003)(82960400001)(66476007)(8676002)(4326008)(66556008)(66946007)(966005)(6486002)(6512007)(83380400001)(5660300002)(8936002)(26005)(9686003)(107886003)(186003)(6506007)(508600001)(54906003)(6916009)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1jtFtJOq8gwCukzE5+8PXTR2Zgw7spWFOJQLgxdPpkm077x7U+X9ziDsIZLL?=
- =?us-ascii?Q?99ginLO0fW2LGphwJOT5kEpPVgl+0n9xyeYrdIaK8tUNNHeJ1mga7e3lvMYb?=
- =?us-ascii?Q?K1AId6v6UAVozMNaTNtOyVFhk7YC3IeD0JuaAxEGU+rIRq5JLeaqZjD4lOPc?=
- =?us-ascii?Q?EV1kUJj0XrHuxpOFq9iB+AyVNQV86QkumhmOBp6YSQrw+a4dUklufBXp11Ic?=
- =?us-ascii?Q?t4eQFG9li8IpgiG9rqGVaDhBJe9MGcEz2rC6UgJTkd4dr6kBGi6dbqrWlPbp?=
- =?us-ascii?Q?b19dFnt6KzWp4t1P8h2VFxBVwcbbT+5p1ZUptlATOmgXf1tUMyNMHb+tF2Zn?=
- =?us-ascii?Q?cmFBT2se1b9b1oJmmdPl0YN+2XiVtlh/jQ8DuSRBULxuM3jytru3b0SpQ506?=
- =?us-ascii?Q?uzwlhOUy32BuUZF5cIaZpTAJAOQRLv4gIeSZLvyf8qnKeSe1An08aPoV/pz5?=
- =?us-ascii?Q?u1h9Kbf5/42zmzyiEIfBAInfiJD30+Z4x7g91bsFwWCm+TrLMnEhjJUs+few?=
- =?us-ascii?Q?MkhwVJGkXWt36SVKmJCmZanfG9CNL9r+ldgvVwszQqFyhVeeptxAE8EaoS51?=
- =?us-ascii?Q?IHBZfFgTxAdPaN/YNLwsd0eC5cgYt2FSAftEGEIqDCNGtSDq8vvSH0JCqrEW?=
- =?us-ascii?Q?q3a0QR605o1et1U8IK3r7SnIWELsqek7VlGSqKqS2xy+p+bYMOfhQ4trlNMy?=
- =?us-ascii?Q?CCRenfThJZ4a6G+Tv1GtosksIUciK6+20q1vL/CQaz1qCj65YpQdGaYXCnfY?=
- =?us-ascii?Q?df7aosfsTF3OfmbKeKVgyh3S+4UABMXLGV1SEUM5rGlchdk/D4QKoz0vMIht?=
- =?us-ascii?Q?IeQ0JURG4mbq4NpwtgAjXVnwnLdpgtXJls3p7GjJ+xuqv5XdOePsIfFzGvK9?=
- =?us-ascii?Q?v1ECLfYlsGOpbGS2r6s1gPoW4RPkGmNZaZ7mckq0C0SdcfZzxKwAk6nJAu9F?=
- =?us-ascii?Q?6dJ44TaK5GfhuRClkXbZ71uA2WLpMTmeJv44Fsjxa+J2504fMHS8Euyul0ZH?=
- =?us-ascii?Q?uyxZ3hgG0z82kUGa/32BsmFu6nA8hugUchiS/FQGWicRaGwkY6vg2Wy4LXJQ?=
- =?us-ascii?Q?t4TmOa+Yw0wECaKyJVh6dJ+U0mqGydAanNrYrdg8vf89jJO4Ymh94zd+q6/H?=
- =?us-ascii?Q?nmKfkku/dsOpcNHceIQ9PG+YPRnWgAkAzIn6l+/aqvMUpqTCKg5kCruhTTws?=
- =?us-ascii?Q?mBJYYbEEugT8QqEpB5mGo/7OG2R8diIdzqNOjzXJW5Q0Md0IN4CoQdq1Q9xZ?=
- =?us-ascii?Q?y5b/E+WmS+xemnxxRHlu13xl57XWgiW7plKeoTB+Rw9N/8RsDUfRIFRaRBFo?=
- =?us-ascii?Q?DVItAMb2IONFkatZhnjyzySTKgdeuICv1tV8I6twdl85/twq8C5Ysfirwfc8?=
- =?us-ascii?Q?TGbTX/6Umk4NDNuwdu1lci/aYnpnEEf+2tmxv1BfB/rO3AWrbpY8y7RLzvoz?=
- =?us-ascii?Q?j121kwLscaNvhvGEO+CYAW4N2lweLiBAYWcPhnRbQJCbu3uIuWvwfOiThaeV?=
- =?us-ascii?Q?qhTQdqZmsKsmzAtYpsflZe6DM3C4Obk7fj0oamTbIfMep0WHDYTkAeLgM67v?=
- =?us-ascii?Q?0o0UgzKbmzROdX9bJz1a/E+wOO9RLQQHHj+QouJX9j2z9vNxlsAIIAEvMTux?=
- =?us-ascii?Q?DXewtH75qKtPKuE9exmPAgSaQhKkWR0aCSVb6k3rJYhDJGlf38DeyUpkjzb9?=
- =?us-ascii?Q?WhZGmU8xnVtX76Vjk/f0rfWAiBzNKRT4lg9+2PMz3n0Y7NuUUNqQa1jGrIlK?=
- =?us-ascii?Q?H3aZUOGz88GfJTH8cN1c0PFuUWfaSjZV8H7FJih15XP5h2QPVkjO?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 03033f90-8828-4890-aad7-08da2de18a4b
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 15:19:53.8715
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z3PxVk+c7PnWVp6I1xwWE9eou2rhBOfL9watHm0NEclrcGMxvhKn9QUjG2xeN1WzErtf5HnfJSlC64Vcjd6blV4MJfIVt9WDedjazKV+MBE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB5830
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, 4 May 2022 15:51:01 +0300
-schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:
+This patch add support for the writing and reading of the phy registers.
+LAN937x uses the Vphy indirect addressing method for accessing the phys.
+And mdio bus is registered in this patch, mdio read and write inturn
+uses the vphy.
 
-> On Tue, Mar 08, 2022 at 08:35:20PM +0100, Henning Schild wrote:
-> > This switches the simatic-ipc modules to using the p2sb interface
-> > introduced by Andy with "platform/x86: introduce p2sb_bar() helper".
-> > 
-> > It also switches to one apollo lake device to using gpio leds.
-> > 
-> > I am kind of hoping Andy will take this on top and propose it in his
-> > series.  
-> 
-> First of all, they are not applicable to my current version [1] of
-> the series (it maybe something changed in the Simatic drivers
-> upstream, because I have got conflicts there. For the record, I'm
-> using Linux Next as a base.
+Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/lan937x_dev.c  | 198 ++++++++++++++++++++++-
+ drivers/net/dsa/microchip/lan937x_dev.h  |   4 +
+ drivers/net/dsa/microchip/lan937x_main.c |  23 +++
+ 3 files changed, 223 insertions(+), 2 deletions(-)
 
-That is possible, some sparse findings have been fixed lately.
-
-> Second question is could it be possible to split first patch into
-> three, or it has to be in one?
-
-I assume one for leds one for wdt and finally drop stuff from platform,
-and i will go with that assumption for a next round based on your tree
-directly.
-Can you explain why that will be useful? While it is kind of a
-separation of concerns and subsystems ... it also kind of all belongs
-together and needs to be merged in a rather strict order.
-
-regards,
-Henning
-
-> [1]: https://gitlab.com/andy-shev/next/-/tree/topic/p2sb-next
-> It would be nice if you can perform another round of testing.
-> 
-> > Henning Schild (2):
-> >   simatic-ipc: convert to use common P2SB accessor
-> >   leds: simatic-ipc-leds-gpio: add GPIO version of Siemens driver
-> > 
-> >  drivers/leds/simple/Kconfig                   |  11 ++
-> >  drivers/leds/simple/Makefile                  |   3 +-
-> >  drivers/leds/simple/simatic-ipc-leds-gpio.c   | 108
-> > ++++++++++++++++++ drivers/leds/simple/simatic-ipc-leds.c        |
-> > 77 +------------ drivers/platform/x86/simatic-ipc.c            |
-> > 43 +------ drivers/watchdog/Kconfig                      |   1 +
-> >  drivers/watchdog/simatic-ipc-wdt.c            |  15 +--
-> >  .../platform_data/x86/simatic-ipc-base.h      |   2 -
-> >  8 files changed, 139 insertions(+), 121 deletions(-)
-> >  create mode 100644 drivers/leds/simple/simatic-ipc-leds-gpio.c
-> > 
-> > -- 
-> > 2.34.1
-> >   
-> 
+diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
+index aee8100659f8..3f1797cc1d16 100644
+--- a/drivers/net/dsa/microchip/lan937x_dev.c
++++ b/drivers/net/dsa/microchip/lan937x_dev.c
+@@ -121,6 +121,36 @@ static void lan937x_switch_exit(struct ksz_device *dev)
+ 	lan937x_reset_switch(dev);
+ }
+ 
++static int lan937x_enable_spi_indirect_access(struct ksz_device *dev)
++{
++	u16 data16;
++	u8 data8;
++	int ret;
++
++	ret = ksz_read8(dev, REG_GLOBAL_CTRL_0, &data8);
++	if (ret < 0)
++		return ret;
++
++	/* Check if PHY register is blocked */
++	if (data8 & SW_PHY_REG_BLOCK) {
++		/* Enable Phy access through SPI */
++		data8 &= ~SW_PHY_REG_BLOCK;
++
++		ret = ksz_write8(dev, REG_GLOBAL_CTRL_0, data8);
++		if (ret < 0)
++			return ret;
++	}
++
++	ret = ksz_read16(dev, REG_VPHY_SPECIAL_CTRL__2, &data16);
++	if (ret < 0)
++		return ret;
++
++	/* Allow SPI access */
++	data16 |= VPHY_SPI_INDIRECT_ENABLE;
++
++	return ksz_write16(dev, REG_VPHY_SPECIAL_CTRL__2, data16);
++}
++
+ static u32 lan937x_get_port_addr(int port, int offset)
+ {
+ 	return PORT_CTRL_ADDR(port, offset);
+@@ -171,6 +201,88 @@ bool lan937x_is_internal_base_t1_phy_port(struct ksz_device *dev, int port)
+ 	return false;
+ }
+ 
++static int lan937x_vphy_ind_addr_wr(struct ksz_device *dev, int addr, int reg)
++{
++	u16 temp, addr_base;
++
++	if (lan937x_is_internal_base_tx_phy_port(dev, addr))
++		addr_base = REG_PORT_TX_PHY_CTRL_BASE;
++	else
++		addr_base = REG_PORT_T1_PHY_CTRL_BASE;
++
++	/* get register address based on the logical port */
++	temp = PORT_CTRL_ADDR(addr, (addr_base + (reg << 2)));
++
++	return ksz_write16(dev, REG_VPHY_IND_ADDR__2, temp);
++}
++
++int lan937x_internal_phy_write(struct ksz_device *dev, int addr, int reg,
++			       u16 val)
++{
++	unsigned int value;
++	int ret;
++
++	/* Check for internal phy port */
++	if (!lan937x_is_internal_phy_port(dev, addr))
++		return -EOPNOTSUPP;
++
++	ret = lan937x_vphy_ind_addr_wr(dev, addr, reg);
++	if (ret < 0)
++		return ret;
++
++	/* Write the data to be written to the VPHY reg */
++	ret = ksz_write16(dev, REG_VPHY_IND_DATA__2, val);
++	if (ret < 0)
++		return ret;
++
++	/* Write the Write En and Busy bit */
++	ret = ksz_write16(dev, REG_VPHY_IND_CTRL__2,
++			  (VPHY_IND_WRITE | VPHY_IND_BUSY));
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
++				       value, !(value & VPHY_IND_BUSY), 10,
++				       1000);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to write phy register\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
++			      u16 *val)
++{
++	unsigned int value;
++	int ret;
++
++	/* Check for internal phy port, return 0xffff for non-existent phy */
++	if (!lan937x_is_internal_phy_port(dev, addr))
++		return 0xffff;
++
++	ret = lan937x_vphy_ind_addr_wr(dev, addr, reg);
++	if (ret < 0)
++		return ret;
++
++	/* Write Read and Busy bit to start the transaction */
++	ret = ksz_write16(dev, REG_VPHY_IND_CTRL__2, VPHY_IND_BUSY);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
++				       value, !(value & VPHY_IND_BUSY), 10,
++				       1000);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to read phy register\n");
++		return ret;
++	}
++
++	/* Read the VPHY register which has the PHY data */
++	return ksz_read16(dev, REG_VPHY_IND_DATA__2, val);
++}
++
+ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ {
+ 	struct dsa_switch *ds = dev->ds;
+@@ -205,6 +317,73 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ 	lan937x_cfg_port_member(dev, port, member);
+ }
+ 
++static int lan937x_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
++{
++	struct ksz_device *dev = bus->priv;
++	u16 val;
++	int ret;
++
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	ret = lan937x_internal_phy_read(dev, addr, regnum, &val);
++	if (ret < 0)
++		return ret;
++
++	return val;
++}
++
++static int lan937x_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
++				 u16 val)
++{
++	struct ksz_device *dev = bus->priv;
++
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	return lan937x_internal_phy_write(dev, addr, regnum, val);
++}
++
++static int lan937x_mdio_register(struct ksz_device *dev)
++{
++	struct dsa_switch *ds = dev->ds;
++	struct device_node *mdio_np;
++	struct mii_bus *bus;
++	int ret;
++
++	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
++	if (!mdio_np) {
++		dev_err(ds->dev, "no MDIO bus node\n");
++		return -ENODEV;
++	}
++
++	bus = devm_mdiobus_alloc(ds->dev);
++	if (!bus) {
++		of_node_put(mdio_np);
++		return -ENOMEM;
++	}
++
++	bus->priv = dev;
++	bus->read = lan937x_sw_mdio_read;
++	bus->write = lan937x_sw_mdio_write;
++	bus->name = "lan937x slave smi";
++	snprintf(bus->id, MII_BUS_ID_SIZE, "SMI-%d", ds->index);
++	bus->parent = ds->dev;
++	bus->phy_mask = ~ds->phys_mii_mask;
++
++	ds->slave_mii_bus = bus;
++
++	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
++	if (ret) {
++		dev_err(ds->dev, "unable to register MDIO bus %s\n",
++			bus->id);
++	}
++
++	of_node_put(mdio_np);
++
++	return ret;
++}
++
+ static int lan937x_switch_init(struct ksz_device *dev)
+ {
+ 	dev->ds->ops = &lan937x_switch_ops;
+@@ -227,10 +406,25 @@ static int lan937x_init(struct ksz_device *dev)
+ 	int ret;
+ 
+ 	ret = lan937x_switch_init(dev);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(dev->dev, "failed to initialize the switch");
++		return ret;
++	}
+ 
+-	return ret;
++	/* enable Indirect Access from SPI to the VPHY registers */
++	ret = lan937x_enable_spi_indirect_access(dev);
++	if (ret < 0) {
++		dev_err(dev->dev, "failed to enable spi indirect access");
++		return ret;
++	}
++
++	ret = lan937x_mdio_register(dev);
++	if (ret < 0) {
++		dev_err(dev->dev, "failed to register the mdio");
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ const struct ksz_dev_ops lan937x_dev_ops = {
+diff --git a/drivers/net/dsa/microchip/lan937x_dev.h b/drivers/net/dsa/microchip/lan937x_dev.h
+index 21f4aade0199..4e6d6f41e138 100644
+--- a/drivers/net/dsa/microchip/lan937x_dev.h
++++ b/drivers/net/dsa/microchip/lan937x_dev.h
+@@ -21,6 +21,10 @@ int lan937x_pwrite16(struct ksz_device *dev, int port,
+ 		     int offset, u16 data);
+ int lan937x_pwrite32(struct ksz_device *dev, int port,
+ 		     int offset, u32 data);
++int lan937x_internal_phy_write(struct ksz_device *dev, int addr,
++			       int reg, u16 val);
++int lan937x_internal_phy_read(struct ksz_device *dev, int addr,
++			      int reg, u16 *val);
+ bool lan937x_is_internal_phy_port(struct ksz_device *dev, int port);
+ bool lan937x_is_internal_base_tx_phy_port(struct ksz_device *dev, int port);
+ bool lan937x_is_internal_base_t1_phy_port(struct ksz_device *dev, int port);
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index 154d7a0f08ac..88ca91f59a6f 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -23,6 +23,27 @@ static enum dsa_tag_protocol lan937x_get_tag_protocol(struct dsa_switch *ds,
+ 	return DSA_TAG_PROTO_LAN937X_VALUE;
+ }
+ 
++static int lan937x_phy_read16(struct dsa_switch *ds, int addr, int reg)
++{
++	struct ksz_device *dev = ds->priv;
++	u16 val;
++	int ret;
++
++	ret = lan937x_internal_phy_read(dev, addr, reg, &val);
++	if (ret < 0)
++		return ret;
++
++	return val;
++}
++
++static int lan937x_phy_write16(struct dsa_switch *ds, int addr, int reg,
++			       u16 val)
++{
++	struct ksz_device *dev = ds->priv;
++
++	return lan937x_internal_phy_write(dev, addr, reg, val);
++}
++
+ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+ 				       u8 state)
+ {
+@@ -199,6 +220,8 @@ static int lan937x_setup(struct dsa_switch *ds)
+ const struct dsa_switch_ops lan937x_switch_ops = {
+ 	.get_tag_protocol = lan937x_get_tag_protocol,
+ 	.setup = lan937x_setup,
++	.phy_read = lan937x_phy_read16,
++	.phy_write = lan937x_phy_write16,
+ 	.port_enable = ksz_enable_port,
+ 	.port_bridge_join = ksz_port_bridge_join,
+ 	.port_bridge_leave = ksz_port_bridge_leave,
+-- 
+2.33.0
 
