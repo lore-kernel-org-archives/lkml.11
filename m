@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D715FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355940AbiEDRWz (ORCPT
+        id S1356714AbiEDRXK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
+        Wed, 4 May 2022 13:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356429AbiEDRFM (ORCPT
+        with ESMTP id S1355760AbiEDREl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:05:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B018050E20;
-        Wed,  4 May 2022 09:54:09 -0700 (PDT)
+        Wed, 4 May 2022 13:04:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC424F9D7;
+        Wed,  4 May 2022 09:53:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7F51B827A5;
-        Wed,  4 May 2022 16:54:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD82C385A5;
-        Wed,  4 May 2022 16:54:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D368BB8279F;
+        Wed,  4 May 2022 16:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C83DC385AF;
+        Wed,  4 May 2022 16:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683246;
-        bh=0gX0SpLF4d8wYM7UAJuh4x9vkfWWnABx2guuzFrTmcY=;
+        s=korg; t=1651683199;
+        bh=c9tifztPdtIZMnIZoFYTn8EbVTxFGghKHU5Yrzs7rmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fFyRoTxAURIp1IL6z0MuBJDyCxhUzBM7qsWVEK0XG0rp51qeccVIJM+/csWPR6jez
-         /f3eTcv7jE3qclSVp+0vF6efN8wxlFysUSYq47coQs/RuNSvHWmQsuJfSoOEY5No6p
-         DgIeof1xH6IOsSO5iTuUAqCg0RKE+u9osTcy7cqE=
+        b=0wnFtUvvswxQNbZXpkHGOrClT9auogOsyQyUOQeMarSn0yGCd34fc+HFEAaluS3BX
+         KjIdoCxf+LVCfCmNaQv+H7nhBHQNG82W7J+At5n09+Q0IMwfroCVSp7Jw4GvnPpN6U
+         AtsMAw9k2QHFJj4j/6p2d57xPds+QgQmmwG6p0xU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 099/177] ip6_gre: Make o_seqno start from 0 in native mode
-Date:   Wed,  4 May 2022 18:44:52 +0200
-Message-Id: <20220504153101.986521745@linuxfoundation.org>
+Subject: [PATCH 5.15 064/177] ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
+Date:   Wed,  4 May 2022 18:44:17 +0200
+Message-Id: <20220504153058.732915149@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,68 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit fde98ae91f79cab4e020f40c35ed23cbdc59661c ]
+[ Upstream commit 0e486fe341fabd8e583f3d601a874cd394979c45 ]
 
-For IP6GRE and IP6GRETAP devices, currently o_seqno starts from 1 in
-native mode.  According to RFC 2890 2.2., "The first datagram is sent
-with a sequence number of 0."  Fix it.
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC and is expected to be set to 12MHz. Previously
+this was mapped using pre-common clock API calls in the audio machine
+driver but the conversion to the common clock framework broke that so
+describe things in the DT instead.
 
-It is worth mentioning that o_seqno already starts from 0 in collect_md
-mode, see the "if (tunnel->parms.collect_md)" clause in __gre6_xmit(),
-where tunnel->o_seqno is passed to gre_build_header() before getting
-incremented.
-
-Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220404102806.581374-2-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/at91sam9g20ek_common.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 869c3337e319..4ccbee5e7526 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -724,6 +724,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- {
- 	struct ip6_tnl *tunnel = netdev_priv(dev);
- 	__be16 protocol;
-+	__be16 flags;
- 
- 	if (dev->type == ARPHRD_ETHER)
- 		IPCB(skb)->flags = 0;
-@@ -739,7 +740,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 	if (tunnel->parms.collect_md) {
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
--		__be16 flags;
- 		int tun_hlen;
- 
- 		tun_info = skb_tunnel_info_txcheck(skb);
-@@ -770,15 +770,14 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 						      : 0);
- 
- 	} else {
--		if (tunnel->parms.o_flags & TUNNEL_SEQ)
--			tunnel->o_seqno++;
--
- 		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
- 			return -ENOMEM;
- 
--		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
-+		flags = tunnel->parms.o_flags;
+diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+index 87bb39060e8b..ca03685f0f08 100644
+--- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
++++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+@@ -219,6 +219,12 @@ i2c-gpio-0 {
+ 		wm8731: wm8731@1b {
+ 			compatible = "wm8731";
+ 			reg = <0x1b>;
 +
-+		gre_build_header(skb, tunnel->tun_hlen, flags,
- 				 protocol, tunnel->parms.o_key,
--				 htonl(tunnel->o_seqno));
-+				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
- 	}
++			/* PCK0 at 12MHz */
++			clocks = <&pmc PMC_TYPE_SYSTEM 8>;
++			clock-names = "mclk";
++			assigned-clocks = <&pmc PMC_TYPE_SYSTEM 8>;
++			assigned-clock-rates = <12000000>;
+ 		};
+ 	};
  
- 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
 -- 
 2.35.1
 
