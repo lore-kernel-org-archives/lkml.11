@@ -2,147 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E875DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345669AbiEDHiW (ORCPT
+        id S1345581AbiEDHjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        Wed, 4 May 2022 03:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345647AbiEDHgB (ORCPT
+        with ESMTP id S1346037AbiEDHjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:36:01 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2042.outbound.protection.outlook.com [40.107.101.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6542458F;
-        Wed,  4 May 2022 00:32:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uw/bTeQThEFLVh1A8LjzYXHJgYSwm/ByEe3UJvPv1KkkANT+vtosntgsjHC6cwMxiRuVvp9diJea49kjI2JSE6pEvmCqawryrSbw9Vs9T9bJip0Ifk85NC8TqS2UBIulPvkzjP332nxX4UvympWewQLsxg910GDC+/0njJ2Lkvyh4xzLm57nxABlnrc3LXvZZ6qtQszyrKOXNPZHz3ilWYbcKIGVtgsMUHzCMUDZiSTJaZGOV65M1glfCob78DH446HD2s8vphYAnZIgAeAhbG16bawekQLwUzItUabrvmivwLSbXSz42R/YkOkTG6jp8ZumCTYR7w4hhw5kULKhVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DxEMAog8PiX4aUmttmMw2zb33gcOgtkamYN8hfraxhs=;
- b=b1YiaSSYEOSkIgIF+QDMiLuXAeL0dYtaiK03zWbUjz/XuxHH178iTX3mafB/SDySVhU7FF8zaeWdAg0i5zkAfs5Pg4J3JkRQN0Ag+gBxRZ6JW8FP5USRWBDh7aN9qWqHqRolcMpuEpXrNWgLwH7RtVPAcN9P/IAPxWEFOLdk4F58ChTvGN9aZwXV0QrmeEx5NEeGEe/i2mQHZTrtZUh/ukEBcWBQwbiT9zDLtubtlwy6+8UQDbC+wnkAHv50Y4+mAiXAOUoxLgivAgzDfDMktiUbjXiy4njUEQoJwRA4CAjkT2Y6pQvsD4parnx3yG6OW0wA9JVuW6IDcpQpCvmzcg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DxEMAog8PiX4aUmttmMw2zb33gcOgtkamYN8hfraxhs=;
- b=4EFRfwhLiKtsSIQU+laktbkIpZj0pqwHMvuoWadZtSV54TmQd0hqK5ZKlYMTH4nme2UdX41VLob+/hTamHDiA13Y/rPaIa5IC2ocqhWaxxogeDBOOs1XcqilToGIWXlFP7n9tDs1n/3+Q8Z2N6RfnnyeEqceDnY9tbd+pt5sM5U=
-Received: from BN9PR03CA0420.namprd03.prod.outlook.com (2603:10b6:408:111::35)
- by BN8PR12MB3012.namprd12.prod.outlook.com (2603:10b6:408:64::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Wed, 4 May
- 2022 07:32:07 +0000
-Received: from BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:111:cafe::a9) by BN9PR03CA0420.outlook.office365.com
- (2603:10b6:408:111::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25 via Frontend
- Transport; Wed, 4 May 2022 07:32:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT061.mail.protection.outlook.com (10.13.177.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 07:32:07 +0000
-Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 4 May
- 2022 02:32:02 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
-        <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
-        <terry.bowman@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 13/14] KVM: SVM: Use target APIC ID to complete x2AVIC IRQs when possible
-Date:   Wed, 4 May 2022 02:31:27 -0500
-Message-ID: <20220504073128.12031-14-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
-References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
+        Wed, 4 May 2022 03:39:16 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05DB27157;
+        Wed,  4 May 2022 00:34:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=cTSIQdlg91RSK+na/NVKBd/Ax/ZBULg9Q/4Gx74hmBE=; b=DJ4sRfVFdZHqiUR1scXw9foZfl
+        L7yKxBEJhUhm/nN8KNGznPTfuCfQS10cTZGTZncnxpQcvHtmIibXuZIf4BWhkVTwUsXutzODCujTX
+        9ol5m6lfkrhF1XEjyiZyaKvorG5EUGu2bSqA/FcWM5LcriPRGK2tDMPLFNt4Lz0WYO0NKcTysvqe1
+        ju+XiMI9AoOmYgIRswBct3J0G8rSnfT/S/lYzMGoHVAa5UY/87fStP27Br/E5nPYN5Sh2OitDpTAx
+        CPy06b7r2hzVIO98a1HVNwlRWcw0xPwXqpEILLaa17u5ZiJGLI0PMYOMFXL3CPPGYkmCdK5kE6dIL
+        wBOgZgjg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nm9Wd-00B171-EK; Wed, 04 May 2022 07:34:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7BD913004B5;
+        Wed,  4 May 2022 09:34:18 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3EF7E2029A1DC; Wed,  4 May 2022 09:34:18 +0200 (CEST)
+Date:   Wed, 4 May 2022 09:34:18 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        llvm@lists.linux.dev
+Subject: Re: [RFC PATCH 00/21] KCFI support
+Message-ID: <YnIses89/uPLrazS@hirez.programming.kicks-ass.net>
+References: <20220429203644.2868448-1-samitolvanen@google.com>
+ <202204291545.47C6A97EA2@keescook>
+ <Ymz7DWkRJy3PMaHm@hirez.programming.kicks-ass.net>
+ <CABCJKuckt75qA1op-LpkJnQsJC36m9fstbY3uD=7pET2VyyZSg@mail.gmail.com>
+ <YnA3Le2uJRaFF4TC@hirez.programming.kicks-ass.net>
+ <CAMn1gO614sMzKzP6qTCcXB0QCeEu-G7CHn_h=6ikCLkFo_Z2Dg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8a638e13-6231-4d7d-7ac7-08da2da031a3
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3012:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB3012C25AE0768FA247944404F3C39@BN8PR12MB3012.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cidlAzT1tvY4NZFYB2HoaNgm0vriXyo4v1MWoJC8U8SgB30dSbztfNOiGWaAA9dy05R2eDXyAPE5+QQYrJawWOepcKQ2UI+WA9V45b31vQbzxLW437YloOOwAhWlYzLuKwGPmV8pEHSmxjXvFYeATS6fZQVNcyf/PU/RTTDS800znV5lWBGARsB1WtjM8t+IpLx5TQWXM9Ed4joltyvtmfe6yN2p3VyspxgEZqwL62pPo2V9zw2sUUAvP5cH+6esUqK29MHGFHMhT0PMFrwIA9FVZYrEjfOAuQF5hQ1QRYQzL687mdhAhJgTudLWyKwiVWE/ZVDae2ZuSf2JKASUGiMNid75tgebEeI9wVCGXFddPCwYqpU7Zj1ruzJQ/OluhoWLIh5CmN5MO/+yiyC6lsDWJ73/GorQqepSOgwyIGHjRY10gqP2aI8ybbR1FL4bRFBrWcCcuOPyx8+v3CY//eg7DyXF7Tc0MBs6WC8dfJDVh5BjS+zIyiU/JUnEfYzbXSAkXF+MMDFgynbMEMILtFTh9Qu/ZnYHO4qkcS0wG66EFMcTkKnyN1f8K651JQrZ2XkaXySFOlmzfmbGSVVgqIl6wyndM+jvUXh1DesK+MbBAIjf3CMGSLJnoCgCrnys7lSBn9vTJiPxnBYGXIcPUImN9D02JFcCTEKJwdLk2ahRxJ72xY0NvOy/BGkJLfdQMR7h5fipXtmIIVkVBPHe4w==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70206006)(47076005)(336012)(4326008)(426003)(40460700003)(81166007)(70586007)(83380400001)(8676002)(36860700001)(110136005)(54906003)(2616005)(16526019)(1076003)(186003)(316002)(82310400005)(86362001)(2906002)(26005)(36756003)(6666004)(356005)(44832011)(5660300002)(7696005)(8936002)(508600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:32:07.6536
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a638e13-6231-4d7d-7ac7-08da2da031a3
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3012
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMn1gO614sMzKzP6qTCcXB0QCeEu-G7CHn_h=6ikCLkFo_Z2Dg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For x2AVIC, the index from incomplete IPI #vmexit info is invalid
-for logical cluster mode. Only ICRH/ICRL values can be used
-to determine the IPI destination APIC ID.
+On Tue, May 03, 2022 at 03:35:34PM -0700, Peter Collingbourne wrote:
+> On Mon, May 2, 2022 at 1:02 PM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > On Mon, May 02, 2022 at 08:22:57AM -0700, Sami Tolvanen wrote:
+> >
+> > > > Anyway, I think I hate that __builtin, I'd *much* rather see a variable
+> > > > attribute or qualifier for this, such that one can mark a function
+> > > > pointer as not doing CFI.
+> > > >
+> > > > I simply doesn't make sense to have a builtin that operates on an
+> > > > expression. The whole thing is about indirect calls, IOW function
+> > > > pointers.
+> > >
+> > > I also thought an attribute would be more convenient, but the compiler
+> > > folks prefer a built-in:
+> > >
+> > > https://reviews.llvm.org/D122673
+> >
+> > That seems to mostly worry about C++ things (overload sets, template
+> > specialization, name mangling) we kernel folks don't seem to much care
+> > about.
+> >
+> > I'll stick with saying type system makes more sense to me though.
+> 
+> I'd say it's not only the C++ issues but more the "action at a
+> distance" that's implied by having this be part of the type system.
+> With this being in the function type it's hard to tell whether any
+> particular call will have CFI disabled, without needing to go and look
+> at how the function pointer is defined.
 
-Since QEMU defines guest physical APIC ID to be the same as
-vCPU ID, it can be used to quickly identify the target vCPU to deliver IPI,
-and avoid the overhead from searching through all vCPUs to match the target
-vCPU.
+Look at how we use volatile:
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- arch/x86/kvm/svm/avic.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+	*(volatile int *)(&foo)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 3b6a96043633..a526fbc60bbd 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -377,7 +377,26 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
- 			/* For xAPIC logical mode, the index is for logical APIC table. */
- 			apic_id = avic_logical_id_table[index] & 0x1ff;
- 		} else {
--			return -EINVAL;
-+			/* For x2APIC logical mode, cannot leverage the index.
-+			 * Instead, calculate physical ID from logical ID in ICRH.
-+			 */
-+			int apic;
-+			int first = ffs(icrh & 0xffff);
-+			int last = fls(icrh & 0xffff);
-+			int cluster = (icrh & 0xffff0000) >> 16;
-+
-+			/*
-+			 * If the x2APIC logical ID sub-field (i.e. icrh[15:0]) contains zero
-+			 * or more than 1 bits, we cannot match just one vcpu to kick for
-+			 * fast path.
-+			 */
-+			if (!first || (first != last))
-+				return -EINVAL;
-+
-+			apic = first - 1;
-+			if ((apic < 0) || (apic > 15) || (cluster >= 0xfffff))
-+				return -EINVAL;
-+			apic_id = (cluster << 4) + apic;
- 		}
- 	}
- 
--- 
-2.25.1
+we don't use volatile on actual variable definitions (much), but instead
+cast it in at the usage site. Same can be done with this if so desired.
 
+> On the other hand, if we
+> explicitly mark up the calls with CFI disabled, the code becomes
+> easier to audit (think Rust "unsafe" blocks).
+
+I don't know any Rust. To me Rust still looks like line noise.
+
+> Does it seem any better to you to have this be marked up via the
+> function expression, rather than the call? The idea is that this would
+> always compile to a check-free function call, no matter what "func"
+> is:
+> 
+> __builtin_kcfi_call_unchecked(func)(args)
+> 
+> We already have this, to some degree, with KCFI as implemented: CFI
+> checks are disabled if the function expression refers to a declared
+> function. The builtin would allow overriding the decision to also
+> disable CFI checks for function expressions that use the builtin. It
+> also wouldn't preclude a type based system later on (the builtin would
+> become effectively a cast to the "unchecked" type).
+
+That's still a bit naf; you've effectively made that builtin a type-cast.
