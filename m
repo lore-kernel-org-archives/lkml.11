@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E02C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345514AbiEDQ5M (ORCPT
+        id S1354123AbiEDQ5S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52242 "EHLO
+        Wed, 4 May 2022 12:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354421AbiEDQyW (ORCPT
+        with ESMTP id S1353894AbiEDQwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:22 -0400
+        Wed, 4 May 2022 12:52:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B9F48E57;
-        Wed,  4 May 2022 09:49:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC1447AC1;
+        Wed,  4 May 2022 09:48:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30F0D617A5;
-        Wed,  4 May 2022 16:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70341C385A4;
-        Wed,  4 May 2022 16:49:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 776A061771;
+        Wed,  4 May 2022 16:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41EFC385A4;
+        Wed,  4 May 2022 16:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682969;
-        bh=DKYLV+LZxiUOMb7u0bnXMz4p/6ql4ov5ZJDiPdMji7E=;
+        s=korg; t=1651682928;
+        bh=vElSciYUSw5PYLIPgzAopPeCZT3L1Ns5W1UDzeUU2sY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o4u4leVXQXS1chPChhgAZmGOVDqRekV8unfxn9NkAFxr6dwHZsvTL5pzOa3c5lZ+G
-         jFITvSYcSi+f0mTjGT+xz30Qsmau5e/w2BxgEQwISzX98PESh+Z1x/ZojSVVspjnYr
-         Rp3UF/ime+eVsLLzUdWUjqPoAqe3drkmbo/ffACk=
+        b=ftPPULb2HKb1930r+yxyFhqa28LbKPU2rcMX5y89IILfepLCbCd+hcuF/OpsU3Sjc
+         iOMmw0GC6EM82XCrPumah1EHnaaM/n4biEEuz/TAGDGwfTGlmTi41cIrwb4K5nAdxZ
+         36Ydrr4Qq6zAHX/ASL/RXNXXnQ8LEoXP8PgqxH+g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kbuild test robot <lkp@intel.com>,
-        Shijie Hu <hushijie3@huawei.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Will Deacon <will@kernel.org>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        yangerkun <yangerkun@huawei.com>, ChenGang <cg.chen@huawei.com>,
-        Chen Jie <chenjie6@huawei.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH 5.4 83/84] hugetlbfs: get unmapped area below TASK_UNMAPPED_BASE for hugetlbfs
-Date:   Wed,  4 May 2022 18:45:04 +0200
-Message-Id: <20220504152934.001472741@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 35/84] phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
+Date:   Wed,  4 May 2022 18:44:16 +0200
+Message-Id: <20220504152930.285423313@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -58,151 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shijie Hu <hushijie3@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 885902531586d5a20a74099c1357bfdc982befe3 upstream.
+[ Upstream commit 388ec8f079f2f20d5cd183c3bc6f33cbc3ffd3ef ]
 
-In a 32-bit program, running on arm64 architecture.  When the address
-space below mmap base is completely exhausted, shmat() for huge pages will
-return ENOMEM, but shmat() for normal pages can still success on no-legacy
-mode.  This seems not fair.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-For normal pages, the calling trace of get_unmapped_area() is:
-
-	=> mm->get_unmapped_area()
-	if on legacy mode,
-		=> arch_get_unmapped_area()
-			=> vm_unmapped_area()
-	if on no-legacy mode,
-		=> arch_get_unmapped_area_topdown()
-			=> vm_unmapped_area()
-
-For huge pages, the calling trace of get_unmapped_area() is:
-
-	=> file->f_op->get_unmapped_area()
-		=> hugetlb_get_unmapped_area()
-			=> vm_unmapped_area()
-
-To solve this issue, we only need to make hugetlb_get_unmapped_area() take
-the same way as mm->get_unmapped_area().  Add *bottomup() and *topdown()
-for hugetlbfs, and check current mm->get_unmapped_area() to decide which
-one to use.  If mm->get_unmapped_area is equal to
-arch_get_unmapped_area_topdown(), hugetlb_get_unmapped_area() calls
-topdown routine, otherwise calls bottomup routine.
-
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Shijie Hu <hushijie3@huawei.com>
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Xiaoming Ni <nixiaoming@huawei.com>
-Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: yangerkun <yangerkun@huawei.com>
-Cc: ChenGang <cg.chen@huawei.com>
-Cc: Chen Jie <chenjie6@huawei.com>
-Link: http://lkml.kernel.org/r/20200518065338.113664-1-hushijie3@huawei.com
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220407091857.230386-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/hugetlbfs/inode.c |   67 ++++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 59 insertions(+), 8 deletions(-)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -38,6 +38,7 @@
- #include <linux/uio.h>
- 
- #include <linux/uaccess.h>
-+#include <linux/sched/mm.h>
- 
- static const struct super_operations hugetlbfs_ops;
- static const struct address_space_operations hugetlbfs_aops;
-@@ -201,13 +202,60 @@ out:
- 
- #ifndef HAVE_ARCH_HUGETLB_UNMAPPED_AREA
- static unsigned long
-+hugetlb_get_unmapped_area_bottomup(struct file *file, unsigned long addr,
-+		unsigned long len, unsigned long pgoff, unsigned long flags)
-+{
-+	struct hstate *h = hstate_file(file);
-+	struct vm_unmapped_area_info info;
-+
-+	info.flags = 0;
-+	info.length = len;
-+	info.low_limit = current->mm->mmap_base;
-+	info.high_limit = TASK_SIZE;
-+	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
-+	info.align_offset = 0;
-+	return vm_unmapped_area(&info);
-+}
-+
-+static unsigned long
-+hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
-+		unsigned long len, unsigned long pgoff, unsigned long flags)
-+{
-+	struct hstate *h = hstate_file(file);
-+	struct vm_unmapped_area_info info;
-+
-+	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
-+	info.length = len;
-+	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
-+	info.high_limit = current->mm->mmap_base;
-+	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
-+	info.align_offset = 0;
-+	addr = vm_unmapped_area(&info);
-+
-+	/*
-+	 * A failed mmap() very likely causes application failure,
-+	 * so fall back to the bottom-up function here. This scenario
-+	 * can happen with large stack limits and large mmap()
-+	 * allocations.
-+	 */
-+	if (unlikely(offset_in_page(addr))) {
-+		VM_BUG_ON(addr != -ENOMEM);
-+		info.flags = 0;
-+		info.low_limit = current->mm->mmap_base;
-+		info.high_limit = TASK_SIZE;
-+		addr = vm_unmapped_area(&info);
-+	}
-+
-+	return addr;
-+}
-+
-+static unsigned long
- hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 		unsigned long len, unsigned long pgoff, unsigned long flags)
- {
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma;
- 	struct hstate *h = hstate_file(file);
--	struct vm_unmapped_area_info info;
- 
- 	if (len & ~huge_page_mask(h))
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 4dd7324d91b2..5077987570fd 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -190,6 +190,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
  		return -EINVAL;
-@@ -228,13 +276,16 @@ hugetlb_get_unmapped_area(struct file *f
- 			return addr;
- 	}
  
--	info.flags = 0;
--	info.length = len;
--	info.low_limit = TASK_UNMAPPED_BASE;
--	info.high_limit = TASK_SIZE;
--	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
--	info.align_offset = 0;
--	return vm_unmapped_area(&info);
-+	/*
-+	 * Use mm->get_unmapped_area value as a hint to use topdown routine.
-+	 * If architectures have special needs, they should define their own
-+	 * version of hugetlb_get_unmapped_area.
-+	 */
-+	if (mm->get_unmapped_area == arch_get_unmapped_area_topdown)
-+		return hugetlb_get_unmapped_area_topdown(file, addr, len,
-+				pgoff, flags);
-+	return hugetlb_get_unmapped_area_bottomup(file, addr, len,
-+			pgoff, flags);
- }
- #endif
+ 	sata_phy->client = of_find_i2c_device_by_node(node);
++	of_node_put(node);
+ 	if (!sata_phy->client)
+ 		return -EPROBE_DEFER;
  
+-- 
+2.35.1
+
 
 
