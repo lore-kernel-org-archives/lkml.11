@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2603C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648ECC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379280AbiEDWxt (ORCPT
+        id S1379613AbiEDWzm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
+        Wed, 4 May 2022 18:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379149AbiEDWxU (ORCPT
+        with ESMTP id S1379429AbiEDWyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:53:20 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831AA53729
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:42 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id 23-20020a630117000000b003c5ea4365a1so1343546pgb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:49:42 -0700 (PDT)
+        Wed, 4 May 2022 18:54:05 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB146338
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:20 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id d127-20020a633685000000b003ab20e589a8so1328329pga.22
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=4pIauhSlde4XCXit2IlbWFMSroGJDw7QeFGFxnStppM=;
-        b=a9+WhsNyIFthX2/9HChLG4NOifYBsqe11L7lWxR3ClM+nDKb459zt9goW8dgYEV3h9
-         RdKNolxw5aTFBVqUUGpe24s4SxsjUYG+Q1rN47d0ukeIDrM+XHt+E/TbxWhfZ45/IKmv
-         qi2K6R6nH2Lnnq2XwTlHk4D5geT0qdM2ln/oozKJ66fHBGlqT1AfOhXASB68uK7s7BTg
-         OC3d834iT8jJgb15w7TL9I9SWBhDFVCg/5uw6n+d96x2OCiYgLskiCgBHHuVN0o/2ia9
-         T/7o7iVo7+OWl6j5fw7ONY4TjMmTG8bXZxofKvVkW5pMQDHO2cmqXBIgLe4H8tfmlw5A
-         tQ1Q==
+        bh=bS1JnwmFoqnz6fKaqQP9Ax0YC4MVWcJGi1pcVulGY0E=;
+        b=GJ0tm7YShP4rbsgcay7UeMRP3cb6NJC8p673pBAiMCXrIU2GWFJei0OPF7kuZXNCOX
+         Xvpd6Pe34ksgkEHdVIKqAYKUp79jpUhXdYJwgx5ChwjG/+MY8xNnNDcQ8SScOU9vV0Yj
+         WGMKK6FpICc1texMyMhciRBgmaY9l5OmbMnh4k6vUsddY2iGSjthQsmdW9bD05EEghTU
+         FVINQZR35sFxoQqm2HZJCejIMEHyDeOJq02MEBw2QWsYpiRysaA5cVingbLLhU1PI8KD
+         UZrz4PS5uyOUDHnMyOQ3F7SqqiE1Pi52EMQcks/dgoD0maFPJ7JQeJo6jZRLY2QoukWY
+         rM1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=4pIauhSlde4XCXit2IlbWFMSroGJDw7QeFGFxnStppM=;
-        b=DuXNPHJTyGwODpb9co59NSogZFzyNvn1daDL/5T3AV/WQwSF04tyUyuCBaudjXlBEe
-         HhBYIioPPXTgPtphCwgARd37wzhj4MiWOMWfigdpFusvewlCX0CzUlIDoke37Gp2TG/e
-         oQ3P/QfKu1u5jkl7U6ntR/IVsVff4YJyRH9efTYy6LfieVlASj1X3f15DoD4HG9/67MO
-         hH662qBoyGyBu0z6TKa3E1hWjGOmFDijJdh/7QIg0Z3ONMFJZxXEuD9KoR64iuGa9SZf
-         6J97XImbIhldgnueLJFVBle5LgWiegfkgjlE7fV3p1vHk0cT1n53Lq131t0YztfNqS7f
-         FASQ==
-X-Gm-Message-State: AOAM5336hk1ocBfGJGT+W7ez08ucJ/XtGwiyQ4iG+e0VofHQSABFqzd4
-        B7/4jUc1ei6oS+2359PihLhJ3M0fCu8=
-X-Google-Smtp-Source: ABdhPJwuL73IVTiU2k74hQ3qJRkNU0pw5Xj2dfjKuUwh4LQNFfuRqowdR8m/OVpUzvVO7wgRdemp+EZAtGE=
+        bh=bS1JnwmFoqnz6fKaqQP9Ax0YC4MVWcJGi1pcVulGY0E=;
+        b=pn1iKCZXHUr25OQDDrZ6aqD/f2jkhs3ELRLdZYDcaszKGn599twHt5/uRwkZMfvNwm
+         kTbgFYh7XtBljxtFVvOQNiiWszmZapyGfCRNRfSPlh3nPat/7hD/sZnW2FKp0H2hXW0i
+         LWHj/BO2ndU0s1lPuJ6SpQkCNtvdfIjcgGeoTHAHlhiov9QWllBCofEDtVTUiPp6uTYC
+         dUm6Ddmxf1y//oFl+TJa8eWYGd3o/AcYs01FgqiH+EqgnZbWmCB/wm+tGUo5IbZ1MVlF
+         ckN1Je+VGib601E93SQt+eUYHYKaM2535PVkV3g9FI4YJ7XmVP35shIWfgbW5bYYDYAD
+         mdag==
+X-Gm-Message-State: AOAM5327LwoynDYHSCzkpnHO+rFJkCe/w/pU8iA7IYUdcIe0/n3xQb7I
+        92S4Cjk/c1Von8URR0XsJOyvhGW04pA=
+X-Google-Smtp-Source: ABdhPJx8ILgf/ODZTw1L8q8mgG2X/4nVaMXkK6Yxppdi3PH2RaVRqZEiCAMnWA/Nv89d1zz0nIOZXK/92ow=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:ec8c:b0:15e:a371:ad89 with SMTP id
- x12-20020a170902ec8c00b0015ea371ad89mr17656273plg.157.1651704582214; Wed, 04
- May 2022 15:49:42 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:903:1205:b0:15e:8cbc:fd2b with SMTP id
+ l5-20020a170903120500b0015e8cbcfd2bmr23990616plh.99.1651704620058; Wed, 04
+ May 2022 15:50:20 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:12 +0000
+Date:   Wed,  4 May 2022 22:47:34 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-7-seanjc@google.com>
+Message-Id: <20220504224914.1654036-29-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 006/128] KVM: selftests: Make vcpu_ioctl() a wrapper to pretty
- print ioctl name
+Subject: [PATCH 028/128] KVM: selftests: Add a VM backpointer to 'struct vcpu'
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -70,97 +69,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make vcpu_ioctl() a macro wrapper and pretty the _name_ of the ioctl on
-failure instead of the number.  Add inner macros to allow handling cases
-where the name of the ioctl needs to be resolved higher up the stack, and
-to allow using the formatting for non-ioctl syscalls without being
-technically wrong.
-
-Deliberately do not use __stringify(), as that will expand the ioctl all
-the way down to its numerical sequence, again the intent is to print the
-name of the macro.
+Add a backpointer to 'struct vcpu' so that tests can get at the owning
+VM when passing around a vCPU object.  Long term, this will be little
+more than a nice-to-have feature, but in the short term it is a critical
+step toward purging the VM+vcpu_id ioctl mess without introducing even
+more churn.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     | 13 ++++++--
- tools/testing/selftests/kvm/lib/kvm_util.c    | 31 +++++--------------
- 2 files changed, 19 insertions(+), 25 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 1 +
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 1 +
+ 2 files changed, 2 insertions(+)
 
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 662579a6358b..00f3103dc85e 100644
+index c508a860984f..5d06d384bf10 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -157,10 +157,19 @@ void vm_userspace_mem_region_add(struct kvm_vm *vm,
- 	uint64_t guest_paddr, uint32_t slot, uint64_t npages,
- 	uint32_t flags);
- 
--void vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid, unsigned long ioctl,
--		void *arg);
-+#define __KVM_SYSCALL_ERROR(_name, _ret) \
-+	"%s failed, rc: %i errno: %i (%s)", (_name), (_ret), errno, strerror(errno)
-+
-+#define __KVM_IOCTL_ERROR(_name, _ret)	__KVM_SYSCALL_ERROR(_name, _ret)
-+#define KVM_IOCTL_ERROR(_ioctl, _ret) __KVM_IOCTL_ERROR(#_ioctl, _ret)
-+
-+void _vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid, unsigned long ioctl,
-+		 const char *name, void *arg);
- int __vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid, unsigned long ioctl,
- 		 void *arg);
-+#define vcpu_ioctl(vm, vcpuid, ioctl, arg) \
-+	_vcpu_ioctl(vm, vcpuid, ioctl, #ioctl, arg)
-+
- void vm_ioctl(struct kvm_vm *vm, unsigned long ioctl, void *arg);
- int __vm_ioctl(struct kvm_vm *vm, unsigned long cmd, void *arg);
- void kvm_ioctl(struct kvm_vm *vm, unsigned long ioctl, void *arg);
+@@ -47,6 +47,7 @@ struct vcpu {
+ 	struct list_head list;
+ 	uint32_t id;
+ 	int fd;
++	struct kvm_vm *vm;
+ 	struct kvm_run *state;
+ 	struct kvm_dirty_gfn *dirty_gfns;
+ 	uint32_t fetch_index;
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 03c1f885a98b..fdcaf74b5959 100644
+index c654c81f7d9d..937e1b80a420 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1937,29 +1937,6 @@ void vcpu_set_reg(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_one_reg *reg)
- 		    ret, errno, strerror(errno));
- }
+@@ -1099,6 +1099,7 @@ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
+ 	vcpu = calloc(1, sizeof(*vcpu));
+ 	TEST_ASSERT(vcpu != NULL, "Insufficient Memory");
  
--/*
-- * VCPU Ioctl
-- *
-- * Input Args:
-- *   vm - Virtual Machine
-- *   vcpuid - VCPU ID
-- *   cmd - Ioctl number
-- *   arg - Argument to pass to the ioctl
-- *
-- * Return: None
-- *
-- * Issues an arbitrary ioctl on a VCPU fd.
-- */
--void vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid,
--		unsigned long cmd, void *arg)
--{
--	int ret;
--
--	ret = __vcpu_ioctl(vm, vcpuid, cmd, arg);
--	TEST_ASSERT(ret == 0, "vcpu ioctl %lu failed, rc: %i errno: %i (%s)",
--		cmd, ret, errno, strerror(errno));
--}
--
- int __vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid,
- 		 unsigned long cmd, void *arg)
- {
-@@ -1973,6 +1950,14 @@ int __vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid,
- 	return ret;
- }
- 
-+void _vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid, unsigned long cmd,
-+		 const char *name, void *arg)
-+{
-+	int ret = __vcpu_ioctl(vm, vcpuid, cmd, arg);
-+
-+	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));
-+}
-+
- void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid)
- {
- 	struct vcpu *vcpu;
++	vcpu->vm = vm;
+ 	vcpu->id = vcpuid;
+ 	vcpu->fd = __vm_ioctl(vm, KVM_CREATE_VCPU, (void *)(unsigned long)vcpuid);
+ 	TEST_ASSERT(vcpu->fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VCPU, vcpu->fd));
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
