@@ -2,95 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C136C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8015CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377169AbiEDSr6 (ORCPT
+        id S1377233AbiEDSsC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        Wed, 4 May 2022 14:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355748AbiEDSrs (ORCPT
+        with ESMTP id S1377165AbiEDSr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:47:48 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96EA6574
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:44:08 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so5956082pju.2
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 11:44:08 -0700 (PDT)
+        Wed, 4 May 2022 14:47:57 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580726574
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:44:21 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id q14-20020a17090a178e00b001dc970bf587so1681054pja.1
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 11:44:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oe43FQiG0EzUZSwlDenCMxyLflMORQ+HtlOEqB8VlVA=;
-        b=XnA1TFA9Fh6f4piPiyq/dAyT6o7T0dTKnHiP+r9bZmMi+ttga/YwNQElvol4XlIqg8
-         5afqHEdKCXO8QEpF1JeXagIhRUl2ROvzgixxZYFDTn66biqzPl+4+cGrWlckcxesbs0V
-         PpV6dmWyTSyykxOdOOANji5wyMDUd4cls3uhg=
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VCyTBnecYpNJdRLQCPsrzRcQbyCBtqwFjPmA2xqKa88=;
+        b=YNx+vJHh5la1cqk7J51+Ly9mRTpv5jSKyWf75UCfc3ZOzIf9YBKLf7iKP1caXry4f2
+         Qr0R9DNxiq560S3gHUdf4bSx/YjMrtnurM+IPCP1p/+8edfGwRboRhxREYbP56zp18Mn
+         WzF3fBxbsYfmkBjcmDOGWD3gfgs+OVzowspbyrFoZcePIvyywBwRWkH5gahjMjcAFFny
+         H3OSivgwBzQFGXneVm5nXwj5smH3Rd03MY2z9yHT7LYDIKv3WkgVsWms/VH2wKlZS7/d
+         ACQ/ZzMZwM/BPd8U5F6qUMXU6EmwN8G32e0z2WtIUOYK2ZvzNd6M0LHaHWwFSxBB9pm0
+         MJhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oe43FQiG0EzUZSwlDenCMxyLflMORQ+HtlOEqB8VlVA=;
-        b=P2NNmjc3PXtd95T0mVMHuZQV7VVPUJY4qDZqgfh63HtNYbHbk+cTmT5t+XpzbNfaZb
-         Rhzgmjuk60qwzgqsDLHuU4tVbtc1xgKiwsV3hgpX6Tr8oMXLplwdNt27ypFGU12Iwowh
-         5ogm+B3gPfMH90kow/XyGwAorNfUurFX8dAnwJBYfExK9fMPYGNy1yQON8OaYeWFVYxn
-         ANI6K9Gf460ckSzV+phm/+kvZLHqnaocPYzkqo30qap1crIeGZFzXfYY4kvuRTccaWNO
-         fhXalMksoBk5vVe9dSOyHlhzR6PaA+lfYSwu7+Oy/148p1lbpDCgib0CQTRIW3FZwx8a
-         BXjw==
-X-Gm-Message-State: AOAM531K0jVx7KBb+PL/ewTchs6ddj0NL6M2LoDA/vEQyhjn/b5axKkO
-        GnMTuvbN7oiWWgtokX5pYSLGMA==
-X-Google-Smtp-Source: ABdhPJygwZxM4lRozsPV6mEjYbV+xHDzUeqet/CyZZIxT24CiVokiYTttmc6WzTwJfsOpKtodAXblA==
-X-Received: by 2002:a17:903:18b:b0:15e:92b9:783 with SMTP id z11-20020a170903018b00b0015e92b90783mr20706653plg.30.1651689848360;
-        Wed, 04 May 2022 11:44:08 -0700 (PDT)
-Received: from [192.168.120.250] (wsip-70-166-189-147.ph.ph.cox.net. [70.166.189.147])
-        by smtp.gmail.com with ESMTPSA id q12-20020a63f94c000000b003c14af50635sm15141662pgk.77.2022.05.04.11.44.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 11:44:07 -0700 (PDT)
-Subject: Re: [PATCH] selftests: mqueue: fix all errors
-To:     Sebin Sebastian <mailmesebin00@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220504101720.5201-1-mailmesebin00@gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <fb86cba0-e9dd-7e66-d3c9-53b8b89d9469@linuxfoundation.org>
-Date:   Wed, 4 May 2022 12:44:05 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20220504101720.5201-1-mailmesebin00@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VCyTBnecYpNJdRLQCPsrzRcQbyCBtqwFjPmA2xqKa88=;
+        b=HNtHNKNpbxGom0aAp1HM/9V4rx8uqH33pCfc1djevrxn/s0grSd2QLoHPe1+Bm5N2o
+         SlTayLoKGFXQV5HlcWT+1H1dvnd8oBNNtjch2dZ2ITkwaSsJdyyjgwWOfSFVamDN4qIZ
+         c3EmkyFHCtcW1JSk3Xdxt5wUWRzsUcyEE9f3EympibUkADJmcuyxX85BQZjes/FEw9ka
+         WQNap1/0Zg6Js7MHReh5JIX0Y83xwkg4lYahzanX4vizNyJ+cLt7/yUp2ZDZNPXAwdh0
+         BV7c/bTYiodM0TuIOu/1HZgOiSsHq3ouPMxv9I4okGfgICOFDxgZoqWbACvPB0vDSkb8
+         5lEg==
+X-Gm-Message-State: AOAM533dgMH5jEXiMyiYT86yJGESrk39jnfYWSYfLW4D4PBi9BDxwLmL
+        PGu/Jg4clnlCueNaP0zdaBWJ00r5XcPH
+X-Google-Smtp-Source: ABdhPJxcxmOQZgwG7ijdgiiboeoF9R0zWhsHRFBvRXOGMQ63dEaW3j2rbPdrIFcHlR+d3fNJwVhWG1ZOtPrm
+X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
+ (user=rananta job=sendgmr) by 2002:a05:6a00:1a4d:b0:50d:5921:1a8f with SMTP
+ id h13-20020a056a001a4d00b0050d59211a8fmr21991848pfv.64.1651689860717; Wed,
+ 04 May 2022 11:44:20 -0700 (PDT)
+Date:   Wed,  4 May 2022 18:44:15 +0000
+Message-Id: <20220504184415.1905224-1-rananta@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+Subject: [PATCH] selftests: KVM: aarch64: Let hypercalls use UAPI *_BIT_COUNT
+From:   Raghavendra Rao Ananta <rananta@google.com>
+To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Raghavendra Rao Anata <rananta@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/4/22 4:17 AM, Sebin Sebastian wrote:
-> All errors and styling issues were fixed.
-> 
-> Signed-off-by: Sebin Sebastian <mailmesebin00@gmail.com>
+The hypercalls test currently defines its own *_BMAP_BIT_MAX macros to
+define the last valid feature bit for each bitmap firmware register.
+However, since these definitions are already present in the uapi header,
+kvm.h, as *_BMAP_BIT_COUNT, and would help to keep the test updated as
+features grow, use these instead.
 
-Please include details on how you found the problems and the log from the tool
+No functional change intended.
 
-> ---
->   .../testing/selftests/mqueue/mq_open_tests.c  | 19 ++++++++++++-------
->   1 file changed, 12 insertions(+), 7 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/mqueue/mq_open_tests.c b/tools/testing/selftests/mqueue/mq_open_tests.c
-> index 9403ac01ba11..c3cb40eae1e9 100644
-> --- a/tools/testing/selftests/mqueue/mq_open_tests.c
-> +++ b/tools/testing/selftests/mqueue/mq_open_tests.c
-> @@ -59,12 +59,12 @@ char *default_queue_path = "/test1";
->   mqd_t queue = -1;
->   
->   static inline void __set(FILE *stream, int value, char *err_msg);
-> -void shutdown(int exit_val, char *err_cause, int line_no);
-> + void shutdown(int exit_val, char *err_cause, int line_no);
-I don't see any change in this line
+Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+---
+ tools/testing/selftests/kvm/aarch64/hypercalls.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-Including the log helps me understand why these changes are necessary.
+diff --git a/tools/testing/selftests/kvm/aarch64/hypercalls.c b/tools/testing/selftests/kvm/aarch64/hypercalls.c
+index 41e0210b7a5e..dea019ec4dd9 100644
+--- a/tools/testing/selftests/kvm/aarch64/hypercalls.c
++++ b/tools/testing/selftests/kvm/aarch64/hypercalls.c
+@@ -18,20 +18,15 @@
+ 
+ #define FW_REG_ULIMIT_VAL(max_feat_bit) (GENMASK(max_feat_bit, 0))
+ 
+-/* Last valid bits of the bitmapped firmware registers */
+-#define KVM_REG_ARM_STD_BMAP_BIT_MAX		0
+-#define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX	0
+-#define KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX	1
+-
+ struct kvm_fw_reg_info {
+ 	uint64_t reg;		/* Register definition */
+ 	uint64_t max_feat_bit;	/* Bit that represents the upper limit of the feature-map */
+ };
+ 
+-#define FW_REG_INFO(r)			\
+-	{					\
+-		.reg = r,			\
+-		.max_feat_bit = r##_BIT_MAX,	\
++#define FW_REG_INFO(r)					\
++	{						\
++		.reg = r,				\
++		.max_feat_bit = r##_BIT_COUNT - 1,	\
+ 	}
+ 
+ static const struct kvm_fw_reg_info fw_reg_info[] = {
+-- 
+2.36.0.512.ge40c2bad7a-goog
 
-thanks,
--- Shuah
