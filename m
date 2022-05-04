@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A999C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356438AbiEDRWl (ORCPT
+        id S1344401AbiEDRWs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
+        Wed, 4 May 2022 13:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355809AbiEDREn (ORCPT
+        with ESMTP id S1355812AbiEDREn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B71B49925;
-        Wed,  4 May 2022 09:53:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6959049910;
+        Wed,  4 May 2022 09:53:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0D23B827AB;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F77A617A6;
+        Wed,  4 May 2022 16:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B06C385A4;
         Wed,  4 May 2022 16:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E068C385AF;
-        Wed,  4 May 2022 16:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683202;
-        bh=fiEjsMwi+sx83CopIVwfDXjNiCaih6WW+Reo85LpXa0=;
+        s=korg; t=1651683203;
+        bh=kSA0y8q2B8BT5CNjVXoE461nAstdV7PrmKTozAHkcSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kO18R6A8uUU/ci6pJnyth9QU+F8C7QE1EiNul4e0ix2Tmat11iK6EzmmC8EIKvaat
-         LGSwTf2/95/bB/4xTj7op5Ng7iWQkE9UgaJqFj2dshlRf8OQzeV4iYF8JHNZsyeey7
-         dVQnI9RnNtDQEy5P/Cc+pE/FFSqbMym1f8mj7Ne4=
+        b=yOTOIoHgIdYsVBcK7f3cFjB6sU9KZWncF8QdL9/JW6yMBsIAQQ+zQUI8tVOiutfGS
+         j2xV0E+vCGm64iBWBBeEoCLVKwgJA8D9c3jldNSdsTG0u7hBC0qEyCbQ2DSyE5eH6p
+         dMhGz7/C3JzxB/s3IvQNCnnK5xqsUa5KzDOjYpY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/177] phy: mapphone-mdm6600: Fix PM error handling in phy_mdm6600_probe
-Date:   Wed,  4 May 2022 18:44:20 +0200
-Message-Id: <20220504153059.048746597@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 055/177] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
+Date:   Wed,  4 May 2022 18:44:08 +0200
+Message-Id: <20220504153057.942692036@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,44 +52,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit d644e0d79829b1b9a14beedbdb0dc1256fc3677d ]
+[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
 
-The pm_runtime_enable will increase power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable(). And use pm_runtime_dont_use_autosuspend() to
-undo pm_runtime_use_autosuspend()
-In the PM Runtime docs:
-    Drivers in ->remove() callback should undo the runtime PM changes done
-    in ->probe(). Usually this means calling pm_runtime_disable(),
-    pm_runtime_dont_use_autosuspend() etc.
+On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
+on the SoM is often not detected and the following error message is
+seen when the sgtl5000 driver tries to read the ID register:
 
-We should do this in error handling.
+sgtl5000 1-000a: Error reading chip id -6
 
-Fixes: f7f50b2a7b05 ("phy: mapphone-mdm6600: Add runtime PM support for n_gsm on USB suspend")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220301024615.31899-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+The reason for the error is that the MCLK clock is not provided
+early enough.
+
+Fix the problem by describing the MCLK pinctrl inside the codec
+node instead of placing it inside the audmux pinctrl group.
+
+With this change applied the sgtl5000 is always detected on every boot.
+
+Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Reviewed-by: Tim Harvey <tharvey@gateworks.com>
+Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/motorola/phy-mapphone-mdm6600.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/phy/motorola/phy-mapphone-mdm6600.c b/drivers/phy/motorola/phy-mapphone-mdm6600.c
-index 5172971f4c36..3cd4d51c247c 100644
---- a/drivers/phy/motorola/phy-mapphone-mdm6600.c
-+++ b/drivers/phy/motorola/phy-mapphone-mdm6600.c
-@@ -629,7 +629,8 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
- cleanup:
- 	if (error < 0)
- 		phy_mdm6600_device_power_off(ddata);
--
-+	pm_runtime_disable(ddata->dev);
-+	pm_runtime_dont_use_autosuspend(ddata->dev);
- 	return error;
- }
+diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+index 30fa349f9d05..a696873dc1ab 100644
+--- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+@@ -286,6 +286,8 @@ vgen6_reg: vgen6 {
+ 	codec: sgtl5000@a {
+ 		compatible = "fsl,sgtl5000";
+ 		reg = <0x0a>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_sgtl5000>;
+ 		clocks = <&clks IMX6QDL_CLK_CKO>;
+ 		VDDA-supply = <&reg_module_3v3_audio>;
+ 		VDDIO-supply = <&reg_module_3v3>;
+@@ -516,8 +518,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
+-			/* SGTL5000 sys_mclk */
+-			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
+ 		>;
+ 	};
  
+@@ -810,6 +810,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
+ 		>;
+ 	};
+ 
++	pinctrl_sgtl5000: sgtl5000grp {
++		fsl,pins = <
++			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
++		>;
++	};
++
+ 	pinctrl_spdif: spdifgrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
 -- 
 2.35.1
 
