@@ -2,74 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E7E8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343699AbiEDJVV (ORCPT
+        id S1347012AbiEDJXK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 05:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        Wed, 4 May 2022 05:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347039AbiEDJUs (ORCPT
+        with ESMTP id S230283AbiEDJXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 05:20:48 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F7525C4A;
-        Wed,  4 May 2022 02:16:18 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id DAB721F41569
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651655777;
-        bh=Dotfy/ZpuAnemLKpN+RhtuMzzTxRdF3JKSnpuEWgFvU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Ele/+rUhfYGdPpKz37ZSGAZweUB5eRLht1elQek2Ls7Uk7ScaKdHq4oOJZokMNng8
-         E4aWPmwyZJIGro0rORFHegX8UpQyy2V66mWC9jH8mKLvBfpryzsLanzVZ6zlz6sPZv
-         H04TXYArsclMV61Qmn4JLcfYl7xQNH2r9U0p7CA4nhBRvKk+RGqa1FIIaJyHJqWoMb
-         oEBE2/98U70CrgAdbBH+ZmJaNy0RRxgtv2gZCkfy0UMoxcu1wo6GtJx2dKvmMvMmBQ
-         aTdlEKhOIqSm1CCyQkF18ye+o1+fzC4SE7Egd3pSbp3rcILsWinVQXIrjPYB64s9Hi
-         4pU26qtXcrSbw==
-Message-ID: <b2bebf6d-a1e5-e998-0f75-17c84b7dbbdc@collabora.com>
-Date:   Wed, 4 May 2022 11:16:13 +0200
+        Wed, 4 May 2022 05:23:08 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6EB21E08;
+        Wed,  4 May 2022 02:19:32 -0700 (PDT)
+X-UUID: 0a0bb7a76d0b4e828bb87b3260f76984-20220504
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:406a2d9f-3dbc-487b-86d6-3cd925a19316,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:7ebb74c7-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 0a0bb7a76d0b4e828bb87b3260f76984-20220504
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1367593413; Wed, 04 May 2022 17:19:29 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 4 May 2022 17:19:27 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 4 May 2022 17:19:27 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 4 May 2022 17:19:27 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
+CC:     <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
+        <jitao.shi@mediatek.com>, <xinlei.lee@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v6 3/4] drm/mediatek: Add mt8186 dsi compatible to mtk_dsi.c
+Date:   Wed, 4 May 2022 17:19:22 +0800
+Message-ID: <20220504091923.2219-4-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220504091923.2219-1-rex-bc.chen@mediatek.com>
+References: <20220504091923.2219-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v20 06/25] soc: mediatek: add mtk_mmsys_update_bits API
-Content-Language: en-US
-To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, wim@linux-watchdog.org,
-        linux@roeck-us.net
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, llvm@lists.linux.dev,
-        singo.chang@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220504091440.2052-1-nancy.lin@mediatek.com>
- <20220504091440.2052-7-nancy.lin@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220504091440.2052-7-nancy.lin@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 04/05/22 11:14, Nancy.Lin ha scritto:
-> Add mtk_mmsys_update_bits API. Simplify code for update  mmsys reg.
-> It is a preparation for adding support for mmsys config API.
-> 
-> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
+Add the compatible because use different cmdq addresses in mt8186.
+
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index ccb0511b9cd5..b13fd0317e96 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -1155,6 +1155,12 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
+ 	.has_size_ctl = true,
+ };
+ 
++static const struct mtk_dsi_driver_data mt8186_dsi_driver_data = {
++	.reg_cmdq_off = 0xd00,
++	.has_shadow_ctl = true,
++	.has_size_ctl = true,
++};
++
+ static const struct of_device_id mtk_dsi_of_match[] = {
+ 	{ .compatible = "mediatek,mt2701-dsi",
+ 	  .data = &mt2701_dsi_driver_data },
+@@ -1162,6 +1168,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
+ 	  .data = &mt8173_dsi_driver_data },
+ 	{ .compatible = "mediatek,mt8183-dsi",
+ 	  .data = &mt8183_dsi_driver_data },
++	{ .compatible = "mediatek,mt8186-dsi",
++	  .data = &mt8186_dsi_driver_data },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, mtk_dsi_of_match);
+-- 
+2.18.0
 
