@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E07CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356012AbiEDRMR (ORCPT
+        id S1355955AbiEDRMY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
+        Wed, 4 May 2022 13:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354791AbiEDQ7G (ORCPT
+        with ESMTP id S1354757AbiEDQ7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C1748314;
-        Wed,  4 May 2022 09:51:01 -0700 (PDT)
+        Wed, 4 May 2022 12:59:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB52473A7;
+        Wed,  4 May 2022 09:50:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D847617BD;
-        Wed,  4 May 2022 16:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 770B4C385A4;
-        Wed,  4 May 2022 16:51:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F74617A6;
+        Wed,  4 May 2022 16:50:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A323C385A5;
+        Wed,  4 May 2022 16:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683060;
-        bh=Ml8Xr3vF/i5o3EcwcDdhV4lR+q7NSKCRiHjFcKZqJvk=;
+        s=korg; t=1651683056;
+        bh=0gbObnZmdg3X7SuNnDkKe2xmN0OZyeNQ6+n97FTWnzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P6NUYIaIIjik+ymXkBx1YvEo/Qi0Ih7wDv8IzI/5yLX9kxmzEJQMPqzup5Cuz1nlw
-         FaOsRra5byE6hxDBEIk7E2ETRZRPMkfpwZ+rwaXDJhA7Cy6OdzMuwnBHlOnwmphhCT
-         /JCObQoXtcS5MbyuZdR43yrHyrhsoZSJn61x8O4c=
+        b=r2pFBxZFjm+FPAzmh2SjD0krVccVhM3TpPns/TRYHnTCP0rnKW2wsOt5Aaaal6BNa
+         hyA6wfdi9z6w0bGoUm7oqKtCH6nQa4hILmjVKDsz4E11EXF+dd5iGl5umOQ5oFi1kS
+         FB+QOUE8Fk9vNHfqT9nFxJVnrAWNGTKbihX0OV8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Stefano Brivio <sbrivio@redhat.com>,
+        stable@vger.kernel.org, Oleksandr Ocheretnyi <oocheret@cisco.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 064/129] netfilter: nft_set_rbtree: overlap detection with element re-addition after deletion
-Date:   Wed,  4 May 2022 18:44:16 +0200
-Message-Id: <20220504153026.338363624@linuxfoundation.org>
+Subject: [PATCH 5.10 060/129] mtd: fix part field data corruption in mtd_info
+Date:   Wed,  4 May 2022 18:44:12 +0200
+Message-Id: <20220504153026.005036487@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,46 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Oleksandr Ocheretnyi <oocheret@cisco.com>
 
-[ Upstream commit babc3dc9524f0bcb5a0ec61f3c3639b11508fad6 ]
+[ Upstream commit 37c5f9e80e015d0df17d0c377c18523002986851 ]
 
-This patch fixes spurious EEXIST errors.
+Commit 46b5889cc2c5 ("mtd: implement proper partition handling")
+started using "mtd_get_master_ofs()" in mtd callbacks to determine
+memory offsets by means of 'part' field from mtd_info, what previously
+was smashed accessing 'master' field in the mtd_set_dev_defaults() method.
+That provides wrong offset what causes hardware access errors.
 
-Extend d2df92e98a34 ("netfilter: nft_set_rbtree: handle element
-re-addition after deletion") to deal with elements with same end flags
-in the same transation.
+Just make 'part', 'master' as separate fields, rather than using
+union type to avoid 'part' data corruption when mtd_set_dev_defaults()
+is called.
 
-Reset the overlap flag as described by 7c84d41416d8 ("netfilter:
-nft_set_rbtree: Detect partial overlaps on insertion").
-
-Fixes: 7c84d41416d8 ("netfilter: nft_set_rbtree: Detect partial overlaps on insertion")
-Fixes: d2df92e98a34 ("netfilter: nft_set_rbtree: handle element re-addition after deletion")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 46b5889cc2c5 ("mtd: implement proper partition handling")
+Signed-off-by: Oleksandr Ocheretnyi <oocheret@cisco.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220417184649.449289-1-oocheret@cisco.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_set_rbtree.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/linux/mtd/mtd.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nft_set_rbtree.c b/net/netfilter/nft_set_rbtree.c
-index 217ab3644c25..94a5446c5eae 100644
---- a/net/netfilter/nft_set_rbtree.c
-+++ b/net/netfilter/nft_set_rbtree.c
-@@ -348,7 +348,11 @@ static int __nft_rbtree_insert(const struct net *net, const struct nft_set *set,
- 				*ext = &rbe->ext;
- 				return -EEXIST;
- 			} else {
--				p = &parent->rb_left;
-+				overlap = false;
-+				if (nft_rbtree_interval_end(rbe))
-+					p = &parent->rb_left;
-+				else
-+					p = &parent->rb_right;
- 			}
- 		}
+diff --git a/include/linux/mtd/mtd.h b/include/linux/mtd/mtd.h
+index 157357ec1441..fc41fecfe44f 100644
+--- a/include/linux/mtd/mtd.h
++++ b/include/linux/mtd/mtd.h
+@@ -388,10 +388,8 @@ struct mtd_info {
+ 	/* List of partitions attached to this MTD device */
+ 	struct list_head partitions;
  
+-	union {
+-		struct mtd_part part;
+-		struct mtd_master master;
+-	};
++	struct mtd_part part;
++	struct mtd_master master;
+ };
+ 
+ static inline struct mtd_info *mtd_get_master(struct mtd_info *mtd)
 -- 
 2.35.1
 
