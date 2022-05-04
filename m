@@ -2,96 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98448C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A32EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348685AbiEDNZw (ORCPT
+        id S1350703AbiEDN0X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
+        Wed, 4 May 2022 09:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350499AbiEDNXg (ORCPT
+        with ESMTP id S1350499AbiEDN0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:23:36 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF1440929
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:19:38 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id g6so2871988ejw.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:19:37 -0700 (PDT)
+        Wed, 4 May 2022 09:26:10 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99E45510;
+        Wed,  4 May 2022 06:21:38 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id i20-20020a05600c355400b0039456976dcaso1199159wmq.1;
+        Wed, 04 May 2022 06:21:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2xS+3Wq/qARvDYZ495/QJzgQMFIcqN5BlqQIo6Nwqu0=;
-        b=Xv2tW6s0n6YZ8iVchnpOyt+jsm7rAsv5nm12e8wVrOiE76NhrNAykn3GsR+abcbwee
-         j8q1fdVKvAY03NUuxp3OouylVW/2muBkZMDCPMGZMNBSnRkUkXvxZq01/FT2nlfK5ZgQ
-         DljrEqSK8KnUd3yks7KZVG9X8A2UYSxpXHXKnDse/VVJD3sfm1MoACL3Ke1vNBVgbLaE
-         3XPpEgWSTEyZ84IZQoBtueEtnp5lEvIm9f0fI5O4xPlXQCBYiHa3YWlnE1nrKmbCrmI5
-         XVrmklD0pJ9OAWtBvq/rbaDP2M+xie/SA3yWzeGi1VOokfWA7bphD+dUi5u1sEcudgiw
-         4SfQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bIzJlgmOg9YiKbOpYW/F57m78adXKAVkRe+KXRci2bg=;
+        b=j3V/s2IRf9hFGeuzK9juEkMCXHJ1cbZDrP7Ql2RiQJeM8R0ebx1Yr8EC7SHGJNp13J
+         JfwmCunK/UWZdcN1W6CibqOX9t1P6GPh9LbrYQzvMO8HpQZqJ/ZdTXMs5wOd4353Q7+5
+         5w/AqtUqsoEgevgEh6zxncr0OMzKE1wBm+HoWj6XU82kYnvMIOaCHpTWx8pWs4+rW5pV
+         Jn4oaGewWU51/7QX0FtxVGnTfxqfhHd5eGaJE4NUSGA9Gm+J7/tifdqBSxlNDzT+DFUC
+         uYBvMfRM8UMxg8qaTexzL3Sj+Tv2eh0XXfq1SAbHJld0IjuMMYjb6799gDAKZkiv7LMz
+         b6qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2xS+3Wq/qARvDYZ495/QJzgQMFIcqN5BlqQIo6Nwqu0=;
-        b=Wgj87oVZDuUVvTtynLb41zkGCtV44U/TsaVtjnzDP666K2jcWYNyrWqGzoFmWNqHaf
-         f0pROUVnGRATIaurLo8Y7dvV8ySAbq0dtZpjAgPmDVVnMIiBkcj6QaEJybVY6BarZDnd
-         ds07WrUvDBY5ItI/eaPANScQcf7iFt4Pp8PPMVQbyVp3Y5QKMUherWZjpxN+0dHgurX/
-         P95y4ghClovvEHUoOzhE+yxNL5Vtzw+tgc+oVPIo8EQXliri+b5bC4h5ruc+tujW+rYx
-         op5qSon+fZoU68rIxfqLohfMXJJ9Gb4R3QJQcW/6L2r86J9tWB7CskrdV/40biR2nVIj
-         e/Pg==
-X-Gm-Message-State: AOAM533pFaQFs9LHscejlekBkDnyAZDpNYjchdyblV58c4Lxpze46owC
-        jFbzAkw3X74dkWIKMg5Ktb1N4Q==
-X-Google-Smtp-Source: ABdhPJw5+CyL4NjX2j/bsZp3+/uT3m87qFXb6CjbQGBrCcBokpRX6U0WSVDj7IdHjP2m5JHP+hYmNA==
-X-Received: by 2002:a17:907:1b28:b0:6f0:836:89b0 with SMTP id mp40-20020a1709071b2800b006f0083689b0mr19282474ejc.379.1651670376494;
-        Wed, 04 May 2022 06:19:36 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gx3-20020a1709068a4300b006f3ef214dc4sm5660924ejc.42.2022.05.04.06.19.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bIzJlgmOg9YiKbOpYW/F57m78adXKAVkRe+KXRci2bg=;
+        b=piENUAoFPGbUOUJTycIvszIRW2iQA7wgXxAR/pm/Iu3MpCVySIqu0UvIpeOIzLffk/
+         oKtszS8GjIL+g29itfKgKkaCfRVjJEuEF9YdDs1fiitWF8Z+ZlyhX66ex1qrL9qPUre0
+         Vm4N2MxNt4E42rMdXuHXw9vSU7+OcZ5YgEdSILL2DDRhLVuJ5SIkkpAaN6sCrbkOm2a0
+         A3FjfEh+aFkusYqSbRlnay9rOjdah2Ewf/slcqlun7X9X8ImsduaVqfS9S+ML1jlKb9A
+         mXvoZ8OBiuERfo84bkwqRwXKnkoRiE5qFAZ/EFbtrlqHK7kZDfcJvThvxd6HTmM8kORu
+         hQPg==
+X-Gm-Message-State: AOAM5339ArE2yopuE8RGsTlWVUSj3Hkrok6tA+fquAbyi/3TuKGjUXhP
+        gG0UW215E9/wWqy7xzoKOK4=
+X-Google-Smtp-Source: ABdhPJzJN6G23D8uMob63DnbbeBf1pop4Zafvwcca/FweJhoFEf7s5Blf1jwse+83kfTgVRfuwAysw==
+X-Received: by 2002:a7b:c186:0:b0:394:bed:e0cf with SMTP id y6-20020a7bc186000000b003940bede0cfmr7578863wmi.162.1651670497066;
+        Wed, 04 May 2022 06:21:37 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id f8-20020a7bc8c8000000b00394615cf468sm369401wml.28.2022.05.04.06.21.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 06:19:36 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 08/13] arm64: dts: qcom: msm8994: add dedicated qcom,msm8994-dwc3 compatible
-Date:   Wed,  4 May 2022 15:19:18 +0200
-Message-Id: <20220504131923.214367-9-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220504131923.214367-1-krzysztof.kozlowski@linaro.org>
-References: <20220504131923.214367-1-krzysztof.kozlowski@linaro.org>
+        Wed, 04 May 2022 06:21:36 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH][next] mm/shmem: Fix check on uninitialized pointer 'folio'
+Date:   Wed,  4 May 2022 14:21:35 +0100
+Message-Id: <20220504132135.229601-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dedicated compatible for DWC3 USB node name to allow more accurate
-DT schema matching.
+In the case where shmem_swapin returns null, the jump to the error return
+path via label 'failed' will end up with the uninitialized pointer folio
+being null checked a few statements later. Fix this by ensuring folio is
+initialized to null.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Detected by clang scan:
+mm/shmem.c:1704:7: warning: variable 'folio' is used uninitialized
+whenever 'if' condition is true [-Wsometimes-uninitialized]
+
+Fixes: 2b58b3f33ba2 ("mm/shmem: convert shmem_swapin_page() to shmem_swapin_folio()")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 2 +-
+ mm/shmem.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 367ed913902c..10c1cce74dad 100644
---- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -428,7 +428,7 @@ frame@f9028000 {
- 		};
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 107f1e4dd0aa..7faaa61ff7fa 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -1682,7 +1682,7 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
+ 	struct shmem_inode_info *info = SHMEM_I(inode);
+ 	struct mm_struct *charge_mm = vma ? vma->vm_mm : NULL;
+ 	struct page *page;
+-	struct folio *folio;
++	struct folio *folio = NULL;
+ 	swp_entry_t swap;
+ 	int error;
  
- 		usb3: usb@f92f8800 {
--			compatible = "qcom,msm8996-dwc3", "qcom,dwc3";
-+			compatible = "qcom,msm8994-dwc3", "qcom,dwc3";
- 			reg = <0xf92f8800 0x400>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
 -- 
-2.32.0
+2.35.1
 
