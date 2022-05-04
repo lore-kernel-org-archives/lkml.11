@@ -2,237 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C33C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377523AbiEDTjU (ORCPT
+        id S1377560AbiEDTj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 15:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        Wed, 4 May 2022 15:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377564AbiEDTjD (ORCPT
+        with ESMTP id S238694AbiEDTjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 15:39:03 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A392E0FD;
-        Wed,  4 May 2022 12:35:24 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id ay11-20020a05600c1e0b00b0038eb92fa965so3829373wmb.4;
-        Wed, 04 May 2022 12:35:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZT7VKniHc2GWnckoL6MlPZLbnEyYu3dBdYD4+s+IxsM=;
-        b=Bp58nmH7PUo//wUZc2uhmQN2OX+RZ5aQLpK6AkiBmVXbEzAekaYLhmj3Yih1HanvNT
-         k6YuK85Gjho+Yrn/QAKJG9v6W2N7DDfE+AIDYaBExDlbWgY9NwaUyGXdpyrMn0ojQoIx
-         +VHexJKd2czGapDFNe/UVyD1MCNSM5F/IwjFvt4yKGfF/faiWMzpVglJZ58FkxIuLwFe
-         aSwhc/Msl6oAoyefPqLYYJ7V3aQI/zettQWHEi3kSpafZCPvKHQUhSCYE2C0DOhSxxQT
-         oKWfCsY8nodzf9jHC+1bFubtqxZCTUxBdCWDh6RYaV6sLYovNEOb0zf2itxfUEl34QG+
-         nt5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZT7VKniHc2GWnckoL6MlPZLbnEyYu3dBdYD4+s+IxsM=;
-        b=Vo0gHYHBspGSAebnM9AdXZntqSDZELLPyS9jqp64s9D0/4/W4/Y99CDod9d/h0LYhh
-         Zm8mrUzT3vBvSN9EnnJX1hXucNHxhh1nto8JzDC8esb0bh9qf6b4c7fqw5Eo7aHhBuaF
-         pwVZk36ImfKsoOZs+uP1l3eR01wSIiZ2/E9Qrjb9jhPBefTAeuPWk7WI00xJhmPJQy/K
-         qJvwYediztxaSZCEWbxyq9aah3CYIdSsR80y+hzfxKnh+BQUBsmGnI/RbhwuEEgV4Tbf
-         OG8wWl4RYHsDgKwFYeW0RFHXBatkdzEbHKWturcFkWYhdrjIewZfzUwxLLaaEM4z3FZM
-         wQAg==
-X-Gm-Message-State: AOAM530+SSpitU90lOYoS05FDCmY+Hwr+8RebVqSWRzpzAaiSJtFddX0
-        0tC3JbodrhRugX9FPva5R+M=
-X-Google-Smtp-Source: ABdhPJw+Kv9dqOx2Wgp0gAQYZHdG6ke4h+kiL7EqNHqEJBn8Z7t0RoZXM5k2Pha5doozf7pbKxfxEg==
-X-Received: by 2002:a05:600c:1ca6:b0:393:eb0e:afd9 with SMTP id k38-20020a05600c1ca600b00393eb0eafd9mr843858wms.87.1651692922999;
-        Wed, 04 May 2022 12:35:22 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id 67-20020a1c1946000000b003942a244f2csm5519358wmz.5.2022.05.04.12.35.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 12:35:22 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     pavel@ucw.cz
-Cc:     Markuss Broks <markuss.broks@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v7 1/2] dt-bindings: leds: convert ktd2692 bindings to yaml
-Date:   Wed,  4 May 2022 22:34:35 +0300
-Message-Id: <20220504193439.15938-2-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220504193439.15938-1-markuss.broks@gmail.com>
-References: <20220504193439.15938-1-markuss.broks@gmail.com>
+        Wed, 4 May 2022 15:39:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB42E1C13D;
+        Wed,  4 May 2022 12:35:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2C1361BE3;
+        Wed,  4 May 2022 19:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B762DC385A4;
+        Wed,  4 May 2022 19:35:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651692931;
+        bh=wifdIng5C5+zvFOVkWllKXbxxVMnCc1cn//B0XhEpek=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lzMbrpl1X0/Izn8Dbd/Pgv0Yx4q/r1wmVr7Ln6lHotMVWggcGUiZhSP413k9Y9zMt
+         dwhdbICf8SZ+qiA+cdQy+g/Jyq2to0UQSy36giJfE0cLWlKUiQPNijxiHfEgtQipxB
+         NJkqWR0PjkuOThf5WqfkhkGX1KQKn3IbjZeVd7/Um+iMZvihmnAQTKSer0jwmGJC6+
+         qYdyywA0pFQpyg7E4HwE2Nf161ijabc5PIfgwm5BzMtyXJ7cKcD9jQyWe1IqbC82Za
+         wRJohgmPQp1nIeAsGZBuq/x3p+c7xAFkx4sw6IpcWSKJz2y/PuubWJRr08wWbKQVs1
+         RPu3wb9+BxLcg==
+Date:   Wed, 4 May 2022 12:35:28 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v3 4/9] PCI/PM: Rework changing power states of PCI
+ devices
+Message-ID: <YnLVgOqGOPaSrC7G@dev-arch.thelio-3990X>
+References: <4419002.LvFx2qVVIh@kreacher>
+ <CAJZ5v0i1Ynt54yb7aMJorkYUvqkxhxOqvQJb8AdA7Ps1aBO5tg@mail.gmail.com>
+ <YnKrcFSjLr+W+myL@dev-arch.thelio-3990X>
+ <2650302.mvXUDI8C0e@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2650302.mvXUDI8C0e@kreacher>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch converts the leds-ktd2692.txt bindings to modern yaml
-style device-tree bindings.
+On Wed, May 04, 2022 at 08:00:33PM +0200, Rafael J. Wysocki wrote:
+> On Wednesday, May 4, 2022 6:36:00 PM CEST Nathan Chancellor wrote:
+> > On Wed, May 04, 2022 at 02:59:17PM +0200, Rafael J. Wysocki wrote:
+> > > On Tue, May 3, 2022 at 7:59 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> > > >
+> > > > Hi Rafael,
+> > > >
+> > > > On Thu, Apr 14, 2022 at 03:11:21PM +0200, Rafael J. Wysocki wrote:
+> > > > > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > > >
+> > > > > There are some issues related to changing power states of PCI
+> > > > > devices, mostly related to carrying out unnecessary actions in some
+> > > > > places, and the code is generally hard to follow.
+> > > > >
+> > > > >  1. pci_power_up() has two callers, pci_set_power_state() and
+> > > > >     pci_pm_default_resume_early().  The latter updates the current
+> > > > >     power state of the device right after calling pci_power_up()
+> > > > >     and it restores the entire config space of the device right
+> > > > >     after that, so pci_power_up() itself need not read the
+> > > > >     PCI_PM_CTRL register or restore the BARs after programming the
+> > > > >     device into D0 in that case.
+> > > > >
+> > > > >  2. It is generally hard to get a clear view of the pci_power_up()
+> > > > >     code flow, especially in some corner cases, due to all of the
+> > > > >     involved PCI_PM_CTRL register reads and writes occurring in
+> > > > >     pci_platform_power_transition() and in pci_raw_set_power_state(),
+> > > > >     some of which are redundant.
+> > > > >
+> > > > >  3. The transitions from low-power states to D0 and the other way
+> > > > >     around are unnecessarily tangled in pci_raw_set_power_state()
+> > > > >     which causes it to use a redundant local variable and makes it
+> > > > >     rather hard to follow.
+> > > > >
+> > > > > To address the above shortcomings, make the following changes:
+> > > > >
+> > > > >  a. Remove the code handling transitions into D0
+> > > > >     from pci_raw_set_power_state() and rename it as
+> > > > >     pci_set_low_power_state().
+> > > > >
+> > > > >  b. Add the code handling transitions into D0 directly
+> > > > >     to pci_power_up() and to a new wrapper function
+> > > > >     pci_set_full_power_state() calling it internally that is
+> > > > >     only used in pci_set_power_state().
+> > > > >
+> > > > >  c. Make pci_power_up() avoid redundant PCI_PM_CTRL register reads
+> > > > >     and make it work in the same way for transitions from any
+> > > > >     low-power states (transitions from D1 and D2 are handled
+> > > > >     slightly differently before the change).
+> > > > >
+> > > > >  d. Put the restoration of the BARs and the PCI_PM_CTRL
+> > > > >     register read confirming the power state change into
+> > > > >     pci_set_full_power_state() to avoid doing that in
+> > > > >     pci_pm_default_resume_early() unnecessarily.
+> > > > >
+> > > > > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > > > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > > >
+> > > > This change as commit 5bffe4c611f5 ("PCI/PM: Rework changing power
+> > > > states of PCI devices") causes my AMD-based system to fail to fully
+> > > > boot. As far as I can tell, this might be NVMe related, which might make
+> > > > getting a full log difficult, as journalctl won't have anywhere to save
+> > > > it. I see:
+> > > >
+> > > > nvme nvme0: I/O 8 QID 0 timeout, completion polled
+> > > >
+> > > > then shortly afterwards:
+> > > >
+> > > > nvme nvme0: I/O 24 QID 0 timeout, completion polled
+> > > > nvme nvme0: missing or invalid SUBNQN field
+> > > >
+> > > > then I am dropped into an emergency shell.
+> > > 
+> > > Thanks for the report!
+> > > 
+> > > > This is a log from the previous commit, which may give some hints about
+> > > > the configuration of this particular system.
+> > > >
+> > > > https://gist.github.com/nathanchance/8a56f0939410cb187896e904c72e41e7/raw/b47b2620bdd32d43c7a3b209fcfd9e3d4668f058/good-boot.log
+> > > >
+> > > > If there is any additional debugging information I can provide or
+> > > > patches I can try, please let me know!
+> > > 
+> > > Please see what happens if the "if (dev->current_state == PCI_D0)"
+> > > check and the following "return 0" statement in pci_power_up() are
+> > > commented out.
+> > 
+> > If I understand you correctly, this? Unfortunately, that does not help.
+> 
+> Thanks for testing.
+> 
+> Please check if the patch below makes any difference.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- .../bindings/leds/kinetic,ktd2692.yaml        | 87 +++++++++++++++++++
- .../devicetree/bindings/leds/leds-ktd2692.txt | 50 -----------
- 2 files changed, 87 insertions(+), 50 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml
- delete mode 100644 Documentation/devicetree/bindings/leds/leds-ktd2692.txt
+Unfortunately, there is still no difference. Even worse, I thought I
+might be able to get some information from the emergency shell but I
+don't think the HID driver is loaded yet so my keyboard does not work. I
+am not sure of how to get any further information from the problematic
+kernel; if anyone has any ideas, I am happy to test them! I am more than
+happy to continue to test patches or provide information, I just don't
+want to be a waste of time :)
 
-diff --git a/Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml b/Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml
-new file mode 100644
-index 000000000000..bac95a51afa1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml
-@@ -0,0 +1,87 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/leds/kinetic,ktd2692.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: KTD2692 Flash LED Driver from Kinetic Technologies
-+
-+maintainers:
-+  - Markuss Broks <markuss.broks@gmail.com>
-+
-+description: |
-+  KTD2692 is the ideal power solution for high-power flash LEDs.
-+  It uses ExpressWire single-wire programming for maximum flexibility.
-+
-+  The ExpressWire interface through CTRL pin can control LED on/off and
-+  enable/disable the IC, Movie(max 1/3 of Flash current) / Flash mode current,
-+  Flash timeout, LVP(low voltage protection).
-+
-+  Also, When the AUX pin is pulled high while CTRL pin is high,
-+  LED current will be ramped up to the flash-mode current level.
-+
-+properties:
-+  compatible:
-+    const: kinetic,ktd2692
-+
-+  ctrl-gpios:
-+    maxItems: 1
-+    description: Specifier of the GPIO connected to CTRL pin.
-+
-+  aux-gpios:
-+    maxItems: 1
-+    description: Specifier of the GPIO connected to CTRL pin.
-+
-+  vin-supply:
-+    description: LED supply (2.7V to 5.5V).
-+
-+  led:
-+    type: object
-+    $ref: common.yaml#
-+    description: Properties for the LED.
-+    properties:
-+      function: true
-+      color: true
-+      flash-max-timeout-us:
-+        description: Flash LED maximum timeout.
-+
-+      led-max-microamp:
-+        maximum: 300000
-+        description: Minimum Threshold for Timer protection
-+          is defined internally (Maximum 300mA).
-+
-+      flash-max-microamp:
-+        maximum: 300000
-+        description: Flash LED maximum current
-+          Formula - I(uA) = 15000000 / Rset.
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - ctrl-gpios
-+  - led
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/leds/common.h>
-+
-+    ktd2692 {
-+      compatible = "kinetic,ktd2692";
-+      ctrl-gpios = <&gpc0 1 0>;
-+      aux-gpios = <&gpc0 2 0>;
-+      vin-supply = <&vbat>;
-+
-+      led {
-+        function = LED_FUNCTION_FLASH;
-+        color = <LED_COLOR_ID_WHITE>;
-+        flash-max-timeout-us = <250000>;
-+        flash-max-microamp = <150000>;
-+        led-max-microamp = <25000>;
-+      };
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/leds/leds-ktd2692.txt b/Documentation/devicetree/bindings/leds/leds-ktd2692.txt
-deleted file mode 100644
-index 853737452580..000000000000
---- a/Documentation/devicetree/bindings/leds/leds-ktd2692.txt
-+++ /dev/null
-@@ -1,50 +0,0 @@
--* Kinetic Technologies - KTD2692 Flash LED Driver
--
--KTD2692 is the ideal power solution for high-power flash LEDs.
--It uses ExpressWire single-wire programming for maximum flexibility.
--
--The ExpressWire interface through CTRL pin can control LED on/off and
--enable/disable the IC, Movie(max 1/3 of Flash current) / Flash mode current,
--Flash timeout, LVP(low voltage protection).
--
--Also, When the AUX pin is pulled high while CTRL pin is high,
--LED current will be ramped up to the flash-mode current level.
--
--Required properties:
--- compatible : Should be "kinetic,ktd2692".
--- ctrl-gpios : Specifier of the GPIO connected to CTRL pin.
--- aux-gpios : Specifier of the GPIO connected to AUX pin.
--
--Optional properties:
--- vin-supply : "vin" LED supply (2.7V to 5.5V).
--  See Documentation/devicetree/bindings/regulator/regulator.txt
--
--A discrete LED element connected to the device must be represented by a child
--node - See Documentation/devicetree/bindings/leds/common.txt
--
--Required properties for flash LED child nodes:
--  See Documentation/devicetree/bindings/leds/common.txt
--- led-max-microamp : Minimum Threshold for Timer protection
--  is defined internally (Maximum 300mA).
--- flash-max-microamp : Flash LED maximum current
--  Formula : I(mA) = 15000 / Rset.
--- flash-max-timeout-us : Flash LED maximum timeout.
--
--Optional properties for flash LED child nodes:
--- label : See Documentation/devicetree/bindings/leds/common.txt
--
--Example:
--
--ktd2692 {
--	compatible = "kinetic,ktd2692";
--	ctrl-gpios = <&gpc0 1 0>;
--	aux-gpios = <&gpc0 2 0>;
--	vin-supply = <&vbat>;
--
--	flash-led {
--		label = "ktd2692-flash";
--		led-max-microamp = <300000>;
--		flash-max-microamp = <1500000>;
--		flash-max-timeout-us = <1835000>;
--	};
--};
--- 
-2.35.1
+Cheers,
+Nathan
 
+> ---
+>  drivers/pci/pci.c |   10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> Index: linux-pm/drivers/pci/pci.c
+> ===================================================================
+> --- linux-pm.orig/drivers/pci/pci.c
+> +++ linux-pm/drivers/pci/pci.c
+> @@ -1245,7 +1245,7 @@ int pci_power_up(struct pci_dev *dev)
+>  
+>  	/* There's nothing more to do if current_state is D0 at this point. */
+>  	if (dev->current_state == PCI_D0)
+> -		return 0;
+> +		goto done;
+>  
+>  	/*
+>  	 * Program the device into PCI_D0 by forcing the entire word to 0 (this
+> @@ -1260,6 +1260,11 @@ int pci_power_up(struct pci_dev *dev)
+>  		udelay(PCI_PM_D2_DELAY);
+>  
+>  	dev->current_state = PCI_D0;
+> +
+> +done:
+> +	if (dev->bus->self)
+> +		pcie_aspm_pm_state_change(dev->bus->self);
+> +
+>  	return 1;
+>  
+>  fail:
+> @@ -1339,9 +1344,6 @@ static int pci_set_full_power_state(stru
+>  		pci_restore_bars(dev);
+>  	}
+>  
+> -	if (dev->bus->self)
+> -		pcie_aspm_pm_state_change(dev->bus->self);
+> -
+>  	return 0;
+>  }
+>  
+> 
+> 
+> 
