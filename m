@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E43C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357774AbiEDRdK (ORCPT
+        id S1358028AbiEDRdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
+        Wed, 4 May 2022 13:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356973AbiEDRJw (ORCPT
+        with ESMTP id S1356954AbiEDRJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6BB47542;
-        Wed,  4 May 2022 09:56:46 -0700 (PDT)
+        Wed, 4 May 2022 13:09:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32317473AE;
+        Wed,  4 May 2022 09:56:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47ED461808;
-        Wed,  4 May 2022 16:56:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E60C385AA;
-        Wed,  4 May 2022 16:56:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12E39617A6;
+        Wed,  4 May 2022 16:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 605A4C385AA;
+        Wed,  4 May 2022 16:56:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683405;
-        bh=TWdPe4Xc82lbZV5izywkdR/TuTC561cxN6pB2TDCNhw=;
+        s=korg; t=1651683401;
+        bh=hdoWo2RhsqsWgZIRmPbb7DxC3aFuG2ViZhr8JO9X6t8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qJ2KTlvWGPo1pWO+at1BCtOSt37M0zGxx+gDXQLjeXEKhVoO0/LKTeBwC0tooWi3P
-         NIxz8cUJFjEE+KkOKWzJvz4iFUD9dlt61eKm92SHaVPaq56uBdPXNDg7/ggSFw1NMm
-         4C8kTulk5OWw3zGuIZcZABZ4ch5l/m1sk/Kn6CZE=
+        b=TfI2kci8w3n/CelDbJEuhjXDVi7WZVLr2gWrl6ZzJ6twWj7zbmMuASsQytOzgBk6o
+         StMfh58fCKuyH3A1O0a6S/jUCwnOX+o93IW92k13sVTY38iKubzqIcsXJbMh/J4UVD
+         fuSBuf4FvA2qrjMcDtSs5xT5dWvP5FJn0FDR5mrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 076/225] phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
-Date:   Wed,  4 May 2022 18:45:14 +0200
-Message-Id: <20220504153118.115217172@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 072/225] iio:dac:ad3552r: Fix an IS_ERR() vs NULL check
+Date:   Wed,  4 May 2022 18:45:10 +0200
+Message-Id: <20220504153117.893992445@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,36 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 388ec8f079f2f20d5cd183c3bc6f33cbc3ffd3ef ]
+[ Upstream commit de3b9fe9609a05d3c354c6718ca657962d11d9fe ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+The fwnode_get_named_child_node() function does not return error
+pointers.  It returns NULL.  Update the check accordingly.
 
-Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220407091857.230386-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 8f2b54824b28 ("drivers:iio:dac: Add AD3552R driver support")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220404114244.GA19201@kili
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/dac/ad3552r.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
-index 9ec234243f7c..6c305a3fe187 100644
---- a/drivers/phy/samsung/phy-exynos5250-sata.c
-+++ b/drivers/phy/samsung/phy-exynos5250-sata.c
-@@ -187,6 +187,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 		return -EINVAL;
+diff --git a/drivers/iio/dac/ad3552r.c b/drivers/iio/dac/ad3552r.c
+index e0a93b27e0e8..d5ea1a1be122 100644
+--- a/drivers/iio/dac/ad3552r.c
++++ b/drivers/iio/dac/ad3552r.c
+@@ -809,10 +809,10 @@ static int ad3552r_configure_custom_gain(struct ad3552r_desc *dac,
  
- 	sata_phy->client = of_find_i2c_device_by_node(node);
-+	of_node_put(node);
- 	if (!sata_phy->client)
- 		return -EPROBE_DEFER;
+ 	gain_child = fwnode_get_named_child_node(child,
+ 						 "custom-output-range-config");
+-	if (IS_ERR(gain_child)) {
++	if (!gain_child) {
+ 		dev_err(dev,
+ 			"mandatory custom-output-range-config property missing\n");
+-		return PTR_ERR(gain_child);
++		return -EINVAL;
+ 	}
  
+ 	dac->ch_data[ch].range_override = 1;
 -- 
 2.35.1
 
