@@ -2,168 +2,378 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA9FC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348524AbiEDLIm (ORCPT
+        id S1348535AbiEDLKs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 07:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        Wed, 4 May 2022 07:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348523AbiEDLIk (ORCPT
+        with ESMTP id S239197AbiEDLKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 07:08:40 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDDA245AF;
-        Wed,  4 May 2022 04:05:00 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 02CF75FD03;
-        Wed,  4 May 2022 14:04:56 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1651662296;
-        bh=hp4dZx7e7B5x52z+YxyWS6SnKYtRvgq3EAaeLq15SDs=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=X/t9SQjjkOtxRknL2/11yTGGnCdaQdeC3Rgdc4Cfz2kZbMdv0Fhw3K1njpK77wv4W
-         2AQoNDg9pMVfi2xP6mPvTkexgH2spsvBfmkQXzGka+wc4emY56FlJZ8+5YnJo7c8zO
-         jAQsSjhVlapJDRWuRWb102Y7x40zEuZi8DjCmTFaY/c4QSc2KGBrdC0OlMRBo2l200
-         KQ0yRKfQh5fp1lhxCzwk910D9PTT/w5hJBBjhcOk/Q0CUVYaGubpb7r95CQYc/YhSQ
-         zzrsdZsr/OcT8QaYNLSbweXAFbJ0Ijj9ljdeDpBCpSgzaLpyy5BGsumsLYggPNtrIw
-         CfdSORLyHNHGw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed,  4 May 2022 14:04:54 +0300 (MSK)
-From:   Alexey Romanov <avromanov@sberdevices.ru>
-To:     <minchan@kernel.org>, <ngupta@vflare.org>,
-        <senozhatsky@chromium.org>, <linux-block@vger.kernel.org>
-CC:     <axboe@chromium.org>, <kernel@sberdevices.ru>,
-        <linux-kernel@vger.kernel.org>, <mnitenko@gmail.com>,
-        Alexey Romanov <avromanov@sberdevices.ru>,
-        Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Subject: [PATCH v3] zram: remove double compression logic
-Date:   Wed, 4 May 2022 14:04:42 +0300
-Message-ID: <20220504110442.59685-1-avromanov@sberdevices.ru>
-X-Mailer: git-send-email 2.33.0
+        Wed, 4 May 2022 07:10:45 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8784F24098
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 04:07:07 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmCqQ-0006y8-HV; Wed, 04 May 2022 13:06:58 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmCqQ-000IRW-Np; Wed, 04 May 2022 13:06:57 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmCqO-006AjO-Oa; Wed, 04 May 2022 13:06:56 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 2/2] net: phy: dp83td510: Add support for the DP83TD510 Ethernet PHY
+Date:   Wed,  4 May 2022 13:06:55 +0200
+Message-Id: <20220504110655.1470008-3-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220504110655.1470008-1-o.rempel@pengutronix.de>
+References: <20220504110655.1470008-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/04 08:31:00 #19348425
-X-KSMG-AntiVirus-Status: Clean, skipped
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 2nd trial allocation under per-cpu presumption has been
-used to prevent regression of allocation failure. However, it
-makes trouble for maintenance without significant benefit.
-The slowpath branch is executed extremely rarely: getting
-there is problematic. Therefore, we delete this branch.
+The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
+that supports 10M single pair cable.
 
-Signed-off-by: Alexey Romanov <avromanov@sberdevices.ru>
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+This driver was tested with NXP SJA1105, STMMAC and ASIX AX88772B USB Ethernet
+controller.
+
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/block/zram/zram_drv.c | 40 ++++++++---------------------------
- drivers/block/zram/zram_drv.h |  1 -
- 2 files changed, 9 insertions(+), 32 deletions(-)
+ drivers/net/phy/Kconfig     |   6 +
+ drivers/net/phy/Makefile    |   1 +
+ drivers/net/phy/dp83td510.c | 272 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 279 insertions(+)
+ create mode 100644 drivers/net/phy/dp83td510.c
 
-diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
-index cb253d80d72b..2eb614769d9d 100644
---- a/drivers/block/zram/zram_drv.c
-+++ b/drivers/block/zram/zram_drv.c
-@@ -1153,9 +1153,8 @@ static ssize_t debug_stat_show(struct device *dev,
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index bbbf6c07ea53..9fee639ee5c8 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -342,6 +342,12 @@ config DP83869_PHY
+ 	  Currently supports the DP83869 PHY.  This PHY supports copper and
+ 	  fiber connections.
  
- 	down_read(&zram->init_lock);
- 	ret = scnprintf(buf, PAGE_SIZE,
--			"version: %d\n%8llu %8llu\n",
-+			"version: %d\n%8llu\n",
- 			version,
--			(u64)atomic64_read(&zram->stats.writestall),
- 			(u64)atomic64_read(&zram->stats.miss_free));
- 	up_read(&zram->init_lock);
- 
-@@ -1373,7 +1372,6 @@ static int __zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
- 	}
- 	kunmap_atomic(mem);
- 
--compress_again:
- 	zstrm = zcomp_stream_get(zram->comp);
- 	src = kmap_atomic(page);
- 	ret = zcomp_compress(zstrm, src, &comp_len);
-@@ -1382,39 +1380,20 @@ static int __zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
- 	if (unlikely(ret)) {
- 		zcomp_stream_put(zram->comp);
- 		pr_err("Compression failed! err=%d\n", ret);
--		zs_free(zram->mem_pool, handle);
- 		return ret;
- 	}
- 
- 	if (comp_len >= huge_class_size)
- 		comp_len = PAGE_SIZE;
--	/*
--	 * handle allocation has 2 paths:
--	 * a) fast path is executed with preemption disabled (for
--	 *  per-cpu streams) and has __GFP_DIRECT_RECLAIM bit clear,
--	 *  since we can't sleep;
--	 * b) slow path enables preemption and attempts to allocate
--	 *  the page with __GFP_DIRECT_RECLAIM bit set. we have to
--	 *  put per-cpu compression stream and, thus, to re-do
--	 *  the compression once handle is allocated.
--	 *
--	 * if we have a 'non-null' handle here then we are coming
--	 * from the slow path and handle has already been allocated.
--	 */
--	if (!handle)
--		handle = zs_malloc(zram->mem_pool, comp_len,
--				__GFP_KSWAPD_RECLAIM |
--				__GFP_NOWARN |
--				__GFP_HIGHMEM |
--				__GFP_MOVABLE);
--	if (!handle) {
++config DP83TD510_PHY
++	tristate "Texas Instruments DP83TD510 Ethernet 10Base-T1L PHY"
++	help
++	  Support for the DP83TD510 Ethernet 10Base-T1L PHY. This PHY supports
++	  a 10M single pair Ethernet connection for up to 1000 meter cable.
 +
-+	handle = zs_malloc(zram->mem_pool, comp_len,
-+			__GFP_KSWAPD_RECLAIM |
-+			__GFP_NOWARN |
-+			__GFP_HIGHMEM |
-+			__GFP_MOVABLE);
+ config VITESSE_PHY
+ 	tristate "Vitesse PHYs"
+ 	help
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index b82651b57043..b12b1d86fc99 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -57,6 +57,7 @@ obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
+ obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
+ obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
+ obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
++obj-$(CONFIG_DP83TD510_PHY)	+= dp83td510.o
+ obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
+ obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
+ obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
+diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
+new file mode 100644
+index 000000000000..8f6b0cbed599
+--- /dev/null
++++ b/drivers/net/phy/dp83td510.c
+@@ -0,0 +1,272 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Driver for the Texas Instruments DP83TD510 PHY
++ * Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
++ */
 +
-+	if (unlikely(!handle)) {
- 		zcomp_stream_put(zram->comp);
--		atomic64_inc(&zram->stats.writestall);
--		handle = zs_malloc(zram->mem_pool, comp_len,
--				GFP_NOIO | __GFP_HIGHMEM |
--				__GFP_MOVABLE);
--		if (handle)
--			goto compress_again;
- 		return -ENOMEM;
- 	}
- 
-@@ -1975,7 +1954,6 @@ static int zram_add(void)
- 	if (ZRAM_LOGICAL_BLOCK_SIZE == PAGE_SIZE)
- 		blk_queue_max_write_zeroes_sectors(zram->disk->queue, UINT_MAX);
- 
--	blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, zram->disk->queue);
- 	ret = device_add_disk(NULL, zram->disk, zram_disk_groups);
- 	if (ret)
- 		goto out_cleanup_disk;
-diff --git a/drivers/block/zram/zram_drv.h b/drivers/block/zram/zram_drv.h
-index 80c3b43b4828..158c91e54850 100644
---- a/drivers/block/zram/zram_drv.h
-+++ b/drivers/block/zram/zram_drv.h
-@@ -81,7 +81,6 @@ struct zram_stats {
- 	atomic64_t huge_pages_since;	/* no. of huge pages since zram set up */
- 	atomic64_t pages_stored;	/* no. of pages currently stored */
- 	atomic_long_t max_used_pages;	/* no. of maximum pages stored */
--	atomic64_t writestall;		/* no. of write slow paths */
- 	atomic64_t miss_free;		/* no. of missed free */
- #ifdef	CONFIG_ZRAM_WRITEBACK
- 	atomic64_t bd_count;		/* no. of pages in backing device */
++#include <linux/bitfield.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/phy.h>
++
++#define DP83TD510E_PHY_ID			0x20000181
++
++/* MDIO_MMD_VEND2 registers */
++#define DP83TD510E_PHY_STS			0x10
++#define DP83TD510E_STS_MII_INT			BIT(7)
++#define DP83TD510E_LINK_STATUS			BIT(0)
++
++#define DP83TD510E_GEN_CFG			0x11
++#define DP83TD510E_GENCFG_INT_POLARITY		BIT(3)
++#define DP83TD510E_GENCFG_INT_EN		BIT(1)
++#define DP83TD510E_GENCFG_INT_OE		BIT(0)
++
++#define DP83TD510E_INTERRUPT_REG_1		0x12
++#define DP83TD510E_INT1_LINK			BIT(13)
++#define DP83TD510E_INT1_LINK_EN			BIT(5)
++
++#define DP83TD510E_AN_STAT_1			0x60c
++#define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
++
++static int dp83td510_config_intr(struct phy_device *phydev)
++{
++	int ret;
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		/* Clear any pending interrupts */
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_PHY_STS,
++				    0x0);
++		if (ret)
++			return ret;
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    DP83TD510E_INTERRUPT_REG_1,
++				    DP83TD510E_INT1_LINK_EN);
++		if (ret)
++			return ret;
++
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
++				       DP83TD510E_GEN_CFG,
++				       DP83TD510E_GENCFG_INT_POLARITY |
++				       DP83TD510E_GENCFG_INT_EN |
++				       DP83TD510E_GENCFG_INT_OE);
++	} else {
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    DP83TD510E_INTERRUPT_REG_1, 0x0);
++		if (ret)
++			return ret;
++
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
++					 DP83TD510E_GEN_CFG,
++					 DP83TD510E_GENCFG_INT_EN);
++		if (ret)
++			return ret;
++
++		/* Clear any pending interrupts */
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_PHY_STS,
++				    0x0);
++	}
++
++	return ret;
++}
++
++static irqreturn_t dp83td510_handle_interrupt(struct phy_device *phydev)
++{
++	int  ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_PHY_STS);
++	if (ret < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	} else if (!(ret & DP83TD510E_STS_MII_INT)) {
++		return IRQ_NONE;
++	}
++
++	/* Read the current enabled interrupts */
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_INTERRUPT_REG_1);
++	if (ret < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	} else if (!(ret & DP83TD510E_INT1_LINK_EN) ||
++		   !(ret & DP83TD510E_INT1_LINK)) {
++		return IRQ_NONE;
++	}
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
++static int dp83td510_read_status(struct phy_device *phydev)
++{
++	u16 phy_sts;
++	int ret, cfg;
++
++	phydev->speed = SPEED_UNKNOWN;
++	phydev->duplex = DUPLEX_UNKNOWN;
++	phydev->pause = 0;
++	phydev->asym_pause = 0;
++	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
++	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
++	linkmode_zero(phydev->lp_advertising);
++
++	phy_sts = phy_read(phydev, DP83TD510E_PHY_STS);
++
++	phydev->link = !!(phy_sts & DP83TD510E_LINK_STATUS);
++	if (phydev->link) {
++		/* This PHY supports only one link mode: 10BaseT1L_Full */
++		phydev->duplex = DUPLEX_FULL;
++		phydev->speed = SPEED_10;
++
++		if (phydev->autoneg == AUTONEG_ENABLE) {
++			ret = genphy_c45_read_lpa(phydev);
++			if (ret)
++				return ret;
++
++			phy_resolve_aneg_linkmode(phydev);
++		}
++	}
++
++	if (phydev->autoneg == AUTONEG_DISABLE) {
++		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD,
++				   MDIO_PMA_PMD_BT1_CTRL);
++		if (ret < 0)
++			return ret;
++
++		if (ret & MDIO_PMA_PMD_BT1_CTRL_CFG_MST) {
++			phydev->master_slave_get =
++				MASTER_SLAVE_CFG_MASTER_FORCE;
++			if (phydev->link)
++				phydev->master_slave_state =
++					MASTER_SLAVE_STATE_MASTER;
++		} else {
++			phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
++			if (phydev->link)
++				phydev->master_slave_state =
++					MASTER_SLAVE_STATE_SLAVE;
++		}
++	} else {
++		ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L);
++		if (ret < 0)
++			return ret;
++
++		cfg = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M);
++		if (cfg < 0)
++			return cfg;
++
++		if (ret & MDIO_AN_T1_ADV_L_FORCE_MS) {
++			if (cfg & MDIO_AN_T1_ADV_M_MST)
++				phydev->master_slave_get =
++					MASTER_SLAVE_CFG_MASTER_FORCE;
++			else
++				phydev->master_slave_get =
++					MASTER_SLAVE_CFG_SLAVE_FORCE;
++		} else {
++			if (cfg & MDIO_AN_T1_ADV_M_MST)
++				phydev->master_slave_get =
++					MASTER_SLAVE_CFG_MASTER_PREFERRED;
++			else
++				phydev->master_slave_get =
++					MASTER_SLAVE_CFG_SLAVE_PREFERRED;
++		}
++
++		ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
++				   DP83TD510E_AN_STAT_1);
++		if (ret < 0)
++			return ret;
++
++		if (ret & DP83TD510E_MASTER_SLAVE_RESOL_FAIL)
++			phydev->master_slave_state = MASTER_SLAVE_STATE_ERR;
++	}
++
++	return 0;
++}
++
++static int dp83td510_config_master_slave(struct phy_device *phydev)
++{
++	int ctl = 0;
++
++	switch (phydev->master_slave_set) {
++	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
++	case MASTER_SLAVE_CFG_MASTER_FORCE:
++		ctl = MDIO_PMA_PMD_BT1_CTRL_CFG_MST;
++		break;
++	case MASTER_SLAVE_CFG_SLAVE_FORCE:
++	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
++		break;
++	case MASTER_SLAVE_CFG_UNKNOWN:
++	case MASTER_SLAVE_CFG_UNSUPPORTED:
++		return 0;
++	default:
++		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
++		return -EOPNOTSUPP;
++	}
++
++	return phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL,
++			     MDIO_PMA_PMD_BT1_CTRL_CFG_MST, ctl);
++}
++
++static int dp83td510_config_aneg(struct phy_device *phydev)
++{
++	bool changed = false;
++	int ctl = 0;
++	int ret;
++
++	ret = dp83td510_config_master_slave(phydev);
++	if (ret < 0)
++		return ret;
++
++	if (phydev->autoneg == AUTONEG_DISABLE)
++		return genphy_c45_an_disable_aneg(phydev);
++
++	ret = genphy_c45_an_config_aneg(phydev);
++	if (ret < 0)
++		return ret;
++	if (ret > 0)
++		changed = true;
++
++	return genphy_c45_check_and_restart_aneg(phydev, changed);
++}
++
++static int dp83td510_get_features(struct phy_device *phydev)
++{
++	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
++	 * In case RMII mode is used (most meaningful mode for this PHY) and
++	 * the PHY do not have own XTAL, and CLK providing MAC is not probed,
++	 * we won't be able to read all needed ability registers.
++	 * So provide it manually.
++	 */
++
++	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
++			 phydev->supported);
++
++	return 0;
++}
++
++static struct phy_driver dp83td510_driver[] = {
++{
++	PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID),
++	.name		= "TI DP83TD510E",
++
++	.config_aneg	= dp83td510_config_aneg,
++	.read_status	= dp83td510_read_status,
++	.get_features	= dp83td510_get_features,
++	.config_intr	= dp83td510_config_intr,
++	.handle_interrupt = dp83td510_handle_interrupt,
++
++	.suspend	= genphy_suspend,
++	.resume		= genphy_resume,
++} };
++module_phy_driver(dp83td510_driver);
++
++static struct mdio_device_id __maybe_unused dp83td510_tbl[] = {
++	{ PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID) },
++	{ }
++};
++MODULE_DEVICE_TABLE(mdio, dp83td510_tbl);
++
++MODULE_DESCRIPTION("Texas Instruments DP83TD510E PHY driver");
++MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
++MODULE_LICENSE("GPL v2");
 -- 
-2.30.1
+2.30.2
 
