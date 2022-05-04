@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA70AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A853C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357353AbiEDRqE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        id S236598AbiEDRqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356363AbiEDRNl (ORCPT
+        with ESMTP id S1356389AbiEDRNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:13:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F57C4BFE9;
-        Wed,  4 May 2022 09:57:55 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7131E4BFF3;
+        Wed,  4 May 2022 09:57:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 217CCB827AC;
-        Wed,  4 May 2022 16:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA602C385A5;
-        Wed,  4 May 2022 16:57:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CC496193E;
+        Wed,  4 May 2022 16:57:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4796C385A4;
+        Wed,  4 May 2022 16:57:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683473;
-        bh=S6XRCJvSUct6wqJVjrr2tkLGkanNTlzpoeSxcEGtOSw=;
+        s=korg; t=1651683464;
+        bh=nU9hRqmoG+NR1e6QcNT5Gtc/DQw+zQxCB3nckjInEu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwjIiC0BwvuDGv7eV1LNGHt4Hn505NIKgofOeGeCPHQUsn/EjQOXP0oT+9mTyHtkn
-         zW+h3wcjzbbTgi6IJhuP1EyAMKHfbyTBN6c/bpqY0qaXzQ54hdIu2TA+vrCkek0riU
-         mfV7eWEmxCt6u2CGs3MFFYgQJgYUjFO7sLEDDuQ0=
+        b=pDZe9K+/A7IxVkyQ9bxuOp1ctGZO9YT1FyGPIv4rPTltqyhUheG6EB8Msz2dQCUst
+         5udpfsmhaqJJexiwjD+Pvvg8q38LG7x+DuKf1WTbk7tYlis35kpAndMTFTCzaFZhmR
+         VO2Qygl3YgHrRxsvc+XBnmYgzdkmExwDA5hFAlF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 148/225] gfs2: Minor retry logic cleanup
-Date:   Wed,  4 May 2022 18:46:26 +0200
-Message-Id: <20220504153123.338685522@linuxfoundation.org>
+Subject: [PATCH 5.17 126/225] bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
+Date:   Wed,  4 May 2022 18:46:04 +0200
+Message-Id: <20220504153121.646218439@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,84 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 124c458a401a2497f796e4f2d6cafac6edbea8e9 ]
+[ Upstream commit fff8c10368e64e7f8960f149375c12ca5f3b30af ]
 
-Clean up the retry logic in the read and write functions somewhat.
+This code is really spurious.
+It always returns an ERR_PTR, even when err is known to be 0 and calls
+put_device() after a successful device_register() call.
 
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+It is likely that the return statement in the normal path is missing.
+Add 'return rdev;' to fix it.
+
+Fixes: d787dcdb9c8f ("bus: sunxi-rsb: Add driver for Allwinner Reduced Serial Bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/ef2b9576350bba4c8e05e669e9535e9e2a415763.1650551719.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/file.c | 34 ++++++++++++++++------------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ drivers/bus/sunxi-rsb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index b53ad18e5ccb..de0122806fb3 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -851,9 +851,9 @@ static ssize_t gfs2_file_direct_read(struct kiocb *iocb, struct iov_iter *to,
- 		leftover = fault_in_iov_iter_writeable(to, window_size);
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
--			if (!gfs2_holder_queued(gh))
--				goto retry;
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(gh))
-+				goto retry_under_glock;
-+			goto retry;
- 		}
- 	}
- 	if (gfs2_holder_queued(gh))
-@@ -920,9 +920,9 @@ static ssize_t gfs2_file_direct_write(struct kiocb *iocb, struct iov_iter *from,
- 		leftover = fault_in_iov_iter_readable(from, window_size);
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
--			if (!gfs2_holder_queued(gh))
--				goto retry;
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(gh))
-+				goto retry_under_glock;
-+			goto retry;
- 		}
- 	}
- out:
-@@ -989,12 +989,11 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 		leftover = fault_in_iov_iter_writeable(to, window_size);
- 		gfs2_holder_disallow_demote(&gh);
- 		if (leftover != window_size) {
--			if (!gfs2_holder_queued(&gh)) {
--				if (written)
--					goto out_uninit;
--				goto retry;
--			}
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(&gh))
-+				goto retry_under_glock;
-+			if (written)
-+				goto out_uninit;
-+			goto retry;
- 		}
- 	}
- 	if (gfs2_holder_queued(&gh))
-@@ -1068,12 +1067,11 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
- 			from->count = min(from->count, window_size - leftover);
--			if (!gfs2_holder_queued(gh)) {
--				if (read)
--					goto out_uninit;
--				goto retry;
--			}
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(gh))
-+				goto retry_under_glock;
-+			if (read)
-+				goto out_uninit;
-+			goto retry;
- 		}
- 	}
- out_unlock:
+diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
+index 4566e730ef2b..60b082fe2ed0 100644
+--- a/drivers/bus/sunxi-rsb.c
++++ b/drivers/bus/sunxi-rsb.c
+@@ -227,6 +227,8 @@ static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
+ 
+ 	dev_dbg(&rdev->dev, "device %s registered\n", dev_name(&rdev->dev));
+ 
++	return rdev;
++
+ err_device_add:
+ 	put_device(&rdev->dev);
+ 
 -- 
 2.35.1
 
