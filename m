@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6181BC35280
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C87C352A8
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376943AbiEDRp3 (ORCPT
+        id S1376466AbiEDRpD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        Wed, 4 May 2022 13:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355910AbiEDRMb (ORCPT
+        with ESMTP id S1355792AbiEDRIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:12:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4174BFD2;
-        Wed,  4 May 2022 09:57:54 -0700 (PDT)
+        Wed, 4 May 2022 13:08:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861B551E73;
+        Wed,  4 May 2022 09:54:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1245B82795;
-        Wed,  4 May 2022 16:57:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9EA7C385A5;
-        Wed,  4 May 2022 16:57:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4B961851;
+        Wed,  4 May 2022 16:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 977CFC385A4;
+        Wed,  4 May 2022 16:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683460;
-        bh=0iMNgaBjHtLS3t6I6ylp1+Pz9b/WoZlybeTCOb/kz44=;
+        s=korg; t=1651683274;
+        bh=y1D8LeGMgAJ4kn6HvDYXfJHSZWVRSoy07IEQjK7OxQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUwCwVu1MGx29cqZYbcnBZAvVhN0y30drRtLJjgxzjxvAhj9SvpNsrar0GueoOrxn
-         qi6GJHi3475+XK6ev9vafsiUNNmhwBdPVipwPull5kRVTdQx/4biTqU1HNVUfP0cse
-         gPyGs1jCUrq/kc2ExzveWAp+FsWrnY/BqQSXrKWE=
+        b=OH+1C1qVje9NlIWUCtWCDENIq2U7rZeG/OkUXVEiIMC9vkH/4B5IQM2l5fC4oRW79
+         7A3HnhkD+BuIhhmlkYyR+MEsxyGbUWAMfkyPOcPHPpE39hXmX5nhZ6IHkhB+UrR7UY
+         RFBknQ9KI8AeSFydQ156ZJQcqPcOgLtpEl0hTaX4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 122/225] ip6_gre: Make o_seqno start from 0 in native mode
-Date:   Wed,  4 May 2022 18:46:00 +0200
-Message-Id: <20220504153121.344531416@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Woody Suwalski <wsuwalski@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 140/177] Revert "ACPI: processor: idle: fix lockup regression on 32-bit ThinkPad T40"
+Date:   Wed,  4 May 2022 18:45:33 +0200
+Message-Id: <20220504153105.772291535@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-[ Upstream commit fde98ae91f79cab4e020f40c35ed23cbdc59661c ]
+commit 20e582e16af24b074e583f9551fad557882a3c9d upstream.
 
-For IP6GRE and IP6GRETAP devices, currently o_seqno starts from 1 in
-native mode.  According to RFC 2890 2.2., "The first datagram is sent
-with a sequence number of 0."  Fix it.
+This reverts commit bfe55a1f7fd6bfede16078bf04c6250fbca11588.
 
-It is worth mentioning that o_seqno already starts from 0 in collect_md
-mode, see the "if (tunnel->parms.collect_md)" clause in __gre6_xmit(),
-where tunnel->o_seqno is passed to gre_build_header() before getting
-incremented.
+This was presumably misdiagnosed as an inability to use C3 at
+all when I suspect the real problem is just misconfiguration of
+C3 vs. ARB_DIS.
 
-Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
+Tested-by: Woody Suwalski <wsuwalski@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ip6_gre.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/acpi/processor_idle.c |    5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 976236736146..d9e4ac94eab4 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -724,6 +724,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- {
- 	struct ip6_tnl *tunnel = netdev_priv(dev);
- 	__be16 protocol;
-+	__be16 flags;
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -95,11 +95,6 @@ static const struct dmi_system_id proces
+ 	  DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
+ 	  DMI_MATCH(DMI_PRODUCT_NAME,"L8400B series Notebook PC")},
+ 	 (void *)1},
+-	/* T40 can not handle C3 idle state */
+-	{ set_max_cstate, "IBM ThinkPad T40", {
+-	  DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
+-	  DMI_MATCH(DMI_PRODUCT_NAME, "23737CU")},
+-	 (void *)2},
+ 	{},
+ };
  
- 	if (dev->type == ARPHRD_ETHER)
- 		IPCB(skb)->flags = 0;
-@@ -739,7 +740,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 	if (tunnel->parms.collect_md) {
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
--		__be16 flags;
- 		int tun_hlen;
- 
- 		tun_info = skb_tunnel_info_txcheck(skb);
-@@ -770,15 +770,14 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 						      : 0);
- 
- 	} else {
--		if (tunnel->parms.o_flags & TUNNEL_SEQ)
--			tunnel->o_seqno++;
--
- 		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
- 			return -ENOMEM;
- 
--		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
-+		flags = tunnel->parms.o_flags;
-+
-+		gre_build_header(skb, tunnel->tun_hlen, flags,
- 				 protocol, tunnel->parms.o_key,
--				 htonl(tunnel->o_seqno));
-+				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
- 	}
- 
- 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
--- 
-2.35.1
-
 
 
