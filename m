@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C461C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA6BC4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359853AbiEDRol (ORCPT
+        id S1359756AbiEDRoh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        Wed, 4 May 2022 13:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355850AbiEDRIx (ORCPT
+        with ESMTP id S1355700AbiEDRLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F10522D1;
-        Wed,  4 May 2022 09:54:38 -0700 (PDT)
+        Wed, 4 May 2022 13:11:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4586C4B84F;
+        Wed,  4 May 2022 09:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F03FAB827A1;
-        Wed,  4 May 2022 16:54:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B826C385AF;
-        Wed,  4 May 2022 16:54:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4148E61931;
+        Wed,  4 May 2022 16:57:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83C0AC385B0;
+        Wed,  4 May 2022 16:57:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683275;
-        bh=/1yeXMa6uf99VEUn8qt+TxYPCMGa6OAgd4dvwWp1OYA=;
+        s=korg; t=1651683453;
+        bh=/A+odwv5Yvew3AOTh02sjc0/Z7SqTQ27aOwXw5tyGf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/0ozO4Mj8a4KYGTvmKoanUzCgMJiaaw617Y3/DAYx8es3SkldOlvwxF02gt1J71w
-         RlgnQHsR2jSRpvIAiTC0jLYdYIxPQuek0b8L2BUVeQJ4iao9IUD0TENCkMpbcRh2yP
-         4RFmm7FOUyR6Qq4QRRZ2w3nTas67ss+39JzCKk84=
+        b=D6T/1G2m9kGJT17n+ITDhN7kxkknbV9u9qlSb17HimpYEwRvk7N5nAEjMZZ8imMHv
+         iE9Twp2vgbkXHJtB5SMAujXpsxKi4opuK2jzsSqtRxC5JKC0tDlq9MeklrHpU8AgXb
+         o34+1OORKedsDsKJwFg02Pdr6vGF7V46OPEkiA38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Hans Holmberg <hans.holmberg@wdc.com>
-Subject: [PATCH 5.15 141/177] zonefs: Fix management of open zones
-Date:   Wed,  4 May 2022 18:45:34 +0200
-Message-Id: <20220504153105.876861977@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 106/225] pinctrl: stm32: Keep pinctrl block clock enabled when LEVEL IRQ requested
+Date:   Wed,  4 May 2022 18:45:44 +0200
+Message-Id: <20220504153120.111947447@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,126 +55,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Marek Vasut <marex@denx.de>
 
-commit 1da18a296f5ba4f99429e62a7cf4fdbefa598902 upstream.
+[ Upstream commit 05d8af449d93e04547b4c6b328e39c890bc803f4 ]
 
-The mount option "explicit_open" manages the device open zone
-resources to ensure that if an application opens a sequential file for
-writing, the file zone can always be written by explicitly opening
-the zone and accounting for that state with the s_open_zones counter.
+The current EOI handler for LEVEL triggered interrupts calls clk_enable(),
+register IO, clk_disable(). The clock manipulation requires locking which
+happens with IRQs disabled in clk_enable_lock(). Instead of turning the
+clock on and off all the time, enable the clock in case LEVEL interrupt is
+requested and keep the clock enabled until all LEVEL interrupts are freed.
+The LEVEL interrupts are an exception on this platform and seldom used, so
+this does not affect the common case.
 
-However, if some zones are already open when mounting, the device open
-zone resource usage status will be larger than the initial s_open_zones
-value of 0. Ensure that this inconsistency does not happen by closing
-any sequential zone that is open when mounting.
+This simplifies the LEVEL interrupt handling considerably and also fixes
+the following splat found when using preempt-rt:
+ ------------[ cut here ]------------
+ WARNING: CPU: 0 PID: 0 at kernel/locking/rtmutex.c:2040 __rt_mutex_trylock+0x37/0x62
+ Modules linked in:
+ CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.109-rt65-stable-standard-00068-g6a5afc4b1217 #85
+ Hardware name: STM32 (Device Tree Support)
+ [<c010a45d>] (unwind_backtrace) from [<c010766f>] (show_stack+0xb/0xc)
+ [<c010766f>] (show_stack) from [<c06353ab>] (dump_stack+0x6f/0x84)
+ [<c06353ab>] (dump_stack) from [<c01145e3>] (__warn+0x7f/0xa4)
+ [<c01145e3>] (__warn) from [<c063386f>] (warn_slowpath_fmt+0x3b/0x74)
+ [<c063386f>] (warn_slowpath_fmt) from [<c063b43d>] (__rt_mutex_trylock+0x37/0x62)
+ [<c063b43d>] (__rt_mutex_trylock) from [<c063c053>] (rt_spin_trylock+0x7/0x16)
+ [<c063c053>] (rt_spin_trylock) from [<c036a2f3>] (clk_enable_lock+0xb/0x80)
+ [<c036a2f3>] (clk_enable_lock) from [<c036ba69>] (clk_core_enable_lock+0x9/0x18)
+ [<c036ba69>] (clk_core_enable_lock) from [<c034e9f3>] (stm32_gpio_get+0x11/0x24)
+ [<c034e9f3>] (stm32_gpio_get) from [<c034ef43>] (stm32_gpio_irq_trigger+0x1f/0x48)
+ [<c034ef43>] (stm32_gpio_irq_trigger) from [<c014aa53>] (handle_fasteoi_irq+0x71/0xa8)
+ [<c014aa53>] (handle_fasteoi_irq) from [<c0147111>] (generic_handle_irq+0x19/0x22)
+ [<c0147111>] (generic_handle_irq) from [<c014752d>] (__handle_domain_irq+0x55/0x64)
+ [<c014752d>] (__handle_domain_irq) from [<c0346f13>] (gic_handle_irq+0x53/0x64)
+ [<c0346f13>] (gic_handle_irq) from [<c0100ba5>] (__irq_svc+0x65/0xc0)
+ Exception stack(0xc0e01f18 to 0xc0e01f60)
+ 1f00:                                                       0000300c 00000000
+ 1f20: 0000300c c010ff01 00000000 00000000 c0e00000 c0e07714 00000001 c0e01f78
+ 1f40: c0e07758 00000000 ef7cd0ff c0e01f68 c010554b c0105542 40000033 ffffffff
+ [<c0100ba5>] (__irq_svc) from [<c0105542>] (arch_cpu_idle+0xc/0x1e)
+ [<c0105542>] (arch_cpu_idle) from [<c063be95>] (default_idle_call+0x21/0x3c)
+ [<c063be95>] (default_idle_call) from [<c01324f7>] (do_idle+0xe3/0x1e4)
+ [<c01324f7>] (do_idle) from [<c01327b3>] (cpu_startup_entry+0x13/0x14)
+ [<c01327b3>] (cpu_startup_entry) from [<c0a00c13>] (start_kernel+0x397/0x3d4)
+ [<c0a00c13>] (start_kernel) from [<00000000>] (0x0)
+ ---[ end trace 0000000000000002 ]---
 
-Furthermore, with ZNS drives, closing an explicitly open zone that has
-not been written will change the zone state to "closed", that is, the
-zone will remain in an active state. Since this can then cause failures
-of explicit open operations on other zones if the drive active zone
-resources are exceeded, we need to make sure that the zone is not
-active anymore by resetting it instead of closing it. To address this,
-zonefs_zone_mgmt() is modified to change a REQ_OP_ZONE_CLOSE request
-into a REQ_OP_ZONE_RESET for sequential zones that have not been
-written.
+Power consumption measured on STM32MP157C DHCOM SoM is not increased or
+is below noise threshold.
 
-Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+To: linux-gpio@vger.kernel.org
+Reviewed-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
+Link: https://lore.kernel.org/r/20220421140827.214088-1-marex@denx.de
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/zonefs/super.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 40 insertions(+), 5 deletions(-)
+ drivers/pinctrl/stm32/pinctrl-stm32.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -35,6 +35,17 @@ static inline int zonefs_zone_mgmt(struc
- 
- 	lockdep_assert_held(&zi->i_truncate_mutex);
- 
-+	/*
-+	 * With ZNS drives, closing an explicitly open zone that has not been
-+	 * written will change the zone state to "closed", that is, the zone
-+	 * will remain active. Since this can then cause failure of explicit
-+	 * open operation on other zones if the drive active zone resources
-+	 * are exceeded, make sure that the zone does not remain active by
-+	 * resetting it.
-+	 */
-+	if (op == REQ_OP_ZONE_CLOSE && !zi->i_wpoffset)
-+		op = REQ_OP_ZONE_RESET;
-+
- 	trace_zonefs_zone_mgmt(inode, op);
- 	ret = blkdev_zone_mgmt(inode->i_sb->s_bdev, op, zi->i_zsector,
- 			       zi->i_zone_size >> SECTOR_SHIFT, GFP_NOFS);
-@@ -1295,12 +1306,13 @@ static void zonefs_init_dir_inode(struct
- 	inc_nlink(parent);
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+index df1d6b466fb7..f7c9459f6628 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -225,6 +225,13 @@ static void stm32_gpio_free(struct gpio_chip *chip, unsigned offset)
+ 	pinctrl_gpio_free(chip->base + offset);
  }
  
--static void zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
--				   enum zonefs_ztype type)
-+static int zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
-+				  enum zonefs_ztype type)
++static int stm32_gpio_get_noclk(struct gpio_chip *chip, unsigned int offset)
++{
++	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
++
++	return !!(readl_relaxed(bank->base + STM32_GPIO_IDR) & BIT(offset));
++}
++
+ static int stm32_gpio_get(struct gpio_chip *chip, unsigned offset)
  {
- 	struct super_block *sb = inode->i_sb;
- 	struct zonefs_sb_info *sbi = ZONEFS_SB(sb);
- 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
-+	int ret = 0;
+ 	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
+@@ -232,7 +239,7 @@ static int stm32_gpio_get(struct gpio_chip *chip, unsigned offset)
  
- 	inode->i_ino = zone->start >> sbi->s_zone_sectors_shift;
- 	inode->i_mode = S_IFREG | sbi->s_perm;
-@@ -1325,6 +1337,22 @@ static void zonefs_init_file_inode(struc
- 	sb->s_maxbytes = max(zi->i_max_size, sb->s_maxbytes);
- 	sbi->s_blocks += zi->i_max_size >> sb->s_blocksize_bits;
- 	sbi->s_used_blocks += zi->i_wpoffset >> sb->s_blocksize_bits;
+ 	clk_enable(bank->clk);
+ 
+-	ret = !!(readl_relaxed(bank->base + STM32_GPIO_IDR) & BIT(offset));
++	ret = stm32_gpio_get_noclk(chip, offset);
+ 
+ 	clk_disable(bank->clk);
+ 
+@@ -316,7 +323,7 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
+ 		return;
+ 
+ 	/* If level interrupt type then retrig */
+-	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
++	level = stm32_gpio_get_noclk(&bank->gpio_chip, d->hwirq);
+ 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
+ 	    (level == 1 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_HIGH))
+ 		irq_chip_retrigger_hierarchy(d);
+@@ -358,6 +365,7 @@ static int stm32_gpio_irq_request_resources(struct irq_data *irq_data)
+ {
+ 	struct stm32_gpio_bank *bank = irq_data->domain->host_data;
+ 	struct stm32_pinctrl *pctl = dev_get_drvdata(bank->gpio_chip.parent);
++	unsigned long flags;
+ 	int ret;
+ 
+ 	ret = stm32_gpio_direction_input(&bank->gpio_chip, irq_data->hwirq);
+@@ -371,6 +379,10 @@ static int stm32_gpio_irq_request_resources(struct irq_data *irq_data)
+ 		return ret;
+ 	}
+ 
++	flags = irqd_get_trigger_type(irq_data);
++	if (flags & IRQ_TYPE_LEVEL_MASK)
++		clk_enable(bank->clk);
 +
-+	/*
-+	 * For sequential zones, make sure that any open zone is closed first
-+	 * to ensure that the initial number of open zones is 0, in sync with
-+	 * the open zone accounting done when the mount option
-+	 * ZONEFS_MNTOPT_EXPLICIT_OPEN is used.
-+	 */
-+	if (type == ZONEFS_ZTYPE_SEQ &&
-+	    (zone->cond == BLK_ZONE_COND_IMP_OPEN ||
-+	     zone->cond == BLK_ZONE_COND_EXP_OPEN)) {
-+		mutex_lock(&zi->i_truncate_mutex);
-+		ret = zonefs_zone_mgmt(inode, REQ_OP_ZONE_CLOSE);
-+		mutex_unlock(&zi->i_truncate_mutex);
-+	}
-+
-+	return ret;
+ 	return 0;
  }
  
- static struct dentry *zonefs_create_inode(struct dentry *parent,
-@@ -1334,6 +1362,7 @@ static struct dentry *zonefs_create_inod
- 	struct inode *dir = d_inode(parent);
- 	struct dentry *dentry;
- 	struct inode *inode;
-+	int ret;
+@@ -378,6 +390,9 @@ static void stm32_gpio_irq_release_resources(struct irq_data *irq_data)
+ {
+ 	struct stm32_gpio_bank *bank = irq_data->domain->host_data;
  
- 	dentry = d_alloc_name(parent, name);
- 	if (!dentry)
-@@ -1344,10 +1373,16 @@ static struct dentry *zonefs_create_inod
- 		goto dput;
- 
- 	inode->i_ctime = inode->i_mtime = inode->i_atime = dir->i_ctime;
--	if (zone)
--		zonefs_init_file_inode(inode, zone, type);
--	else
-+	if (zone) {
-+		ret = zonefs_init_file_inode(inode, zone, type);
-+		if (ret) {
-+			iput(inode);
-+			goto dput;
-+		}
-+	} else {
- 		zonefs_init_dir_inode(dir, inode, type);
-+	}
++	if (bank->irq_type[irq_data->hwirq] & IRQ_TYPE_LEVEL_MASK)
++		clk_disable(bank->clk);
 +
- 	d_add(dentry, inode);
- 	dir->i_size++;
+ 	gpiochip_unlock_as_irq(&bank->gpio_chip, irq_data->hwirq);
+ }
  
+-- 
+2.35.1
+
 
 
