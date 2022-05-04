@@ -2,223 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B79A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 074B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348870AbiEDLgU (ORCPT
+        id S1348872AbiEDLgZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 07:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
+        Wed, 4 May 2022 07:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348863AbiEDLgM (ORCPT
+        with ESMTP id S1348858AbiEDLgS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 07:36:12 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898862B187;
-        Wed,  4 May 2022 04:32:36 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KtZSL71Lqz9sT2;
-        Wed,  4 May 2022 13:32:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id IAc3H3RRv0Gv; Wed,  4 May 2022 13:32:34 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KtZSL64ZWz9sSn;
-        Wed,  4 May 2022 13:32:34 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id BDB218B77C;
-        Wed,  4 May 2022 13:32:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id v9H-M2I-5IVQ; Wed,  4 May 2022 13:32:34 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 93CC98B763;
-        Wed,  4 May 2022 13:32:34 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 244BWP5d928246
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 4 May 2022 13:32:25 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 244BWOUT928245;
-        Wed, 4 May 2022 13:32:24 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Douglas Miller <dougmill@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Ishizaki Kou <kou.ishizaki@toshiba.co.jp>,
-        Geoff Levand <geoff@infradead.org>, tanghui20@huawei.com
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v3] net: ethernet: Prepare cleanup of powerpc's asm/prom.h
-Date:   Wed,  4 May 2022 13:32:17 +0200
-Message-Id: <09a13d592d628de95d30943e59b2170af5b48110.1651663857.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Wed, 4 May 2022 07:36:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E15B72BB35
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 04:32:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651663960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xSmRyvY5USUJK4bqOwkMxhLEWYFefLvLLVRpwsW24V4=;
+        b=JKhqgmAztVTPamoAqkHcjBpDzjHX1qT0odi3JFJ5jb1+fkz5vxb/5TzYPc3gsuobuDHccD
+        r7X3+LKSh904KvAkKpAlbqjYjaVvQ+ymBflmIq4+LwFuijVJhsI6st0Oh74lJpD8T4GG+J
+        838FURjc1xFUZNKxLoSI4YEQLWzeo98=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-150-vlKWuOsYMfCvp3-xYseHkw-1; Wed, 04 May 2022 07:32:39 -0400
+X-MC-Unique: vlKWuOsYMfCvp3-xYseHkw-1
+Received: by mail-wr1-f69.google.com with SMTP id m8-20020adfc588000000b0020c4edd8a57so277336wrg.10
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 04:32:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xSmRyvY5USUJK4bqOwkMxhLEWYFefLvLLVRpwsW24V4=;
+        b=yi2pKkVFOC3iX7JziJrdNlpQ2OFO8pxOWta0Pw7eruczdUcyTqfdXGO5pS/+qPR/Gr
+         2tK1jwUH24V27oNH3fnGuZHyggJYFKSZaQhLhrb2a8KW49UlB8dpsBej6yoR8cSGBWEv
+         j+x3o6HgdNFJmvvljDleE5HnfqojHaRWOmwOngGO5ijh+9cenCRiCekkdVSicQyQi5PQ
+         z2eK4ETcYGgEqjVjDLJqRX0uvWe8+StGZqvvh+bSyDzqUjAblmfRdi2PsSw61i8/jm4r
+         irCveIOjvATqTckhU0k2hbdLhl3e8AtpzL/7exiPbcLG2dK5Gh7ZdTpOi42AMSxS9HTQ
+         373g==
+X-Gm-Message-State: AOAM530vp4xgo/M+WYKt9rgCuZoGUrkpr8uqFmedaCkJ2sJ0cPaBckfj
+        E9T6WqrW+b+1L0+wY+M3ETK0azicNy2mqSoqvNOWTENtNNRevZJO8+7yFSd/aGRGB8hB8+b0WjL
+        Nh1ovjex8vdcccHdfMIEAZRNcm3H9VwfknWTeEFgfLQNW1IjfpjCi3L4ANRY7wKUVXAGV+/LwVn
+        E=
+X-Received: by 2002:a7b:ce08:0:b0:394:32df:2ae6 with SMTP id m8-20020a7bce08000000b0039432df2ae6mr7189960wmc.184.1651663958465;
+        Wed, 04 May 2022 04:32:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwA5wXaWnN+rrsK5flhGj5h/2tfXvIEclG8Wrk1xlOuCGc80m9A3smlCSu4+D4IoWK24dOV7Q==
+X-Received: by 2002:a7b:ce08:0:b0:394:32df:2ae6 with SMTP id m8-20020a7bce08000000b0039432df2ae6mr7189946wmc.184.1651663958176;
+        Wed, 04 May 2022 04:32:38 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id m6-20020a05600c3b0600b0039429bfebeasm4958174wms.2.2022.05.04.04.32.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 04:32:37 -0700 (PDT)
+Message-ID: <bfb03d40-a023-12a9-9554-1b6e6c474134@redhat.com>
+Date:   Wed, 4 May 2022 13:32:37 +0200
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1651663936; l=5364; s=20211009; h=from:subject:message-id; bh=ABxpX9a6zN4yk0JfFY3tXrQWdpjpK7KccQt1/iNp6P8=; b=dYEsA9gXFRNZ8TEqsyBJ6e6QoH0WUunlshP+ueozeegTsKcWz8bUmGZE0fYBkdtgU8lD34mfAMgf hKL9Mgx/CEJpwy+ccz0KBP6KrtsCJWOX5C+qi1u+9XPwiCE6JopF
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/3] drm: Allow simpledrm to setup its emulated FB as
+ firmware provided
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        dri-devel@lists.freedesktop.org
+References: <20220503071540.471667-1-javierm@redhat.com>
+ <20220503071540.471667-4-javierm@redhat.com>
+ <YnJcaaDcIsJKhSwQ@phenom.ffwll.local>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YnJcaaDcIsJKhSwQ@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-powerpc's asm/prom.h includes some headers that it doesn't
-need itself.
+On 5/4/22 12:58, Daniel Vetter wrote:
+> On Tue, May 03, 2022 at 09:15:40AM +0200, Javier Martinez Canillas wrote:
+>> Indicate to fbdev subsystem that the registered framebuffer is provided by
+>> the system firmware, so that it can handle accordingly. For example, would
+>> unregister the FB devices if asked to remove the conflicting framebuffers.
+>>
+>> Add a new DRM_FB_FW field to drm_fbdev_generic_setup() options parameter.
+>> Drivers can use this to indicate the FB helper initialization that the FB
+>> registered is provided by the firmware, so it can be configured as such.
+>>
+>> Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
+>> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+>> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+>> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>> ---
+>>
+>> Changes in v3:
+>> - Drop the firmware local variable (Laurent Pinchart).
+>> - Use DRM_FB_OPTION() since DRM_FB_SET_OPTION() got renamed (kernel test robot).
+> 
+> Just for the record what I brought up on irc already:
+> 
+> FBINFO_MISC_FIRMWARE is purely an internal flag with no uapi impact, and
+> it's only to control whether we nuke this from
+> remove_conflicting_framebuffer or not. Since simpledrm only ever binds
+> against sysfb I think it'd be cleaner to only rely on that, and relegate
 
-In order to clean powerpc's asm/prom.h up in a further step,
-first clean all files that include asm/prom.h
+That's not actually true. The OF subsystem also registers "simple-framebuffer"
+devices when there are Device Tree nodes that contain a "simple-framebuffer"
+compatible string. In that case these pdev will also bind against simpledrm.
 
-Some files don't need asm/prom.h at all. For those ones,
-just remove inclusion of asm/prom.h
+> that entire FBINFO_MISC_FIRMWARE misc hack to the fbdev dungeons and let
+> it quietly wither away there.
+>
+> Also I'm not a huge fan of these midlayer flags in general :-)
 
-Some files don't need any of the items provided by asm/prom.h,
-but need some of the headers included by asm/prom.h. For those
-ones, add the needed headers that are brought by asm/prom.h at
-the moment and remove asm/prom.h
+And while I agree with you that these midlayer flags are horrible, that is
+what any other fbdev that makes use of a firmware-provided framebuffer set,
+so simpledrm emulated fbdev shouldn't be the exception IMO.
 
-Some files really need asm/prom.h but also need some of the
-headers included by asm/prom.h. For those one, leave asm/prom.h
-but also add the needed headers so that they can be removed
-from asm/prom.h in a later step.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v3: Slightly rephrased commit description based on Paolo's comments
-
-v2: More detailed commit description
----
- drivers/net/ethernet/apple/bmac.c                | 1 -
- drivers/net/ethernet/apple/mace.c                | 1 -
- drivers/net/ethernet/freescale/fec_mpc52xx.c     | 2 ++
- drivers/net/ethernet/freescale/fec_mpc52xx_phy.c | 1 +
- drivers/net/ethernet/ibm/ehea/ehea.h             | 1 +
- drivers/net/ethernet/ibm/ehea/ehea_main.c        | 2 ++
- drivers/net/ethernet/ibm/ibmvnic.c               | 1 +
- drivers/net/ethernet/sun/sungem.c                | 1 -
- drivers/net/ethernet/toshiba/spider_net.c        | 1 +
- 9 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
-index 4d2ba30c2fbd..334de0d93c89 100644
---- a/drivers/net/ethernet/apple/bmac.c
-+++ b/drivers/net/ethernet/apple/bmac.c
-@@ -25,7 +25,6 @@
- #include <linux/ethtool.h>
- #include <linux/slab.h>
- #include <linux/pgtable.h>
--#include <asm/prom.h>
- #include <asm/dbdma.h>
- #include <asm/io.h>
- #include <asm/page.h>
-diff --git a/drivers/net/ethernet/apple/mace.c b/drivers/net/ethernet/apple/mace.c
-index 6f8c91eb1263..d0a771b65e88 100644
---- a/drivers/net/ethernet/apple/mace.c
-+++ b/drivers/net/ethernet/apple/mace.c
-@@ -20,7 +20,6 @@
- #include <linux/bitrev.h>
- #include <linux/slab.h>
- #include <linux/pgtable.h>
--#include <asm/prom.h>
- #include <asm/dbdma.h>
- #include <asm/io.h>
- #include <asm/macio.h>
-diff --git a/drivers/net/ethernet/freescale/fec_mpc52xx.c b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-index be0bd4b44926..5ddb769bdfb4 100644
---- a/drivers/net/ethernet/freescale/fec_mpc52xx.c
-+++ b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-@@ -29,7 +29,9 @@
- #include <linux/crc32.h>
- #include <linux/hardirq.h>
- #include <linux/delay.h>
-+#include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/of_platform.h>
-diff --git a/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c b/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c
-index b5497e308302..f85b5e81dfc1 100644
---- a/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c
-+++ b/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c
-@@ -15,6 +15,7 @@
- #include <linux/phy.h>
- #include <linux/of_platform.h>
- #include <linux/slab.h>
-+#include <linux/of_address.h>
- #include <linux/of_mdio.h>
- #include <asm/io.h>
- #include <asm/mpc52xx.h>
-diff --git a/drivers/net/ethernet/ibm/ehea/ehea.h b/drivers/net/ethernet/ibm/ehea/ehea.h
-index b140835d4c23..208c440a602b 100644
---- a/drivers/net/ethernet/ibm/ehea/ehea.h
-+++ b/drivers/net/ethernet/ibm/ehea/ehea.h
-@@ -19,6 +19,7 @@
- #include <linux/ethtool.h>
- #include <linux/vmalloc.h>
- #include <linux/if_vlan.h>
-+#include <linux/platform_device.h>
- 
- #include <asm/ibmebus.h>
- #include <asm/io.h>
-diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
-index bad94e4d50f4..8ce3348edf08 100644
---- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
-+++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
-@@ -29,6 +29,8 @@
- #include <asm/kexec.h>
- #include <linux/mutex.h>
- #include <linux/prefetch.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include <net/ip.h>
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 5c5931dba51d..09d3fa87a097 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -53,6 +53,7 @@
- #include <linux/ip.h>
- #include <linux/ipv6.h>
- #include <linux/irq.h>
-+#include <linux/irqdomain.h>
- #include <linux/kthread.h>
- #include <linux/seq_file.h>
- #include <linux/interrupt.h>
-diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
-index 036856102c50..45bd89153de2 100644
---- a/drivers/net/ethernet/sun/sungem.c
-+++ b/drivers/net/ethernet/sun/sungem.c
-@@ -52,7 +52,6 @@
- #endif
- 
- #ifdef CONFIG_PPC_PMAC
--#include <asm/prom.h>
- #include <asm/machdep.h>
- #include <asm/pmac_feature.h>
- #endif
-diff --git a/drivers/net/ethernet/toshiba/spider_net.c b/drivers/net/ethernet/toshiba/spider_net.c
-index f47b8358669d..eeee4f7ae444 100644
---- a/drivers/net/ethernet/toshiba/spider_net.c
-+++ b/drivers/net/ethernet/toshiba/spider_net.c
-@@ -35,6 +35,7 @@
- #include <linux/wait.h>
- #include <linux/workqueue.h>
- #include <linux/bitops.h>
-+#include <linux/of.h>
- #include <net/checksum.h>
- 
- #include "spider_net.h"
 -- 
-2.35.1
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
