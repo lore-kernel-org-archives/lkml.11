@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA62C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C461C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359603AbiEDRo1 (ORCPT
+        id S1359853AbiEDRol (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
+        Wed, 4 May 2022 13:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355927AbiEDRI4 (ORCPT
+        with ESMTP id S1355850AbiEDRIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AE5522E8;
-        Wed,  4 May 2022 09:54:42 -0700 (PDT)
+        Wed, 4 May 2022 13:08:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F10522D1;
+        Wed,  4 May 2022 09:54:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 466A761505;
-        Wed,  4 May 2022 16:54:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9143FC385A4;
-        Wed,  4 May 2022 16:54:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F03FAB827A1;
+        Wed,  4 May 2022 16:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B826C385AF;
+        Wed,  4 May 2022 16:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683281;
-        bh=aEDMA/3oe/qWVXNiG9wL+UoIZG5uPLMm54IzJ4kwM5c=;
+        s=korg; t=1651683275;
+        bh=/1yeXMa6uf99VEUn8qt+TxYPCMGa6OAgd4dvwWp1OYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5A9/qREI3rr1L6UwIbajqV94SHLVNF7eXTP4tu9S+WMMgjgvZJuvJh/6jDYpj2op
-         dr0qg41VwhoPblEmEU+MEXutqTlZ7ff77fY+Q/hyKrWpd80TZnRkv1v2hZLk3QAaZF
-         gZ8JuEOhCeaCyi0TK2MOCAHhwZfpea6ahaJnyMyU=
+        b=j/0ozO4Mj8a4KYGTvmKoanUzCgMJiaaw617Y3/DAYx8es3SkldOlvwxF02gt1J71w
+         RlgnQHsR2jSRpvIAiTC0jLYdYIxPQuek0b8L2BUVeQJ4iao9IUD0TENCkMpbcRh2yP
+         4RFmm7FOUyR6Qq4QRRZ2w3nTas67ss+39JzCKk84=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 134/177] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
-Date:   Wed,  4 May 2022 18:45:27 +0200
-Message-Id: <20220504153105.187160754@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Hans Holmberg <hans.holmberg@wdc.com>
+Subject: [PATCH 5.15 141/177] zonefs: Fix management of open zones
+Date:   Wed,  4 May 2022 18:45:34 +0200
+Message-Id: <20220504153105.876861977@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,51 +51,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
+commit 1da18a296f5ba4f99429e62a7cf4fdbefa598902 upstream.
 
-The first "if" condition in __memcpy_flushcache is supposed to align the
-"dest" variable to 8 bytes and copy data up to this alignment.  However,
-this condition may misbehave if "size" is greater than 4GiB.
+The mount option "explicit_open" manages the device open zone
+resources to ensure that if an application opens a sequential file for
+writing, the file zone can always be written by explicitly opening
+the zone and accounting for that state with the s_open_zones counter.
 
-The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
-arguments to unsigned int and selects the smaller one.  However, the
-cast truncates high bits in "size" and it results in misbehavior.
+However, if some zones are already open when mounting, the device open
+zone resource usage status will be larger than the initial s_open_zones
+value of 0. Ensure that this inconsistency does not happen by closing
+any sequential zone that is open when mounting.
 
-For example:
+Furthermore, with ZNS drives, closing an explicitly open zone that has
+not been written will change the zone state to "closed", that is, the
+zone will remain in an active state. Since this can then cause failures
+of explicit open operations on other zones if the drive active zone
+resources are exceeded, we need to make sure that the zone is not
+active anymore by resetting it instead of closing it. To address this,
+zonefs_zone_mgmt() is modified to change a REQ_OP_ZONE_CLOSE request
+into a REQ_OP_ZONE_RESET for sequential zones that have not been
+written.
 
-	suppose that size == 0x100000001, dest == 0x200000002
-	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
-	...
-	dest += 0x1;
-
-so we copy just one byte "and" dest remains unaligned.
-
-This patch fixes the bug by replacing unsigned with size_t.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/usercopy_64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/zonefs/super.c |   45 ++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 40 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
-index 508c81e97ab1..f1c0befb62df 100644
---- a/arch/x86/lib/usercopy_64.c
-+++ b/arch/x86/lib/usercopy_64.c
-@@ -121,7 +121,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
+--- a/fs/zonefs/super.c
++++ b/fs/zonefs/super.c
+@@ -35,6 +35,17 @@ static inline int zonefs_zone_mgmt(struc
  
- 	/* cache copy and flush to align dest */
- 	if (!IS_ALIGNED(dest, 8)) {
--		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
-+		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
+ 	lockdep_assert_held(&zi->i_truncate_mutex);
  
- 		memcpy((void *) dest, (void *) source, len);
- 		clean_cache_range((void *) dest, len);
--- 
-2.35.1
-
++	/*
++	 * With ZNS drives, closing an explicitly open zone that has not been
++	 * written will change the zone state to "closed", that is, the zone
++	 * will remain active. Since this can then cause failure of explicit
++	 * open operation on other zones if the drive active zone resources
++	 * are exceeded, make sure that the zone does not remain active by
++	 * resetting it.
++	 */
++	if (op == REQ_OP_ZONE_CLOSE && !zi->i_wpoffset)
++		op = REQ_OP_ZONE_RESET;
++
+ 	trace_zonefs_zone_mgmt(inode, op);
+ 	ret = blkdev_zone_mgmt(inode->i_sb->s_bdev, op, zi->i_zsector,
+ 			       zi->i_zone_size >> SECTOR_SHIFT, GFP_NOFS);
+@@ -1295,12 +1306,13 @@ static void zonefs_init_dir_inode(struct
+ 	inc_nlink(parent);
+ }
+ 
+-static void zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
+-				   enum zonefs_ztype type)
++static int zonefs_init_file_inode(struct inode *inode, struct blk_zone *zone,
++				  enum zonefs_ztype type)
+ {
+ 	struct super_block *sb = inode->i_sb;
+ 	struct zonefs_sb_info *sbi = ZONEFS_SB(sb);
+ 	struct zonefs_inode_info *zi = ZONEFS_I(inode);
++	int ret = 0;
+ 
+ 	inode->i_ino = zone->start >> sbi->s_zone_sectors_shift;
+ 	inode->i_mode = S_IFREG | sbi->s_perm;
+@@ -1325,6 +1337,22 @@ static void zonefs_init_file_inode(struc
+ 	sb->s_maxbytes = max(zi->i_max_size, sb->s_maxbytes);
+ 	sbi->s_blocks += zi->i_max_size >> sb->s_blocksize_bits;
+ 	sbi->s_used_blocks += zi->i_wpoffset >> sb->s_blocksize_bits;
++
++	/*
++	 * For sequential zones, make sure that any open zone is closed first
++	 * to ensure that the initial number of open zones is 0, in sync with
++	 * the open zone accounting done when the mount option
++	 * ZONEFS_MNTOPT_EXPLICIT_OPEN is used.
++	 */
++	if (type == ZONEFS_ZTYPE_SEQ &&
++	    (zone->cond == BLK_ZONE_COND_IMP_OPEN ||
++	     zone->cond == BLK_ZONE_COND_EXP_OPEN)) {
++		mutex_lock(&zi->i_truncate_mutex);
++		ret = zonefs_zone_mgmt(inode, REQ_OP_ZONE_CLOSE);
++		mutex_unlock(&zi->i_truncate_mutex);
++	}
++
++	return ret;
+ }
+ 
+ static struct dentry *zonefs_create_inode(struct dentry *parent,
+@@ -1334,6 +1362,7 @@ static struct dentry *zonefs_create_inod
+ 	struct inode *dir = d_inode(parent);
+ 	struct dentry *dentry;
+ 	struct inode *inode;
++	int ret;
+ 
+ 	dentry = d_alloc_name(parent, name);
+ 	if (!dentry)
+@@ -1344,10 +1373,16 @@ static struct dentry *zonefs_create_inod
+ 		goto dput;
+ 
+ 	inode->i_ctime = inode->i_mtime = inode->i_atime = dir->i_ctime;
+-	if (zone)
+-		zonefs_init_file_inode(inode, zone, type);
+-	else
++	if (zone) {
++		ret = zonefs_init_file_inode(inode, zone, type);
++		if (ret) {
++			iput(inode);
++			goto dput;
++		}
++	} else {
+ 		zonefs_init_dir_inode(dir, inode, type);
++	}
++
+ 	d_add(dentry, inode);
+ 	dir->i_size++;
+ 
 
 
