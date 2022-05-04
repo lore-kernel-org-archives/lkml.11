@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E08EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357542AbiEDRbs (ORCPT
+        id S1352460AbiEDRby (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
+        Wed, 4 May 2022 13:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356920AbiEDRJt (ORCPT
+        with ESMTP id S1356926AbiEDRJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD99447386;
-        Wed,  4 May 2022 09:56:26 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7F94738D;
+        Wed,  4 May 2022 09:56:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84E25B8279C;
-        Wed,  4 May 2022 16:56:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DDA3C385A5;
-        Wed,  4 May 2022 16:56:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEA72617A6;
+        Wed,  4 May 2022 16:56:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28DC5C385AA;
+        Wed,  4 May 2022 16:56:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683384;
-        bh=XXe5e6LTOiqCf7n9YpwIDSJ2KM10tPHdgipwNToxAwY=;
+        s=korg; t=1651683387;
+        bh=2AHMO1rt09lcgtSq7YM7IIDJOOXaAVwLycWd1FnTCxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q8bHGCVCgfyagBkT+LYPwhk1CvuAmrGNRt4pq0657O5fur0MTjH2xybBZZNJJqy5X
-         qo6tcNquEm7DqKnmbCybOQgI1gDYpr5RiKpdRPBv4LNEtwnDI6MoFxKhxzusmHDNPs
-         US2MBINe6mgemGz15VB+97ElcTswFBoTidqQ8z7I=
+        b=JyUluXrLQfaVwneNAFkOfb/ATq/40wEBpIsLny+ZNk84Htqv6FBJAxayNeXA89z6t
+         Z7gy4280Iu7rtkdZSypTCV8G9JEav3VQEYBorJdU/zbCES/jmkdBMco/7GBVmz91dM
+         Ku2EVgBivokv6gt+VWMJXmj6k1u01M3+M4Nk4scc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 056/225] cpufreq: qcom-hw: fix the race between LMH worker and cpuhp
-Date:   Wed,  4 May 2022 18:44:54 +0200
-Message-Id: <20220504153115.159210170@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
+Subject: [PATCH 5.17 059/225] video: fbdev: udlfb: properly check endpoint type
+Date:   Wed,  4 May 2022 18:44:57 +0200
+Message-Id: <20220504153115.436114773@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,71 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 5e4f009da6be563984ba4db4ef4f32529e9aeb90 ]
+[ Upstream commit aaf7dbe07385e0b8deb7237eca2a79926bbc7091 ]
 
-The driver would disable the worker when cpu is being put offline, but
-it happens closer to the end of cpufreq_offline(). The function
-qcom_lmh_dcvs_poll() can be running in parallel with this, when
-policy->cpus already has been updated. Read policy->related_cpus
-instead.
+syzbot reported warning in usb_submit_urb, which is caused by wrong
+endpoint type.
 
-[   37.122433] ------------[ cut here ]------------
-[   37.127225] WARNING: CPU: 0 PID: 187 at drivers/base/arch_topology.c:180 topology_update_thermal_pressure+0xec/0x100
-[   37.138098] Modules linked in:
-[   37.141279] CPU: 0 PID: 187 Comm: kworker/0:3 Tainted: G S                5.17.0-rc6-00389-g37c83d0b8710-dirty #713
-[   37.158306] Workqueue: events qcom_lmh_dcvs_poll
-[   37.163095] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   37.170278] pc : topology_update_thermal_pressure+0xec/0x100
-[   37.176131] lr : topology_update_thermal_pressure+0x20/0x100
-[   37.181977] sp : ffff800009b6bce0
-[   37.185402] x29: ffff800009b6bce0 x28: ffffd87abe92b000 x27: ffff04bd7292e205
-[   37.192792] x26: ffffd87abe930af8 x25: ffffd87abe94e4c8 x24: 0000000000000000
-[   37.200180] x23: ffff04bb01177018 x22: ffff04bb011770c0 x21: ffff04bb01177000
-[   37.207567] x20: ffff04bb0a419000 x19: 00000000000c4e00 x18: 0000000000000000
-[   37.214954] x17: 000000040044ffff x16: 004000b2b5503510 x15: 0000006aaa1326d2
-[   37.222333] x14: 0000000000000232 x13: 0000000000000001 x12: 0000000000000040
-[   37.229718] x11: ffff04bb00400000 x10: 968f57bd39f701c8 x9 : ffff04bb0acc8674
-[   37.237095] x8 : fefefefefefefeff x7 : 0000000000000018 x6 : ffffd87abd90092c
-[   37.244478] x5 : 0000000000000016 x4 : 0000000000000000 x3 : 0000000000000100
-[   37.251852] x2 : ffff04bb0a419020 x1 : 0000000000000100 x0 : 0000000000000100
-[   37.259235] Call trace:
-[   37.261771]  topology_update_thermal_pressure+0xec/0x100
-[   37.267266]  qcom_lmh_dcvs_poll+0xbc/0x154
-[   37.271505]  process_one_work+0x288/0x69c
-[   37.275654]  worker_thread+0x74/0x470
-[   37.279450]  kthread+0xfc/0x100
-[   37.282712]  ret_from_fork+0x10/0x20
-[   37.286417] irq event stamp: 74
-[   37.289664] hardirqs last  enabled at (73): [<ffffd87abdd78af4>] _raw_spin_unlock_irq+0x44/0x80
-[   37.298632] hardirqs last disabled at (74): [<ffffd87abdd71fc0>] __schedule+0x710/0xa10
-[   37.306885] softirqs last  enabled at (58): [<ffffd87abcc90410>] _stext+0x410/0x588
-[   37.314778] softirqs last disabled at (51): [<ffffd87abcd1bf68>] __irq_exit_rcu+0x158/0x174
-[   37.323386] ---[ end trace 0000000000000000 ]---
+This driver uses out bulk endpoint for communication, so
+let's check if this endpoint is present and bail out early if not.
 
-Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fail log:
+
+usb 1-1: BOGUS urb xfer, pipe 3 != type 1
+WARNING: CPU: 0 PID: 4822 at drivers/usb/core/urb.c:493 usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
+Modules linked in:
+CPU: 0 PID: 4822 Comm: kworker/0:3 Tainted: G        W         5.13.0-syzkaller #0
+...
+Workqueue: usb_hub_wq hub_event
+RIP: 0010:usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
+...
+Call Trace:
+ dlfb_submit_urb+0x89/0x160 drivers/video/fbdev/udlfb.c:1969
+ dlfb_set_video_mode+0x21f0/0x2950 drivers/video/fbdev/udlfb.c:315
+ dlfb_ops_set_par+0x2a3/0x840 drivers/video/fbdev/udlfb.c:1110
+ dlfb_usb_probe.cold+0x113e/0x1f4a drivers/video/fbdev/udlfb.c:1732
+ usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+
+Fixes: 88e58b1a42f8 ("Staging: add udlfb driver")
+Reported-and-tested-by: syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qcom-cpufreq-hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/udlfb.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
-index 740518d8ae16..dc0d5f84d863 100644
---- a/drivers/cpufreq/qcom-cpufreq-hw.c
-+++ b/drivers/cpufreq/qcom-cpufreq-hw.c
-@@ -277,7 +277,7 @@ static unsigned int qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
- static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
- {
- 	struct cpufreq_policy *policy = data->policy;
--	int cpu = cpumask_first(policy->cpus);
-+	int cpu = cpumask_first(policy->related_cpus);
- 	struct device *dev = get_cpu_device(cpu);
- 	unsigned long freq_hz, throttled_freq;
- 	struct dev_pm_opp *opp;
+diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
+index 90f48b71fd8f..d9eec1b60e66 100644
+--- a/drivers/video/fbdev/udlfb.c
++++ b/drivers/video/fbdev/udlfb.c
+@@ -1649,8 +1649,9 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 	const struct device_attribute *attr;
+ 	struct dlfb_data *dlfb;
+ 	struct fb_info *info;
+-	int retval = -ENOMEM;
++	int retval;
+ 	struct usb_device *usbdev = interface_to_usbdev(intf);
++	struct usb_endpoint_descriptor *out;
+ 
+ 	/* usb initialization */
+ 	dlfb = kzalloc(sizeof(*dlfb), GFP_KERNEL);
+@@ -1664,6 +1665,12 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 	dlfb->udev = usb_get_dev(usbdev);
+ 	usb_set_intfdata(intf, dlfb);
+ 
++	retval = usb_find_common_endpoints(intf->cur_altsetting, NULL, &out, NULL, NULL);
++	if (retval) {
++		dev_err(&intf->dev, "Device should have at lease 1 bulk endpoint!\n");
++		goto error;
++	}
++
+ 	dev_dbg(&intf->dev, "console enable=%d\n", console);
+ 	dev_dbg(&intf->dev, "fb_defio enable=%d\n", fb_defio);
+ 	dev_dbg(&intf->dev, "shadow enable=%d\n", shadow);
+@@ -1673,6 +1680,7 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 	if (!dlfb_parse_vendor_descriptor(dlfb, intf)) {
+ 		dev_err(&intf->dev,
+ 			"firmware not recognized, incompatible device?\n");
++		retval = -ENODEV;
+ 		goto error;
+ 	}
+ 
+@@ -1686,8 +1694,10 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 
+ 	/* allocates framebuffer driver structure, not framebuffer memory */
+ 	info = framebuffer_alloc(0, &dlfb->udev->dev);
+-	if (!info)
++	if (!info) {
++		retval = -ENOMEM;
+ 		goto error;
++	}
+ 
+ 	dlfb->info = info;
+ 	info->par = dlfb;
 -- 
 2.35.1
 
