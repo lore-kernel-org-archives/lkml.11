@@ -2,129 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E72C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377300AbiEDSuz (ORCPT
+        id S1377317AbiEDSvt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
+        Wed, 4 May 2022 14:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377285AbiEDSuv (ORCPT
+        with ESMTP id S1377307AbiEDSvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:50:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB6D165B1;
-        Wed,  4 May 2022 11:47:13 -0700 (PDT)
-Date:   Wed, 04 May 2022 18:47:10 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651690031;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
+        Wed, 4 May 2022 14:51:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92D02165BC
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:48:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651690087;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zu5TSATSvCYYaY7Kn2lIzDaMbq7oFFxVQXH2iz93NOU=;
-        b=FT9XUPQSXNPAliWIwJWVv3GAtt+7uGyTD+RdDKElLRAS96W/MU3t3q/XtnJ1Rv1Y7OmGNb
-        IqZ0t3MxLwHFcLSTpM+JNNEVW1QIPj4HF7XQ+Zwfrl7UmAq/UqnVi6M3PK7Ol1wUvyzzkH
-        MqbUeBhA5V6xF2sVKfguup3Xkv8oFCWeGLhvkPOR7B4ozQ1Uy0//IQHkVDuyJnMvVpEgxi
-        7nhXTiSGPWqP6ehkHpwVShjO0Z8ibIKW+tYDamZE5OUAJsm0rSG3A6bb844H3cQPBH2I/q
-        6MB+FaDz+MORPCgVsQ2CkQylegh6DWWvwJXw9WorTmtyEEWOR3i3pO+RYY/ueA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651690031;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zu5TSATSvCYYaY7Kn2lIzDaMbq7oFFxVQXH2iz93NOU=;
-        b=L5OJ4IGTIFitrOyK09kyp0h2o+yt356Sl4YooRa8tmSRXqgNNxb9i5nLP7CslxZ1ThAUg4
-        ViZT4yarJJ9II4Bg==
-From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] MAINTAINERS: Update Josh Poimboeuf's email address
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>, Borislav Petkov <bp@suse.de>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <1abc3de4b00dc6f915ac975a2ec29ed545d96dc4.1651687652.git.jpoimboe@redhat.com>
-References: <1abc3de4b00dc6f915ac975a2ec29ed545d96dc4.1651687652.git.jpoimboe@redhat.com>
+        bh=isyJXjX8ZlcuSFyFP6cYiy/Ir8zd1vsMPiOsVFDMplU=;
+        b=Cyrbe0Z452Vffg0ex69aXhrJgzpiuy4wFaDDEt2FTUwxCGHAM58Q5aFO1tt1bTcqMxNZ42
+        NeNvk1rUJmNMwvawQIqFi1eIfnKjbnA8C1dwv465L0aHxpGPwNqaBVSOW3hPQph+aiElw5
+        y7DKw7hLXYXQnylWLRMc2tF+IzQiy6o=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-541-YkUybQACOXSjzvT6LcABzg-1; Wed, 04 May 2022 14:48:04 -0400
+X-MC-Unique: YkUybQACOXSjzvT6LcABzg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3921829ABA06;
+        Wed,  4 May 2022 18:48:04 +0000 (UTC)
+Received: from jtoppins.rdu.csb (unknown [10.22.10.95])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E08FA2166B17;
+        Wed,  4 May 2022 18:48:03 +0000 (UTC)
+From:   Jonathan Toppins <jtoppins@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH iproute2 next v2] bond: add mac_filter option
+Date:   Wed,  4 May 2022 14:47:51 -0400
+Message-Id: <1cdf3438ed17d6aaab1a21ef1aa8f282f752a810.1651689818.git.jtoppins@redhat.com>
+In-Reply-To: <6227427ef3b57d7de6d4d95e9dd7c9b222a37bf6.1651689665.git.jtoppins@redhat.com>
+References: <6227427ef3b57d7de6d4d95e9dd7c9b222a37bf6.1651689665.git.jtoppins@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165169003042.4207.8052984123869654429.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+Add ability to set bonding option `mac_filter`. Values greater than zero
+represent the maximum hashtable size the mac filter is allowed to grow
+to, zero disables the filter.
 
-Commit-ID:     770fb0942c338545f93a584342b64848cff31efe
-Gitweb:        https://git.kernel.org/tip/770fb0942c338545f93a584342b64848cff31efe
-Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Wed, 04 May 2022 11:07:45 -07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 04 May 2022 20:43:08 +02:00
-
-MAINTAINERS: Update Josh Poimboeuf's email address
-
-Change to my kernel.org email address.
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/1abc3de4b00dc6f915ac975a2ec29ed545d96dc4.1651687652.git.jpoimboe@redhat.com
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
 ---
- MAINTAINERS | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/uapi/linux/if_link.h |  1 +
+ ip/iplink_bond.c             | 15 +++++++++++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index edc96cd..1e1a226 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7499,7 +7499,7 @@ F:	Documentation/hwmon/f71805f.rst
- F:	drivers/hwmon/f71805f.c
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 34002e72d10a..85f5f07f5153 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -932,6 +932,7 @@ enum {
+ 	IFLA_BOND_AD_LACP_ACTIVE,
+ 	IFLA_BOND_MISSED_MAX,
+ 	IFLA_BOND_NS_IP6_TARGET,
++	IFLA_BOND_MAC_FILTER,
+ 	__IFLA_BOND_MAX,
+ };
  
- FADDR2LINE
--M:	Josh Poimboeuf <jpoimboe@redhat.com>
-+M:	Josh Poimboeuf <jpoimboe@kernel.org>
- S:	Maintained
- F:	scripts/faddr2line
+diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
+index 650411fc7de1..64f910e2b4cc 100644
+--- a/ip/iplink_bond.c
++++ b/ip/iplink_bond.c
+@@ -156,6 +156,7 @@ static void print_explain(FILE *f)
+ 		"                [ ad_actor_sys_prio SYSPRIO ]\n"
+ 		"                [ ad_actor_system LLADDR ]\n"
+ 		"                [ arp_missed_max MISSED_MAX ]\n"
++		"                [ mac_filter HASH_SIZE ]\n"
+ 		"\n"
+ 		"BONDMODE := balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb\n"
+ 		"ARP_VALIDATE := none|active|backup|all|filter|filter_active|filter_backup\n"
+@@ -409,6 +410,14 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			}
+ 			addattr8(n, 1024, IFLA_BOND_TLB_DYNAMIC_LB,
+ 				 tlb_dynamic_lb);
++		} else if (matches(*argv, "mac_filter") == 0) {
++			__u8 mac_filter;
++			NEXT_ARG();
++			if (get_u8(&mac_filter, *argv, 0)) {
++				invarg("invalid mac_filter", *argv);
++				return -1;
++			}
++			addattr8(n, 1024, IFLA_BOND_MAC_FILTER, mac_filter);
+ 		} else if (matches(*argv, "help") == 0) {
+ 			explain();
+ 			return -1;
+@@ -490,6 +499,12 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 			   "arp_missed_max %u ",
+ 			   rta_getattr_u8(tb[IFLA_BOND_MISSED_MAX]));
  
-@@ -11348,7 +11348,7 @@ F:	drivers/mmc/host/litex_mmc.c
- N:	litex
++	if (tb[IFLA_BOND_MAC_FILTER])
++		print_uint(PRINT_ANY,
++			   "mac_filter",
++			   "mac_filter %u ",
++			   rta_getattr_u8(tb[IFLA_BOND_MAC_FILTER]));
++
+ 	if (tb[IFLA_BOND_ARP_IP_TARGET]) {
+ 		struct rtattr *iptb[BOND_MAX_ARP_TARGETS + 1];
  
- LIVE PATCHING
--M:	Josh Poimboeuf <jpoimboe@redhat.com>
-+M:	Josh Poimboeuf <jpoimboe@kernel.org>
- M:	Jiri Kosina <jikos@kernel.org>
- M:	Miroslav Benes <mbenes@suse.cz>
- M:	Petr Mladek <pmladek@suse.com>
-@@ -14224,7 +14224,7 @@ F:	lib/objagg.c
- F:	lib/test_objagg.c
- 
- OBJTOOL
--M:	Josh Poimboeuf <jpoimboe@redhat.com>
-+M:	Josh Poimboeuf <jpoimboe@kernel.org>
- M:	Peter Zijlstra <peterz@infradead.org>
- S:	Supported
- F:	tools/objtool/
-@@ -18792,7 +18792,7 @@ F:	include/dt-bindings/reset/starfive-jh7100.h
- 
- STATIC BRANCH/CALL
- M:	Peter Zijlstra <peterz@infradead.org>
--M:	Josh Poimboeuf <jpoimboe@redhat.com>
-+M:	Josh Poimboeuf <jpoimboe@kernel.org>
- M:	Jason Baron <jbaron@akamai.com>
- R:	Steven Rostedt <rostedt@goodmis.org>
- R:	Ard Biesheuvel <ardb@kernel.org>
-@@ -21444,7 +21444,7 @@ F:	arch/x86/kernel/apic/x2apic_uv_x.c
- F:	arch/x86/platform/uv/
- 
- X86 STACK UNWINDING
--M:	Josh Poimboeuf <jpoimboe@redhat.com>
-+M:	Josh Poimboeuf <jpoimboe@kernel.org>
- M:	Peter Zijlstra <peterz@infradead.org>
- S:	Supported
- F:	arch/x86/include/asm/unwind*.h
+-- 
+2.27.0
+
