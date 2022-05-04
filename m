@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354242AbiEDR01 (ORCPT
+        id S1350687AbiEDR0g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
+        Wed, 4 May 2022 13:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353151AbiEDRFU (ORCPT
+        with ESMTP id S1353159AbiEDRFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:05:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E75850E16;
-        Wed,  4 May 2022 09:54:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7235133B;
+        Wed,  4 May 2022 09:54:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A69AB827AD;
-        Wed,  4 May 2022 16:54:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26102C385A5;
-        Wed,  4 May 2022 16:54:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C386561896;
+        Wed,  4 May 2022 16:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B196C385AF;
+        Wed,  4 May 2022 16:54:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683251;
-        bh=vzEX6Tq9n68EdutGIw5T+UJNk47l/3TGbuch2cwKSbs=;
+        s=korg; t=1651683254;
+        bh=V/5M8e8MGND+F+zgU4fwcSKS4RgrHl+diawDinNCLTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y71IOSKfQjSk+KpJQJBtc9NT637Hka7ODM+v+Z88h43YF/xwbBkwUNpQLVNByefE8
-         ZlO+OIRdmy5QlEju4W4DbkVLrbzhiRR4RPwElxa85F3cj8NQFGHVxXvOIprxBD06zp
-         InwOoOEcbZekOy+8KZXBrjVXyfFXEKNqC3SkcCig=
+        b=tC4sruaKsbzsrPUaG4cCRAauocgxewfJiCae+3R6tuaO7FIXbSjOFk3Wuoh5HMFFs
+         tHzd3M6Xq84WUJcbhlPX6NzIpSElt10BUEJ7E9Rl7xbd3lxaWRX89vp47+QPKySu4B
+         tJOnlsDQVpQHK/pB33dI6zULiY6H5lRH3n/RLL/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/177] clk: sunxi: sun9i-mmc: check return value after calling platform_get_resource()
-Date:   Wed,  4 May 2022 18:44:57 +0200
-Message-Id: <20220504153102.499192036@linuxfoundation.org>
+Subject: [PATCH 5.15 111/177] io_uring: check reserved fields for send/sendmsg
+Date:   Wed,  4 May 2022 18:45:04 +0200
+Message-Id: <20220504153103.153328353@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,36 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit f58ca215cda1975f77b2b762903684a3c101bec9 ]
+[ Upstream commit 588faa1ea5eecb351100ee5d187b9be99210f70d ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+We should check unused fields for non-zero and -EINVAL if they are set,
+making it consistent with other opcodes.
 
-Fixes: 7a6fca879f59 ("clk: sunxi: Add driver for A80 MMC config clocks/resets")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220421134308.2885094-1-yangyingliang@huawei.com
+Fixes: 0fa03c624d8f ("io_uring: add support for sendmsg()")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/sunxi/clk-sun9i-mmc.c | 2 ++
+ fs/io_uring.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clk/sunxi/clk-sun9i-mmc.c b/drivers/clk/sunxi/clk-sun9i-mmc.c
-index 542b31d6e96d..636bcf2439ef 100644
---- a/drivers/clk/sunxi/clk-sun9i-mmc.c
-+++ b/drivers/clk/sunxi/clk-sun9i-mmc.c
-@@ -109,6 +109,8 @@ static int sun9i_a80_mmc_config_clk_probe(struct platform_device *pdev)
- 	spin_lock_init(&data->lock);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 1bf1ea2cd8b0..48c9a550e48c 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4786,6 +4786,8 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!r)
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->file_index))
 +		return -EINVAL;
- 	/* one clock/reset pair per word */
- 	count = DIV_ROUND_UP((resource_size(r)), SUN9I_MMC_WIDTH);
- 	data->membase = devm_ioremap_resource(&pdev->dev, r);
+ 
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	sr->len = READ_ONCE(sqe->len);
 -- 
 2.35.1
 
