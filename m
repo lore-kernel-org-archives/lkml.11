@@ -2,67 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7706C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376440AbiEDSHB (ORCPT
+        id S1376456AbiEDSHF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
+        Wed, 4 May 2022 14:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359659AbiEDSGL (ORCPT
+        with ESMTP id S1359530AbiEDSGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:06:11 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1619E6D3B1
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:21:30 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id m25so1845434oih.2
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:21:30 -0700 (PDT)
+        Wed, 4 May 2022 14:06:10 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3755450072
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:21:27 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e2fa360f6dso1856394fac.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:21:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wGaNEgkga2C3vR38cQjxSl3nf4BfaDAQqYW9Vv/BBTc=;
-        b=PEfoXor+JdsqfPlN+A3GqSST7jD5o0bcF7nggWSaH6F54b6L4ub2nPZsEEL0/L8je6
-         L4JS9CJXWZsNNZdMhgBhz8n/d1YQjBCcUoikb8NTH6h1ofErB23tOgwNHxn5sNy9bd4g
-         ntydlC27R1G0Q0xUUUXK4+0O7HIoYEPFZkFa8VglaiHOo+ojUHG41As2Q925/PPtwt8C
-         6iuIXGAuAWlSWr/laNZFzGfJAnj1iKhjkKwrm3tE7kBS4LgCeeJHHUMtWl70k+08eHIy
-         qMJvomyu/rTkI/PjGmFUaHuimmIVCIwk6c3fZpoGkteqD/ynqbLr1fDQq2tqvz3Klae9
-         nevg==
+        bh=tlkw9w1COBFGlrfEOEmUj1EqnjghHZ07vJ79BtjifOo=;
+        b=m+YUKyfod23OXFRBpqCg4+1iapObamekGkHiEzVU7Lul/qnTAvu7zDVFU3xa801Dc2
+         ocJltiKLrpYKnM78r2NZvtsvk0BeOdLmgPk7PJLkIMVQVFMgYHeDMBUoHl8W2ex7gxP4
+         pYcGNoJgdGp8ogLIdB+RBnD6oqjAQWT5q9we6gVdjSjT6f7VNR+ZCzGlt1IdPPqw9boD
+         FIMf8jSQMIwwvdKBBusZGXTTm40jCnYKeE+FT9nEMctTYkw8EwDjiHfaHzUd5fNudZwK
+         6IRIlSmNHgtDCCvA0Z2jHz9IZfI7BW4NWlI+VNz1tnhVXda5n2U0qFXW8Pdm1HGetY7G
+         RWnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wGaNEgkga2C3vR38cQjxSl3nf4BfaDAQqYW9Vv/BBTc=;
-        b=4haC6BU32ONGuxHSIUEqfPyLPWTnJvLBvid1RRx4usXQHOSeIHUSVqXfy5k01C+i0V
-         17XbIV3ho8zFMEZv/5wvRhS7PBv0wF34dnA83b4AcFB51/trtNtqhdXPNCgR/FqsxrKg
-         N4x0nVzinyivW6ASuQYENW6uF8pn+doWIyoXAGseDcXEn5T7I5yZaF0yOif/d/yl6RLY
-         1TiDDcb7r4Q4MTa6rUiRMJtxGLNqFBf57T6LTPwZcOJ2F8iaT5ODjeF88R3U8tvwkPPp
-         +tHMM1iLMzstGlqDANcYXC8yyIbwYXHgcWZst3LPcuxeovGt1FvBG1kH9BeG++ceq7Qa
-         vc4Q==
-X-Gm-Message-State: AOAM532ub4so5Uemk2SBvpLkqvL4b4jMyGIwblQXNIMDqIk8Qr/JqlYa
-        Dk6Dlkz+9MxnHT+P9uVZQptcWw==
-X-Google-Smtp-Source: ABdhPJwa6dp2UBzeU6Egf+BrynvyfLaVErlWkcSLlDE67ay70zmXc3sc2mENXNU1OiQ9R77IHyoDJQ==
-X-Received: by 2002:a05:6808:1646:b0:2f7:50ea:85f3 with SMTP id az6-20020a056808164600b002f750ea85f3mr242567oib.137.1651684890264;
-        Wed, 04 May 2022 10:21:30 -0700 (PDT)
+        bh=tlkw9w1COBFGlrfEOEmUj1EqnjghHZ07vJ79BtjifOo=;
+        b=zNWjEe6Dt4Xci65tfPFkDs/HKwMO+oLMc37SpSssbAySEf5tVNze3S3Dte/dPu9fKU
+         4iEfYTbY9MPMfUDm2QU/bTlzsZ8lPkW3ICehZi2gxl3VrX3uCu/lf4tBiKdjAWH5epXJ
+         ocdgOhrcmQnm0VhUod+IB8ms+fmF1N5EwyFCZ68adNx5tGpn4h19FoH8T5ucrR3XJiPa
+         Wy8jlSgrH0OoXazUhCHZ2kaVSJF8REc30MTPvjZr5iFplpSVrN57e25pJ9DDw7UuTTF3
+         eGuiZJpKy4GjdDqMph20ws1ocChQuR4JfI0fRZWlU8jmiQjL1PDnxyMlsrHCTvFr7Chj
+         bc4w==
+X-Gm-Message-State: AOAM530oYrwg+20z3KCcQ9qcA+AwYDCoAGHYNBthJ+c4YEq3+YuUFUdF
+        b6R9X430qiTzTFeZEHJgVTXKAw==
+X-Google-Smtp-Source: ABdhPJynAOZr1shQZ1UOcpvXwTWpxit4tHD2dse/1+L32+bYnRcaMWIrrO38klBRBghqjWxW+5whVA==
+X-Received: by 2002:a05:6870:a2cd:b0:ed:754:a2c6 with SMTP id w13-20020a056870a2cd00b000ed0754a2c6mr247783oak.270.1651684886531;
+        Wed, 04 May 2022 10:21:26 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a7-20020a056870b14700b000ead8b89484sm5785452oal.5.2022.05.04.10.21.29
+        by smtp.gmail.com with ESMTPSA id a7-20020a056870b14700b000ead8b89484sm5785452oal.5.2022.05.04.10.21.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 10:21:29 -0700 (PDT)
+        Wed, 04 May 2022 10:21:26 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Alex Elder <elder@linaro.org>, Georgi Djakov <djakov@kernel.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Taniya Das <quic_tdas@quicinc.com>, patches@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Mike Tipton <quic_mdtipton@quicinc.com>
-Subject: Re: (subset) [PATCH 3/2] arm64: dts: qcom: sc7180: Remove ipa interconnect node
-Date:   Wed,  4 May 2022 12:21:14 -0500
-Message-Id: <165168485226.3730817.11676742538463355486.b4-ty@linaro.org>
+To:     Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Andy Gross <agross@kernel.org>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH 1/3] ARM: dts: msm8974-FP2: We're msm8974pro
+Date:   Wed,  4 May 2022 12:21:11 -0500
+Message-Id: <165168485226.3730817.5587724254002689421.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220415005828.1980055-1-swboyd@chromium.org>
-References: <20220412220033.1273607-1-swboyd@chromium.org> <20220415005828.1980055-1-swboyd@chromium.org>
+In-Reply-To: <20220421211936.345168-1-luca@z3ntu.xyz>
+References: <20220421211936.345168-1-luca@z3ntu.xyz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -70,16 +72,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 17:58:26 -0700, Stephen Boyd wrote:
-> This device node is unused now that we've removed the driver that
-> consumed it in the kernel. Drop the unused node to save some space.
+On Thu, 21 Apr 2022 23:19:33 +0200, Luca Weiss wrote:
+> Fairphone 2 always uses Snapdragon 801, a.k.a msm8974pro so change the
+> include and filename to that.
 > 
 > 
 
 Applied, thanks!
 
-[3/3] arm64: dts: qcom: sc7180: Remove ipa interconnect node
-      commit: 067bc653b85e466048914c48e46659a50a907fa6
+[1/3] ARM: dts: msm8974-FP2: We're msm8974pro
+      commit: 3237f21824165b41ef0bbdd3f784579c931b2a21
+[2/3] ARM: dts: msm8974-FP2: Add mmc* aliases
+      commit: 9c5537723429b82561087f8eb8179d065355443c
+[3/3] ARM: dts: qcom: msm8974: Add missing license headers
+      commit: 3912e74c576a56920cde1d5591125cdd5560caae
 
 Best regards,
 -- 
