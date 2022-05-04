@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3EEC41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0721FC46467
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376473AbiEDRyg (ORCPT
+        id S1376577AbiEDRyq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
+        Wed, 4 May 2022 13:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357477AbiEDRPD (ORCPT
+        with ESMTP id S1357464AbiEDRPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:15:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5290C54F92;
-        Wed,  4 May 2022 09:58:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F5954F89;
+        Wed,  4 May 2022 09:58:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E45EFB827AD;
-        Wed,  4 May 2022 16:58:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A514C385AF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 368236191D;
         Wed,  4 May 2022 16:58:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 796AEC385B2;
+        Wed,  4 May 2022 16:58:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683516;
-        bh=5BB8vQtqoB0EdnhJdulb5o79642bRYVhga3ZDYyj2PI=;
+        s=korg; t=1651683515;
+        bh=pDO7J4hTnTMkiO1iaE8XoV4Bd3P1yn/V95cI8h/LSFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B0NBC68j06/oaBIBKW1rjSfLJGMgDuFqej1zTzZe/qsqwzgID6GsXehBxO1AH+in1
-         1syR1pvcHTxQGHKyyzA6D9qF4q6nuk1xObwun4kUpbjf0lAwJxV801E79hwoZDX1/e
-         uKfM8PPSKFdlAXYatabk3Mllz/9vgh6RZX2agVYE=
+        b=SaFdAr0TX4z6/1KRBWHYRsncW7FNpOHpKQ7zmGryhc4QZwU5g+4X3PXINTXJBPNE2
+         Ez12JfdwfLu9Q+SS+ndT/4YnJ6oYz4KAP3g2zYMtRUjX5IODHebFrXND0oesab3PZ9
+         99X82VMeYMptQPfLRoyVfwAe9Jyf/OTthCXyWQ0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, suresh kumar <suresh2514@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 169/225] bonding: do not discard lowest hash bit for non layer3+4 hashing
-Date:   Wed,  4 May 2022 18:46:47 +0200
-Message-Id: <20220504153125.234936948@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Woody Suwalski <wsuwalski@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 178/225] Revert "ACPI: processor: idle: fix lockup regression on 32-bit ThinkPad T40"
+Date:   Wed,  4 May 2022 18:46:56 +0200
+Message-Id: <20220504153126.224223525@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,99 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-[ Upstream commit 49aefd131739df552f83c566d0665744c30b1d70 ]
+commit 20e582e16af24b074e583f9551fad557882a3c9d upstream.
 
-Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
-but it also removes last bit from non layer3+4 hashing
+This reverts commit bfe55a1f7fd6bfede16078bf04c6250fbca11588.
 
-Below script shows layer2+3 hashing will result in same slave to be used with above commit.
-$ cat hash.py
-#/usr/bin/python3.6
+This was presumably misdiagnosed as an inability to use C3 at
+all when I suspect the real problem is just misconfiguration of
+C3 vs. ARB_DIS.
 
-h_dests=[0xa0, 0xa1]
-h_source=0xe3
-hproto=0x8
-saddr=0x1e7aa8c0
-daddr=0x17aa8c0
-
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    print(hash)
-
-print("with last bit removed")
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    hash = hash >> 1
-    print(hash)
-
-Output:
-$ python3.6 hash.py
-522133332
-522133333   <-------------- will result in both slaves being used
-
-with last bit removed
-261066666
-261066666   <-------------- only single slave used
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
+Tested-by: Woody Suwalski <wsuwalski@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_main.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/acpi/processor_idle.c |    5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index aebeb46e6fa6..c9107a8b4b90 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3819,14 +3819,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
- 	return true;
- }
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -96,11 +96,6 @@ static const struct dmi_system_id proces
+ 	  DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
+ 	  DMI_MATCH(DMI_PRODUCT_NAME,"L8400B series Notebook PC")},
+ 	 (void *)1},
+-	/* T40 can not handle C3 idle state */
+-	{ set_max_cstate, "IBM ThinkPad T40", {
+-	  DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
+-	  DMI_MATCH(DMI_PRODUCT_NAME, "23737CU")},
+-	 (void *)2},
+ 	{},
+ };
  
--static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
-+static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
- {
- 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
- 		(__force u32)flow_get_u32_src(flow);
- 	hash ^= (hash >> 16);
- 	hash ^= (hash >> 8);
-+
- 	/* discard lowest hash bit to deal with the common even ports pattern */
--	return hash >> 1;
-+	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
-+		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
-+		return hash >> 1;
-+
-+	return hash;
- }
- 
- /* Generate hash based on xmit policy. If @skb is given it is used to linearize
-@@ -3856,7 +3861,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
- 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	}
- 
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
- }
- 
- /**
-@@ -5051,7 +5056,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
- 	/* L4 */
- 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	/* L3 */
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
- }
- 
- static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
--- 
-2.35.1
-
 
 
