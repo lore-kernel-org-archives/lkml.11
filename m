@@ -2,170 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1843FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27054C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354592AbiEDW5U (ORCPT
+        id S1379692AbiEDW5X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
+        Wed, 4 May 2022 18:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379551AbiEDWy1 (ORCPT
+        with ESMTP id S1350070AbiEDWy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:54:27 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBA94C43C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:49 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id h9-20020a631209000000b0039cc31b22aeso1345478pgl.9
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=GQfPzPtdZfr3rPuoQKIQO/wdm3b/PW1yxF0crxQV5Zs=;
-        b=kC4ouZvYCf46p3Y2P0o/cGpVwFOkvvoFMpskIQzIVlYFFIp2DI+jf+SPulbjsfbzon
-         FJDgUnGIF44Q26D8Gp2pYnDYlvtrt4E/e4YOfvzmJdsYngbG14pEnbUbYGIylkgs0/di
-         9KwtE3LJBS+Z97eArW2mUF4kOIFVKZdjzVkzKYVLYYqnNbBdPVue7SZAMZq5qYinonyz
-         b6HuhKr736F1cp4ZgFiaIPQZhUM7AHKFptNpaoVYYz7WIIRFt5NaOZcu0nWfaFV67KDp
-         eg12SwnlpQqST7AkBL1qlxBlXSGxer/1B+DiY3x79IJFjixzhBH4Jy6lk09HYU/l2oZg
-         eniA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=GQfPzPtdZfr3rPuoQKIQO/wdm3b/PW1yxF0crxQV5Zs=;
-        b=Ohwd6pPvA9YggF65mme1y0CojnsJxV7sUUCxbkmT34eMQXL68BeGQbPjoae4H/jZXq
-         qwXf1gZNgJZu4pNnt/YA2dEeCpmcKd8X6XuHX/CyJ9vcwaxfkPdoaI5AHr4KaizwcAPA
-         qIb76AfhAhsIM9FRUXWox3fkfi+mCkh6HvsNv3+mbRD4yEYL+cJskYg4oouf9S7Pq38f
-         TEgGYvv8sEnRTlDmwbXfe/KPM52jSGdzEMQ2WKkmzJ5l/ytpsz6Vk1Jsydk8gPwHP1S7
-         gKbVKxlVvINHTAWJJQcl7AbGCP2OUUETMjMM4jj7Gu1tdlftm3nrBYH/RxEc9+OCoGiS
-         dtog==
-X-Gm-Message-State: AOAM533lAr40x+exbvQEGefU7vM4Z8KQSBsn78Upec0fXbzi2pRG2j34
-        yIjdDwFDizYxOTFF00K6+559LmkyGeo=
-X-Google-Smtp-Source: ABdhPJzjlJsIZtRISyX7XcoGaf2pPor2TUTf37ombDeCId1LYhgAoiVcsqmG+g1J+VBBehYaMPu8qWwu+DU=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:22cb:b0:15e:d715:1bd8 with SMTP id
- y11-20020a17090322cb00b0015ed7151bd8mr863353plg.159.1651704649219; Wed, 04
- May 2022 15:50:49 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:51 +0000
-In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-46-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220504224914.1654036-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 045/128] KVM: selftests: Convert vmx_preemption_timer_test
- away from VCPU_ID
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Sean Christopherson <seanjc@google.com>
+        Wed, 4 May 2022 18:54:29 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A93532D2;
+        Wed,  4 May 2022 15:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651704652; x=1683240652;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=A7XFxSLvRlucze5cun1lMJ4EA0Zppv8AXe28hpjk+nQ=;
+  b=eos/Qo6GspLIboRFPJy3uuZjFjNE1EDsGMcN45NyY3QET4N8cTsKMToS
+   nPPiu5LHRodM0p5C3dNY0oFYp5wH5eTV9M6UnNoOBl7j0KvE4EN4DWnF3
+   d7bti9h5gHxnupJpswchq/xnTAAYRJLWJ+FwqRCoVvyxNOX27/iQ451di
+   2WLwocp6n2zp65Of0yQvbUg4Kz5Fu8qyZb+m0qDmdz4yvb1FFad3T4xck
+   y6y1eYVnGiEctc2z5wezs6eXC76aQ3dJ/ZFbQ62V6IYr8a+H7VT3pPNhq
+   4H8o3YigfkspGzDf3x4SbiqFjKd4GbEBwJ850q1AOSwogqp1Lkjb0UChM
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="330907720"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="330907720"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:50:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="599744287"
+Received: from karendt-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.3.218])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:50:48 -0700
+Message-ID: <eb67bad8c09bd2c2c0613b864d7232cd8a941bc4.camel@intel.com>
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Date:   Thu, 05 May 2022 10:50:46 +1200
+In-Reply-To: <CAPcyv4jQ6C+vu3ALtG_3k483KYwYGB5gd_auUCeUNaJ=v4eTyQ@mail.gmail.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
+         <ecf718abf864bbb2366209f00d4315ada090aedc.camel@intel.com>
+         <de24ac7e-349c-e49a-70bb-31b9bc867b10@intel.com>
+         <9b388f54f13b34fe684ef77603fc878952e48f87.camel@intel.com>
+         <d98ca73b-2d2d-757d-e937-acc83cfedfb0@intel.com>
+         <c90a10763969077826f42be6f492e3a3e062326b.camel@intel.com>
+         <fc1ca04d94ad45e79c0297719d5ef50a7c33c352.camel@intel.com>
+         <664f8adeb56ba61774f3c845041f016c54e0f96e.camel@intel.com>
+         <CAPcyv4jQ6C+vu3ALtG_3k483KYwYGB5gd_auUCeUNaJ=v4eTyQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert vmx_preemption_timer_test to use vm_create_with_one_vcpu() and
-pass around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
-Note, this is a "functional" change in the sense that the test now
-creates a vCPU with vcpu_id==0 instead of vcpu_id==5.  The non-zero
-VCPU_ID was 100% arbitrary and added little to no validation coverage.
-If testing non-zero vCPU IDs is desirable for generic tests, that can be
-done in the future by tweaking the VM creation helpers.
+On Wed, 2022-05-04 at 07:31 -0700, Dan Williams wrote:
+> On Tue, May 3, 2022 at 4:59 PM Kai Huang <kai.huang@intel.com> wrote:
+> > 
+> > On Fri, 2022-04-29 at 13:40 +1200, Kai Huang wrote:
+> > > On Thu, 2022-04-28 at 12:58 +1200, Kai Huang wrote:
+> > > > On Wed, 2022-04-27 at 17:50 -0700, Dave Hansen wrote:
+> > > > > On 4/27/22 17:37, Kai Huang wrote:
+> > > > > > On Wed, 2022-04-27 at 14:59 -0700, Dave Hansen wrote:
+> > > > > > > In 5 years, if someone takes this code and runs it on Intel hardware
+> > > > > > > with memory hotplug, CPU hotplug, NVDIMMs *AND* TDX support, what happens?
+> > > > > > 
+> > > > > > I thought we could document this in the documentation saying that this code can
+> > > > > > only work on TDX machines that don't have above capabilities (SPR for now).  We
+> > > > > > can change the code and the documentation  when we add the support of those
+> > > > > > features in the future, and update the documentation.
+> > > > > > 
+> > > > > > If 5 years later someone takes this code, he/she should take a look at the
+> > > > > > documentation and figure out that he/she should choose a newer kernel if the
+> > > > > > machine support those features.
+> > > > > > 
+> > > > > > I'll think about design solutions if above doesn't look good for you.
+> > > > > 
+> > > > > No, it doesn't look good to me.
+> > > > > 
+> > > > > You can't just say:
+> > > > > 
+> > > > >   /*
+> > > > >    * This code will eat puppies if used on systems with hotplug.
+> > > > >    */
+> > > > > 
+> > > > > and merrily await the puppy bloodbath.
+> > > > > 
+> > > > > If it's not compatible, then you have to *MAKE* it not compatible in a
+> > > > > safe, controlled way.
+> > > > > 
+> > > > > > > You can't just ignore the problems because they're not present on one
+> > > > > > > version of the hardware.
+> > > > > 
+> > > > > Please, please read this again ^^
+> > > > 
+> > > > OK.  I'll think about solutions and come back later.
+> > > > > 
+> > > 
+> > > Hi Dave,
+> > > 
+> > > I think we have two approaches to handle memory hotplug interaction with the TDX
+> > > module initialization.
+> > > 
+> > > The first approach is simple.  We just block memory from being added as system
+> > > RAM managed by page allocator when the platform supports TDX [1]. It seems we
+> > > can add some arch-specific-check to __add_memory_resource() and reject the new
+> > > memory resource if platform supports TDX.  __add_memory_resource() is called by
+> > > both __add_memory() and add_memory_driver_managed() so it prevents from adding
+> > > NVDIMM as system RAM and normal ACPI memory hotplug [2].
+> > 
+> > Hi Dave,
+> > 
+> > Try to close how to handle memory hotplug.  Any comments to below?
+> > 
+> > For the first approach, I forgot to think about memory hot-remove case.  If we
+> > just reject adding new memory resource when TDX is capable on the platform, then
+> > if the memory is hot-removed, we won't be able to add it back.  My thinking is
+> > we still want to support memory online/offline because it is purely in software
+> > but has nothing to do with TDX.  But if one memory resource can be put to
+> > offline, it seems we don't have any way to prevent it from being removed.
+> > 
+> > So if we do above, on the future platforms when memory hotplug can co-exist with
+> > TDX, ACPI hot-add and kmem-hot-add memory will be prevented.  However if some
+> > memory is hot-removed, it won't be able to be added back (even it is included in
+> > CMR, or TDMRs after TDX module is initialized).
+> > 
+> > Is this behavior acceptable?  Or perhaps I have misunderstanding?
+> 
+> Memory online at boot uses similar kernel paths as memory-online at
+> run time, so it sounds like your question is confusing physical vs
+> logical remove. Consider the case of logical offline then re-online
+> where the proposed TDX sanity check blocks the memory online, but then
+> a new kernel is kexec'd and that kernel again trusts the memory as TD
+> convertible again just because it onlines the memory in the boot path.
+> For physical memory remove it seems up to the platform to block that
+> if it conflicts with TDX, not for the kernel to add extra assumptions
+> that logical offline / online is incompatible with TDX.
 
-Opportunistically use vcpu_run() instead of _vcpu_run(), the test expects
-KVM_RUN to succeed.
+Hi Dan,
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- .../kvm/x86_64/vmx_preemption_timer_test.c    | 30 +++++++++----------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+No we don't block memory online, but we block memory add.  The code I mentioned
+is add_memory_resource(), while memory online code path is
+memory_block_online().  Or am I wrong?
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
-index f5b4ae914131..168adc5b2272 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
-@@ -22,7 +22,6 @@
- #include "processor.h"
- #include "vmx.h"
- 
--#define VCPU_ID		5
- #define PREEMPTION_TIMER_VALUE			100000000ull
- #define PREEMPTION_TIMER_VALUE_THRESHOLD1	 80000000ull
- 
-@@ -159,6 +158,7 @@ int main(int argc, char *argv[])
- 	struct kvm_regs regs1, regs2;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_x86_state *state;
- 	struct ucall uc;
- 	int stage;
-@@ -175,22 +175,22 @@ int main(int argc, char *argv[])
- 	}
- 
- 	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	run = vcpu->run;
- 
--	vcpu_regs_get(vm, VCPU_ID, &regs1);
-+	vcpu_regs_get(vm, vcpu->id, &regs1);
- 
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, vmx_pages_gva);
- 
- 	for (stage = 1;; stage++) {
--		_vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Stage %d: unexpected exit reason: %u (%s),\n",
- 			    stage, run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
- 
--		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
- 				  __FILE__, uc.args[1]);
-@@ -232,22 +232,22 @@ int main(int argc, char *argv[])
- 				stage, uc.args[4], uc.args[5]);
- 		}
- 
--		state = vcpu_save_state(vm, VCPU_ID);
-+		state = vcpu_save_state(vm, vcpu->id);
- 		memset(&regs1, 0, sizeof(regs1));
--		vcpu_regs_get(vm, VCPU_ID, &regs1);
-+		vcpu_regs_get(vm, vcpu->id, &regs1);
- 
- 		kvm_vm_release(vm);
- 
- 		/* Restore state in a new VM.  */
--		kvm_vm_restart(vm);
--		vm_vcpu_add(vm, VCPU_ID);
--		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
--		vcpu_load_state(vm, VCPU_ID, state);
--		run = vcpu_state(vm, VCPU_ID);
-+		vcpu = vm_recreate_with_one_vcpu(vm);
-+
-+		vcpu_set_cpuid(vm, vcpu->id, kvm_get_supported_cpuid());
-+		vcpu_load_state(vm, vcpu->id, state);
-+		run = vcpu->run;
- 		kvm_x86_state_cleanup(state);
- 
- 		memset(&regs2, 0, sizeof(regs2));
--		vcpu_regs_get(vm, VCPU_ID, &regs2);
-+		vcpu_regs_get(vm, vcpu->id, &regs2);
- 		TEST_ASSERT(!memcmp(&regs1, &regs2, sizeof(regs2)),
- 			    "Unexpected register values after vcpu_load_state; rdi: %lx rsi: %lx",
- 			    (ulong) regs2.rdi, (ulong) regs2.rsi);
 -- 
-2.36.0.464.gb9c8b46e94-goog
+Thanks,
+-Kai
+
 
