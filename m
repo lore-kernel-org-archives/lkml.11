@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73185C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F341C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349772AbiEDMhp (ORCPT
+        id S1349633AbiEDMi3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
+        Wed, 4 May 2022 08:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349717AbiEDMhY (ORCPT
+        with ESMTP id S1349674AbiEDMi0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:37:24 -0400
+        Wed, 4 May 2022 08:38:26 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B210A32EE1
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:33:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 371FC26ADC
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:34:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651667627;
+        s=mimecast20190719; t=1651667687;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KtPEDLKRL8wH1P8IKIjc8oaZj0ZhJhxzB+wJ1j/1ViU=;
-        b=PeySgyJaRaFIjDk7fWQqJmbImjWy+HfGER9wNvBMt94a5g2D8cy7c5+KD8LgZ55pFqc8bR
-        084OhWOsx+j7Rt0M59z8jKfhbc75hOlLhiAV1zu/s84tsuUf1S7lR3xPhowPEA1YgM4max
-        zIDnL0LwFe1d9OrMfVWjwHxPLk8JzN4=
+        bh=ct2PlEY6QQ3N5sgB9Tu4Cg6jVTTmJssD5F6j4gnRtK4=;
+        b=F6luokugMjKoUekuWCn08h8HR6nPWTG7THp4mrk0HQ+OBiXwW8KSWotxE6Fdmf4bIRLTZn
+        HwrY2z73rTriA94V4yCzWx8imlKGX8u2Gajeq7F59TzoK6o1BE02daYaW1mzltm9XdXeXN
+        uU4sYviCVLZ8WSEk56TkcUl6u/lRzbw=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-426-JA6x8T_5Pj2c6GW5M0_mIg-1; Wed, 04 May 2022 08:33:46 -0400
-X-MC-Unique: JA6x8T_5Pj2c6GW5M0_mIg-1
+ us-mta-656-TFrKv3fMMoeKwU5CoYnd8w-1; Wed, 04 May 2022 08:34:42 -0400
+X-MC-Unique: TFrKv3fMMoeKwU5CoYnd8w-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA2C5811E75;
-        Wed,  4 May 2022 12:33:40 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A3DBE185A7BA;
+        Wed,  4 May 2022 12:34:41 +0000 (UTC)
 Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C2ECF40CF8F8;
-        Wed,  4 May 2022 12:33:38 +0000 (UTC)
-Message-ID: <36aed569ad306d10f999f001cf1b170496e3ba6f.camel@redhat.com>
-Subject: Re: [PATCH v3 12/14] kvm/x86: Warning APICv inconsistency only when
- vcpu APIC mode is valid
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F7B640CF8F8;
+        Wed,  4 May 2022 12:34:39 +0000 (UTC)
+Message-ID: <93e65bad6bbb8b1c198aa4da295d4d48ad5e24f3.camel@redhat.com>
+Subject: Re: [PATCH v3 13/14] KVM: SVM: Use target APIC ID to complete
+ x2AVIC IRQs when possible
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
         linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
         jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Wed, 04 May 2022 15:33:37 +0300
-In-Reply-To: <20220504073128.12031-13-suravee.suthikulpanit@amd.com>
+Date:   Wed, 04 May 2022 15:34:38 +0300
+In-Reply-To: <20220504073128.12031-14-suravee.suthikulpanit@amd.com>
 References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
-         <20220504073128.12031-13-suravee.suthikulpanit@amd.com>
+         <20220504073128.12031-14-suravee.suthikulpanit@amd.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
@@ -61,50 +61,55 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Wed, 2022-05-04 at 02:31 -0500, Suravee Suthikulpanit wrote:
-> When launching a VM with x2APIC and specify more than 255 vCPUs,
-> the guest kernel can disable x2APIC (e.g. specify nox2apic kernel option).
-> The VM fallbacks to xAPIC mode, and disable the vCPU ID 255 and greater.
+> For x2AVIC, the index from incomplete IPI #vmexit info is invalid
+> for logical cluster mode. Only ICRH/ICRL values can be used
+> to determine the IPI destination APIC ID.
 > 
-> In this case, APICV should be deactivated for the disabled vCPUs.
-> However, the current APICv consistency warning does not account for
-> this case, which results in a warning.
-> 
-> Therefore, modify warning logic to report only when vCPU APIC mode
-> is valid.
+> Since QEMU defines guest physical APIC ID to be the same as
+> vCPU ID, it can be used to quickly identify the target vCPU to deliver IPI,
+> and avoid the overhead from searching through all vCPUs to match the target
+> vCPU.
 > 
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->  arch/x86/kvm/x86.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+>  arch/x86/kvm/svm/avic.c | 21 ++++++++++++++++++++-
+>  1 file changed, 20 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 8ee8c91fa762..b14e02ea0ff6 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -9838,6 +9838,10 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
->  
->  	activate = kvm_vcpu_apicv_activated(vcpu);
->  
-> +	/* Do not activate AVIC when APIC is disabled */
-> +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_DISABLED)
-> +		activate = false;
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 3b6a96043633..a526fbc60bbd 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -377,7 +377,26 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+>  			/* For xAPIC logical mode, the index is for logical APIC table. */
+>  			apic_id = avic_logical_id_table[index] & 0x1ff;
+>  		} else {
+> -			return -EINVAL;
+> +			/* For x2APIC logical mode, cannot leverage the index.
+> +			 * Instead, calculate physical ID from logical ID in ICRH.
+> +			 */
+> +			int apic;
+> +			int first = ffs(icrh & 0xffff);
+> +			int last = fls(icrh & 0xffff);
+> +			int cluster = (icrh & 0xffff0000) >> 16;
 > +
->  	if (vcpu->arch.apicv_active == activate)
->  		goto out;
+> +			/*
+> +			 * If the x2APIC logical ID sub-field (i.e. icrh[15:0]) contains zero
+> +			 * or more than 1 bits, we cannot match just one vcpu to kick for
+> +			 * fast path.
+> +			 */
+> +			if (!first || (first != last))
+> +				return -EINVAL;
+> +
+> +			apic = first - 1;
+> +			if ((apic < 0) || (apic > 15) || (cluster >= 0xfffff))
+> +				return -EINVAL;
+> +			apic_id = (cluster << 4) + apic;
+>  		}
+>  	}
 >  
-> @@ -10240,7 +10244,8 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->  		 * per-VM state, and responsing vCPUs must wait for the update
->  		 * to complete before servicing KVM_REQ_APICV_UPDATE.
->  		 */
-> -		WARN_ON_ONCE(kvm_vcpu_apicv_activated(vcpu) != kvm_vcpu_apicv_active(vcpu));
-> +		if (kvm_vcpu_apicv_activated(vcpu) != kvm_vcpu_apicv_active(vcpu))
-> +			WARN_ON_ONCE(kvm_get_apic_mode(vcpu) != LAPIC_MODE_DISABLED);
->  
->  		exit_fastpath = static_call(kvm_x86_vcpu_run)(vcpu);
->  		if (likely(exit_fastpath != EXIT_FASTPATH_REENTER_GUEST))
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
 Best regards,
-	Maxim Levitsky
+        Maxim Levitsky
 
