@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 204DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354393AbiEDRqy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        id S239066AbiEDRrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356437AbiEDRNn (ORCPT
+        with ESMTP id S1356591AbiEDRN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:13:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09F54B874;
-        Wed,  4 May 2022 09:57:59 -0700 (PDT)
+        Wed, 4 May 2022 13:13:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D2F53A67;
+        Wed,  4 May 2022 09:58:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 813C661808;
-        Wed,  4 May 2022 16:57:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9919C385AA;
-        Wed,  4 May 2022 16:57:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58222618B0;
+        Wed,  4 May 2022 16:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF16C385B1;
+        Wed,  4 May 2022 16:58:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683468;
-        bh=f1LFHvJ8uk8SHhwLGhNDYMjw5ZoMM0XJ+6vYeOX3FRo=;
+        s=korg; t=1651683486;
+        bh=HzXEB+jiefZVdvXEiPjM7zJ7btDrrLOGhLbd7Aa/u8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ojVD+tbwY8MjARWZ4ZOmv8YGxqPIYAkFg4Z3n9L/SNNJzvsD2ILkUNO9AmC/WlslO
-         3iTpdmXsaJcKWtPf9KJ4HV2dvz5tQMDoSRirwpmEam7ghb8yRht2MFu7mbMuosX6Tl
-         mzFzY2LnxIp5LYfU9Z6B9dmZtawvG4SBSeWQqILI=
+        b=Et34VXqAu4ivN4dwnn9ugJCuRgF0z+j4luvOIf0olvT44bJqCvIgQE6hgmiIV/mvF
+         mze5mX1SJSrB/Gm3EojF+QbjkeVIYfZS7EgN8JGp9w/sGqaoWUrTrQfgw3Lwu5W1Jb
+         b7FVdQtF0zIe8JCwIE7KIW4gZap2hHaemKtGUWlg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 120/225] net: lan966x: fix a couple off by one bugs
-Date:   Wed,  4 May 2022 18:45:58 +0200
-Message-Id: <20220504153121.194923229@linuxfoundation.org>
+Subject: [PATCH 5.17 161/225] ASoC: wm8731: Disable the regulator when probing fails
+Date:   Wed,  4 May 2022 18:46:39 +0200
+Message-Id: <20220504153124.363141736@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,47 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 9810c58c7051ae83e7ac326fca3daa823da6b778 ]
+[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
 
-The lan966x->ports[] array has lan966x->num_phys_ports elements.  These
-are assigned in lan966x_probe().  That means the > comparison should be
-changed to >=.
+When the driver fails during probing, the driver should disable the
+regulator, not just handle it in wm8731_hw_init().
 
-The first off by one check is harmless but the second one could lead to
-an out of bounds access and a crash.
+The following log reveals it:
 
-Fixes: 5ccd66e01cbe ("net: lan966x: add support for interrupts from analyzer")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   17.824467] Call Trace:
+[   17.824774]  <TASK>
+[   17.825040]  regulator_bulk_free+0x82/0xe0
+[   17.825514]  devres_release_group+0x319/0x3d0
+[   17.825882]  i2c_device_probe+0x766/0x940
+[   17.829198]  i2c_register_driver+0xb5/0x130
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wm8731.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index 2679111ef669..005e56ea5da1 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -346,7 +346,7 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index 86b1f6eaa599..518167d90b10 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -602,7 +602,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	ret = wm8731_reset(wm8731->regmap);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to issue reset: %d\n", ret);
+-		goto err_regulator_enable;
++		goto err;
+ 	}
  
- 			lan966x_mac_process_raw_entry(&raw_entries[column],
- 						      mac, &vid, &dest_idx);
--			if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+			if (WARN_ON(dest_idx >= lan966x->num_phys_ports))
- 				continue;
+ 	/* Clear POWEROFF, keep everything else disabled */
+@@ -619,10 +619,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
  
- 			/* If the entry in SW is found, then there is nothing
-@@ -393,7 +393,7 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 	regcache_mark_dirty(wm8731->regmap);
  
- 		lan966x_mac_process_raw_entry(&raw_entries[column],
- 					      mac, &vid, &dest_idx);
--		if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+		if (WARN_ON(dest_idx >= lan966x->num_phys_ports))
- 			continue;
+-err_regulator_enable:
+-	/* Regulators will be enabled by bias management */
+-	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+-
++err:
+ 	return ret;
+ }
  
- 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
+@@ -760,21 +757,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
+ 		ret = PTR_ERR(wm8731->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+ 			ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	ret = wm8731_hw_init(&i2c->dev, wm8731);
+ 	if (ret != 0)
+-		return ret;
++		goto err_regulator_enable;
+ 
+ 	ret = devm_snd_soc_register_component(&i2c->dev,
+ 			&soc_component_dev_wm8731, &wm8731_dai, 1);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	return 0;
++
++err_regulator_enable:
++	/* Regulators will be enabled by bias management */
++	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
++
++	return ret;
+ }
+ 
+ static int wm8731_i2c_remove(struct i2c_client *client)
 -- 
 2.35.1
 
