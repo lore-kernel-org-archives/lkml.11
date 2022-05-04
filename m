@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C44B7C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1E5C35280
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359330AbiEDRf5 (ORCPT
+        id S1358929AbiEDRf2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
+        Wed, 4 May 2022 13:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356946AbiEDRJu (ORCPT
+        with ESMTP id S1357038AbiEDRJx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C01473A6;
-        Wed,  4 May 2022 09:56:38 -0700 (PDT)
+        Wed, 4 May 2022 13:09:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466EF4889D;
+        Wed,  4 May 2022 09:56:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13E33616B8;
-        Wed,  4 May 2022 16:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B39FC385A4;
-        Wed,  4 May 2022 16:56:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BDDAB827C2;
+        Wed,  4 May 2022 16:56:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF0EAC385B0;
+        Wed,  4 May 2022 16:56:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683397;
-        bh=c9tifztPdtIZMnIZoFYTn8EbVTxFGghKHU5Yrzs7rmg=;
+        s=korg; t=1651683416;
+        bh=SRazH2uyyXomn+ZtPfi6A/TGv9uvTaddlbbFfB3+IhA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wMoVHNrHwXeINDIEgRHxkWM4FnVNnZZOFY9mRml4+6qGQC6nVgssznxIFq/RVDrFU
-         nmqbhrXYuvsUe40E1zErZAg60FRGYcaEtS+7cUtRRpn6k8IZxRziHG0+OdRoFkoVGx
-         DLKZk3UiPIewoBtFnWmLLORs/Mf8clc50ik4ubpI=
+        b=QeNqCzQEBnJzlIzPtDTbuMOgY9enyXH5M2WQ35anVRvnktn4Yj9cX0WtzFdqaThLk
+         qYPu1J3T+1i2pkKKJknMjAkD8gMzX99HQ3mjRRwS/uPyMkZyucba9H3E5Dp/gQsgYs
+         paQdFckxfibP/EM0ybqb+i4rdBI3UXNqloR6gaQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 082/225] ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
-Date:   Wed,  4 May 2022 18:45:20 +0200
-Message-Id: <20220504153118.453349345@linuxfoundation.org>
+Subject: [PATCH 5.17 101/225] net: dsa: Add missing of_node_put() in dsa_port_link_register_of
+Date:   Wed,  4 May 2022 18:45:39 +0200
+Message-Id: <20220504153119.734641238@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,42 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0e486fe341fabd8e583f3d601a874cd394979c45 ]
+[ Upstream commit fc06b2867f4cea543505acfb194c2be4ebf0c7d3 ]
 
-The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
-PCK0 output of the SoC and is expected to be set to 12MHz. Previously
-this was mapped using pre-common clock API calls in the audio machine
-driver but the conversion to the common clock framework broke that so
-describe things in the DT instead.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
+of_node_put() will check for NULL value.
 
-Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220404102806.581374-2-broonie@kernel.org
+Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91sam9g20ek_common.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/dsa/port.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-index 87bb39060e8b..ca03685f0f08 100644
---- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-+++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-@@ -219,6 +219,12 @@ i2c-gpio-0 {
- 		wm8731: wm8731@1b {
- 			compatible = "wm8731";
- 			reg = <0x1b>;
-+
-+			/* PCK0 at 12MHz */
-+			clocks = <&pmc PMC_TYPE_SYSTEM 8>;
-+			clock-names = "mclk";
-+			assigned-clocks = <&pmc PMC_TYPE_SYSTEM 8>;
-+			assigned-clock-rates = <12000000>;
- 		};
- 	};
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 1a40c52f5a42..4368fd32c4a5 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1240,8 +1240,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
+ 			if (ds->ops->phylink_mac_link_down)
+ 				ds->ops->phylink_mac_link_down(ds, port,
+ 					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
++			of_node_put(phy_np);
+ 			return dsa_port_phylink_register(dp);
+ 		}
++		of_node_put(phy_np);
+ 		return 0;
+ 	}
  
 -- 
 2.35.1
