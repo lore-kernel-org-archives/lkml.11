@@ -2,92 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80615C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377052AbiEDUFS (ORCPT
+        id S1357780AbiEDULJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        Wed, 4 May 2022 16:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230295AbiEDUFP (ORCPT
+        with ESMTP id S230295AbiEDULH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:05:15 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CFF1F612;
-        Wed,  4 May 2022 13:01:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:Subject:From:Cc:To:
-        MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=aBNOEK5JmznFe788VWdmCxb/E0ad0SoBOicyxzidG4M=; b=hU6ZvLQLzt+mU2QbDsSwJAwG2K
-        30DuoWSMuIj8aO9pQO7xIlf0hPGS0L5OuRlGxcQJiRKoYSMAtroKV1MFv+B5r0Bpvx1Arl4UGvGgd
-        KROrXNajwRwCgHJ6jdWZXZhRjoqYLiDyfNJ9pzlkh+9MgrMg3FSXUHo8A1m88XchRWcj5eugxuNVc
-        +hZD4GEF0LfrUEaXFnM1KOSFiEZsuzMrcuhqMNV9yLhNNuljEXsV8sjTLMHgus+VC7fIB6uXkeBmx
-        yTxrb17XAdg8JXbasw9OhBvqp88JRzHZk65H39flrqd2hbf2yt4OPFFvDY8rjlPzERcK9AWXYOlQw
-        grP2V7AQ==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nmLBC-000BAC-K7; Wed, 04 May 2022 22:00:59 +0200
-Message-ID: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
-Date:   Wed, 4 May 2022 17:00:42 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        will Deacon <will@kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, mark.rutland@arm.com,
+        Wed, 4 May 2022 16:11:07 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD411205E8;
+        Wed,  4 May 2022 13:07:30 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id i19so4940263eja.11;
+        Wed, 04 May 2022 13:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7lSSNpXXfR9Qy/9yZmZMditNWGkfTBxEtIAkXYQaMHY=;
+        b=DwrZPfkdvYwiBurT5FmmNntdTqHrVcc8lePpYW6+Ntes+tTNLEObFTfQJrJYVQTl5A
+         BJ+jQ6xn7udqIMO2MjGbtuOgMursdwv//eRcXUBeC0RjImLY78VJCOCnVJBcp2GUrjTr
+         4TUcKyKXcNUpqnn5WU8bRPUj6VMOdL5pI3scjr+2zSYIBvbg2sZfVcG88vFh5OkSe36A
+         sMfw1WtJe3tIipPmStwJQwzyRJISt9Y3Z8vkL2MplGRahYAd8JqVeGq8b4D6VqiAuqGq
+         k0l2x0ebEVOeHfzui4wu2UmbxvRqb2es+mmk4mOsaPDrRlxMatTClQgctgei0RB0Voch
+         5zrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7lSSNpXXfR9Qy/9yZmZMditNWGkfTBxEtIAkXYQaMHY=;
+        b=yWc5Au9lAvJHeGNs9FKWjqUvrmQNvntWCFpZ5xy8AA8SXO38fwcTxGvEzEdkTw1AFd
+         f7YZpYTrCvIEXURncBSX2dbOa2PIOVK78t9zAlRgCzmJ4Cbk4dg5yBH4h0BtGgK7i8km
+         O3hDSaqYvkxJi29yZwY4gDIe/gvwJ1ODqYYxHtlhwHZmDA1JmeBTLfC8q8dZzXWynvIr
+         QJc3bjfPosV3lDPIRA1FtkzzRWYhHU9nGJuHyHksq1YrY3nFjp0SipNZWpracIlmN+W4
+         Fw68XyLCn0nxJmGpGbOx1nfSucnYmcfL+kNfB2OOEjCYVc1eDvHlcQTVzsWW6ktnHP5H
+         pLvQ==
+X-Gm-Message-State: AOAM533f0V53oYcAIWjKxwqw3In9NO8nHw6Z+9yjEIVBBrOaj+MSoAp7
+        UI+3NSCczgXGmon2Tx3E1+8=
+X-Google-Smtp-Source: ABdhPJzlGXzx5m76HwjZ3ekvNPEQriouGOD8PegIt5LcRvA/OXYGxxHNoM74Oe4PeDvJgXSnhTVgRw==
+X-Received: by 2002:a17:906:9b8a:b0:6f3:fcc9:f863 with SMTP id dd10-20020a1709069b8a00b006f3fcc9f863mr22090808ejc.672.1651694849219;
+        Wed, 04 May 2022 13:07:29 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id hf27-20020a1709072c5b00b006f3ef214e2fsm6164979ejc.149.2022.05.04.13.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 13:07:28 -0700 (PDT)
+Date:   Wed, 4 May 2022 23:07:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org
-Cc:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Should arm64 have a custom crash shutdown handler?
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [Patch net-next v13 07/13] net: dsa: microchip: add LAN937x SPI
+ driver
+Message-ID: <20220504200726.pn7y73gt7wc2dpsg@skbuf>
+References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
+ <20220504151755.11737-8-arun.ramadoss@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504151755.11737-8-arun.ramadoss@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks, this email is to ask feedback / trigger a discussion about the
-concept of custom crash shutdown handler, that is "missing" in arm64
-while it's present in many architectures [mips, powerpc, x86, sh (!)].
+On Wed, May 04, 2022 at 08:47:49PM +0530, Arun Ramadoss wrote:
+> This patch add the SPI driver for the LAN937x switches. It uses the
+> lan937x_main.c and lan937x_dev.c functions.
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
+>  drivers/net/dsa/microchip/Makefile      |   1 +
+>  drivers/net/dsa/microchip/ksz_common.h  |   1 +
+>  drivers/net/dsa/microchip/lan937x_dev.c |   7 +
+>  drivers/net/dsa/microchip/lan937x_spi.c | 236 ++++++++++++++++++++++++
+>  4 files changed, 245 insertions(+)
+>  create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+> 
+> diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
+> index d32ff38dc240..28d8eb62a795 100644
+> --- a/drivers/net/dsa/microchip/Makefile
+> +++ b/drivers/net/dsa/microchip/Makefile
+> @@ -10,3 +10,4 @@ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
+>  obj-$(CONFIG_NET_DSA_MICROCHIP_LAN937X)		+= lan937x.o
+>  lan937x-objs := lan937x_dev.o
+>  lan937x-objs += lan937x_main.o
+> +lan937x-objs += lan937x_spi.o
+> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+> index 5671f580948d..fd9e0705d2d2 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.h
+> +++ b/drivers/net/dsa/microchip/ksz_common.h
+> @@ -151,6 +151,7 @@ void ksz_switch_remove(struct ksz_device *dev);
+>  int ksz8_switch_register(struct ksz_device *dev);
+>  int ksz9477_switch_register(struct ksz_device *dev);
+>  int lan937x_switch_register(struct ksz_device *dev);
+> +int lan937x_check_device_id(struct ksz_device *dev);
+>  
+>  void ksz_update_port_member(struct ksz_device *dev, int port);
+>  void ksz_init_mib_timer(struct ksz_device *dev);
+> diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
+> index 3f1797cc1d16..f430a8711775 100644
+> --- a/drivers/net/dsa/microchip/lan937x_dev.c
+> +++ b/drivers/net/dsa/microchip/lan937x_dev.c
+> @@ -386,8 +386,15 @@ static int lan937x_mdio_register(struct ksz_device *dev)
+>  
+>  static int lan937x_switch_init(struct ksz_device *dev)
+>  {
+> +	int ret;
+> +
+>  	dev->ds->ops = &lan937x_switch_ops;
+>  
+> +	/* Check device tree */
+> +	ret = lan937x_check_device_id(dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
 
-Currently, when we kexec in arm64, the function machine_crash_shutdown()
-is called as a handler to disable CPUs and (potentially) do extra
-quiesce work. In the aforementioned architectures, there's a way to
-override this function, if for example an hypervisor wish to have its
-guests running their own custom shutdown machinery.
+Can't this be called from lan937x_spi_probe() directly, why do you need
+to go through lan937x_switch_register() first?
 
-For powerpc/mips, the approach is a generic shutdown function that might
-call other handler-registered functions, whereas x86/sh relies in the
-"machine_ops" structure, having the crash shutdown as a callback in such
-struct.
-
-The usage for that is very broad, but heavy users are hypervisors like
-Hyper-V / KVM (CCed Michael and Vitaly here for this reason). The
-discussion about the need for that in arm64 is from another thread [0],
-so before start implementing/playing with that, I'd like to ask ARM64
-community if there is any feedback and in case it's positive, what is
-the best implementation strategy (struct callback vs. handler call), etc.
-
-I've CCed ARM64/ARM32 maintainers plus extra people I found as really
-involved with ARM architecture - sorry if I added people I shouldn't or
-if I forgot somebody (though the ARM mailing-list is CC).
-Cheers,
-
-
-Guilherme
-
-
-[0]
-https://lore.kernel.org/lkml/2787b476-6366-1c83-db80-0393da417497@igalia.com/
-See the proposed option (b)
+>  	dev->port_mask = (1 << dev->port_cnt) - 1;
+>  
+>  	dev->ports = devm_kzalloc(dev->dev,
