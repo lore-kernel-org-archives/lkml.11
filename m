@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C53C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FFFC4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359624AbiEDRte (ORCPT
+        id S1359675AbiEDRtl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
+        Wed, 4 May 2022 13:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357623AbiEDRPJ (ORCPT
+        with ESMTP id S1357711AbiEDRPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EBA55233;
-        Wed,  4 May 2022 09:58:47 -0700 (PDT)
+        Wed, 4 May 2022 13:15:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B35C4C78F;
+        Wed,  4 May 2022 09:58:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 219ADCE28B9;
-        Wed,  4 May 2022 16:58:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F7DCC385B1;
-        Wed,  4 May 2022 16:58:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 666BB61770;
+        Wed,  4 May 2022 16:58:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3A4CC385B0;
+        Wed,  4 May 2022 16:58:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683523;
-        bh=BKUXDLzplQ5j6VjlLJEEr3gBKq6Qoso3pd32RExTUsM=;
+        s=korg; t=1651683534;
+        bh=uApf3v+9kesqtJgfXozi9r+RG/9L8H2PAKWXC7sppRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=01BMEdh+W2sh+nUpH/VAFvt0aT3uQ7mr6RFFc5InfbJ94QL1v5FP2ASIlAnuCR+fv
-         ptMW2FI2qNaqpbMIPWuv/DlmF5FdXqY+KPC4TYZ/gxe+WlqG6xpfQtkbDjJ+e2r5ph
-         1zewA6GXw4vBgZWJ9XVm/TxLf4RMEj3I4xTtHtf4=
+        b=womKuCWyVAHDoom+6bd6XQuccus/Zui99EhHwGpadZ+wwMFPu/HttxVOEM9hERlK5
+         Q7+dYEBVy0BEFD0v0I/80O2B/dMT6qnf4zFyWVbXnDbJMF88PSwPhTW8i2FzBtJi0X
+         P6RpJXg1vf4EYS9hFFE9SLc3D7mBdrwRNUwyhJnA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michele Ballabio <ballabio.m@gmail.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 185/225] drm/amdgpu: dont runtime suspend if there are displays attached (v3)
-Date:   Wed,  4 May 2022 18:47:03 +0200
-Message-Id: <20220504153126.888301268@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>, Qu Wenruo <wqu@suse.com>,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Christoph Hellwig <hch@lst.de>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 192/225] btrfs: fix direct I/O writes for split bios on zoned devices
+Date:   Wed,  4 May 2022 18:47:10 +0200
+Message-Id: <20220504153127.384584893@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,170 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit f95af4a9236695caed24fe6401256bb974e8f2a7 upstream.
+commit 0fdf977d4576ee0decd612e22f6a837a239573cc upstream.
 
-We normally runtime suspend when there are displays attached if they
-are in the DPMS off state, however, if something wakes the GPU
-we send a hotplug event on resume (in case any displays were connected
-while the GPU was in suspend) which can cause userspace to light
-up the displays again soon after they were turned off.
+When a bio is split in btrfs_submit_direct, dip->file_offset contains
+the file offset for the first bio.  But this means the start value used
+in btrfs_end_dio_bio to record the write location for zone devices is
+incorrect for subsequent bios.
 
-Prior to
-commit 087451f372bf76 ("drm/amdgpu: use generic fb helpers instead of setting up AMD own's."),
-the driver took a runtime pm reference when the fbdev emulation was
-enabled because we didn't implement proper shadowing support for
-vram access when the device was off so the device never runtime
-suspended when there was a console bound.  Once that commit landed,
-we now utilize the core fb helper implementation which properly
-handles the emulation, so runtime pm now suspends in cases where it did
-not before.  Ultimately, we need to sort out why runtime suspend in not
-working in this case for some users, but this should restore similar
-behavior to before.
-
-v2: move check into runtime_suspend
-v3: wake ups -> wakeups in comment, retain pm_runtime behavior in
-    runtime_idle callback
-
-Fixes: 087451f372bf76 ("drm/amdgpu: use generic fb helpers instead of setting up AMD own's.")
-Link: https://lore.kernel.org/r/20220403132322.51c90903@darkstar.example.org/
-Tested-by: Michele Ballabio <ballabio.m@gmail.com>
-Reviewed-by: Evan Quan <evan.quan@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+CC: stable@vger.kernel.org # 5.16+
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Naohiro Aota <naohiro.aota@wdc.com>
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |  105 +++++++++++++++++++++-----------
- 1 file changed, 70 insertions(+), 35 deletions(-)
+ fs/btrfs/inode.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -2348,6 +2348,71 @@ static int amdgpu_pmops_restore(struct d
- 	return amdgpu_device_resume(drm_dev, true);
- }
- 
-+static int amdgpu_runtime_idle_check_display(struct device *dev)
-+{
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct drm_device *drm_dev = pci_get_drvdata(pdev);
-+	struct amdgpu_device *adev = drm_to_adev(drm_dev);
-+
-+	if (adev->mode_info.num_crtc) {
-+		struct drm_connector *list_connector;
-+		struct drm_connector_list_iter iter;
-+		int ret = 0;
-+
-+		/* XXX: Return busy if any displays are connected to avoid
-+		 * possible display wakeups after runtime resume due to
-+		 * hotplug events in case any displays were connected while
-+		 * the GPU was in suspend.  Remove this once that is fixed.
-+		 */
-+		mutex_lock(&drm_dev->mode_config.mutex);
-+		drm_connector_list_iter_begin(drm_dev, &iter);
-+		drm_for_each_connector_iter(list_connector, &iter) {
-+			if (list_connector->status == connector_status_connected) {
-+				ret = -EBUSY;
-+				break;
-+			}
-+		}
-+		drm_connector_list_iter_end(&iter);
-+		mutex_unlock(&drm_dev->mode_config.mutex);
-+
-+		if (ret)
-+			return ret;
-+
-+		if (amdgpu_device_has_dc_support(adev)) {
-+			struct drm_crtc *crtc;
-+
-+			drm_for_each_crtc(crtc, drm_dev) {
-+				drm_modeset_lock(&crtc->mutex, NULL);
-+				if (crtc->state->active)
-+					ret = -EBUSY;
-+				drm_modeset_unlock(&crtc->mutex);
-+				if (ret < 0)
-+					break;
-+			}
-+		} else {
-+			mutex_lock(&drm_dev->mode_config.mutex);
-+			drm_modeset_lock(&drm_dev->mode_config.connection_mutex, NULL);
-+
-+			drm_connector_list_iter_begin(drm_dev, &iter);
-+			drm_for_each_connector_iter(list_connector, &iter) {
-+				if (list_connector->dpms ==  DRM_MODE_DPMS_ON) {
-+					ret = -EBUSY;
-+					break;
-+				}
-+			}
-+
-+			drm_connector_list_iter_end(&iter);
-+
-+			drm_modeset_unlock(&drm_dev->mode_config.connection_mutex);
-+			mutex_unlock(&drm_dev->mode_config.mutex);
-+		}
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int amdgpu_pmops_runtime_suspend(struct device *dev)
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -7845,6 +7845,7 @@ static blk_status_t btrfs_submit_bio_sta
+ static void btrfs_end_dio_bio(struct bio *bio)
  {
- 	struct pci_dev *pdev = to_pci_dev(dev);
-@@ -2360,6 +2425,10 @@ static int amdgpu_pmops_runtime_suspend(
- 		return -EBUSY;
- 	}
+ 	struct btrfs_dio_private *dip = bio->bi_private;
++	struct btrfs_bio *bbio = btrfs_bio(bio);
+ 	blk_status_t err = bio->bi_status;
  
-+	ret = amdgpu_runtime_idle_check_display(dev);
-+	if (ret)
-+		return ret;
-+
- 	/* wait for all rings to drain before suspending */
- 	for (i = 0; i < AMDGPU_MAX_RINGS; i++) {
- 		struct amdgpu_ring *ring = adev->rings[i];
-@@ -2469,41 +2538,7 @@ static int amdgpu_pmops_runtime_idle(str
- 		return -EBUSY;
- 	}
+ 	if (err)
+@@ -7855,12 +7856,12 @@ static void btrfs_end_dio_bio(struct bio
+ 			   bio->bi_iter.bi_size, err);
  
--	if (amdgpu_device_has_dc_support(adev)) {
--		struct drm_crtc *crtc;
--
--		drm_for_each_crtc(crtc, drm_dev) {
--			drm_modeset_lock(&crtc->mutex, NULL);
--			if (crtc->state->active)
--				ret = -EBUSY;
--			drm_modeset_unlock(&crtc->mutex);
--			if (ret < 0)
--				break;
--		}
--
--	} else {
--		struct drm_connector *list_connector;
--		struct drm_connector_list_iter iter;
--
--		mutex_lock(&drm_dev->mode_config.mutex);
--		drm_modeset_lock(&drm_dev->mode_config.connection_mutex, NULL);
--
--		drm_connector_list_iter_begin(drm_dev, &iter);
--		drm_for_each_connector_iter(list_connector, &iter) {
--			if (list_connector->dpms ==  DRM_MODE_DPMS_ON) {
--				ret = -EBUSY;
--				break;
--			}
--		}
--
--		drm_connector_list_iter_end(&iter);
--
--		drm_modeset_unlock(&drm_dev->mode_config.connection_mutex);
--		mutex_unlock(&drm_dev->mode_config.mutex);
--	}
--
--	if (ret == -EBUSY)
--		DRM_DEBUG_DRIVER("failing to power off - crtc active\n");
-+	ret = amdgpu_runtime_idle_check_display(dev);
+ 	if (bio_op(bio) == REQ_OP_READ)
+-		err = btrfs_check_read_dio_bio(dip, btrfs_bio(bio), !err);
++		err = btrfs_check_read_dio_bio(dip, bbio, !err);
  
- 	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_autosuspend(dev);
+ 	if (err)
+ 		dip->dio_bio->bi_status = err;
+ 
+-	btrfs_record_physical_zoned(dip->inode, dip->file_offset, bio);
++	btrfs_record_physical_zoned(dip->inode, bbio->file_offset, bio);
+ 
+ 	bio_put(bio);
+ 	btrfs_dio_private_put(dip);
 
 
