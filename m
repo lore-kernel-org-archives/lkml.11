@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F864C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E196C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352293AbiEDRLe (ORCPT
+        id S1348079AbiEDRKP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
+        Wed, 4 May 2022 13:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355229AbiEDQ7s (ORCPT
+        with ESMTP id S1355641AbiEDRAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBB14927B;
-        Wed,  4 May 2022 09:51:23 -0700 (PDT)
+        Wed, 4 May 2022 13:00:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E644BB96;
+        Wed,  4 May 2022 09:51:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B180BB82752;
-        Wed,  4 May 2022 16:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FF1BC385A4;
-        Wed,  4 May 2022 16:51:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A228D617A6;
+        Wed,  4 May 2022 16:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F17C385A4;
+        Wed,  4 May 2022 16:51:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683080;
-        bh=8mU0N5y3/ls+9yHWZTXSzfmxl+KB6SVRRsQWl7M9eJw=;
+        s=korg; t=1651683118;
+        bh=bk8oiHo7fAjLCDCB+GgK+zQPJnwtXBeitJ/3OLXIcW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z4nt2H8/sAignXH0xSJJeJUhukeoFaCYSUIpgO9u+QTcalS4t6VKvL3qfNd69uy9O
-         oMETTdbPQnvi6QR/y6zHYFcG0Pg+pCMYF4y7NBrdoWVHMXXA67+T2QoKwVCqtS1OQ+
-         MAgFJBgAmA9HzfDLfv5JAdW9cOg7umXvzZy+heBU=
+        b=tLFPcbfLakokdhPhOs2vV855XKojdSES34R3eUiYJf6DGsUeaVprX4uHutIntmmCf
+         oXc2vMrTy4vsDxFd3OMkf+TJW8HTFEc5PMyF2mh0Zn7e7js95bz1K19MfQPenazrCi
+         rquMDkZ0QATMjx8AW+B0JvjUm5rXzsHBrlSxntao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ying Xu <yinxu@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 071/129] sctp: check asoc strreset_chunk in sctp_generate_reconf_event
-Date:   Wed,  4 May 2022 18:44:23 +0200
-Message-Id: <20220504153026.891800744@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 122/129] tty: n_gsm: fix wrong DLCI release order
+Date:   Wed,  4 May 2022 18:45:14 +0200
+Message-Id: <20220504153031.140574826@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -52,66 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 165e3e17fe8fe6a8aab319bc6e631a2e23b9a857 ]
+commit deefc58bafb4841df7f0a0d85d89a1c819db9743 upstream.
 
-A null pointer reference issue can be triggered when the response of a
-stream reconf request arrives after the timer is triggered, such as:
+The current DLCI release order starts with the control channel followed by
+the user channels. Reverse this order to keep the control channel open
+until all user channels have been released.
 
-  send Incoming SSN Reset Request --->
-  CPU0:
-   reconf timer is triggered,
-   go to the handler code before hold sk lock
-                            <--- reply with Outgoing SSN Reset Request
-  CPU1:
-   process Outgoing SSN Reset Request,
-   and set asoc->strreset_chunk to NULL
-  CPU0:
-   continue the handler code, hold sk lock,
-   and try to hold asoc->strreset_chunk, crash!
-
-In Ying Xu's testing, the call trace is:
-
-  [ ] BUG: kernel NULL pointer dereference, address: 0000000000000010
-  [ ] RIP: 0010:sctp_chunk_hold+0xe/0x40 [sctp]
-  [ ] Call Trace:
-  [ ]  <IRQ>
-  [ ]  sctp_sf_send_reconf+0x2c/0x100 [sctp]
-  [ ]  sctp_do_sm+0xa4/0x220 [sctp]
-  [ ]  sctp_generate_reconf_event+0xbd/0xe0 [sctp]
-  [ ]  call_timer_fn+0x26/0x130
-
-This patch is to fix it by returning from the timer handler if asoc
-strreset_chunk is already set to NULL.
-
-Fixes: 7b9438de0cd4 ("sctp: add stream reconf timer")
-Reported-by: Ying Xu <yinxu@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-9-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sctp/sm_sideeffect.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/n_gsm.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-index 0948f14ce221..d4e5969771f0 100644
---- a/net/sctp/sm_sideeffect.c
-+++ b/net/sctp/sm_sideeffect.c
-@@ -458,6 +458,10 @@ void sctp_generate_reconf_event(struct timer_list *t)
- 		goto out_unlock;
- 	}
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2073,8 +2073,8 @@ static void gsm_cleanup_mux(struct gsm_m
+ 	/* Finish outstanding timers, making sure they are done */
+ 	del_timer_sync(&gsm->t2_timer);
  
-+	/* This happens when the response arrives after the timer is triggered. */
-+	if (!asoc->strreset_chunk)
-+		goto out_unlock;
-+
- 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
- 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
- 			   asoc->state, asoc->ep, asoc,
--- 
-2.35.1
-
+-	/* Free up any link layer users */
+-	for (i = 0; i < NUM_DLCI; i++)
++	/* Free up any link layer users and finally the control channel */
++	for (i = NUM_DLCI - 1; i >= 0; i--)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+ 	mutex_unlock(&gsm->mutex);
 
 
