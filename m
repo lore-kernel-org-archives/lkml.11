@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B49A4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBCFC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357668AbiEDRYw (ORCPT
+        id S1357600AbiEDRYp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        Wed, 4 May 2022 13:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355356AbiEDRER (ORCPT
+        with ESMTP id S1355398AbiEDRET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:17 -0400
+        Wed, 4 May 2022 13:04:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D3D4ECD0;
-        Wed,  4 May 2022 09:52:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BBC4ECF9;
+        Wed,  4 May 2022 09:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC04FB82792;
-        Wed,  4 May 2022 16:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912D3C385A5;
-        Wed,  4 May 2022 16:52:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2416CB82752;
+        Wed,  4 May 2022 16:52:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C153FC385AA;
+        Wed,  4 May 2022 16:52:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683171;
-        bh=50t13TWnJkWNJqSYvgR68ZzAcfdUER8rrkJF4QqlJCI=;
+        s=korg; t=1651683174;
+        bh=d9FRUiv783dU/wMy58x9p6NFoSQWCkLOfWCusjCDE3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dgCb10JE1oABvSPJJld3Zq+/VbLzgWBP71vAfJBhMHE7PIEw1mRojZJGrSVlUCRIJ
-         sBoKhb5fHfvPG8/4mmPH1YIMMMbjoY/zxgZ4DlG1PZSaHB2mR8kThS2JbdUZot9C9I
-         eNQJmnWu4TEdwLpI4RdjX783j40ishixaKJ0ykgk=
+        b=yaB+54cS9MSILoSUutOH4ZF6yIDOws67yu/bmdIxSdT53w206ZgAPqaRBYlUjHUI+
+         GpTwMqB///sQjQPrwdS23Cx/FciK1r0w6DmrJ7P8TJp09ln2ggp1GDlipj7VslZgkb
+         Kkg7jvZQZj6wq3GA/xur7JHUBQLoRQS8VDwEPQfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.15 036/177] bus: mhi: host: pci_generic: Flush recovery worker during freeze
-Date:   Wed,  4 May 2022 18:43:49 +0200
-Message-Id: <20220504153056.192191908@linuxfoundation.org>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        stable <stable@kernel.org>
+Subject: [PATCH 5.15 026/177] usb: dwc3: pci: add support for the Intel Meteor Lake-P
+Date:   Wed,  4 May 2022 18:43:39 +0200
+Message-Id: <20220504153055.464711103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,37 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-commit c38f83bae4037023827c85e045841d0421f85034 upstream.
+commit 973e0f7a847ef13ade840d4c30729ce329a66895 upstream.
 
-It is possible that the recovery work might be running while the freeze
-gets executed (during hibernation etc.,). Currently, we don't powerdown
-the stack if it is not up but if the recovery work completes after freeze,
-then the device will be up afterwards. This will not be a sane situation.
+This patch adds the necessary PCI IDs for Intel Meteor Lake-P
+devices.
 
-So let's flush the recovery worker before trying to powerdown the device.
-
-Cc: stable@vger.kernel.org
-Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
-Reported-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
-Reviewed-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
-Link: https://lore.kernel.org/r/20220408150039.17297-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220425103518.44028-1-heikki.krogerus@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/mhi/pci_generic.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc3/dwc3-pci.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -1020,6 +1020,7 @@ static int __maybe_unused mhi_pci_freeze
- 	 * the intermediate restore kernel reinitializes MHI device with new
- 	 * context.
- 	 */
-+	flush_work(&mhi_pdev->recovery_work);
- 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
- 		mhi_power_down(mhi_cntrl, true);
- 		mhi_unprepare_after_power_down(mhi_cntrl);
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -44,6 +44,8 @@
+ #define PCI_DEVICE_ID_INTEL_ADLM		0x54ee
+ #define PCI_DEVICE_ID_INTEL_ADLS		0x7ae1
+ #define PCI_DEVICE_ID_INTEL_RPLS		0x7a61
++#define PCI_DEVICE_ID_INTEL_MTLP		0x7ec1
++#define PCI_DEVICE_ID_INTEL_MTL			0x7e7e
+ #define PCI_DEVICE_ID_INTEL_TGL			0x9a15
+ #define PCI_DEVICE_ID_AMD_MR			0x163a
+ 
+@@ -421,6 +423,12 @@ static const struct pci_device_id dwc3_p
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_RPLS),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+ 
++	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTLP),
++	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
++
++	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTL),
++	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
++
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+ 
 
 
