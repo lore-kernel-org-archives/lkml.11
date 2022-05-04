@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DD8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6085CC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358203AbiEDR3r (ORCPT
+        id S1358307AbiEDRaD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
+        Wed, 4 May 2022 13:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356536AbiEDRJS (ORCPT
+        with ESMTP id S1356728AbiEDRJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399C025EF;
-        Wed,  4 May 2022 09:55:14 -0700 (PDT)
+        Wed, 4 May 2022 13:09:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD841101C6;
+        Wed,  4 May 2022 09:55:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1F81616B8;
-        Wed,  4 May 2022 16:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DE8C385AA;
-        Wed,  4 May 2022 16:55:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B33DB8279A;
+        Wed,  4 May 2022 16:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD2CC385A5;
+        Wed,  4 May 2022 16:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683313;
-        bh=Pv6X4Dct+sK2R/BzHQahrsi0kPRPIvAyAQ9pivAnEro=;
+        s=korg; t=1651683326;
+        bh=W0ma7N9tFRN5uOzAAOel1RrPOTCwMohQRrM+WFEL8KE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2QNh1KptinDjH1nyKs/LLWQeplQFYAlxG9XC6phiWMiMk9lvbph0CQCaI1UoMUmUX
-         bH0/WR8vRyqinQWVwQDERv9XD+jI+dY7IN01S99+fbHpKuS+uuaOCkW37Td7R4BY/R
-         BTAJuXQnTvE+uz3Zy+cZARq6GWCBMvnaDbE9QjwM=
+        b=N4F3wzyuUo6TEkHyKXww0w9OQdCxnXmDnnd5H1oZ7jv9RiEq3EyGyWBrQlNPhDLM4
+         YFRfMnhebgNBZ2XaTs6T72iDnFFN1/wAyH1Dtztax/beUlciJ4xjbJ+XVXLFkG8zqG
+         fS6oOBW5V9gk1ZvmADpRSyX04NzTPO7cIpuxocVg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.15 165/177] tty: n_gsm: fix missing explicit ldisc flush
-Date:   Wed,  4 May 2022 18:45:58 +0200
-Message-Id: <20220504153108.285574527@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 005/225] USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
+Date:   Wed,  4 May 2022 18:44:03 +0200
+Message-Id: <20220504153110.722997606@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,35 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Kees Cook <keescook@chromium.org>
 
-commit 17eac652028501df7ea296b1d9b9c134db262b7d upstream.
+commit e23e50e7acc8d8f16498e9c129db33e6a00e80eb upstream.
 
-In gsm_cleanup_mux() the muxer is closed down and all queues are removed.
-However, removing the queues is done without explicit control of the
-underlying buffers. Flush those before freeing up our queues to ensure
-that all outgoing queues are cleared consistently. Otherwise, a new mux
-connection establishment attempt may time out while the underlying tty is
-still busy sending out the remaining data from the previous connection.
+The sizeof(struct whitehat_dr_info) can be 4 bytes under CONFIG_AEABI=n
+due to "-mabi=apcs-gnu", even though it has a single u8:
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+whiteheat_private {
+        __u8                       mcr;                  /*     0     1 */
+
+        /* size: 4, cachelines: 1, members: 1 */
+        /* padding: 3 */
+        /* last cacheline: 4 bytes */
+};
+
+The result is technically harmless, as both the source and the
+destinations are currently the same allocation size (4 bytes) and don't
+use their padding, but if anything were to ever be added after the
+"mcr" member in "struct whiteheat_private", it would be overwritten. The
+structs both have a single u8 "mcr" member, but are 4 bytes in padded
+size. The memcpy() destination was explicitly targeting the u8 member
+(size 1) with the length of the whole structure (size 4), triggering
+the memcpy buffer overflow warning:
+
+In file included from include/linux/string.h:253,
+                 from include/linux/bitmap.h:11,
+                 from include/linux/cpumask.h:12,
+                 from include/linux/smp.h:13,
+                 from include/linux/lockdep.h:14,
+                 from include/linux/spinlock.h:62,
+                 from include/linux/mmzone.h:8,
+                 from include/linux/gfp.h:6,
+                 from include/linux/slab.h:15,
+                 from drivers/usb/serial/whiteheat.c:17:
+In function 'fortify_memcpy_chk',
+    inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
+include/linux/fortify-string.h:328:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+  328 |                         __write_overflow_field(p_size_field, size);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instead, just assign the one byte directly.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204142318.vDqjjSFn-lkp@intel.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-10-daniel.starke@siemens.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220421001234.2421107-1-keescook@chromium.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/serial/whiteheat.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2087,6 +2087,7 @@ static void gsm_cleanup_mux(struct gsm_m
- 			gsm_dlci_release(gsm->dlci[i]);
- 	mutex_unlock(&gsm->mutex);
- 	/* Now wipe the queues */
-+	tty_ldisc_flush(gsm->tty);
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
- 		kfree(txq);
- 	INIT_LIST_HEAD(&gsm->tx_list);
+--- a/drivers/usb/serial/whiteheat.c
++++ b/drivers/usb/serial/whiteheat.c
+@@ -584,9 +584,8 @@ static int firm_send_command(struct usb_
+ 		switch (command) {
+ 		case WHITEHEAT_GET_DTR_RTS:
+ 			info = usb_get_serial_port_data(port);
+-			memcpy(&info->mcr, command_info->result_buffer,
+-					sizeof(struct whiteheat_dr_info));
+-				break;
++			info->mcr = command_info->result_buffer[0];
++			break;
+ 		}
+ 	}
+ exit:
 
 
