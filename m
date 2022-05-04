@@ -2,129 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7606DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B607FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349686AbiEDMhI (ORCPT
+        id S1349745AbiEDMhW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
+        Wed, 4 May 2022 08:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349723AbiEDMgr (ORCPT
+        with ESMTP id S1349778AbiEDMg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:36:47 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5A3340C9;
-        Wed,  4 May 2022 05:33:10 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id kq17so2601715ejb.4;
-        Wed, 04 May 2022 05:33:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bqWHfh4DenBhYZWygCRQbAilVjZPwr6A8uSbGQA4n4g=;
-        b=EZzaLJio+J3mjbbdhdVzx9o+zyM0yUBmXhCHYMUe6sKGiZiRW+p2IPAa4xWiey50Yj
-         CZA/rkUSAR3XnRJmilJxvBcro6ohrkcqM5V31qy35yeG1jUaNWkfH3OZEzB5aE22Fqvm
-         qK0drlQdJC5dK0OpNtbGrjEnX+WD/M1fLvHKcgQ32xvorx4antbKnPiXByg/y2fZhJwg
-         StOIjjopQ9QfPL0WfTtMkA/lnTHUSomeZcwtAvqr3gLaEWjwG/BRJQWAQEjCE4/V1kEm
-         KmK5I/BRyRr0KEATiU6yNSY1N+AP74b1yWLPzlnzdEQ4WuvPb+IHNojcmh49oGarhL+F
-         r6Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bqWHfh4DenBhYZWygCRQbAilVjZPwr6A8uSbGQA4n4g=;
-        b=8BovGrIJYdrHifARh9rd1e7L5WBE8DUDkIHQuvs97ZfLOsMAO4CIMKNkoJxy4TkNwu
-         PCI8ND0kTyWzTR5FlXMmJDGaDy8L2/b8THbydCz+1faE/vqR+cy2ou69B1Ulllzf3Kdf
-         1p8IesUDnmqoOEm7bfkIgls4VZGqUlZp93MPUmpe7b4ErV8hFpuPYxqO39Ag4Gk8CmWZ
-         vUZfWEHcfIxcuEtXPHvLUQE719G8e2qjH3SapNmzt8M+myuekOAMQPKEyatszGHIcH2d
-         /reQ9V7vnkVGKqZ1PkF5/wJODmQg/hRhNeTV2X1/4Yx0OdxzYJ9bVXRk4BuefnEKTE6Q
-         wnsg==
-X-Gm-Message-State: AOAM530GT0wh/7x+DZA6/RvJPBhVSCuKVXa7EkFPO0FNnJ4hWwFkbYEH
-        DeAqPSDLM6qKIAVBsg7oB/A=
-X-Google-Smtp-Source: ABdhPJxbSCmy6aDiEsDO0UJSjgrOhwaYA7A0tZ1JNTIpOydZSEMbnGEGdNrmCdIAjrEcL2PW8p2vaQ==
-X-Received: by 2002:a17:906:2ac9:b0:6ce:dc0f:9139 with SMTP id m9-20020a1709062ac900b006cedc0f9139mr19979129eje.206.1651667589400;
-        Wed, 04 May 2022 05:33:09 -0700 (PDT)
-Received: from localhost.localdomain (185-177-124-12.hosted-by-worldstream.net. [185.177.124.12])
-        by smtp.gmail.com with ESMTPSA id ig1-20020a1709072e0100b006f3ef214e7asm5688693ejc.224.2022.05.04.05.33.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 05:33:09 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Weiyi Lu <weiyi.lu@mediatek.com>,
-        Ikjoon Jang <ikjn@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Sam Shih <sam.shih@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 11/13] clk: mediatek: reset: Implement mtk_unregister_reset_controller() API
-Date:   Wed,  4 May 2022 16:26:00 +0400
-Message-Id: <20220504122601.335495-12-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504122601.335495-1-y.oudjana@protonmail.com>
-References: <20220504122601.335495-1-y.oudjana@protonmail.com>
+        Wed, 4 May 2022 08:36:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0187C393C1
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:33:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651667597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aHYlr9CGl7IpjK8h/sO0XqVINbN1X58lTAyHvT3Wo+k=;
+        b=aUeNWbo2kq+D2aX4salkLMAq7q6bV424njzXw7y/zTpxXZhVS2+NtbDvQgPtWRKOyqLz48
+        1AsGPj0Pd7YmtbmLM1/QErtQdpwszh2goxDazn4mGPsHnd6pTLQckXuUrCtoXgqM2arobQ
+        LVcVtDsX9kx/xRv7RoP0IMFdvS3NO7w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-433-rCP5UuC3PeigN2ECxTmcVA-1; Wed, 04 May 2022 08:33:01 -0400
+X-MC-Unique: rCP5UuC3PeigN2ECxTmcVA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DF108811E7A;
+        Wed,  4 May 2022 12:33:00 +0000 (UTC)
+Received: from starship (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C5EA01CBB5;
+        Wed,  4 May 2022 12:32:58 +0000 (UTC)
+Message-ID: <fe7cd5012445a941cf55ea82871ea51157490aaa.camel@redhat.com>
+Subject: Re: [PATCH v3 11/14] KVM: SVM: Introduce hybrid-AVIC mode
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Wed, 04 May 2022 15:32:57 +0300
+In-Reply-To: <20220504073128.12031-12-suravee.suthikulpanit@amd.com>
+References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
+         <20220504073128.12031-12-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Wed, 2022-05-04 at 02:31 -0500, Suravee Suthikulpanit wrote:
+> Currently, AVIC is inhibited when booting a VM w/ x2APIC support.
+> because AVIC cannot virtualize x2APIC MSR register accesses.
+> However, the AVIC doorbell can be used to accelerate interrupt
+> injection into a running vCPU, while all guest accesses to x2APIC MSRs
+> will be intercepted and emulated by KVM.
+> 
+> With hybrid-AVIC support, the APICV_INHIBIT_REASON_X2APIC is
+> no longer enforced.
+> 
+> Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/kvm/svm/avic.c | 10 +++++++++-
+>  arch/x86/kvm/svm/svm.c  |  9 ---------
+>  2 files changed, 9 insertions(+), 10 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index d07c58f06bed..3b6a96043633 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -92,12 +92,20 @@ static void avic_activate_vmcb(struct vcpu_svm *svm)
+>  	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
+>  
+>  	vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
+> -	if (apic_x2apic_mode(svm->vcpu.arch.apic)) {
+> +
+> +	/* Note:
+> +	 * KVM can support hybrid-x2AVIC mode, where KVM emulates x2APIC
+> +	 * MSR accesses, while interrupt injection to a running vCPU
+> +	 * can be achieve using AVIC doorbell.
+> +	 */
+> +	if (apic_x2apic_mode(svm->vcpu.arch.apic) &&
+> +	    (avic_mode == AVIC_MODE_X2)) {
+>  		vmcb->control.int_ctl |= X2APIC_MODE_MASK;
+>  		vmcb->control.avic_physical_id |= X2AVIC_MAX_PHYSICAL_ID;
+>  		/* Disabling MSR intercept for x2APIC registers */
+>  		avic_set_x2apic_msr_interception(svm, false);
+>  	} else {
+> +		/* For xAVIC and hybrid-x2AVIC modes */
+>  		vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
+>  		/* Enabling MSR intercept for x2APIC registers */
+>  		avic_set_x2apic_msr_interception(svm, true);
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 96a1fc1a1d1b..c0a3d4a1f3dc 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4041,7 +4041,6 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+>  {
+>  	struct vcpu_svm *svm = to_svm(vcpu);
+>  	struct kvm_cpuid_entry2 *best;
+> -	struct kvm *kvm = vcpu->kvm;
+>  
+>  	vcpu->arch.xsaves_enabled = guest_cpuid_has(vcpu, X86_FEATURE_XSAVE) &&
+>  				    boot_cpu_has(X86_FEATURE_XSAVE) &&
+> @@ -4073,14 +4072,6 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+>  			vcpu->arch.reserved_gpa_bits &= ~(1UL << (best->ebx & 0x3f));
+>  	}
+>  
+> -	if (kvm_vcpu_apicv_active(vcpu)) {
+> -		/*
+> -		 * AVIC does not work with an x2APIC mode guest. If the X2APIC feature
+> -		 * is exposed to the guest, disable AVIC.
+> -		 */
+> -		if (guest_cpuid_has(vcpu, X86_FEATURE_X2APIC))
+> -			kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_X2APIC);
+> -	}
+>  	init_vmcb_after_set_cpuid(vcpu);
+>  }
+>  
 
-Add a function to unregister a reset controller previously
-registered with mtk_register_reset_controller() or
-mtk_register_reset_controller_set_clr(), and do the necessary cleanup.
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
- drivers/clk/mediatek/clk-mtk.h | 2 ++
- drivers/clk/mediatek/reset.c   | 7 +++++++
- 2 files changed, 9 insertions(+)
+Well strictly speaking, another thing that has to be done, other that removing the inhibit,
+is to 'hide' the AVIC's private memslot if one of vCPUs is in x2apic mode, 
+although not doing this doesn't cause any harm as the guest is not supposed to poke at xAPIC
+mmio even when uses x2apic, and if it does it will get the normal AVIC acceleration,
+so probably it is better to not add any more complexity and leave it like that.
 
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index 317905ec4a36..1a0462d9c20b 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -196,6 +196,8 @@ struct mtk_reset *mtk_register_reset_controller(struct device_node *np,
- struct mtk_reset *mtk_register_reset_controller_set_clr(struct device_node *np,
- 	unsigned int num_regs, int regofs);
- 
-+void mtk_unregister_reset_controller(struct mtk_reset *data);
-+
- struct mtk_clk_desc {
- 	const struct mtk_gate *clks;
- 	size_t num_clks;
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index f853bc8a7092..7201e1f5e07b 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -141,4 +141,11 @@ struct mtk_reset *mtk_register_reset_controller_set_clr(struct device_node *np,
- }
- EXPORT_SYMBOL_GPL(mtk_register_reset_controller_set_clr);
- 
-+void mtk_unregister_reset_controller(struct mtk_reset *data)
-+{
-+	reset_controller_unregister(&data->rcdev);
-+	kfree(data);
-+}
-+EXPORT_SYMBOL_GPL(mtk_unregister_reset_controller);
-+
- MODULE_LICENSE("GPL");
--- 
-2.36.0
+Besides that my only note on this is that you forgot the most satisfying part of this,
+removing the APICV_INHIBIT_REASON_X2APIC value ;-)
+
+So besides the removal of the APICV_INHIBIT_REASON_X2APIC:
+
+Reviewed-by: Maxim Levitsky <mlevisk@redhat.com>
+
+
+BTW, hardware wise, does 'X2APIC_MODE' keeps the emulation of the AVIC mmio, or
+not?
+
+Best regards,
+	Maxim Levitsky
 
