@@ -2,103 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C28C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E69C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244624AbiEDA2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 20:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        id S244673AbiEDA2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 20:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244615AbiEDA2c (ORCPT
+        with ESMTP id S244656AbiEDA2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 20:28:32 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A42E4339D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 17:24:59 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id h3so10214435qtn.4
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 17:24:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BXKwANX9smJAfYSvt1T0VUO54zua3SqRupnCifAoDtA=;
-        b=TqYuhMgCmiN66eY32dsXpgZIT4PLiwZGBx3dKBOmXLNCO4y184UCJ/beks6mCVrHDT
-         /8LZdDRGnKX6Wh9P8rfbrtm5I7gqUzhSi2VAHJdg4d1UFmvomPPiVLI4rM07g3IHLk2K
-         M+Chnnz9dMZIJEFeyiLNMw4kHf79y14fSSk9G8B0VTRAr+rpCDTUc30rFW1njJwd6+vF
-         dCoFSnzxgvG28ZYNLZxBOo2QfFjvLVzRGKA+ikSwkFCKq1FIAdnwjkISZNQdHRBzFnNy
-         jZyKMRcH5jJKKnJMVGIG/WTrWVzJRUorsJmJ+lw7hxIUvu+Nu+LGTDCg0DLH0Ze5oVaw
-         lxBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BXKwANX9smJAfYSvt1T0VUO54zua3SqRupnCifAoDtA=;
-        b=Qo0myX7GCzY0o1ls4HRaP1aPmExmaRY6bQ7F9R/FpxYAJACsqNIwj1HmFRSmn79Rt+
-         nqcataR0FYb015wRX0F7NsuZRqhYj3FEp2jbYwKOQ/SpWUMPObFWDoAfckt5PIDqY0gN
-         KbNG+kaUPyUQH2ByMryhvQneyHN8o84dEyyJY7mxqLdWZm5QfQZjCSEEVmITLFbU0dsN
-         1ZcBvDXyoAPswi3HUdBDrzBZWj9lpCCZCfPtzcz20uuGnGovHei8DpBrzp/tDnZMn2vG
-         if7mG8b85l0E00rdQTTs/SMv7FYb4FIKumIQlYDdEX6+woHXTm5o0xf+1r/Sn0v4fqIZ
-         SdgQ==
-X-Gm-Message-State: AOAM533kEOpcAKsV7PcstBIiaW1jAsacDwZkT7LncVgw0DMJGovzE/kb
-        hJ7AReLf4c3dQr/eK8HpxywL3OKeCBhByQ==
-X-Google-Smtp-Source: ABdhPJyblDlpqLbyxuviA+1St8zyRhH8rLqGloGH75Eoiy3CNRsix2RXLc6kUbzeSBbN+FetBeGryQ==
-X-Received: by 2002:ac8:7f8a:0:b0:2f3:a31e:810 with SMTP id z10-20020ac87f8a000000b002f3a31e0810mr12546589qtj.95.1651623898317;
-        Tue, 03 May 2022 17:24:58 -0700 (PDT)
-Received: from localhost.localdomain ([66.63.167.151])
-        by smtp.gmail.com with ESMTPSA id e188-20020a37b5c5000000b0069fc13ce225sm5966358qkf.86.2022.05.03.17.24.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 17:24:55 -0700 (PDT)
-From:   Forest Crossman <cyrozap@gmail.com>
-To:     C.Emde@osadl.org, corbet@lwn.net
-Cc:     Forest Crossman <cyrozap@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] tools/edid: Only include the .data section in the raw binary output
-Date:   Tue,  3 May 2022 19:24:43 -0500
-Message-Id: <20220504002444.114011-1-cyrozap@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        Tue, 3 May 2022 20:28:51 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609EC5F71;
+        Tue,  3 May 2022 17:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651623917; x=1683159917;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZCzg68E9e6BqBao4oWRrx0n2MdE1MfcFFpx+KA+MVak=;
+  b=n7yHHnSbciamEuX96JvhMtGmN3pbbfxFPoiyeXL4PSkndFhYIuq5F9ce
+   3bTxW050PVXT7w566JDjwzFcE5eVxh9onga4VVcUQRCaO13N4PHclw4lt
+   xUUBW5GHKggPuUf58+XvWg5zeiIlPaAuLcpce35FDiKJSb43yUh4WLAhB
+   GTpaNUUIDU+iNpq0OFD/+HRaf5XM74PftP36+7m7n3AxOIaF/9f+Ba4R2
+   UC8ImQSu0uVg5GXLJMFi2Uiq4PuhFmRXJ4EfOd+LO1ZX9C0t1uzNQX1oD
+   vnru3/NkjZmPaH7nrcQE83QXz7V5FzPItMwcBzwBytS9uvsDvFhdKg3FE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="328169916"
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="328169916"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 17:25:16 -0700
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="664215706"
+Received: from dbandax-mobl2.amr.corp.intel.com (HELO [10.209.188.251]) ([10.209.188.251])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 17:25:15 -0700
+Message-ID: <1b681365-ef98-ec78-96dc-04e28316cf0e@intel.com>
+Date:   Tue, 3 May 2022 17:25:35 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
+ <ecf718abf864bbb2366209f00d4315ada090aedc.camel@intel.com>
+ <de24ac7e-349c-e49a-70bb-31b9bc867b10@intel.com>
+ <9b388f54f13b34fe684ef77603fc878952e48f87.camel@intel.com>
+ <d98ca73b-2d2d-757d-e937-acc83cfedfb0@intel.com>
+ <c90a10763969077826f42be6f492e3a3e062326b.camel@intel.com>
+ <fc1ca04d94ad45e79c0297719d5ef50a7c33c352.camel@intel.com>
+ <664f8adeb56ba61774f3c845041f016c54e0f96e.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <664f8adeb56ba61774f3c845041f016c54e0f96e.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I don't know at what point this changed, but with gcc 11.2.0 and
-binutils 2.38, if we don't restrict what sections are output to the raw
-binary, the ".note.gnu.property" section in the object file will be
-written into the first 48 bytes of the EDID, rendering it unusable.
+On 5/3/22 16:59, Kai Huang wrote:
+> Should be:
+> 
+> 	// prevent racing with TDX module initialization */
+> 	tdx_init_disable();
+> 
+> 	if (tdx_module_initialized()) {
+> 		if (new_memory_resource in TDMRs)
+> 			// allow memory hot-add
+> 		else
+> 			// reject memory hot-add
+> 	} else if (new_memory_resource in CMR) {
+> 		// add new memory to TDX memory so it can be
+> 		// included into TDMRs
+> 
+> 		// allow memory hot-add
+> 	}
+> 	else
+> 		// reject memory hot-add
+> 	
+> 	tdx_module_enable();
+> 
+> And when platform doesn't TDX, always allow memory hot-add.
 
-To fix this, limit the binary output to the ".data" section.
+I don't think it even needs to be *that* complicated.
 
-Signed-off-by: Forest Crossman <cyrozap@gmail.com>
----
- tools/edid/Makefile | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+It could just be winner take all: if TDX is initialized first, don't
+allow memory hotplug.  If memory hotplug happens first, don't allow TDX
+to be initialized.
 
-diff --git a/tools/edid/Makefile b/tools/edid/Makefile
-index 85a927dfab02..b62bfd925348 100644
---- a/tools/edid/Makefile
-+++ b/tools/edid/Makefile
-@@ -16,7 +16,7 @@ clean:
- 	@cc -c $^
- 
- %.bin.nocrc:	%.o
--	@objcopy -Obinary $^ $@
-+	@objcopy -j.data -Obinary $^ $@
- 
- %.crc:	%.bin.nocrc
- 	@list=$$(for i in `seq 1 127`; do head -c$$i $^ | tail -c1 \
-@@ -27,10 +27,10 @@ clean:
- 	@cc -c -DCRC="$$(cat $*.crc)" -o $@ $*.S
- 
- %.bin:	%.p
--	@objcopy -Obinary $^ $@
-+	@objcopy -j.data -Obinary $^ $@
- 
- %.bin.ihex:	%.p
--	@objcopy -Oihex $^ $@
-+	@objcopy -j.data -Oihex $^ $@
- 	@dos2unix $@ 2>/dev/null
- 
- %.c:	%.bin
--- 
-2.36.0
+That's fine at least for a minimal patch set.
+
+What you have up above is probably where you want to go eventually, but
+it means doing things like augmenting the e820 since it's the single
+source of truth for creating the TMDRs right now.
 
