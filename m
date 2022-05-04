@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B31C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F4FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359122AbiEDRnw (ORCPT
+        id S1359364AbiEDRoH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        Wed, 4 May 2022 13:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356035AbiEDRI7 (ORCPT
+        with ESMTP id S1355966AbiEDRI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91020527E9;
-        Wed,  4 May 2022 09:54:50 -0700 (PDT)
+        Wed, 4 May 2022 13:08:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62652527C3;
+        Wed,  4 May 2022 09:54:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8F60B8278E;
-        Wed,  4 May 2022 16:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78E9CC385A5;
-        Wed,  4 May 2022 16:54:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 391E361896;
+        Wed,  4 May 2022 16:54:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 859E7C385B9;
+        Wed,  4 May 2022 16:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683287;
-        bh=xCx+GlsVxmY/H4CVNQZ7axuhJ5gW967unc+iX5+XCBQ=;
+        s=korg; t=1651683285;
+        bh=qoLkNOpHDZegcIXVQDcuYOHTdqmMBOW+KEJuAQFdY5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ANigu09cuqp4P+AcIcoCDKNY4qB2sII/n+I/dSmCXPvZzvX0MRKg6Hynt46SIYL5
-         I9Nykpzt/pJ2ZwUaYXrm/+7+9PEj7uRLxqmcHnjZALfz9JXbFfACBaYyhq20RGESmp
-         dCnTp8DKwFPBeS7dC9h9+HMSmH4L+39pTyoABOu8=
+        b=MJZ1TTMlXyty+2KeAqNVyRQa4aCwPI76aOXSoQvEm8zkvINI1iEnks0wWqRc9kwmI
+         /subMRICFTtGCiEBjxlEyUtEWh6GX8Cg+SQ7E0H//3LrFulmUw8E20hkEhfK6y/ZUb
+         2E4e5oG74HfTuxikGH1zoV4/HmO3G8txaR+qBqDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.15 153/177] ARM: dts: imx8mm-venice-gw{71xx,72xx,73xx}: fix OTG controller OC mode
-Date:   Wed,  4 May 2022 18:45:46 +0200
-Message-Id: <20220504153107.086817776@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 128/177] ASoC: wm8731: Disable the regulator when probing fails
+Date:   Wed,  4 May 2022 18:45:21 +0200
+Message-Id: <20220504153104.570889166@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,81 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Harvey <tharvey@gateworks.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 4c79865f3e8a2db93ec1e844509edfebe5a6ae56 upstream.
+[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
 
-The GW71xx, GW72xx and GW73xx boards have USB1 routed to a USB OTG
-connectors and USB2 routed to a USB hub.
+When the driver fails during probing, the driver should disable the
+regulator, not just handle it in wm8731_hw_init().
 
-The OTG connector has a over-currently protection with an active-low
-pin and the USB1 to HUB connection has no over-current protection (as
-the HUB itself implements this for its downstream ports).
+The following log reveals it:
 
-Add proper dt nodes to specify the over-current pin polarity for USB1
-and disable over-current protection for USB2.
+[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   17.824467] Call Trace:
+[   17.824774]  <TASK>
+[   17.825040]  regulator_bulk_free+0x82/0xe0
+[   17.825514]  devres_release_group+0x319/0x3d0
+[   17.825882]  i2c_device_probe+0x766/0x940
+[   17.829198]  i2c_register_driver+0xb5/0x130
 
-Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi |    2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi |    2 ++
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi |    2 ++
- 3 files changed, 6 insertions(+)
+ sound/soc/codecs/wm8731.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
-@@ -103,12 +103,14 @@
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index dcee7b2bd3d7..859ebcec8383 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -602,7 +602,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	ret = wm8731_reset(wm8731->regmap);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to issue reset: %d\n", ret);
+-		goto err_regulator_enable;
++		goto err;
+ 	}
  
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
+ 	/* Clear POWEROFF, keep everything else disabled */
+@@ -619,10 +619,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
  
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	status = "okay";
- };
+ 	regcache_mark_dirty(wm8731->regmap);
  
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
-@@ -139,12 +139,14 @@
+-err_regulator_enable:
+-	/* Regulators will be enabled by bias management */
+-	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+-
++err:
+ 	return ret;
+ }
  
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
+@@ -766,21 +763,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
+ 		ret = PTR_ERR(wm8731->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+ 			ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
  
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
-@@ -166,12 +166,14 @@
+ 	ret = wm8731_hw_init(&i2c->dev, wm8731);
+ 	if (ret != 0)
+-		return ret;
++		goto err_regulator_enable;
  
- &usbotg1 {
- 	dr_mode = "otg";
-+	over-current-active-low;
- 	vbus-supply = <&reg_usb_otg1_vbus>;
- 	status = "okay";
- };
+ 	ret = devm_snd_soc_register_component(&i2c->dev,
+ 			&soc_component_dev_wm8731, &wm8731_dai, 1);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
  
- &usbotg2 {
- 	dr_mode = "host";
-+	disable-over-current;
- 	vbus-supply = <&reg_usb_otg2_vbus>;
- 	status = "okay";
- };
+ 	return 0;
++
++err_regulator_enable:
++	/* Regulators will be enabled by bias management */
++	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
++
++	return ret;
+ }
+ 
+ static int wm8731_i2c_remove(struct i2c_client *client)
+-- 
+2.35.1
+
 
 
