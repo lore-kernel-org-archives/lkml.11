@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05538C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A5BC3527B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376420AbiEDRo4 (ORCPT
+        id S1376637AbiEDRpO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
+        Wed, 4 May 2022 13:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355789AbiEDRIv (ORCPT
+        with ESMTP id S1354608AbiEDRHU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432BA51E6F;
-        Wed,  4 May 2022 09:54:34 -0700 (PDT)
+        Wed, 4 May 2022 13:07:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6373515AE;
+        Wed,  4 May 2022 09:54:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B930618A8;
-        Wed,  4 May 2022 16:54:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 971B3C385A5;
-        Wed,  4 May 2022 16:54:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BCC6617DE;
+        Wed,  4 May 2022 16:54:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA418C385A5;
+        Wed,  4 May 2022 16:54:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683273;
-        bh=V4+udKpGUEb7EfiAhVQ52/X71aaDypSDTq4SjL343KA=;
+        s=korg; t=1651683264;
+        bh=FB6S71sPeFP0H53YPfgswpGWG6zlz1yjWXv/ilUPvWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TPKuDyl1lseDGwXW1Uo4SrFDNkuDjK64zlTaoafn73/2n5QFNom5N/ZiMBAzUhZee
-         RApL548aEjYC+7EGYchD6h+M8herj2PhipFDn87IriGC0tjWs34hGLE+f3wXUQgCOY
-         C48Xhj8zigkNandxiycMzfIMZIjDWjZcpSYIM0Dw=
+        b=vuL7RtDrmsD/pszgwocosQWmtEhoqK8f7y6i8WSrCQDdKTgF3xCE8uz8tSc4p4w8s
+         umq/YNORJfXr7AzLelS6pDWHA2ZcIzVDxc6xvoQpC31l70hMSymou58YLre8cCNQHO
+         bLDv8aC+tCH9Pb3BqZMLy03+25vBTfxX5/omOftE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, David Yat Sin <david.yatsin@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 139/177] selftest/vm: verify remap destination address in mremap_test
-Date:   Wed,  4 May 2022 18:45:32 +0200
-Message-Id: <20220504153105.675996205@linuxfoundation.org>
+Subject: [PATCH 5.15 114/177] drm/amdkfd: Fix GWS queue count
+Date:   Wed,  4 May 2022 18:45:07 +0200
+Message-Id: <20220504153103.397174871@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -53,105 +51,220 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+From: David Yat Sin <david.yatsin@amd.com>
 
-[ Upstream commit 18d609daa546c919fd36b62a7b510c18de4b4af8 ]
+[ Upstream commit 7c6b6e18c890f30965b0589b0a57645e1dbccfde ]
 
-Because mremap does not have a MAP_FIXED_NOREPLACE flag, it can destroy
-existing mappings.  This causes a segfault when regions such as text are
-remapped and the permissions are changed.
+dqm->gws_queue_count and pdd->qpd.mapped_gws_queue need to be updated
+each time the queue gets evicted.
 
-Verify the requested mremap destination address does not overlap any
-existing mappings by using mmap's MAP_FIXED_NOREPLACE flag.  Keep
-incrementing the destination address until a valid mapping is found or
-fail the current test once the max address is reached.
-
-Link: https://lkml.kernel.org/r/20220420215721.4868-2-sidhartha.kumar@oracle.com
-Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: b8020b0304c8 ("drm/amdkfd: Enable over-subscription with >1 GWS queue")
+Signed-off-by: David Yat Sin <david.yatsin@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/mremap_test.c | 42 ++++++++++++++++++++++--
- 1 file changed, 39 insertions(+), 3 deletions(-)
+ .../drm/amd/amdkfd/kfd_device_queue_manager.c | 83 +++++++++----------
+ 1 file changed, 37 insertions(+), 46 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
-index 2b3b4f15185f..e3ce33a9954e 100644
---- a/tools/testing/selftests/vm/mremap_test.c
-+++ b/tools/testing/selftests/vm/mremap_test.c
-@@ -10,6 +10,7 @@
- #include <string.h>
- #include <sys/mman.h>
- #include <time.h>
-+#include <stdbool.h>
- 
- #include "../kselftest.h"
- 
-@@ -65,6 +66,30 @@ enum {
- 	.expect_failure = should_fail				\
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+index 4f2e0cc8a51a..442857f3bde7 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+@@ -138,19 +138,33 @@ void program_sh_mem_settings(struct device_queue_manager *dqm,
  }
  
-+/*
-+ * Returns false if the requested remap region overlaps with an
-+ * existing mapping (e.g text, stack) else returns true.
-+ */
-+static bool is_remap_region_valid(void *addr, unsigned long long size)
-+{
-+	void *remap_addr = NULL;
-+	bool ret = true;
-+
-+	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
-+	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
-+					 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
-+					 -1, 0);
-+
-+	if (remap_addr == MAP_FAILED) {
-+		if (errno == EEXIST)
-+			ret = false;
-+	} else {
-+		munmap(remap_addr, size);
-+	}
-+
-+	return ret;
-+}
-+
- /* Returns mmap_min_addr sysctl tunable from procfs */
- static unsigned long long get_mmap_min_addr(void)
+ static void increment_queue_count(struct device_queue_manager *dqm,
+-			enum kfd_queue_type type)
++				  struct qcm_process_device *qpd,
++				  struct queue *q)
  {
-@@ -112,8 +137,8 @@ static void *get_source_mapping(struct config c)
- 		goto retry;
- 
- 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
--			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
--			-1, 0);
-+					MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
-+					-1, 0);
- 	if (src_addr == MAP_FAILED) {
- 		if (errno == EPERM || errno == EEXIST)
- 			goto retry;
-@@ -180,9 +205,20 @@ static long long remap_region(struct config c, unsigned int threshold_mb,
- 	if (!((unsigned long long) addr & c.dest_alignment))
- 		addr = (void *) ((unsigned long long) addr | c.dest_alignment);
- 
-+	/* Don't destroy existing mappings unless expected to overlap */
-+	while (!is_remap_region_valid(addr, c.region_size) && !c.overlapping) {
-+		/* Check for unsigned overflow */
-+		if (addr + c.dest_alignment < addr) {
-+			ksft_print_msg("Couldn't find a valid region to remap to\n");
-+			ret = -1;
-+			goto out;
-+		}
-+		addr += c.dest_alignment;
-+	}
+ 	dqm->active_queue_count++;
+-	if (type == KFD_QUEUE_TYPE_COMPUTE || type == KFD_QUEUE_TYPE_DIQ)
++	if (q->properties.type == KFD_QUEUE_TYPE_COMPUTE ||
++	    q->properties.type == KFD_QUEUE_TYPE_DIQ)
+ 		dqm->active_cp_queue_count++;
 +
- 	clock_gettime(CLOCK_MONOTONIC, &t_start);
- 	dest_addr = mremap(src_addr, c.region_size, c.region_size,
--			MREMAP_MAYMOVE|MREMAP_FIXED, (char *) addr);
-+					  MREMAP_MAYMOVE|MREMAP_FIXED, (char *) addr);
- 	clock_gettime(CLOCK_MONOTONIC, &t_end);
++	if (q->properties.is_gws) {
++		dqm->gws_queue_count++;
++		qpd->mapped_gws_queue = true;
++	}
+ }
  
- 	if (dest_addr == MAP_FAILED) {
+ static void decrement_queue_count(struct device_queue_manager *dqm,
+-			enum kfd_queue_type type)
++				  struct qcm_process_device *qpd,
++				  struct queue *q)
+ {
+ 	dqm->active_queue_count--;
+-	if (type == KFD_QUEUE_TYPE_COMPUTE || type == KFD_QUEUE_TYPE_DIQ)
++	if (q->properties.type == KFD_QUEUE_TYPE_COMPUTE ||
++	    q->properties.type == KFD_QUEUE_TYPE_DIQ)
+ 		dqm->active_cp_queue_count--;
++
++	if (q->properties.is_gws) {
++		dqm->gws_queue_count--;
++		qpd->mapped_gws_queue = false;
++	}
+ }
+ 
+ static int allocate_doorbell(struct qcm_process_device *qpd, struct queue *q)
+@@ -390,7 +404,7 @@ static int create_queue_nocpsch(struct device_queue_manager *dqm,
+ 	list_add(&q->list, &qpd->queues_list);
+ 	qpd->queue_count++;
+ 	if (q->properties.is_active)
+-		increment_queue_count(dqm, q->properties.type);
++		increment_queue_count(dqm, qpd, q);
+ 
+ 	/*
+ 	 * Unconditionally increment this counter, regardless of the queue's
+@@ -515,13 +529,8 @@ static int destroy_queue_nocpsch_locked(struct device_queue_manager *dqm,
+ 		deallocate_vmid(dqm, qpd, q);
+ 	}
+ 	qpd->queue_count--;
+-	if (q->properties.is_active) {
+-		decrement_queue_count(dqm, q->properties.type);
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count--;
+-			qpd->mapped_gws_queue = false;
+-		}
+-	}
++	if (q->properties.is_active)
++		decrement_queue_count(dqm, qpd, q);
+ 
+ 	return retval;
+ }
+@@ -613,12 +622,11 @@ static int update_queue(struct device_queue_manager *dqm, struct queue *q)
+ 	 * dqm->active_queue_count to determine whether a new runlist must be
+ 	 * uploaded.
+ 	 */
+-	if (q->properties.is_active && !prev_active)
+-		increment_queue_count(dqm, q->properties.type);
+-	else if (!q->properties.is_active && prev_active)
+-		decrement_queue_count(dqm, q->properties.type);
+-
+-	if (q->gws && !q->properties.is_gws) {
++	if (q->properties.is_active && !prev_active) {
++		increment_queue_count(dqm, &pdd->qpd, q);
++	} else if (!q->properties.is_active && prev_active) {
++		decrement_queue_count(dqm, &pdd->qpd, q);
++	} else if (q->gws && !q->properties.is_gws) {
+ 		if (q->properties.is_active) {
+ 			dqm->gws_queue_count++;
+ 			pdd->qpd.mapped_gws_queue = true;
+@@ -680,11 +688,7 @@ static int evict_process_queues_nocpsch(struct device_queue_manager *dqm,
+ 		mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
+ 				q->properties.type)];
+ 		q->properties.is_active = false;
+-		decrement_queue_count(dqm, q->properties.type);
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count--;
+-			qpd->mapped_gws_queue = false;
+-		}
++		decrement_queue_count(dqm, qpd, q);
+ 
+ 		if (WARN_ONCE(!dqm->sched_running, "Evict when stopped\n"))
+ 			continue;
+@@ -730,7 +734,7 @@ static int evict_process_queues_cpsch(struct device_queue_manager *dqm,
+ 			continue;
+ 
+ 		q->properties.is_active = false;
+-		decrement_queue_count(dqm, q->properties.type);
++		decrement_queue_count(dqm, qpd, q);
+ 	}
+ 	pdd->last_evict_timestamp = get_jiffies_64();
+ 	retval = execute_queues_cpsch(dqm,
+@@ -801,11 +805,7 @@ static int restore_process_queues_nocpsch(struct device_queue_manager *dqm,
+ 		mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
+ 				q->properties.type)];
+ 		q->properties.is_active = true;
+-		increment_queue_count(dqm, q->properties.type);
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count++;
+-			qpd->mapped_gws_queue = true;
+-		}
++		increment_queue_count(dqm, qpd, q);
+ 
+ 		if (WARN_ONCE(!dqm->sched_running, "Restore when stopped\n"))
+ 			continue;
+@@ -863,7 +863,7 @@ static int restore_process_queues_cpsch(struct device_queue_manager *dqm,
+ 			continue;
+ 
+ 		q->properties.is_active = true;
+-		increment_queue_count(dqm, q->properties.type);
++		increment_queue_count(dqm, &pdd->qpd, q);
+ 	}
+ 	retval = execute_queues_cpsch(dqm,
+ 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+@@ -1265,7 +1265,7 @@ static int create_kernel_queue_cpsch(struct device_queue_manager *dqm,
+ 			dqm->total_queue_count);
+ 
+ 	list_add(&kq->list, &qpd->priv_queue_list);
+-	increment_queue_count(dqm, kq->queue->properties.type);
++	increment_queue_count(dqm, qpd, kq->queue);
+ 	qpd->is_debug = true;
+ 	execute_queues_cpsch(dqm, KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+ 	dqm_unlock(dqm);
+@@ -1279,7 +1279,7 @@ static void destroy_kernel_queue_cpsch(struct device_queue_manager *dqm,
+ {
+ 	dqm_lock(dqm);
+ 	list_del(&kq->list);
+-	decrement_queue_count(dqm, kq->queue->properties.type);
++	decrement_queue_count(dqm, qpd, kq->queue);
+ 	qpd->is_debug = false;
+ 	execute_queues_cpsch(dqm, KFD_UNMAP_QUEUES_FILTER_ALL_QUEUES, 0);
+ 	/*
+@@ -1346,7 +1346,7 @@ static int create_queue_cpsch(struct device_queue_manager *dqm, struct queue *q,
+ 	qpd->queue_count++;
+ 
+ 	if (q->properties.is_active) {
+-		increment_queue_count(dqm, q->properties.type);
++		increment_queue_count(dqm, qpd, q);
+ 
+ 		execute_queues_cpsch(dqm,
+ 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+@@ -1548,15 +1548,11 @@ static int destroy_queue_cpsch(struct device_queue_manager *dqm,
+ 	list_del(&q->list);
+ 	qpd->queue_count--;
+ 	if (q->properties.is_active) {
+-		decrement_queue_count(dqm, q->properties.type);
++		decrement_queue_count(dqm, qpd, q);
+ 		retval = execute_queues_cpsch(dqm,
+ 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+ 		if (retval == -ETIME)
+ 			qpd->reset_wavefronts = true;
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count--;
+-			qpd->mapped_gws_queue = false;
+-		}
+ 	}
+ 
+ 	/*
+@@ -1747,7 +1743,7 @@ static int process_termination_cpsch(struct device_queue_manager *dqm,
+ 	/* Clean all kernel queues */
+ 	list_for_each_entry_safe(kq, kq_next, &qpd->priv_queue_list, list) {
+ 		list_del(&kq->list);
+-		decrement_queue_count(dqm, kq->queue->properties.type);
++		decrement_queue_count(dqm, qpd, kq->queue);
+ 		qpd->is_debug = false;
+ 		dqm->total_queue_count--;
+ 		filter = KFD_UNMAP_QUEUES_FILTER_ALL_QUEUES;
+@@ -1760,13 +1756,8 @@ static int process_termination_cpsch(struct device_queue_manager *dqm,
+ 		else if (q->properties.type == KFD_QUEUE_TYPE_SDMA_XGMI)
+ 			deallocate_sdma_queue(dqm, q);
+ 
+-		if (q->properties.is_active) {
+-			decrement_queue_count(dqm, q->properties.type);
+-			if (q->properties.is_gws) {
+-				dqm->gws_queue_count--;
+-				qpd->mapped_gws_queue = false;
+-			}
+-		}
++		if (q->properties.is_active)
++			decrement_queue_count(dqm, qpd, q);
+ 
+ 		dqm->total_queue_count--;
+ 	}
 -- 
 2.35.1
 
