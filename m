@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AB6C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3178EC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358498AbiEDRaj (ORCPT
+        id S1358475AbiEDRa1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        Wed, 4 May 2022 13:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356800AbiEDRJo (ORCPT
+        with ESMTP id S1356777AbiEDRJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:44 -0400
+        Wed, 4 May 2022 13:09:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D259D1E3CC;
-        Wed,  4 May 2022 09:55:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CA81B7A5;
+        Wed,  4 May 2022 09:55:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AA5BB8278E;
-        Wed,  4 May 2022 16:55:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3950BC385A5;
-        Wed,  4 May 2022 16:55:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 838F4B82737;
+        Wed,  4 May 2022 16:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8E1C385AA;
+        Wed,  4 May 2022 16:55:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683340;
-        bh=/ORMeW9VdrfrZbrInu4dInEhj+vzKcGEl2Q1Sgw3Yvc=;
+        s=korg; t=1651683332;
+        bh=HCoN8/Wq4Acpa5T6uG4M7Zn2PwaQBMq/3dfZoQIgsyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DGaecDNyc3mCqeJb9vlR3HCRQrKUVsVkxjccA1E5fWqJOrhC8OhTEQiJp3MoLBhEW
-         05Yn8bphvOfebgA0F4H0srKq18OfS/nMXFI3xddQKJW2AE4JG1+hpkNNpNWMlINjBB
-         3eYVCeVGKOfwIm4ghKh1OesUn64dJHOok2uyo5YY=
+        b=l1TB1MjEf7UdT5grUfqfBJ+g+Gt5AdO3NFCqe6bg1pIuZX3SZVfAy9SAKAh04u8Vp
+         zabLlq6Q/DH4tPaE+sCQCcMs+xhX7dpmacCYiLHq1UpKZI0WysNPKV/iLOv+OGvCVW
+         T7Qc4XbueO6K3czAD3uno/xVT91AtHMEubvny60Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.17 015/225] iio: dac: ad5446: Fix read_raw not returning set value
-Date:   Wed,  4 May 2022 18:44:13 +0200
-Message-Id: <20220504153111.613317044@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Tasos Sahanidis <tasos@tasossah.com>
+Subject: [PATCH 5.17 019/225] usb: core: Dont hold the device lock while sleeping in do_proc_control()
+Date:   Wed,  4 May 2022 18:44:17 +0200
+Message-Id: <20220504153112.012598935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,33 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+From: Tasos Sahanidis <tasos@tasossah.com>
 
-commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
+commit 0543e4e8852ef5ff1809ae62f1ea963e2ab23b66 upstream.
 
-read_raw should return the un-scaled value.
+Since commit ae8709b296d8 ("USB: core: Make do_proc_control() and
+do_proc_bulk() killable") if a device has the USB_QUIRK_DELAY_CTRL_MSG
+quirk set, it will temporarily block all other URBs (e.g. interrupts)
+while sleeping due to a control.
 
-Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This results in noticeable delays when, for example, a userspace usbfs
+application is sending URB interrupts at a high rate to a keyboard and
+simultaneously updates the lock indicators using controls. Interrupts
+with direction set to IN are also affected by this, meaning that
+delivery of HID reports (containing scancodes) to the usbfs application
+is delayed as well.
+
+This patch fixes the regression by calling msleep() while the device
+mutex is unlocked, as was the case originally with usb_control_msg().
+
+Fixes: ae8709b296d8 ("USB: core: Make do_proc_control() and do_proc_bulk() killable")
+Cc: stable <stable@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
+Link: https://lore.kernel.org/r/3e299e2a-13b9-ddff-7fee-6845e868bc06@tasossah.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5446.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/core/devio.c |   14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/iio/dac/ad5446.c
-+++ b/drivers/iio/dac/ad5446.c
-@@ -178,7 +178,7 @@ static int ad5446_read_raw(struct iio_de
+--- a/drivers/usb/core/devio.c
++++ b/drivers/usb/core/devio.c
+@@ -1197,12 +1197,16 @@ static int do_proc_control(struct usb_de
  
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		*val = st->cached_val;
-+		*val = st->cached_val >> chan->scan_type.shift;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = st->vref_mv;
+ 		usb_unlock_device(dev);
+ 		i = usbfs_start_wait_urb(urb, tmo, &actlen);
++
++		/* Linger a bit, prior to the next control message. */
++		if (dev->quirks & USB_QUIRK_DELAY_CTRL_MSG)
++			msleep(200);
+ 		usb_lock_device(dev);
+ 		snoop_urb(dev, NULL, pipe, actlen, i, COMPLETE, tbuf, actlen);
+ 		if (!i && actlen) {
+ 			if (copy_to_user(ctrl->data, tbuf, actlen)) {
+ 				ret = -EFAULT;
+-				goto recv_fault;
++				goto done;
+ 			}
+ 		}
+ 	} else {
+@@ -1219,6 +1223,10 @@ static int do_proc_control(struct usb_de
+ 
+ 		usb_unlock_device(dev);
+ 		i = usbfs_start_wait_urb(urb, tmo, &actlen);
++
++		/* Linger a bit, prior to the next control message. */
++		if (dev->quirks & USB_QUIRK_DELAY_CTRL_MSG)
++			msleep(200);
+ 		usb_lock_device(dev);
+ 		snoop_urb(dev, NULL, pipe, actlen, i, COMPLETE, NULL, 0);
+ 	}
+@@ -1230,10 +1238,6 @@ static int do_proc_control(struct usb_de
+ 	}
+ 	ret = (i < 0 ? i : actlen);
+ 
+- recv_fault:
+-	/* Linger a bit, prior to the next control message. */
+-	if (dev->quirks & USB_QUIRK_DELAY_CTRL_MSG)
+-		msleep(200);
+  done:
+ 	kfree(dr);
+ 	usb_free_urb(urb);
 
 
