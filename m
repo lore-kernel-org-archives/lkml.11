@@ -2,113 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87096C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D34BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353185AbiEDQSh (ORCPT
+        id S1353200AbiEDQTQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
+        Wed, 4 May 2022 12:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241279AbiEDQSe (ORCPT
+        with ESMTP id S1353222AbiEDQSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:18:34 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175F9326EC
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:14:58 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id e128so1276054qkd.7
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 09:14:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=25gauivTso+aPDMUMdYArAx6UKOEKikakpvozYIXV04=;
-        b=aJJHRw1hrM+eJoAEQHKr+3xCNLpAHdUG6nAl8WdDBwP5qaPNhOkhyCGPzGJCfIn33d
-         zKZAJYIXqJ/qqrS9DeFl0frOfu/CvrpCm0Q8620pqKw6fSCRsdgWw6GIjFcp5I3sH2bv
-         VqR+CrVQBxBM1vWr4chDe2J2XgBLvFZDUt/lSD/TAjyUyokDfx1IQ5cvlicgdJOsIrNf
-         iLk+IXHTbfFO0745eWHzGr/MKzLfZ0fGuHUnAYBqJ/80vBMvn5SzkdaVstLfnhSbHI2t
-         cEnwTl1ZYiE+2SDeDcbcPClmIkNLEIl/Sbk8ZDcy4U1QK5YPertXolXtvbOZw2Y2/xhX
-         JceQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=25gauivTso+aPDMUMdYArAx6UKOEKikakpvozYIXV04=;
-        b=4+bZDeEX175Tuq81rcQwWbFJqvQe4lGVwnZDpaSyAFoZrUqN4EKXolxmGhmlNM7euA
-         /EyxSTRupOWMAWJsWlyu/Q7/3YI/GqYWe2avhKFBkrtyDG9PgJ+PHfWI8bthZ8JryfRw
-         sCuGrlKKGuMRV6VykSb+r9bo4Ly/I3UHHm0lo/kScE4in9z7mSHtiwBcjGsrMe5bGvQk
-         dnowxcT5GZuMVxWGSQbRSao+jl64aNO67LtGfX98veGswjJNHvSGkt2kM00ngtwavIDb
-         d4QMKU1Y3cbW0A9DzyINr6d85p6J9v3xqJoyY1qpm4Dw2iW49J1s1AtUnguy2xqRBnup
-         oSeQ==
-X-Gm-Message-State: AOAM531NLAPE2NxJb61olWWT1EwXngLpXT7x/PzI0b5n1/Bmym9BkF+A
-        bwK0bmeJ34YoAszT0CqwAWAV7g==
-X-Google-Smtp-Source: ABdhPJx0dx8kcVi/eEjgGDxAh5m/w84UJmNT0c86lwP/MjJLFqD6oWOX0PmxZa+8Kho55+03vEsAEA==
-X-Received: by 2002:a05:620a:2a14:b0:69f:fc99:48de with SMTP id o20-20020a05620a2a1400b0069ffc9948demr7666553qkp.604.1651680897202;
-        Wed, 04 May 2022 09:14:57 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:1d10:5830:4611:5fd6:ef88:7605])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac85652000000b002f39b99f66dsm7594467qtt.7.2022.05.04.09.14.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 09:14:56 -0700 (PDT)
-From:   Milan Landaverde <milan@mdaverde.com>
-Cc:     milan@mdaverde.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Paul Chaignon <paul@isovalent.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 1/2] bpftool: adjust for error codes from libbpf probes
-Date:   Wed,  4 May 2022 12:13:31 -0400
-Message-Id: <20220504161356.3497972-2-milan@mdaverde.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220504161356.3497972-1-milan@mdaverde.com>
-References: <20220504161356.3497972-1-milan@mdaverde.com>
+        Wed, 4 May 2022 12:18:49 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CA046678
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:10 -0700 (PDT)
+Date:   Wed, 04 May 2022 16:15:07 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651680909;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B7/awrMq8ptHu515E06FSFVcsH5aRD5n1ud0J2jAhGo=;
+        b=iWPgQHzJIxlk+ssLKRcIkS1dU9HvYTcPk7Oc29RqbUC981nXOZh61Zp91b1BhGwppZc/0k
+        FN2ErxxlBgYOvbHIzE1bvAfYYZORUznsl8/gQ8T5qQFvmmGHuGGWtwrYiE33V0Q4VQFvr0
+        i9kVNg+1Q2WspxvIYpLQOLki56DAqgH2r36fNPqHOlG6yFopRqbGGo7oBWptDXJhUxg338
+        9Ny/jqnlCG6z9RwpvXvME+BoE9ncydGVVX/dFVGVmH5eaBU8olBYTIp61xll8KYh6HQrNG
+        g2e/WaiQs4VvCjJ/GmmXDysYCyI9KCHbPVFyAJOirKhoUPiq69gFMhmJihaCMg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651680909;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B7/awrMq8ptHu515E06FSFVcsH5aRD5n1ud0J2jAhGo=;
+        b=x+XO0WDOIhePhx9Azie1fcRRGWBIVeqTImgoezh3Dfd8vnosJnkDKkzQCTiXhNDU/eXwUV
+        LanxLrtNcthJvCDw==
+From:   "irqchip-bot for Lucas Stach" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] irqchip/imx-irqsteer: Add runtime PM support
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220406163701.1277930-2-l.stach@pengutronix.de>
+References: <20220406163701.1277930-2-l.stach@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Message-ID: <165168090796.4207.16097445461269415468.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Originally [1], libbpf's (now deprecated) probe functions returned a bool
-to acknowledge support but the new APIs return an int with a possible
-negative error code to reflect probe failure. This change decides for
-bpftool to declare maps and helpers are not available on probe failures.
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-[1]: https://lore.kernel.org/bpf/20220202225916.3313522-3-andrii@kernel.org/
+Commit-ID:     4730d2233311d86cad9dc510318d1b40e4b53cf2
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/4730d2233311d86cad9dc510318d1b40e4b53cf2
+Author:        Lucas Stach <l.stach@pengutronix.de>
+AuthorDate:    Wed, 06 Apr 2022 18:37:01 +02:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Wed, 04 May 2022 16:44:51 +01:00
 
-Signed-off-by: Milan Landaverde <milan@mdaverde.com>
+irqchip/imx-irqsteer: Add runtime PM support
+
+There are now SoCs that integrate the irqsteer controller within
+a separate power domain. In order to allow this domain to be
+powered down when not needed, add runtime PM support to the driver.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220406163701.1277930-2-l.stach@pengutronix.de
 ---
- tools/bpf/bpftool/feature.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-imx-irqsteer.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index be130e35462f..c532c8855c24 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -638,7 +638,7 @@ probe_map_type(enum bpf_map_type map_type, const char *define_prefix,
+diff --git a/drivers/irqchip/irq-imx-irqsteer.c b/drivers/irqchip/irq-imx-irqsteer.c
+index e286e7c..96230a0 100644
+--- a/drivers/irqchip/irq-imx-irqsteer.c
++++ b/drivers/irqchip/irq-imx-irqsteer.c
+@@ -12,6 +12,7 @@
+ #include <linux/kernel.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
+ #include <linux/spinlock.h>
  
- 		res = probe_map_type_ifindex(map_type, ifindex);
- 	} else {
--		res = libbpf_probe_bpf_map_type(map_type, NULL);
-+		res = libbpf_probe_bpf_map_type(map_type, NULL) > 0;
+ #define CTRL_STRIDE_OFF(_t, _r)	(_t * 4 * _r)
+@@ -175,7 +176,7 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
+ 	data->irq_count = DIV_ROUND_UP(irqs_num, 64);
+ 	data->reg_num = irqs_num / 32;
+ 
+-	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
++	if (IS_ENABLED(CONFIG_PM)) {
+ 		data->saved_reg = devm_kzalloc(&pdev->dev,
+ 					sizeof(u32) * data->reg_num,
+ 					GFP_KERNEL);
+@@ -199,6 +200,7 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
+ 		ret = -ENOMEM;
+ 		goto out;
  	}
++	irq_domain_set_pm_device(data->domain, &pdev->dev);
  
- 	/* Probe result depends on the success of map creation, no additional
-@@ -701,7 +701,7 @@ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 		if (ifindex)
- 			res = probe_helper_ifindex(id, prog_type, ifindex);
- 		else
--			res = libbpf_probe_bpf_helper(prog_type, id, NULL);
-+			res = libbpf_probe_bpf_helper(prog_type, id, NULL) > 0;
- #ifdef USE_LIBCAP
- 		/* Probe may succeed even if program load fails, for
- 		 * unprivileged users check that we did not fail because of
--- 
-2.32.0
-
+ 	if (!data->irq_count || data->irq_count > CHAN_MAX_OUTPUT_INT) {
+ 		ret = -EINVAL;
+@@ -219,6 +221,9 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++
+ 	return 0;
+ out:
+ 	clk_disable_unprepare(data->ipg_clk);
+@@ -241,7 +246,7 @@ static int imx_irqsteer_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
++#ifdef CONFIG_PM
+ static void imx_irqsteer_save_regs(struct irqsteer_data *data)
+ {
+ 	int i;
+@@ -288,7 +293,10 @@ static int imx_irqsteer_resume(struct device *dev)
+ #endif
+ 
+ static const struct dev_pm_ops imx_irqsteer_pm_ops = {
+-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(imx_irqsteer_suspend, imx_irqsteer_resume)
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
++				      pm_runtime_force_resume)
++	SET_RUNTIME_PM_OPS(imx_irqsteer_suspend,
++			   imx_irqsteer_resume, NULL)
+ };
+ 
+ static const struct of_device_id imx_irqsteer_dt_ids[] = {
