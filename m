@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 508B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238518AbiEDVmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
+        id S1378763AbiEDVm0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 17:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234995AbiEDVl6 (ORCPT
+        with ESMTP id S234995AbiEDVmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:41:58 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115EE1C910
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:38:21 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id p6so2103024plr.12
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 14:38:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mdl+GxAonGFBDF3U2llopaVHtHA1rpzl+Lz6pPUtmxc=;
-        b=k7fPNd4qvYwnCVuuO+NxqbuONaxe40wSbufQtEf27g8rrF1yQ3IMGP2tuZgGvHjOfE
-         niyKWs2TyaUG7lKJGm4t4CFjMB5G4Cm0fzjRNJgjCfcImIujygnZjTYP97Fnd/4ZPQ7K
-         x7L9DfL2WO3uvVPEn/LHlro/1MMfWze4iWEYI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mdl+GxAonGFBDF3U2llopaVHtHA1rpzl+Lz6pPUtmxc=;
-        b=ib/eyjFsz/4jZooD2jYH4lKDs+tBZ97zUQ8PcLTJVCThLLsMH24RveL/70mvyU3mIZ
-         Mk8uVFk9A1kTfAo9H5BRoalz6WZbLiskvflhjCwGogjXlxIMyKhAZC40aTDtiNrBaGHY
-         PFYZx0fxRDvxaKi6Ajl60EOxHd4i/JUB5LivpMgvVySVuqSokE4FCEx38eiaEbgcAXwc
-         BpruHw+gn8MWzc2UJzvFjhUhV6pyYpsSyah5UUmoHYYCl6Ycqaa3IcKVODW1QdCsdW0o
-         tWC+Vge5hD0Qg2d+XSrM32GcN5A9mrXKQ1wsxtWfvBPqze0+HAJbAXHtmfB/PAlOvrT8
-         5q2g==
-X-Gm-Message-State: AOAM531Pt5Xjw7MX3UlnDfP7u+AfiNDiZKBjO1p/3nSo7rCI0l1s1GrL
-        3Uf8IT2B/DXRNXX+2P4ymTZDgQ==
-X-Google-Smtp-Source: ABdhPJys2IvRcQmRGZzmkSLut+kvaoO5/bSCZPMtaA9l8ZwCvuoq7aszjmTwTiPIibHssbH1YKJECg==
-X-Received: by 2002:a17:902:b107:b0:15d:391c:5a72 with SMTP id q7-20020a170902b10700b0015d391c5a72mr24188487plr.46.1651700300635;
-        Wed, 04 May 2022 14:38:20 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:35b6:c77b:be04:3bd5])
-        by smtp.gmail.com with UTF8SMTPSA id s22-20020aa78296000000b0050dc76281b5sm9025499pfm.143.2022.05.04.14.38.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 14:38:20 -0700 (PDT)
-Date:   Wed, 4 May 2022 14:38:19 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v11 07/12] arm64: dts: qcom: sc7280: herobrine: Add
- max98360a codec node
-Message-ID: <YnLyS3NgsUEii0RL@google.com>
-References: <1651664649-25290-1-git-send-email-quic_srivasam@quicinc.com>
- <1651664649-25290-8-git-send-email-quic_srivasam@quicinc.com>
+        Wed, 4 May 2022 17:42:23 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEEA1FCC7;
+        Wed,  4 May 2022 14:38:46 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 5EB351F44BA3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651700325;
+        bh=uyAo5zR8dw2G1PXvLBzX4kEvbmbHh0MqtTGpkAws0D4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=inO3cIE1rPZA0GCZu1aeQjV6iYnIhJF7h5w1UFxljkHcfOzGjt/6e5AdBubBBgtIM
+         ajmxEAcAv39U4TWCq65xRt6fgS3edehSQWe4qaRsOdFO9zh1ashxBv8zRK6Pxuzgfv
+         SHFhC5xjcldM/blagI01VYnA/89Kb0LqmEcwP0UVYbWDN4egDfBHNJJlxle7E+B1lB
+         9sgE5lUg0g+9o+0F1H4raLBx+AptayB4wW/evyWF101Ccxlh6bEqEaSoMey2HTE++k
+         pQsYojZ7YVTxhxQEdIOpTsXGFuvbDOoeTcq93eoRIilIvm0AdFzUhDe9TAjknHu4pj
+         x65BHNCyOY8wQ==
+Received: by jupiter.universe (Postfix, from userid 1000)
+        id 598FE4819D7; Wed,  4 May 2022 23:32:53 +0200 (CEST)
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        kernel@collabora.com
+Subject: [PATCHv2 18/21] dt-bindings: pinctrl: rockchip: increase max amount of device functions
+Date:   Wed,  4 May 2022 23:32:48 +0200
+Message-Id: <20220504213251.264819-19-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220504213251.264819-1-sebastian.reichel@collabora.com>
+References: <20220504213251.264819-1-sebastian.reichel@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1651664649-25290-8-git-send-email-quic_srivasam@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:14:04PM +0530, Srinivasa Rao Mandadapu wrote:
-> Add max98360a codec node for audio use case on all herobrine boards.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+RK3588 can have 10 different device functions, so increase the maximum
+amount appropriately. Considering rockchip uses auto-generated pinmux
+files, adding a quite complex if construct to increase the limit just
+for rk3588 does not seem to be worth the effort.
 
-Carrying over from v10:
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+diff --git a/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml
+index e62fb5e9db76..68339082571f 100644
+--- a/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml
+@@ -130,7 +130,7 @@ additionalProperties:
+               description:
+                 Pin bank index.
+             - minimum: 0
+-              maximum: 6
++              maximum: 10
+               description:
+                 Mux 0 means GPIO and mux 1 to N means
+                 the specific device function.
+-- 
+2.35.1
+
