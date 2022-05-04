@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D245BC4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 757A2C3527D
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359312AbiEDRjz (ORCPT
+        id S1359725AbiEDRkQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
+        Wed, 4 May 2022 13:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356801AbiEDRJo (ORCPT
+        with ESMTP id S1356792AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F271E3C5;
-        Wed,  4 May 2022 09:55:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9581D319;
+        Wed,  4 May 2022 09:55:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B4A4B82552;
-        Wed,  4 May 2022 16:55:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BCF1C385A4;
-        Wed,  4 May 2022 16:55:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7328DB8278E;
+        Wed,  4 May 2022 16:55:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD48C385A4;
+        Wed,  4 May 2022 16:55:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683339;
-        bh=c8j9sThsQt1nXao1ztdPXjEAbh1QS7CoMekdvJqvNuM=;
+        s=korg; t=1651683335;
+        bh=8VMbv6k1Ez79dhZYetnG2VPw/IkmhQKJA3RVyKVyfcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YBPic7mbUopE2qH2aI3oC/Fa5aNCHif9yfD7huv78xA80U77JYWf/g6WJLcgG3wbd
-         dMXyngAMFYsjoOdimkamZTwZez6EepfTx4d9XBaPkzCPPgj076uBxxrzzveQZPd27X
-         Qzm5iLpOQ4yOBFUIZ7BMiDnkC7ICtYm/eAafmopw=
+        b=yotB2Wj2gVVIpz4NqmAnKLPZLCs+bm4idMcdP+vI8VkDyg6eXcbKyE0ML3fxyNJWZ
+         Y19JjNyRWnv04yp+ND4Cqg0pRuAgPsXxLfQya6ZVnYtC2l6V4cAvUY/WA8yNGMro72
+         3pvf3Yusa2MRmA3g+whD71JJeln0sGGevbmmTMB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.17 014/225] iio: scd4x: check return of scd4x_write_and_fetch
-Date:   Wed,  4 May 2022 18:44:12 +0200
-Message-Id: <20220504153111.533116882@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+        stable <stable@kernel.org>
+Subject: [PATCH 5.17 010/225] xhci: Enable runtime PM on second Alderlake controller
+Date:   Wed,  4 May 2022 18:44:08 +0200
+Message-Id: <20220504153111.197596636@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,51 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Evan Green <evgreen@chromium.org>
 
-commit f50232193e61cf89a73130b5e843fef30763c428 upstream.
+commit d8bfe5091d6cc4b8b8395e4666979ae72a6069ca upstream.
 
-Clang static analysis reports this problem
-scd4x.c:474:10: warning: The left operand of '==' is a
-  garbage value
-  if (val == 0xff) {
-      ~~~ ^
-val is only set from a successful call to scd4x_write_and_fetch()
-So check it's return.
+Alderlake has two XHCI controllers with PCI IDs 0x461e and 0x51ed. We
+had previously added the quirk to default enable runtime PM for 0x461e,
+now add it for 0x51ed as well.
 
-Fixes: 49d22b695cbb ("drivers: iio: chemical: Add support for Sensirion SCD4x CO2 sensor")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Link: https://lore.kernel.org/r/20220301025223.223223-1-trix@redhat.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Evan Green <evgreen@chromium.org>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220408114225.1.Ibcff6b86ed4eacfe4c4bc89c90e18416f3900a3e@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/chemical/scd4x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/usb/host/xhci-pci.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/chemical/scd4x.c b/drivers/iio/chemical/scd4x.c
-index 20d4e7584e92..37143b5526ee 100644
---- a/drivers/iio/chemical/scd4x.c
-+++ b/drivers/iio/chemical/scd4x.c
-@@ -471,12 +471,15 @@ static ssize_t calibration_forced_value_store(struct device *dev,
- 	ret = scd4x_write_and_fetch(state, CMD_FRC, arg, &val, sizeof(val));
- 	mutex_unlock(&state->lock);
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -59,6 +59,7 @@
+ #define PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI		0x9a13
+ #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI		0x1138
+ #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
++#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
  
-+	if (ret)
-+		return ret;
-+
- 	if (val == 0xff) {
- 		dev_err(dev, "forced calibration has failed");
- 		return -EINVAL;
- 	}
+ #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
+ #define PCI_DEVICE_ID_AMD_PROMONTORYA_4			0x43b9
+@@ -266,7 +267,8 @@ static void xhci_pci_quirks(struct devic
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_ICE_LAKE_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI ||
+ 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
+-	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI))
++	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
++	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
+ 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
  
--	return ret ?: len;
-+	return len;
- }
- 
- static IIO_DEVICE_ATTR_RW(calibration_auto_enable, 0);
--- 
-2.36.0
-
+ 	if (pdev->vendor == PCI_VENDOR_ID_ETRON &&
 
 
