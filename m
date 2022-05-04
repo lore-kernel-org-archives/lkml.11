@@ -2,213 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8614AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353082AbiEDQPU (ORCPT
+        id S1353120AbiEDQQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47384 "EHLO
+        Wed, 4 May 2022 12:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353075AbiEDQPQ (ORCPT
+        with ESMTP id S239138AbiEDQQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:15:16 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387D6286F6
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:11:40 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id bv19so3822113ejb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 09:11:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sYeIs03ajhIBWiYoaUqE6sHrS2llkidG0pWS/3WopUA=;
-        b=Vj69ODdDTDp/nytWChqSXLxuj8VzxVrUlY+xH0sK5HcG6n5NaS/oJpXsDM7YCfxO5N
-         m20FwlodgMtcbp1PpPY1N7QImv0H9R1Noc+ORG227sXpo6elEHgZz3bCqIc/XLwgdBLn
-         7Nf+YQ2wHC88zDDWuM0ypSPJ22MCF878wb4yM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sYeIs03ajhIBWiYoaUqE6sHrS2llkidG0pWS/3WopUA=;
-        b=6hIlfU6UuiOpNr5kidNOdvV2zsJ5bp9lMqArricypdUzicBZYItMafmsrXoChGcfui
-         ObL206ieODI/5IFJ6c0R+DDI32HOsnkxgGb8kJHFoop2VhiSn2kpTAqNpuk9cmiOu+zV
-         CGWFNO1Gr6lEs57q2izdPfZo45kJ44SGYChQwYNejgrDUEYGBoOb53u7rDFO4uMd0Zyj
-         NxZNDb/59Xy/cVe0WqO2JB0AkROOyntyodr89XpAJ8kY+RhkPBeRuilMOLR4AZwsy0mg
-         y5dK52uvKL1Xg5ch7CQ77tEGJer1zwDaOCFxjb6p5VUnEmPuN5V9tnhHuV1RJA+qG7KP
-         BOgw==
-X-Gm-Message-State: AOAM532ak3PtD6moFNPPT7AuOfD+MfHWkX5mMf2IyBA0JWSaAmL/aS6F
-        iBYPPNlJgQCulK1x1ES0YWjzXjlPzUM2nJa86Y4=
-X-Google-Smtp-Source: ABdhPJwCSolPpQi+InodvMQwwlpdFs/FxhfnRwqj9WrylmiKlip7oMGf3kYd4REqvCHcoKr0pcyPuQ==
-X-Received: by 2002:a17:907:6d14:b0:6f4:a3ab:7548 with SMTP id sa20-20020a1709076d1400b006f4a3ab7548mr6428494ejc.596.1651680698397;
-        Wed, 04 May 2022 09:11:38 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id h21-20020a1709070b1500b006f3ef214e17sm5835522ejl.125.2022.05.04.09.11.37
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 09:11:38 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id m62so1139075wme.5
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 09:11:37 -0700 (PDT)
-X-Received: by 2002:a05:600c:4f08:b0:391:fe3c:40e6 with SMTP id
- l8-20020a05600c4f0800b00391fe3c40e6mr141836wmq.34.1651680282225; Wed, 04 May
- 2022 09:04:42 -0700 (PDT)
+        Wed, 4 May 2022 12:16:43 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADADA289B5
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:13:06 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2446CVn2001835;
+        Wed, 4 May 2022 11:12:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=CA8OB2CanPoJtK8+jq1whJdPE6KMUGj3tSd1euRzv2Q=;
+ b=VACKymnWpd+seCKgTPyTvpO6eq3lkfSLCMhal19NtpUucLrbMeottc52dhi2diwkGM1T
+ oYQkK9boW36Yvnn9H7ajkHZLjePqvYXMPNR8ZIP+P9gxCryW9FpGhL2nLXSugyq18zSX
+ eZ2xxsdL7KKhMEn2saecVbH0OlMqPvbhw9mVcIEChqeKcJLf2ndmNjcLiYRZIVch+0aI
+ Aya7O8GVgWMjp6pxbRrdbprp+E3MUGny65bxSP6CiWbRZIx4JV04tWmKdQnLnsBr/ohk
+ Xkt9cf+qUH6Gc+ufT0gSiAhg1NQg0qXapR2Z38qqWZwhoCCIoVEyWM6sb8vY6yX0BBch 9w== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fs2h2d6b6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 04 May 2022 11:12:48 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 4 May
+ 2022 17:12:46 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Wed, 4 May 2022 17:12:46 +0100
+Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.73])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9A7D6B10;
+        Wed,  4 May 2022 16:12:45 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v1 0/3]  Add Manual Mode Jack Detection for CS42L42 in HDA
+Date:   Wed, 4 May 2022 17:12:33 +0100
+Message-ID: <20220504161236.2490532-1-sbinding@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220503162033.1.Ia8651894026707e4fa61267da944ff739610d180@changeid>
- <YnJv3B/85hTz54SC@intel.com>
-In-Reply-To: <YnJv3B/85hTz54SC@intel.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 4 May 2022 09:04:28 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WndmKuEB0=OVQP9YuJaSmD0uxkNs5LE0wWsFj7gBvhBA@mail.gmail.com>
-Message-ID: <CAD=FV=WndmKuEB0=OVQP9YuJaSmD0uxkNs5LE0wWsFj7gBvhBA@mail.gmail.com>
-Subject: Re: [PATCH] drm: Document that power requirements for DP AUX transfers
-To:     =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Lyude Paul <lyude@redhat.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Imre Deak <imre.deak@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: NlKOMX4SqaNPXbsdBqJoaKx2gXEXZEJS
+X-Proofpoint-GUID: NlKOMX4SqaNPXbsdBqJoaKx2gXEXZEJS
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+CS42L42 supports automatic type detection, to determine headset type,
+or headphones. However, automatic type detection does not always work
+correctly. To improve detection accuracy, manual mode detection can be
+run. This is already done in the ASoC version of the CS42L42 driver,
+and this chain adds the same support into the HDA version.
 
-On Wed, May 4, 2022 at 5:21 AM Ville Syrj=C3=A4l=C3=A4
-<ville.syrjala@linux.intel.com> wrote:
->
-> On Tue, May 03, 2022 at 04:21:08PM -0700, Douglas Anderson wrote:
-> > When doing DP AUX transfers there are two actors that need to be
-> > powered in order for the DP AUX transfer to work: the DP source and
-> > the DP sync. Commit bacbab58f09d ("drm: Mention the power state
-> > requirement on side-channel operations") added some documentation
-> > saying that the DP source is required to power itself up (if needed)
-> > to do AUX transfers. However, that commit doesn't talk anything about
-> > the DP sink.
-> >
-> > For full fledged DP the sink isn't really a problem. It's expected
-> > that if an external DP monitor isn't plugged in that attempting to do
-> > AUX transfers won't work. It's also expected that if a DP monitor is
-> > plugged in (and thus asserting HPD) that it AUX transfers will work.
-> >
-> > When we're looking at eDP, however, things are less obvious. Let's add
-> > some documentation about expectations. Here's what we'll say:
-> >
-> > 1. We don't expect the DP AUX transfer function to power on an eDP
-> > panel. If an eDP panel is physically connected but powered off then it
-> > makes sense for the transfer to fail.
->
-> I don't agree with this. I think the panel should just get powred up
-> for AUX transfers.
+In addition, to better align the ASoC and HDA drivers, the ASoC header
+file has been moved into the general sound includes, which allows both
+ASoC and HDA to have access to the header.
+This improves the maintainability of the HDA driver, and makes it
+easier to port fixes/features from CS42L42 ASoC to HDA.
 
-That's definitely a fair thing to think about and I have at times
-thought about trying to make it work that way. It always ends up
-hitting a roadblock.
+Stefan Binding (3):
+  ASoC: cs42l42: Move CS42L42 register descriptions to general include
+  ALSA: hda/cs8409: Use general cs42l42 include in cs8409 hda driver
+  ALSA: hda/cs8409: Support manual mode detection for CS42L42
 
-The biggest roadblock that I recall is that to make this work then
-you'd have to somehow ensure that the bridge chain's pre_enable() call
-was made as part of the AUX transfer, right? Since the transfer
-function can be called in any context at all, we have to coordinate
-this with DRM. If, for instance, DRM is mid way through powering the
-panel down then we need to wait for DRM to fully finish powering down,
-then we need to power the panel back up. I don't believe that we can
-just force the panel to stay on if DRM is turning it off because of
-panel power sequencing requirements. At least I know it would have the
-potential to break "samsung-atna33xc20.c" which absolutely needs to
-see the panel power off after it's been disabled.
+ include/sound/cs42l42.h             | 810 +++++++++++++++++++++++++++
+ sound/pci/hda/patch_cs8409-tables.c | 327 ++++++-----
+ sound/pci/hda/patch_cs8409.c        | 275 ++++++---
+ sound/pci/hda/patch_cs8409.h        |   9 +-
+ sound/soc/codecs/cs42l42.h          | 826 +---------------------------
+ 5 files changed, 1167 insertions(+), 1080 deletions(-)
+ create mode 100644 include/sound/cs42l42.h
 
-We also, I believe, need to handle the fact that the bridge chain may
-not have even been created yet. We do AUX transfers to read the EDID
-and also to setup the backlight in the probe function of panel-edp. At
-that point the panel hasn't been linked into the chain. We had _long_
-discussions [1] about moving these out of probe and decided that we
-could move the EDID read to be later but that it was going to really
-ugly to move the AUX backlight later. The backlight would end up
-popping up at some point in time later (the first call to panel
-prepare() or maybe get_modes()) and that seemed weird.
+-- 
+2.25.1
 
-[1] https://lore.kernel.org/lkml/CAD=3DFV=3DU5-sTDLYdkeJWLAOG-0wgxR49VxtwUy=
-UO7z2PuibLGsg@mail.gmail.com/
-
-
-> Otherwise you can't trust that eg. the /dev/aux
-> stuff is actually usable.
-
-Yeah, it's been on my mind to talk more about /dev/aux. I think
-/dev/aux has some problems, at least with eDP. Specifically:
-
-1. Even if we somehow figure out how to power the panel on as part of
-the aux transfer, we actually _still_ not guaranteed to be able to
-talk to it as far as I understand. My colleague reported to me that on
-a system he was working with that had PSR (panel self refresh) that
-when the panel was powered on but in PSR mode that it wouldn't talk
-over AUX. Assuming that this is correct then I guess we'd also have to
-do even more coordination with DRM to exit PSR and block future
-transitions of PSR. (NOTE: it's always possible that my colleague ran
-into some other bug and that panels are _supposed_ to be able to talk
-in PSR. If you think this is the case, I can always try to dig more).
-
-2. I'm not totally convinced that it's a great idea, at least for eDP,
-for userspace to be mucking with /dev/aux. For DP's case I guess
-/dev/aux is essentially enabling userspace drivers to do things like
-update firmware on DP monitors or play with the backlight. I guess we
-decided that we didn't want to add drivers in the kernel to handle
-this type of stuff so we left it for userspace? For eDP, though, there
-is a panel driver and we if we have an AUX backlight we create a real
-backlight device. If we needed to do a firmware update of an eDP panel
-it would make sense for the panel driver to present some interface for
-the firmware update so that the panel driver could make sure that the
-panel stayed powered for the duration of the firmware update, not just
-for the duration of a single AUX transfer.
-
-3. In general it feels a little awkward for userspace to be directly
-poking at the same set of registers that a kernel driver is also
-poking at.
-
-To me it feels like /dev/aux is much like the /dev/i2c interface. Yes,
-userspace can go talk to random i2c devices and can even talk to them
-after a kernel driver has "claimed" an i2c device, but:
-a) If an i2c device is powered off, then the i2c transfer won't work.
-b) If you set a register of a device managed by a kernel driver behind
-the back of the kernel driver, you're really asking for trouble.
-
-
-So I guess my proposals would be to pick one of:
-
-a) Leave things they way they are as I've documented. NOTE that my
-documentation does document the way things are today. No aux transfer
-function that I'm aware of powers up an eDP panel. In this case if
-someone wants to use /dev/aux for an eDP panel it's really up to them
-not to shoot themselves in the foot.
-
-b) Stop populating /dev/aux for eDP panels and only do it for DP and
-then if/when someone yells we figure out how they were using /dev/aux
-and why it was safe. This is definitely an ABI change but I have no
-idea if it would really break anyone. I suppose we could take a first
-step by spewing a WARN_ON if someone directly uses /dev/aux for eDP?
-
-c) Somehow dynamically create / remove the /dev/aux device as the eDP
-panel turns off and on again. If /dev/aux is there then we know that
-the panel is on. NOTE: this ignores PSR. I don't think we'd want to
-delete / create the /dev/aux node that often. So we'd either have to
-still accept that the transfers will sometimes fail (c1) or make it a
-requirement that we bring the panel out of PSR for an AUX transfer
-(c2).
-
-
-Technically we could list option (d) to power the panel up, but as per
-above I think it's pretty awkward and doesn't feel like the right way
-to go. Obviously happy to hear other opinions, though.
