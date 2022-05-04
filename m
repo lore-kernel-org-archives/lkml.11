@@ -2,90 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354294AbiEDQzg convert rfc822-to-8bit (ORCPT
+        id S1354059AbiEDQxs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        Wed, 4 May 2022 12:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354163AbiEDQxy (ORCPT
+        with ESMTP id S1353797AbiEDQw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:54 -0400
-X-Greylist: delayed 1707 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 09:49:10 PDT
-Received: from mail.megasoftsol.com (mail.megasoftsol.com [43.231.250.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDD347043
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:49:10 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.megasoftsol.com (Postfix) with ESMTP id 9962990742C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 21:38:51 +0530 (IST)
-Received: from mail.megasoftsol.com ([127.0.0.1])
-        by localhost (mail.megasoftsol.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id Y5qAAEPoqdqy for <linux-kernel@vger.kernel.org>;
-        Wed,  4 May 2022 21:38:50 +0530 (IST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.megasoftsol.com (Postfix) with ESMTP id D9B6D90741C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 21:38:50 +0530 (IST)
-X-Virus-Scanned: amavisd-new at megasoftsol.com
-Received: from mail.megasoftsol.com ([127.0.0.1])
-        by localhost (mail.megasoftsol.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id P8QFrs29W82M for <linux-kernel@vger.kernel.org>;
-        Wed,  4 May 2022 21:38:50 +0530 (IST)
-Received: from johnlewis.com (unknown [20.97.211.134])
-        (Authenticated sender: admin)
-        by mail.megasoftsol.com (Postfix) with ESMTPSA id 1A7DD907418
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 21:38:49 +0530 (IST)
-Reply-To: robert_turner@johnlewis-trades.com
-From:   John Lewis & Partnersip <robert.turner44@johnlewis.com>
+        Wed, 4 May 2022 12:52:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E05473A6;
+        Wed,  4 May 2022 09:48:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C0A9B82552;
+        Wed,  4 May 2022 16:48:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0496AC385B0;
+        Wed,  4 May 2022 16:48:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651682917;
+        bh=dR2rosQz0KUtee7nTyTCC27JjP3MR6tspTPQM5RkkMY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=z4TofSUHkVkCnk+3MPI++WadavhJrWFa9M8lx1Advn6a2e+O0Y00SNUUnJlC/dt/m
+         Dp8mUi9KZ3QyyoJ4X/yKe1YQcuC4s45hpnqpL6FgUvM3r/sPL6JROB+L62c/XkJN0i
+         d4GLJXwod2wRqZi4SjngBXuC440VHYpdZuG39fMY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: 5/04/2022 Product Inquiry (JL)
-Date:   04 May 2022 16:11:18 +0000
-Message-ID: <20220504123943.39DFB088092BE443@johnlewis.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 23/84] serial: imx: fix overrun interrupts in DMA mode
+Date:   Wed,  4 May 2022 18:44:04 +0200
+Message-Id: <20220504152929.410802997@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
+References: <20220504152927.744120418@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear linux-kernel
+From: Johan Hovold <johan@kernel.org>
+
+commit 3ee82c6e41f3d2212647ce0bc5a05a0f69097824 upstream.
+
+Commit 76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is
+off") accidentally enabled overrun interrupts unconditionally when
+deferring DMA enable until after the receiver has been enabled during
+startup.
+
+Fix this by using the DMA-initialised instead of DMA-enabled flag to
+determine whether overrun interrupts should be enabled.
+
+Note that overrun interrupts are already accounted for in
+imx_uart_clear_rx_errors() when using DMA since commit 41d98b5da92f
+("serial: imx-serial - update RX error counters when DMA is used").
+
+Fixes: 76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is off")
+Cc: stable@vger.kernel.org      # 4.17
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20220411081957.7846-1-johan@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/imx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1401,7 +1401,7 @@ static int imx_uart_startup(struct uart_
+ 	imx_uart_writel(sport, ucr1, UCR1);
  
+ 	ucr4 = imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
+-	if (!sport->dma_is_enabled)
++	if (!dma_is_inited)
+ 		ucr4 |= UCR4_OREN;
+ 	imx_uart_writel(sport, ucr4, UCR4);
  
-The famous brand John Lewis & Partners, is UK's largest multi-
-channel retailer with over 126 shops and multiple expansion in 
-Africa furnished by European/Asian/American products. We are 
-sourcing new products to attract new customers and also retain 
-our existing ones, create new partnerships with companies dealing 
-with different kinds of goods globally.
- 
-Your company's products are of interest to our market as we have 
-an amazing market for your products.
- 
-Provide us your current catalog through email to review more. We 
-hope to be able to order with you and start a long-term friendly, 
-respectable and solid business partnership. Please we would 
-appreciate it if you could send us your stock availability via 
-email if any.
- 
- 
-Our payment terms are 15 days net in Europe, 30 days Net in UK 
-and 30 days net in Asia/USA as we have operated with over 5297 
-suppliers around the globe for the past 50 years now. For 
-immediate response Send your reply to "robert_turner@johnlewis-
-trades.com" for us to be able to treat with care and urgency.
- 
- 
- 
-Best Regards
- 
- 
-Rob Turner
-Head Of Procurement Operations
-John Lewis & Partners.
-robert_turner@johnlewis-trades.com
-Tel: +44-7451-274090
-WhatsApp: +447497483925
-www.johnlewis.com
-REGISTERED OFFICE: 171 VICTORIA STREET, LONDON SW1E 5NN
+
+
