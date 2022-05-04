@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B402C4707A
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87979C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351841AbiEDRug (ORCPT
+        id S1355927AbiEDRup (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
+        Wed, 4 May 2022 13:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358053AbiEDRPi (ORCPT
+        with ESMTP id S1358256AbiEDRPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:38 -0400
+        Wed, 4 May 2022 13:15:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEC1562F2;
-        Wed,  4 May 2022 09:59:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA8956755;
+        Wed,  4 May 2022 09:59:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C0D7618B4;
-        Wed,  4 May 2022 16:59:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98155C385A5;
-        Wed,  4 May 2022 16:59:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6303E618D7;
+        Wed,  4 May 2022 16:59:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF92CC385B7;
+        Wed,  4 May 2022 16:59:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683557;
-        bh=HaSWJ8xbqsfIyor5wYKaej8fqfI/IRRwiXdjpMSXFPc=;
+        s=korg; t=1651683547;
+        bh=jqiIuEIrnPH+mxbYqx0dJSBw+ip8rOGrsXRlAQce6w8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V+hpjfESF/I0Mb/zMXwzSidILSwVmantqq6fM/DCz5zVURk9yad1RLLJ8ojcaHaoy
-         fpiIZDirJDegKjFYfpvnQH84a4EJlLRlpxfj18WQdPfeXjg/Tt9aMtafIjyxWMzyb3
-         tiYdb/UHvTfl0r5F2XHDHxyNYsfh28twEELSE1Eg=
+        b=VL0u53Kxj0kfYbrxsX7WwzCzKi5V+JkxGblEViBS+RY2sKp8mC+QRAIyODjg3zx8C
+         qbKoJFz2RjWsFBWiu3+tVzJSQhi7R8JoTBR4cicjMrtEUX29sK8r9zT1Bc3e2XQBta
+         owM9s/wywPVaRzz4jTKW6aodGm5p22Oig5m/SbTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.17 220/225] tty: n_gsm: fix invalid use of MSC in advanced option
-Date:   Wed,  4 May 2022 18:47:38 +0200
-Message-Id: <20220504153129.511494867@linuxfoundation.org>
+Subject: [PATCH 5.17 201/225] tty: n_gsm: fix missing mux reset on config change at responder
+Date:   Wed,  4 May 2022 18:47:19 +0200
+Message-Id: <20220504153128.101130820@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,236 +50,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit c19ffe00fed6bb423d81406d2a7e5793074c7d83 upstream.
+commit 11451693e4081d32ef65147c6ca08cd0094ae252 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.3.7 states that the Modem Status
-Command (MSC) shall only be used if the basic option was chosen.
-The current implementation uses MSC frames even if advanced option was
-chosen to inform the peer about modem line state updates. A standard
-conform peer may choose to discard these frames in advanced option mode.
-Furthermore, gsmtty_modem_update() is not part of the 'tty_operations'
-functions despite its name.
-Rename gsmtty_modem_update() to gsm_modem_update() to clarify this. Split
-its function into gsm_modem_upd_via_data() and gsm_modem_upd_via_msc()
-depending on the encoding and adaption. Introduce gsm_dlci_modem_output()
-as adaption of gsm_dlci_data_output() to encode and queue empty frames in
-advanced option mode. Use it in gsm_modem_upd_via_data().
-gsm_modem_upd_via_msc() is based on the initial gsmtty_modem_update()
-function which used only MSC frames to update modem states.
+Currently, only the initiator resets the mux protocol if the user requests
+new parameters that are incompatible to those of the current connection.
+The responder also needs to reset the multiplexer if the new parameter set
+requires this. Otherwise, we end up with an inconsistent parameter set
+between initiator and responder.
+Revert the old behavior to inform the peer upon an incompatible parameter
+set change from the user on the responder side by re-establishing the mux
+protocol in such case.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Fixes: 509067bbd264 ("tty: n_gsm: Delete gsm_disconnect when config requester")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220422071025.5490-2-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |  125 ++++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 117 insertions(+), 8 deletions(-)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -366,7 +366,7 @@ static const u8 gsm_fcs8[256] = {
- #define GOOD_FCS	0xCF
+@@ -2373,7 +2373,7 @@ static int gsm_config(struct gsm_mux *gs
+ 	 * configuration
+ 	 */
  
- static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
--static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
-+static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
+-	if (gsm->initiator && (need_close || need_restart)) {
++	if (need_close || need_restart) {
+ 		int ret;
  
- /**
-  *	gsm_fcs_add	-	update FCS
-@@ -915,6 +915,63 @@ static int gsm_dlci_data_output_framed(s
- }
- 
- /**
-+ *	gsm_dlci_modem_output	-	try and push modem status out of a DLCI
-+ *	@gsm: mux
-+ *	@dlci: the DLCI to pull modem status from
-+ *	@brk: break signal
-+ *
-+ *	Push an empty frame in to the transmit queue to update the modem status
-+ *	bits and to transmit an optional break.
-+ *
-+ *	Caller must hold the tx_lock of the mux.
-+ */
-+
-+static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
-+				 u8 brk)
-+{
-+	u8 *dp = NULL;
-+	struct gsm_msg *msg;
-+	int size;
-+
-+	/* for modem bits without break data */
-+	if (dlci->adaption == 1) {
-+		size = 0;
-+	} else if (dlci->adaption == 2) {
-+		size = 1;
-+		if (brk > 0)
-+			size++;
-+	} else {
-+		pr_err("%s: unsupported adaption %d\n", __func__,
-+		       dlci->adaption);
-+	}
-+
-+	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
-+	if (!msg) {
-+		pr_err("%s: gsm_data_alloc error", __func__);
-+		return -ENOMEM;
-+	}
-+	dp = msg->data;
-+	switch (dlci->adaption) {
-+	case 1: /* Unstructured */
-+		break;
-+	case 2: /* Unstructured with modem bits. */
-+		if (brk == 0) {
-+			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
-+		} else {
-+			*dp++ = gsm_encode_modem(dlci) << 1;
-+			*dp++ = (brk << 4) | 2 | EA; /* Length, Break, EA */
-+		}
-+		break;
-+	default:
-+		/* Handled above */
-+		break;
-+	}
-+
-+	__gsm_data_queue(dlci, msg);
-+	return size;
-+}
-+
-+/**
-  *	gsm_dlci_data_sweep		-	look for data to send
-  *	@gsm: the GSM mux
-  *
-@@ -1464,7 +1521,7 @@ static void gsm_dlci_open(struct gsm_dlc
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Send current modem state */
- 	if (dlci->addr)
--		gsmtty_modem_update(dlci, 0);
-+		gsm_modem_update(dlci, 0);
- 	wake_up(&dlci->gsm->event);
- }
- 
-@@ -2897,12 +2954,43 @@ static struct tty_ldisc_ops tty_ldisc_pa
- 
- #define TX_SIZE		512
- 
--static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
-+/**
-+ *	gsm_modem_upd_via_data	-	send modem bits via convergence layer
-+ *	@dlci: channel
-+ *	@brk: break signal
-+ *
-+ *	Send an empty frame to signal mobile state changes and to transmit the
-+ *	break signal for adaption 2.
-+ */
-+
-+static void gsm_modem_upd_via_data(struct gsm_dlci *dlci, u8 brk)
-+{
-+	struct gsm_mux *gsm = dlci->gsm;
-+	unsigned long flags;
-+
-+	if (dlci->state != DLCI_OPEN || dlci->adaption != 2)
-+		return;
-+
-+	spin_lock_irqsave(&gsm->tx_lock, flags);
-+	gsm_dlci_modem_output(gsm, dlci, brk);
-+	spin_unlock_irqrestore(&gsm->tx_lock, flags);
-+}
-+
-+/**
-+ *	gsm_modem_upd_via_msc	-	send modem bits via control frame
-+ *	@dlci: channel
-+ *	@brk: break signal
-+ */
-+
-+static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
- {
- 	u8 modembits[3];
- 	struct gsm_control *ctrl;
- 	int len = 2;
- 
-+	if (dlci->gsm->encoding != 0)
-+		return 0;
-+
- 	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
- 	if (!brk) {
- 		modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
-@@ -2917,6 +3005,27 @@ static int gsmtty_modem_update(struct gs
- 	return gsm_control_wait(dlci->gsm, ctrl);
- }
- 
-+/**
-+ *	gsm_modem_update	-	send modem status line state
-+ *	@dlci: channel
-+ *	@brk: break signal
-+ */
-+
-+static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
-+{
-+	if (dlci->adaption == 2) {
-+		/* Send convergence layer type 2 empty data frame. */
-+		gsm_modem_upd_via_data(dlci, brk);
-+		return 0;
-+	} else if (dlci->gsm->encoding == 0) {
-+		/* Send as MSC control message. */
-+		return gsm_modem_upd_via_msc(dlci, brk);
-+	}
-+
-+	/* Modem status lines are not supported. */
-+	return -EPROTONOSUPPORT;
-+}
-+
- static int gsm_carrier_raised(struct tty_port *port)
- {
- 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
-@@ -2949,7 +3058,7 @@ static void gsm_dtr_rts(struct tty_port
- 		modem_tx &= ~(TIOCM_DTR | TIOCM_RTS);
- 	if (modem_tx != dlci->modem_tx) {
- 		dlci->modem_tx = modem_tx;
--		gsmtty_modem_update(dlci, 0);
-+		gsm_modem_update(dlci, 0);
- 	}
- }
- 
-@@ -3140,7 +3249,7 @@ static int gsmtty_tiocmset(struct tty_st
- 
- 	if (modem_tx != dlci->modem_tx) {
- 		dlci->modem_tx = modem_tx;
--		return gsmtty_modem_update(dlci, 0);
-+		return gsm_modem_update(dlci, 0);
- 	}
- 	return 0;
- }
-@@ -3201,7 +3310,7 @@ static void gsmtty_throttle(struct tty_s
- 		dlci->modem_tx &= ~TIOCM_RTS;
- 	dlci->throttled = true;
- 	/* Send an MSC with RTS cleared */
--	gsmtty_modem_update(dlci, 0);
-+	gsm_modem_update(dlci, 0);
- }
- 
- static void gsmtty_unthrottle(struct tty_struct *tty)
-@@ -3213,7 +3322,7 @@ static void gsmtty_unthrottle(struct tty
- 		dlci->modem_tx |= TIOCM_RTS;
- 	dlci->throttled = false;
- 	/* Send an MSC with RTS set */
--	gsmtty_modem_update(dlci, 0);
-+	gsm_modem_update(dlci, 0);
- }
- 
- static int gsmtty_break_ctl(struct tty_struct *tty, int state)
-@@ -3231,7 +3340,7 @@ static int gsmtty_break_ctl(struct tty_s
- 		if (encode > 0x0F)
- 			encode = 0x0F;	/* Best effort */
- 	}
--	return gsmtty_modem_update(dlci, encode);
-+	return gsm_modem_update(dlci, encode);
- }
- 
- static void gsmtty_cleanup(struct tty_struct *tty)
+ 		ret = gsm_disconnect(gsm);
 
 
