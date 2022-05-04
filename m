@@ -2,113 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00EF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357181AbiEDRXk (ORCPT
+        id S1357201AbiEDRXn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        Wed, 4 May 2022 13:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355741AbiEDREl (ORCPT
+        with ESMTP id S1355717AbiEDREk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427404F9C0;
-        Wed,  4 May 2022 09:53:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEEAFB8278E;
-        Wed,  4 May 2022 16:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98893C385A5;
-        Wed,  4 May 2022 16:53:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683197;
-        bh=hmbtWVfyriMLSNG2cgnHPr6zR2rssfLG2hmu6gUSMOc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pBTbZ71sdOk68ImgMCHiNWWhOLnMmX/Rkdp//H6//Z2Bp9PVLG/NmLu+Wlz0h8Ppr
-         7a4efWp15F/HL4J9nMcDGRYmW3CBxsX0fIVFF+Xfi06Pq69viEk+pDjfe/oxBEjUKd
-         /fr7+0w1xqz/KxRRnNIJe5EvhjKf3nD0W8cqkRGI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
-        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 054/177] USB: Fix xhci event ring dequeue pointer ERDP update issue
-Date:   Wed,  4 May 2022 18:44:07 +0200
-Message-Id: <20220504153057.854422954@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 4 May 2022 13:04:40 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AC44EDF9
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:53:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651683197; x=1683219197;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=2ruaEki3lEFphqlq4guVMtsn0+R46uZAusUGO9phaiA=;
+  b=nnQDaljSkrpyGAxU8Vz10ZvcvKg8/NXeBKvv7IU71nQM+UTbewgKaN6r
+   Bdir+9l/ELBwnDC70otkg9hiHZlnic2xhxbSS8keyBJ7fqf9hu5tXspcw
+   XJGrBf0H32/v8+ZGcF77llYRJVeU+BbHeZP0yyaKnqG9VflZK+fYm6+Vz
+   bzXSsmZOBaTFpJ/eettkOYrQgM22MYQufx8KdnvlqO7D9JMt/NhXmPJbI
+   rZI4eKeYYd0vVbIyLKfyAXgfq6x5Uvgw1Lz+rcvIv77nlFb2sraSBP1/R
+   8UL15WxcMz4NB0TDfU3bHWleuNbwkwL+bScgj0RIkB/us31UvlfYklEYh
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="266666271"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="266666271"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 09:53:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="708544144"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 04 May 2022 09:53:15 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmIFX-000BdP-4O;
+        Wed, 04 May 2022 16:53:15 +0000
+Date:   Thu, 5 May 2022 00:53:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jirislaby:devel 53/73] drivers/video/console/vgacon.c:370:11:
+ error: assignment to 'struct uni_pagedir *' from incompatible pointer type
+ 'struct uni_pagedict *'
+Message-ID: <202205050033.3hyaijm7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
+head:   fab642eca5e0ca41e656c8a0685cadf975b7ff88
+commit: 9aaf33513f7cd36e3ac26196731192e7d7d92a99 [53/73] vt: rename and document struct uni_pagedir
+config: alpha-defconfig (https://download.01.org/0day-ci/archive/20220505/202205050033.3hyaijm7-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=9aaf33513f7cd36e3ac26196731192e7d7d92a99
+        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
+        git fetch --no-tags jirislaby devel
+        git checkout 9aaf33513f7cd36e3ac26196731192e7d7d92a99
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash
 
-[ Upstream commit e91ac20889d1a26d077cc511365cd7ff4346a6f3 ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-In some situations software handles TRB events slower than adding TRBs.
-If the number of TRB events to be processed in a given interrupt is exactly
-the same as the event ring size 256, then the local variable
-"event_ring_deq" that holds the initial dequeue position is equal to
-software_dequeue after handling all 256 interrupts.
+All errors (new ones prefixed by >>):
 
-It will cause driver to not update ERDP to hardware,
+   drivers/video/console/vgacon.c: In function 'vgacon_init':
+>> drivers/video/console/vgacon.c:370:11: error: assignment to 'struct uni_pagedir *' from incompatible pointer type 'struct uni_pagedict *' [-Werror=incompatible-pointer-types]
+     370 |         p = *c->vc_uni_pagedir_loc;
+         |           ^
+   drivers/video/console/vgacon.c:371:35: warning: comparison of distinct pointer types lacks a cast
+     371 |         if (c->vc_uni_pagedir_loc != &vgacon_uni_pagedir) {
+         |                                   ^~
+>> drivers/video/console/vgacon.c:373:39: error: assignment to 'struct uni_pagedict **' from incompatible pointer type 'struct uni_pagedir **' [-Werror=incompatible-pointer-types]
+     373 |                 c->vc_uni_pagedir_loc = &vgacon_uni_pagedir;
+         |                                       ^
+   cc1: some warnings being treated as errors
 
-Software dequeue pointer is out of sync with ERDP on interrupt exit.
-On the next interrupt, the event ring may full but driver will not
-update ERDP as software_dequeue is equal to ERDP.
 
-[  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
-[  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 inflight: CMD OUT
-[  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00 00 08 00
-[  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not responding to stop endpoint command.
-[  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
-[  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding, assume dead
-[  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 inflight: CMD
-[  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00 00 08 00
-[  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 inflight: CMD
+vim +370 drivers/video/console/vgacon.c
 
-Hardware ERDP is updated mid event handling if there are more than 128
-events in an interrupt (half of ring size).
-Fix this by updating the software local variable at the same time as
-hardware ERDP.
+^1da177e4c3f41 Linus Torvalds     2005-04-16  342  
+^1da177e4c3f41 Linus Torvalds     2005-04-16  343  static void vgacon_init(struct vc_data *c, int init)
+^1da177e4c3f41 Linus Torvalds     2005-04-16  344  {
+e4bdab70dd07d8 Takashi Iwai       2014-05-13  345  	struct uni_pagedir *p;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  346  
+50ec42edd9784f Antonino A. Daplas 2006-06-26  347  	/*
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  348  	 * We cannot be loaded as a module, therefore init will be 1
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  349  	 * if we are the default console, however if we are a fallback
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  350  	 * console, for example if fbcon has failed registration, then
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  351  	 * init will be 0, so we need to make sure our boot parameters
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  352  	 * have been copied to the console structure for vgacon_resize
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  353  	 * ultimately called by vc_resize.  Any subsequent calls to
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  354  	 * vgacon_init init will have init set to 0 too.
+50ec42edd9784f Antonino A. Daplas 2006-06-26  355  	 */
+^1da177e4c3f41 Linus Torvalds     2005-04-16  356  	c->vc_can_do_color = vga_can_do_color;
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  357  	c->vc_scan_lines = vga_scan_lines;
+3dfac26e2ef29f Maciej W. Rozycki  2021-10-26  358  	c->vc_font.height = c->vc_cell_height = vga_video_font_height;
+50ec42edd9784f Antonino A. Daplas 2006-06-26  359  
+50ec42edd9784f Antonino A. Daplas 2006-06-26  360  	/* set dimensions manually if init != 0 since vc_resize() will fail */
+50ec42edd9784f Antonino A. Daplas 2006-06-26  361  	if (init) {
+^1da177e4c3f41 Linus Torvalds     2005-04-16  362  		c->vc_cols = vga_video_num_columns;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  363  		c->vc_rows = vga_video_num_lines;
+50ec42edd9784f Antonino A. Daplas 2006-06-26  364  	} else
+50ec42edd9784f Antonino A. Daplas 2006-06-26  365  		vc_resize(c, vga_video_num_columns, vga_video_num_lines);
+50ec42edd9784f Antonino A. Daplas 2006-06-26  366  
+^1da177e4c3f41 Linus Torvalds     2005-04-16  367  	c->vc_complement_mask = 0x7700;
+a40920b42ae232 Bill Nottingham    2005-05-01  368  	if (vga_512_chars)
+a40920b42ae232 Bill Nottingham    2005-05-01  369  		c->vc_hi_font_mask = 0x0800;
+^1da177e4c3f41 Linus Torvalds     2005-04-16 @370  	p = *c->vc_uni_pagedir_loc;
+0f2893f0d1acff Takashi Iwai       2014-05-13  371  	if (c->vc_uni_pagedir_loc != &vgacon_uni_pagedir) {
+^1da177e4c3f41 Linus Torvalds     2005-04-16  372  		con_free_unimap(c);
+0f2893f0d1acff Takashi Iwai       2014-05-13 @373  		c->vc_uni_pagedir_loc = &vgacon_uni_pagedir;
+0f2893f0d1acff Takashi Iwai       2014-05-13  374  		vgacon_refcount++;
+0f2893f0d1acff Takashi Iwai       2014-05-13  375  	}
+0f2893f0d1acff Takashi Iwai       2014-05-13  376  	if (!vgacon_uni_pagedir && p)
+^1da177e4c3f41 Linus Torvalds     2005-04-16  377  		con_set_default_unimap(c);
+f6c06b6807ff92 Matthew Garrett    2009-11-13  378  
+b434a680a29424 Matthew Garrett    2009-11-13  379  	/* Only set the default if the user didn't deliberately override it */
+b434a680a29424 Matthew Garrett    2009-11-13  380  	if (global_cursor_default == -1)
+b434a680a29424 Matthew Garrett    2009-11-13  381  		global_cursor_default =
+b434a680a29424 Matthew Garrett    2009-11-13  382  			!(screen_info.flags & VIDEO_FLAGS_NOCURSOR);
+^1da177e4c3f41 Linus Torvalds     2005-04-16  383  }
+^1da177e4c3f41 Linus Torvalds     2005-04-16  384  
 
-[commit message rewording -Mathias]
+:::::: The code at line 370 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
 
-Fixes: dc0ffbea5729 ("usb: host: xhci: update event ring dequeue pointer on purpose")
-Reviewed-by: Peter Chen <peter.chen@kernel.org>
-Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-2-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/usb/host/xhci-ring.c | 1 +
- 1 file changed, 1 insertion(+)
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
 
-diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-index d0b6806275e0..f9707997969d 100644
---- a/drivers/usb/host/xhci-ring.c
-+++ b/drivers/usb/host/xhci-ring.c
-@@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
- 		if (event_loop++ < TRBS_PER_SEGMENT / 2)
- 			continue;
- 		xhci_update_erst_dequeue(xhci, event_ring_deq);
-+		event_ring_deq = xhci->event_ring->dequeue;
- 
- 		/* ring is half-full, force isoc trbs to interrupt more often */
- 		if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
