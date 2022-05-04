@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3712AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C464C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344371AbiEDDcB (ORCPT
+        id S1344341AbiEDDeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 23:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
+        Tue, 3 May 2022 23:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343502AbiEDDbv (ORCPT
+        with ESMTP id S1344472AbiEDDeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 23:31:51 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E1613A
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 20:28:16 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id r11so365626ybg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 20:28:16 -0700 (PDT)
+        Tue, 3 May 2022 23:34:13 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321DB1AF03
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 20:30:39 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id a21so322637edb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 20:30:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=R9FJwQCrIwdOgk5TBiW4fZIwz7YdVA9O8EgN31+EQpM=;
-        b=A/kA4+FBweAr9lVyBTELBbGu9MrjxfHDgMNZieroE6twWBKa0ozA98z4GsZqBTYDW3
-         S+tkUjiaivxuGA18dVlvBzfgH+HV7zi/eOwfotkb4xUzCI4jLNDndRmkC6uX5AoFPpPD
-         oqpkzdvGprG1P/w7A4UNVO05F4hH/9zHUb1ZXsIDaXWQ0WWHvAuZuK0KyjDHRTbEUIGk
-         ZLhqJxvvriMH1Eggz9hshHRAMZPLyHPkyEJdF1YFpMvVGNgp8/A8Cb3bkKiMj5ayRHCd
-         xiWy0YffXzZk/qMbQfHVulsO2vqDggBXWwv3hg5pXTtM5GVcPV+U1G51GTFqnMyXsauT
-         i4lA==
+        bh=Gs5Ounip899C5lOiAHgN9uTnUVGqEvAG7D7k08amNUU=;
+        b=HDFCo6RgpG74US91ZvtFD01vc6SEfhs/hMctx67JvMAFtT8caBpUOb07SMOPDFS0II
+         lKG7CSe5N/dGOVU0YUMpd6Bzw3Y2PQjCVndT1T0Se7+/0A7GGC7+l8AnScBLo4l5q1fF
+         gX1/SoS2DdcwJcirjlMsLQNSS3z3H+2wAANvI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=R9FJwQCrIwdOgk5TBiW4fZIwz7YdVA9O8EgN31+EQpM=;
-        b=kSKoeS0txatfBEOpqZ5zI/NrCgoKNhoWw+QrmOg5FWrwBBqtjCCjIBUM6B0D0aj9Ve
-         J+eoLjpmUB59DMBqac2DPV0M1VqyW5tTm0DcmlcYo9sY02T3nQkdggE12AT8mLBd1iGo
-         +8p/m2eFa+dGXi2MurAisYFe7Fks7YoL2oDTK/ElDTRn7+6ZYSuVr/8mhctAMRZMoxwO
-         8H/BEvP8Bx07+m9lxZ7AXQChb1ogldr6JlLO+rBCgXhXUHObzDke1nWcqBbYylwpN3MW
-         /iPpYMpn9n56uem7g7HtolIcl/+JliZ0CIFU05sB+yG2vmzugKbzKON8APWs9VivHDnQ
-         3Qtw==
-X-Gm-Message-State: AOAM531khc+sQwx2kOk73oMnmHVYMeN0u5I8M6u9YxsM8q7qg496AQMV
-        qha1URDK26na42XP5zGIS1JRSM+pYbfk4cQFrm25L7K/jvs=
-X-Google-Smtp-Source: ABdhPJxg5zoFR8qLr9OHBxcx2aPHWBf18tbQHiTK5nxyByE5sZWTpONjJFbTOZEPKdz4f+cpktC++OySLL9aSPyzZzs=
-X-Received: by 2002:a25:d1d6:0:b0:649:73e3:e49e with SMTP id
- i205-20020a25d1d6000000b0064973e3e49emr9738209ybg.315.1651634895588; Tue, 03
- May 2022 20:28:15 -0700 (PDT)
+        bh=Gs5Ounip899C5lOiAHgN9uTnUVGqEvAG7D7k08amNUU=;
+        b=lEwb60GCUYpN+HwQtkGw+U///AgdT7oK32FJIx+hzRbSPQriZDj2syk49M3I12MHAJ
+         FxtWb97Ti/EXB/3waocj23IWBdU0E/OOx+dsJK01EcfUXt8cZgqGQq1FIFt6I2w5lbYn
+         nIOfBZMOGPGgPhDFloFmnNDh44S3SEkliVuLZ9qXIhvDxafcuxJbbTbEYG3ZLLg8zIcA
+         wnPcH33ePvMnpQjjDUJkhhhbNEcYv4jYocMYscsjhYLdOH4yav1qrtzxs1quJZHFcJQs
+         YfZPO5+ereTq8urAWJ8m81isp8yg2JYQ7T0YHffZvhBNY1TeB8+D9XYRhOKQxrJE8lP4
+         RohQ==
+X-Gm-Message-State: AOAM531lEJjcpQ1SX3lCzq9MmeHHxT9A5O4MItwk48AxNw6sywKRHtNy
+        BE749aatIfx9HILRbGI1xwTtQBGIRfc2n9g6gRo=
+X-Google-Smtp-Source: ABdhPJx3hiCEJhE0Rl0OWbz6xq+SZJKY9wdhy7SOZtkh1SmwyWyrBKwB0eg04Uv6CwSaY1pOyGKT7g==
+X-Received: by 2002:a05:6402:2397:b0:426:4967:8574 with SMTP id j23-20020a056402239700b0042649678574mr21562080eda.197.1651635037534;
+        Tue, 03 May 2022 20:30:37 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id gv36-20020a1709072be400b006f3ef214e5bsm5165599ejc.193.2022.05.03.20.30.36
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 20:30:36 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id d5so261938wrb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 20:30:36 -0700 (PDT)
+X-Received: by 2002:a5d:6d09:0:b0:20c:53a9:cc30 with SMTP id
+ e9-20020a5d6d09000000b0020c53a9cc30mr13905399wrq.513.1651635035897; Tue, 03
+ May 2022 20:30:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220502045102.40005-1-ppbuk5246@gmail.com> <20220504120903.057867b1b2e2fb2b2a542470@kernel.org>
-In-Reply-To: <20220504120903.057867b1b2e2fb2b2a542470@kernel.org>
-From:   Yun Levi <ppbuk5246@gmail.com>
-Date:   Wed, 4 May 2022 12:28:01 +0900
-Message-ID: <CAM7-yPT5DDUvQiyVmExa4=6hdK0mSW7eWxmXYSZN=ErAUM9suA@mail.gmail.com>
-Subject: Re: [PATCH] kprobe: sync issue's on ftraced-kprobe.
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, mingo@redhat.com,
-        bp@alien8.de, hpa@zytor.com, naveen.n.rao@linux.ibm.com,
-        "David S. Miller" <davem@davemloft.net>, rostedt@goodmis.org,
-        yun.wang@linux.alibaba.com, x86@kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220502173338.1.I26eca1856f99e6160d30de6d50ecab60e6226354@changeid>
+ <13819b2d-26f0-14f4-9cb9-affb6b18f13d@quicinc.com>
+In-Reply-To: <13819b2d-26f0-14f4-9cb9-affb6b18f13d@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 3 May 2022 20:30:23 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VBqbhB03uPtnzYdRHhU-4TnX6RgDpHK27RUXY84esebw@mail.gmail.com>
+Message-ID: <CAD=FV=VBqbhB03uPtnzYdRHhU-4TnX6RgDpHK27RUXY84esebw@mail.gmail.com>
+Subject: Re: [PATCH] soc: qcom: socinfo: Add another ID for sc7180
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>, matvore@chromium.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> NAK this, because get_kprobes() doesn't require the kprobe_mutex in
-> the preempt-disabled context. Please read the comment of get_kprobe().
+Hi,
+
+On Tue, May 3, 2022 at 7:14 PM Sai Prakash Ranjan
+<quic_saipraka@quicinc.com> wrote:
 >
-> /*
->  * This routine is called either:
->  *      - under the 'kprobe_mutex' - during kprobe_[un]register().
->  *                              OR
->  *      - with preemption disabled - from architecture specific code.
->  */
-> struct kprobe *get_kprobe(void *addr)
+> Hi,
+>
+> On 5/3/2022 6:03 AM, Douglas Anderson wrote:
+> > It appears the some sc7180 devices, like the one in my
+> > sc7180-trogdor-homestar, report an ID of 407 instead of 425. Add
+> > another ID into the list.
+> >
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> >
+> >   drivers/soc/qcom/socinfo.c | 1 +
+> >   1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
+> > index cee579a267a6..2ef1dc2a1dd3 100644
+> > --- a/drivers/soc/qcom/socinfo.c
+> > +++ b/drivers/soc/qcom/socinfo.c
+> > @@ -318,6 +318,7 @@ static const struct soc_id soc_id[] = {
+> >       { 396, "IPQ8071A" },
+> >       { 402, "IPQ6018" },
+> >       { 403, "IPQ6028" },
+> > +     { 407, "SC7180" },
+> >       { 421, "IPQ6000" },
+> >       { 422, "IPQ6010" },
+> >       { 425, "SC7180" },
+>
+> Hmm, this ID maps to SM6250 which is a mobile variant. Not sure we should
+> use it for SC7180 which already has 425 ID assigned, perks of marketing :)
 
-> Moreover, we can not use mutex inside kprobe handler because it runs
-> in the interrupt context.
+That's super weird. Any idea why my strongbad reports 407 then? Is it
+a firmware bug, or someone misprogrammed something? What can we do to
+make the CPU recognized in strongbad?
 
-Actually, I think it's in the preemption disabled in situation.
-What I mentioned is actually it seems inside the kprobe handler which
-installed via ftrace isn't interrupt context.
+...and just for extra info, I believe strongbad actually has the
+slightly faster version of sc7180. It has a higher GPU/CPU speed. In
+some places I've heard it called sc7185, but in other places I've
+heard it called just sc7180 with a faster clock speed...
 
-#ifdef CONFIG_KPROBES_ON_FTRACE
-static struct ftrace_ops kprobe_ftrace_ops __read_mostly = {
- >---.func = kprobe_ftrace_handler,
- >---.flags = FTRACE_OPS_FL_SAVE_REGS,
- };
-
-In case of optimized kprobe it disables preemption when it enter
-"optimized callback"
-And the trampoline isn't the interrupted context.
-It's also the same to install kprobe via ftraced .
-When I see the ftraced patched code, I couldn't find any interrupt and
-preemption disable code.
-But it seems to allow preemption in ftarce handler.
-(In the ftrace_reg_caller, ftace_reg_end, and other ftrace trampoline code also)
-
-What I understand is break point based kprobe is only interrupted
-disabled status
-But optimized kprobe and ftarced kprobe isn't interrupted disabled status.
-For this, optimized kprobe disable disable preemption in "optimized_callback"
-
-But ftrace kprobe isn't preemption disabled nor interrupt-disabled context.
-
-That's why I sent patches and I experienced the problem above.
-
-Am I missing something?
-
-Thx.
+-Doug
