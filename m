@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5E6C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E459C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355008AbiEDRD7 (ORCPT
+        id S1355084AbiEDREH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
+        Wed, 4 May 2022 13:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354587AbiEDQ6x (ORCPT
+        with ESMTP id S1354579AbiEDQ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:58:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A325E1B7BE;
-        Wed,  4 May 2022 09:50:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32A518E30;
+        Wed,  4 May 2022 09:50:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F1746179D;
-        Wed,  4 May 2022 16:50:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E401C385AA;
-        Wed,  4 May 2022 16:50:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E99C61794;
+        Wed,  4 May 2022 16:50:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AFCCC385A4;
+        Wed,  4 May 2022 16:50:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683040;
-        bh=kSA0y8q2B8BT5CNjVXoE461nAstdV7PrmKTozAHkcSs=;
+        s=korg; t=1651683034;
+        bh=/1lHACNg12AF4maJVK5N1PfVNsb8YTHvHFzRsME3Q0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ewHIfCmjXO+7okxz5N9QTH8FaNhHU6SgJWWEVcf1XXptWuiPEd6DFyjkePjmCPvQ3
-         mRR+MRj2bDOp5Z2WYUHysD42KWL/vwDaD/m9KRHu1slTa0ZWEHV0RTZCkhW8ZzgwnG
-         Gh7mA0+r8ci6XwEMDLSmDCjomORS6OlTxdVxtMFw=
+        b=2T6/ktK/NSazSUMp9+hl5leGOZyX9f1hweQm5BMVoPgPoHQ+81CfTmuvzC/9fQT+L
+         4YgRfGGuc9Mkho+wONagPlPYFyheTUWA1BoR+BgLt2Lei9sF9tq8r6Y4U4Z2wAhJB2
+         MQrpT7QnUzQx30MLdzr8CnGoh+tNK8sTiAVE9dtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 044/129] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
-Date:   Wed,  4 May 2022 18:43:56 +0200
-Message-Id: <20220504153024.669972738@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 015/129] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
+Date:   Wed,  4 May 2022 18:43:27 +0200
+Message-Id: <20220504153022.494786909@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -52,71 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
+commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
 
-On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
-on the SoM is often not detected and the following error message is
-seen when the sgtl5000 driver tries to read the ID register:
+When the driver fails to enable the regulator 'vid', we will get the
+following splat:
 
-sgtl5000 1-000a: Error reading chip id -6
+[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   79.967570] Call Trace:
+[   79.967773]  <TASK>
+[   79.967951]  regulator_put+0x1f/0x30
+[   79.968254]  devres_release_group+0x319/0x3d0
+[   79.968608]  i2c_device_probe+0x766/0x940
 
-The reason for the error is that the MCLK clock is not provided
-early enough.
+Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
+regulator.
 
-Fix the problem by describing the MCLK pinctrl inside the codec
-node instead of placing it inside the audmux pinctrl group.
-
-With this change applied the sgtl5000 is always detected on every boot.
-
-Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Reviewed-by: Tim Harvey <tharvey@gateworks.com>
-Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/iio/magnetometer/ak8975.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 30fa349f9d05..a696873dc1ab 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -286,6 +286,8 @@ vgen6_reg: vgen6 {
- 	codec: sgtl5000@a {
- 		compatible = "fsl,sgtl5000";
- 		reg = <0x0a>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_sgtl5000>;
- 		clocks = <&clks IMX6QDL_CLK_CKO>;
- 		VDDA-supply = <&reg_module_3v3_audio>;
- 		VDDIO-supply = <&reg_module_3v3>;
-@@ -516,8 +518,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
- 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
- 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
- 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
--			/* SGTL5000 sys_mclk */
--			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
- 		>;
- 	};
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -389,6 +389,7 @@ static int ak8975_power_on(const struct
+ 	if (ret) {
+ 		dev_warn(&data->client->dev,
+ 			 "Failed to enable specified Vid supply\n");
++		regulator_disable(data->vdd);
+ 		return ret;
+ 	}
  
-@@ -810,6 +810,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
- 		>;
- 	};
- 
-+	pinctrl_sgtl5000: sgtl5000grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
-+		>;
-+	};
-+
- 	pinctrl_spdif: spdifgrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
--- 
-2.35.1
-
 
 
