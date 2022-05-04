@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99027C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356794AbiEDRVy (ORCPT
+        id S1355865AbiEDRWL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        Wed, 4 May 2022 13:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355703AbiEDREj (ORCPT
+        with ESMTP id S1356151AbiEDREz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3F34F456;
-        Wed,  4 May 2022 09:53:15 -0700 (PDT)
+        Wed, 4 May 2022 13:04:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560BE506C6;
+        Wed,  4 May 2022 09:53:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F416B827A1;
-        Wed,  4 May 2022 16:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCA90C385AA;
-        Wed,  4 May 2022 16:53:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC4FCB827A9;
+        Wed,  4 May 2022 16:53:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622A7C385A4;
+        Wed,  4 May 2022 16:53:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683192;
-        bh=JSN3iWdCY/Avvkx26JMis6POmyQuyyQMFX0qbKasTh8=;
+        s=korg; t=1651683232;
+        bh=BhD/YoPhqnDf8jMNqwbknukIxwRJA39mAq7J59EoT1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mav6F7ZcdNAwlaiuU/LsPtpC37zaX6Xq6LohbTZ9cALipr2rUY1uxNA9UpXQ5hQsT
-         khkbjBTPFxButUbUqvQvwL442DmN+TUmTJ0CPyIzl/dYI+hAP4g6NB9NDTyCY02RGC
-         CVH6+9vyYCl03XhjoJ2igyuw5+35lR+3uRN/I0Yc=
+        b=TVyHqy94RW4wPQiK9AAy7NK8RTu68bajbvxH3njprw1B/oWtHUAYZBDztbQ9lK8qG
+         ycGONdpsMbyf5Vz1vK9ia0xs88IlZKbPlS8Csra4AYPNBZLyi0atWKnOfxokTVbih8
+         9UO27JCgMYSkMN8f3pYOUOga+nMeXKR1yYl0Np5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/177] cpufreq: qcom-hw: fix the race between LMH worker and cpuhp
-Date:   Wed,  4 May 2022 18:43:58 +0200
-Message-Id: <20220504153056.956369919@linuxfoundation.org>
+Subject: [PATCH 5.15 085/177] pinctrl: stm32: Keep pinctrl block clock enabled when LEVEL IRQ requested
+Date:   Wed,  4 May 2022 18:44:38 +0200
+Message-Id: <20220504153100.717869692@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,71 +55,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 5e4f009da6be563984ba4db4ef4f32529e9aeb90 ]
+[ Upstream commit 05d8af449d93e04547b4c6b328e39c890bc803f4 ]
 
-The driver would disable the worker when cpu is being put offline, but
-it happens closer to the end of cpufreq_offline(). The function
-qcom_lmh_dcvs_poll() can be running in parallel with this, when
-policy->cpus already has been updated. Read policy->related_cpus
-instead.
+The current EOI handler for LEVEL triggered interrupts calls clk_enable(),
+register IO, clk_disable(). The clock manipulation requires locking which
+happens with IRQs disabled in clk_enable_lock(). Instead of turning the
+clock on and off all the time, enable the clock in case LEVEL interrupt is
+requested and keep the clock enabled until all LEVEL interrupts are freed.
+The LEVEL interrupts are an exception on this platform and seldom used, so
+this does not affect the common case.
 
-[   37.122433] ------------[ cut here ]------------
-[   37.127225] WARNING: CPU: 0 PID: 187 at drivers/base/arch_topology.c:180 topology_update_thermal_pressure+0xec/0x100
-[   37.138098] Modules linked in:
-[   37.141279] CPU: 0 PID: 187 Comm: kworker/0:3 Tainted: G S                5.17.0-rc6-00389-g37c83d0b8710-dirty #713
-[   37.158306] Workqueue: events qcom_lmh_dcvs_poll
-[   37.163095] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   37.170278] pc : topology_update_thermal_pressure+0xec/0x100
-[   37.176131] lr : topology_update_thermal_pressure+0x20/0x100
-[   37.181977] sp : ffff800009b6bce0
-[   37.185402] x29: ffff800009b6bce0 x28: ffffd87abe92b000 x27: ffff04bd7292e205
-[   37.192792] x26: ffffd87abe930af8 x25: ffffd87abe94e4c8 x24: 0000000000000000
-[   37.200180] x23: ffff04bb01177018 x22: ffff04bb011770c0 x21: ffff04bb01177000
-[   37.207567] x20: ffff04bb0a419000 x19: 00000000000c4e00 x18: 0000000000000000
-[   37.214954] x17: 000000040044ffff x16: 004000b2b5503510 x15: 0000006aaa1326d2
-[   37.222333] x14: 0000000000000232 x13: 0000000000000001 x12: 0000000000000040
-[   37.229718] x11: ffff04bb00400000 x10: 968f57bd39f701c8 x9 : ffff04bb0acc8674
-[   37.237095] x8 : fefefefefefefeff x7 : 0000000000000018 x6 : ffffd87abd90092c
-[   37.244478] x5 : 0000000000000016 x4 : 0000000000000000 x3 : 0000000000000100
-[   37.251852] x2 : ffff04bb0a419020 x1 : 0000000000000100 x0 : 0000000000000100
-[   37.259235] Call trace:
-[   37.261771]  topology_update_thermal_pressure+0xec/0x100
-[   37.267266]  qcom_lmh_dcvs_poll+0xbc/0x154
-[   37.271505]  process_one_work+0x288/0x69c
-[   37.275654]  worker_thread+0x74/0x470
-[   37.279450]  kthread+0xfc/0x100
-[   37.282712]  ret_from_fork+0x10/0x20
-[   37.286417] irq event stamp: 74
-[   37.289664] hardirqs last  enabled at (73): [<ffffd87abdd78af4>] _raw_spin_unlock_irq+0x44/0x80
-[   37.298632] hardirqs last disabled at (74): [<ffffd87abdd71fc0>] __schedule+0x710/0xa10
-[   37.306885] softirqs last  enabled at (58): [<ffffd87abcc90410>] _stext+0x410/0x588
-[   37.314778] softirqs last disabled at (51): [<ffffd87abcd1bf68>] __irq_exit_rcu+0x158/0x174
-[   37.323386] ---[ end trace 0000000000000000 ]---
+This simplifies the LEVEL interrupt handling considerably and also fixes
+the following splat found when using preempt-rt:
+ ------------[ cut here ]------------
+ WARNING: CPU: 0 PID: 0 at kernel/locking/rtmutex.c:2040 __rt_mutex_trylock+0x37/0x62
+ Modules linked in:
+ CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.109-rt65-stable-standard-00068-g6a5afc4b1217 #85
+ Hardware name: STM32 (Device Tree Support)
+ [<c010a45d>] (unwind_backtrace) from [<c010766f>] (show_stack+0xb/0xc)
+ [<c010766f>] (show_stack) from [<c06353ab>] (dump_stack+0x6f/0x84)
+ [<c06353ab>] (dump_stack) from [<c01145e3>] (__warn+0x7f/0xa4)
+ [<c01145e3>] (__warn) from [<c063386f>] (warn_slowpath_fmt+0x3b/0x74)
+ [<c063386f>] (warn_slowpath_fmt) from [<c063b43d>] (__rt_mutex_trylock+0x37/0x62)
+ [<c063b43d>] (__rt_mutex_trylock) from [<c063c053>] (rt_spin_trylock+0x7/0x16)
+ [<c063c053>] (rt_spin_trylock) from [<c036a2f3>] (clk_enable_lock+0xb/0x80)
+ [<c036a2f3>] (clk_enable_lock) from [<c036ba69>] (clk_core_enable_lock+0x9/0x18)
+ [<c036ba69>] (clk_core_enable_lock) from [<c034e9f3>] (stm32_gpio_get+0x11/0x24)
+ [<c034e9f3>] (stm32_gpio_get) from [<c034ef43>] (stm32_gpio_irq_trigger+0x1f/0x48)
+ [<c034ef43>] (stm32_gpio_irq_trigger) from [<c014aa53>] (handle_fasteoi_irq+0x71/0xa8)
+ [<c014aa53>] (handle_fasteoi_irq) from [<c0147111>] (generic_handle_irq+0x19/0x22)
+ [<c0147111>] (generic_handle_irq) from [<c014752d>] (__handle_domain_irq+0x55/0x64)
+ [<c014752d>] (__handle_domain_irq) from [<c0346f13>] (gic_handle_irq+0x53/0x64)
+ [<c0346f13>] (gic_handle_irq) from [<c0100ba5>] (__irq_svc+0x65/0xc0)
+ Exception stack(0xc0e01f18 to 0xc0e01f60)
+ 1f00:                                                       0000300c 00000000
+ 1f20: 0000300c c010ff01 00000000 00000000 c0e00000 c0e07714 00000001 c0e01f78
+ 1f40: c0e07758 00000000 ef7cd0ff c0e01f68 c010554b c0105542 40000033 ffffffff
+ [<c0100ba5>] (__irq_svc) from [<c0105542>] (arch_cpu_idle+0xc/0x1e)
+ [<c0105542>] (arch_cpu_idle) from [<c063be95>] (default_idle_call+0x21/0x3c)
+ [<c063be95>] (default_idle_call) from [<c01324f7>] (do_idle+0xe3/0x1e4)
+ [<c01324f7>] (do_idle) from [<c01327b3>] (cpu_startup_entry+0x13/0x14)
+ [<c01327b3>] (cpu_startup_entry) from [<c0a00c13>] (start_kernel+0x397/0x3d4)
+ [<c0a00c13>] (start_kernel) from [<00000000>] (0x0)
+ ---[ end trace 0000000000000002 ]---
 
-Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Power consumption measured on STM32MP157C DHCOM SoM is not increased or
+is below noise threshold.
+
+Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+To: linux-gpio@vger.kernel.org
+Reviewed-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
+Link: https://lore.kernel.org/r/20220421140827.214088-1-marex@denx.de
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qcom-cpufreq-hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/stm32/pinctrl-stm32.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
-index 35d93361fda1..dfe72d82858f 100644
---- a/drivers/cpufreq/qcom-cpufreq-hw.c
-+++ b/drivers/cpufreq/qcom-cpufreq-hw.c
-@@ -277,7 +277,7 @@ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+index 2c78af0aac57..97a4fb5a9328 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -225,6 +225,13 @@ static void stm32_gpio_free(struct gpio_chip *chip, unsigned offset)
+ 	pinctrl_gpio_free(chip->base + offset);
+ }
+ 
++static int stm32_gpio_get_noclk(struct gpio_chip *chip, unsigned int offset)
++{
++	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
++
++	return !!(readl_relaxed(bank->base + STM32_GPIO_IDR) & BIT(offset));
++}
++
+ static int stm32_gpio_get(struct gpio_chip *chip, unsigned offset)
  {
- 	unsigned long max_capacity, capacity, freq_hz, throttled_freq;
- 	struct cpufreq_policy *policy = data->policy;
--	int cpu = cpumask_first(policy->cpus);
-+	int cpu = cpumask_first(policy->related_cpus);
- 	struct device *dev = get_cpu_device(cpu);
- 	struct dev_pm_opp *opp;
- 	unsigned int freq;
+ 	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
+@@ -232,7 +239,7 @@ static int stm32_gpio_get(struct gpio_chip *chip, unsigned offset)
+ 
+ 	clk_enable(bank->clk);
+ 
+-	ret = !!(readl_relaxed(bank->base + STM32_GPIO_IDR) & BIT(offset));
++	ret = stm32_gpio_get_noclk(chip, offset);
+ 
+ 	clk_disable(bank->clk);
+ 
+@@ -316,7 +323,7 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
+ 		return;
+ 
+ 	/* If level interrupt type then retrig */
+-	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
++	level = stm32_gpio_get_noclk(&bank->gpio_chip, d->hwirq);
+ 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
+ 	    (level == 1 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_HIGH))
+ 		irq_chip_retrigger_hierarchy(d);
+@@ -358,6 +365,7 @@ static int stm32_gpio_irq_request_resources(struct irq_data *irq_data)
+ {
+ 	struct stm32_gpio_bank *bank = irq_data->domain->host_data;
+ 	struct stm32_pinctrl *pctl = dev_get_drvdata(bank->gpio_chip.parent);
++	unsigned long flags;
+ 	int ret;
+ 
+ 	ret = stm32_gpio_direction_input(&bank->gpio_chip, irq_data->hwirq);
+@@ -371,6 +379,10 @@ static int stm32_gpio_irq_request_resources(struct irq_data *irq_data)
+ 		return ret;
+ 	}
+ 
++	flags = irqd_get_trigger_type(irq_data);
++	if (flags & IRQ_TYPE_LEVEL_MASK)
++		clk_enable(bank->clk);
++
+ 	return 0;
+ }
+ 
+@@ -378,6 +390,9 @@ static void stm32_gpio_irq_release_resources(struct irq_data *irq_data)
+ {
+ 	struct stm32_gpio_bank *bank = irq_data->domain->host_data;
+ 
++	if (bank->irq_type[irq_data->hwirq] & IRQ_TYPE_LEVEL_MASK)
++		clk_disable(bank->clk);
++
+ 	gpiochip_unlock_as_irq(&bank->gpio_chip, irq_data->hwirq);
+ }
+ 
 -- 
 2.35.1
 
