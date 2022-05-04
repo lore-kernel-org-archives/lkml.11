@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A49C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B85C3C35275
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359072AbiEDRj3 (ORCPT
+        id S1359290AbiEDRjt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
+        Wed, 4 May 2022 13:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356821AbiEDRJp (ORCPT
+        with ESMTP id S1356812AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9783222A9;
-        Wed,  4 May 2022 09:55:50 -0700 (PDT)
+        Wed, 4 May 2022 13:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB425205F4;
+        Wed,  4 May 2022 09:55:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98CF7B82795;
-        Wed,  4 May 2022 16:55:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A4BC385A4;
-        Wed,  4 May 2022 16:55:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 977DDB8278E;
+        Wed,  4 May 2022 16:55:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43E55C385AF;
+        Wed,  4 May 2022 16:55:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683348;
-        bh=G71WT7nFX4UN9eB8Tn1SQhYCaU4g34pC/vPb7hR0lQI=;
+        s=korg; t=1651683343;
+        bh=8lm3thwt99G1i9oKsvxb5K2n7Qp9sOJOBnjoL2NNz4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQ6QW0aXF5QZWfbMg8EaqbcJsUyXVmkndiycEuPubu5cHld0/x1lIvg74XPaNvtZ6
-         U6lGoLiTWGrCcZcuEpVPW7gF/1qLpKL1p1SAi+r642vTN6vCCf/ELmYu/5K1eWgPj3
-         o2nZWinhkbO5Zm1NLXWCTtmFGC45IieQUZdqCrNA=
+        b=B3XLPkQyttT5oSOiFtjDXCVf4zMKNTi5SEY4bFJ8/+5J+99HKkMTSmqM6+vf/nH9Y
+         EiXy3Q1xgL1SU1fnsvJpuL34Hfju4UyJ68i8QEcTnFmThMXKqv6JvHKVr4BFw5qPb/
+         vL5PvXtxTFxgpOjh1XKBdgbz37cN/jgJSgmVJ/sI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH 5.17 035/225] serial: amba-pl011: do not time out prematurely when draining tx fifo
-Date:   Wed,  4 May 2022 18:44:33 +0200
-Message-Id: <20220504153113.350828662@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 008/225] USB: serial: option: add Telit 0x1057, 0x1058, 0x1075 compositions
+Date:   Wed,  4 May 2022 18:44:06 +0200
+Message-Id: <20220504153111.022630292@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,67 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-commit 0e4deb56b0c625efdb70c94f150429e2f2a16fa1 upstream.
+commit f32c5a0423400e01f4d7c607949fa3a1f006e8fa upstream.
 
-The current timeout for draining the tx fifo in RS485 mode is calculated by
-multiplying the time it takes to transmit one character (with the given
-baud rate) with the maximal number of characters in the tx queue.
+Add support for the following Telit FN980 and FN990 compositions:
 
-This timeout is too short for two reasons:
-First when calculating the time to transmit one character integer division
-is used which may round down the result in case of a remainder of the
-division.
+0x1057: tty, adb, rmnet, tty, tty, tty, tty, tty
+0x1058: tty, adb, tty, tty, tty, tty, tty
+0x1075: adb, tty
 
-Fix this by rounding up the division result.
-
-Second the hardware may need additional time (e.g for first putting the
-characters from the fifo into the shift register) before the characters are
-actually put onto the wire.
-
-To be on the safe side double the current maximum number of iterations
-that are used to wait for the queue draining.
-
-Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Link: https://lore.kernel.org/r/20220406141408.580669-1-dnlplm@gmail.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Link: https://lore.kernel.org/r/20220408233503.7251-1-LinoSanfilippo@gmx.de
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/amba-pl011.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1255,13 +1255,18 @@ static inline bool pl011_dma_rx_running(
- 
- static void pl011_rs485_tx_stop(struct uart_amba_port *uap)
- {
-+	/*
-+	 * To be on the safe side only time out after twice as many iterations
-+	 * as fifo size.
-+	 */
-+	const int MAX_TX_DRAIN_ITERS = uap->port.fifosize * 2;
- 	struct uart_port *port = &uap->port;
- 	int i = 0;
- 	u32 cr;
- 
- 	/* Wait until hardware tx queue is empty */
- 	while (!pl011_tx_empty(port)) {
--		if (i == port->fifosize) {
-+		if (i > MAX_TX_DRAIN_ITERS) {
- 			dev_warn(port->dev,
- 				 "timeout while draining hardware tx queue\n");
- 			break;
-@@ -2052,7 +2057,7 @@ pl011_set_termios(struct uart_port *port
- 	 * with the given baud rate. We use this as the poll interval when we
- 	 * wait for the tx queue to empty.
- 	 */
--	uap->rs485_tx_drain_interval = (bits * 1000 * 1000) / baud;
-+	uap->rs485_tx_drain_interval = DIV_ROUND_UP(bits * 1000 * 1000, baud);
- 
- 	pl011_setup_status_masks(port, termios);
- 
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1219,6 +1219,10 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(0) | RSVD(1) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1056, 0xff),	/* Telit FD980 */
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1057, 0xff),	/* Telit FN980 */
++	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1058, 0xff),	/* Telit FN980 (PCIe) */
++	  .driver_info = NCTRL(0) | RSVD(1) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1060, 0xff),	/* Telit LN920 (rmnet) */
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1061, 0xff),	/* Telit LN920 (MBIM) */
+@@ -1235,6 +1239,8 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1073, 0xff),	/* Telit FN990 (ECM) */
+ 	  .driver_info = NCTRL(0) | RSVD(1) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1075, 0xff),	/* Telit FN990 (PCIe) */
++	  .driver_info = RSVD(0) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_ME910),
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(3) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_ME910_DUAL_MODEM),
 
 
