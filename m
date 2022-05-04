@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:19:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBCFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347077AbiEDJXX (ORCPT
+        id S1347106AbiEDJXc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 05:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        Wed, 4 May 2022 05:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbiEDJXM (ORCPT
+        with ESMTP id S1347050AbiEDJXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 05:23:12 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D994222A9;
-        Wed,  4 May 2022 02:19:36 -0700 (PDT)
-X-UUID: 184dc017eb964020875e7864a88bb3d9-20220504
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709CD24F0E;
+        Wed,  4 May 2022 02:19:37 -0700 (PDT)
+X-UUID: 4dd035e07b0047e8847d8c8a09d1d66a-20220504
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:27cf8375-b87c-422f-a9ae-40c42954c9d5,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:95
-X-CID-INFO: VERSION:1.1.4,REQID:27cf8375-b87c-422f-a9ae-40c42954c9d5,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:95
-X-CID-META: VersionHash:faefae9,CLOUDID:b3bb74c7-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:a890dcaa6657,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+X-CID-O-INFO: VERSION:1.1.4,REQID:80393125-8c08-48a6-a30a-5d75c75d3541,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:75
+X-CID-INFO: VERSION:1.1.4,REQID:80393125-8c08-48a6-a30a-5d75c75d3541,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:75
+X-CID-META: VersionHash:faefae9,CLOUDID:9498ac2f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:0b065cd284c6,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
         ,QS:0,BEC:nil
-X-UUID: 184dc017eb964020875e7864a88bb3d9-20220504
+X-UUID: 4dd035e07b0047e8847d8c8a09d1d66a-20220504
 Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2010662201; Wed, 04 May 2022 17:19:28 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 4 May 2022 17:19:27 +0800
+        with ESMTP id 1318471534; Wed, 04 May 2022 17:19:28 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 4 May 2022 17:19:27 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 4 May 2022 17:19:27 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
  15.2.792.3 via Frontend Transport; Wed, 4 May 2022 17:19:27 +0800
@@ -51,10 +48,11 @@ CC:     <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
         <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v6 2/4] dt-bindings: display: mediatek: dsi: Add compatible for MediaTek MT8186
-Date:   Wed, 4 May 2022 17:19:21 +0800
-Message-ID: <20220504091923.2219-3-rex-bc.chen@mediatek.com>
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v6 4/4] drm/mediatek: Add MT8186 DSI compatible for mtk_drm_drv.c
+Date:   Wed, 4 May 2022 17:19:23 +0800
+Message-ID: <20220504091923.2219-5-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220504091923.2219-1-rex-bc.chen@mediatek.com>
 References: <20220504091923.2219-1-rex-bc.chen@mediatek.com>
@@ -65,30 +63,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+The compatible "mediatek,mt8186-dsi" is used by MT8186 DSI, so
+add it to mtk_ddp_comp_dt_ids in mtk_drm_drv.c.
 
-Add dt-binding documentation of dsi for MediaTek MT8186 SoC.
-
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/display/mediatek/mediatek,dsi.yaml       | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-index fa5bdf28668a..b18d6a57c6e1 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-@@ -28,6 +28,7 @@ properties:
-       - mediatek,mt8167-dsi
-       - mediatek,mt8173-dsi
-       - mediatek,mt8183-dsi
-+      - mediatek,mt8186-dsi
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+index 6abe6bcacbdc..0104283767ad 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+@@ -544,6 +544,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DSI },
+ 	{ .compatible = "mediatek,mt8183-dsi",
+ 	  .data = (void *)MTK_DSI },
++	{ .compatible = "mediatek,mt8186-dsi",
++	  .data = (void *)MTK_DSI },
+ 	{ }
+ };
  
-   reg:
-     maxItems: 1
 -- 
 2.18.0
 
