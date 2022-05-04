@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 757A2C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E501C3527B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359725AbiEDRkQ (ORCPT
+        id S1359575AbiEDRkK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
+        Wed, 4 May 2022 13:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356792AbiEDRJo (ORCPT
+        with ESMTP id S1356798AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9581D319;
-        Wed,  4 May 2022 09:55:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34EE1DA55;
+        Wed,  4 May 2022 09:55:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7328DB8278E;
-        Wed,  4 May 2022 16:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD48C385A4;
-        Wed,  4 May 2022 16:55:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7025DB82795;
+        Wed,  4 May 2022 16:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26B4AC385A5;
+        Wed,  4 May 2022 16:55:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683335;
-        bh=8VMbv6k1Ez79dhZYetnG2VPw/IkmhQKJA3RVyKVyfcU=;
+        s=korg; t=1651683338;
+        bh=9vZ4s2S3OkqcFoWeX3a+FHD4PzlE9/XUKS4qPEXLkgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yotB2Wj2gVVIpz4NqmAnKLPZLCs+bm4idMcdP+vI8VkDyg6eXcbKyE0ML3fxyNJWZ
-         Y19JjNyRWnv04yp+ND4Cqg0pRuAgPsXxLfQya6ZVnYtC2l6V4cAvUY/WA8yNGMro72
-         3pvf3Yusa2MRmA3g+whD71JJeln0sGGevbmmTMB8=
+        b=Cl2QCCzS6jUx6/lQTTv66BwoUXn7Cjgw2O6U/t6s07YOLnMaZa7PKftsf1KJVotOW
+         MiCWpv24V2IWa4RvCuSyqUley+JREU0lNk/Zf+jk+GG04MM1vOclLTcvNNHc2rvPRu
+         m6eXoVmGv7tbhF9mKI9eUwzH2Qm33ngy/2wKq8Ys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.17 010/225] xhci: Enable runtime PM on second Alderlake controller
-Date:   Wed,  4 May 2022 18:44:08 +0200
-Message-Id: <20220504153111.197596636@linuxfoundation.org>
+        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.17 013/225] iio: dac: ad5592r: Fix the missing return value.
+Date:   Wed,  4 May 2022 18:44:11 +0200
+Message-Id: <20220504153111.439649738@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,41 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Zizhuang Deng <sunsetdzz@gmail.com>
 
-commit d8bfe5091d6cc4b8b8395e4666979ae72a6069ca upstream.
+commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
 
-Alderlake has two XHCI controllers with PCI IDs 0x461e and 0x51ed. We
-had previously added the quirk to default enable runtime PM for 0x461e,
-now add it for 0x51ed as well.
+The third call to `fwnode_property_read_u32` did not record
+the return value, resulting in `channel_offstate` possibly
+being assigned the wrong value.
 
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220408114225.1.Ibcff6b86ed4eacfe4c4bc89c90e18416f3900a3e@changeid
+Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
+Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
+Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-pci.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/dac/ad5592r-base.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci-pci.c
-+++ b/drivers/usb/host/xhci-pci.c
-@@ -59,6 +59,7 @@
- #define PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI		0x9a13
- #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI		0x1138
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
-+#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
+--- a/drivers/iio/dac/ad5592r-base.c
++++ b/drivers/iio/dac/ad5592r-base.c
+@@ -523,7 +523,7 @@ static int ad5592r_alloc_channels(struct
+ 		if (!ret)
+ 			st->channel_modes[reg] = tmp;
  
- #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
- #define PCI_DEVICE_ID_AMD_PROMONTORYA_4			0x43b9
-@@ -266,7 +267,8 @@ static void xhci_pci_quirks(struct devic
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ICE_LAKE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
--	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI))
-+	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
-+	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
- 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
- 
- 	if (pdev->vendor == PCI_VENDOR_ID_ETRON &&
+-		fwnode_property_read_u32(child, "adi,off-state", &tmp);
++		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
+ 		if (!ret)
+ 			st->channel_offstate[reg] = tmp;
+ 	}
 
 
