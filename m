@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E631CC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F6AC4708B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383552AbiEDXHP (ORCPT
+        id S1384970AbiEDXIW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        Wed, 4 May 2022 19:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380509AbiEDXAE (ORCPT
+        with ESMTP id S1380040AbiEDXCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:00:04 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD6857B3A
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:28 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id z11-20020a17090a468b00b001dc792e8660so1320270pjf.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:28 -0700 (PDT)
+        Wed, 4 May 2022 19:02:05 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B845A087
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:42 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id r9-20020a655089000000b003c612b48014so158779pgp.18
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=Y0ltxz1n+cyN9oREkFOZuEteikspMaetU0xjw3Z41ek=;
-        b=aUFgP/bFtY1euxIu3o+lcaoKK4P/6/CaCsFszu3Zqslm0vfXNjHvwREDNYSy79i9hw
-         JkiVnd36bY57O6fq8Ope5Z0RvUawzJM+Pv+Fe3DiZZHSn+/TLZJZe5tTTjzrQsVrAy0R
-         RyuMQtrYBqQmSp832a9nz6c7Em8uJ7Tlw4qEXzXTKMLKIfZK9oJgphZnJbFHwO6WfK6I
-         z0p65ncHT+sX9s/NXV4HImEg1qQEk5asvqsk/G26KsDXTKfZD0XPAqi+yEZLOaB1NkHf
-         Pd4y/H6vtaVy87NB2NhjVBfLKJ+AZ4lFQfPuYZH7YNUuZ1gax1sAhuUdK1clShZApbyc
-         990w==
+        bh=hThR3eXvdbL6PIPwsArk6NS/Y6ItR8JxmYPs055HfNQ=;
+        b=HZvGef4wMTUUww0ii1QoiwMBQSBC/Pvw3CoC72aul1ExRfDQ2K5By8y4/GGBcgJaeN
+         owaaHAG/e7rStRrir9ExqsMKk4ynjLGKLmJaW5Z/6z+xjstjP5ZbhJ3Kb6wDVrH9QauE
+         DkJedMIVsKGVgA4gID4rx3C4DyKI6MUL7S3Bffz5GU/1jUw6uYENZeYMnZJcSD1FBHxo
+         uqhvPCUHKfzKn25stT7tccHRDWctknK2xDWQEGGvAoVl9rL2byoPoQ07LbFg5Ho4zHpN
+         PGa+qnQwevzHvvolT3qf93eqYFEuuCX9mYdLStjxrXePI+/05RKJk2pFbAaGb7yOggAB
+         V58A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=Y0ltxz1n+cyN9oREkFOZuEteikspMaetU0xjw3Z41ek=;
-        b=CgRXVeblBBuw3ULsourQhZsgSCbC8nbtn/ar0BB1rBzSLpuHrzemITDSr8bD9TTGdK
-         jfmt4ixLg9/2iIS9D34bQpktlMsf9aqnuTyaGcJy+PfACB9suAt6ZBgICPvaaejDNw7m
-         hdgPbejug+NCz5QOCwttsFM2qREmpHW1CV1GBrpUpwHnKpzAfRwb4/6tlGl+jTmoScNI
-         6LXnpDF5Q4QqMfa0jh1+In3LqmjPNN7aRtM3Ok+3jejUGhNDDxbSC0lio7Rr2S+u73g+
-         9inXhd/Gb2yjAL6XDcisz1SplA+Py45eURouZ1NRXqWbFhsxl+qUcweM7bT4i98rB6sM
-         t6Tg==
-X-Gm-Message-State: AOAM531NL2JlzACa644Sbo2ryiXc47Bbf+wgyK4XxGqHtfEhUutYKDKT
-        LUmZr0OfizFz7MMS+hYpdMcbD04/PGs=
-X-Google-Smtp-Source: ABdhPJw0c4fwBdmtI5STNhQu6KndxT4eTv+v+03HIZdr9hfcfayqBDensfmmaO+7Jn8mEt4lc5hIl5jNexY=
+        bh=hThR3eXvdbL6PIPwsArk6NS/Y6ItR8JxmYPs055HfNQ=;
+        b=kGsfdXV2RyJ7n2bVcD/F88iQ+PUa4IYbxSOCoOCHMr6KPpW3uRb45D6JnIJ/BE0xK9
+         NROYxUHLtEBe68CJ9tYfyCB4OZSCuFBUZQlr8B3Kv5AWGw00ppw7J7fUQZptuVagJxPB
+         5N7yDBeFDtcpzeLeD3rNlTjjr1XTF77AcBKoX+lrW9Te0scGkSXcZPwdZbLMR7PmsQPw
+         wKe1rxDLvNtcBVxKH/uum6quGhaEVNcCk1t/1v1XXtVA2uAVLTlu03raOmAtNTvADGXG
+         jwGHRImmID9/d0f+LGMpZwVyqplkqmNcYzrFKBAwHyytMDKoX1/C6n0fI6wpWs6YjQ6t
+         6/Tw==
+X-Gm-Message-State: AOAM530TwTY7GP4BsM+kbmx+kH1I4Ig9NkX/dqErYvFNnREE6qJ70GA6
+        ZBfzIIfgeyoTSXOyi2JMsMdOnvQefLQ=
+X-Google-Smtp-Source: ABdhPJwgHLHvRfb8WYuIp2kW1pjw/YQRzjjh1gfBOLY12cy5NstVGLntHtlD+eVhWnvP5CGghG3yOhajnck=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:e5d2:b0:15e:9467:187 with SMTP id
- u18-20020a170902e5d200b0015e94670187mr21683068plf.123.1651704776410; Wed, 04
- May 2022 15:52:56 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:d487:b0:15e:a0a4:69e3 with SMTP id
+ c7-20020a170902d48700b0015ea0a469e3mr18832343plg.155.1651704791544; Wed, 04
+ May 2022 15:53:11 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:49:05 +0000
+Date:   Wed,  4 May 2022 22:49:14 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-120-seanjc@google.com>
+Message-Id: <20220504224914.1654036-129-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 119/128] KVM: selftests: Require vCPU output array when
- creating VM with vCPUs
+Subject: [PATCH 128/128] KVM: selftests: Drop DEFAULT_GUEST_PHY_PAGES, open
+ code the magic number
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -70,49 +70,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Require the caller of __vm_create_with_vcpus() to provide a non-NULL
-array of vCPUs now that all callers do so.  It's extremely unlikely a
-test will have a legitimate use case for creating a VM with vCPUs without
-wanting to do something with those vCPUs, and if there is such a use case,
-requiring that one-off test to provide a dummy array is a minor
-annoyance.
+Remove DEFAULT_GUEST_PHY_PAGES and open code the magic number (with a
+comment) in vm_nr_pages_required().  Exposing DEFAULT_GUEST_PHY_PAGES to
+tests was a symptom of the VM creation APIs not cleanly supporting tests
+that create runnable vCPUs, but can't do so immediately.  Now that tests
+don't have to manually compute the amount of memory needed for basic
+operation, make it harder for tests to do things that should be handled
+by the framework, i.e. force developers to improve the framework instead
+of hacking around flaws in individual tests.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/lib/kvm_util.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 1 -
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 8 +++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 527f63a30668..d30f8e0612af 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -100,7 +100,6 @@ memslot2region(struct kvm_vm *vm, uint32_t memslot);
+ #define KVM_UTIL_MIN_VADDR		0x2000
+ #define KVM_GUEST_PAGE_TABLE_MIN_PADDR	0x180000
+ 
+-#define DEFAULT_GUEST_PHY_PAGES		512
+ #define DEFAULT_GUEST_STACK_VADDR_MIN	0xab6000
+ #define DEFAULT_STACK_PGS		5
+ 
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index ccd194007e90..9cc1eacacb4e 100644
+index f4bd4d7559b9..a0c8333d1bf6 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -306,10 +306,11 @@ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus
- 				      struct kvm_vcpu *vcpus[])
- {
- 	uint64_t vcpu_pages, extra_pg_pages, pages;
--	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	int i;
+@@ -274,7 +274,13 @@ static uint64_t vm_nr_pages_required(uint32_t nr_runnable_vcpus,
+ 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
+ 		    nr_runnable_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
  
-+	TEST_ASSERT(!nr_vcpus || vcpus, "Must provide vCPU array");
+-	nr_pages = DEFAULT_GUEST_PHY_PAGES;
++	/*
++	 * Arbitrarily allocate 512 pages (2mb when page size is 4kb) for the
++	 * test code and other per-VM assets that will be loaded into memslot0.
++	 */
++	nr_pages = 512;
 +
- 	/* Force slot0 memory size not small than DEFAULT_GUEST_PHY_PAGES */
- 	if (slot0_mem_pages < DEFAULT_GUEST_PHY_PAGES)
- 		slot0_mem_pages = DEFAULT_GUEST_PHY_PAGES;
-@@ -330,11 +331,8 @@ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus
++	/* Account for the per-vCPU stacks on behalf of the test. */
+ 	nr_pages += nr_runnable_vcpus * DEFAULT_STACK_PGS;
  
- 	vm = __vm_create(mode, pages);
- 
--	for (i = 0; i < nr_vcpus; ++i) {
--		vcpu = vm_vcpu_add(vm, i, guest_code);
--		if (vcpus)
--			vcpus[i] = vcpu;
--	}
-+	for (i = 0; i < nr_vcpus; ++i)
-+		vcpus[i] = vm_vcpu_add(vm, i, guest_code);
- 
- 	return vm;
- }
+ 	/*
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
