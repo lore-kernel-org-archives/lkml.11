@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C64DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FE59C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358078AbiEDRdT (ORCPT
+        id S1357785AbiEDRdX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        Wed, 4 May 2022 13:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356956AbiEDRJv (ORCPT
+        with ESMTP id S1356955AbiEDRJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D71473AB;
-        Wed,  4 May 2022 09:56:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720CF473A9;
+        Wed,  4 May 2022 09:56:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 124B661794;
-        Wed,  4 May 2022 16:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D1DC385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DFFC617A6;
         Wed,  4 May 2022 16:56:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FF3C385A4;
+        Wed,  4 May 2022 16:56:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683400;
-        bh=BSn/8yTGvLIHbBu3mlc38X9iJe+OQtQDI5OHBi2CgMY=;
+        s=korg; t=1651683399;
+        bh=kPLz94WvLTpi4nn5bI9RZUlYwgXMZk6o7VGKl86N18I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a4z7FgCIlgIVs58+USnjRkiaEdj8DFidE5uCsa6Mai4GnLLdyIGoFlfEDUj6s5oc4
-         kBOXVfK2tWkWClB+CoiEYjKszjd+VW2aRo8rn254bKu/LkYo7/EGiCnlvJQI3dHSLE
-         C3L/kP5SiVvBIs1kLHxRAy8ON2qPeRSqNp7h2Phk=
+        b=jMc1P2EV3cxxf9VNM5fiK9K1SzUJUkgL15oahxxIgslnJbao6LjTtqU/+HW34/3h3
+         J/z5xdUFOsWdEzyqLILwjBrGyrfIGcDXHuwQk8Mys9mdeu7+6IUeypAVbsKsTCw4js
+         qVZfo5Hl8C8uNZ94dFLYSoeMxYTws3qknFUB4HpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Ajay Kathat <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 071/225] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
-Date:   Wed,  4 May 2022 18:45:09 +0200
-Message-Id: <20220504153117.838767637@linuxfoundation.org>
+Subject: [PATCH 5.17 084/225] ARM: dts: at91: fix pinctrl phandles
+Date:   Wed,  4 May 2022 18:45:22 +0200
+Message-Id: <20220504153118.564236955@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,69 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
+[ Upstream commit 0c640d9544d0109da3889d71ae77301e556db977 ]
 
-On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
-on the SoM is often not detected and the following error message is
-seen when the sgtl5000 driver tries to read the ID register:
+Commit bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all
+gpios") introduces pinctrl phandles for pins used by individual
+controllers to avoid failures due to commit 2ab73c6d8323 ("gpio:
+Support GPIO controllers without pin-ranges"). For SPI controllers
+available on SAMA5D4 and SAMA5D3 some of the pins are defined in
+SoC specific dtsi on behalf of pinctrl-0. Adding extra pinctrl phandles
+on board specific dts also on behalf of pinctrl-0 overwrite the pinctrl-0
+phandle specified in SoC specific dtsi. Thus add the board specific
+pinctrl to pinctrl-1.
 
-sgtl5000 1-000a: Error reading chip id -6
-
-The reason for the error is that the MCLK clock is not provided
-early enough.
-
-Fix the problem by describing the MCLK pinctrl inside the codec
-node instead of placing it inside the audmux pinctrl group.
-
-With this change applied the sgtl5000 is always detected on every boot.
-
-Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Reviewed-by: Tim Harvey <tharvey@gateworks.com>
-Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all gpios")
+Depends-on: 5c8b49852910 ("ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name")
+Reported-by: Ajay Kathat <ajay.kathat@microchip.com>
+Co-developed-by: Ajay Kathat <ajay.kathat@microchip.com>
+Signed-off-by: Ajay Kathat <ajay.kathat@microchip.com>
+Tested-by: Ajay Kathat <ajay.kathat@microchip.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220331141323.194355-2-claudiu.beznea@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/at91-sama5d3_xplained.dts | 8 ++++----
+ arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index ed2739e39085..bd763bae596b 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -286,6 +286,8 @@ vgen6_reg: vgen6 {
- 	codec: sgtl5000@a {
- 		compatible = "fsl,sgtl5000";
- 		reg = <0x0a>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_sgtl5000>;
- 		clocks = <&clks IMX6QDL_CLK_CKO>;
- 		VDDA-supply = <&reg_module_3v3_audio>;
- 		VDDIO-supply = <&reg_module_3v3>;
-@@ -517,8 +519,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
- 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
- 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
- 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
--			/* SGTL5000 sys_mclk */
--			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
- 		>;
- 	};
+diff --git a/arch/arm/boot/dts/at91-sama5d3_xplained.dts b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
+index d72c042f2850..a49c2966b41e 100644
+--- a/arch/arm/boot/dts/at91-sama5d3_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
+@@ -57,8 +57,8 @@ slot@0 {
+ 			};
  
-@@ -811,6 +811,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
- 		>;
- 	};
+ 			spi0: spi@f0004000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi0_cs>;
++				pinctrl-names = "default", "cs";
++				pinctrl-1 = <&pinctrl_spi0_cs>;
+ 				cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
+ 				status = "okay";
+ 			};
+@@ -171,8 +171,8 @@ slot@0 {
+ 			};
  
-+	pinctrl_sgtl5000: sgtl5000grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
-+		>;
-+	};
-+
- 	pinctrl_spdif: spdifgrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
+ 			spi1: spi@f8008000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi1_cs>;
++				pinctrl-names = "default", "cs";
++				pinctrl-1 = <&pinctrl_spi1_cs>;
+ 				cs-gpios = <&pioC 25 0>;
+ 				status = "okay";
+ 			};
+diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+index accb92cfac44..e519d2747936 100644
+--- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+@@ -81,8 +81,8 @@ usart4: serial@fc010000 {
+ 			};
+ 
+ 			spi1: spi@fc018000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi1_cs>;
++				pinctrl-names = "default", "cs";
++				pinctrl-1 = <&pinctrl_spi1_cs>;
+ 				cs-gpios = <&pioB 21 0>;
+ 				status = "okay";
+ 			};
 -- 
 2.35.1
 
