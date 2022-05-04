@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787D1C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9771BC4707F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376700AbiEDRzH (ORCPT
+        id S1376727AbiEDRzO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
+        Wed, 4 May 2022 13:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357190AbiEDROy (ORCPT
+        with ESMTP id S1357057AbiEDROq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DB4541B3;
-        Wed,  4 May 2022 09:58:23 -0700 (PDT)
+        Wed, 4 May 2022 13:14:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F7454180;
+        Wed,  4 May 2022 09:58:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04504B8279A;
-        Wed,  4 May 2022 16:58:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56ACC385B5;
-        Wed,  4 May 2022 16:57:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57422617A6;
+        Wed,  4 May 2022 16:57:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A36B9C385A4;
+        Wed,  4 May 2022 16:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683479;
-        bh=TuLouNdS92eCxvqd/mAyGX1SxJHvxX+sIgxL3M1XSO4=;
+        s=korg; t=1651683476;
+        bh=pPUIlAMOVYe9srKo2SbyhxPjEu2zN8+V4ndrRz4piyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G62G4zeN7TIF5Yf5BFoSWotN1AMmuROaUpEXpC2vG+QMc7sVG7MMI3WBEdwFRYA+1
-         Rn9ZcUB9uk0vvMG+g5xaVeBMAHvtKFsxgw4X4DiSv9ozT3gfau39lJE33KVy2GFuH0
-         2a+kZIw46IdjoWXHDe0kvmGyVZmZ0rCe/bO4YCOs=
+        b=K3FKZWwDbgEz9DNS0mr8us0dSrX6QhkIdREvw53ij7dqIjSrhtdFEpj/UEyNFpc54
+         DDxwgvdqtYohAN34k0PZc5X7PYpdE+lmqxNoLDabghLwI7aAYM81saGoN+zdhbiFd8
+         ab4mBtFXIGQ16UeWUzrmf5M3esbRZx8wC9+Bcl7c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 141/225] platform/x86: asus-wmi: Potential buffer overflow in asus_wmi_evaluate_method_buf()
-Date:   Wed,  4 May 2022 18:46:19 +0200
-Message-Id: <20220504153122.795402848@linuxfoundation.org>
+Subject: [PATCH 5.17 138/225] io_uring: check reserved fields for recv/recvmsg
+Date:   Wed,  4 May 2022 18:46:16 +0200
+Message-Id: <20220504153122.566841289@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,44 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 4345ece8f0bcc682f1fb3b648922c9be5f7dbe6c ]
+[ Upstream commit 5a1e99b61b0c81388cde0c808b3e4173907df19f ]
 
-This code tests for if the obj->buffer.length is larger than the buffer
-but then it just does the memcpy() anyway.
+We should check unused fields for non-zero and -EINVAL if they are set,
+making it consistent with other opcodes.
 
-Fixes: 0f0ac158d28f ("platform/x86: asus-wmi: Add support for custom fan curves")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220413073744.GB8812@kili
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: aa1fa28fc73e ("io_uring: add support for recvmsg()")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/asus-wmi.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ fs/io_uring.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
-index adab31b52f2a..399a4a345224 100644
---- a/drivers/platform/x86/asus-wmi.c
-+++ b/drivers/platform/x86/asus-wmi.c
-@@ -371,10 +371,14 @@ static int asus_wmi_evaluate_method_buf(u32 method_id,
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 107bce75131e..531d0086d0b3 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5103,6 +5103,8 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  
- 	switch (obj->type) {
- 	case ACPI_TYPE_BUFFER:
--		if (obj->buffer.length > size)
-+		if (obj->buffer.length > size) {
- 			err = -ENOSPC;
--		if (obj->buffer.length == 0)
-+			break;
-+		}
-+		if (obj->buffer.length == 0) {
- 			err = -ENODATA;
-+			break;
-+		}
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
++	if (unlikely(sqe->addr2 || sqe->file_index))
++		return -EINVAL;
  
- 		memcpy(ret_buffer, obj->buffer.pointer, obj->buffer.length);
- 		break;
+ 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	sr->len = READ_ONCE(sqe->len);
 -- 
 2.35.1
 
