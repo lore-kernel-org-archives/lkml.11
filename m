@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 586A2C46467
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2821BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358057AbiEDRZ3 (ORCPT
+        id S1357260AbiEDRXt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53584 "EHLO
+        Wed, 4 May 2022 13:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354991AbiEDRDs (ORCPT
+        with ESMTP id S1356474AbiEDRFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:03:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7A04D273;
-        Wed,  4 May 2022 09:52:38 -0700 (PDT)
+        Wed, 4 May 2022 13:05:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613935131F;
+        Wed,  4 May 2022 09:54:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B716617C3;
-        Wed,  4 May 2022 16:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F072C385A5;
-        Wed,  4 May 2022 16:52:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D2A0B827A9;
+        Wed,  4 May 2022 16:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA53C385A4;
+        Wed,  4 May 2022 16:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683157;
-        bh=IzHnTEH3xlGhfuyQg4J8ArZeDQO0q0tTgX2u3BJ5BDk=;
+        s=korg; t=1651683250;
+        bh=nU9hRqmoG+NR1e6QcNT5Gtc/DQw+zQxCB3nckjInEu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TizbRl46qVb/cv1lkbahlPUP3I2GatgVPN1EpkDi5sA8sUkchGkZJ7vdPLvr6/m9H
-         Otx9JdIyPEqmZpcOrJUhPQ41N9od6bgpkiciagbktkGm4cq+H6/T22OyVSQV8SgMou
-         coQA2/qlrhE9RbeaD9EdLBw2b9fOfqxdWTk/nr/c=
+        b=LcXBsBwzk2hLfSszzASHxFBSly8+5H/HMXhCO7BxDm0M1fnEdtAr0U7zIEWQqhWqh
+         vY7RWVBpbuMT4RtLt12tNTjvZys62RaA2D3gBSv7gubmNzU2hAjgre6ntYuAmnYKaB
+         zec4ZgwFOuga9niPQOIBu63W1/l4pGoJG2DDGbYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH 5.15 022/177] usb: dwc3: Try usb-role-switch first in dwc3_drd_init
-Date:   Wed,  4 May 2022 18:43:35 +0200
-Message-Id: <20220504153055.222697534@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 103/177] bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
+Date:   Wed,  4 May 2022 18:44:56 +0200
+Message-Id: <20220504153102.408014748@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,55 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Peter <sven@svenpeter.dev>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit ab7aa2866d295438dc60522f85c5421c6b4f1507 upstream.
+[ Upstream commit fff8c10368e64e7f8960f149375c12ca5f3b30af ]
 
-If the PHY controller node has a "port" dwc3 tries to find an
-extcon device even when "usb-role-switch" is present. This happens
-because dwc3_get_extcon() sees that "port" node and then calls
-extcon_find_edev_by_node() which will always return EPROBE_DEFER
-in that case.
+This code is really spurious.
+It always returns an ERR_PTR, even when err is known to be 0 and calls
+put_device() after a successful device_register() call.
 
-On the other hand, even if an extcon was present and dwc3_get_extcon()
-was successful it would still be ignored in favor of "usb-role-switch".
+It is likely that the return statement in the normal path is missing.
+Add 'return rdev;' to fix it.
 
-Let's just first check if "usb-role-switch" is configured in the device
-tree and directly use it instead and only try to look for an extcon
-device otherwise.
-
-Fixes: 8a0a13799744 ("usb: dwc3: Registering a role switch in the DRD code.")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
-Link: https://lore.kernel.org/r/20220411155300.9766-1-sven@svenpeter.dev
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d787dcdb9c8f ("bus: sunxi-rsb: Add driver for Allwinner Reduced Serial Bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/ef2b9576350bba4c8e05e669e9535e9e2a415763.1650551719.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/drd.c |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/bus/sunxi-rsb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/dwc3/drd.c
-+++ b/drivers/usb/dwc3/drd.c
-@@ -571,16 +571,15 @@ int dwc3_drd_init(struct dwc3 *dwc)
- {
- 	int ret, irq;
+diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
+index 4566e730ef2b..60b082fe2ed0 100644
+--- a/drivers/bus/sunxi-rsb.c
++++ b/drivers/bus/sunxi-rsb.c
+@@ -227,6 +227,8 @@ static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
  
-+	if (ROLE_SWITCH &&
-+	    device_property_read_bool(dwc->dev, "usb-role-switch"))
-+		return dwc3_setup_role_switch(dwc);
+ 	dev_dbg(&rdev->dev, "device %s registered\n", dev_name(&rdev->dev));
+ 
++	return rdev;
 +
- 	dwc->edev = dwc3_get_extcon(dwc);
- 	if (IS_ERR(dwc->edev))
- 		return PTR_ERR(dwc->edev);
+ err_device_add:
+ 	put_device(&rdev->dev);
  
--	if (ROLE_SWITCH &&
--	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
--		ret = dwc3_setup_role_switch(dwc);
--		if (ret < 0)
--			return ret;
--	} else if (dwc->edev) {
-+	if (dwc->edev) {
- 		dwc->edev_nb.notifier_call = dwc3_drd_notifier;
- 		ret = extcon_register_notifier(dwc->edev, EXTCON_USB_HOST,
- 					       &dwc->edev_nb);
+-- 
+2.35.1
+
 
 
