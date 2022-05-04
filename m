@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4842EC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A77C3527E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382361AbiEDXsy (ORCPT
+        id S1382579AbiEDXtC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        Wed, 4 May 2022 19:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383949AbiEDXZR (ORCPT
+        with ESMTP id S1385500AbiEDXZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:25:17 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35914EF54
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:21:39 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id x18so2823786plg.6
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:21:39 -0700 (PDT)
+        Wed, 4 May 2022 19:25:27 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ABE4DF4A
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:21:49 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id w17-20020a17090a529100b001db302efed6so2555771pjh.4
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:21:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NCPgvpZcA0uAt4aHPP7BYpOEKu3u65fsur79lcM7RCY=;
-        b=Zs2UVopnaRBcMqzeWwdu3RMSHFGCRemyVLw1Wiq1qURH8sHjtfDVQfZbSeFcEHO3yo
-         3A1MC5oNYk09WmKFCtVeexkI58hzjqDiFLj3wo1aQ2A7txkNgN7GmMK0k3LRqjZKN7OW
-         Ejffr5D3JC4siZtEiGZt/YgD+39nWwRmq2VxY=
+        bh=T0Ha5PjFrQlu4myFqDfG5tFx9BSiu6/SZECZT4sF2bI=;
+        b=lygx6dOsIFOk6hF+4C4Y8LRBekgsVCS6E/2MWFWQDMqc5bqCTYepfliMJM1myFV70X
+         jLFK02Fm2WKNyG22x0nZg+TsW5CsKzRyxkbYqV5+/PZ+gd4MpqDNr7coCd5Kt+2BDZNd
+         ONxJuOjN2+D6qeZ3Xquf1Dcw1BHsLe77ypccU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NCPgvpZcA0uAt4aHPP7BYpOEKu3u65fsur79lcM7RCY=;
-        b=ievlUr3X4YrSs41pUDF+OmQwZBVczvM2bPpRD7dpAQ9mFcZK27oWpaxMNUtNNrNx8+
-         E4q7pVnTWS15ndAxidscXc3rJA3q0ksgBppdvd0qrjxYqpahlIhQtp5aQlXClKnBWol7
-         fxlvyu1AwzS4JffZ9xEPcEAVBjkvRT9h/D07s2lD/K8fPFBJgQcwK/BoHjKzGCyFb+fT
-         JXB9Oi0Q856fJra1ZKW4nEzlsc690MwVQs98TeRtONBhtuPKOn87yrsWcSvgRGGTBJrE
-         BBr3/BB3RBYNXcCnEu++Y81L9n7CvjGNYPcSpLptAjZu3TOf3eIkrtzSMmSypQSmMbEc
-         TguA==
-X-Gm-Message-State: AOAM533L89UtlSsxM3i5A9baoPPOyHSYboR2NTQbAT1zefvM578MSipG
-        hApslFb8gaCl36SqHO3dcYYdRi8JX1HxxNUz
-X-Google-Smtp-Source: ABdhPJx2TPK/nouqDF1yYzVVWJk+thRPtu2hPJrJDWbQ1tzdLDmA68Nrl8oQvHeptfCEiB4Lsu9xWQ==
-X-Received: by 2002:a17:903:2d0:b0:14d:8a8d:cb1 with SMTP id s16-20020a17090302d000b0014d8a8d0cb1mr24121633plk.50.1651706499061;
-        Wed, 04 May 2022 16:21:39 -0700 (PDT)
+        bh=T0Ha5PjFrQlu4myFqDfG5tFx9BSiu6/SZECZT4sF2bI=;
+        b=V235HIa0HZkNr95R9B9Reww0Tp102qKruG0Dva2r92o5bE48qxnRzS5if856jctGtc
+         jNmFiQxt3Y5XdMirUgQBEi3p4EchsdAtaepZMHBhC+ZbXeT5s1Bl+VFpqt5H+lofUxiZ
+         /TjkmH0ccgEZ6Mx5n42YiTEtUqma0GNZW+UxYRyL0xOjcvnq52CLrWDW6bf49jQ2yNKO
+         GlsXhZnjBMiB9dakndu4QcQV8gX94cU1UT6FMB5CfaEp93OnAZ4yYGM6Qh4sikR4AtIU
+         WFi75GnwY8QClaBtBvI0j4i4oPvXJllN7qyp7IzMsanaIldvFtb62CtWYvJ7UkDk0sS0
+         qL/w==
+X-Gm-Message-State: AOAM53257Klh/8Rhy1sa+p4FHSJgljbZmx2fAEopvxa8pKJFN8xmupvx
+        DpPofftxztY+0AeTRL78jURuPZ8J5QLDE6Jq
+X-Google-Smtp-Source: ABdhPJwTek7lbCixRIDyD0usxwvu26W1HK2YAo0odHiNuXLR54TGcMPEtMfBRJ0xUOtP1S0Xrla3iw==
+X-Received: by 2002:a17:903:22c9:b0:15e:a8a0:2a79 with SMTP id y9-20020a17090322c900b0015ea8a02a79mr16125068plg.31.1651706508866;
+        Wed, 04 May 2022 16:21:48 -0700 (PDT)
 Received: from evgreen-glaptop.lan ([98.47.98.87])
-        by smtp.gmail.com with ESMTPSA id q12-20020a170902f78c00b0015e8d4eb2d6sm1901pln.288.2022.05.04.16.21.37
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902f78c00b0015e8d4eb2d6sm1901pln.288.2022.05.04.16.21.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 16:21:38 -0700 (PDT)
+        Wed, 04 May 2022 16:21:48 -0700 (PDT)
 From:   Evan Green <evgreen@chromium.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Matthew Garrett <mgarrett@aurora.tech>, dlunev@google.com,
@@ -53,14 +53,11 @@ Cc:     Matthew Garrett <mgarrett@aurora.tech>, dlunev@google.com,
         linux-integrity@vger.kernel.org, corbet@lwn.net, rjw@rjwysocki.net,
         gwendal@chromium.org, jarkko@kernel.org, linux-pm@vger.kernel.org,
         Evan Green <evgreen@chromium.org>,
-        David Howells <dhowells@redhat.com>,
-        Hao Wu <hao.wu@rubrik.com>, James Morris <jmorris@namei.org>,
-        Matthew Garrett <matthewgarrett@google.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>, axelj <axelj@axis.com>,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH 05/10] security: keys: trusted: Verify creation data
-Date:   Wed,  4 May 2022 16:20:57 -0700
-Message-Id: <20220504161439.5.I6cdb522cb5ea28fcd1e35b4cd92cbd067f99269a@changeid>
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: [PATCH 09/10] PM: hibernate: Verify the digest encryption key
+Date:   Wed,  4 May 2022 16:21:01 -0700
+Message-Id: <20220504161439.9.I504d456c7a94ef1aaa7a2c63775ce9690c3ad7ab@changeid>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220504232102.469959-1-evgreen@chromium.org>
 References: <20220504232102.469959-1-evgreen@chromium.org>
@@ -70,123 +67,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a loaded key contains creation data, ask the TPM to verify that
-creation data. This allows users like encrypted hibernate to know that
-the loaded and parsed creation data has not been tampered with.
+We want to ensure that the key used to encrypt the digest was created by
+the kernel during hibernation. To do this we request that the TPM
+include information about the value of PCR 23 at the time of key
+creation in the sealed blob. On resume, we can make sure that the PCR
+information in the creation data blob (already certified by the TPM to
+be accurate) corresponds to the expected value. Since only
+the kernel can touch PCR 23, if an attacker generates a key themselves
+the value of PCR 23 will have been different, allowing us to reject the
+key and boot normally instead of resuming.
 
-Partially-sourced-from: Matthew Garrett <mjg59@google.com>
+Sourced-from: Matthew Garrett <mjg59@google.com>
 Signed-off-by: Evan Green <evgreen@chromium.org>
 
 ---
-Source material for this change is at:
+Matthew's original version of this patch is here:
 https://patchwork.kernel.org/project/linux-pm/patch/20210220013255.1083202-9-matthewgarrett@google.com/
 
- include/linux/tpm.h                       |  1 +
- security/keys/trusted-keys/trusted_tpm2.c | 72 ++++++++++++++++++++++-
- 2 files changed, 72 insertions(+), 1 deletion(-)
+I moved the TPM2_CC_CERTIFYCREATION code into a separate change in the
+trusted key code because the blob_handle was being flushed and was no
+longer valid for use in CC_CERTIFYCREATION after the key was loaded. As
+an added benefit of moving the certification into the trusted keys code,
+we can drop the other patch from the original series that squirrelled
+the blob_handle away.
 
-diff --git a/include/linux/tpm.h b/include/linux/tpm.h
-index 8320cbac6f4009..438f8bc0a50582 100644
---- a/include/linux/tpm.h
-+++ b/include/linux/tpm.h
-@@ -224,6 +224,7 @@ enum tpm2_command_codes {
- 	TPM2_CC_SELF_TEST	        = 0x0143,
- 	TPM2_CC_STARTUP		        = 0x0144,
- 	TPM2_CC_SHUTDOWN	        = 0x0145,
-+	TPM2_CC_CERTIFYCREATION	        = 0x014A,
- 	TPM2_CC_NV_READ                 = 0x014E,
- 	TPM2_CC_CREATE		        = 0x0153,
- 	TPM2_CC_LOAD		        = 0x0157,
-diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
-index b7ddb78e644d17..6db30a5fc320c0 100644
---- a/security/keys/trusted-keys/trusted_tpm2.c
-+++ b/security/keys/trusted-keys/trusted_tpm2.c
-@@ -600,6 +600,69 @@ static int tpm2_unseal_cmd(struct tpm_chip *chip,
- 	return rc;
- }
+ kernel/power/snapenc.c | 96 +++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 94 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/power/snapenc.c b/kernel/power/snapenc.c
+index 067f49c05a4d54..38bc820f780d8b 100644
+--- a/kernel/power/snapenc.c
++++ b/kernel/power/snapenc.c
+@@ -23,6 +23,45 @@ static struct tpm_digest known_digest = { .alg_id = TPM_ALG_SHA256,
+ 		   0xf1, 0x22, 0x38, 0x6c, 0x33, 0xb1, 0x14, 0xb7, 0xec, 0x05,
+ 		   0x5f, 0x49}};
  
-+/**
-+ * tpm2_certify_creation() - execute a TPM2_CertifyCreation command
-+ *
-+ * @chip: TPM chip to use
-+ * @payload: the key data in clear and encrypted form
-+ * @blob_handle: the loaded TPM handle of the key
-+ *
-+ * Return: 0 on success
-+ *         -EINVAL on tpm error status
-+ *         < 0 error from tpm_send or tpm_buf_init
-+ */
-+static int tpm2_certify_creation(struct tpm_chip *chip,
-+				 struct trusted_key_payload *payload,
-+				 u32 blob_handle)
++/* sha256(sha256(empty_pcr | known_digest)) */
++static const char expected_digest[] = {0x2f, 0x96, 0xf2, 0x1b, 0x70, 0xa9, 0xe8,
++	0x42, 0x25, 0x8e, 0x66, 0x07, 0xbe, 0xbc, 0xe3, 0x1f, 0x2c, 0x84, 0x4a,
++	0x3f, 0x85, 0x17, 0x31, 0x47, 0x9a, 0xa5, 0x53, 0xbb, 0x23, 0x0c, 0x32,
++	0xf3};
++
++static int sha256_data(char *buf, int size, char *output)
 +{
-+	struct tpm_header *head;
-+	struct tpm_buf buf;
-+	int rc;
++	struct crypto_shash *tfm;
++	struct shash_desc *desc;
++	int ret;
 +
-+	rc = tpm_buf_init(&buf, TPM2_ST_SESSIONS, TPM2_CC_CERTIFYCREATION);
-+	if (rc)
-+		return rc;
++	tfm = crypto_alloc_shash("sha256", 0, 0);
++	if (IS_ERR(tfm))
++		return PTR_ERR(tfm);
 +
-+	/* Use TPM_RH_NULL for signHandle */
-+	tpm_buf_append_u32(&buf, 0x40000007);
++	desc = kmalloc(sizeof(struct shash_desc) +
++			       crypto_shash_descsize(tfm), GFP_KERNEL);
++	if (!desc) {
++		crypto_free_shash(tfm);
++		return -ENOMEM;
++	}
 +
-+	/* Object handle */
-+	tpm_buf_append_u32(&buf, blob_handle);
++	desc->tfm = tfm;
++	ret = crypto_shash_init(desc);
++	if (ret != 0) {
++		crypto_free_shash(tfm);
++		kfree(desc);
++		return ret;
++	}
 +
-+	/* Auth */
-+	tpm_buf_append_u32(&buf, 9);
-+	tpm_buf_append_u32(&buf, TPM2_RS_PW);
-+	tpm_buf_append_u16(&buf, 0);
-+	tpm_buf_append_u8(&buf, 0);
-+	tpm_buf_append_u16(&buf, 0);
++	crypto_shash_update(desc, buf, size);
++	crypto_shash_final(desc, output);
++	crypto_free_shash(desc->tfm);
++	kfree(desc);
 +
-+	/* Qualifying data */
-+	tpm_buf_append_u16(&buf, 0);
-+
-+	/* Creation data hash */
-+	tpm_buf_append_u16(&buf, payload->creation_hash_len);
-+	tpm_buf_append(&buf, payload->creation_hash,
-+		       payload->creation_hash_len);
-+
-+	/* signature scheme */
-+	tpm_buf_append_u16(&buf, TPM_ALG_NULL);
-+
-+	/* creation ticket */
-+	tpm_buf_append(&buf, payload->tk, payload->tk_len);
-+
-+	rc = tpm_transmit_cmd(chip, &buf, 6, "certifying creation data");
-+	if (rc)
-+		goto out;
-+
-+	head = (struct tpm_header *)buf.data;
-+
-+	if (head->return_code != 0)
-+		rc = -EINVAL;
-+out:
-+	tpm_buf_destroy(&buf);
-+	return rc;
++	return 0;
 +}
 +
- /**
-  * tpm2_unseal_trusted() - unseal the payload of a trusted key
-  *
-@@ -625,8 +688,15 @@ int tpm2_unseal_trusted(struct tpm_chip *chip,
+ /* Derive a key from the kernel and user keys for data encryption. */
+ static int snapshot_use_user_key(struct snapshot_data *data)
+ {
+@@ -515,7 +554,7 @@ static int snapshot_create_kernel_key(struct snapshot_data *data)
+ 	struct key *key;
+ 	int ret, i;
+ 	/* Create a key sealed by the SRK. */
+-	char *keyinfo = "new\t32\tkeyhandle=0x81000000";
++	char *keyinfo = "new\t32\tkeyhandle=0x81000000\tcreationpcrs=0x00800000";
+ 
+ 	chip = tpm_default_chip();
+ 	if (!chip)
+@@ -628,6 +667,7 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
+ 	struct uswsusp_key_blob *blob)
+ {
+ 
++	char certhash[SHA256_DIGEST_SIZE];
+ 	const struct cred *cred = current_cred();
+ 	char *keytemplate = "load\t%s\tkeyhandle=0x81000000";
+ 	struct tpm_digest *digests = NULL;
+@@ -635,6 +675,7 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
+ 	char *keyinfo = NULL;
+ 	struct tpm_chip *chip;
+ 	struct key *key;
++	struct trusted_key_payload *payload;
+ 	int i, ret;
+ 
+ 	chip = tpm_default_chip();
+@@ -650,8 +691,10 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
+ 
+ 	digests = kcalloc(chip->nr_allocated_banks, sizeof(struct tpm_digest),
+ 			  GFP_KERNEL);
+-	if (!digests)
++	if (!digests) {
++		ret = -ENOMEM;
+ 		goto reset;
++	}
+ 
+ 	for (i = 0; i <= chip->nr_allocated_banks; i++) {
+ 		digests[i].alg_id = chip->allocated_banks[i].alg_id;
+@@ -690,6 +733,55 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
+ 	if (ret < 0)
  		goto out;
  
- 	rc = tpm2_unseal_cmd(chip, payload, options, blob_handle);
--	tpm2_flush_context(chip, blob_handle);
-+	if (rc)
-+		goto flush;
++	/* Verify the creation hash matches the creation data. */
++	payload = key->payload.data[0];
++	ret = sha256_data(payload->creation, payload->creation_len, certhash);
++	if (ret < 0)
++		goto out;
 +
-+	if (payload->creation_len)
-+		rc = tpm2_certify_creation(chip, payload, blob_handle);
- 
++	if (memcmp(payload->creation_hash, certhash, SHA256_DIGEST_SIZE) != 0) {
++		ret = -EINVAL;
++		goto out;
++	}
 +
-+flush:
-+	tpm2_flush_context(chip, blob_handle);
- out:
- 	tpm_put_ops(chip);
++	/* We now know that the creation data is authentic - parse it */
++
++	/* TPML_PCR_SELECTION.count */
++	if (be32_to_cpu(*(int *)payload->creation) != 1) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	if (be16_to_cpu(*(u16 *)&payload->creation[4]) != TPM_ALG_SHA256) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	if (*(char *)&payload->creation[6] != 3) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	/* PCR 23 selected */
++	if (be32_to_cpu(*(int *)&payload->creation[6]) != 0x03000080) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	if (be16_to_cpu(*(u16 *)&payload->creation[10]) !=
++	    SHA256_DIGEST_SIZE) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	/* Verify PCR 23 contained the expected value when the key was created. */
++	if (memcmp(&payload->creation[12], expected_digest,
++		   SHA256_DIGEST_SIZE) != 0) {
++
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	data->key = key;
+ 	key = NULL;
  
 -- 
 2.31.0
