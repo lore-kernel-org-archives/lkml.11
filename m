@@ -2,150 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4E7C35294
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03963C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376793AbiEDRzX (ORCPT
+        id S1376882AbiEDRz2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        Wed, 4 May 2022 13:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357096AbiEDROr (ORCPT
+        with ESMTP id S1356364AbiEDRVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4BC5418F;
-        Wed,  4 May 2022 09:58:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65778618B4;
-        Wed,  4 May 2022 16:57:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4ABAC385AF;
-        Wed,  4 May 2022 16:57:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683477;
-        bh=kf3q6jXDvibRoh2l+V9FYoIeB2JPjD515DNDKpNhycI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ngqrprgVvuvuMW9u4/R5gzyk1E5uNUoY4oh21rcUga/mxEa0Q+sfzKNJo1Z6+5u6C
-         an9w7YcrlStt1c815ag06c8vETZML+5MtUgeIRld/nNJkUQU6ie1OX06MHkQnlx4WO
-         lFOV3YeSdt0fnu2e6HXNdbwqYEqoJnHu0W/XgKwU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaco Kroon <jaco@uls.co.za>,
-        Florian Westphal <fw@strlen.de>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 139/225] netfilter: nf_conntrack_tcp: re-init for syn packets only
-Date:   Wed,  4 May 2022 18:46:17 +0200
-Message-Id: <20220504153122.642804005@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 4 May 2022 13:21:10 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFDA4EDE5
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:02:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651683724; x=1683219724;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=CTg7Xyv27hMl+wBuAu9Sk2WDDBF7tqVYHYYBMKvmxj0=;
+  b=lFAHEtRDiWcLrAPxJEEIg50D2RCU7/xit3h7h1WdMqxcUG3lLSHglH7X
+   QV9FenAOdWsPDEU0pLuzcOHG93+e6S3RJ0OvDUqpW3SONpHzqRRh/0yWN
+   QnliSs1p2yyUOrHz7tzmD2JzpT+Dner2S/ghLhOsiAd+n3dZffcgsUORB
+   rjk5Y9qOqTz3C8vQuTX/p8j9jWl1d8zaIvTXCe8teYDf+w+NTcevm1PnN
+   jUEgltbt7Ei0zzkFbH+NzFc1WicD3yysYe9vWbJE8eUww18vyd/a6lT8B
+   MOgJIJuV2UrXTmEw5hpvWN52abJhM4ATxJPU++IBXN79dDBbfzwUcx8fg
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267422323"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="267422323"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 10:02:02 -0700
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="562814255"
+Received: from jrhamric-mobl.amr.corp.intel.com (HELO [10.212.121.177]) ([10.212.121.177])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 10:02:00 -0700
+Message-ID: <52541497-c097-5a51-4718-feed13660255@intel.com>
+Date:   Wed, 4 May 2022 10:02:20 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+Content-Language: en-US
+To:     Wei Xu <weixugc@google.com>
+Cc:     Alistair Popple <apopple@nvidia.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <20220501175813.tvytoosygtqlh3nn@offworld> <87o80eh65f.fsf@nvdebian.thelocal>
+ <e47bf89c-cee7-3006-5c1b-c76f640c3e23@intel.com>
+ <87mtfygoxs.fsf@nvdebian.thelocal>
+ <9fb22767-54de-d316-7e6b-5aac375c9c49@intel.com>
+ <CAAPL-u9UkG1WMQm5u1eAe+4-d04aqVAXc9H0gLSegYoHctkCnw@mail.gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <CAAPL-u9UkG1WMQm5u1eAe+4-d04aqVAXc9H0gLSegYoHctkCnw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On 5/3/22 18:31, Wei Xu wrote:
+>> Well, x86 CPUs have performance monitoring hardware that can
+>> theoretically collect physical access information too.  But, this
+>> performance monitoring hardware wasn't designed for this specific use
+>> case in mind.  So, in practice, these events (PEBS) weren't very useful
+>> for driving memory tiering.
+> The PEBS events without any filtering might not be useful for memory
+> tiering, but the PEBS events with hardware-based data source filtering
+> can be useful in driving promotions in memory tiering. Certainly,
+> because these events are not designed for this specific use case in
+> mind, there are inefficiencies using them for memory tiering, e.g.
+> instead of just getting a heat counter for each hot page, we can get
+> events repeatedly on the hot pages.
 
-[ Upstream commit c7aab4f17021b636a0ee75bcf28e06fb7c94ab48 ]
+Also, I believe the addresses that come out of the PEBS events are
+virtual addresses (Data Linear Addresses according to the SDM).  If the
+events are written from a KVM guest, you get guest linear addresses.
 
-Jaco Kroon reported tcp problems that Eric Dumazet and Neal Cardwell
-pinpointed to nf_conntrack tcp_in_window() bug.
+That means a lot of page table and EPT walks to map those linear
+addresses back to physical.  That adds to the inefficiency.
 
-tcp trace shows following sequence:
+In the end, you get big PEBS buffers with lots of irrelevant data that
+needs significant post-processing to make sense of it.  The folks at
+Intel that tried this really struggled to take this mess and turn it
+into a successful hot-page tracking.
 
-I > R Flags [S], seq 3451342529, win 62580, options [.. tfo [|tcp]>
-R > I Flags [S.], seq 2699962254, ack 3451342530, win 65535, options [..]
-R > I Flags [P.], seq 1:89, ack 1, [..]
-
-Note 3rd ACK is from responder to initiator so following branch is taken:
-    } else if (((state->state == TCP_CONNTRACK_SYN_SENT
-               && dir == IP_CT_DIR_ORIGINAL)
-               || (state->state == TCP_CONNTRACK_SYN_RECV
-               && dir == IP_CT_DIR_REPLY))
-               && after(end, sender->td_end)) {
-
-... because state == TCP_CONNTRACK_SYN_RECV and dir is REPLY.
-This causes the scaling factor to be reset to 0: window scale option
-is only present in syn(ack) packets.  This in turn makes nf_conntrack
-mark valid packets as out-of-window.
-
-This was always broken, it exists even in original commit where
-window tracking was added to ip_conntrack (nf_conntrack predecessor)
-in 2.6.9-rc1 kernel.
-
-Restrict to 'tcph->syn', just like the 3rd condtional added in
-commit 82b72cb94666 ("netfilter: conntrack: re-init state for retransmitted syn-ack").
-
-Upon closer look, those conditionals/branches can be merged:
-
-Because earlier checks prevent syn-ack from showing up in
-original direction, the 'dir' checks in the conditional quoted above are
-redundant, remove them. Return early for pure syn retransmitted in reply
-direction (simultaneous open).
-
-Fixes: 9fb9cbb1082d ("[NETFILTER]: Add nf_conntrack subsystem.")
-Reported-by: Jaco Kroon <jaco@uls.co.za>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/netfilter/nf_conntrack_proto_tcp.c | 21 ++++++---------------
- 1 file changed, 6 insertions(+), 15 deletions(-)
-
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 8ec55cd72572..204a5cdff5b1 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -556,24 +556,14 @@ static bool tcp_in_window(struct nf_conn *ct,
- 			}
- 
- 		}
--	} else if (((state->state == TCP_CONNTRACK_SYN_SENT
--		     && dir == IP_CT_DIR_ORIGINAL)
--		   || (state->state == TCP_CONNTRACK_SYN_RECV
--		     && dir == IP_CT_DIR_REPLY))
--		   && after(end, sender->td_end)) {
-+	} else if (tcph->syn &&
-+		   after(end, sender->td_end) &&
-+		   (state->state == TCP_CONNTRACK_SYN_SENT ||
-+		    state->state == TCP_CONNTRACK_SYN_RECV)) {
- 		/*
- 		 * RFC 793: "if a TCP is reinitialized ... then it need
- 		 * not wait at all; it must only be sure to use sequence
- 		 * numbers larger than those recently used."
--		 */
--		sender->td_end =
--		sender->td_maxend = end;
--		sender->td_maxwin = (win == 0 ? 1 : win);
--
--		tcp_options(skb, dataoff, tcph, sender);
--	} else if (tcph->syn && dir == IP_CT_DIR_REPLY &&
--		   state->state == TCP_CONNTRACK_SYN_SENT) {
--		/* Retransmitted syn-ack, or syn (simultaneous open).
- 		 *
- 		 * Re-init state for this direction, just like for the first
- 		 * syn(-ack) reply, it might differ in seq, ack or tcp options.
-@@ -581,7 +571,8 @@ static bool tcp_in_window(struct nf_conn *ct,
- 		tcp_init_sender(sender, receiver,
- 				skb, dataoff, tcph,
- 				end, win);
--		if (!tcph->ack)
-+
-+		if (dir == IP_CT_DIR_REPLY && !tcph->ack)
- 			return true;
- 	}
- 
--- 
-2.35.1
-
-
-
+Maybe someone else will find a better way to do it, but we tried and
+gave up.
