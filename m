@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D74DC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354306AbiEDQyB (ORCPT
+        id S1354350AbiEDQyP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
+        Wed, 4 May 2022 12:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353685AbiEDQwa (ORCPT
+        with ESMTP id S1353827AbiEDQwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AF2473B2;
-        Wed,  4 May 2022 09:48:40 -0700 (PDT)
+        Wed, 4 May 2022 12:52:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C3847544;
+        Wed,  4 May 2022 09:48:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F3B7B82752;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56E6AB82554;
+        Wed,  4 May 2022 16:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0021FC385AF;
         Wed,  4 May 2022 16:48:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF68C385A4;
-        Wed,  4 May 2022 16:48:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682918;
-        bh=bWIjm8It5BNOSRlnHwW+zxNkTiw7XIoQ7LfvoH41GnM=;
+        s=korg; t=1651682920;
+        bh=MLY81sk510OJLkxwkZwh0Ccm8v4sy0ctp6+z8ceDhLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UuykhxRtSebG/qCWzKonwqQZq2RcqYNRnjlXKFs418qPlc/SqgBTnG5gfzH9DIuSX
-         VRtceGhd1r1Og/+nO6rZ6760Efm6ii0JZ01mVi16Qzd5kB9lvTS+ymWF8DBZag4oDY
-         OFo162xnfDj/hK+qd3HXZ78Rl0W2KpnZbfBsZTqI=
+        b=nlJL7R3DbO0PQSMmGVvCvFKTjSI3ZyLbZPAhyH2l3HH82mgMvFt7Ja6Lc7cY0Xiz5
+         kFuWWa/qnX6uCXuCEOO4tOMQPx3pkTUaPQVCRPclQZxHlsmCQ3HwUrijT83GqC5RRY
+         EOydwptUQtukvbtX8msmHb+grclqvKAZS59718wo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 14/84] iio: dac: ad5592r: Fix the missing return value.
-Date:   Wed,  4 May 2022 18:43:55 +0200
-Message-Id: <20220504152928.826085238@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 38/84] phy: ti: omap-usb2: Fix error handling in omap_usb2_enable_clocks
+Date:   Wed,  4 May 2022 18:44:19 +0200
+Message-Id: <20220504152930.522335096@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,34 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
+[ Upstream commit 3588060befff75ff39fab7122b94c6fb3148fcda ]
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+The corresponding API for clk_prepare_enable is clk_disable_unprepare.
+Make sure that the clock is unprepared on exit by changing clk_disable
+to clk_disable_unprepare.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ed31ee7cf1fe ("phy: ti: usb2: Fix logic on -EPROBE_DEFER")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220318105748.19532-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad5592r-base.c |    2 +-
+ drivers/phy/ti/phy-omap-usb2.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -530,7 +530,7 @@ static int ad5592r_alloc_channels(struct
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
+diff --git a/drivers/phy/ti/phy-omap-usb2.c b/drivers/phy/ti/phy-omap-usb2.c
+index 3d74629d7423..471fe2e80f4e 100644
+--- a/drivers/phy/ti/phy-omap-usb2.c
++++ b/drivers/phy/ti/phy-omap-usb2.c
+@@ -157,7 +157,7 @@ static int omap_usb2_enable_clocks(struct omap_usb *phy)
+ 	return 0;
  
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
- 	}
+ err1:
+-	clk_disable(phy->wkupclk);
++	clk_disable_unprepare(phy->wkupclk);
+ 
+ err0:
+ 	return ret;
+-- 
+2.35.1
+
 
 
