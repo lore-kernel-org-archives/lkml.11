@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6085CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A32C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358307AbiEDRaD (ORCPT
+        id S1358371AbiEDRaP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
+        Wed, 4 May 2022 13:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356728AbiEDRJj (ORCPT
+        with ESMTP id S1356760AbiEDRJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD841101C6;
-        Wed,  4 May 2022 09:55:28 -0700 (PDT)
+        Wed, 4 May 2022 13:09:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E817E6354;
+        Wed,  4 May 2022 09:55:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B33DB8279A;
-        Wed,  4 May 2022 16:55:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD2CC385A5;
-        Wed,  4 May 2022 16:55:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C352B82792;
+        Wed,  4 May 2022 16:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACC3C385A4;
+        Wed,  4 May 2022 16:55:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683326;
-        bh=W0ma7N9tFRN5uOzAAOel1RrPOTCwMohQRrM+WFEL8KE=;
+        s=korg; t=1651683330;
+        bh=n9Q/W/occ0bb07vn7HK5qwDHGDLUQo+K6rMhV1GBuo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N4F3wzyuUo6TEkHyKXww0w9OQdCxnXmDnnd5H1oZ7jv9RiEq3EyGyWBrQlNPhDLM4
-         YFRfMnhebgNBZ2XaTs6T72iDnFFN1/wAyH1Dtztax/beUlciJ4xjbJ+XVXLFkG8zqG
-         fS6oOBW5V9gk1ZvmADpRSyX04NzTPO7cIpuxocVg=
+        b=U0REyl/uWvNRLngLs59+DHV71bKP3fAiycDWJauSOh5Sx9VTUSoFdwakcuimuy3Eu
+         Qgkl9iRTVKOwQyS76/8GGmIU1dBbNxXtSg6BF5fxzA1Uda/mNNWe2ULV5kXNvNXbOZ
+         3KbrV2b2wSOsd/EUp5UpzZ9EkHGT9ED04PG927BY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 005/225] USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
-Date:   Wed,  4 May 2022 18:44:03 +0200
-Message-Id: <20220504153110.722997606@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>
+Subject: [PATCH 5.17 009/225] usb: xhci: tegra:Fix PM usage reference leak of tegra_xusb_unpowergate_partitions
+Date:   Wed,  4 May 2022 18:44:07 +0200
+Message-Id: <20220504153111.114797832@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,72 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: zhangqilong <zhangqilong3@huawei.com>
 
-commit e23e50e7acc8d8f16498e9c129db33e6a00e80eb upstream.
+commit 8771039482d965bdc8cefd972bcabac2b76944a8 upstream.
 
-The sizeof(struct whitehat_dr_info) can be 4 bytes under CONFIG_AEABI=n
-due to "-mabi=apcs-gnu", even though it has a single u8:
+pm_runtime_get_sync will increment pm usage counter
+even it failed. Forgetting to putting operation will
+result in reference leak here. We fix it by replacing
+it with pm_runtime_resume_and_get to keep usage counter
+balanced.
 
-whiteheat_private {
-        __u8                       mcr;                  /*     0     1 */
-
-        /* size: 4, cachelines: 1, members: 1 */
-        /* padding: 3 */
-        /* last cacheline: 4 bytes */
-};
-
-The result is technically harmless, as both the source and the
-destinations are currently the same allocation size (4 bytes) and don't
-use their padding, but if anything were to ever be added after the
-"mcr" member in "struct whiteheat_private", it would be overwritten. The
-structs both have a single u8 "mcr" member, but are 4 bytes in padded
-size. The memcpy() destination was explicitly targeting the u8 member
-(size 1) with the length of the whole structure (size 4), triggering
-the memcpy buffer overflow warning:
-
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from include/linux/smp.h:13,
-                 from include/linux/lockdep.h:14,
-                 from include/linux/spinlock.h:62,
-                 from include/linux/mmzone.h:8,
-                 from include/linux/gfp.h:6,
-                 from include/linux/slab.h:15,
-                 from drivers/usb/serial/whiteheat.c:17:
-In function 'fortify_memcpy_chk',
-    inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
-include/linux/fortify-string.h:328:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-  328 |                         __write_overflow_field(p_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Instead, just assign the one byte directly.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202204142318.vDqjjSFn-lkp@intel.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220421001234.2421107-1-keescook@chromium.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 41a7426d25fa ("usb: xhci: tegra: Unlink power domain devices")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+Link: https://lore.kernel.org/r/20220319023822.145641-1-zhangqilong3@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/whiteheat.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/usb/host/xhci-tegra.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/whiteheat.c
-+++ b/drivers/usb/serial/whiteheat.c
-@@ -584,9 +584,8 @@ static int firm_send_command(struct usb_
- 		switch (command) {
- 		case WHITEHEAT_GET_DTR_RTS:
- 			info = usb_get_serial_port_data(port);
--			memcpy(&info->mcr, command_info->result_buffer,
--					sizeof(struct whiteheat_dr_info));
--				break;
-+			info->mcr = command_info->result_buffer[0];
-+			break;
+--- a/drivers/usb/host/xhci-tegra.c
++++ b/drivers/usb/host/xhci-tegra.c
+@@ -1034,13 +1034,13 @@ static int tegra_xusb_unpowergate_partit
+ 	int rc;
+ 
+ 	if (tegra->use_genpd) {
+-		rc = pm_runtime_get_sync(tegra->genpd_dev_ss);
++		rc = pm_runtime_resume_and_get(tegra->genpd_dev_ss);
+ 		if (rc < 0) {
+ 			dev_err(dev, "failed to enable XUSB SS partition\n");
+ 			return rc;
  		}
- 	}
- exit:
+ 
+-		rc = pm_runtime_get_sync(tegra->genpd_dev_host);
++		rc = pm_runtime_resume_and_get(tegra->genpd_dev_host);
+ 		if (rc < 0) {
+ 			dev_err(dev, "failed to enable XUSB Host partition\n");
+ 			pm_runtime_put_sync(tegra->genpd_dev_ss);
 
 
