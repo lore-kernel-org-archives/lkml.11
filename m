@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1406BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B80C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357326AbiEDR3E (ORCPT
+        id S1357716AbiEDR3O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        Wed, 4 May 2022 13:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356307AbiEDRJL (ORCPT
+        with ESMTP id S1356263AbiEDRJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EBB532DB;
-        Wed,  4 May 2022 09:55:02 -0700 (PDT)
+        Wed, 4 May 2022 13:09:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB989532C7;
+        Wed,  4 May 2022 09:55:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2E4261899;
-        Wed,  4 May 2022 16:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D0FC385AA;
-        Wed,  4 May 2022 16:55:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62499B82552;
+        Wed,  4 May 2022 16:55:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A30C385AA;
+        Wed,  4 May 2022 16:55:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683302;
-        bh=7pBfGO7jJD7TSXKhPud04PKEnIWy2lecZmL2TL3JfC8=;
+        s=korg; t=1651683300;
+        bh=LqikQVruDlTPY4W8yio5ZihTYRkdGJY8fqc90o2rNZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D/gJkHr7qUwFSaEjq1VWmAcj+p1V8cRnuzPJiEs1HVoMTciy05vj2vA7njOH5kp76
-         mYm/WC8edXaHP3OintIEjGzfWeBdD/ISO1d/y3RwWLCS3sNmosADyiWXBYB0Tx5qWi
-         fYFrgYz2fGGOsOyVFxnEazNRd5rZYRes1b5UUcDU=
+        b=coNhCWYqnrfqNT70riuu9EaJMYjXCRe8MoUHkS4QnwZsN2SnQX+PeZ22BtIL+yjRR
+         hYuE0lieZwFOJXdjWtThiQP2bKcZ9ptU2KuN2tjs6f5wk3Wukm4Dkix3wi8dumLoui
+         v/sJjhOYMMZ2c/fRoZvgW8ZE9bVKpU8eT582Kpmo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.15 167/177] tty: n_gsm: fix wrong command frame length field encoding
-Date:   Wed,  4 May 2022 18:46:00 +0200
-Message-Id: <20220504153108.497103113@linuxfoundation.org>
+        stable@vger.kernel.org, Zqiang <qiang1.zhang@intel.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 143/177] kasan: prevent cpu_quarantine corruption when CPU offline and cache shrink occur at same time
+Date:   Wed,  4 May 2022 18:45:36 +0200
+Message-Id: <20220504153106.070173619@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -48,76 +54,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Zqiang <qiang1.zhang@intel.com>
 
-commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
+commit 31fa985b4196f8a66f027672e9bf2b81fea0417c upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
-be made up from type, length and value. Looking for example in chapter
-5.4.6.3.5 at the description for the encoding of a flow control on command
-it becomes obvious, that the type and length field is always present
-whereas the value may be zero bytes long. The current implementation omits
-the length field if the value is not present. This is wrong.
-Correct this by always sending the length in gsm_control_transmit().
-So far only the modem status command (MSC) has included a value and encoded
-its length directly. Therefore, also change gsmtty_modem_update().
+kasan_quarantine_remove_cache() is called in kmem_cache_shrink()/
+destroy().  The kasan_quarantine_remove_cache() call is protected by
+cpuslock in kmem_cache_destroy() to ensure serialization with
+kasan_cpu_offline().
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
+However the kasan_quarantine_remove_cache() call is not protected by
+cpuslock in kmem_cache_shrink().  When a CPU is going offline and cache
+shrink occurs at same time, the cpu_quarantine may be corrupted by
+interrupt (per_cpu_remove_cache operation).
+
+So add a cpu_quarantine offline flags check in per_cpu_remove_cache().
+
+[akpm@linux-foundation.org: add comment, per Zqiang]
+
+Link: https://lkml.kernel.org/r/20220414025925.2423818-1-qiang1.zhang@intel.com
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ mm/kasan/quarantine.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1302,11 +1302,12 @@ static void gsm_control_response(struct
+--- a/mm/kasan/quarantine.c
++++ b/mm/kasan/quarantine.c
+@@ -315,6 +315,13 @@ static void per_cpu_remove_cache(void *a
+ 	struct qlist_head *q;
  
- static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
- {
--	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
-+	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
- 	if (msg == NULL)
- 		return;
--	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
--	memcpy(msg->data + 1, ctrl->data, ctrl->len);
-+	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
-+	msg->data[1] = (ctrl->len << 1) | EA;
-+	memcpy(msg->data + 2, ctrl->data, ctrl->len);
- 	gsm_data_queue(gsm->dlci[0], msg);
+ 	q = this_cpu_ptr(&cpu_quarantine);
++	/*
++	 * Ensure the ordering between the writing to q->offline and
++	 * per_cpu_remove_cache.  Prevent cpu_quarantine from being corrupted
++	 * by interrupt.
++	 */
++	if (READ_ONCE(q->offline))
++		return;
+ 	qlist_move_cache(q, &to_free, cache);
+ 	qlist_free_all(&to_free, cache);
  }
- 
-@@ -2889,19 +2890,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
- 
- static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
- {
--	u8 modembits[5];
-+	u8 modembits[3];
- 	struct gsm_control *ctrl;
- 	int len = 2;
- 
--	if (brk)
-+	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
-+	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
-+	if (brk) {
-+		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
- 		len++;
--
--	modembits[0] = len << 1 | EA;		/* Data bytes */
--	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
--	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
--	if (brk)
--		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
--	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
-+	}
-+	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
- 	if (ctrl == NULL)
- 		return -ENOMEM;
- 	return gsm_control_wait(dlci->gsm, ctrl);
 
 
