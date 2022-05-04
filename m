@@ -2,193 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB79C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377997AbiEDU12 (ORCPT
+        id S1378014AbiEDUaI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
+        Wed, 4 May 2022 16:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240316AbiEDU1Y (ORCPT
+        with ESMTP id S1357166AbiEDUaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:27:24 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD15D4F44C;
-        Wed,  4 May 2022 13:23:38 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.49.211]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MPowd-1nQ1aU0uUl-00MqjQ; Wed, 04 May 2022 22:23:05 +0200
-Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by leknes.fjasle.eu (Postfix) with ESMTPS id 665993C01C;
-        Wed,  4 May 2022 22:23:01 +0200 (CEST)
-Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
-Received: by localhost.fjasle.eu (Postfix, from userid 1000)
-        id 36837724; Wed,  4 May 2022 22:22:59 +0200 (CEST)
-Date:   Wed, 4 May 2022 22:22:59 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH v2 21/26] genksyms: adjust the output format for .cmd
- files
-Message-ID: <YnLgo+y5tR86hBL5@bergen.fjasle.eu>
-References: <20220501084032.1025918-1-masahiroy@kernel.org>
- <20220501084032.1025918-22-masahiroy@kernel.org>
+        Wed, 4 May 2022 16:30:03 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B044F9E6
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:26:26 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id p12so4273974lfs.5
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:26:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mmrVv14fPgXxwEi6qY3BXXY+CxBqDRKooA9FDuaSqV8=;
+        b=DQgRC/EIfbWTO7QipnFt6qsWGushz/ykabQ4BikNPsBniuH7tmy2HqjGaM/O/TTfjR
+         PeGmWoUZNVKcciqEeK9HLq+1xzjRzJpGjJ1eJXH5UuI8k7WRVZLn9WO5h3h+CUyKYLq9
+         8CDVmr9R33re1VR4CQcJV26FFK5+hmaku/Sdg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mmrVv14fPgXxwEi6qY3BXXY+CxBqDRKooA9FDuaSqV8=;
+        b=gCBaDYqtfdjsJ7oglh+rxWu5lEGn+bRXyJLjd4LcuYjHS6VL8wS+9hKrmUdK0BQV7E
+         zlA9Zz4whel09CZY1H0e9h706e19lM0KCK9qzaMYCnM/mCGB1f6NEj0QcXc38E8L1Lg/
+         nXgccmGFq/kcOciv73bfu/jUtQcc6dJfBEFjN/k7xXM3Qi+TWFv4A06EqbiDSkdVdWpA
+         cR4uG3+dTVy3dG/LriUfWcTljQrA7H9t26lJc6qtuGYw+cx0hmZkh10O6F2+8PEwcbrL
+         oSM0PBOFfOFzlc5cNM+hVFQj4KruoGqBU8R25HBD0uTiqbytJjRgS7DKd+H5snfnEt2+
+         TYJg==
+X-Gm-Message-State: AOAM532kx6ppne8JGED3d13svefiHNpO/tl5OIVO1HePRq+kkZLCFQSI
+        nDB+SN3N/DMuY/PDs31QQKG0hWKQYqa555/g3Ts=
+X-Google-Smtp-Source: ABdhPJxG9l4q23vjsBZqfh3GEQhWHIgBFHMm9vslv/eC1vbRamzu4oxOsntA2qELq0s954JIqrn3pw==
+X-Received: by 2002:a19:fc0e:0:b0:471:ff7d:ab35 with SMTP id a14-20020a19fc0e000000b00471ff7dab35mr15247444lfi.345.1651695984569;
+        Wed, 04 May 2022 13:26:24 -0700 (PDT)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id g4-20020a19ac04000000b0047255d211f7sm1291235lfc.294.2022.05.04.13.26.22
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 13:26:23 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id w1so4277953lfa.4
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:26:22 -0700 (PDT)
+X-Received: by 2002:a05:6512:3c93:b0:44b:4ba:c334 with SMTP id
+ h19-20020a0565123c9300b0044b04bac334mr15722106lfv.27.1651695982340; Wed, 04
+ May 2022 13:26:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220501084032.1025918-22-masahiroy@kernel.org>
-Jabber-ID: nicolas@jabber.no
-X-Operating-System: Debian GNU/Linux bookworm/sid
-X-Provags-ID: V03:K1:My2Sy57WDCTl+dHhJAdllzvu0KkMWTC94Kpwc583XPVyqzWdbyt
- rx4oxJ1qrfOO0hffaL2uuG2tVwm7cooY3DxFloeuGV+7r+Gm3RuyzkQcbhqSiIbGLshkAcz
- borSfPWEKWusn7FdJ36OJgN/ciUOVOY0cnd3ekHolVw6mDyOaPrC+KqOImrOCCkhTNJQzEq
- G+W3FukXpmdW6p46olmlQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6vHfwB7BZzQ=:ociXP/tp4QcKx+kYpZn9fE
- I0EIbmMcEF/uIT1iUypRY5Umi8DuiREmdU/PM7s/dxgGURy8mO2MQBB/lIwjwecLVOOZRrwhu
- Oc6Mgp1fu/Ys8Rdc0ZfWUHyWlNNv6kvBzD17T7lyekl3lNR0HK5qqbdoA05EwZSheTxC8m/q+
- POxjwvoJwSwlpGVl1w4bD9U5TNE7VCtcBYmY42+8KPDi0XyZCfYvN7TAhwD2nKN1Hhot/Vajy
- j3eFbCB1CTsNKxK+wvPL3JBb8XalwWAnRp1g4S00osQ0t2Dc9Xlo/AlTq76Q+h24lXsDY33ZC
- 454NqWT91OM5mLYpgBEIh3OuKJd2cnkQNN3JKoq3sVBU1ZmSOcKPzGCtkcWZHtsfegcziElGi
- ZF/8aHkiL4mlF4egeoVmNxul2v7VsqBnmiHEyMMp3FeuVOrd9bcNz0Bpjf1+jd8iaHo2c3eMJ
- L4/0UllON57/Zzid5itSQCQHQ6TYHz0X8R0fG7Z2fOfpax/YRI+K1CJCAU1rZXJyOeaBFk9xv
- UNlVNBcdVoDD25CxW0QbPbEeI+c/YZ739HGFhB+uaZkMTmQ7loPlpdGzUHvQvc9e6aY7cqiuJ
- n43D0He7j9y26k/mz8+BF4yHOWoUIJKjf/M2DUZiuLETJB0L+FRLJi78flR5Wf67+3Sx7Sm0o
- 2yTlh3EkmB4rWLh/mc7fTwdJXedvveXcdTYgFWnlHpX/nYdp5PwVGPhYjyI9TMILD0j4=
+References: <alpine.LRH.2.02.2204250723120.26714@file01.intranet.prod.int.rdu2.redhat.com>
+ <YnI7hE4cIfjsdKSF@antec> <YnJI4Ru0AlUgrr9C@zx2c4.com> <YnJOCbLtdATzC+jn@zx2c4.com>
+ <YnJQXr3igEMTqY3+@smile.fi.intel.com> <YnJSQ3jJyvhmIstD@zx2c4.com>
+ <CAHk-=wgb_eBdjM_mzEvXfRG2EhrSK5MHNGyAj7=4vxvN4U9Rug@mail.gmail.com>
+ <CAHmME9q_-nfGxp8_VCqaritm4N8v8g67AzRjXs9du846JhhpoQ@mail.gmail.com>
+ <CAHk-=wiaj8SMSQTWAx2cUFqzRWRqBspO5YV=qA8M+QOC2vDorw@mail.gmail.com>
+ <CAHk-=witNAEG7rRsbxD0-4mxhtijRT8fwSc3QCi5HN1sR=0YcA@mail.gmail.com> <YnLeH7kBImX5XLNn@antec>
+In-Reply-To: <YnLeH7kBImX5XLNn@antec>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 4 May 2022 13:26:05 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj5UXrsLz3GzYWLaU1b=_dRQWqj1ZC-buf6MHmLrJF_Og@mail.gmail.com>
+Message-ID: <CAHk-=wj5UXrsLz3GzYWLaU1b=_dRQWqj1ZC-buf6MHmLrJF_Og@mail.gmail.com>
+Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        device-mapper development <dm-devel@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mike Snitzer <msnitzer@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Milan Broz <gmazyland@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On sø. 01. mai 2022 kl. 17.40 Masahiro Yamada wrote:
-> genksyms output symbol versions in the linker script format.
+On Wed, May 4, 2022 at 1:12 PM Stafford Horne <shorne@gmail.com> wrote:
+>
+> Which version of Fedora?
 
-output -> outputs ?
+F35 here.
 
-> The output format depends on CONFIG_MODULE_REL_CRCS.
+But looking further, it's not dnsmasq either. Yes, dnsmasq is built
+with no-i18n, but as mentioned IDN2 does seem to be enabled, so I
+think it's just "no i18n messages".
 
-Looking at the patch itself, I think the sentence above should be 
-inverted, as all rel_crc special handling is removed.  Or did I get it 
-wrong?
+It seems to be the upstream dns server.
 
-Kind regards,
-Nicolas
+Using 8.8.8.8 explicitly makes it work for me, and that obviously
+bypasses not just the local dns cache, but also the next dns server
+hop.
 
-> 
-> Now, symbol versions are passed to modpost as plain text data,
-> we can simplify the genksyms code.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
-> Changes in v2:
->   - New patch
-> 
->  scripts/Makefile.build      |  9 ---------
->  scripts/genksyms/genksyms.c | 17 ++++-------------
->  2 files changed, 4 insertions(+), 22 deletions(-)
-> 
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 10092efb61ac..1f480e4ff70a 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -128,7 +128,6 @@ $(obj)/%.i: $(src)/%.c FORCE
->  
->  genksyms = scripts/genksyms/genksyms		\
->  	$(if $(1), -T $(2))			\
-> -	$(if $(CONFIG_MODULE_REL_CRCS), -R)	\
->  	$(if $(KBUILD_PRESERVE), -p)		\
->  	-r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
->  
-> @@ -166,18 +165,10 @@ ifdef CONFIG_MODVERSIONS
->  # o modpost will extract versions from the .cmd file and create linker
->  #   scripts used to link the kernel and/or modules.
->  
-> -genksyms_format_rel_crc := [^_]*__crc_\([^ ]*\) = \.; LONG(\([^)]*\)).*
-> -genksyms_format_normal := __crc_\(.*\) = \(.*\);
-> -genksyms_format := $(if $(CONFIG_MODULE_REL_CRCS),$(genksyms_format_rel_crc),$(genksyms_format_normal))
-> -
->  gen_symversions =								\
->  	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
->  		$(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) \
-> -		    > $@.symversions;						\
-> -		sed -n 's/$(genksyms_format)/$(pound)SYMVER \1 \2/p' $@.symversions \
->  			>> $(dot-target).cmd;					\
-> -	else									\
-> -		rm -f $@.symversions;						\
->  	fi
->  
->  cmd_gen_symversions_c =	$(call gen_symversions,c)
-> diff --git a/scripts/genksyms/genksyms.c b/scripts/genksyms/genksyms.c
-> index 4827c5abe5b7..ec5ad4405483 100644
-> --- a/scripts/genksyms/genksyms.c
-> +++ b/scripts/genksyms/genksyms.c
-> @@ -33,7 +33,7 @@ char *cur_filename;
->  int in_source_file;
->  
->  static int flag_debug, flag_dump_defs, flag_reference, flag_dump_types,
-> -	   flag_preserve, flag_warnings, flag_rel_crcs;
-> +	   flag_preserve, flag_warnings;
->  
->  static int errors;
->  static int nsyms;
-> @@ -680,11 +680,7 @@ void export_symbol(const char *name)
->  		if (flag_dump_defs)
->  			fputs(">\n", debugfile);
->  
-> -		/* Used as a linker script. */
-> -		printf(!flag_rel_crcs ? "__crc_%s = 0x%08lx;\n" :
-> -		       "SECTIONS { .rodata : ALIGN(4) { "
-> -		       "__crc_%s = .; LONG(0x%08lx); } }\n",
-> -		       name, crc);
-> +		printf("#SYMVER %s 0x%08lx\n", name, crc);
->  	}
->  }
->  
-> @@ -745,7 +741,6 @@ static void genksyms_usage(void)
->  	      "  -q                    Disable warnings (default)\n"
->  	      "  -h                    Print this message\n"
->  	      "  -V                    Print the release version\n"
-> -	      "  -R                    Emit section relative symbol CRCs\n"
->  #endif				/* __GNU_LIBRARY__ */
->  	      , stderr);
->  }
-> @@ -766,14 +761,13 @@ int main(int argc, char **argv)
->  		{"preserve", 0, 0, 'p'},
->  		{"version", 0, 0, 'V'},
->  		{"help", 0, 0, 'h'},
-> -		{"relative-crc", 0, 0, 'R'},
->  		{0, 0, 0, 0}
->  	};
->  
-> -	while ((o = getopt_long(argc, argv, "s:dwqVDr:T:phR",
-> +	while ((o = getopt_long(argc, argv, "s:dwqVDr:T:ph",
->  				&long_opts[0], NULL)) != EOF)
->  #else				/* __GNU_LIBRARY__ */
-> -	while ((o = getopt(argc, argv, "s:dwqVDr:T:phR")) != EOF)
-> +	while ((o = getopt(argc, argv, "s:dwqVDr:T:ph")) != EOF)
->  #endif				/* __GNU_LIBRARY__ */
->  		switch (o) {
->  		case 'd':
-> @@ -813,9 +807,6 @@ int main(int argc, char **argv)
->  		case 'h':
->  			genksyms_usage();
->  			return 0;
-> -		case 'R':
-> -			flag_rel_crcs = 1;
-> -			break;
->  		default:
->  			genksyms_usage();
->  			return 1;
-> -- 
-> 2.32.0
+Could be anywhere. Xfinity, Nest WiFi, or the cable router. They all
+are doing their own dns thing.
 
--- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+Probably my cable box, since it's likely the oldest thing in the chain.
+
+                Linus
