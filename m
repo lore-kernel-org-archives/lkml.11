@@ -2,128 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C799C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377768AbiEDT6U (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 15:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
+        id S245442AbiEDT7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 15:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377752AbiEDT6H (ORCPT
+        with ESMTP id S229503AbiEDT7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 15:58:07 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D2F4ECCE
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 12:54:29 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d17so2420674plg.0
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 12:54:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qM82pLe5LIpNsG3poDlPVKU5bEYefBi/IlcSrVO4JAI=;
-        b=neUBEwGA4kq8JLwN5POTUHELuHm+l5M7u79I7XDLezrivLCU1aE6AFNc57wWU+0ODY
-         9N0fRDhZ0iUfFp3kqga3HicjJzX8kYd9uLjlyBcfk0hPy4NyqkuuifzyrRzn8XzhgtH4
-         CCEL3s0utu1QINUSJ+cZwchHFdenNYLU5VxWI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qM82pLe5LIpNsG3poDlPVKU5bEYefBi/IlcSrVO4JAI=;
-        b=DXvYwFvrZC2TdaSXgVQvBNqooX7g9MjwTXPcMLslO3RIRRl04nBNBULM+R8Kjzd3NM
-         TtCzW61+XY53SfIcNiazZOvPCLFgzasjA2Ad81MapsB4AfNUxfm9PZfnEQi3BRle53CC
-         Txq/3Y8ayMhmHKOpWVc5W1DOlfset/hw+7nw3FOFpUuc1U/U4e8M/5Tsfa0DiGsF8+F9
-         fdmwY5uvqH0D1omLAAWQ6iBM7JfU2Us57MLlIv2Adz8+IAbsvK13N5Y6SA/BJMGYee3w
-         +0EG4u76ixh63PRwWJjR+fTSb57MGQlCSv03WWIVwJ0ZQTazkhHXiGx//jZWBSpBcYvx
-         6Ucw==
-X-Gm-Message-State: AOAM533wZ1/nSN4WtTliXSTOF6XHwTGwiHPuDXaJNIqOTy4cZbZiQL31
-        8ekbUFFIKW7bMp9DV9onOtBcqw==
-X-Google-Smtp-Source: ABdhPJyQN0M+9153jv/w/MlWINhzXu1GoODr13+92d+vbgDekp0dhUhMFOATx1GkA2fDTz3kWcPUcw==
-X-Received: by 2002:a17:903:1249:b0:15e:8b15:b7d2 with SMTP id u9-20020a170903124900b0015e8b15b7d2mr24555926plh.150.1651694068934;
-        Wed, 04 May 2022 12:54:28 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:35b6:c77b:be04:3bd5])
-        by smtp.gmail.com with UTF8SMTPSA id t3-20020a17090aae0300b001d5e1b124a0sm3727332pjq.7.2022.05.04.12.54.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 12:54:28 -0700 (PDT)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     dm-devel@redhat.com, linux-kernel@vger.kernel.org,
-        linux-raid@vger.kernel.org, Song Liu <song@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-security-module@vger.kernel.org,
-        Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v3 3/3] dm: verity-loadpin: Use CONFIG_SECURITY_LOADPIN_VERITY for conditional compilation
-Date:   Wed,  4 May 2022 12:54:19 -0700
-Message-Id: <20220504125404.v3.3.I5aca2dcc3b06de4bf53696cd21329dce8272b8aa@changeid>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-In-Reply-To: <20220504195419.1143099-1-mka@chromium.org>
-References: <20220504195419.1143099-1-mka@chromium.org>
+        Wed, 4 May 2022 15:59:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD0C282;
+        Wed,  4 May 2022 12:55:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD39D60C25;
+        Wed,  4 May 2022 19:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81658C385A4;
+        Wed,  4 May 2022 19:55:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651694142;
+        bh=Fc7TKOapEDiSTVYg8J8ppOTkNfnmVAFqfSwAH7ygR9Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nu7+omXrDdXyfUuqZtR03nNOpGdKexslmmt5/AkAYWvrosPm8nYzUg1rI+TDVmYN9
+         NrZTLGRFiCrLNxPQYy4OcIb4H2acX0a0rEyJkL80OSIpAa38rDCBFNOS4SKs8GMH0d
+         dUyEogY9WMLLvpsu9IGvF8xgRPO04WJzKOkVg3yiemO1awt+la/69trrrcLh8bPa2M
+         iQpFlRZYaFcW+Xm1vn35v0SEf9QAS3MqGUo9xWGOdZjMB0LeyqDxRQdU5WaEjBlGWh
+         JcbJCN9ipEveKPYeTGjGq3lN6m91Blk44NdjFIL2EwW1B1RQPkP9EgFuOBeK2b9n8J
+         QGL+umAh9r1sQ==
+Date:   Wed, 4 May 2022 21:55:38 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Jan Dabros <jsd@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
+        mika.westerberg@linux.intel.com, rrangel@chromium.org,
+        Nimesh.Easow@amd.com, upstream@semihalf.com
+Subject: Re: [PATCH] i2c: designware: Modify timing parameters for amdpsp
+ mailbox
+Message-ID: <YnLaOkzTA1dUrMkc@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jarkko.nikula@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
+        rrangel@chromium.org, Nimesh.Easow@amd.com, upstream@semihalf.com
+References: <20220428122651.208575-1-jsd@semihalf.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3DCxUqrF3RDH4NSn"
+Content-Disposition: inline
+In-Reply-To: <20220428122651.208575-1-jsd@semihalf.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The verity glue for LoadPin is only needed when CONFIG_SECURITY_LOADPIN_VERITY
-is set, use this option for conditional compilation instead of the combo of
-CONFIG_DM_VERITY and CONFIG_SECURITY_LOADPIN.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
+--3DCxUqrF3RDH4NSn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes in v3:
-- none
+On Thu, Apr 28, 2022 at 02:26:51PM +0200, Jan Dabros wrote:
+> Adjust retry period and timeout values for x86-PSP mailbox based on the
+> typical I2C traffic generated by PSP. In order to limit the possibility
+> of timeouts, x86 should reduce the interval between retries as well as
+> increase overall time after which it gives up.
+>=20
+> Signed-off-by: Jan Dabros <jsd@semihalf.com>
 
-Changes in v2:
-- none
+Applied to for-next, thanks! Let me know if you think this is a bugfix
+and should be in for-current.
 
- drivers/md/Makefile               | 7 +------
- include/linux/dm-verity-loadpin.h | 2 +-
- 2 files changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/md/Makefile b/drivers/md/Makefile
-index e12cd004d375..a96441752ec7 100644
---- a/drivers/md/Makefile
-+++ b/drivers/md/Makefile
-@@ -83,6 +83,7 @@ obj-$(CONFIG_DM_LOG_WRITES)	+= dm-log-writes.o
- obj-$(CONFIG_DM_INTEGRITY)	+= dm-integrity.o
- obj-$(CONFIG_DM_ZONED)		+= dm-zoned.o
- obj-$(CONFIG_DM_WRITECACHE)	+= dm-writecache.o
-+obj-$(CONFIG_SECURITY_LOADPIN_VERITY)	+= dm-verity-loadpin.o
- 
- ifeq ($(CONFIG_DM_INIT),y)
- dm-mod-objs			+= dm-init.o
-@@ -100,12 +101,6 @@ ifeq ($(CONFIG_IMA),y)
- dm-mod-objs			+= dm-ima.o
- endif
- 
--ifeq ($(CONFIG_DM_VERITY),y)
--ifeq ($(CONFIG_SECURITY_LOADPIN),y)
--dm-mod-objs			+= dm-verity-loadpin.o
--endif
--endif
--
- ifeq ($(CONFIG_DM_VERITY_FEC),y)
- dm-verity-objs			+= dm-verity-fec.o
- endif
-diff --git a/include/linux/dm-verity-loadpin.h b/include/linux/dm-verity-loadpin.h
-index 12a86911d05a..be63ac76f98d 100644
---- a/include/linux/dm-verity-loadpin.h
-+++ b/include/linux/dm-verity-loadpin.h
-@@ -13,7 +13,7 @@ struct trusted_root_digest {
- 	struct list_head node;
- };
- 
--#if IS_ENABLED(CONFIG_SECURITY_LOADPIN) && IS_BUILTIN(CONFIG_DM_VERITY)
-+#if IS_ENABLED(CONFIG_SECURITY_LOADPIN_VERITY)
- void dm_verity_loadpin_set_trusted_root_digests(struct list_head *digests);
- bool dm_verity_loadpin_is_md_trusted(struct mapped_device *md);
- #else
--- 
-2.36.0.464.gb9c8b46e94-goog
+--3DCxUqrF3RDH4NSn
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy2joACgkQFA3kzBSg
+KbZfvQ/9FtJLrSlbhQhIlCwj5UShEHCg1lMA6jROIM4nhMUXccAzQQSlpKSdqUny
+GISePI9smnKVoTeShKRRvtNTzojL+mRcKxH9cn5KtvAttqhystdGJxRYbMO1+3KS
+ZOWkVd7/6NCPYqIkxxRc3WQo1Nkemi/Qw6Fp/2FfF2XgrJ/w1nDqSoGOWH8QsP5w
+zH1I44HwPu6rURKQhy1olj/It7adsj8ZHJPaq1+ZcpvG0WNjovH+g406/+4/zQej
+6X5M1QKS/kWlEZvEANE5PYe8CQvsVOXGEJIHE4cUwipSRGugBfb6fOCo1Hg+ikcO
+spvQCfJjBnUSFko3qf0bwWpTPlf0UzMp53m3F9sn8bPdX9v4UjJRx+Xg4u3NxLnX
+Hofx4kwRC60tGV3QrBPLl00F24plhgQIyTgWCMehwAXqQnPY1L2RQjThNfVMckmY
+VM56hJjTHbTQVU7JIML28KhxeodEh1tiCMCul+cOWefPORJXB0hTEq52pKHaoq9l
+eEl9tRJvl3zy3jvst+UXR8gBY+Rnl6KY4S2vwOzQFfI9eot6sgQNdixeCdMzlLfp
+crhdO2N46x3Z3z+TGJNKbqHQBm1DQZBA0qoJOa1ycjeQtXzS8LKsvU54TB6B6lOS
+MwmD0lqpeQ5jE2XZxmH7aIz9XyaAhnC+pBqGB3W1m1K074nUD24=
+=uLg5
+-----END PGP SIGNATURE-----
+
+--3DCxUqrF3RDH4NSn--
