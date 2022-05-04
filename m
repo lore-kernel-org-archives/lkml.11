@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8542C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240153AbiEDXBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        id S1359567AbiEDXBP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 19:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379475AbiEDWzP (ORCPT
+        with ESMTP id S1379623AbiEDWzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:55:15 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A13254180
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:24 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id q14-20020a17090a178e00b001dc970bf587so1943841pja.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:23 -0700 (PDT)
+        Wed, 4 May 2022 18:55:37 -0400
+Received: from mail-ot1-x34a.google.com (mail-ot1-x34a.google.com [IPv6:2607:f8b0:4864:20::34a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ED554BFB
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:33 -0700 (PDT)
+Received: by mail-ot1-x34a.google.com with SMTP id q21-20020a056830233500b00605db4a91a0so979824otg.17
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=VfF+qu4NBn2WU10IrpaRgWEMCJ3uSkBYIlbisDqeCTU=;
-        b=BQQwTh22N5a2BCrol9MzuIpKxSzSmRgbQYgoefbnNP4rkxJeOiiWuGT06a1BmPtNN/
-         niiSCabObYe6G3aRLzILXi4N1AA5oiDng7zAVBuJ9HMuxha6Mj01SB7G8MJz05muJ9o0
-         U9JJDULdoUElIaRGGxOrtw750C4UxOzhK6FnWBggAo4XKaMhtfYwf6lvfb/pGu3fnS5t
-         HRZ/IkIaqvaf7CzLLDkLEy8tKLXnfTpCnwYdrfKTtbUR1sJtcUun9dYcm6wIUL93M2xc
-         AkQ2Sa+ykLx+rggE8FLD2tv7LhioLZNXS5aBR/VG6EWgUVEzfC/utW3Kc6z0lLOTAjb+
-         GIng==
+        bh=KiE9VficpCeN1xBVdUN8xYll0C4HLuJFd4x1wesa6do=;
+        b=RR06S68mHbetxo2/DFm9fevn41ldDuSZzFIqQLw3luNwdEAeyVrZbWkd4295+phqwo
+         zuWTiWktZRYLy1NzIDnkeeQNPvRmX/dihUUNC3FybgUvKuRkBaoSDI83eMKomc2MQOrO
+         TFVKi7CcYGQ9Oe25D7B26dz9I8/odtVhXmuNRho0rQHGz5LiB+6xmZS3+4WNsDq0tTfY
+         ZinvBHjG2Hv4w7Wk0WSeTR4yOOrBoUyAXOF7knimUSprtXe1wtpvx3Fk00t7kqiG6o+N
+         i6yalRzQjGKAFffYBMmVfB+7i2QC0DBm9REMmycPmq29wbOBv8u9C0jUawysWhu04qVC
+         VdCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=VfF+qu4NBn2WU10IrpaRgWEMCJ3uSkBYIlbisDqeCTU=;
-        b=Ki1k1gIWt+t2Q20XUN+lW7tkOfxkFFzNrC2yVgvPTARKc/nGizO/ASl6MkH8W4y2Fe
-         OC+HsCMT5ZHwkUFi5OyKQC8plGz3uPoIrXQncUWEB+Pakjkoh02D0ucDDTMh1R7EGJdU
-         3FF9zGzVGNfz4JuH78yOr5BU+E6VsN+/MpJKCraS5rwRKQ4eNbRCej+p+75XIdgVp4bP
-         vZ/6Nn3oq57MGHyp8pBPB5U5YTM1ozEwgUDGqDUHdJB6MTaf7UOz0c/WtMWcTye1Q+hB
-         /DGe2yP9uHG3tYy8YA1h21GCFzvDDexYzhccCRp6zLcw4zRm9O7WcCJyovaRiKeB+u/v
-         ZPRQ==
-X-Gm-Message-State: AOAM531V1zTxDscFPGsoe7/9niRkZb/4RO8N4rJzr2H5uYBPjLkZ3ION
-        cYbEMsePEpg64deIniTZHOkTMTjwDF0=
-X-Google-Smtp-Source: ABdhPJwKAjHvkXGwDJzSyVYavQh0IQUj+ob3hyNrc9umVOEUOPHulxsMvBFzbEQpHscz5PDAnt1WXXF5Xd0=
+        bh=KiE9VficpCeN1xBVdUN8xYll0C4HLuJFd4x1wesa6do=;
+        b=pdeos36yooRHcm2OE82qLsfZIs/YpFrC+gVgp+PsrAxZP3wSpuOapNw1OxIzhwKVY7
+         NDU57yy2RZBd0i0n8j78aT9FEc9E4iITgThz5Wc1faemrlBvUVK+/FY84BdO99pbz0UC
+         sBm3zngeofRyVzjjlvLUfRtK6H1KVbQ8zDY8e+E+SfcXWz2UtOLgiVpBMd6//P2wY6lR
+         vLLdJCVLQubdM8rr5T+HD7q8DpCTHM1LEZtg0rj3YKtduMmyMGywSSUlEBdtSGtH2c2r
+         3bY52QOA4a13q2wxnUX4fKQFdqSnaTvkNpamkxe/EH3FiWBkKr1k2a1T+0AOTCz6N91k
+         FiLA==
+X-Gm-Message-State: AOAM5324B3HRYQ940L1MLzQM6Bvdo4GYwmM17ka8n360vTcSzQmTtBhf
+        VuFrvZ92SO1kBUm+NV6FKnGtRruJCZQ=
+X-Google-Smtp-Source: ABdhPJxnrpq5WxtjmZ6u+D0kWIimk3PB8r/vORqJp7aU2tk7sgFX4X0l+1lPevztzsqswm3eWOEIXvXDCdQ=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:aa7:88d2:0:b0:50a:cf7d:6ff1 with SMTP id
- k18-20020aa788d2000000b0050acf7d6ff1mr23417886pff.67.1651704683611; Wed, 04
- May 2022 15:51:23 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6870:32d6:b0:e3:6e1a:e56b with SMTP id
+ r22-20020a05687032d600b000e36e1ae56bmr904389oac.206.1651704692371; Wed, 04
+ May 2022 15:51:32 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:11 +0000
+Date:   Wed,  4 May 2022 22:48:16 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-66-seanjc@google.com>
+Message-Id: <20220504224914.1654036-71-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 065/128] KVM: selftests: Convert vmx_exception_with_invalid_guest_state
- away from VCPU_ID
+Subject: [PATCH 070/128] KVM: selftests: Convert hyperv_clock away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,174 +69,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert vmx_exception_with_invalid_guest_state to use
-vm_create_with_one_vcpu() and pass around a 'struct kvm_vcpu' object
-instead of using a global VCPU_ID.
+Convert hyperv_clock to use vm_create_with_one_vcpu() and pass around a
+'struct kvm_vcpu' object instead of using a global VCPU_ID.
+
+Opportunistically use vcpu_run() instead of _vcpu_run() with an open
+coded assert that KVM_RUN succeeded.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../vmx_exception_with_invalid_guest_state.c  | 62 +++++++++++--------
- 1 file changed, 36 insertions(+), 26 deletions(-)
+ .../selftests/kvm/x86_64/hyperv_clock.c       | 25 +++++++++----------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c b/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c
-index 27a850f3d7ce..70b30583e50d 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c
-@@ -10,10 +10,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+index e0b2bb1339b1..43584ddc4de0 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+@@ -171,22 +171,20 @@ static void guest_main(struct ms_hyperv_tsc_page *tsc_page, vm_paddr_t tsc_page_
+ 	GUEST_DONE();
+ }
  
- #include "kselftest.h"
- 
--#define VCPU_ID	0
+-#define VCPU_ID 0
 -
--static struct kvm_vm *vm;
--
- static void guest_ud_handler(struct ex_regs *regs)
+-static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
++static void host_check_tsc_msr_rdtsc(struct kvm_vcpu *vcpu)
  {
- 	/* Loop on the ud2 until guest state is made invalid. */
-@@ -24,11 +20,11 @@ static void guest_code(void)
- 	asm volatile("ud2");
- }
+ 	u64 tsc_freq, r1, r2, t1, t2;
+ 	s64 delta_ns;
  
--static void __run_vcpu_with_invalid_state(void)
-+static void __run_vcpu_with_invalid_state(struct kvm_vcpu *vcpu)
- {
--	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+	struct kvm_run *run = vcpu->run;
+-	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
++	tsc_freq = vcpu_get_msr(vcpu->vm, vcpu->id, HV_X64_MSR_TSC_FREQUENCY);
+ 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
  
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_run(vcpu->vm, vcpu->id);
+ 	/* First, check MSR-based clocksource */
+ 	r1 = rdtsc();
+-	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	t1 = vcpu_get_msr(vcpu->vm, vcpu->id, HV_X64_MSR_TIME_REF_COUNT);
+ 	nop_loop();
+ 	r2 = rdtsc();
+-	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	t2 = vcpu_get_msr(vcpu->vm, vcpu->id, HV_X64_MSR_TIME_REF_COUNT);
  
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_INTERNAL_ERROR,
- 		    "Expected KVM_EXIT_INTERNAL_ERROR, got %d (%s)\n",
-@@ -38,15 +34,15 @@ static void __run_vcpu_with_invalid_state(void)
- 		    run->emulation_failure.suberror);
- }
+ 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
  
--static void run_vcpu_with_invalid_state(void)
-+static void run_vcpu_with_invalid_state(struct kvm_vcpu *vcpu)
- {
- 	/*
- 	 * Always run twice to verify KVM handles the case where _KVM_ queues
- 	 * an exception with invalid state and then exits to userspace, i.e.
- 	 * that KVM doesn't explode if userspace ignores the initial error.
- 	 */
--	__run_vcpu_with_invalid_state();
--	__run_vcpu_with_invalid_state();
-+	__run_vcpu_with_invalid_state(vcpu);
-+	__run_vcpu_with_invalid_state(vcpu);
- }
+@@ -203,33 +201,34 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
  
- static void set_timer(void)
-@@ -59,33 +55,43 @@ static void set_timer(void)
- 	ASSERT_EQ(setitimer(ITIMER_REAL, &timer, NULL), 0);
- }
- 
--static void set_or_clear_invalid_guest_state(bool set)
-+static void set_or_clear_invalid_guest_state(struct kvm_vcpu *vcpu, bool set)
- {
- 	static struct kvm_sregs sregs;
- 
- 	if (!sregs.cr0)
--		vcpu_sregs_get(vm, VCPU_ID, &sregs);
-+		vcpu_sregs_get(vcpu->vm, vcpu->id, &sregs);
- 	sregs.tr.unusable = !!set;
--	vcpu_sregs_set(vm, VCPU_ID, &sregs);
-+	vcpu_sregs_set(vcpu->vm, vcpu->id, &sregs);
- }
- 
--static void set_invalid_guest_state(void)
-+static void set_invalid_guest_state(struct kvm_vcpu *vcpu)
- {
--	set_or_clear_invalid_guest_state(true);
-+	set_or_clear_invalid_guest_state(vcpu, true);
- }
- 
--static void clear_invalid_guest_state(void)
-+static void clear_invalid_guest_state(struct kvm_vcpu *vcpu)
- {
--	set_or_clear_invalid_guest_state(false);
-+	set_or_clear_invalid_guest_state(vcpu, false);
-+}
-+
-+static struct kvm_vcpu *get_set_sigalrm_vcpu(struct kvm_vcpu *__vcpu)
-+{
-+	static struct kvm_vcpu *vcpu = NULL;
-+
-+	if (__vcpu)
-+		vcpu = __vcpu;
-+	return vcpu;
- }
- 
- static void sigalrm_handler(int sig)
- {
-+	struct kvm_vcpu *vcpu = get_set_sigalrm_vcpu(NULL);
- 	struct kvm_vcpu_events events;
- 
- 	TEST_ASSERT(sig == SIGALRM, "Unexpected signal = %d", sig);
- 
--	vcpu_events_get(vm, VCPU_ID, &events);
-+	vcpu_events_get(vcpu->vm, vcpu->id, &events);
- 
- 	/*
- 	 * If an exception is pending, attempt KVM_RUN with invalid guest,
-@@ -93,8 +99,8 @@ static void sigalrm_handler(int sig)
- 	 * between KVM queueing an exception and re-entering the guest.
- 	 */
- 	if (events.exception.pending) {
--		set_invalid_guest_state();
--		run_vcpu_with_invalid_state();
-+		set_invalid_guest_state(vcpu);
-+		run_vcpu_with_invalid_state(vcpu);
- 	} else {
- 		set_timer();
- 	}
-@@ -102,15 +108,19 @@ static void sigalrm_handler(int sig)
- 
- int main(int argc, char *argv[])
+ int main(void)
  {
 +	struct kvm_vcpu *vcpu;
-+	struct kvm_vm *vm;
-+
- 	if (!is_intel_cpu() || vm_is_unrestricted_guest(NULL)) {
- 		print_skip("Must be run with kvm_intel.unrestricted_guest=0");
- 		exit(KSFT_SKIP);
- 	}
+ 	struct kvm_vm *vm;
+ 	struct kvm_run *run;
+ 	struct ucall uc;
+ 	vm_vaddr_t tsc_page_gva;
+ 	int stage;
  
--	vm = vm_create_default(VCPU_ID, 0, (void *)guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	get_set_sigalrm_vcpu(vcpu);
+-	vm = vm_create_default(VCPU_ID, 0, guest_main);
+-	run = vcpu_state(vm, VCPU_ID);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
++	run = vcpu->run;
  
- 	vm_init_descriptor_tables(vm);
--	vcpu_init_descriptor_tables(vm, VCPU_ID);
-+	vcpu_init_descriptor_tables(vm, vcpu->id);
+-	vcpu_set_hv_cpuid(vm, VCPU_ID);
++	vcpu_set_hv_cpuid(vm, vcpu->id);
  
- 	vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
+ 	tsc_page_gva = vm_vaddr_alloc_page(vm);
+ 	memset(addr_gva2hva(vm, tsc_page_gva), 0x0, getpagesize());
+ 	TEST_ASSERT((addr_gva2gpa(vm, tsc_page_gva) & (getpagesize() - 1)) == 0,
+ 		"TSC page has to be page aligned\n");
+-	vcpu_args_set(vm, VCPU_ID, 2, tsc_page_gva, addr_gva2gpa(vm, tsc_page_gva));
++	vcpu_args_set(vm, vcpu->id, 2, tsc_page_gva, addr_gva2gpa(vm, tsc_page_gva));
  
-@@ -119,8 +129,8 @@ int main(int argc, char *argv[])
- 	 * KVM_RUN should induce a TRIPLE_FAULT in L2 as KVM doesn't support
- 	 * emulating invalid guest state for L2.
- 	 */
--	set_invalid_guest_state();
--	run_vcpu_with_invalid_state();
-+	set_invalid_guest_state(vcpu);
-+	run_vcpu_with_invalid_state(vcpu);
+-	host_check_tsc_msr_rdtsc(vm);
++	host_check_tsc_msr_rdtsc(vcpu);
  
- 	/*
- 	 * Verify KVM also handles the case where userspace gains control while
-@@ -129,11 +139,11 @@ int main(int argc, char *argv[])
- 	 * guest with invalid state when the handler interrupts KVM with an
- 	 * exception pending.
- 	 */
--	clear_invalid_guest_state();
-+	clear_invalid_guest_state(vcpu);
- 	TEST_ASSERT(signal(SIGALRM, sigalrm_handler) != SIG_ERR,
- 		    "Failed to register SIGALRM handler, errno = %d (%s)",
- 		    errno, strerror(errno));
+ 	for (stage = 1;; stage++) {
+-		_vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "Stage %d: unexpected exit reason: %u (%s),\n",
+ 			    stage, run->exit_reason,
+ 			    exit_reason_str(run->exit_reason));
  
- 	set_timer();
--	run_vcpu_with_invalid_state();
-+	run_vcpu_with_invalid_state(vcpu);
- }
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
