@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C60E8C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357363AbiEDR1g (ORCPT
+        id S1357393AbiEDR1p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        Wed, 4 May 2022 13:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355522AbiEDRHs (ORCPT
+        with ESMTP id S1355233AbiEDRHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:07:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C8A51597;
-        Wed,  4 May 2022 09:54:24 -0700 (PDT)
+        Wed, 4 May 2022 13:07:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BD9517FB;
+        Wed,  4 May 2022 09:54:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 93ED7CE2625;
-        Wed,  4 May 2022 16:54:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41BFC385A5;
-        Wed,  4 May 2022 16:54:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9F47B82792;
+        Wed,  4 May 2022 16:54:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B171C385A5;
+        Wed,  4 May 2022 16:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683260;
-        bh=J+jBo16iQs/BiLfou3/SFc7FzOVPopt9RazhfTcTP6o=;
+        s=korg; t=1651683267;
+        bh=EQYtsU7y1/iFH99A+gYDzQJA01vWiQVZBTuGGozh31Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YILkD6aLeVaMEsIkqRHcu8K3UsGcEtF02q5HTWlI/CLtC7pIM6YpAOS8Z7WkyTMe5
-         rQZF/w4AAmo350ZdyN22JQyOmyHWouLV3swc0BmDI+W9iAWjO9OYA2ip7H26cUDszX
-         h6/sF6mXFgz0qycR7Ri3MCdJa27/oGwP/SDyTLsA=
+        b=t2QKqbVYdCs+es+rI4Hu7T2QM+furNVzAK0HD1uaShHgA58D0JX/3JOZjlp/zrKhw
+         v6D9l/FjyjZEeUXU0Bme3uiRXlZCtjuJx+sOXsVJiQE5ogSIA7xltoUQlajwITt0tv
+         qhrNFejdJG+6BNdIVpeMijr7bxGEttfXD55DnaMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, David Christensen <drc@linux.vnet.ibm.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 126/177] tcp: fix F-RTO may not work correctly when receiving DSACK
-Date:   Wed,  4 May 2022 18:45:19 +0200
-Message-Id: <20220504153104.380107754@linuxfoundation.org>
+Subject: [PATCH 5.15 117/177] bnx2x: fix napi API usage sequence
+Date:   Wed,  4 May 2022 18:45:10 +0200
+Message-Id: <20220504153103.659925278@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,86 +52,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pengcheng Yang <yangpc@wangsu.com>
+From: Manish Chopra <manishc@marvell.com>
 
-[ Upstream commit d9157f6806d1499e173770df1f1b234763de5c79 ]
+[ Upstream commit af68656d66eda219b7f55ce8313a1da0312c79e1 ]
 
-Currently DSACK is regarded as a dupack, which may cause
-F-RTO to incorrectly enter "loss was real" when receiving
-DSACK.
+While handling PCI errors (AER flow) driver tries to
+disable NAPI [napi_disable()] after NAPI is deleted
+[__netif_napi_del()] which causes unexpected system
+hang/crash.
 
-Packetdrill to demonstrate:
+System message log shows the following:
+=======================================
+[ 3222.537510] EEH: Detected PCI bus error on PHB#384-PE#800000 [ 3222.537511] EEH: This PCI device has failed 2 times in the last hour and will be permanently disabled after 5 failures.
+[ 3222.537512] EEH: Notify device drivers to shutdown [ 3222.537513] EEH: Beginning: 'error_detected(IO frozen)'
+[ 3222.537514] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
+bnx2x->error_detected(IO frozen)
+[ 3222.537516] bnx2x: [bnx2x_io_error_detected:14236(eth14)]IO error detected [ 3222.537650] EEH: PE#800000 (PCI 0384:80:00.0): bnx2x driver reports:
+'need reset'
+[ 3222.537651] EEH: PE#800000 (PCI 0384:80:00.1): Invoking
+bnx2x->error_detected(IO frozen)
+[ 3222.537651] bnx2x: [bnx2x_io_error_detected:14236(eth13)]IO error detected [ 3222.537729] EEH: PE#800000 (PCI 0384:80:00.1): bnx2x driver reports:
+'need reset'
+[ 3222.537729] EEH: Finished:'error_detected(IO frozen)' with aggregate recovery state:'need reset'
+[ 3222.537890] EEH: Collect temporary log [ 3222.583481] EEH: of node=0384:80:00.0 [ 3222.583519] EEH: PCI device/vendor: 168e14e4 [ 3222.583557] EEH: PCI cmd/status register: 00100140 [ 3222.583557] EEH: PCI-E capabilities and status follow:
+[ 3222.583744] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.583892] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.583893] EEH: PCI-E 20: 00000000 [ 3222.583893] EEH: PCI-E AER capability register set follows:
+[ 3222.584079] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.584230] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.584378] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.584416] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.584416] EEH: of node=0384:80:00.1 [ 3222.584454] EEH: PCI device/vendor: 168e14e4 [ 3222.584491] EEH: PCI cmd/status register: 00100140 [ 3222.584492] EEH: PCI-E capabilities and status follow:
+[ 3222.584677] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.584825] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.584826] EEH: PCI-E 20: 00000000 [ 3222.584826] EEH: PCI-E AER capability register set follows:
+[ 3222.585011] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.585160] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.585309] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.585347] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.586872] RTAS: event: 5, Type: Platform Error (224), Severity: 2 [ 3222.586873] EEH: Reset without hotplug activity [ 3224.762767] EEH: Beginning: 'slot_reset'
+[ 3224.762770] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
+bnx2x->slot_reset()
+[ 3224.762771] bnx2x: [bnx2x_io_slot_reset:14271(eth14)]IO slot reset initializing...
+[ 3224.762887] bnx2x 0384:80:00.0: enabling device (0140 -> 0142) [ 3224.768157] bnx2x: [bnx2x_io_slot_reset:14287(eth14)]IO slot reset
+--> driver unload
 
-// Enable F-RTO and TLP
-    0 `sysctl -q net.ipv4.tcp_frto=2`
-    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
-    0 `sysctl -q net.ipv4.tcp_congestion_control=cubic`
+Uninterruptible tasks
+=====================
+crash> ps | grep UN
+     213      2  11  c000000004c89e00  UN   0.0       0      0  [eehd]
+     215      2   0  c000000004c80000  UN   0.0       0      0
+[kworker/0:2]
+    2196      1  28  c000000004504f00  UN   0.1   15936  11136  wickedd
+    4287      1   9  c00000020d076800  UN   0.0    4032   3008  agetty
+    4289      1  20  c00000020d056680  UN   0.0    7232   3840  agetty
+   32423      2  26  c00000020038c580  UN   0.0       0      0
+[kworker/26:3]
+   32871   4241  27  c0000002609ddd00  UN   0.1   18624  11648  sshd
+   32920  10130  16  c00000027284a100  UN   0.1   48512  12608  sendmail
+   33092  32987   0  c000000205218b00  UN   0.1   48512  12608  sendmail
+   33154   4567  16  c000000260e51780  UN   0.1   48832  12864  pickup
+   33209   4241  36  c000000270cb6500  UN   0.1   18624  11712  sshd
+   33473  33283   0  c000000205211480  UN   0.1   48512  12672  sendmail
+   33531   4241  37  c00000023c902780  UN   0.1   18624  11648  sshd
 
-// Establish a connection
-   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
-   +0 bind(3, ..., ...) = 0
-   +0 listen(3, 1) = 0
+EEH handler hung while bnx2x sleeping and holding RTNL lock
+===========================================================
+crash> bt 213
+PID: 213    TASK: c000000004c89e00  CPU: 11  COMMAND: "eehd"
+  #0 [c000000004d477e0] __schedule at c000000000c70808
+  #1 [c000000004d478b0] schedule at c000000000c70ee0
+  #2 [c000000004d478e0] schedule_timeout at c000000000c76dec
+  #3 [c000000004d479c0] msleep at c0000000002120cc
+  #4 [c000000004d479f0] napi_disable at c000000000a06448
+                                        ^^^^^^^^^^^^^^^^
+  #5 [c000000004d47a30] bnx2x_netif_stop at c0080000018dba94 [bnx2x]
+  #6 [c000000004d47a60] bnx2x_io_slot_reset at c0080000018a551c [bnx2x]
+  #7 [c000000004d47b20] eeh_report_reset at c00000000004c9bc
+  #8 [c000000004d47b90] eeh_pe_report at c00000000004d1a8
+  #9 [c000000004d47c40] eeh_handle_normal_event at c00000000004da64
 
-// RTT 10ms, RTO 210ms
-  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
-   +0 > S. 0:0(0) ack 1 <...>
- +.01 < . 1:1(0) ack 1 win 257
-   +0 accept(3, ..., ...) = 4
+And the sleeping source code
+============================
+crash> dis -ls c000000000a06448
+FILE: ../net/core/dev.c
+LINE: 6702
 
-// Send 2 data segments
-   +0 write(4, ..., 2000) = 2000
-   +0 > P. 1:2001(2000) ack 1
+   6697  {
+   6698          might_sleep();
+   6699          set_bit(NAPI_STATE_DISABLE, &n->state);
+   6700
+   6701          while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
+* 6702                  msleep(1);
+   6703          while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
+   6704                  msleep(1);
+   6705
+   6706          hrtimer_cancel(&n->timer);
+   6707
+   6708          clear_bit(NAPI_STATE_DISABLE, &n->state);
+   6709  }
 
-// TLP
-+.022 > P. 1001:2001(1000) ack 1
+EEH calls into bnx2x twice based on the system log above, first through
+bnx2x_io_error_detected() and then bnx2x_io_slot_reset(), and executes
+the following call chains:
 
-// Continue to send 8 data segments
-   +0 write(4, ..., 10000) = 10000
-   +0 > P. 2001:10001(8000) ack 1
+bnx2x_io_error_detected()
+  +-> bnx2x_eeh_nic_unload()
+       +-> bnx2x_del_all_napi()
+            +-> __netif_napi_del()
 
-// RTO
-+.188 > . 1:1001(1000) ack 1
+bnx2x_io_slot_reset()
+  +-> bnx2x_netif_stop()
+       +-> bnx2x_napi_disable()
+            +->napi_disable()
 
-// The original data is acked and new data is sent(F-RTO step 2.b)
-   +0 < . 1:1(0) ack 2001 win 257
-   +0 > P. 10001:12001(2000) ack 1
+Fix this by correcting the sequence of NAPI APIs usage,
+that is delete the NAPI after disabling it.
 
-// D-SACK caused by TLP is regarded as a dupack, this results in
-// the incorrect judgment of "loss was real"(F-RTO step 3.a)
-+.022 < . 1:1(0) ack 2001 win 257 <sack 1001:2001,nop,nop>
-
-// Never-retransmitted data(3001:4001) are acked and
-// expect to switch to open state(F-RTO step 3.b)
-   +0 < . 1:1(0) ack 4001 win 257
-+0 %{ assert tcpi_ca_state == 0, tcpi_ca_state }%
-
-Fixes: e33099f96d99 ("tcp: implement RFC5682 F-RTO")
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Tested-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/1650967419-2150-1-git-send-email-yangpc@wangsu.com
+Fixes: 7fa6f34081f1 ("bnx2x: AER revised")
+Reported-by: David Christensen <drc@linux.vnet.ibm.com>
+Tested-by: David Christensen <drc@linux.vnet.ibm.com>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Link: https://lore.kernel.org/r/20220426153913.6966-1-manishc@marvell.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 6bd283b58bb8..dfd32cd3b95e 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -3860,7 +3860,8 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
- 		tcp_process_tlp_ack(sk, ack, flag);
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index bdd4e420f869..553f3de93957 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -14158,10 +14158,6 @@ static int bnx2x_eeh_nic_unload(struct bnx2x *bp)
  
- 	if (tcp_ack_is_dubious(sk, flag)) {
--		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
-+		if (!(flag & (FLAG_SND_UNA_ADVANCED |
-+			      FLAG_NOT_DUP | FLAG_DSACKING_ACK))) {
- 			num_dupack = 1;
- 			/* Consider if pure acks were aggregated in tcp_add_backlog() */
- 			if (!(flag & FLAG_DATA))
+ 	/* Stop Tx */
+ 	bnx2x_tx_disable(bp);
+-	/* Delete all NAPI objects */
+-	bnx2x_del_all_napi(bp);
+-	if (CNIC_LOADED(bp))
+-		bnx2x_del_all_napi_cnic(bp);
+ 	netdev_reset_tc(bp->dev);
+ 
+ 	del_timer_sync(&bp->timer);
+@@ -14266,6 +14262,11 @@ static pci_ers_result_t bnx2x_io_slot_reset(struct pci_dev *pdev)
+ 		bnx2x_drain_tx_queues(bp);
+ 		bnx2x_send_unload_req(bp, UNLOAD_RECOVERY);
+ 		bnx2x_netif_stop(bp, 1);
++		bnx2x_del_all_napi(bp);
++
++		if (CNIC_LOADED(bp))
++			bnx2x_del_all_napi_cnic(bp);
++
+ 		bnx2x_free_irq(bp);
+ 
+ 		/* Report UNLOAD_DONE to MCP */
 -- 
 2.35.1
 
