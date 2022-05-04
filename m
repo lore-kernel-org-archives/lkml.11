@@ -2,163 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BECC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F4EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351851AbiEDPIj (ORCPT
+        id S1351776AbiEDPK1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        Wed, 4 May 2022 11:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351727AbiEDPIc (ORCPT
+        with ESMTP id S1351730AbiEDPKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:08:32 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7404E41325
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 08:04:55 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id dk23so3441096ejb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 08:04:55 -0700 (PDT)
+        Wed, 4 May 2022 11:10:24 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CDD1D0FE;
+        Wed,  4 May 2022 08:06:48 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id p7-20020a05600c358700b00393e80c59daso2775914wmq.0;
+        Wed, 04 May 2022 08:06:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=x5Zoz/iyWDxLTQhXQBTElr/xGz3ziSFD9Wy1VQnSTXI=;
-        b=hW6OlYQ9E4L5RU2mGkTdC1n2bf+wBHAt3hCerdvKM4BRmSIV1vRGVE6fKTSrqm7qT5
-         ZN9S4rVAHb2tIgglQWUaO6LB3KlUlXAktMvMV6CqwC2Ih56jmxcwDgbYN2l928z15ySq
-         qEsAfqqY/vUBImzo3VKRNO2IpEwx+5c6wfq+ENr3a71QWhwnETr4EdwQIcfMwLGHBUve
-         tw66Rpm9IzhxDdislc2yTm1Q1WOhDDKbe16rz1RJR8MAEE2mHB8Fb/CubNbRBPDn3goL
-         otmALhVVcItojb0jzE5GmyKWrG/mSKx6isqXcafGTKD6ERRJkEge1wses/Z/sDwAgWwa
-         YFsg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PLmxdEGvqe0b9xKOHj+/DgoHCwSTpZrIfVZVX1IGYVE=;
+        b=RJ5Y+sMQpd20ZyIJH1JA5wTBSuhhYBuHYRDaWB21Q8hJk+0dSFTKTxpwt/e11XBGQs
+         GkHQqeZoac8FqFZ7bOwyic+hNGBcWM/3ZHSxsgiEZS/aAAozjV7vkK26hQnU+t1Q3zwU
+         sLjCJpUI+aexAU8HQDvF/5ogQErLQELeV+E9hhiB2gDfGWlkfyW1BokC/Vhpc1ujjhjC
+         s9osgfDoi1Y49kiIrk2y3K6VjBOmCcgW460LAV0Bbbbp7a3ObNum5R4UoLlWMfbCn942
+         idZqZ7pvkPYITEnrVuJak+PHDrAHbPKsuDzWdfVJ1NcDehZKfSQFS6ss6RDKj6tmAI+M
+         La9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=x5Zoz/iyWDxLTQhXQBTElr/xGz3ziSFD9Wy1VQnSTXI=;
-        b=47pKuU0Q6aeL2aiktQ+UzJpWo+9+iICyWoN7+SxI8+71ysgjirWntqcd3KrAOMhHIu
-         Q8qLEkAKvrEUSkZ9qyVD7r0dtoWgn+l5y9AEXEqbRSJbIjj4hxBkFxVt1PLpoxGXNtmx
-         vcD/BlQWWVlNCVVUs3ieFNZnicvcpI03R+bhmZDNlThrDxIxmhfcfCAEHHVEZX3AhPrb
-         qNv+apes9GgrnVT9V8ug+4CeVkk5OVfyGCraaJl1FbVo1Fjwcmtz79OqgBPFIkDihCKl
-         q6RH+EI7SSe9V+05uyMO7Ft0f0MEcOsGN0D0uakC2DtOrAgPh+ksv14Sx34Qjuqenau4
-         XeSw==
-X-Gm-Message-State: AOAM530oPBq4/3tMYNie5KG9ouMHUYQaJ+mNDNRXDeYpRY42ZZfoN2K8
-        DV4TK0S8O2cmJwzTvRABowefpA==
-X-Google-Smtp-Source: ABdhPJwIOV/eE5zBY57dkzYmTDhfsV2xNZbGb5Dm4XBxb47mkKoNVLltzkrubopudGNlgWmKnSyZpQ==
-X-Received: by 2002:a17:907:7fac:b0:6f4:6b70:33d9 with SMTP id qk44-20020a1709077fac00b006f46b7033d9mr10666095ejc.380.1651676693967;
-        Wed, 04 May 2022 08:04:53 -0700 (PDT)
-Received: from [192.168.0.215] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id eb8-20020a170907280800b006f3ef214decsm5711399ejc.82.2022.05.04.08.04.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 08:04:53 -0700 (PDT)
-Message-ID: <17407fe7-b11d-2ba8-acca-3e71cf1a3b2f@linaro.org>
-Date:   Wed, 4 May 2022 17:04:52 +0200
+        bh=PLmxdEGvqe0b9xKOHj+/DgoHCwSTpZrIfVZVX1IGYVE=;
+        b=HMHm4RksbdvhiQWdgLnzEYygAi+jZPWtMFDPAUnlkgFMOkKEUltznxiGS848qaCAwr
+         53N8u0dixrr1zAIKnm6aOVWi3jrKtUCWegb7vjoKZB486eFYVEImui1M0jfMgdzAIKma
+         mPEqTukZLIQcmZ/xQbigBgbMjMPYdVjE+2smqtsvIlylU3lMoALsKP2KGFjI6nLNPs1i
+         YLrwFs9wrfTqNcY9hWBhLTBXUFsyGdfpSJEsPxNWeA9MmelOQNWfRIZnxGVUPEmKf+QI
+         LyvRdcoiZzaIXppVSHX94bS4O55NwRvoPZfU0M+TjXRwQ52oE+ECuM+diZ5sau4NIGGr
+         YzBw==
+X-Gm-Message-State: AOAM530Hr/ZmEkEnlB/lkA7TnW0ibU+6h5YlaAgQtahfQU+z+e7bxfFD
+        AgQxyKaeyETb7oXXFErACdw=
+X-Google-Smtp-Source: ABdhPJx+qvrlmXgsYT5R8LTc8zrOEgffWUXrPSoe9HJXdVRJcuiV8a4dw5YQactUmt24rxBGG0DTRA==
+X-Received: by 2002:a1c:f606:0:b0:394:1a21:f68c with SMTP id w6-20020a1cf606000000b003941a21f68cmr8183075wmc.131.1651676806706;
+        Wed, 04 May 2022 08:06:46 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id q14-20020adfaa4e000000b0020c5253d91fsm12143596wrd.107.2022.05.04.08.06.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 08:06:46 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     pavel@ucw.cz
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v6 0/2] Make AUX gpio pin optional for ktd2692
+Date:   Wed,  4 May 2022 18:04:09 +0300
+Message-Id: <20220504150457.5626-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/3] dt-bindings: misc: add bindings for Intel HPS Copy
- Engine
-Content-Language: en-US
-To:     matthew.gerlach@linux.intel.com, dinguyen@kernel.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
-References: <20220503194546.1287679-1-matthew.gerlach@linux.intel.com>
- <20220503194546.1287679-2-matthew.gerlach@linux.intel.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220503194546.1287679-2-matthew.gerlach@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/05/2022 21:45, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add device tree bindings documentation for the Intel Hard
-> Processor System (HPS) Copy Engine.
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> ---
->  .../bindings/misc/intel,hps-copy-engine.yaml  | 48 +++++++++++++++++++
->  1 file changed, 48 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
-> new file mode 100644
-> index 000000000000..74e7da9002f4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/misc/intel,hps-copy-engine.yaml
+Some appliances of ktd2692 don't have the AUX pin connected to
+a GPIO. Specifically, Samsung Galaxy J5 (2015), which uses ktd2692
+for driving the front flash LED, has the pin not connected anywhere on
+schematics. Make specifying the AUX pin optional, since it is additional
+functionality and only affects amount of current going through the LED.
 
-Please find appropriate directory matching this hardware, not "misc". As
-a fallback SoC related bindings end up in "soc".
+Also convert the txt device-tree bindings to yaml and pick up maintenance
+over the yaml binding and the driver itself.
 
-> @@ -0,0 +1,48 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +# Copyright (C) 2022, Intel Corporation
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/misc/intel,hps-copy-engine.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Intel HPS Copy Engine
-> +
-> +maintainers:
-> +  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> +
-> +description: |
-> +  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
-> +  a bootable image from host memory to HPS DDR.  Additionally, there is a
-> +  register the HPS can use to indicate the state of booting the copied image as
-> +  well as a keep-a-live indication to the host.
-> +
-> +properties:
-> +  compatible:
-> +    items:
+v2:
+- fix the dt_binding_check
+v3:
+- set the aux_gpio to NULL to avoid passing ERR_PTR as a gpio
+v4:
+- maintainership -> maintenance (description)
+- remove the if (led->aux_gpio)
+- use devm_gpiod_get_optional for aux gpio
+v5:
+- use ret to pass a correct error return code (Christophe)
+v6:
+- use PTR_ERR properly (when IS_ERR is true) (Christophe)
 
-No "items", you have just one item.
+Markuss Broks (2):
+  dt-bindings: leds: convert ktd2692 bindings to yaml
+  leds: ktd2692: Make aux-gpios optional
 
-> +      - const: intel,hps-copy-engine
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    agilex_hps_bridges: bus@80000000 {
+ .../bindings/leds/kinetic,ktd2692.yaml        | 87 +++++++++++++++++++
+ .../devicetree/bindings/leds/leds-ktd2692.txt | 50 -----------
+ MAINTAINERS                                   |  6 ++
+ drivers/leds/flash/leds-ktd2692.c             | 18 ++--
+ 4 files changed, 103 insertions(+), 58 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml
+ delete mode 100644 Documentation/devicetree/bindings/leds/leds-ktd2692.txt
 
-Unused label...
+-- 
+2.35.1
 
-> +        compatible = "simple-bus";
-> +        reg = <0x80000000 0x60000000>,
-> +              <0xf9000000 0x00100000>;
-> +        reg-names = "axi_h2f", "axi_h2f_lw";
-> +        #address-cells = <0x2>;
-
-$ git grep address-cell
-Do not use inconsistent coding. The same applies to your DTS.
-
-> +        #size-cells = <0x1>;
-> +        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
-
-Why do you even need the simple-bus above and cannot put the device
-directly on the bus?
-
-> +
-> +        hps_cp_eng@0 {
-
-No underscores in node names. Generic node name.
-
-> +            compatible = "intel,hps-copy-engine";
-> +            reg = <0x00000000 0x00000000 0x00001000>;
-> +        };
-> +    };
-
-
-Best regards,
-Krzysztof
