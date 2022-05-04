@@ -2,103 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BECCC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345542AbiEDUlT (ORCPT
+        id S1378151AbiEDUmS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
+        Wed, 4 May 2022 16:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355912AbiEDUlQ (ORCPT
+        with ESMTP id S1343785AbiEDUmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:41:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2D049279;
-        Wed,  4 May 2022 13:37:40 -0700 (PDT)
+        Wed, 4 May 2022 16:42:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D1F4F9EE;
+        Wed,  4 May 2022 13:38:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC417B82945;
-        Wed,  4 May 2022 20:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C5DC385A5;
-        Wed,  4 May 2022 20:37:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABD8E617A8;
+        Wed,  4 May 2022 20:38:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C861C385A5;
+        Wed,  4 May 2022 20:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651696657;
-        bh=x2k8eLmpAI5MhrBnDOm1e2daghSZLAuKoipmd98NfjA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p6PPDNMR45buGLAqUlEo0R6GwTHIYs79XWGXpoLi589fZEP/Qqa/eZUhrK2UAEwQo
-         7Z2YFBuTgCDFjuvhy9tdxQA8pccHhv3Pb+3NDAiXN9+xjbMxsLxkBU70uyz6Tbr9aF
-         gPSFS1jw9aH8BJFn3zM6V6lEAZtIWlPCp16MMHUNYcGGcNVxLp5ScLRJieQpVVWpu2
-         MlqhqkX3qMrM63SRLKORcpd4hSq9/fBk4J9bFBPDAwOlf3qqGoOiVpeohxFn7ipl2A
-         roj8Ye6wjzgCiaJUAqTX2AprJXMcOsLgCajQHCwsHuDlqhxcNqIl8XMCww2HQtJITT
-         rItsnS9Kk5T0g==
-Date:   Wed, 4 May 2022 21:45:57 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Subject: Re: [PATCH v1 1/1] iio: trigger: stm32-lptimer-trigger: Make use of
- device properties
-Message-ID: <20220504214557.6a075da7@jic23-huawei>
-In-Reply-To: <28627ccb-21ef-1b86-e5d7-460daf672d6d@foss.st.com>
-References: <20220413185656.21994-1-andriy.shevchenko@linux.intel.com>
-        <20220428193304.016c46a3@jic23-huawei>
-        <YnEB97YfPYpe2aCn@smile.fi.intel.com>
-        <28627ccb-21ef-1b86-e5d7-460daf672d6d@foss.st.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1651696719;
+        bh=bAFjKvIBpiguiHw0d8TsEXxAy/N7r3y3izCenwfFfsg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HQcIy0Cpc0WIWw79MFGyRtF2UFkbh6oPmE77mgArpyx9hDC+t3r7H1i9fK6FyVpZj
+         jp3l7DzRcUnAc4pGRJiQxGKY/cc99nO4pW/I4lYmJ9C9ZR7RNzuabNQt5TX2f/BFYZ
+         0Mz/GurO2PecTtBVP9resMh11+pws7dsA52nym3h0frQzDiFFABOqgNL+wYn1hXR/H
+         IUWLzs3WMQLonKw/AuomuGs/zCuOf9Tv12STZNCOfL0VUvY/O6r2x55OacmNWwgIYP
+         4PMuMUPCZmlJP/nMzeRbJ73+aPy8dhC6WV8Z3i+VnVZINEofDj6WoRiYzAAMs4pufj
+         LG2DBehl+3iGQ==
+Date:   Wed, 4 May 2022 22:38:35 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+        narmstrong@baylibre.com, tanure@linux.com
+Subject: Re: [PATCH -next] i2c: meson: fix missing clk_disable_unprepare() on
+ error in meson_i2c_probe()
+Message-ID: <YnLkS+/oT8qeL75s@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+        narmstrong@baylibre.com, tanure@linux.com
+References: <20220421090042.2278081-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+8ScGLI3M/D7Ttui"
+Content-Disposition: inline
+In-Reply-To: <20220421090042.2278081-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 3 May 2022 14:25:37 +0200
-Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
 
-> On 5/3/22 12:20, Andy Shevchenko wrote:
-> > On Thu, Apr 28, 2022 at 07:33:04PM +0100, Jonathan Cameron wrote:  
-> >> On Wed, 13 Apr 2022 21:56:56 +0300
-> >> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >>  
-> >>> Convert the module to be property provider agnostic and allow
-> >>> it to be used on non-OF platforms.
-> >>>
-> >>> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
-> >>
-> >> MAINTAINERS entry for this one uses extensive wild cards so may
-> >> escape scripts...
-> >>
-> >> +CC Fabrice.  
-> > 
-> > Thanks!
-> > 
-> > Not sure it might break anything, it's quite straightforward conversion.  
-> 
-> Hi Andy, Jonathan,
-> 
-> You can add my:
-> Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+--+8ScGLI3M/D7Ttui
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Applied to the togreg branch of iio.git and pushed out as testing to
-let 0-day see if it can find anything we missed.
+On Thu, Apr 21, 2022 at 05:00:42PM +0800, Yang Yingliang wrote:
+> Fix the missing clk_disable_unprepare() before return
+> from meson_i2c_probe() in the error handling case.
+>=20
+> Fixes: a57f9b4dd6f5 ("i2c: meson: Use 50% duty cycle for I2C clock")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Thanks,
-
-Jonathan
+Applied to for-next, thanks!
 
 
-> 
-> Thanks,
-> Best Regards,
-> Fabrice
-> 
-> >   
+--+8ScGLI3M/D7Ttui
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy5EsACgkQFA3kzBSg
+Kbb9JA/9Fff1+jTo+deKplfTktFDn0s8+w4imP4ghlpLhCfwpa0P0R4GQzJD7Nch
+Z66l9/oYE3Xx5OLU3NeRPg6SEoLPvlxuCHj9EoUX2Pu8v9e26TTUir8+dDOrfBuR
+Q3Rs9jzVyKs/MXV85o6lS0n2oDd6AZZPWpOFR1Zh6HYMZT/T3+l2Xs6bwS0G9oQn
+ONS8rABeZeUV4cziYCo0mDaFdafJTGBq2SAH7m8OVuPqBbSNM2oDZ3yZCRL2Hd/x
+/t7YYW6KHh3oW5UHS8WyJEAzsdh11YSVl3VORTYOLG1Efd+AWZwigiCHI3zmrQV2
+irm0mFxkimkPcKlTjiZD471ATBHhv1FQgPKXMHomMWA/ui1bhO4BuAk0bPf5n5u+
+m6QDvip+SR1v1bDnRWC8yWzDhORKhveCVAU3WOUhM67ycIzbeX6yaIgfvDneupTc
+cR2PCChAlmnVvBev13FAHpwTah3+yTTzx4pbNJJBloOCPoQC8FFbcOfRKckSKJZx
+zmfJeo9f4Mm12mMbcaUK3WmTg9Lt4AfNnA0uluOt2bl0T7SHh+DTqp/J+20Kb91Z
+supznEKa92FFzmL2sHu8ETGHLaSgMHk30Ua+dIVkkqOgVAKS5jMQNIbAnIDQk7QF
+lkdW6ggvS0Rn9t1TPmaWhN2VjnD//M2ZPaSrWFMYOvRR8HUvQAA=
+=WE8/
+-----END PGP SIGNATURE-----
+
+--+8ScGLI3M/D7Ttui--
