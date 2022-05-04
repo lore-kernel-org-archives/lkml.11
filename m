@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E752FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3359CC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359428AbiEDRoU (ORCPT
+        id S1376561AbiEDRpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
+        Wed, 4 May 2022 13:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355953AbiEDRI5 (ORCPT
+        with ESMTP id S1355540AbiEDRHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5898E49F97;
-        Wed,  4 May 2022 09:54:45 -0700 (PDT)
+        Wed, 4 May 2022 13:07:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B57517DA;
+        Wed,  4 May 2022 09:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD9BCB82792;
-        Wed,  4 May 2022 16:54:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9151DC385A5;
-        Wed,  4 May 2022 16:54:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14862B8278E;
+        Wed,  4 May 2022 16:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B73EDC385A4;
+        Wed,  4 May 2022 16:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683282;
-        bh=Gzzt0waAa8K+0dMB3qQiJ0MfV9GnsZLefeXzHn4bzdI=;
+        s=korg; t=1651683265;
+        bh=IIINfVmwi4MVCKx9RAdZyLjQxxX/j2tucRd/eLdKJW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNVAOVbbIfHFdXpklG10n0aJObAaGZehHqDQP+3rTVeZBd1aebXhOFC1JtimsDitQ
-         kul06CfHTPoacbiDlQydvAxAzustIO17ItYnixtTnJX0UG+IWY+5Q7Mv3d0H8Ufwef
-         tZCL59mwNkiVZI7P3qiz7Hk3doZuF1w/om/B5T68=
+        b=J38fCjNNJnX8J42CYOzI+y5sg5vlXH517meZmAbQLjHsvn4u+AdZVjiZrOdLjH5Xg
+         4C+B2uqWGzb5DdLqcxuw5DyzF4KR1K3N0NBpqdbXOKfGX4EsphQ3gfACfE+Hfg86c/
+         q9ykF0D7h/zryDipD3yOtoyTY2HHiAlXQLnBEe/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 135/177] cifs: destage any unwritten data to the server before calling copychunk_write
-Date:   Wed,  4 May 2022 18:45:28 +0200
-Message-Id: <20220504153105.277538828@linuxfoundation.org>
+Subject: [PATCH 5.15 115/177] drm/amd/display: Fix memory leak in dcn21_clock_source_create
+Date:   Wed,  4 May 2022 18:45:08 +0200
+Message-Id: <20220504153103.497293099@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,56 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
+[ Upstream commit 65e54987508b6f0771f56bdfa3ee1926d52785ae ]
 
-because the copychunk_write might cover a region of the file that has not yet
-been sent to the server and thus fail.
+When dcn20_clk_src_construct() fails, we need to release clk_src.
 
-A simple way to reproduce this is:
-truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
-
-the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
-the 'fcollapse 16k 24k' due to write-back caching.
-
-fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
-and it will fail serverside since the file is still 0b in size serverside
-until the writes have been destaged.
-To avoid this we must ensure that we destage any unwritten data to the
-server before calling COPYCHUNK_WRITE.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 6f4e6361c3ff ("drm/amd/display: Add Renoir resource (v2)")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index db3ead52ec7c..0c1af2dd9069 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -1849,9 +1849,17 @@ smb2_copychunk_range(const unsigned int xid,
- 	int chunks_copied = 0;
- 	bool chunk_sizes_updated = false;
- 	ssize_t bytes_written, total_bytes_written = 0;
-+	struct inode *inode;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+index fbbdf9976183..5b8274b8c384 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+@@ -1428,6 +1428,7 @@ static struct clock_source *dcn21_clock_source_create(
+ 		return &clk_src->base;
+ 	}
  
- 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
- 
-+	/*
-+	 * We need to flush all unwritten data before we can send the
-+	 * copychunk ioctl to the server.
-+	 */
-+	inode = d_inode(trgtfile->dentry);
-+	filemap_write_and_wait(inode->i_mapping);
-+
- 	if (pcchunk == NULL)
- 		return -ENOMEM;
- 
++	kfree(clk_src);
+ 	BREAK_TO_DEBUGGER();
+ 	return NULL;
+ }
 -- 
 2.35.1
 
