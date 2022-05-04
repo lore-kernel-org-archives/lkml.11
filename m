@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC0CCC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF74C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376533AbiEDRyl (ORCPT
+        id S1376421AbiEDRy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        Wed, 4 May 2022 13:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357456AbiEDRPC (ORCPT
+        with ESMTP id S1357498AbiEDRPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:02 -0400
+        Wed, 4 May 2022 13:15:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B901954F82;
-        Wed,  4 May 2022 09:58:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ECA54F9E;
+        Wed,  4 May 2022 09:58:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FEAE61794;
-        Wed,  4 May 2022 16:58:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F81AC385AF;
-        Wed,  4 May 2022 16:58:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27F5E618B4;
+        Wed,  4 May 2022 16:58:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7250CC385A5;
+        Wed,  4 May 2022 16:58:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683491;
-        bh=Q9u6Gz6M80SVS5hvS/h6zXfSYjFBtPvZlCANhhT/kOc=;
+        s=korg; t=1651683518;
+        bh=bvN0Q2KeQ+lFGhU9gqxM4MpeW6/hWRogBqaVHPcl+dA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J6h+ChgJnIs5fzIRQRYLU/bUcBFOqPj579We5aFDhBj7FsDOQAaPi0mJqVSEyqx+Y
-         io2rvSqO+/0ashZv7qK8ZhmF1JKFeUjQn0HYk4owJt4BQhVhxziEQ4K5WuEHMooGNm
-         nX2ULveKiQumxliXk68bO2OiFiHndDyQUY9S69rk=
+        b=Ewt90gjRwPBk5B9/yW7LWJKUrYufgBnQMC89mWrzwgqb2dQ5EK06ttE5HgiQp+j2+
+         GfqYUze4avv/ZhAFEUjbTQNSpW82cZH0Puyv+Y6NrFY+Cw2K+7nY/ABasR2ZJr8ZST
+         H2NvDIp8RZPut/LDXaAaXePGRqXH11olNTSuTJ9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 166/225] ksmbd: increment reference count of parent fp
-Date:   Wed,  4 May 2022 18:46:44 +0200
-Message-Id: <20220504153124.766507888@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 193/225] btrfs: fix leaked plug after failure syncing log on zoned filesystems
+Date:   Wed,  4 May 2022 18:47:11 +0200
+Message-Id: <20220504153127.459522306@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,51 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit 8510a043d334ecdf83d4604782f288db6bf21d60 ]
+commit 50ff57888d0b13440e7f4cde05dc339ee8d0f1f8 upstream.
 
-Add missing increment reference count of parent fp in
-ksmbd_lookup_fd_inode().
+On a zoned filesystem, if we fail to allocate the root node for the log
+root tree while syncing the log, we end up returning without finishing
+the IO plug we started before, resulting in leaking resources as we
+have started writeback for extent buffers of a log tree before. That
+allocation failure, which typically is either -ENOMEM or -ENOSPC, is not
+fatal and the fsync can safely fallback to a full transaction commit.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So release the IO plug if we fail to allocate the extent buffer for the
+root of the log root tree when syncing the log on a zoned filesystem.
+
+Fixes: 3ddebf27fcd3a9 ("btrfs: zoned: reorder log node allocation on zoned filesystem")
+CC: stable@vger.kernel.org # 5.15+
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c   | 2 ++
- fs/ksmbd/vfs_cache.c | 1 +
- 2 files changed, 3 insertions(+)
+ fs/btrfs/tree-log.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 67e8e28e3fc3..a19a2b9c1e56 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -5771,8 +5771,10 @@ static int set_rename_info(struct ksmbd_work *work, struct ksmbd_file *fp,
- 	if (parent_fp) {
- 		if (parent_fp->daccess & FILE_DELETE_LE) {
- 			pr_err("parent dir is opened with delete access\n");
-+			ksmbd_fd_put(work, parent_fp);
- 			return -ESHARE;
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -3225,6 +3225,7 @@ int btrfs_sync_log(struct btrfs_trans_ha
+ 			ret = btrfs_alloc_log_tree_node(trans, log_root_tree);
+ 			if (ret) {
+ 				mutex_unlock(&fs_info->tree_root->log_mutex);
++				blk_finish_plug(&plug);
+ 				goto out;
+ 			}
  		}
-+		ksmbd_fd_put(work, parent_fp);
- 	}
- next:
- 	return smb2_rename(work, fp, user_ns, rename_info,
-diff --git a/fs/ksmbd/vfs_cache.c b/fs/ksmbd/vfs_cache.c
-index 29c1db66bd0f..8b873d92d785 100644
---- a/fs/ksmbd/vfs_cache.c
-+++ b/fs/ksmbd/vfs_cache.c
-@@ -497,6 +497,7 @@ struct ksmbd_file *ksmbd_lookup_fd_inode(struct inode *inode)
- 	list_for_each_entry(lfp, &ci->m_fp_list, node) {
- 		if (inode == file_inode(lfp->filp)) {
- 			atomic_dec(&ci->m_count);
-+			lfp = ksmbd_fp_get(lfp);
- 			read_unlock(&ci->m_lock);
- 			return lfp;
- 		}
--- 
-2.35.1
-
 
 
