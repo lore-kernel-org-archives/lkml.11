@@ -2,169 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22257C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E73BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353269AbiEDQTq (ORCPT
+        id S1353303AbiEDQTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        Wed, 4 May 2022 12:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353259AbiEDQSy (ORCPT
+        with ESMTP id S1353294AbiEDQTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:18:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D24D10F1
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:17 -0700 (PDT)
-Date:   Wed, 04 May 2022 16:15:14 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651680915;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q2vHls7OFJ9WpNJVx5ui3b+OziiE0WeKT5e6e7wVy4g=;
-        b=KqSGIo7aUE+doxcCKieI4MeeL/KtYnybsSDil/gUiWKzckzJmVOljqf8tYiAX+Rf8/o5Xk
-        LZaF2XpNsblnM3bHwL9CVEgiXY+4BkXhNIi1KPQdebwjr8DZpk3XcqqVPeOOXt/YS4eTVE
-        bsb1CYtZqRotyWx8O0NqUgbwB46ujLD2MTxjN+pb9WxOR3i2+qSVJfM2ZvO9uN8dPldcqm
-        +Mlg17fyo2eugMlOt2SVEuofKLwcOT89/kx9gOaXrAiuYihNiNwlaEo3tbc9cb3z7ojkPY
-        40GJziiplNr2OG+lZ8HTu5tQ9//OuMMOFeog42sMiJ4lJwgn3GhwGYCS/SQRrQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651680915;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q2vHls7OFJ9WpNJVx5ui3b+OziiE0WeKT5e6e7wVy4g=;
-        b=/J1STSEfG5kxkmu14GFOinCQE2qFEPRVnoTaBG3s/sr91vOSszBrSzj0FQSjaU0jHDQIh4
-        zMjildlOQD8ezeAw==
-From:   "irqchip-bot for Daniel Thompson" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/exiu: Fix acknowledgment of edge
- triggered interrupts
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220503134541.2566457-1-daniel.thompson@linaro.org>
-References: <20220503134541.2566457-1-daniel.thompson@linaro.org>
+        Wed, 4 May 2022 12:19:01 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B5D10F1
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:24 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id a5so1176856qvx.1
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 09:15:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aRTT3Khcb1rZ/aGFwRbPNDE/jeWlp1F0NgwR7yaPUME=;
+        b=MVEwt4lEQ6odj4JoF+ekWEO601myqPUssVHGiuBUWjYeEk+C9+mjc+l5YmEzVre3wm
+         oPHisIb2b7rw3Vl1n0uzeWrxDQ2jd+MZfaZQ2mO9wbchYzPrHzE5tXh1hEdD0neRiBWs
+         t63roERMr0X3TbTo3+J/O0aWy0hzRNzyEqrrG9pZ1yIKBX0zorrkDwbAFY1IxQO1sZ1k
+         x/LWIhGKSHkg4sKxgV6ZkpA1y4SEiVYAAnCuzTXZmaHUjl8O3dYpodQ50sZKuN4FVz3n
+         vaMmLwN9gXgsCLUZSo8hf0yWnVJLeq7oskBqjm2qTnmEvnXceq8Cl5mERkSrwlWNY9vH
+         mZJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aRTT3Khcb1rZ/aGFwRbPNDE/jeWlp1F0NgwR7yaPUME=;
+        b=YamsRBRdc1z56asumH2r7XjJ3SLWTansYreqE1GTXBeUxB6oDFFV5GBAtuvPBHoECE
+         kQ/gVIzLPPxCpQgekWDTSOKJY2GcFLpav8MIm4yjSmlwZF0L/p8LaQu+0FlqAYHG7fa7
+         3rdIwNB9eUdKQOKntMx4tBKHDKPYualXgPeZjYJiHeGzP6KOwVq79fJmlk9VPLBUD3yl
+         yBVCnjGJwgNRqThR7cPn8zoxIIlTuMNuqbKceFbzHNGOGnG3Y0F+h/gzuENArajzZuIe
+         Oarium2NMjz28ZP8p406a0UScLFXQLOUJmIwjWvNM7PXIkqU2ilkcnIIAtg5/nV1u7D4
+         0vRQ==
+X-Gm-Message-State: AOAM533fAXNW6DgzPR8rL9T42+WDdidQbiwmP2MkW70rWBI1kMGRV+Mg
+        MtiCA3HtOakf/tMhjdQqT5cf/A==
+X-Google-Smtp-Source: ABdhPJxVYo/IWIg5lLnfnd4q5/JBFnRFyOg9pQqgHLIhnd2mJGMlex3zVNr4pwIGyKX3YYDu+DyO5w==
+X-Received: by 2002:a0c:f1d2:0:b0:45a:8012:1a90 with SMTP id u18-20020a0cf1d2000000b0045a80121a90mr16256965qvl.31.1651680923269;
+        Wed, 04 May 2022 09:15:23 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:1d10:5830:4611:5fd6:ef88:7605])
+        by smtp.gmail.com with ESMTPSA id 18-20020ac85652000000b002f39b99f66dsm7594467qtt.7.2022.05.04.09.15.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 09:15:22 -0700 (PDT)
+From:   Milan Landaverde <milan@mdaverde.com>
+Cc:     milan@mdaverde.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Paul Chaignon <paul@isovalent.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next 2/2] bpftool: output message if no helpers found in feature probing
+Date:   Wed,  4 May 2022 12:13:32 -0400
+Message-Id: <20220504161356.3497972-3-milan@mdaverde.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220504161356.3497972-1-milan@mdaverde.com>
+References: <20220504161356.3497972-1-milan@mdaverde.com>
 MIME-Version: 1.0
-Message-ID: <165168091463.4207.2939998284968135016.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+Currently in libbpf, we have hardcoded program types that are not
+supported for helper function probing (e.g. tracing, ext, lsm).
+Due to this (and other legitimate failures), bpftool feature probe returns
+empty for those program type helper functions.
 
-Commit-ID:     4efc851c36e389f7ed432edac0149acc5f94b0c7
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/4efc851c36e389f7ed432edac0149acc5f94b0c7
-Author:        Daniel Thompson <daniel.thompson@linaro.org>
-AuthorDate:    Tue, 03 May 2022 14:45:41 +01:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 04 May 2022 16:33:17 +01:00
+Instead of implying to the user that there are no helper functions
+available for a program type, we output a message to the user explaining
+that helper function probing failed for that program type.
 
-irqchip/exiu: Fix acknowledgment of edge triggered interrupts
-
-Currently the EXIU uses the fasteoi interrupt flow that is configured by
-it's parent (irq-gic-v3.c). With this flow the only chance to clear the
-interrupt request happens during .irq_eoi() and (obviously) this happens
-after the interrupt handler has run. EXIU requires edge triggered
-interrupts to be acked prior to interrupt handling. Without this we
-risk incorrect interrupt dismissal when a new interrupt is delivered
-after the handler reads and acknowledges the peripheral but before the
-irq_eoi() takes place.
-
-Fix this by clearing the interrupt request from .irq_ack() if we are
-configured for edge triggered interrupts. This requires adopting the
-fasteoi-ack flow instead of the fasteoi to ensure the ack gets called.
-
-These changes have been tested using the power button on a
-Developerbox/SC2A11 combined with some hackery in gpio-keys so I can
-play with the different trigger mode [and an mdelay(500) so I can
-can check what happens on a double click in both modes].
-
-Fixes: 706cffc1b912 ("irqchip/exiu: Add support for Socionext Synquacer EXIU controller")
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220503134541.2566457-1-daniel.thompson@linaro.org
+Signed-off-by: Milan Landaverde <milan@mdaverde.com>
 ---
- arch/arm64/Kconfig.platforms   |  1 +
- drivers/irqchip/irq-sni-exiu.c | 25 ++++++++++++++++++++++---
- 2 files changed, 23 insertions(+), 3 deletions(-)
+ tools/bpf/bpftool/feature.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 30b123c..aaeaf57 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -253,6 +253,7 @@ config ARCH_INTEL_SOCFPGA
- 
- config ARCH_SYNQUACER
- 	bool "Socionext SynQuacer SoC Family"
-+	select IRQ_FASTEOI_HIERARCHY_HANDLERS
- 
- config ARCH_TEGRA
- 	bool "NVIDIA Tegra SoC Family"
-diff --git a/drivers/irqchip/irq-sni-exiu.c b/drivers/irqchip/irq-sni-exiu.c
-index abd011f..c7db617 100644
---- a/drivers/irqchip/irq-sni-exiu.c
-+++ b/drivers/irqchip/irq-sni-exiu.c
-@@ -37,11 +37,26 @@ struct exiu_irq_data {
- 	u32		spi_base;
- };
- 
--static void exiu_irq_eoi(struct irq_data *d)
-+static void exiu_irq_ack(struct irq_data *d)
- {
- 	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
- 
- 	writel(BIT(d->hwirq), data->base + EIREQCLR);
-+}
-+
-+static void exiu_irq_eoi(struct irq_data *d)
-+{
-+	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
-+
-+	/*
-+	 * Level triggered interrupts are latched and must be cleared during
-+	 * EOI or the interrupt will be jammed on. Of course if a level
-+	 * triggered interrupt is still asserted then the write will not clear
-+	 * the interrupt.
-+	 */
-+	if (irqd_is_level_type(d))
-+		writel(BIT(d->hwirq), data->base + EIREQCLR);
-+
- 	irq_chip_eoi_parent(d);
+diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+index c532c8855c24..d12f46051aac 100644
+--- a/tools/bpf/bpftool/feature.c
++++ b/tools/bpf/bpftool/feature.c
+@@ -690,7 +690,7 @@ probe_helper_ifindex(enum bpf_func_id id, enum bpf_prog_type prog_type,
+ 	return res;
  }
  
-@@ -91,10 +106,13 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
- 	writel_relaxed(val, data->base + EILVL);
+-static void
++static bool
+ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
+ 			  const char *define_prefix, unsigned int id,
+ 			  const char *ptype_name, __u32 ifindex)
+@@ -723,6 +723,8 @@ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
+ 		if (res)
+ 			printf("\n\t- %s", helper_name[id]);
+ 	}
++
++	return res;
+ }
  
- 	val = readl_relaxed(data->base + EIEDG);
--	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH)
-+	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH) {
- 		val &= ~BIT(d->hwirq);
--	else
-+		irq_set_handler_locked(d, handle_fasteoi_irq);
-+	} else {
- 		val |= BIT(d->hwirq);
-+		irq_set_handler_locked(d, handle_fasteoi_ack_irq);
+ static void
+@@ -732,6 +734,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
+ 	const char *ptype_name = prog_type_name[prog_type];
+ 	char feat_name[128];
+ 	unsigned int id;
++	bool probe_res = false;
+ 
+ 	if (ifindex)
+ 		/* Only test helpers for offload-able program types */
+@@ -764,7 +767,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
+ 				continue;
+ 			/* fallthrough */
+ 		default:
+-			probe_helper_for_progtype(prog_type, supported_type,
++			probe_res |= probe_helper_for_progtype(prog_type, supported_type,
+ 						  define_prefix, id, ptype_name,
+ 						  ifindex);
+ 		}
+@@ -772,8 +775,17 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
+ 
+ 	if (json_output)
+ 		jsonw_end_array(json_wtr);
+-	else if (!define_prefix)
++	else if (!define_prefix) {
+ 		printf("\n");
++		if (!probe_res) {
++			if (!supported_type)
++				printf("\tProgram type not supported\n");
++			else
++				printf("\tCould not determine which helpers are available\n");
++		}
 +	}
- 	writel_relaxed(val, data->base + EIEDG);
++
++
+ }
  
- 	writel_relaxed(BIT(d->hwirq), data->base + EIREQCLR);
-@@ -104,6 +122,7 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
- 
- static struct irq_chip exiu_irq_chip = {
- 	.name			= "EXIU",
-+	.irq_ack		= exiu_irq_ack,
- 	.irq_eoi		= exiu_irq_eoi,
- 	.irq_enable		= exiu_irq_enable,
- 	.irq_mask		= exiu_irq_mask,
+ static void
+-- 
+2.32.0
+
