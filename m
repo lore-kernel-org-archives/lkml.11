@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD87C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2284FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354940AbiEDRDa (ORCPT
+        id S1347319AbiEDRDe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
+        Wed, 4 May 2022 13:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354601AbiEDQ6y (ORCPT
+        with ESMTP id S1354597AbiEDQ6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:58:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484EF1F629;
-        Wed,  4 May 2022 09:50:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1C71EECF;
+        Wed,  4 May 2022 09:50:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDD9AB82554;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53DD0617BD;
+        Wed,  4 May 2022 16:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A17CC385AA;
         Wed,  4 May 2022 16:50:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A49C385A5;
-        Wed,  4 May 2022 16:50:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683042;
-        bh=7dpsaI8+DZ3trt2V0mBtNEbPk+Gy1oRkzaJHsKmOU9M=;
+        s=korg; t=1651683043;
+        bh=+J6mkW7g7FZT8T1bJ9fP3KdetTDCgArgqcBdHrc4ShY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iq6ySQPBnQKL3Rrdu6Sx2XB25iK+3+3MwYHy6zuS6fyvbHtiOgb5DRgh2Khgn8UVc
-         bIaMrMG2s3glsNwFcFL0vFSxp7UhtGcetA5dppAvYjsPb9Td0KLf/w0Dj90vmBpNxV
-         KMLjfPmdcN4uwVPIEYWsPbsOWrKARKHbnYELZlDU=
+        b=dpxJGPDje5iDDKJQJvdzneBXOHIkLJRksauD7x82UYx8q8n2QZ3i/WaazynUP6Xyl
+         +QvexhRAocqftmWzXna4oGdgWvwqaJ6P+YechbPvdGPd0DflG2onHHlkNbBc4iDEaU
+         SRUgTLUt31iRGbuyckN1mGo8dq7EtsdNMyEB4bS0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 033/129] hex2bin: make the function hex_to_bin constant-time
-Date:   Wed,  4 May 2022 18:43:45 +0200
-Message-Id: <20220504153023.908308980@linuxfoundation.org>
+Subject: [PATCH 5.10 034/129] hex2bin: fix access beyond string end
+Date:   Wed,  4 May 2022 18:43:46 +0200
+Message-Id: <20220504153023.967318541@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,89 +52,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
+commit e4d8a29997731b3bb14059024b24df9f784288d0 upstream.
 
-The function hex2bin is used to load cryptographic keys into device
-mapper targets dm-crypt and dm-integrity.  It should take constant time
-independent on the processed data, so that concurrently running
-unprivileged code can't infer any information about the keys via
-microarchitectural convert channels.
+If we pass too short string to "hex2bin" (and the string size without
+the terminating NUL character is even), "hex2bin" reads one byte after
+the terminating NUL character.  This patch fixes it.
 
-This patch changes the function hex_to_bin so that it contains no
-branches and no memory accesses.
-
-Note that this shouldn't cause performance degradation because the size
-of the new function is the same as the size of the old function (on
-x86-64) - and the new function causes no branch misprediction penalties.
-
-I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
-i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
-sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
-powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
-no branches in the generated code.
+Note that hex_to_bin returns -1 on error and hex2bin return -EINVAL on
+error - so we can't just return the variable "hi" or "lo" on error.
+This inconsistency may be fixed in the next merge window, but for the
+purpose of fixing this bug, we just preserve the existing behavior and
+return -1 and -EINVAL.
 
 Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Fixes: b78049831ffe ("lib: add error checking to hex2bin")
 Cc: stable@vger.kernel.org
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/kernel.h |    2 +-
- lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
- 2 files changed, 26 insertions(+), 8 deletions(-)
+ lib/hexdump.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -635,7 +635,7 @@ static inline char *hex_byte_pack_upper(
- 	return buf;
- }
- 
--extern int hex_to_bin(char ch);
-+extern int hex_to_bin(unsigned char ch);
- extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
- extern char *bin2hex(char *dst, const void *src, size_t count);
- 
 --- a/lib/hexdump.c
 +++ b/lib/hexdump.c
-@@ -22,15 +22,33 @@ EXPORT_SYMBOL(hex_asc_upper);
-  *
-  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
-  * input.
-+ *
-+ * This function is used to load cryptographic keys, so it is coded in such a
-+ * way that there are no conditions or memory accesses that depend on data.
-+ *
-+ * Explanation of the logic:
-+ * (ch - '9' - 1) is negative if ch <= '9'
-+ * ('0' - 1 - ch) is negative if ch >= '0'
-+ * we "and" these two values, so the result is negative if ch is in the range
-+ *	'0' ... '9'
-+ * we are only interested in the sign, so we do a shift ">> 8"; note that right
-+ *	shift of a negative value is implementation-defined, so we cast the
-+ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
-+ *	the range '0' ... '9', 0 otherwise
-+ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
-+ *	in the range '0' ... '9', 0 otherwise
-+ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
-+ *	... '9', -1 otherwise
-+ * the next line is similar to the previous one, but we need to decode both
-+ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
-+ *	lowercase to uppercase
-  */
--int hex_to_bin(char ch)
-+int hex_to_bin(unsigned char ch)
+@@ -63,10 +63,13 @@ EXPORT_SYMBOL(hex_to_bin);
+ int hex2bin(u8 *dst, const char *src, size_t count)
  {
--	if ((ch >= '0') && (ch <= '9'))
--		return ch - '0';
--	ch = tolower(ch);
--	if ((ch >= 'a') && (ch <= 'f'))
--		return ch - 'a' + 10;
--	return -1;
-+	unsigned char cu = ch & 0xdf;
-+	return -1 +
-+		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
-+		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
- }
- EXPORT_SYMBOL(hex_to_bin);
+ 	while (count--) {
+-		int hi = hex_to_bin(*src++);
+-		int lo = hex_to_bin(*src++);
++		int hi, lo;
  
+-		if ((hi < 0) || (lo < 0))
++		hi = hex_to_bin(*src++);
++		if (unlikely(hi < 0))
++			return -EINVAL;
++		lo = hex_to_bin(*src++);
++		if (unlikely(lo < 0))
+ 			return -EINVAL;
+ 
+ 		*dst++ = (hi << 4) | lo;
 
 
