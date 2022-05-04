@@ -2,41 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B561FC35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC8EC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359822AbiEDRuH (ORCPT
+        id S1359801AbiEDRuD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        Wed, 4 May 2022 13:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357862AbiEDRPY (ORCPT
+        with ESMTP id S1357786AbiEDRPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87159554B2;
-        Wed,  4 May 2022 09:59:05 -0700 (PDT)
+        Wed, 4 May 2022 13:15:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A6955486;
+        Wed,  4 May 2022 09:59:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E9AD6191D;
-        Wed,  4 May 2022 16:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 983EAC385AF;
-        Wed,  4 May 2022 16:59:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D138B82416;
+        Wed,  4 May 2022 16:58:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B79FFC385AA;
+        Wed,  4 May 2022 16:58:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683544;
-        bh=7cNWoDllzlhlhBT0AEDDuXRENPZ9G9LkpZELR4gvMbo=;
+        s=korg; t=1651683536;
+        bh=lxOCNLhoXuv1p/yYbOt/qn66HbF114gIdpkYgvRyQOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lZ0hpDz3wLHlt2MIen9ABqHWNAbGS9mPDcFFjTLE7V59ndso2UsT4F/WUPTcLsLRq
-         t+jYXHjbLJbYFVNt7fzuKlIEnv1r7gIHVgOZfK3Ub2SkQvh6MjhRaEUUpohXCBR7Ac
-         zrEnCw+oByu6DY+zmMguLRjBzuWiMOfY7YahxAkU=
+        b=UKK7zyVych9jc6yk8U2lGjM6lK2hXHhdR5SOoPTgkSzVheT74KtUSFe3L4k+Q51WQ
+         Ds20KThpqWTtAueLKx8okBn97sbpqOZpqF5s11hrGOhen7LJKVJBApJB1VFKj6tQ1r
+         3NVJrO+su6qmWI8Bw4ce4l+bMaIli05ywDFj6Kr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.17 215/225] tty: n_gsm: fix missing tty wakeup in convergence layer type 2
-Date:   Wed,  4 May 2022 18:47:33 +0200
-Message-Id: <20220504153129.137505333@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.17 199/225] perf symbol: Update symbols__fixup_end()
+Date:   Wed,  4 May 2022 18:47:17 +0200
+Message-Id: <20220504153127.917372986@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,35 +63,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-commit 1adf6fee58ca25fb6720b8d34c919dcf5425cc9c upstream.
+commit 8799ebce84d672aae1dc3170510f6a3e66f96b11 upstream.
 
-gsm_control_modem() informs the virtual tty that more data can be written
-after receiving a control signal octet via modem status command (MSC).
-However, gsm_dlci_data() fails to do the same after receiving a control
-signal octet from the convergence layer type 2 header.
-Add tty_wakeup() in gsm_dlci_data() for convergence layer type 2 to fix
-this.
+Now arch-specific functions all do the same thing.  When it fixes the
+symbol address it needs to check the boundary between the kernel image
+and modules.  For the last symbol in the previous region, it cannot
+know the exact size as it's discarded already.  Thus it just uses a
+small page size (4096) and rounds it up like the last symbol.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-14-daniel.starke@siemens.com
+Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-s390@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Link: https://lore.kernel.org/r/20220416004048.1514900-3-namhyung@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/perf/util/symbol.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1615,6 +1615,7 @@ static void gsm_dlci_data(struct gsm_dlc
- 		tty = tty_port_tty_get(port);
- 		if (tty) {
- 			gsm_process_modem(tty, dlci, modem, slen);
-+			tty_wakeup(tty);
- 			tty_kref_put(tty);
- 		}
- 		fallthrough;
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -217,8 +217,8 @@ again:
+ 	}
+ }
+ 
+-void symbols__fixup_end(struct rb_root_cached *symbols,
+-			bool is_kallsyms __maybe_unused)
++/* Update zero-sized symbols using the address of the next symbol */
++void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms)
+ {
+ 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
+ 	struct symbol *curr, *prev;
+@@ -232,8 +232,29 @@ void symbols__fixup_end(struct rb_root_c
+ 		prev = curr;
+ 		curr = rb_entry(nd, struct symbol, rb_node);
+ 
+-		if (prev->end == prev->start || prev->end != curr->start)
+-			arch__symbols__fixup_end(prev, curr);
++		/*
++		 * On some architecture kernel text segment start is located at
++		 * some low memory address, while modules are located at high
++		 * memory addresses (or vice versa).  The gap between end of
++		 * kernel text segment and beginning of first module's text
++		 * segment is very big.  Therefore do not fill this gap and do
++		 * not assign it to the kernel dso map (kallsyms).
++		 *
++		 * In kallsyms, it determines module symbols using '[' character
++		 * like in:
++		 *   ffffffffc1937000 T hdmi_driver_init  [snd_hda_codec_hdmi]
++		 */
++		if (prev->end == prev->start) {
++			/* Last kernel/module symbol mapped to end of page */
++			if (is_kallsyms && (!strchr(prev->name, '[') !=
++					    !strchr(curr->name, '[')))
++				prev->end = roundup(prev->end + 4096, 4096);
++			else
++				prev->end = curr->start;
++
++			pr_debug4("%s sym:%s end:%#" PRIx64 "\n",
++				  __func__, prev->name, prev->end);
++		}
+ 	}
+ 
+ 	/* Last entry */
 
 
