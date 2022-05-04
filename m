@@ -2,249 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4868BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 292C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349526AbiEDMdP (ORCPT
+        id S1349538AbiEDMeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
+        Wed, 4 May 2022 08:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347936AbiEDMdM (ORCPT
+        with ESMTP id S240502AbiEDMeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:33:12 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F2F24BE4;
-        Wed,  4 May 2022 05:29:35 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651667373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B2VY1pBCHecUOk5t/5XaUHPp27OaBx7YYYmupaRwS+A=;
-        b=zdznyDCSDehnyX/b0QFmsj2JVN5/n99CsO5EFO+/CCG/+E1TjEQ2bgcdGG0deAKbf3xEJS
-        uOZwf/IxxHbe7wV8Q1AFizSFsFLv925fZnu7sd2gJqn0HSI5uH9kA/QW4PbPOC3Z4ifO5S
-        YbL2LSMILOw3J4wQDfKuUEND7wy3N6bHhSwZO8n03inujIDA8/ska9h4W90rFoahqgyEnR
-        kHl+4YHzuHp3tGYN79MWlrffO53Wh1mDX07L9fvHunCFh+YOqRBRYph4ZB1SswZqMwXBTA
-        9MIK2CJ4FtpoYWxO9lYtnXeE82a3tTb9YVQomsk2mFpqPLZ0ysTEo3g3qkzvow==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651667373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B2VY1pBCHecUOk5t/5XaUHPp27OaBx7YYYmupaRwS+A=;
-        b=uDUwSXu/Lh+hMmMAi1uwqvrO9ZBzsl5U9wICOYYSbVL1NYk1IAG604Z/MquO+3gwwn2t8P
-        UsmEFtu+Jq+yETDA==
-To:     Tony Luck <tony.luck@intel.com>, hdegoede@redhat.com,
-        markgross@kernel.org
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        jithu.joseph@intel.com, ashok.raj@intel.com, tony.luck@intel.com,
-        rostedt@goodmis.org, dan.j.williams@intel.com,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
-        ravi.v.shankar@intel.com
-Subject: Re: [PATCH v5 07/10] platform/x86/intel/ifs: Add scan test support
-In-Reply-To: <20220428153849.295779-8-tony.luck@intel.com>
-References: <20220422200219.2843823-1-tony.luck@intel.com>
- <20220428153849.295779-1-tony.luck@intel.com>
- <20220428153849.295779-8-tony.luck@intel.com>
-Date:   Wed, 04 May 2022 14:29:33 +0200
-Message-ID: <87r159jxaq.ffs@tglx>
+        Wed, 4 May 2022 08:34:18 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58C414099;
+        Wed,  4 May 2022 05:30:41 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id gh6so2627798ejb.0;
+        Wed, 04 May 2022 05:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ysH00HyaDWMX3g6z4wMVizpKRp8qVpyqeMYEzT6C4WY=;
+        b=UmOQeFRlgk1stR2NmLpQW+SDcyKo7NYlY5RN8eB9sAoG+7DFYiW5P69CUQ14Qswzee
+         8uadORkcp8BMGnvvz59WqMr+rlTLKLDiCY6QTIrQh6HCWFhw4JTJVnUw1zrmoGSZ+JJw
+         TG4g2tKBxg9j+aUx81OAbAxxyanm/A/VIPcqjFiO43okoqNbsqziHTHKp8M4/yWIE5ID
+         hWZ0+2ZKMkfDpa8F+CVv8oisIF1QuowYHmTAFIKw41+0G3YctIj03YPxOYPitcUqP29g
+         d6fivTck2GEhetzgC44rVRxV1i5iYNECGt80oOs1s0clzm2IvDE4qspPT5pxq27vcTJ+
+         CA7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ysH00HyaDWMX3g6z4wMVizpKRp8qVpyqeMYEzT6C4WY=;
+        b=sWIB4c5Ej3PJPYNpaKIaFSP7fd7zNIS7d/zT2e2LmMoUyrGZZGIVWWOjeJefMVcDQU
+         03JPxABrF9Jx12E4Jblc090WhelrpjJVUvhXgafLo06Gg+2h5w3rC5RIK9SUtqoZ9GV4
+         OByIgnHO17GEQG8iRUMGE/UX7dqNoIUVO4hyHUWsqPbxTnsPIhGPQfQsGiwyJqLdSi8p
+         oar/CRC2ZTAYUC0+yPbGnhcwo6oFxUY7EPtXrAIC9hrCgo/D0cSqigoq+n/5Y9fsD0ta
+         atrQO5ERf8+/rC7S4f/NMTnGun/0HLxXFn9zh8H1sEsYWZratiJ5bAMsJKTWNw1DEWX4
+         xzrw==
+X-Gm-Message-State: AOAM533ZXhSirDkp4QQN1dL5mwkhZZcuMngonEwh0Gkl/w4wDvIObb0t
+        +0MWx/Ej1SRJ74V9HR2mNKE=
+X-Google-Smtp-Source: ABdhPJzqrcu+vGdjVz8arDFDG21wP7cRG4mf/U2UT7S5YNTI5mlnaRQ/efBX7UUbFJ6GRQov/bRnlA==
+X-Received: by 2002:a17:907:3f16:b0:6f4:c54:2700 with SMTP id hq22-20020a1709073f1600b006f40c542700mr20290260ejc.615.1651667440245;
+        Wed, 04 May 2022 05:30:40 -0700 (PDT)
+Received: from localhost.localdomain (185-177-124-12.hosted-by-worldstream.net. [185.177.124.12])
+        by smtp.gmail.com with ESMTPSA id ig1-20020a1709072e0100b006f3ef214e7asm5688693ejc.224.2022.05.04.05.30.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 05:30:39 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        Ikjoon Jang <ikjn@chromium.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Sam Shih <sam.shih@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 01/13] dt-bindings: clock: Add Mediatek MT6735 clock bindings
+Date:   Wed,  4 May 2022 16:25:50 +0400
+Message-Id: <20220504122601.335495-2-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504122601.335495-1-y.oudjana@protonmail.com>
+References: <20220504122601.335495-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28 2022 at 08:38, Tony Luck wrote:
-> +static bool wait_for_siblings(struct device *dev, struct ifs_data *ifsd, atomic_t *t, long long timeout)
-> +{
-> +	atomic_inc(t);
-> +	while (atomic_read(t) < cpu_sibl_ct) {
-> +		if (timeout < SPINUNIT) {
-> +			dev_err(dev,
-> +				"Timeout while waiting for CPUs rendezvous, remaining: %d\n",
-> +				cpu_sibl_ct - atomic_read(t));
-> +			return false;
-> +		}
-> +
-> +		ndelay(SPINUNIT);
-> +		timeout -= SPINUNIT;
-> +
-> +		touch_nmi_watchdog();
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +/*
-> + * When a Scan test (for a particular core) is triggered by the user, worker threads
-> + * for each sibling cpus(belonging to that core) are queued to execute this function in
-> + * the Workqueue (ifs_wq) context.
-> + * Wait for the sibling thread to join before the execution.
-> + * Execute the scan test by running wrmsr(MSR_ACTIVATE_SCAN).
-> + */
-> +static void ifs_work_func(struct work_struct *work)
-> +{
-> +	struct ifs_work *local_work = container_of(work, struct ifs_work, w);
-> +	int cpu = smp_processor_id();
-> +	union ifs_scan activate;
-> +	union ifs_status status;
-> +	unsigned long timeout;
-> +	struct ifs_data *ifsd;
-> +	struct device *dev;
-> +	int retries;
-> +	u32 first;
-> +
-> +	dev = local_work->dev;
-> +	ifsd = ifs_get_data(dev);
-> +
-> +	activate.rsvd = 0;
-> +	activate.delay = msec_to_tsc(THREAD_WAIT);
-> +	activate.sigmce = 0;
-> +
-> +	/*
-> +	 * Need to get (and keep) the threads on this core executing close together
-> +	 * so that the writes to MSR_ACTIVATE_SCAN below will succeed in entering
-> +	 * IFS test mode on this core. Interrupts on each thread are expected to be
-> +	 * brief. But preemption would be a problem.
-> +	 */
-> +	preempt_disable();
-> +
-> +	/* wait for the sibling threads to join */
-> +	first = cpumask_first(topology_sibling_cpumask(cpu));
-> +	if (!wait_for_siblings(dev, ifsd, &siblings_in, NSEC_PER_SEC)) {
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-Waiting for a second with preemption disabled? Seriously?
+Add clock definitions for Mediatek MT6735 clocks provided by
+apmixedsys, topckgen, infracfg and pericfg.
 
-> +		preempt_enable();
-> +		dev_err(dev, "cpu %d sibling did not join rendezvous\n", cpu);
-> +		goto out;
-> +	}
-> +
-> +	activate.start = 0;
-> +	activate.stop = ifsd->valid_chunks - 1;
-> +	timeout = jiffies + HZ / 2;
+Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+---
+ MAINTAINERS                                   | 10 +++
+ .../clock/mediatek,mt6735-apmixedsys.h        | 16 ++++
+ .../clock/mediatek,mt6735-infracfg.h          | 25 ++++++
+ .../clock/mediatek,mt6735-pericfg.h           | 37 +++++++++
+ .../clock/mediatek,mt6735-topckgen.h          | 79 +++++++++++++++++++
+ 5 files changed, 167 insertions(+)
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-infracfg.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-pericfg.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-topckgen.h
 
-Plus another half a second with preemption disabled. That's just insane.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2869a958f5e4..e917039b9d8c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12437,6 +12437,16 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+ F:	drivers/mmc/host/mtk-sd.c
+ 
++MEDIATEK MT6735 CLOCK DRIVERS
++M:	Yassine Oudjana <y.oudjana@protonmail.com>
++L:	linux-clk@vger.kernel.org
++L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
++S:	Maintained
++F:	include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h
++F:	include/dt-bindings/clock/mediatek,mt6735-infracfg.h
++F:	include/dt-bindings/clock/mediatek,mt6735-pericfg.h
++F:	include/dt-bindings/clock/mediatek,mt6735-topckgen.h
++
+ MEDIATEK MT76 WIRELESS LAN DRIVER
+ M:	Felix Fietkau <nbd@nbd.name>
+ M:	Lorenzo Bianconi <lorenzo@kernel.org>
+diff --git a/include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h b/include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h
+new file mode 100644
+index 000000000000..3dda719fd5d5
+--- /dev/null
++++ b/include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef _DT_BINDINGS_CLK_MT6735_APMIXEDSYS_H
++#define _DT_BINDINGS_CLK_MT6735_APMIXEDSYS_H
++
++#define ARMPLL				0
++#define MAINPLL				1
++#define UNIVPLL				2
++#define MMPLL				3
++#define MSDCPLL				4
++#define VENCPLL				5
++#define TVDPLL				6
++#define APLL1				7
++#define APLL2				8
++
++#endif
+diff --git a/include/dt-bindings/clock/mediatek,mt6735-infracfg.h b/include/dt-bindings/clock/mediatek,mt6735-infracfg.h
+new file mode 100644
+index 000000000000..979a174ff8b6
+--- /dev/null
++++ b/include/dt-bindings/clock/mediatek,mt6735-infracfg.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef _DT_BINDINGS_CLK_MT6735_INFRACFG_H
++#define _DT_BINDINGS_CLK_MT6735_INFRACFG_H
++
++#define DBGCLK				0
++#define GCE				1
++#define TRBG				2
++#define CPUM				3
++#define DEVAPC				4
++#define AUDIO				5
++#define GCPU				6
++#define L2C_SRAM			7
++#define M4U				8
++#define CLDMA				9
++#define CONNMCU_BUS			10
++#define KP				11
++#define APXGPT				12
++#define SEJ				13
++#define CCIF0_AP			14
++#define CCIF1_AP			15
++#define PMIC_SPI			16
++#define PMIC_WRAP			17
++
++#endif
+diff --git a/include/dt-bindings/clock/mediatek,mt6735-pericfg.h b/include/dt-bindings/clock/mediatek,mt6735-pericfg.h
+new file mode 100644
+index 000000000000..16f3c6a9a772
+--- /dev/null
++++ b/include/dt-bindings/clock/mediatek,mt6735-pericfg.h
+@@ -0,0 +1,37 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef _DT_BINDINGS_CLK_MT6735_PERICFG_H
++#define _DT_BINDINGS_CLK_MT6735_PERICFG_H
++
++#define DISP_PWM			0
++#define THERM				1
++#define PWM1				2
++#define PWM2				3
++#define PWM3				4
++#define PWM4				5
++#define PWM5				6
++#define PWM6				7
++#define PWM7				8
++#define PWM				9
++#define USB0				10
++#define IRDA				11
++#define APDMA				12
++#define MSDC30_0			13
++#define MSDC30_1			14
++#define MSDC30_2			15
++#define MSDC30_3			16
++#define UART0				17
++#define UART1				18
++#define UART2				19
++#define UART3				20
++#define UART4				21
++#define BTIF				22
++#define I2C0				23
++#define I2C1				24
++#define I2C2				25
++#define I2C3				26
++#define AUXADC				27
++#define SPI0				28
++#define IRTX				29
++
++#endif
+diff --git a/include/dt-bindings/clock/mediatek,mt6735-topckgen.h b/include/dt-bindings/clock/mediatek,mt6735-topckgen.h
+new file mode 100644
+index 000000000000..a771910a4b8a
+--- /dev/null
++++ b/include/dt-bindings/clock/mediatek,mt6735-topckgen.h
+@@ -0,0 +1,79 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef _DT_BINDINGS_CLK_MT6735_TOPCKGEN_H
++#define _DT_BINDINGS_CLK_MT6735_TOPCKGEN_H
++
++#define AD_SYS_26M_CK			0
++#define CLKPH_MCK_O			1
++#define DMPLL				2
++#define DPI_CK				3
++#define WHPLL_AUDIO_CK			4
++
++#define SYSPLL_D2			5
++#define SYSPLL_D3			6
++#define SYSPLL_D5			7
++#define SYSPLL1_D2			8
++#define SYSPLL1_D4			9
++#define SYSPLL1_D8			10
++#define SYSPLL1_D16			11
++#define SYSPLL2_D2			12
++#define SYSPLL2_D4			13
++#define SYSPLL3_D2			14
++#define SYSPLL3_D4			15
++#define SYSPLL4_D2			16
++#define SYSPLL4_D4			17
++#define UNIVPLL_D2			18
++#define UNIVPLL_D3			19
++#define UNIVPLL_D5			20
++#define UNIVPLL_D26			21
++#define UNIVPLL1_D2			22
++#define UNIVPLL1_D4			23
++#define UNIVPLL1_D8			24
++#define UNIVPLL2_D2			25
++#define UNIVPLL2_D4			26
++#define UNIVPLL2_D8			27
++#define UNIVPLL3_D2			28
++#define UNIVPLL3_D4			29
++#define MSDCPLL_D2			30
++#define MSDCPLL_D4			31
++#define MSDCPLL_D8			32
++#define MSDCPLL_D16			33
++#define VENCPLL_D3			34
++#define TVDPLL_D2			35
++#define TVDPLL_D4			36
++#define DMPLL_D2			37
++#define DMPLL_D4			38
++#define DMPLL_D8			39
++#define AD_SYS_26M_D2			40
++
++#define AXI_SEL				41
++#define MEM_SEL				42
++#define DDRPHY_SEL			43
++#define MM_SEL				44
++#define PWM_SEL				45
++#define VDEC_SEL			46
++#define MFG_SEL				47
++#define CAMTG_SEL			48
++#define UART_SEL			49
++#define SPI_SEL				50
++#define USB20_SEL			51
++#define MSDC50_0_SEL			52
++#define MSDC30_0_SEL			53
++#define MSDC30_1_SEL			54
++#define MSDC30_2_SEL			55
++#define MSDC30_3_SEL			56
++#define AUDIO_SEL			57
++#define AUDINTBUS_SEL			58
++#define PMICSPI_SEL			59
++#define SCP_SEL				60
++#define ATB_SEL				61
++#define DPI0_SEL			62
++#define SCAM_SEL			63
++#define MFG13M_SEL			64
++#define AUD1_SEL			65
++#define AUD2_SEL			66
++#define IRDA_SEL			67
++#define IRTX_SEL			68
++#define DISPPWM_SEL			69
++
++#endif
+-- 
+2.36.0
 
-> +	retries = MAX_IFS_RETRIES;
-> +
-> +	while (activate.start <= activate.stop) {
-> +		if (time_after(jiffies, timeout)) {
-> +			status.error_code = IFS_SW_TIMEOUT;
-> +			break;
-> +		}
-> +
-> +		local_irq_disable();
-> +		wrmsrl(MSR_ACTIVATE_SCAN, activate.data);
-> +		local_irq_enable();
-
-That local_irq_disable() solves what?
-
-> +		/*
-> +		 * All logical CPUs on this core are now running IFS test. When it completes
-> +		 * execution or is interrupted, the following RDMSR gets the scan status.
-> +		 */
-> +
-> +		rdmsrl(MSR_SCAN_STATUS, status.data);
-
-Wait. Is that rdmsrl() blocking execution until the scan completes?
-
-If so, what's the stall time here? If not, how is the logic below
-supposed to work?
-
-> +		/* Some cases can be retried, give up for others */
-> +		if (!can_restart(status))
-> +			break;
-> +
-> +		if (status.chunk_num == activate.start) {
-> +			/* Check for forward progress */
-> +			if (retries-- == 0) {
-> +				if (status.error_code == IFS_NO_ERROR)
-> +					status.error_code = IFS_SW_PARTIAL_COMPLETION;
-> +				break;
-> +			}
-> +		} else {
-> +			retries = MAX_IFS_RETRIES;
-> +			activate.start = status.chunk_num;
-> +		}
-> +	}
-> +
-> +	preempt_enable();
-> +
-> +	if (cpu == first) {
-> +		/* Update status for this core */
-> +		ifsd->scan_details = status.data;
-> +
-> +		if (status.control_error || status.signature_error) {
-> +			ifsd->status = SCAN_TEST_FAIL;
-> +			message_fail(dev, cpu, status);
-> +		} else if (status.error_code) {
-> +			ifsd->status = SCAN_NOT_TESTED;
-> +			message_not_tested(dev, cpu, status);
-> +		} else {
-> +			ifsd->status = SCAN_TEST_PASS;
-> +		}
-> +	}
-> +
-> +	if (!wait_for_siblings(dev, ifsd, &siblings_out, NSEC_PER_SEC))
-> +		dev_err(dev, "cpu %d sibling did not exit rendezvous\n", cpu);
-> +
-> +out:
-> +	if (cpu == first)
-> +		complete(&test_thread_done);
-> +}
-> +
-> +/*
-> + * Initiate per core test. It wakes up work queue threads on the target cpu and
-> + * its sibling cpu. Once all sibling threads wake up, the scan test gets executed and
-> + * wait for all sibling threads to finish the scan test.
-> + */
-> +int do_core_test(int cpu, struct device *dev)
-> +{
-> +	struct ifs_work *local_work;
-> +	int sibling;
-> +	int ret = 0;
-> +	int i = 0;
-> +
-> +	if (!scan_enabled)
-> +		return -ENXIO;
-> +
-> +	cpu_hotplug_disable();
-
-Why cpu_hotplug_disable()? Why is cpus_read_lock() not sufficient here?
-
-> +	if (!cpu_online(cpu)) {
-> +		dev_info(dev, "cannot test on the offline cpu %d\n", cpu);
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	reinit_completion(&test_thread_done);
-> +	atomic_set(&siblings_in, 0);
-> +	atomic_set(&siblings_out, 0);
-> +
-> +	cpu_sibl_ct = cpumask_weight(topology_sibling_cpumask(cpu));
-> +	local_work = kcalloc(cpu_sibl_ct, sizeof(*local_work), GFP_NOWAIT);
-
-Why does this need GFP_NOWAIT?
-
-> +int ifs_setup_wq(void)
-> +{
-> +	/* Flags are to keep all the sibling cpu worker threads (of a core) in close sync */
-
-I put that into the wishful thinking realm.
-
-Is there anywhere a proper specification of this mechanism? The public
-available MSR list in the SDM is uselss.
-
-Without proper documentation it's pretty much impossible to review this
-code and to think about the approach.
-
-Thanks,
-
-        tglx
