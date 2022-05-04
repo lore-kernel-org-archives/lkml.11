@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF74C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3EEC41535
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376421AbiEDRy3 (ORCPT
+        id S1376473AbiEDRyg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        Wed, 4 May 2022 13:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357498AbiEDRPE (ORCPT
+        with ESMTP id S1357477AbiEDRPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ECA54F9E;
-        Wed,  4 May 2022 09:58:39 -0700 (PDT)
+        Wed, 4 May 2022 13:15:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5290C54F92;
+        Wed,  4 May 2022 09:58:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27F5E618B4;
-        Wed,  4 May 2022 16:58:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7250CC385A5;
-        Wed,  4 May 2022 16:58:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E45EFB827AD;
+        Wed,  4 May 2022 16:58:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A514C385AF;
+        Wed,  4 May 2022 16:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683518;
-        bh=bvN0Q2KeQ+lFGhU9gqxM4MpeW6/hWRogBqaVHPcl+dA=;
+        s=korg; t=1651683516;
+        bh=5BB8vQtqoB0EdnhJdulb5o79642bRYVhga3ZDYyj2PI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ewt90gjRwPBk5B9/yW7LWJKUrYufgBnQMC89mWrzwgqb2dQ5EK06ttE5HgiQp+j2+
-         GfqYUze4avv/ZhAFEUjbTQNSpW82cZH0Puyv+Y6NrFY+Cw2K+7nY/ABasR2ZJr8ZST
-         H2NvDIp8RZPut/LDXaAaXePGRqXH11olNTSuTJ9g=
+        b=B0NBC68j06/oaBIBKW1rjSfLJGMgDuFqej1zTzZe/qsqwzgID6GsXehBxO1AH+in1
+         1syR1pvcHTxQGHKyyzA6D9qF4q6nuk1xObwun4kUpbjf0lAwJxV801E79hwoZDX1/e
+         uKfM8PPSKFdlAXYatabk3Mllz/9vgh6RZX2agVYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 193/225] btrfs: fix leaked plug after failure syncing log on zoned filesystems
-Date:   Wed,  4 May 2022 18:47:11 +0200
-Message-Id: <20220504153127.459522306@linuxfoundation.org>
+        stable@vger.kernel.org, suresh kumar <suresh2514@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 169/225] bonding: do not discard lowest hash bit for non layer3+4 hashing
+Date:   Wed,  4 May 2022 18:46:47 +0200
+Message-Id: <20220504153125.234936948@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,40 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: suresh kumar <suresh2514@gmail.com>
 
-commit 50ff57888d0b13440e7f4cde05dc339ee8d0f1f8 upstream.
+[ Upstream commit 49aefd131739df552f83c566d0665744c30b1d70 ]
 
-On a zoned filesystem, if we fail to allocate the root node for the log
-root tree while syncing the log, we end up returning without finishing
-the IO plug we started before, resulting in leaking resources as we
-have started writeback for extent buffers of a log tree before. That
-allocation failure, which typically is either -ENOMEM or -ENOSPC, is not
-fatal and the fsync can safely fallback to a full transaction commit.
+Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
+but it also removes last bit from non layer3+4 hashing
 
-So release the IO plug if we fail to allocate the extent buffer for the
-root of the log root tree when syncing the log on a zoned filesystem.
+Below script shows layer2+3 hashing will result in same slave to be used with above commit.
+$ cat hash.py
+#/usr/bin/python3.6
 
-Fixes: 3ddebf27fcd3a9 ("btrfs: zoned: reorder log node allocation on zoned filesystem")
-CC: stable@vger.kernel.org # 5.15+
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+h_dests=[0xa0, 0xa1]
+h_source=0xe3
+hproto=0x8
+saddr=0x1e7aa8c0
+daddr=0x17aa8c0
+
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    print(hash)
+
+print("with last bit removed")
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    hash = hash >> 1
+    print(hash)
+
+Output:
+$ python3.6 hash.py
+522133332
+522133333   <-------------- will result in both slaves being used
+
+with last bit removed
+261066666
+261066666   <-------------- only single slave used
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/tree-log.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/bonding/bond_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -3225,6 +3225,7 @@ int btrfs_sync_log(struct btrfs_trans_ha
- 			ret = btrfs_alloc_log_tree_node(trans, log_root_tree);
- 			if (ret) {
- 				mutex_unlock(&fs_info->tree_root->log_mutex);
-+				blk_finish_plug(&plug);
- 				goto out;
- 			}
- 		}
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index aebeb46e6fa6..c9107a8b4b90 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3819,14 +3819,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
+ 	return true;
+ }
+ 
+-static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
++static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
+ {
+ 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
+ 		(__force u32)flow_get_u32_src(flow);
+ 	hash ^= (hash >> 16);
+ 	hash ^= (hash >> 8);
++
+ 	/* discard lowest hash bit to deal with the common even ports pattern */
+-	return hash >> 1;
++	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
++		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
++		return hash >> 1;
++
++	return hash;
+ }
+ 
+ /* Generate hash based on xmit policy. If @skb is given it is used to linearize
+@@ -3856,7 +3861,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
+ 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	}
+ 
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
+ }
+ 
+ /**
+@@ -5051,7 +5056,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
+ 	/* L4 */
+ 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	/* L3 */
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
+ }
+ 
+ static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
+-- 
+2.35.1
+
 
 
