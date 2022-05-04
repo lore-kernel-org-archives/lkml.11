@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A69ABC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 787D1C3527D
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376744AbiEDRzR (ORCPT
+        id S1376700AbiEDRzH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
+        Wed, 4 May 2022 13:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357795AbiEDRPQ (ORCPT
+        with ESMTP id S1357190AbiEDROy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B3855491;
-        Wed,  4 May 2022 09:59:01 -0700 (PDT)
+        Wed, 4 May 2022 13:14:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DB4541B3;
+        Wed,  4 May 2022 09:58:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 226B0B827A0;
-        Wed,  4 May 2022 16:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1441C385A4;
-        Wed,  4 May 2022 16:58:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04504B8279A;
+        Wed,  4 May 2022 16:58:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56ACC385B5;
+        Wed,  4 May 2022 16:57:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683538;
-        bh=gTSwULzluSSgYRiQsdp4wV9Mnneb1sdZlUUEE99Wd9I=;
+        s=korg; t=1651683479;
+        bh=TuLouNdS92eCxvqd/mAyGX1SxJHvxX+sIgxL3M1XSO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u8cagx1KZOPDnwGKlieoF0/K4d4nNqqcEMSyEvF5XGRelIFqYVHkVmsMEqtR1Ibv+
-         eY4nHUut86GLzdYltlsahHouPcoEER3MKMx3KCYpLMP0gog8ScqCjoQTOFI0YZyaNM
-         6DgYJJvN5SOuTSuYPHxlfQeHqDpFCw5X7FtPum6Y=
+        b=G62G4zeN7TIF5Yf5BFoSWotN1AMmuROaUpEXpC2vG+QMc7sVG7MMI3WBEdwFRYA+1
+         Rn9ZcUB9uk0vvMG+g5xaVeBMAHvtKFsxgw4X4DiSv9ozT3gfau39lJE33KVy2GFuH0
+         2a+kZIw46IdjoWXHDe0kvmGyVZmZ0rCe/bO4YCOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.17 209/225] tty: n_gsm: fix insufficient txframe size
-Date:   Wed,  4 May 2022 18:47:27 +0200
-Message-Id: <20220504153128.691067193@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 141/225] platform/x86: asus-wmi: Potential buffer overflow in asus_wmi_evaluate_method_buf()
+Date:   Wed,  4 May 2022 18:46:19 +0200
+Message-Id: <20220504153122.795402848@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,52 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 535bf600de75a859698892ee873521a48d289ec1 upstream.
+[ Upstream commit 4345ece8f0bcc682f1fb3b648922c9be5f7dbe6c ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
-(N1) refers to the length of the information field (i.e. user payload).
-However, 'txframe' stores the whole frame including frame header, checksum
-and start/end flags. We also need to consider the byte stuffing overhead.
-Define constant for the protocol overhead and adjust the 'txframe' size
-calculation accordingly to reserve enough space for a complete mux frame
-including byte stuffing for advanced option mode. Note that no byte
-stuffing is applied to the start and end flag.
-Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
-transmission.
+This code tests for if the obj->buffer.length is larger than the buffer
+but then it just does the memcpy() anyway.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-8-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0f0ac158d28f ("platform/x86: asus-wmi: Add support for custom fan curves")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220413073744.GB8812@kili
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/platform/x86/asus-wmi.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -73,6 +73,8 @@ module_param(debug, int, 0600);
-  */
- #define MAX_MRU 1500
- #define MAX_MTU 1500
-+/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
-+#define PROT_OVERHEAD 7
- #define	GSM_NET_TX_TIMEOUT (HZ*10)
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index adab31b52f2a..399a4a345224 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -371,10 +371,14 @@ static int asus_wmi_evaluate_method_buf(u32 method_id,
  
- /*
-@@ -2264,7 +2266,7 @@ static struct gsm_mux *gsm_alloc_mux(voi
- 		kfree(gsm);
- 		return NULL;
- 	}
--	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
-+	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
- 	if (gsm->txframe == NULL) {
- 		kfree(gsm->buf);
- 		kfree(gsm);
+ 	switch (obj->type) {
+ 	case ACPI_TYPE_BUFFER:
+-		if (obj->buffer.length > size)
++		if (obj->buffer.length > size) {
+ 			err = -ENOSPC;
+-		if (obj->buffer.length == 0)
++			break;
++		}
++		if (obj->buffer.length == 0) {
+ 			err = -ENODATA;
++			break;
++		}
+ 
+ 		memcpy(ret_buffer, obj->buffer.pointer, obj->buffer.length);
+ 		break;
+-- 
+2.35.1
+
 
 
