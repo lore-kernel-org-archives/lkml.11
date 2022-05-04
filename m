@@ -2,112 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8842AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FD0C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379411AbiEDXJ4 (ORCPT
+        id S1379683AbiEDXJ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        Wed, 4 May 2022 19:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379355AbiEDXBM (ORCPT
+        with ESMTP id S1380389AbiEDXDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:01:12 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7244259BB8
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:42 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id fy8-20020a17090b020800b001d8de2118ccso1318489pjb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=gLfv5SLMJcSQPQ/Ju5zaAkWd2HIOB4z3HRnHNL4SQDI=;
-        b=WHNG80cfO6Tcty1emt0cr2ZRfola+mwo3Xx7vEmfo/M08fDw7RKpCZo2ciCaodmNRB
-         l1KZtURFo+tUKrso6qkLkun3Y8U6L0WKSEGiniIYxYLRVgLw8TLtzp639C/oGejrt51a
-         XSeyGK9WJMhMcmIzhJuEqPCrF91myLXOcw8ON851YzKaers7haXqum41vyTzytm/p+/t
-         a1tEqd3oSpXOYqvVqQJlq4R1h8/pBxp8gSnslxC5rCzxbC//TZWvNb/3mVbmQQgCTBuq
-         szX1+7oz8V14TbyCDuy/IstASVOqPEduFPfUmh1yufwgK7PPvv973HqKefcdfbPhk/RZ
-         TD3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=gLfv5SLMJcSQPQ/Ju5zaAkWd2HIOB4z3HRnHNL4SQDI=;
-        b=n8UNtnrTBuOgAb4wlDC8Hdna+2NGM9/b3DuGy20t+1K6859gS0WXn6hCFCabxlxH47
-         okcIEXsRoCNQVeRW5X9Mu6VUaTvlRCc8/qKfODGvPDJ2dvIqcwKyOt6rvzOEbAtjtPuo
-         u6nlx7D0IvbtU7BR+jREYOe8VOkOEBE5gH7PoJ6Q/YrRroteqOtIMYethvMywFtUWgI2
-         4gLSNEE+TCIKYxA0w9baXeHv+W7i0Gcpq15VFInGzCn95aDnTxbQF03V8e/8t38GQVUA
-         4vmq42fj75OGovAy1XlATxqjBIu3BCQbc2g/ecFe0Vbs2pyRCCnChRAVjKxcur/lMXUw
-         vdzw==
-X-Gm-Message-State: AOAM530r/Plz9R6h+0mEliJ9Zrcpnp443xM+xV3dWDd7HAA495I3ZSVv
-        6rVeAEzhUoojCZmkRGPiDBRKw9WxKGA=
-X-Google-Smtp-Source: ABdhPJwiqUWSlwjB4cPjqFgJiVLVDwoP4qOmo5KEo17lpHxloA+ZHrsQaErPHoJ7IxDiZXmG2ApfCJEZDDA=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2408:b0:4f7:a8cb:9b63 with SMTP id
- z8-20020a056a00240800b004f7a8cb9b63mr23382390pfh.33.1651704789825; Wed, 04
- May 2022 15:53:09 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:49:13 +0000
-In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-128-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220504224914.1654036-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 127/128] KVM: selftests: Trust that MAXPHYADDR > memslot0 in vmx_apic_access_test
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 4 May 2022 19:03:06 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D502255206
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651704847; x=1683240847;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AvzdZAViZbcFt+gCFFUnTX7OmoPclkBZz4ni9KPzED4=;
+  b=ELC6m2UGPoiOaNiD0t+DWbqztmvWdGD74HCM4MqM7848/mBFZpUM7fuL
+   4cFA3Sm439If9A/eRGdG67GjZOtksYopiNniONxyrzDZmTIsbQpFRL8Wn
+   ZDm+Cvvot8OKqSOMRc5Tpgi958xErJNSkZ3RsEda5fSUw1D93LKFiIsrz
+   0587wJMEhsX0XOA2Lh1pr2x7HFkk1TExJanYWEVcSZPWQhRoq52ae1tft
+   SIWfkHUOK7F7bK2GJeJe8+WrAyhevMcpw6BtKdR65RErwgYMAQGmps+vq
+   LcRdrl/jnlcL3Ut1i48/zwIxF7uZkTjTsyIe/XTZKlpxO2RwYszT5OGyP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="247830265"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="247830265"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:52:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="708675488"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 04 May 2022 15:52:15 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmNqx-000Brz-81;
+        Wed, 04 May 2022 22:52:15 +0000
+Date:   Thu, 05 May 2022 06:51:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/splitlock] BUILD SUCCESS
+ 0180a1e823d7c41d9a1c19f38e6069b38fe60c87
+Message-ID: <62730363.GLGLFU3Eqtjf0nNk%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use vm->max_gfn to compute the highest gpa in vmx_apic_access_test, and
-blindly trust that the highest gfn/gpa will be well above the memory
-carved out for memslot0.  The existing check is beyond paranoid; KVM
-doesn't support CPUs with host.MAXPHYADDR < 32, and the selftests are all
-kinds of hosed if memslot0 overlaps the local xAPIC, which resides above
-"lower" (below 4gb) DRAM.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/splitlock
+branch HEAD: 0180a1e823d7c41d9a1c19f38e6069b38fe60c87  x86/split_lock: Enable the split lock feature on Raptor Lake
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- .../testing/selftests/kvm/x86_64/vmx_apic_access_test.c  | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+elapsed time: 750m
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c b/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c
-index ef7514376b1e..ccb05ef7234e 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c
-@@ -72,8 +72,6 @@ static void l1_guest_code(struct vmx_pages *vmx_pages, unsigned long high_gpa)
- int main(int argc, char *argv[])
- {
- 	unsigned long apic_access_addr = ~0ul;
--	unsigned int paddr_width;
--	unsigned int vaddr_width;
- 	vm_vaddr_t vmx_pages_gva;
- 	unsigned long high_gpa;
- 	struct vmx_pages *vmx;
-@@ -86,12 +84,7 @@ int main(int argc, char *argv[])
- 
- 	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
- 
--	kvm_get_cpu_address_width(&paddr_width, &vaddr_width);
--	high_gpa = (1ul << paddr_width) - getpagesize();
--	if ((unsigned long)DEFAULT_GUEST_PHY_PAGES * getpagesize() > high_gpa) {
--		print_skip("No unbacked physical page available");
--		exit(KSFT_SKIP);
--	}
-+	high_gpa = (vm->max_gfn - 1) << vm->page_shift;
- 
- 	vmx = vcpu_alloc_vmx(vm, &vmx_pages_gva);
- 	prepare_virtualize_apic_accesses(vmx, vm);
+configs tested: 135
+configs skipped: 92
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+m68k                       m5249evb_defconfig
+mips                           ip32_defconfig
+powerpc                     asp8347_defconfig
+arc                           tb10x_defconfig
+ia64                        generic_defconfig
+mips                       bmips_be_defconfig
+h8300                     edosk2674_defconfig
+powerpc                    amigaone_defconfig
+arm                           corgi_defconfig
+powerpc                      pcm030_defconfig
+powerpc                        cell_defconfig
+arc                     haps_hs_smp_defconfig
+riscv             nommu_k210_sdcard_defconfig
+mips                         cobalt_defconfig
+openrisc                  or1klitex_defconfig
+xtensa                  audio_kc705_defconfig
+m68k                            q40_defconfig
+arc                 nsimosci_hs_smp_defconfig
+powerpc                 mpc85xx_cds_defconfig
+arm                            xcep_defconfig
+arm                        oxnas_v6_defconfig
+microblaze                          defconfig
+xtensa                    smp_lx200_defconfig
+um                             i386_defconfig
+arm                        mini2440_defconfig
+m68k                             allyesconfig
+microblaze                      mmu_defconfig
+arc                            hsdk_defconfig
+mips                        bcm47xx_defconfig
+m68k                        stmark2_defconfig
+arm                            mps2_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220501
+m68k                             allmodconfig
+m68k                                defconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                 randconfig-a003-20220502
+i386                 randconfig-a002-20220502
+i386                 randconfig-a001-20220502
+i386                 randconfig-a004-20220502
+i386                 randconfig-a005-20220502
+i386                 randconfig-a006-20220502
+i386                          randconfig-a012
+i386                          randconfig-a016
+i386                          randconfig-a014
+arc                  randconfig-r043-20220501
+s390                 randconfig-r044-20220501
+riscv                randconfig-r042-20220501
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220501
+riscv                randconfig-c006-20220501
+mips                 randconfig-c004-20220501
+arm                  randconfig-c002-20220501
+powerpc                    socrates_defconfig
+mips                     cu1830-neo_defconfig
+powerpc                      katmai_defconfig
+arm                           sama7_defconfig
+hexagon                          alldefconfig
+arm                         s3c2410_defconfig
+mips                           rs90_defconfig
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64               randconfig-a011-20220502
+x86_64               randconfig-a014-20220502
+x86_64               randconfig-a012-20220502
+x86_64               randconfig-a013-20220502
+x86_64               randconfig-a016-20220502
+x86_64               randconfig-a015-20220502
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+i386                 randconfig-a011-20220502
+i386                 randconfig-a013-20220502
+i386                 randconfig-a016-20220502
+i386                 randconfig-a015-20220502
+i386                 randconfig-a014-20220502
+i386                 randconfig-a012-20220502
+hexagon              randconfig-r045-20220502
+hexagon              randconfig-r045-20220501
+riscv                randconfig-r042-20220502
+hexagon              randconfig-r041-20220502
+hexagon              randconfig-r041-20220501
+
 -- 
-2.36.0.464.gb9c8b46e94-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
