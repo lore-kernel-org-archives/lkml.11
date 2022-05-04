@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56159C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C259C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239545AbiEDQzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        id S1353906AbiEDQ4D (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 12:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354146AbiEDQxw (ORCPT
+        with ESMTP id S1354130AbiEDQxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:53:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D59848396;
-        Wed,  4 May 2022 09:49:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB86E4833E;
+        Wed,  4 May 2022 09:49:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E5B461756;
-        Wed,  4 May 2022 16:49:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88A10C385AA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CE1961720;
         Wed,  4 May 2022 16:49:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 954B3C385A5;
+        Wed,  4 May 2022 16:49:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682947;
-        bh=a99vRrxEY2vMTcwfYVJCvDotzx84+gY+R24E5W+w7q4=;
+        s=korg; t=1651682946;
+        bh=NJQPprFVt5xzzLJOxs/sz1CrlI1ZPfT0dh0Hx18IpOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FlKZ8yg5SdEXtkAqK22PUhLQwSj8LhzrHnPzXfOpMsmWLfj44zkpgJtZff/BeCmgr
-         Jzwh2JqSZE7T5tb3bSkkIAQh0LnmI//1YLeNb6Uv4LlpECPqkMJMBQifEOKxowr0vn
-         MJrMAj7JB3wqYBJOE075FKmr9+p/kfBlBxa/OXp0=
+        b=z5RULd9xx0x0cWhIhR1hsM8JNtk9Z1WUrbp4WpVrkx2FTCVpl2HObqEAUx6aL8Wp0
+         dhQxwvnaYLB227w6MpFRisRjVwAS1kekx22np8Px+ZPaz1Xz2F4DPV/DhjRJ+jzjaK
+         PzdxxRXmQCXNFrCHYXJeR78YXkXpfhDa8RqOpeOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 42/84] ARM: dts: Fix mmc order for omap3-gta04
-Date:   Wed,  4 May 2022 18:44:23 +0200
-Message-Id: <20220504152930.799569912@linuxfoundation.org>
+Subject: [PATCH 5.4 51/84] ARM: dts: imx6ull-colibri: fix vqmmc regulator
+Date:   Wed,  4 May 2022 18:44:32 +0200
+Message-Id: <20220504152931.359583869@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -49,36 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: H. Nikolaus Schaller <hns@goldelico.com>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-[ Upstream commit 09269dd050094593fc747f2a5853d189fefcb6b5 ]
+[ Upstream commit 45974e4276a8d6653394f66666fc57d8ffa6de9a ]
 
-Commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-introduces general mmc aliases. Let's tailor them to the need
-of the GTA04 board which does not make use of mmc2 and mmc3 interfaces.
+The correct spelling for the property is gpios. Otherwise, the regulator
+will neither reserve nor control any GPIOs. Thus, any SD/MMC card which
+can use UHS-I modes will fail.
 
-Fixes: a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Message-Id: <dc9173ee3d391d9e92b7ab8ed4f84b29f0a21c83.1646744420.git.hns@goldelico.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: c2e4987e0e02 ("ARM: dts: imx6ull: add Toradex Colibri iMX6ULL support")
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-gta04.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/imx6ull-colibri.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
-index 186b2af7743e..089e9f1f442b 100644
---- a/arch/arm/boot/dts/omap3-gta04.dtsi
-+++ b/arch/arm/boot/dts/omap3-gta04.dtsi
-@@ -31,6 +31,8 @@ chosen {
- 	aliases {
- 		display0 = &lcd;
- 		display1 = &tv0;
-+		/delete-property/ mmc2;
-+		/delete-property/ mmc3;
- 	};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+index d56728f03c35..c83323b9ea53 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+@@ -37,7 +37,7 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
  
- 	ldo_3v3: fixedregulator {
+ 	reg_sd1_vmmc: regulator-sd1-vmmc {
+ 		compatible = "regulator-gpio";
+-		gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
++		gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_snvs_reg_sd>;
+ 		regulator-always-on;
 -- 
 2.35.1
 
