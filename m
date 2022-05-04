@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92730C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353858AbiEDSGu (ORCPT
+        id S1359842AbiEDSG5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        Wed, 4 May 2022 14:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359674AbiEDSGL (ORCPT
+        with ESMTP id S1359599AbiEDSGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 14:06:11 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DF46D3B3
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:21:31 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-d39f741ba0so1827959fac.13
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:21:31 -0700 (PDT)
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3536D6D3A7
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:21:29 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-edf9ddb312so905399fac.8
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:21:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9uwOGnLYMEJR/9HVxcO1OnuSImbrqYL22DFR4CN456k=;
-        b=kh2l6tCUfmXum7Viz5IbpjauRsyWy+uzfTkiP9KgnsQUkleUr4A6KD0Fe7X4vR5x1q
-         KWopCu6yA3HGBZ1PE+2F4ru5MRJ1n6Ok3T2dOwRAUhCAuTsUWJkXK5BaNTl3Tq65rE0l
-         VYU/2pnMkejXlkY+VqA38ZOHgEFHNUZE3RmHfqHZrK3NsxP0UjoyatuSS8su+i7JpWzk
-         igX6QrQfKxO6QOGU+j+f0JexMpSIDTjTDtKQoN2mmQ1iTM763De2ptE4Xl2Du1h9/d2b
-         YkF7ck96I8jcVIYoiESssMp9/8J7WRJljX/RhdiLkF3U3LkZWufAE1Dquc2yF+iC2J8F
-         Ocrg==
+        bh=vKpqt3Zv71OFS+RtPhQCpWEmVvpBGhpyU8YWWfhiy8Y=;
+        b=X3sXe04ZkZYP37hU1qpG6mMuBg9Z7LxX/EgWjSm7om6CYeHY5AX+WVfwlUtuR6s3DS
+         JQ2MOTy6wndnhdDNyARx/uI7yIWF3JnnEeFhoLU84NGkC7kVeQnfhEDswdgZ4jan6QYu
+         3hTtJim8bqdzAukunw3K/36WIdd2UoiOxiQrv3q+/ev+3xR0zYXB0I11VJOqLo5kKQnW
+         K8l43rAqc7C0qGOsLeYw4q/AJnZ9vbzRtD1wlNGiwI2fdtmhiSEbYdofofwBTXjQ69Az
+         Hybm0bC8HnDgoRCgNwt+lF5yHIvOhE7sQNuwi7gl5lUXcijwN+TQBY07gD+TPjFlCiva
+         fTPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9uwOGnLYMEJR/9HVxcO1OnuSImbrqYL22DFR4CN456k=;
-        b=lq422/uFBwgFeBrvpf+7SxE7XQQG06goqb6LTekWD6gE/mXjFPA3DlNkD95t+QzSw3
-         /kcMT6i8Q1R5RxT2O2sWDwvzRLnlA+NKpFfNhZsSG12cbaqBEiakaINaEkWZdbBfg60u
-         RGwQWfV7oeq+UAlk7KRe0GGCs7weHHOvRj2Qm09/sNxkEs7brhwtckjKr6UohcqVeAhL
-         wWQGNcGKN3V64wZeEKtoPd/aTjEGZEYwsZrlKHqEuloYD2C2sFii/MuUYe4Nx9PE/hcR
-         sHRao431kEMWY/GpXjGoaermwwiF7/lLQwDNot0RBnTg4kV5KGKqSSqPBfbd/TxJrsmu
-         BNmA==
-X-Gm-Message-State: AOAM533usX3q8rzYA4FAz2jhALieMkWpHQx8yUwPS0wKUnjx0QMe56tf
-        H3jwWzIYgzEpck6btT/QSjrjCASRjjtwzw0u
-X-Google-Smtp-Source: ABdhPJw0NytvaSnOYdTa7GUSqGzJJxnqCVMGNXFaU+Bu60k1BERVeupvou3p01pEwFJ+Dhp7gFPtHw==
-X-Received: by 2002:a05:6870:a910:b0:e6:dca:5fd3 with SMTP id eq16-20020a056870a91000b000e60dca5fd3mr264373oab.202.1651684891384;
-        Wed, 04 May 2022 10:21:31 -0700 (PDT)
+        bh=vKpqt3Zv71OFS+RtPhQCpWEmVvpBGhpyU8YWWfhiy8Y=;
+        b=b2KY6k5TxraY+mkLz4tVCj698Bhq+3OIfKDqu6aA2W3R63HDxkBkuw6qaYHXLiIknm
+         HqVJ0bUgj3m08omPc/EvSOiBJC1yWGGhbyno6l3KOqGo+NVX1ocD71IF3poUugOJfP37
+         osMGr4/D8ZyObGT9Z/K4Rs7YN4tA6sfstwsh57gg/pCQ62YFIlHjTEiBZnDPUSAJ9qDQ
+         FyIXrPQU1frs0S+tChLNoewkcksQOGw2Nn+hbOgSjVSoTSUru9ZNJQYKkcpSKsl7OziZ
+         mO1UXw/Ss6zbWWq7S1nCZ3CFmeucTdKP4+vz2emFj9ep+tbuqofkh7RULfaK/ywefFv0
+         96cA==
+X-Gm-Message-State: AOAM533VYoChFd4wJIwS0935owTDdu5N0lpKlhPL2tTUQt7fLEsNn9Ly
+        KY2FGhtOleAmDX/gU2K15JWnDA==
+X-Google-Smtp-Source: ABdhPJyU0Q/uoTIwMxovxMdIKX+ny8p88N5ogcC+0vganajhvhHMka5oEPfrKlUo8lGlzi/th+7yvw==
+X-Received: by 2002:a05:6870:6301:b0:e9:17b2:2e12 with SMTP id s1-20020a056870630100b000e917b22e12mr276826oao.96.1651684888962;
+        Wed, 04 May 2022 10:21:28 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a7-20020a056870b14700b000ead8b89484sm5785452oal.5.2022.05.04.10.21.30
+        by smtp.gmail.com with ESMTPSA id a7-20020a056870b14700b000ead8b89484sm5785452oal.5.2022.05.04.10.21.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 10:21:30 -0700 (PDT)
+        Wed, 04 May 2022 10:21:28 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Alex Elder <elder@linaro.org>, Georgi Djakov <djakov@kernel.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Taniya Das <quic_tdas@quicinc.com>, patches@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Mike Tipton <quic_mdtipton@quicinc.com>
-Subject: Re: (subset) [PATCH 4/2] ARM: dts: qcom: sdx55: Remove ipa interconnect node
-Date:   Wed,  4 May 2022 12:21:15 -0500
-Message-Id: <165168485227.3730817.7400663039437041029.b4-ty@linaro.org>
+To:     devicetree@vger.kernel.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org
+Cc:     dianders@chromium.org, quic_msavaliy@quicinc.com
+Subject: Re: [V6 0/2] arm64: dts: qcom: Configure CTS pin to bias-bus-hold for bluetooth
+Date:   Wed,  4 May 2022 12:21:13 -0500
+Message-Id: <165168485227.3730817.12193941137410849095.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220415005828.1980055-2-swboyd@chromium.org>
-References: <20220412220033.1273607-1-swboyd@chromium.org> <20220415005828.1980055-1-swboyd@chromium.org> <20220415005828.1980055-2-swboyd@chromium.org>
+In-Reply-To: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
+References: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -70,16 +69,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 17:58:27 -0700, Stephen Boyd wrote:
-> This device node is unused now that we've removed the driver that
-> consumed it in the kernel. Drop the unused node to save some space.
+On Thu, 21 Apr 2022 21:26:05 +0530, Vijaya Krishna Nivarthi wrote:
+> WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+> Change pinctrl configuration to handle same.
 > 
 > 
 
 Applied, thanks!
 
-[4/4] ARM: dts: qcom: sdx55: Remove ipa interconnect node
-      commit: 02fbeb1649534d564b100a994b05d4eaa167ea19
+[1/2] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
+      commit: 497b272759986af1aa5a25b5e903d082c67bd8f6
+[2/2] arm64: dts: qcom: sc7280-qcard: Configure CTS pin to bias-bus-hold for bluetooth
+      commit: 3d0e375bae55c2dfa6dd0762f45ad71f0b192f71
 
 Best regards,
 -- 
