@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354514AbiEDQ60 (ORCPT
+        id S1354524AbiEDQ6a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        Wed, 4 May 2022 12:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354447AbiEDQyW (ORCPT
+        with ESMTP id S1354450AbiEDQyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:54:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469B54968B;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665B049255;
         Wed,  4 May 2022 09:49:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E96961701;
-        Wed,  4 May 2022 16:49:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D14EC385A5;
-        Wed,  4 May 2022 16:49:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E19EFB827A2;
+        Wed,  4 May 2022 16:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879FDC385AA;
+        Wed,  4 May 2022 16:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682974;
-        bh=ri5FZx4k/xV0y56XosfN461TREudlontDU4CQIoNdhY=;
+        s=korg; t=1651682972;
+        bh=6+rjE9zh4GATjXkM46Hk/BnlVF8MeLJ7vpypB9Ynn/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GA3MboEVM8t3ogjgLkReGoWBWwDKeXqH9SGSfSjTfyAjD/s8w1/GhZer+DWARpCkT
-         +UQDmVqtMBdibfzT49RJ1bpmhXJAMMxc25Ed9mhQL7Feg0OOCbKdqGcqrPlsKi3hoU
-         aRt36VZ2LpyzG/CHsz9Xk8id1EtQspq9Fzh29pGE=
+        b=sZQG5Glp4x2tobHD0Xz6NIahIfO2QOLs8jl0q+jXdABU2wgf8QziwZb6kDLlwuznz
+         n4WVFTTMiHgiGBUh8MVa5FSr4Cpt/3dSYBQBf/y7E7pqUhSMDnJoA4kroix7JXwYxM
+         ABpGyzzMGKlZy4mgbYGEGWt66fvXhZOLX2b5fMps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Topi Miettinen <toiwoton@gmail.com>
-Subject: [PATCH 5.4 77/84] netfilter: nft_socket: only do sk lookups when indev is available
-Date:   Wed,  4 May 2022 18:44:58 +0200
-Message-Id: <20220504152933.610244490@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.4 75/84] tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
+Date:   Wed,  4 May 2022 18:44:56 +0200
+Message-Id: <20220504152933.399385984@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,110 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 743b83f15d4069ea57c3e40996bf4a1077e0cdc1 upstream.
+commit 06d5afd4d640eea67f5623e76cd5fc03359b7f3c upstream.
 
-Check if the incoming interface is available and NFT_BREAK
-in case neither skb->sk nor input device are set.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.5.2 describes that the signal octet in
+convergence layer type 2 can be either one or two bytes. The length is
+encoded in the EA bit. This is set 1 for the last byte in the sequence.
+gsmtty_modem_update() handles this correctly but gsm_dlci_data_output()
+fails to set EA to 1. There is no case in which we encode two signal octets
+as there is no case in which we send out a break signal.
+Therefore, always set the EA bit to 1 for the signal octet to fix this.
 
-Because nf_sk_lookup_slow*() assume packet headers are in the
-'in' direction, use in postrouting is not going to yield a meaningful
-result.  Same is true for the forward chain, so restrict the use
-to prerouting, input and output.
-
-Use in output work if a socket is already attached to the skb.
-
-Fixes: 554ced0a6e29 ("netfilter: nf_tables: add support for native socket matching")
-Reported-and-tested-by: Topi Miettinen <toiwoton@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-5-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_socket.c |   52 ++++++++++++++++++++++++++++++++-------------
- 1 file changed, 38 insertions(+), 14 deletions(-)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/netfilter/nft_socket.c
-+++ b/net/netfilter/nft_socket.c
-@@ -14,6 +14,32 @@ struct nft_socket {
- 	};
- };
- 
-+static struct sock *nft_socket_do_lookup(const struct nft_pktinfo *pkt)
-+{
-+	const struct net_device *indev = nft_in(pkt);
-+	const struct sk_buff *skb = pkt->skb;
-+	struct sock *sk = NULL;
-+
-+	if (!indev)
-+		return NULL;
-+
-+	switch (nft_pf(pkt)) {
-+	case NFPROTO_IPV4:
-+		sk = nf_sk_lookup_slow_v4(nft_net(pkt), skb, indev);
-+		break;
-+#if IS_ENABLED(CONFIG_NF_TABLES_IPV6)
-+	case NFPROTO_IPV6:
-+		sk = nf_sk_lookup_slow_v6(nft_net(pkt), skb, indev);
-+		break;
-+#endif
-+	default:
-+		WARN_ON_ONCE(1);
-+		break;
-+	}
-+
-+	return sk;
-+}
-+
- static void nft_socket_eval(const struct nft_expr *expr,
- 			    struct nft_regs *regs,
- 			    const struct nft_pktinfo *pkt)
-@@ -27,20 +53,7 @@ static void nft_socket_eval(const struct
- 		sk = NULL;
- 
- 	if (!sk)
--		switch(nft_pf(pkt)) {
--		case NFPROTO_IPV4:
--			sk = nf_sk_lookup_slow_v4(nft_net(pkt), skb, nft_in(pkt));
--			break;
--#if IS_ENABLED(CONFIG_NF_TABLES_IPV6)
--		case NFPROTO_IPV6:
--			sk = nf_sk_lookup_slow_v6(nft_net(pkt), skb, nft_in(pkt));
--			break;
--#endif
--		default:
--			WARN_ON_ONCE(1);
--			regs->verdict.code = NFT_BREAK;
--			return;
--		}
-+		sk = nft_socket_do_lookup(pkt);
- 
- 	if (!sk) {
- 		regs->verdict.code = NFT_BREAK;
-@@ -123,6 +136,16 @@ static int nft_socket_dump(struct sk_buf
- 	return 0;
- }
- 
-+static int nft_socket_validate(const struct nft_ctx *ctx,
-+			       const struct nft_expr *expr,
-+			       const struct nft_data **data)
-+{
-+	return nft_chain_validate_hooks(ctx->chain,
-+					(1 << NF_INET_PRE_ROUTING) |
-+					(1 << NF_INET_LOCAL_IN) |
-+					(1 << NF_INET_LOCAL_OUT));
-+}
-+
- static struct nft_expr_type nft_socket_type;
- static const struct nft_expr_ops nft_socket_ops = {
- 	.type		= &nft_socket_type,
-@@ -130,6 +153,7 @@ static const struct nft_expr_ops nft_soc
- 	.eval		= nft_socket_eval,
- 	.init		= nft_socket_init,
- 	.dump		= nft_socket_dump,
-+	.validate	= nft_socket_validate,
- };
- 
- static struct nft_expr_type nft_socket_type __read_mostly = {
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -823,7 +823,7 @@ static int gsm_dlci_data_output(struct g
+ 			break;
+ 		case 2:	/* Unstructed with modem bits.
+ 		Always one byte as we never send inline break data */
+-			*dp++ = gsm_encode_modem(dlci);
++			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
+ 			break;
+ 		}
+ 		WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
 
 
