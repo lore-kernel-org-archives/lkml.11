@@ -2,145 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07887C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351430AbiEDOoO (ORCPT
+        id S1351445AbiEDOrw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
+        Wed, 4 May 2022 10:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344317AbiEDOoJ (ORCPT
+        with ESMTP id S1351407AbiEDOrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:44:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777616147;
-        Wed,  4 May 2022 07:40:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C0CF61A9C;
-        Wed,  4 May 2022 14:40:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47618C385A4;
-        Wed,  4 May 2022 14:40:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651675232;
-        bh=pXEMqJc4FMTugFCsqdvFsuG1NQYrw+IcXscCZBtoAmQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=poZyFfi/B3gq6L6NFEBuYPHvtwbfB7IYSgRGeftkd/+88cA4KuFAt/JFIRgp/qC29
-         3ZqgPAzgHH9W/VdxK0kiocFMLzhpRohjJ7dLs90/Pr5d85rdkZy0Qi+n1kgZaF0FWX
-         Y0a5/2cnRJ8cOdM/Yarnsw50+1OFUhgJU6CtAoj0=
-Date:   Wed, 4 May 2022 16:40:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        USB mailing list <linux-usb@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [PATCH 4/4] USB: gadget: Add a new bus for gadgets
-Message-ID: <YnKQXwGbe4k+cGkF@kroah.com>
-References: <YjeEbHL8ITkW692W@rowland.harvard.edu>
- <YmKt3kH+85kjzdbL@kroah.com>
- <YmSc29YZvxgT5fEJ@rowland.harvard.edu>
- <YmSo6fU1FlNq8cOZ@rowland.harvard.edu>
- <YmSpKpnWR8WWEk/p@rowland.harvard.edu>
- <YmSpdxaDNeC2BBOf@rowland.harvard.edu>
- <alpine.DEB.2.22.394.2205031209030.681336@ramsan.of.borg>
- <YnFCEn45XwDWM/9Y@rowland.harvard.edu>
- <CAMuHMdVDK0W0T3=+2c1E6wtwy5JTUemTGYyj3PFuVUhK++AzrA@mail.gmail.com>
- <YnFO0Qr8RY7peFCg@rowland.harvard.edu>
+        Wed, 4 May 2022 10:47:46 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6319A1260E
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:44:09 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-e656032735so1408089fac.0
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 07:44:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hzXxKtcQps0ZAgRhahbmep1urQpR9Cgb4jllU0BGEjo=;
+        b=AaRIzJr666XG5+EfWEqXud0jEDdbtOXM3arp9tH/ET8Mu61UpwavXLlLZgQxIODP2d
+         4DshXJXHjPS28WuTdLfDzanffOSPGmzwsLqHAeWqGxfPYGzrxvrxuBcvBmiJmcvkQTSF
+         R3+3lAqSD3p+J4kIUAOaWa6OJlMzCRsSFoqpI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hzXxKtcQps0ZAgRhahbmep1urQpR9Cgb4jllU0BGEjo=;
+        b=4UDw48o5UEfyv4jfjtCgOYXaBk447zU1wPlT6Mx8qUMLbbsMy/oT8FzIMuHDT9G/m9
+         t6v6a20kwPdGoqKyDiK2pJXc6BlzgOoNmMBGUInuIoMP0XRwFdX0Y7QZuxKg5zbUHz1t
+         fOXLjVHJOtHCLMApziw0XYXnVh90dvr+nonYVLJ6L+yJJ0vTkyKww0J+fmWFIJ8UrGI1
+         8M6kIWgMHeJsCv70LvooH4x6wwIVsagDln6px/7bGLgyG/1Lj0tpfrHCs3Rmt0pQBdEh
+         uOdyN2mvUIiZHc3Ku6W7mym1AGX2cp6pXKc6XLdtQMLQSSPEFe1INe8BXFXqFvk4gtSL
+         fWrQ==
+X-Gm-Message-State: AOAM531LtvN48SEjufP4kpB/84XAmnihiYcUEzBYozpSMFZHGY9zZvGL
+        XZgG9APoOOgaT+Mmv2VAAYJ6WQ==
+X-Google-Smtp-Source: ABdhPJx3/UeuBZsluNWODA4kiKaqDvbK5qLaNKbUKByLbstg23zONbpgcCwRsLd3dXF4WjHRvUdLqw==
+X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id s37-20020a056870eaa500b000da0b3f2b45mr3979241oap.228.1651675448541;
+        Wed, 04 May 2022 07:44:08 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:373b:a889:93d6:e756])
+        by smtp.gmail.com with ESMTPSA id h3-20020a056870d24300b000e686d1386fsm8064357oac.9.2022.05.04.07.44.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 07:44:08 -0700 (PDT)
+Date:   Wed, 4 May 2022 09:44:07 -0500
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Sean Christopherson <seanjc@google.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a
+ livepatch is pending
+Message-ID: <YnKRN1zXKuh/gIMl@do-x1extreme>
+References: <20220503174934.2641605-1-sforshee@digitalocean.com>
+ <20220504130753.GB8069@pathway.suse.cz>
+ <YnKEnqfxSyVmSGYx@do-x1extreme>
+ <20220504142809.GC8069@pathway.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnFO0Qr8RY7peFCg@rowland.harvard.edu>
+In-Reply-To: <20220504142809.GC8069@pathway.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 11:48:33AM -0400, Alan Stern wrote:
-> On Tue, May 03, 2022 at 05:27:08PM +0200, Geert Uytterhoeven wrote:
-> > Hi Alan,
+On Wed, May 04, 2022 at 04:28:09PM +0200, Petr Mladek wrote:
+> On Wed 2022-05-04 08:50:22, Seth Forshee wrote:
+> > On Wed, May 04, 2022 at 03:07:53PM +0200, Petr Mladek wrote:
+> > > On Tue 2022-05-03 12:49:34, Seth Forshee wrote:
+> > > > A task can be livepatched only when it is sleeping or it exits to
+> > > > userspace. This may happen infrequently for a heavily loaded vCPU task,
+> > > > leading to livepatch transition failures.
+> > > 
+> > > The problem was solved by sending a fake signal, see the commit
+> > > 0b3d52790e1cfd6b80b826 ("livepatch: Remove signal sysfs attribute").
+> > > It was achieved by calling signal_wake_up(). It set TIF_SIGPENDING
+> > > and woke the task. It interrupted the syscall and the task was
+> > > transitioned when leaving to the userspace.
+> > > 
+> > > signal_wake_up() was later replaced by set_notify_signal(),
+> > > see the commit 8df1947c71ee53c7e21 ("livepatch: Replace
+> > > the fake signal sending with TIF_NOTIFY_SIGNAL infrastructure").
+> > > The difference is that set_notify_signal() uses TIF_NOTIFY_SIGNAL
+> > > instead of TIF_SIGPENDING.
+> > > 
+> > > The effect is the same when running on a real hardware. The syscall
+> > > gets interrupted and exit_to_user_mode_loop() is called where
+> > > the livepatch state is updated (task migrated).
+> > > 
+> > > But it works a different way in kvm where the task works are
+> > > called in the guest mode and the task does not return into
+> > > the user space in the host mode.
 > > 
-> > On Tue, May 3, 2022 at 5:14 PM Alan Stern <stern@rowland.harvard.edu> wrote:
-> > > On Tue, May 03, 2022 at 12:14:30PM +0200, Geert Uytterhoeven wrote:
-> > > > On Sat, 23 Apr 2022, Alan Stern wrote:
-> > > > > This patch adds a "gadget" bus and uses it for registering gadgets and
-> > > > > their drivers.  From now on, bindings will be managed by the driver
-> > > > > core rather than through ad-hoc manipulations in the UDC core.
-> > > > >
-> > > > > As part of this change, the driver_pending_list is removed.  The UDC
-> > > > > core won't need to keep track of unbound drivers for later binding,
-> > > > > because the driver core handles all of that for us.
-> > > > >
-> > > > > However, we do need one new feature: a way to prevent gadget drivers
-> > > > > from being bound to more than one gadget at a time.  The existing code
-> > > > > does this automatically, but the driver core doesn't -- it's perfectly
-> > > > > happy to bind a single driver to all the matching devices on the bus.
-> > > > > The patch adds a new bitflag to the usb_gadget_driver structure for
-> > > > > this purpose.
-> > > > >
-> > > > > A nice side effect of this change is a reduction in the total lines of
-> > > > > code, since now the driver core will do part of the work that the UDC
-> > > > > used to do.
-> > > > >
-> > > > > A possible future patch could add udc devices to the gadget bus, say
-> > > > > as a separate device type.
-> > > > >
-> > > > > Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-> > > >
-> > > > Thanks for your patch, which is now commit fc274c1e997314bf ("USB:
-> > > > gadget: Add a new bus for gadgets") in usb-next.
-> > > >
-> > > > This patch cause a regression on the Renesas Salvator-XS development
-> > > > board, as R-Car H3 has multiple USB gadget devices:
-> > >
-> > > Then these gadgets ought to have distinct names in order to avoid the
-> > > conflict below:
-> > >
-> > > >     sysfs: cannot create duplicate filename '/bus/gadget/devices/gadget'
-> > > >     CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc1-arm64-renesas-00074-gfc274c1e9973 #1587
-> > > >     Hardware name: Renesas Salvator-X 2nd version board based on r8a77951 (DT)
-> > > >     Call trace:
-> > > >      dump_backtrace+0xcc/0xd8
-> > > >      show_stack+0x14/0x30
-> > > >      dump_stack_lvl+0x88/0xb0
-> > > >      dump_stack+0x14/0x2c
-> > > >      sysfs_warn_dup+0x60/0x78
-> > > >      sysfs_do_create_link_sd.isra.0+0xe4/0xf0
-> > > >      sysfs_create_link+0x20/0x40
-> > > >      bus_add_device+0x64/0x110
-> > > >      device_add+0x31c/0x850
-> > > >      usb_add_gadget+0x124/0x1a0
-> > > >      usb_add_gadget_udc_release+0x1c/0x50
-> > > >      usb_add_gadget_udc+0x10/0x18
-> > > >      renesas_usb3_probe+0x450/0x728
-> > > ...
-> > >
-> > > Having three gadget devices, all named "gadget", doesn't seem like a
-> > > good idea.
-> > 
-> > I'm not so sure where these names are coming from.
-> > `git grep '"gadget"'` points to the following likely targets:
-> > 
-> > drivers/usb/gadget/udc/core.c:  dev_set_name(&gadget->dev, "gadget");
-> > drivers/usb/renesas_usbhs/mod_gadget.c: gpriv->mod.name         = "gadget";
-> > 
-> > Changing both names reveals the problem is actually caused by
-> > the former ;-)
+> > > > --- a/kernel/entry/kvm.c
+> > > > +++ b/kernel/entry/kvm.c
+> > > > @@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
+> > > >  				task_work_run();
+> > > >  		}
+> > > >  
+> > > > -		if (ti_work & _TIF_SIGPENDING) {
+> > > > +		/*
+> > > > +		 * When a livepatch is pending, force an exit to userspace
+> > > > +		 * as though a signal is pending to allow the task to be
+> > > > +		 * patched.
+> > > > +		 */
+> > > > +		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
+> > > >  			kvm_handle_signal_exit(vcpu);
 > 
-> Ah, good.
+> Another problem. Is it safe to call kvm_handle_signal_exit(vcpu)
+> for kthreads?
 > 
-> One way to attack this would be to keep a static counter and dynamically 
-> set the name to "gadget.%d" using the counter's value.  Or keep a bitmap 
-> of allocated gadget numbers and use the first available number.
+> kthreads have _TIF_PATCH_PENDING when they need the livepatch transition.
+> But kthreads never leave kernel so we do not send the fake signal
+> signals to them.
+
+xfer_to_guest_mode_handle_work() should only be getting called on user
+threads running ioctl(KVM_RUN).
+
 > 
-> Felipe, Greg, any opinions?
+> > > >  			return -EINTR;
+> > > >  		}
+> > > 
+> > > Does xfer_to_guest_mode_work() interrupts the syscall running
+> > > on the guest?
+> > 
+> > xfer_to_guest_mode_work() is called as part of a loop to execute kvm
+> > guests (for example, on x86 see vcpu_run() in arch/x86/kvm/x86.c). When
+> > guest execution is interrupted (in the livepatch case it is interrupted
+> > when set_notify_signal() is called for the vCPU task)
+> > xfer_to_guest_mode_work() is called if there is pending work, and if it
+> > returns non-zero the loop does not immediately re-enter guest execution
+> > but instead returns to userspace.
+> 
+> Thanks for the detailed explanation.
+> 
+> 
+> > > If "yes" then we do not need to call kvm_handle_signal_exit(vcpu).
+> > > It will be enough to call:
+> > > 
+> > > 		if (ti_work & _TIF_PATCH_PENDING)
+> > > 			klp_update_patch_state(current);
+> > 
+> > What if the task's call stack contains a function being patched?
+> 
+> We do not need to check the stack when the syscall gets restarted.
+> The task might be transitioned only when the syscall gets restarted.
 
-Just use an idr structure for the number, that's the simplest way to
-track that.
+I see. Thanks!
 
-thanks,
+> > > If "no" then I do not understand why TIF_NOTIFY_SIGNAL interrupts
+> > > the syscall on the real hardware and not in kvm.
+> > 
+> > It does interrupt, but xfer_to_guest_mode_handle_work() concludes it's
+> > not necessary to return to userspace and resumes guest execution.
+> 
+> In this case, we should revert the commit 8df1947c71ee53c7e21
+> ("livepatch: Replace the fake signal sending with TIF_NOTIFY_SIGNAL
+> infrastructure"). The flag TIF_NOTIFY_SIGNAL clearly does not guarantee
+> restarting the syscall or exiting to the user space with -EINTR.
+> 
+> It should solve this problem. And it looks like a cleaner solution
+> to me.
 
-greg k-h
+It looks like that should fix the issue. I'll test to confirm.
+
+Thanks,
+Seth
