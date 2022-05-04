@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A359C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B03C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359378AbiEDRwP (ORCPT
+        id S1359421AbiEDRwU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55650 "EHLO
+        Wed, 4 May 2022 13:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357455AbiEDRPC (ORCPT
+        with ESMTP id S1357699AbiEDRPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B63954BFB;
-        Wed,  4 May 2022 09:58:36 -0700 (PDT)
+        Wed, 4 May 2022 13:15:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE3155367;
+        Wed,  4 May 2022 09:58:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C94B4B82416;
-        Wed,  4 May 2022 16:58:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79736C385A4;
-        Wed,  4 May 2022 16:58:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62AB661744;
+        Wed,  4 May 2022 16:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B39BCC385A5;
+        Wed,  4 May 2022 16:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683514;
-        bh=L7DYpejEYREcuXWD29M7l9A1VyzsjUx/u8M06UpSmMU=;
+        s=korg; t=1651683531;
+        bh=7HP96qjk9PvmbCCTHdMjGWvz+8Yhk8M/QPjWnUSKpgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K6vzjX4N2rSPw2BOzd2qwbGHwi6wBU/P54hKntcLFXd3jYRZP0PotnFfA/xGM0JJO
-         HGi/MyfrDTWQIDMiLHh1/bC+C0w+mpS7/KTL/LuKQuLy6TBAo1YGurOCCHwrXWStF8
-         ZrKJaBrf+akiuFZK6woCm315TCE6GeW0BKLy+SjA=
+        b=iksL/Wrki3z4HVnJcZ5wcNzD6pZLzTFm9N1BJcd991jeMBEv7wmTN8v0uupqffGXW
+         MW0NIGF8sv+j+Q5KmZuWxTbW68/NgRKHFYAYAiYTBaOwUTe7cYEgshq/Ss763vqKg2
+         J5jiaiSq4f1JJ8wdWVcFQHkh+w+VVPZKWXh91T3E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Murphy <lists@colorremedies.com>,
-        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 177/225] bfq: Fix warning in bfqq_request_over_limit()
-Date:   Wed,  4 May 2022 18:46:55 +0200
-Message-Id: <20220504153126.156084152@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Woody Suwalski <wsuwalski@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 189/225] ACPI: processor: idle: Avoid falling back to C3 type C-states
+Date:   Wed,  4 May 2022 18:47:07 +0200
+Message-Id: <20220504153127.166101213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,64 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 09df6a75fffa68169c5ef9bef990cd7ba94f3eef upstream.
+commit fc45e55ebc58dbf622cb89ddbf797589c7a5510b upstream.
 
-People are occasionally reporting a warning bfqq_request_over_limit()
-triggering reporting that BFQ's idea of cgroup hierarchy (and its depth)
-does not match what generic blkcg code thinks. This can actually happen
-when bfqq gets moved between BFQ groups while bfqq_request_over_limit()
-is running. Make sure the code is safe against BFQ queue being moved to
-a different BFQ group.
+The "safe state" index is used by acpi_idle_enter_bm() to avoid
+entering a C-state that may require bus mastering to be disabled
+on entry in the cases when this is not going to happen.  For this
+reason, it should not be set to point to C3 type of C-states, because
+they may require bus mastering to be disabled on entry in principle.
 
-Fixes: 76f1df88bbc2 ("bfq: Limit number of requests consumed by each cgroup")
-CC: stable@vger.kernel.org
-Link: https://lore.kernel.org/all/CAJCQCtTw_2C7ZSz7as5Gvq=OmnDiio=HRkQekqWpKot84sQhFA@mail.gmail.com/
-Reported-by: Chris Murphy <lists@colorremedies.com>
-Reported-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220407140738.9723-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This was broken by commit d6b88ce2eb9d ("ACPI: processor idle: Allow
+playing dead in C3 state") which inadvertently allowed the "safe
+state" index to point to C3 type of C-states.
+
+This results in a machine that won't boot past the point when it first
+enters C3. Restore the correct behaviour (either demote to C1/C2, or
+use C3 but also set ARB_DIS=1).
+
+I hit this on a Fujitsu Siemens Lifebook S6010 (P3) machine.
+
+Fixes: d6b88ce2eb9d ("ACPI: processor idle: Allow playing dead in C3 state")
+Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Tested-by: Woody Suwalski <wsuwalski@gmail.com>
+[ rjw: Subject and changelog adjustments ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/acpi/processor_idle.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -569,7 +569,7 @@ static bool bfqq_request_over_limit(stru
- 	struct bfq_entity *entity = &bfqq->entity;
- 	struct bfq_entity *inline_entities[BFQ_LIMIT_INLINE_DEPTH];
- 	struct bfq_entity **entities = inline_entities;
--	int depth, level;
-+	int depth, level, alloc_depth = BFQ_LIMIT_INLINE_DEPTH;
- 	int class_idx = bfqq->ioprio_class - 1;
- 	struct bfq_sched_data *sched_data;
- 	unsigned long wsum;
-@@ -578,15 +578,21 @@ static bool bfqq_request_over_limit(stru
- 	if (!entity->on_st_or_in_serv)
- 		return false;
- 
-+retry:
-+	spin_lock_irq(&bfqd->lock);
- 	/* +1 for bfqq entity, root cgroup not included */
- 	depth = bfqg_to_blkg(bfqq_group(bfqq))->blkcg->css.cgroup->level + 1;
--	if (depth > BFQ_LIMIT_INLINE_DEPTH) {
-+	if (depth > alloc_depth) {
-+		spin_unlock_irq(&bfqd->lock);
-+		if (entities != inline_entities)
-+			kfree(entities);
- 		entities = kmalloc_array(depth, sizeof(*entities), GFP_NOIO);
- 		if (!entities)
- 			return false;
-+		alloc_depth = depth;
-+		goto retry;
- 	}
- 
--	spin_lock_irq(&bfqd->lock);
- 	sched_data = entity->sched_data;
- 	/* Gather our ancestors as we need to traverse them in reverse order */
- 	level = 0;
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -790,7 +790,8 @@ static int acpi_processor_setup_cstates(
+ 		if (cx->type == ACPI_STATE_C1 || cx->type == ACPI_STATE_C2 ||
+ 		    cx->type == ACPI_STATE_C3) {
+ 			state->enter_dead = acpi_idle_play_dead;
+-			drv->safe_state_index = count;
++			if (cx->type != ACPI_STATE_C3)
++				drv->safe_state_index = count;
+ 		}
+ 		/*
+ 		 * Halt-induced C1 is not good for ->enter_s2idle, because it
 
 
