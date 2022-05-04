@@ -2,108 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350065AbiEDMzT (ORCPT
+        id S1350043AbiEDM4O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
+        Wed, 4 May 2022 08:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350068AbiEDMzM (ORCPT
+        with ESMTP id S237921AbiEDM4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:55:12 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD7D3CFF5
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:51:23 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id p18so1580607edr.7
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 05:51:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jjmxXKFpqf8Z4PNCW7+PYo1hRoBDuo7aymv8o4l0yig=;
-        b=aXfY/UifkO/9PvC8A7tJ7N9w2P+4MfokRY5N48dcJ7tVumGyuQRJBOane2na/rpX5j
-         0iOj2Pb7o4cj35miU9Z1pog+murDeRRKuOep7SWHpsQEEKNR9qBTWopUScPNNL1aoipW
-         +6KenYFjpVqsUfFnK4v0Dez/uqovQeELxRsUyW+dRYRjBjDI1GLYzin87eX2nxqeS2uC
-         A4abEkuRrbhlivBCVgpa2ciIDqcUKSUrB9m2rXeAAahCLxYDTLnYNZdWlX1rqKFJ/OSC
-         aqiOWKOgvhtnlOgzoP4MRDTUojNy2goFoUxyl8Du81SuEhV4N+2ahPA0O1LFu/HTOoNl
-         fIcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jjmxXKFpqf8Z4PNCW7+PYo1hRoBDuo7aymv8o4l0yig=;
-        b=ymRImhwtVpsOIVRkEt1IFrCZCRLI1TPM8A2NXwc3YYiFV4iOlvJDdWByB7ygEenvfp
-         AE4A5EmS4ky+3YuitJoENpwOUNLLIxkzvCe4yRGjLTGdzJwrldIVZBADKVlXPjsvRYEr
-         /9xRwvt/SR6zUaHxCxF6KvZiUzarPa9mVN/nd0qq7m9CJF2T27OYApGEhdSvO6mfye0C
-         RfJg5Hl9/V72Pa9ea/vDnxdggP+kgjffWXXTy6E1p++Jon7m2PozDXqBj6iyJWii/X/i
-         YwXDTHSHaWSHSjmPCsEf0REo0ZXu4tRPcOdHi1jH9CriQ4aRA20cT5cJkBPFE7sfJtnk
-         1sTw==
-X-Gm-Message-State: AOAM530XlBVMMQWhefKqiIfzSdW95dLM7dSk3VVdtRuh6EaWfcVR+Lbx
-        F4hCT7T9eH5kxVdzD6KKJcK6Nw==
-X-Google-Smtp-Source: ABdhPJwx4+fZYJ0ueATWol1S7O97WonwX3s+AS1NMLk16prb52CGswaP2AVvW6RQEEejrEh/pn3QuA==
-X-Received: by 2002:a05:6402:1592:b0:425:edec:992d with SMTP id c18-20020a056402159200b00425edec992dmr22368071edv.283.1651668682420;
-        Wed, 04 May 2022 05:51:22 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id hg13-20020a1709072ccd00b006f3ef214df3sm5664261ejc.89.2022.05.04.05.51.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 05:51:21 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] spi: dt-bindings: qcom,spi-geni-qcom: allow three interconnects
-Date:   Wed,  4 May 2022 14:51:19 +0200
-Message-Id: <20220504125119.190526-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Wed, 4 May 2022 08:56:11 -0400
+X-Greylist: delayed 901 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 05:52:35 PDT
+Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25F452AE12
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:52:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=0j/hv
+        WPupqrJGaOCk9faAVdYLcHHclCHbuBk/wL09eE=; b=XKXx2GJzfal9rxPRPgbfQ
+        1/robgERR1lNwK3ndSt6c+kbjEqn6m8tyRqe8yKVCAUPSu4wQ6drHUVyos7whsxy
+        3AFuhqCosXFTwzcqmjn1GnW0km6lUAiKXIe+nUNDrOcpD0reS/lfvJSmxaaMWmg7
+        kwyM6ZWcBsB0ThHHG8xkHs=
+Received: from localhost.localdomain (unknown [120.204.77.149])
+        by smtp14 (Coremail) with SMTP id EsCowABnJ_tKc3JikTI+Aw--.4038S4;
+        Wed, 04 May 2022 20:37:05 +0800 (CST)
+From:   lizhe <sensor1010@163.com>
+To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
+        prudo@redhat.com
+Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        lizhe <sensor1010@163.com>
+Subject: [PATCH] kernel/crash_core.c : Remove redundant checks for ck_cmdline is NULL
+Date:   Wed,  4 May 2022 05:36:23 -0700
+Message-Id: <20220504123623.36852-1-sensor1010@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EsCowABnJ_tKc3JikTI+Aw--.4038S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW5Kr1rCw4xCrWxArWUXFW7CFg_yoWxXrX_W3
+        y7Krn2qr15Aw1j9r18ZayfWrWUKa10va9a9a43trW2va47trn5G343JFn0yrnxC397Cr17
+        Gws7Jrnrt3yakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_sqWUUUUUU==
+X-Originating-IP: [120.204.77.149]
+X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/xtbBohH2q1aEEK-VzAAAsa
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recent Qualcomm Geni SPI nodes, e.g. on SM8450, come with three
-interconnects.  This fixes dtbs_check warnings like:
+When ck_cmdline is NULL. The last three lines of
+this function(get_last_crashkernel()) are equivalent to :
+	if (!NULL)
+		return NULL;
 
-  sm8450-qrd.dtb: geniqup@8c0000: spi@880000:interconnect-names: ['qup-core', 'qup-config'] is too short
+	return NULL;
+This is obviously a redundant check
 
-Fixes: 5bdcae1fe1c5 ("spi: dt-bindings: qcom,spi-geni-qcom: convert to dtschema")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Signed-off-by: lizhe <sensor1010@163.com>
 ---
+ kernel/crash_core.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Fix for a commit in MSM/Bjorn's tree.
----
- .../devicetree/bindings/spi/qcom,spi-geni-qcom.yaml          | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-index e2c7b934c50d..47e1b3ee8b1b 100644
---- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-+++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-@@ -45,12 +45,15 @@ properties:
-       - const: rx
+diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+index 256cf6db573c..c232f01a2c54 100644
+--- a/kernel/crash_core.c
++++ b/kernel/crash_core.c
+@@ -222,9 +222,6 @@ static __init char *get_last_crashkernel(char *cmdline,
+ 		p = strstr(p+1, name);
+ 	}
  
-   interconnects:
--    maxItems: 2
-+    minItems: 2
-+    maxItems: 3
+-	if (!ck_cmdline)
+-		return NULL;
+-
+ 	return ck_cmdline;
+ }
  
-   interconnect-names:
-+    minItems: 2
-     items:
-       - const: qup-core
-       - const: qup-config
-+      - const: qup-memory
- 
-   interrupts:
-     maxItems: 1
 -- 
-2.32.0
+2.25.1
 
