@@ -2,98 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6E7C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350601AbiEDNhD (ORCPT
+        id S1350609AbiEDNi2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
+        Wed, 4 May 2022 09:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350589AbiEDNhB (ORCPT
+        with ESMTP id S230220AbiEDNiX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:37:01 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E7922D
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:33:25 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id h3so817884qtn.4
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:33:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bHLG3LK3T4GfLB78t/R62gL/IMn6Ku8arAOqdFJ64Yc=;
-        b=DKGOWJf9Ip/fKN5Dnk8qGDOEeA8SeLELn38oAXiEeDY3uZVeUOcUXzFGRqp0MRiq4u
-         Blfjd4zDBm2WqbOG3qhRmWGgUrvO16ZmjZzIIEgJIHki3EHDIw0EwcUBpFuRc/o/F6SD
-         EIm6XizAXMfY35AXSGFpxBDuHLNGWT61VqpnlCFbzDKQ24fagtZw77dEaY93ROc8c2YM
-         zuuBgiVePRGWjzQsev9Sf06YMdnhPLg6bGQs8I3K1HRkqtX+c5uBbEHaq1yfH9R2o3fk
-         iTuWyystuJrBQ5sr3cEeOMEhKDghPrEObBdv4Vf6P9g8ZpaV2taSIq8Rgv/TEMf28asV
-         ez9g==
-X-Gm-Message-State: AOAM531dGL/+o2k13S8YDb+Wb2BYD9z4Ckghs63OKsU4DyLtWdUM+xq4
-        1Rq+RiSV4K9iY+p0fF4JO4cARGD+Tn5LFQ==
-X-Google-Smtp-Source: ABdhPJzszEPIgNglwr90oODkKGV7S4CkFh3CO2BoQv669K15Ii9G4sbEVPzVF+Auw00ElEv86cPjxg==
-X-Received: by 2002:ac8:5c0f:0:b0:2f3:afd1:3e06 with SMTP id i15-20020ac85c0f000000b002f3afd13e06mr6186635qti.249.1651671204108;
-        Wed, 04 May 2022 06:33:24 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id g5-20020a379d05000000b0069fc13ce1ecsm7606094qke.29.2022.05.04.06.33.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 06:33:23 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2f7b815ac06so15451697b3.3
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:33:23 -0700 (PDT)
-X-Received: by 2002:a81:6588:0:b0:2f8:b75e:1e1a with SMTP id
- z130-20020a816588000000b002f8b75e1e1amr19797234ywb.358.1651671203161; Wed, 04
- May 2022 06:33:23 -0700 (PDT)
+        Wed, 4 May 2022 09:38:23 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4280DBA;
+        Wed,  4 May 2022 06:34:47 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nmF9R-0001EX-Iz; Wed, 04 May 2022 15:34:45 +0200
+Message-ID: <82f2762a-4b53-bfa1-4e57-8e53f13c76e6@leemhuis.info>
+Date:   Wed, 4 May 2022 15:34:44 +0200
 MIME-Version: 1.0
-References: <202205041720.i8wJ8uXq-lkp@intel.com> <CAK8P3a3F3Z1NyhVcK6wN+b6Es3gqiYGee8a+pAPsaer4hhHDbQ@mail.gmail.com>
-In-Reply-To: <CAK8P3a3F3Z1NyhVcK6wN+b6Es3gqiYGee8a+pAPsaer4hhHDbQ@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 4 May 2022 15:33:11 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVHUvbembVU92CZ+SXhfb8i8F_==d9rcH18pc=O-F8WOQ@mail.gmail.com>
-Message-ID: <CAMuHMdVHUvbembVU92CZ+SXhfb8i8F_==d9rcH18pc=O-F8WOQ@mail.gmail.com>
-Subject: Re: time.c:undefined reference to `mach_get_rtc_pll'
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Daniel Palmer <daniel@0x0f.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Thierry Reding <treding@nvidia.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220315165205.1502325-1-brgl@bgdev.pl>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH] Revert "gpio: Revert regression in sysfs-gpio
+ (gpiolib.c)"
+In-Reply-To: <20220315165205.1502325-1-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651671287;6d3f29cc;
+X-HE-SMSGID: 1nmF9R-0001EX-Iz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+On 15.03.22 17:52, Bartosz Golaszewski wrote:
+> This reverts commit fc328a7d1fcce263db0b046917a66f3aa6e68719.
+> 
+> This commit - while attempting to fix a regression - has caused a number
+> of other problems. As the fallout from it is more significant than the
+> initial problem itself, revert it for now before we find a correct
+> solution.
 
-On Wed, May 4, 2022 at 2:25 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> On Wed, May 4, 2022 at 11:14 AM kernel test robot <lkp@intel.com> wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > head:   107c948d1d3e61d10aee9d0f7c3d81bbee9842af
-> > commit: 8b22820efb35f93d98638563b0a8f4094e8ee399 m68k: m68328: remove duplicate code
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > All errors (new ones prefixed by >>):
-> >
-> >    m68k-linux-ld: arch/m68k/kernel/time.o: in function `rtc_ioctl':
-> > >> time.c:(.text+0x82): undefined reference to `mach_get_rtc_pll'
-> >    m68k-linux-ld: time.c:(.text+0xbc): undefined reference to `mach_set_rtc_pll'
-> >    m68k-linux-ld: time.c:(.text+0xf4): undefined reference to `mach_set_rtc_pll'
-> >
->
-> I think this is just another build failure that was hidden before my patch,
-> not caused by my patch.
+I just noticed that the regression that fc328a7d1fcc was trying to fix
+is still on my list of tracked regressions. Is anyone working on it od
+did it fall through the cracks? Was it maybe even fixed already? Or are
+matters now that complicated that it's best to just leave everything as
+it is now?
 
-That's an m68knommu kernel build with CONFIG_RTC_DRV_GENERIC=y,
-I guess?
+Ciao, Thorsten
 
-Gr{oetje,eeting}s,
+#regzbot ^backmonitor:
+https://lore.kernel.org/stable/20211217153555.9413-1-marcelo.jimenez@gmail.com/
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> ---
+>  drivers/gpio/gpiolib.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+> index defb7c464b87..6630d92e30ad 100644
+> --- a/drivers/gpio/gpiolib.c
+> +++ b/drivers/gpio/gpiolib.c
+> @@ -1701,6 +1701,11 @@ static inline void gpiochip_irqchip_free_valid_mask(struct gpio_chip *gc)
+>   */
+>  int gpiochip_generic_request(struct gpio_chip *gc, unsigned int offset)
+>  {
+> +#ifdef CONFIG_PINCTRL
+> +	if (list_empty(&gc->gpiodev->pin_ranges))
+> +		return 0;
+> +#endif
+> +
+>  	return pinctrl_gpio_request(gc->gpiodev->base + offset);
+>  }
+>  EXPORT_SYMBOL_GPL(gpiochip_generic_request);
+> @@ -1712,6 +1717,11 @@ EXPORT_SYMBOL_GPL(gpiochip_generic_request);
+>   */
+>  void gpiochip_generic_free(struct gpio_chip *gc, unsigned int offset)
+>  {
+> +#ifdef CONFIG_PINCTRL
+> +	if (list_empty(&gc->gpiodev->pin_ranges))
+> +		return;
+> +#endif
+> +
+>  	pinctrl_gpio_free(gc->gpiodev->base + offset);
+>  }
+>  EXPORT_SYMBOL_GPL(gpiochip_generic_free);
