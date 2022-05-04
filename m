@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76185C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A999C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356413AbiEDRWh (ORCPT
+        id S1356438AbiEDRWl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        Wed, 4 May 2022 13:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355819AbiEDREn (ORCPT
+        with ESMTP id S1355809AbiEDREn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9414A4992B;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B71B49925;
         Wed,  4 May 2022 09:53:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1509A616F8;
-        Wed,  4 May 2022 16:53:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55454C385AF;
-        Wed,  4 May 2022 16:53:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0D23B827AB;
+        Wed,  4 May 2022 16:53:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E068C385AF;
+        Wed,  4 May 2022 16:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683204;
-        bh=6Va1t0xMrqkOyI+YVYgcsaBtCpt0QomG1pI3tWZkQTg=;
+        s=korg; t=1651683202;
+        bh=fiEjsMwi+sx83CopIVwfDXjNiCaih6WW+Reo85LpXa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdWcbBYxLk3ye8H7/EaAVigXalKasgYZfPSxBg0xrwGjl7CFaE11+kEuYSRCniWOz
-         kX1/T2t7OCUP4zvI5l/bXAWrHN8cYoWz69yJAv2D+F8mjNHK5a28qMhntNgQQemD7e
-         DEibafLaQP2FPqZAm56j4MxnZDl6G01F+YJsUXqU=
+        b=kO18R6A8uUU/ci6pJnyth9QU+F8C7QE1EiNul4e0ix2Tmat11iK6EzmmC8EIKvaat
+         LGSwTf2/95/bB/4xTj7op5Ng7iWQkE9UgaJqFj2dshlRf8OQzeV4iYF8JHNZsyeey7
+         dVQnI9RnNtDQEy5P/Cc+pE/FFSqbMym1f8mj7Ne4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Adam Ford <aford173@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Peng Fan <peng.fan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/177] arm64: dts: imx8mn: Fix SAI nodes
-Date:   Wed,  4 May 2022 18:44:09 +0200
-Message-Id: <20220504153058.039257167@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 067/177] phy: mapphone-mdm6600: Fix PM error handling in phy_mdm6600_probe
+Date:   Wed,  4 May 2022 18:44:20 +0200
+Message-Id: <20220504153059.048746597@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -53,78 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 574518b7ccbaef74cb89eb1a1a0da88afa1e0113 ]
+[ Upstream commit d644e0d79829b1b9a14beedbdb0dc1256fc3677d ]
 
-The most specific compatible string element should be "fsl,imx8mn-sai"
-on i.MX8M Nano, fix it from current "fsl,imx8mm-sai" (two Ms, likely
-due to copy-paste error from i.MX8M Mini).
+The pm_runtime_enable will increase power disable depth.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable(). And use pm_runtime_dont_use_autosuspend() to
+undo pm_runtime_use_autosuspend()
+In the PM Runtime docs:
+    Drivers in ->remove() callback should undo the runtime PM changes done
+    in ->probe(). Usually this means calling pm_runtime_disable(),
+    pm_runtime_dont_use_autosuspend() etc.
 
-Fixes: 9e9860069725f ("arm64: dts: imx8mn: Add SAI nodes")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Adam Ford <aford173@gmail.com>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Peng Fan <peng.fan@nxp.com>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-To: linux-arm-kernel@lists.infradead.org
-Reviewed-by: Adam Ford <aford173@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+We should do this in error handling.
+
+Fixes: f7f50b2a7b05 ("phy: mapphone-mdm6600: Add runtime PM support for n_gsm on USB suspend")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220301024615.31899-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mn.dtsi | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/phy/motorola/phy-mapphone-mdm6600.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn.dtsi b/arch/arm64/boot/dts/freescale/imx8mn.dtsi
-index da6c942fb7f9..6d6cbd4c83b8 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mn.dtsi
-@@ -263,7 +263,7 @@ spba2: spba-bus@30000000 {
- 				ranges;
+diff --git a/drivers/phy/motorola/phy-mapphone-mdm6600.c b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+index 5172971f4c36..3cd4d51c247c 100644
+--- a/drivers/phy/motorola/phy-mapphone-mdm6600.c
++++ b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+@@ -629,7 +629,8 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
+ cleanup:
+ 	if (error < 0)
+ 		phy_mdm6600_device_power_off(ddata);
+-
++	pm_runtime_disable(ddata->dev);
++	pm_runtime_dont_use_autosuspend(ddata->dev);
+ 	return error;
+ }
  
- 				sai2: sai@30020000 {
--					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
-+					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
- 					reg = <0x30020000 0x10000>;
- 					interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clk IMX8MN_CLK_SAI2_IPG>,
-@@ -277,7 +277,7 @@ sai2: sai@30020000 {
- 				};
- 
- 				sai3: sai@30030000 {
--					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
-+					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
- 					reg = <0x30030000 0x10000>;
- 					interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clk IMX8MN_CLK_SAI3_IPG>,
-@@ -291,7 +291,7 @@ sai3: sai@30030000 {
- 				};
- 
- 				sai5: sai@30050000 {
--					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
-+					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
- 					reg = <0x30050000 0x10000>;
- 					interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clk IMX8MN_CLK_SAI5_IPG>,
-@@ -307,7 +307,7 @@ sai5: sai@30050000 {
- 				};
- 
- 				sai6: sai@30060000 {
--					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
-+					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
- 					reg = <0x30060000  0x10000>;
- 					interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clk IMX8MN_CLK_SAI6_IPG>,
-@@ -364,7 +364,7 @@ spdif1: spdif@30090000 {
- 				};
- 
- 				sai7: sai@300b0000 {
--					compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
-+					compatible = "fsl,imx8mn-sai", "fsl,imx8mq-sai";
- 					reg = <0x300b0000 0x10000>;
- 					interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clk IMX8MN_CLK_SAI7_IPG>,
 -- 
 2.35.1
 
