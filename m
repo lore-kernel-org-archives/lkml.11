@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C0AC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E419C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358458AbiEDRP7 (ORCPT
+        id S1358350AbiEDRPv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        Wed, 4 May 2022 13:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355709AbiEDREk (ORCPT
+        with ESMTP id S1355648AbiEDREc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:40 -0400
+        Wed, 4 May 2022 13:04:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5284F470;
-        Wed,  4 May 2022 09:53:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BF44EF63;
+        Wed,  4 May 2022 09:53:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BD5861852;
-        Wed,  4 May 2022 16:53:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94340C385A4;
-        Wed,  4 May 2022 16:53:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74220617DE;
+        Wed,  4 May 2022 16:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B35D0C385A4;
+        Wed,  4 May 2022 16:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683196;
-        bh=vzK/3MQfktlOQvm7xuFwJAiiuTHOPQGeUfSkCAJbx3s=;
+        s=korg; t=1651683190;
+        bh=UZl42qo5/Ar8qtWtm+NFa5TCzVY3jfja3ZRWVrYwy6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w6o+ZIYO+flgNnbuSmSyOYr7KA3Jv9vzxvBxgB5Oe4YWw9vBXOm6oHnMOXdekUOPv
-         OmAqD9GI5/jsamCpYhkznyWa6KZYmdHZdBRvv6LLOjDu/3ORVRxQH9sYTsYJR8akpP
-         h+1yuzQqiVsEyYqbU1V9Yn8NlGxCSGFO3qtlWT/s=
+        b=gcd7mMpjvISQQ2LJVSHjZDO8Rwg3hIEzmyVH+j2/pV7ncK08bvaPZmrTbOenJS4J2
+         7sKqVHD4VNi6kiYB3XVL/ii9fovLK9mZ4T/hQrMPpSrranV0nWW360L4/09ugTqzHe
+         g2KjUT/Rp8O/5JWpxlr/KBiatVXeF11ECRO1VC6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 039/177] hex2bin: make the function hex_to_bin constant-time
-Date:   Wed,  4 May 2022 18:43:52 +0200
-Message-Id: <20220504153056.413198047@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Rik van Riel <riel@surriel.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 043/177] iocost: dont reset the inuse weight of under-weighted debtors
+Date:   Wed,  4 May 2022 18:43:56 +0200
+Message-Id: <20220504153056.785607749@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,91 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Tejun Heo <tj@kernel.org>
 
-commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
+commit 8c936f9ea11ec4e35e288810a7503b5c841a355f upstream.
 
-The function hex2bin is used to load cryptographic keys into device
-mapper targets dm-crypt and dm-integrity.  It should take constant time
-independent on the processed data, so that concurrently running
-unprivileged code can't infer any information about the keys via
-microarchitectural convert channels.
+When an iocg is in debt, its inuse weight is owned by debt handling and
+should stay at 1. This invariant was broken when determining the amount of
+surpluses at the beginning of donation calculation - when an iocg's
+hierarchical weight is too low, the iocg is excluded from donation
+calculation and its inuse is reset to its active regardless of its
+indebtedness, triggering warnings like the following:
 
-This patch changes the function hex_to_bin so that it contains no
-branches and no memory accesses.
+ WARNING: CPU: 5 PID: 0 at block/blk-iocost.c:1416 iocg_kick_waitq+0x392/0x3a0
+ ...
+ RIP: 0010:iocg_kick_waitq+0x392/0x3a0
+ Code: 00 00 be ff ff ff ff 48 89 4d a8 e8 98 b2 70 00 48 8b 4d a8 85 c0 0f 85 4a fe ff ff 0f 0b e9 43 fe ff ff 0f 0b e9 4d fe ff ff <0f> 0b e9 50 fe ff ff e8 a2 ae 70 00 66 90 0f 1f 44 00 00 55 48 89
+ RSP: 0018:ffffc90000200d08 EFLAGS: 00010016
+ ...
+  <IRQ>
+  ioc_timer_fn+0x2e0/0x1470
+  call_timer_fn+0xa1/0x2c0
+ ...
 
-Note that this shouldn't cause performance degradation because the size
-of the new function is the same as the size of the old function (on
-x86-64) - and the new function causes no branch misprediction penalties.
+As this happens only when an iocg's hierarchical weight is negligible, its
+impact likely is limited to triggering the warnings. Fix it by skipping
+resetting inuse of under-weighted debtors.
 
-I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
-i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
-sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
-powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
-no branches in the generated code.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Reported-by: Rik van Riel <riel@surriel.com>
+Fixes: c421a3eb2e27 ("blk-iocost: revamp debt handling")
+Cc: stable@vger.kernel.org # v5.10+
+Link: https://lore.kernel.org/r/YmjODd4aif9BzFuO@slm.duckdns.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/kernel.h |    2 +-
- lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
- 2 files changed, 26 insertions(+), 8 deletions(-)
+ block/blk-iocost.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -277,7 +277,7 @@ static inline char *hex_byte_pack_upper(
- 	return buf;
- }
- 
--extern int hex_to_bin(char ch);
-+extern int hex_to_bin(unsigned char ch);
- extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
- extern char *bin2hex(char *dst, const void *src, size_t count);
- 
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -22,15 +22,33 @@ EXPORT_SYMBOL(hex_asc_upper);
-  *
-  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
-  * input.
-+ *
-+ * This function is used to load cryptographic keys, so it is coded in such a
-+ * way that there are no conditions or memory accesses that depend on data.
-+ *
-+ * Explanation of the logic:
-+ * (ch - '9' - 1) is negative if ch <= '9'
-+ * ('0' - 1 - ch) is negative if ch >= '0'
-+ * we "and" these two values, so the result is negative if ch is in the range
-+ *	'0' ... '9'
-+ * we are only interested in the sign, so we do a shift ">> 8"; note that right
-+ *	shift of a negative value is implementation-defined, so we cast the
-+ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
-+ *	the range '0' ... '9', 0 otherwise
-+ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
-+ *	in the range '0' ... '9', 0 otherwise
-+ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
-+ *	... '9', -1 otherwise
-+ * the next line is similar to the previous one, but we need to decode both
-+ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
-+ *	lowercase to uppercase
-  */
--int hex_to_bin(char ch)
-+int hex_to_bin(unsigned char ch)
- {
--	if ((ch >= '0') && (ch <= '9'))
--		return ch - '0';
--	ch = tolower(ch);
--	if ((ch >= 'a') && (ch <= 'f'))
--		return ch - 'a' + 10;
--	return -1;
-+	unsigned char cu = ch & 0xdf;
-+	return -1 +
-+		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
-+		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
- }
- EXPORT_SYMBOL(hex_to_bin);
- 
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -2322,7 +2322,17 @@ static void ioc_timer_fn(struct timer_li
+ 				iocg->hweight_donating = hwa;
+ 				iocg->hweight_after_donation = new_hwi;
+ 				list_add(&iocg->surplus_list, &surpluses);
+-			} else {
++			} else if (!iocg->abs_vdebt) {
++				/*
++				 * @iocg doesn't have enough to donate. Reset
++				 * its inuse to active.
++				 *
++				 * Don't reset debtors as their inuse's are
++				 * owned by debt handling. This shouldn't affect
++				 * donation calculuation in any meaningful way
++				 * as @iocg doesn't have a meaningful amount of
++				 * share anyway.
++				 */
+ 				TRACE_IOCG_PATH(inuse_shortage, iocg, &now,
+ 						iocg->inuse, iocg->active,
+ 						iocg->hweight_inuse, new_hwi);
 
 
