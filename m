@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2AEC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC35C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349642AbiEDRF6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
+        id S236973AbiEDRGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354919AbiEDQ7d (ORCPT
+        with ESMTP id S1354937AbiEDQ7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BCD48E41;
-        Wed,  4 May 2022 09:51:07 -0700 (PDT)
+        Wed, 4 May 2022 12:59:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A64148E54;
+        Wed,  4 May 2022 09:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14944617C3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA4CEB82552;
+        Wed,  4 May 2022 16:51:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F124C385A4;
         Wed,  4 May 2022 16:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627E4C385A5;
-        Wed,  4 May 2022 16:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683066;
-        bh=diggpXpaogfTolgGhLMSTPCOg45trUgVREPa87khvgI=;
+        s=korg; t=1651683067;
+        bh=fiEjsMwi+sx83CopIVwfDXjNiCaih6WW+Reo85LpXa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=USZrlzorH6BBY38thEh1xBcBHKDAimcLGUz6vN8zlR41LEz4n2sNR1QqqrfDslwF0
-         hEig1Ijocrhmz1jvFCKiDzzCRtBx0fUGdX+kbei+T6LJXE2wFuvIZUhwUHh4ZTGtIW
-         ZCa1jamW6HrVElV0T8CPSyVhj+x/UgP55++7j2KY=
+        b=mxq5WcqrEbpruMNikozdUMjzhD8YpmCtI4CNX9xMMgsF7600GeRtbW3bjNGJLGbTg
+         BtkdumDoTOFXgqPvaLJhgF1nyxcPquvp/Bzf0pYvjYKqUmecZ/hZ+0lDC2Hf+3YPAv
+         7ciuwI8XsvjmDBVQxh0JwcQpPrY4V8We7hQi7TmY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 051/129] ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name
-Date:   Wed,  4 May 2022 18:44:03 +0200
-Message-Id: <20220504153025.114681974@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 052/129] phy: mapphone-mdm6600: Fix PM error handling in phy_mdm6600_probe
+Date:   Wed,  4 May 2022 18:44:04 +0200
+Message-Id: <20220504153025.174384585@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,42 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5c8b49852910caffeebb1ce541fdd264ffc691b8 ]
+[ Upstream commit d644e0d79829b1b9a14beedbdb0dc1256fc3677d ]
 
-Pinctrl phandle is for spi1 so rename it to reflect this.
+The pm_runtime_enable will increase power disable depth.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable(). And use pm_runtime_dont_use_autosuspend() to
+undo pm_runtime_use_autosuspend()
+In the PM Runtime docs:
+    Drivers in ->remove() callback should undo the runtime PM changes done
+    in ->probe(). Usually this means calling pm_runtime_disable(),
+    pm_runtime_dont_use_autosuspend() etc.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220331141323.194355-1-claudiu.beznea@microchip.com
+We should do this in error handling.
+
+Fixes: f7f50b2a7b05 ("phy: mapphone-mdm6600: Add runtime PM support for n_gsm on USB suspend")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220301024615.31899-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/phy/motorola/phy-mapphone-mdm6600.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-index e42dae06b582..73cb157c4ef5 100644
---- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-@@ -91,7 +91,7 @@ usart4: serial@fc010000 {
+diff --git a/drivers/phy/motorola/phy-mapphone-mdm6600.c b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+index 5172971f4c36..3cd4d51c247c 100644
+--- a/drivers/phy/motorola/phy-mapphone-mdm6600.c
++++ b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+@@ -629,7 +629,8 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
+ cleanup:
+ 	if (error < 0)
+ 		phy_mdm6600_device_power_off(ddata);
+-
++	pm_runtime_disable(ddata->dev);
++	pm_runtime_dont_use_autosuspend(ddata->dev);
+ 	return error;
+ }
  
- 			spi1: spi@fc018000 {
- 				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi0_cs>;
-+				pinctrl-0 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioB 21 0>;
- 				status = "okay";
- 			};
-@@ -149,7 +149,7 @@ pinctrl_macb0_phy_irq: macb0_phy_irq_0 {
- 						atmel,pins =
- 							<AT91_PIOE 1 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
- 					};
--					pinctrl_spi0_cs: spi0_cs_default {
-+					pinctrl_spi1_cs: spi1_cs_default {
- 						atmel,pins =
- 							<AT91_PIOB 21 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
- 					};
 -- 
 2.35.1
 
