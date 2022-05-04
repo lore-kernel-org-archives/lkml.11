@@ -2,324 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D28EC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24424C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348115AbiEDKgs (ORCPT
+        id S1348142AbiEDKhL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
+        Wed, 4 May 2022 06:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239023AbiEDKgp (ORCPT
+        with ESMTP id S1344185AbiEDKhI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:36:45 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2047.outbound.protection.outlook.com [40.107.212.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C43C192B3;
-        Wed,  4 May 2022 03:33:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WzoogM3zsbCGYqRGCZI0RAo4Qbdyt0dnMoTGDatjUqFVPJa+GtelNaWuIyzQqOMQrBO93R59owfmwiuvYzDCUx22Z3RO72jRIaSxamSGgP0H874zjvfJ5nCBl4nClKLKgUrhuSZCNzzzqN8v+u9/QmHFII9UgRd//0Aj9g4ZA/PAh9BPv8vNH81pFBLp8nYZ1vNnRvZHIRaX29kHSGmukES8NYoktMySIZN/54bvn94yJxw5CCugjyEjNc1GzVyWcVcsrpOyC8OkxBw2svxFXjcN4w87M+OXN6W7dE8ji+VpHQ1Y49JU+Yx8odRNOn5L7vOM3glBAmNDxadrP8aBew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=47RnqaiyuWIWjyyZOX9nl75nOIKlQZuBq7JiiTSBgpg=;
- b=A+H8mW5FZTleufnaZ4PU1vni1SE2ZaWDwGzrb21bVagvuuvpY0Tl33A0I9j8POQhStXF8YJ+iJU3nm+uRdK8mfM3hHmydbRc8crXqXohOV0aytHyGRARs36Pm7FAEXtXN2RDkJUUXBro6/HyipbSDVcIYf5R3p/44rJvVx8b/JmEBeq5sHTMc4WqlMTvtNMsqPvUlBzUcYjQAonfkeF3N26yCMwhkPZSVrNs1EzYF6Eojgmi7OQ7dySRqoAZLW5pbGZ8/Dnqhiguz1CygZOQZL9znCuo3ieTdA8I7OkiGkMzY2x9LZqwZPQriF5x9X7FkqCsGH9IjO26X2sUnIOfEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=47RnqaiyuWIWjyyZOX9nl75nOIKlQZuBq7JiiTSBgpg=;
- b=OUTwngqbXdMxOVLvjFs+CVaNKn9VEGCgL9GwukK3nn6m08fDnUp6fBX1GP0QydcWGEAGqB9axZohEj23vIZNDZKcGxAxw5kEM8RIfP74IiLrtaxv8CvWKdlUT8rzZpyLBhpBpKHnu263rEuF3rEIEJzqt7hVjxiwBG1bYWODWTtZSbPiyIF0+83YhV2dsUY5rNZtbVmy6tU8r2yveXqY9cyv8jm/NPIdF/pRqXhRW6qXdzS8/JAmVGq6Z4KMBDcMR1qcEO7LD6PKoN898dUoWkKFdjTIQdKfyq16DORs5AariTeAQS9JyjvNCwOuLbbHd1SFpQ7Y1vGIB7s3qHTxSA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL1PR12MB5304.namprd12.prod.outlook.com (2603:10b6:208:314::13)
- by DM6PR12MB2714.namprd12.prod.outlook.com (2603:10b6:5:42::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 4 May
- 2022 10:33:07 +0000
-Received: from BL1PR12MB5304.namprd12.prod.outlook.com
- ([fe80::a9fa:62ae:bbc8:9d7d]) by BL1PR12MB5304.namprd12.prod.outlook.com
- ([fe80::a9fa:62ae:bbc8:9d7d%6]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 10:33:07 +0000
-Message-ID: <f8f9ea38-0716-7f41-0879-2c71dd243369@nvidia.com>
-Date:   Wed, 4 May 2022 16:02:54 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 4/8] vfio/pci: Add support for setting driver data
- inside core layer
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org
-References: <20220425092615.10133-1-abhsahu@nvidia.com>
- <20220425092615.10133-5-abhsahu@nvidia.com>
- <20220503111124.38b07a9e.alex.williamson@redhat.com>
- <20220504002056.GW8364@nvidia.com>
-X-Nvconfidentiality: public
-From:   Abhishek Sahu <abhsahu@nvidia.com>
-In-Reply-To: <20220504002056.GW8364@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA0PR01CA0013.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:80::13) To BL1PR12MB5304.namprd12.prod.outlook.com
- (2603:10b6:208:314::13)
+        Wed, 4 May 2022 06:37:08 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B748289A3;
+        Wed,  4 May 2022 03:33:32 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id 4so1091125ljw.11;
+        Wed, 04 May 2022 03:33:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0PBmpaAj+ZXT8mUn2eUwOeYmdH/XcbpP8zVecGViTdI=;
+        b=hG76OyB0VeC9eY4XA9NZa/CK7BUq+DGCFmtxjjQZUdUVaNYr51WNiveosVb6gsJj2U
+         LCR5sLUuptvlfRFXQG8T7CtPL1UfPzdxKdmV69ViUX6IIZy7xGjPxeWy5nqGaFN8FaXQ
+         MZCeXvLL0tKbcq5mpUxCqy2AO6yT53Erts1qhh1QYJhEjSE0RwHc8dBMPqyIQcBYV0Xv
+         GD6Xro9X1heFABSsoiIX4sYGNOI5YkVzQjG+QwMSeVZf3cDu2dqXeuRa+or9ScgUgYS6
+         a4qDEXsNatHdE17kQ83wyGZpuJzvtaeaMEhVpgGToA/v2iseIpCe3Tni6uAwyyVDGQuu
+         fpPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0PBmpaAj+ZXT8mUn2eUwOeYmdH/XcbpP8zVecGViTdI=;
+        b=X4g6WM/JqzV7z0tP11In/V/yQVXRQiGPonpQ3Mr8MkHb8pOh+jEPHlO2zAjOnnw+AI
+         oBH2nvIERki5TzwJXT/eiREFfx2H+aEw9nxt+CsN3EQjhYDmb8WX7i1pZANeGRAtNeow
+         PxrN1Ypcu/N9XIYgdRkGXzoEpog9kbAUH3bq56GKHjbU4+Qrue9q03jPR/+oZ/1PX/ZH
+         0OhDfBLHCzWp0mWfDlDzOG3ZHfuQOh09xPlZKm1+zpVYtvmLBS8Qtlz0vEuB75HzIy9z
+         Y8yTizasYqXp3mXsg4C+1lom/p19ta1+iVe1Zdn41jT2kcgRBClK2k84V1xFewfZdVLg
+         zW/A==
+X-Gm-Message-State: AOAM530CJvDbQ8bDDTnNSsCKmqiP+hCfeo235d0sq0nb0ukOqn4VSknT
+        wMwrv3JCJ1oMxHKn8a9sy/c=
+X-Google-Smtp-Source: ABdhPJw2K2mG8jaHwj/A2FFBztH+CM8T45zIS//+uJZJYE3ZZFeY34+23nbk56mtIfBPYu+0UlBL2g==
+X-Received: by 2002:a2e:54b:0:b0:24f:1055:194c with SMTP id 72-20020a2e054b000000b0024f1055194cmr11835086ljf.106.1651660410400;
+        Wed, 04 May 2022 03:33:30 -0700 (PDT)
+Received: from mobilestation ([95.79.189.214])
+        by smtp.gmail.com with ESMTPSA id q28-20020a2eb4bc000000b0024f3d1daea0sm1632375ljm.40.2022.05.04.03.33.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 03:33:29 -0700 (PDT)
+Date:   Wed, 4 May 2022 13:33:27 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     "Srikandan, Nandhini" <nandhini.srikandan@intel.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "mgross@linux.intel.com" <mgross@linux.intel.com>,
+        "Pan, Kris" <kris.pan@intel.com>,
+        "Demakkanavar, Kenchappa" <kenchappa.demakkanavar@intel.com>,
+        "Zhou, Furong" <furong.zhou@intel.com>,
+        "Sangannavar, Mallikarjunappa" 
+        <mallikarjunappa.sangannavar@intel.com>,
+        "Vaidya, Mahesh R" <mahesh.r.vaidya@intel.com>,
+        "A, Rashmi" <rashmi.a@intel.com>
+Subject: Re: [PATCH v4 3/3] spi: dw: Add support for master mode selection
+ for DWC SSI controller
+Message-ID: <20220504103327.vykfu2kffoarlyyv@mobilestation>
+References: <20220308103331.4116-1-nandhini.srikandan@intel.com>
+ <20220308103331.4116-4-nandhini.srikandan@intel.com>
+ <20220413130249.ueisqj5xs3komhmr@mobilestation>
+ <SJ0PR11MB58160274EABEA39BFA625F5485FA9@SJ0PR11MB5816.namprd11.prod.outlook.com>
+ <20220428143454.igdqqbbtufrzrizz@mobilestation.baikal.int>
+ <SJ0PR11MB58167AE8F52DD81B68AE91A885C19@SJ0PR11MB5816.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5b02be29-30ae-455c-3db6-08da2db97a24
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2714:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB27145A483ADC9206D78ACE3ACCC39@DM6PR12MB2714.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZoNX92OxUFLaATKqNikPvDdpkfLk3nLJkWxdOjIDHfuQ6NLlZCD1P9XqPf2h/Alv8GpPhNj0zSQ3Y6s+dnk5JO+ZjR2Rn/NCE3BWuSY5gFo37NY4yGG1q/pTJawN1LjhdveQnCWAzzucsQbTJncRMICOBbfFYRJ5Aj2fovQQ37B1yBTc2oYYGLIuZnQep2yxVW7wgQppN5bjekQPqphUAwOHCQCDlcLm+yqPLbwR+vKqYZ1RtsMTTVZgtOvaBXcBSM48UPz8BdttHlKsTBw5DkUCVBUqtSdq6aHNH66mSVsOzcPPccEaJzfsmE5kN7kSQYV6ivC9a6BgOhThjO2azl+1Xrvvsq6Noz9kzMOHiYirtnYyJngK/um0HY8OvV0tlRQS8hFhKgsX848Oj9mhT7Re8ZyeLNVR4SlpvEJABGo2fUOOjWpwKzflbvLvr9VEUzNr8ZyT8DgNy/+eDbfiCJ2AhrDeNzJ8f0vH+ciN33P4IPClZsaibH/nBFtidepxU73USzeBoFbK/79flcXB5lgJegtf6SmlBgfyvJLTfOyCNA08LT5pieNgMw46xDo5hJUX3UU7FTfldw3bmP5D4qclf0h3jTiVViLzH/TeI2g31jYd6Evo4EcDTOYVZV3aCr73rBhnR6nrEMHacFm3RjZD4oiC4v//OwLohvAgDNGuSlArhxlAeG3SIo+kF+EmAPkK8DpBNrIOgFrsrSyS6erB9fSnOKfdL9IJcQVyeoOPGlCTUXliE16TNqy5Glr2VfKVHspmHJEgUTK8g11h5M/9aXfDOFPHKCmc5si+6zHkKkqWpxsTl03d74p3luBg
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5304.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(966005)(6486002)(508600001)(31696002)(26005)(53546011)(55236004)(6506007)(6512007)(38100700002)(6666004)(7416002)(66556008)(186003)(66476007)(316002)(2906002)(66946007)(36756003)(5660300002)(8936002)(54906003)(31686004)(110136005)(83380400001)(4326008)(8676002)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R0h5UFB1YklNMWRLMUswcm1xTDM3R0pQaW14Umk2Ulg4ZDVVcE1VMmppNWZa?=
- =?utf-8?B?K0F6Q3ZPNWlQTVU4YW41SWMvcnBtLzc4MkR2MEpieXI4b1hmOVlwbFAxRWp4?=
- =?utf-8?B?Q2hWakZpa2dWK1BUMFZ3ZHdlODBFS2ZTRU1LZHRrcVQvR0pTaGhlWWwrUExZ?=
- =?utf-8?B?YnQ2S2lyZ1p2d2diTjFZamFrNkNua3VrWUVwemVvemMzcmk3amZjNlpabUli?=
- =?utf-8?B?QlpYQXdJU3dWWW8rQlQ2NTd3TjhrNGgzdWVaaHd3QVc2L2ZsUmZPajF6ZFdY?=
- =?utf-8?B?d0Q3bjZQR1VTSzhibnVadFk2bXNMNjl4ZDVjWlpOcDhtYk90SlhLNDU4ZVlF?=
- =?utf-8?B?SjFPL2JPQjZ6OWpDM1Y0RlNXOFd0NmNWclQ5Q1R2YXBsMmZFYTV0c1B1K21t?=
- =?utf-8?B?OGVKb0R3a1hOYzltdEVXZ2hJVlBxVHJCQ3VFUTkzREpIVmtvQzRIZGlaRHdo?=
- =?utf-8?B?am1tQlR5Nm9Yc3V0WGpORnNIVk94V1ZIYzFUZ0FvM1B0d014SFpuMGszek9p?=
- =?utf-8?B?MHdxYnFCYVUxMDFLZ0Y2bGRzcVVobnRXZDF1Si9HdWtxNHFXNmZiM29VT0dT?=
- =?utf-8?B?MzkzK2xtVFRUZ0l3NnF1c3dsYXBYZHU2TEE5eDZYeW9pWm1KY08yU1g1Sy95?=
- =?utf-8?B?bHA1YzZGRU9jU09qQm1ZaWQxeThYTEFvUGhvUFB1TjNZWEhFMDdmYktaRVEv?=
- =?utf-8?B?dEltV09mQzQxZDZzSFlVZEhkdGY3RDYwbG9tdDg5VFdTWTUveEdUZDlVM21q?=
- =?utf-8?B?Z1htd0U4MzRPNmdsaSthalIxU04zaE5yZndINGZqL0xQalVoUEp2RXBKYVRm?=
- =?utf-8?B?TFlVNHhoMkhDUFdreEh3cTNtTW03NU5MRnVkWjJ3OTdOREsyb0ZLTmVUN21o?=
- =?utf-8?B?V3BnT3A3NWpDRU5XTnBhVnNqNFNzOXdqQ0tYSDlJYzIvZ1VpQ1MrNkk5ZXhQ?=
- =?utf-8?B?M3g0UWdWTmZjNDR0Q3dreWkyYXdJamtrOGVaSjM5akcrd0xlVUQyUE5NWnVp?=
- =?utf-8?B?M2hVdEVtN2JBbXBGOGRHTnJjTEhsSEprdHVuUVZCNXdJUE5UV2xkdDNDWFRq?=
- =?utf-8?B?THBvSThsY1NvZjRROWdtczdLRi9vM1Q2RmxUck1yYktadUtnSXJ0TzRQUC9L?=
- =?utf-8?B?cGpYZnZSUTZZeHhXdGVVSUY3Y3JDMnFjTHlRM3BBbjdWaVlvWGVHaG5UQU95?=
- =?utf-8?B?QSs5M0luL2dzellvU25sMzlzZ2FTNk1RaFdrbmpieU1ZaHA2ZjltODdHbnha?=
- =?utf-8?B?bGNyQksxUEdnYXVBaGNjTHlZeXVVS2VsQWtYenkzVjVQWGFZMXZxdTI1L2RI?=
- =?utf-8?B?dlRsSis0cXdpOWVZZmUvM2VPLzFqR3RmWHBpMy9kOFpFMXBrYWJWRms0U2Nw?=
- =?utf-8?B?dEJyYW44VDJMaHVmYTNtWkhXeElqUmcraWhkWWtUSTB6QjRFK0FFdUk5L0N3?=
- =?utf-8?B?aFhTaGJOWStkRHIwZ09DMlZ5U1M0c3dHYjgwMVhkVDFBaXF3R0JqcHZqNEVZ?=
- =?utf-8?B?T25IMjhNblFaaDVkOXNNV09MSkp0TGVIZCtqQk03NEZzbS9FLzFlVzV3WGVR?=
- =?utf-8?B?S0pDRnZwSWNaU28xaW91aGEwekE2aFQwTGZtNlF1OWlMcmRkUE5yR2lkTE10?=
- =?utf-8?B?ZEE2QTdGQnJmbk1Mbm5RU3Q2Z1ZDcE9xOGJrNVZ5RDV2N0ZpOU9mY3ZzbEM1?=
- =?utf-8?B?aHlmTFFKQU11OUhmeHMrOUNGYmpISjVrU3UyeVhsR3E2djFDVkt0NzJhOENm?=
- =?utf-8?B?MDYrbzZVTm9oNHlDY2tyNGxQUlhQYk1UTjBiUFhETXdyNCtGekl1OGt0TTBG?=
- =?utf-8?B?Z2Y4b0tDT2RHSWk1bG1RZjVpbndXRm13RzdobCsxL1lCYUNoL0JmWXUyQVpP?=
- =?utf-8?B?S2ZFRC9lTzZ6My92Y1F6ZC9pZ0ZFNk45UFVxeUg1YTBhb3d5RTZMQW1yYmYz?=
- =?utf-8?B?Z2tPSkcxZ0Vad1Z0UlhCeDlMaW04ZWloRlYvbE11YWFBT2JmbXVHRldZTlZm?=
- =?utf-8?B?M0F6U2pkZmo3MEJzcnNTMy9QL3dSdVMvMktTSTJ6SDdwcjNpMmRWSit0OEFW?=
- =?utf-8?B?dXhUcVhMbWsvRjRDbUhWNTVlUlByU0tUb2hIZVBXNWJiMzRmRytSdnJ6QWli?=
- =?utf-8?B?V2t4UmxlMmZRNEUwVXg2Ty95ZStMSXF6eGtXT3JqaEN5Ym16OFZ3T0g0SllM?=
- =?utf-8?B?YndCV2RQOVNvbGIrR2FVOE1abXhWQ1hHak53WkRrS09nWVdnTTJiQUtYZEJJ?=
- =?utf-8?B?MUlGYUFUc1c3WEhzVDFWeXdGTkNUV01kQnU1RU4wanBoZnB3S0NHYVdkbkNZ?=
- =?utf-8?B?bnlmd1pJRm03VUltZ3paVHZTYUpzSjZyMDFHZldtRHhIUWlaVlhqUT09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b02be29-30ae-455c-3db6-08da2db97a24
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5304.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 10:33:07.1021
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zd2AGBg/EDl9YgDRssY5FWTaiBw/rvSP4ef3ZQQcHHVPDWUlmv/ZFMzy68JX70oEeT5JxnRlRyMEajexEcFo7w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2714
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SJ0PR11MB58167AE8F52DD81B68AE91A885C19@SJ0PR11MB5816.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/4/2022 5:50 AM, Jason Gunthorpe wrote:
-> On Tue, May 03, 2022 at 11:11:24AM -0600, Alex Williamson wrote:
->>> @@ -1843,6 +1845,17 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
->>>  		return -EBUSY;
->>>  	}
->>>  
->>> +	/*
->>> +	 * The 'struct vfio_pci_core_device' should be the first member of the
->>> +	 * of the structure referenced by 'driver_data' so that it can be
->>> +	 * retrieved with dev_get_drvdata() inside vfio-pci core layer.
->>> +	 */
->>> +	if ((struct vfio_pci_core_device *)driver_data != vdev) {
->>> +		pci_warn(pdev, "Invalid driver data\n");
->>> +		return -EINVAL;
->>> +	}
->>
->> It seems a bit odd to me to add a driver_data arg to the function,
->> which is actually required to point to the same thing as the existing
->> function arg.  Is this just to codify the requirement?  Maybe others
->> can suggest alternatives.
+On Mon, May 02, 2022 at 08:51:06AM +0000, Srikandan, Nandhini wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Serge Semin <fancer.lancer@gmail.com>
+> > Sent: Thursday, April 28, 2022 8:06 PM
+> > To: Srikandan, Nandhini <nandhini.srikandan@intel.com>
+> > Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>; broonie@kernel.org;
+> > robh+dt@kernel.org; linux-spi@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; devicetree@vger.kernel.org;
+> > mgross@linux.intel.com; Pan, Kris <kris.pan@intel.com>; Demakkanavar,
+> > Kenchappa <kenchappa.demakkanavar@intel.com>; Zhou, Furong
+> > <furong.zhou@intel.com>; Sangannavar, Mallikarjunappa
+> > <mallikarjunappa.sangannavar@intel.com>; Vaidya, Mahesh R
+> > <mahesh.r.vaidya@intel.com>; A, Rashmi <rashmi.a@intel.com>
+> > Subject: Re: [PATCH v4 3/3] spi: dw: Add support for master mode selection
+> > for DWC SSI controller
+> > 
+> > On Wed, Apr 27, 2022 at 09:51:47AM +0000, Srikandan, Nandhini wrote:
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Serge Semin <fancer.lancer@gmail.com>
+> > > > Sent: Wednesday, April 13, 2022 6:33 PM
+> > > > To: Srikandan, Nandhini <nandhini.srikandan@intel.com>
+> > > > Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>;
+> > > > broonie@kernel.org;
+> > > > robh+dt@kernel.org; linux-spi@vger.kernel.org; linux-
+> > > > kernel@vger.kernel.org; devicetree@vger.kernel.org;
+> > > > mgross@linux.intel.com; Pan, Kris <kris.pan@intel.com>;
+> > > > Demakkanavar, Kenchappa <kenchappa.demakkanavar@intel.com>;
+> > Zhou,
+> > > > Furong <furong.zhou@intel.com>; Sangannavar, Mallikarjunappa
+> > > > <mallikarjunappa.sangannavar@intel.com>; Vaidya, Mahesh R
+> > > > <mahesh.r.vaidya@intel.com>; A, Rashmi <rashmi.a@intel.com>
+> > > > Subject: Re: [PATCH v4 3/3] spi: dw: Add support for master mode
+> > > > selection for DWC SSI controller
+> > > >
+> > > > Hello Nandhini
+> > > >
+> > > > AFAICS this patch should go before
+> > > > [PATCH v4 2/3] spi: dw: Add support for Intel Thunder Bay SPI
+> > > > controller Thus you'd perform the DWC AHB SSI Master mode conversion
+> > > > first, then introduce the new controller support. Otherwise without
+> > > > this patch applied the DW SPI driver is most likely left broken for
+> > > > the Intel SPI controllers since you drop the DW_SPI_CAP_KEEMBAY_MST
+> > > > macro usage in [PATCH 2/3] while the new DW AHB SSI Master
+> > > > functionality is introduced in the next patch [PATCH 3/3]. So please
+> > > > convert the series to the harmless configuration on each git image state.
+> > > >
+> > > Sure, I will reorder patch 2/3 and 3/3 so that the master mode conversion
+> > happens first followed by new controller support.
+> > >
+> > > > On Tue, Mar 08, 2022 at 06:33:31PM +0800,
+> > > > nandhini.srikandan@intel.com
+> > > > wrote:
+> > > > > From: Nandhini Srikandan <nandhini.srikandan@intel.com>
+> > > > >
+> > > > > Add support to select the controller mode as master mode by
+> > > > > setting Bit 31 of CTRLR0 register. This feature is supported for
+> > > > > controller versions above v1.02.
+> > > > >
+> > > > > Signed-off-by: Nandhini Srikandan <nandhini.srikandan@intel.com>
+> > > > > ---
+> > > > >  drivers/spi/spi-dw-core.c | 4 ++--
+> > > > >  drivers/spi/spi-dw.h      | 7 +++----
+> > > > >  2 files changed, 5 insertions(+), 6 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/spi/spi-dw-core.c b/drivers/spi/spi-dw-core.c
+> > > > > index ecea471ff42c..68bfdf2c4dc7 100644
+> > > > > --- a/drivers/spi/spi-dw-core.c
+> > > > > +++ b/drivers/spi/spi-dw-core.c
+> > > > > @@ -307,8 +307,8 @@ static u32 dw_spi_prepare_cr0(struct dw_spi
+> > > > > *dws,
+> > > > struct spi_device *spi)
+> > > > >  		if (spi->mode & SPI_LOOP)
+> > > > >  			cr0 |= DW_HSSI_CTRLR0_SRL;
+> > > > >
+> > > >
+> > > > > -		if (dws->caps & DW_SPI_CAP_KEEMBAY_MST)
+> > > > > -			cr0 |= DW_HSSI_CTRLR0_KEEMBAY_MST;
+> > > > > +		/* CTRLR0[31] MST */
+> > > > > +		cr0 |= DW_HSSI_CTRLR0_MST;
+> > > >
+> > > > Could you please conditionally set that flag here? That's what we
+> > > > agreed to do in v3:
+> > > > https://lore.kernel.org/linux-
+> > > > spi/20211116191542.vc42cxvflzn66ien@mobilestation/
+> > > > like this:
+> > > > +	/* CTRLR0[31] MST */
+> > > > +	if (dw_spi_ver_is_ge(dws, HSSI, 102A))
+> > > > +		cr0 |= DWC_HSSI_CTRLR0_MST;
+> > > >
+> > 
+> > > In case of Keem Bay, though the version of SPI controller is shown as 1.01a
+> > from the HW register, it still needs the MST BIT31 to be set in order for
+> > controller to work in master mode.
+> > > Also since the older versions of the controller which do not need the BIT31
+> > to be set, the bit was reserved. Hence there is no impact by setting this BIT31
+> > for older versions.
+> > > So, the condition check was removed.
+> > 
+> > I am completely confused. Earlier you said that both Keem Bay and Thunder
+> > bay had v1.02a DW AHB SSI IP-core:
+> > https://patchwork.kernel.org/project/spi-devel-
+> > general/patch/20210824085856.12714-3-nandhini.srikandan@intel.com/
+> > Now you say they are based on the different versions of the core.
+> > Please clarify.
+> > 
+> > -Sergey
+> > 
 
- Yes. It was mainly for enforcing this requirement, otherwise in future
- if someone tries to add new driver (or done changes in the existing
- structure) and does not follow this convention then the pointer will
- be wrong.
+> HW IP team informed us that the version used by Keem Bay SPI controller is 1.02a. But in the IP version register it is updated as 1.01a. We are checking with the HW IP team regarding this mismatch and this will be taken care of internally. Apologies for the confusions. I will add the conditional check as per your suggestion.
 
->>
->> We also need to collaborate with Jason's patch:
->>
->> https://lore.kernel.org/all/0-v2-0f36bcf6ec1e+64d-vfio_get_from_dev_jgg@nvidia.com/
->>
->> (and maybe others)
->>
->> If we implement a change like proposed here that vfio-pci-core sets
->> drvdata then we don't need for each variant driver to implement their
->> own wrapper around err_handler or err_detected as Jason proposes in the
->> linked patch.  Thanks,
-> 
-> Oh, I forgot about this series completely.
-> 
-> Yes, we need to pick a method, either drvdata always points at the
-> core struct, or we wrapper the core functions.
-> 
-> I have an independent version of the above patch that uses the
-> drvdata, but I chucked it because it was unnecessary for just a couple
-> of AER functions. 
-> 
-> We should probably go back to it though if we are adding more
-> functions, as the wrapping is a bit repetitive. I'll go and respin
-> that series then. Abhishek can base on top of it.
-> 
+Ok. Waiting for v5 then.
 
- Sure. I will rebase on top of Jason patch series.
+-Sergey
 
-> My approach was more type-sane though:
-> 
- This is also fine.
-
- Initially I wanted to do the same but it requires to have a new
- wrapper function for each driver so I implemented in the core layer.
- 
- Thanks,
- Abhishek
-
-> commit 12ba94a72d7aa134af8752d6ff78193acdac93ae
-> Author: Jason Gunthorpe <jgg@ziepe.ca>
-> Date:   Tue Mar 29 16:32:32 2022 -0300
-> 
->     vfio/pci: Have all VFIO PCI drivers store the vfio_pci_core_device in drvdata
->     
->     Having a consistent pointer in the drvdata will allow the next patch to
->     make use of the drvdata from some of the core code helpers.
->     
->     Use a WARN_ON inside vfio_pci_core_unregister_device() to detect drivers
->     that miss this.
->     
->     Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-> index 767b5d47631a49..665691967a030c 100644
-> --- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-> +++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-> @@ -337,6 +337,14 @@ static int vf_qm_cache_wb(struct hisi_qm *qm)
->  	return 0;
->  }
->  
-> +static struct hisi_acc_vf_core_device *hssi_acc_drvdata(struct pci_dev *pdev)
-> +{
-> +	struct vfio_pci_core_device *core_device = dev_get_drvdata(&pdev->dev);
-> +
-> +	return container_of(core_device, struct hisi_acc_vf_core_device,
-> +			    core_device);
-> +}
-> +
->  static void vf_qm_fun_reset(struct hisi_acc_vf_core_device *hisi_acc_vdev,
->  			    struct hisi_qm *qm)
->  {
-> @@ -962,7 +970,7 @@ hisi_acc_vfio_pci_get_device_state(struct vfio_device *vdev,
->  
->  static void hisi_acc_vf_pci_aer_reset_done(struct pci_dev *pdev)
->  {
-> -	struct hisi_acc_vf_core_device *hisi_acc_vdev = dev_get_drvdata(&pdev->dev);
-> +	struct hisi_acc_vf_core_device *hisi_acc_vdev = hssi_acc_drvdata(pdev);
->  
->  	if (hisi_acc_vdev->core_device.vdev.migration_flags !=
->  				VFIO_MIGRATION_STOP_COPY)
-> @@ -1278,7 +1286,7 @@ static int hisi_acc_vfio_pci_probe(struct pci_dev *pdev, const struct pci_device
->  	if (ret)
->  		goto out_free;
->  
-> -	dev_set_drvdata(&pdev->dev, hisi_acc_vdev);
-> +	dev_set_drvdata(&pdev->dev, &hisi_acc_vdev->core_device);
->  	return 0;
->  
->  out_free:
-> @@ -1289,7 +1297,7 @@ static int hisi_acc_vfio_pci_probe(struct pci_dev *pdev, const struct pci_device
->  
->  static void hisi_acc_vfio_pci_remove(struct pci_dev *pdev)
->  {
-> -	struct hisi_acc_vf_core_device *hisi_acc_vdev = dev_get_drvdata(&pdev->dev);
-> +	struct hisi_acc_vf_core_device *hisi_acc_vdev = hssi_acc_drvdata(pdev);
->  
->  	vfio_pci_core_unregister_device(&hisi_acc_vdev->core_device);
->  	vfio_pci_core_uninit_device(&hisi_acc_vdev->core_device);
-> diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
-> index bbec5d288fee97..3391f965abd9f0 100644
-> --- a/drivers/vfio/pci/mlx5/main.c
-> +++ b/drivers/vfio/pci/mlx5/main.c
-> @@ -39,6 +39,14 @@ struct mlx5vf_pci_core_device {
->  	struct mlx5_vf_migration_file *saving_migf;
->  };
->  
-> +static struct mlx5vf_pci_core_device *mlx5vf_drvdata(struct pci_dev *pdev)
-> +{
-> +	struct vfio_pci_core_device *core_device = dev_get_drvdata(&pdev->dev);
-> +
-> +	return container_of(core_device, struct mlx5vf_pci_core_device,
-> +			    core_device);
-> +}
-> +
->  static struct page *
->  mlx5vf_get_migration_page(struct mlx5_vf_migration_file *migf,
->  			  unsigned long offset)
-> @@ -505,7 +513,7 @@ static int mlx5vf_pci_get_device_state(struct vfio_device *vdev,
->  
->  static void mlx5vf_pci_aer_reset_done(struct pci_dev *pdev)
->  {
-> -	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
-> +	struct mlx5vf_pci_core_device *mvdev = mlx5vf_drvdata(pdev);
->  
->  	if (!mvdev->migrate_cap)
->  		return;
-> @@ -618,7 +626,7 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
->  	if (ret)
->  		goto out_free;
->  
-> -	dev_set_drvdata(&pdev->dev, mvdev);
-> +	dev_set_drvdata(&pdev->dev, &mvdev->core_device);
->  	return 0;
->  
->  out_free:
-> @@ -629,7 +637,7 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
->  
->  static void mlx5vf_pci_remove(struct pci_dev *pdev)
->  {
-> -	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
-> +	struct mlx5vf_pci_core_device *mvdev = mlx5vf_drvdata(pdev);
->  
->  	vfio_pci_core_unregister_device(&mvdev->core_device);
->  	vfio_pci_core_uninit_device(&mvdev->core_device);
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index 06b6f3594a1316..53ad39d617653d 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -262,6 +262,10 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
->  	u16 cmd;
->  	u8 msix_pos;
->  
-> +	/* Drivers must set the vfio_pci_core_device to their drvdata */
-> +	if (WARN_ON(vdev != dev_get_drvdata(&vdev->pdev->dev)))
-> +		return -EINVAL;
-> +
->  	vfio_pci_set_power_state(vdev, PCI_D0);
->  
->  	/* Don't allow our initial saved state to include busmaster */
-
+> > >
+> > > > >  	}
+> > > > >
+> > > > >  	return cr0;
+> > > > > diff --git a/drivers/spi/spi-dw.h b/drivers/spi/spi-dw.h index
+> > > > > d5ee5130601e..2583b7314c41 100644
+> > > > > --- a/drivers/spi/spi-dw.h
+> > > > > +++ b/drivers/spi/spi-dw.h
+> > > > > @@ -23,7 +23,7 @@
+> > > > >  	((_dws)->ip == DW_ ## _ip ## _ID)
+> > > > >
+> > > >
+> > > > >  #define __dw_spi_ver_cmp(_dws, _ip, _ver, _op) \
+> > > > > -	(dw_spi_ip_is(_dws, _ip) && (_dws)->ver _op DW_ ## _ip ## _ver)
+> > > > > +	(dw_spi_ip_is(_dws, _ip) && (_dws)->ver _op DW_ ## _ip ## _ ##
+> > > > _ver)
+> > > >
+> > > > Nice catch. My mistake. Could you please move this change into a
+> > > > dedicated patch with the next fixes tag?
+> > > > Fixes: 2cc8d9227bbb ("spi: dw: Introduce Synopsys IP-core versions
+> > > > interface")
+> > > >
+> > 
+> > > Sure, I will convert this to a dedicated patch. Just for confirmation, the
+> > patch should be a separate patch with this title "Fixes: 2cc8d9227bbb ("spi:
+> > dw: Introduce Synopsys IP-core versions interface")"
+> > > and not part of the current patch set series.
+> > 
+> > You can add that patch to this series (better to the head of it). The title can
+> > be something like: "spi: dw: Fix IP-core versions macro".
+> > The tag needs to be added in the commit log above the Signed-off-by tag.
+> > 
+> Sure, I will add the patch to the head of this series and add the tag.
+> > -Sergey
+> > 
+> > > > >
+> > > > >  #define dw_spi_ver_is(_dws, _ip, _ver) __dw_spi_ver_cmp(_dws,
+> > > > > _ip, _ver, ==)
+> > > > >
+> > > > > @@ -31,8 +31,7 @@
+> > > > >
+> > > > >  /* DW SPI controller capabilities */
+> > > > >  #define DW_SPI_CAP_CS_OVERRIDE		BIT(0)
+> > > > > -#define DW_SPI_CAP_KEEMBAY_MST		BIT(1)
+> > > > > -#define DW_SPI_CAP_DFS32		BIT(2)
+> > > > > +#define DW_SPI_CAP_DFS32		BIT(1)
+> > > > >
+> > > > >  /* Register offsets (Generic for both DWC APB SSI and DWC SSI IP-
+> > cores) */
+> > > > >  #define DW_SPI_CTRLR0			0x00
+> > > > > @@ -100,7 +99,7 @@
+> > > >
+> > > > >   * 0: SSI is slave
+> > > > >   * 1: SSI is master
+> > > > >   */
+> > > > > -#define DW_HSSI_CTRLR0_KEEMBAY_MST		BIT(31)
+> > > > > +#define DW_HSSI_CTRLR0_MST			BIT(31)
+> > > >
+> > > > Could you please drop the redundant comment above and join the macro
+> > > > with the DW_HSSI_* macros group?
+> > > >
+> > > Sure, I will remove the comment and group the macros.
+> > > > -Sergey
+> > > >
+> > > > >
+> > > > >  /* Bit fields in CTRLR1 */
+> > > > >  #define DW_SPI_NDF_MASK				GENMASK(15,
+> > 0)
+> > > > > --
+> > > > > 2.17.1
+> > > > >
