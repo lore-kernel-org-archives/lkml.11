@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D715FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD43C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356714AbiEDRXK (ORCPT
+        id S1356286AbiEDRXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        Wed, 4 May 2022 13:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355760AbiEDREl (ORCPT
+        with ESMTP id S1355753AbiEDREl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC424F9D7;
-        Wed,  4 May 2022 09:53:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488F84F9D2;
+        Wed,  4 May 2022 09:53:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D368BB8279F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A066618A9;
+        Wed,  4 May 2022 16:53:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DFAC385A4;
         Wed,  4 May 2022 16:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C83DC385AF;
-        Wed,  4 May 2022 16:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683199;
-        bh=c9tifztPdtIZMnIZoFYTn8EbVTxFGghKHU5Yrzs7rmg=;
+        s=korg; t=1651683200;
+        bh=ND4TvuaQfIW/5AgPmtvCsaRACYMDAT08gszoo/ScmM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0wnFtUvvswxQNbZXpkHGOrClT9auogOsyQyUOQeMarSn0yGCd34fc+HFEAaluS3BX
-         KjIdoCxf+LVCfCmNaQv+H7nhBHQNG82W7J+At5n09+Q0IMwfroCVSp7Jw4GvnPpN6U
-         AtsMAw9k2QHFJj4j/6p2d57xPds+QgQmmwG6p0xU=
+        b=rblendjv+W8RZGlKRI/41EeHOwsNYwhjSxBWamVS9EIbN2CyosXh6qKl+8c3N+45m
+         htyKxrYccaw4HJfhMkoyB+drYGL/ouTuexmAieLgcUVbTKpCaeNWH78rWis7PsyaVB
+         gfJ1/O7G5QCm/+y8QS4hW1YjFmATtPJsQOqhnol4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 064/177] ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
-Date:   Wed,  4 May 2022 18:44:17 +0200
-Message-Id: <20220504153058.732915149@linuxfoundation.org>
+Subject: [PATCH 5.15 065/177] ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name
+Date:   Wed,  4 May 2022 18:44:18 +0200
+Message-Id: <20220504153058.816269298@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,43 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit 0e486fe341fabd8e583f3d601a874cd394979c45 ]
+[ Upstream commit 5c8b49852910caffeebb1ce541fdd264ffc691b8 ]
 
-The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
-PCK0 output of the SoC and is expected to be set to 12MHz. Previously
-this was mapped using pre-common clock API calls in the audio machine
-driver but the conversion to the common clock framework broke that so
-describe things in the DT instead.
+Pinctrl phandle is for spi1 so rename it to reflect this.
 
-Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220404102806.581374-2-broonie@kernel.org
+Link: https://lore.kernel.org/r/20220331141323.194355-1-claudiu.beznea@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91sam9g20ek_common.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-index 87bb39060e8b..ca03685f0f08 100644
---- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-+++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-@@ -219,6 +219,12 @@ i2c-gpio-0 {
- 		wm8731: wm8731@1b {
- 			compatible = "wm8731";
- 			reg = <0x1b>;
-+
-+			/* PCK0 at 12MHz */
-+			clocks = <&pmc PMC_TYPE_SYSTEM 8>;
-+			clock-names = "mclk";
-+			assigned-clocks = <&pmc PMC_TYPE_SYSTEM 8>;
-+			assigned-clock-rates = <12000000>;
- 		};
- 	};
+diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+index d241c24f0d83..accb92cfac44 100644
+--- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+@@ -82,7 +82,7 @@ usart4: serial@fc010000 {
  
+ 			spi1: spi@fc018000 {
+ 				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi0_cs>;
++				pinctrl-0 = <&pinctrl_spi1_cs>;
+ 				cs-gpios = <&pioB 21 0>;
+ 				status = "okay";
+ 			};
+@@ -140,7 +140,7 @@ pinctrl_macb0_phy_irq: macb0_phy_irq_0 {
+ 						atmel,pins =
+ 							<AT91_PIOE 1 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
+ 					};
+-					pinctrl_spi0_cs: spi0_cs_default {
++					pinctrl_spi1_cs: spi1_cs_default {
+ 						atmel,pins =
+ 							<AT91_PIOB 21 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
+ 					};
 -- 
 2.35.1
 
