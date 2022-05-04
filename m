@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3955FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A3FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351668AbiEDRQu (ORCPT
+        id S1356298AbiEDRRE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
+        Wed, 4 May 2022 13:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355961AbiEDREs (ORCPT
+        with ESMTP id S1356006AbiEDREu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F104FC58;
-        Wed,  4 May 2022 09:53:35 -0700 (PDT)
+        Wed, 4 May 2022 13:04:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79B350044;
+        Wed,  4 May 2022 09:53:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FFC0B827A1;
-        Wed,  4 May 2022 16:53:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D1CC385A4;
-        Wed,  4 May 2022 16:53:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ECD3B8278E;
+        Wed,  4 May 2022 16:53:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D79C385AA;
+        Wed,  4 May 2022 16:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683214;
-        bh=9Gg/dWksUKSdNnvO9+X8KZ+em90nL3aF/I7M8l2cWyc=;
+        s=korg; t=1651683218;
+        bh=mG562RSlp1GIUX/9eUaCxfRcLCFqQjtL0AeviNxO6YI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0FB3mlxQVEzekcPqQd3m9o3xU2n6iMnZBtO98hKHcyfBLZ9TWHC8nJ9e/C6yo08U
-         uEeJ81kPTU8poBL9pxTy3tTGyf4EebjMn0+3OFsyAuAfdHqLLrCXJqANkDc3zPxUOw
-         ZCDmZTewXKCXK5muVOhy9DgZ17TV85kNXpp5fKGI=
+        b=PtufCUmOKslV8c3IG/LvM+9l6VirxWoGKodQJdSIyAmw0NGiCaqr1PMhVHNsf26G8
+         gx+2kugw1rwiVKu3A+0IqeBL0xcc/+rQqtGTMfZbsuq34MpIIwcnyZHvzZ3FUMqvhi
+         gvAu60mdvvE5IKNveG72K02EN+2Y4t/WZXuIczas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/177] memory: renesas-rpc-if: Fix HF/OSPI data transfer in Manual Mode
-Date:   Wed,  4 May 2022 18:44:32 +0200
-Message-Id: <20220504153100.143222475@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 071/177] ARM: dts: am3517-evm: Fix misc pinmuxing
+Date:   Wed,  4 May 2022 18:44:24 +0200
+Message-Id: <20220504153059.391179111@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -53,167 +50,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 7e842d70fe599bc13594b650b2144c4b6e6d6bf1 ]
+[ Upstream commit 942da3af32b2288e674736eb159d1fc676261691 ]
 
-HyperFlash devices fail to probe:
+The bootloader for the AM3517 has previously done much of the pin
+muxing, but as the bootloader is moving more and more to a model
+based on the device tree, it may no longer automatically mux the
+pins, so it is necessary to add the pinmuxing to the Linux device
+trees so the respective peripherals can remain functional.
 
-    rpc-if-hyperflash rpc-if-hyperflash: probing of hyperbus device failed
-
-In HyperFlash or Octal-SPI Flash mode, the Transfer Data Enable bits
-(SPIDE) in the Manual Mode Enable Setting Register (SMENR) are derived
-from half of the transfer size, cfr. the rpcif_bits_set() helper
-function.  However, rpcif_reg_{read,write}() does not take the bus size
-into account, and does not double all Manual Mode Data Register access
-sizes when communicating with a HyperFlash or Octal-SPI Flash device.
-
-Fix this, and avoid the back-and-forth conversion between transfer size
-and Transfer Data Enable bits, by explicitly storing the transfer size
-in struct rpcif, and using that value to determine access size in
-rpcif_reg_{read,write}().
-
-Enforce that the "high" Manual Mode Read/Write Data Registers
-(SM[RW]DR1) are only used for 8-byte data accesses.
-While at it, forbid writing to the Manual Mode Read Data Registers,
-as they are read-only.
-
-Fixes: fff53a551db50f5e ("memory: renesas-rpc-if: Correct QSPI data transfer in Manual mode")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Tested-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Link: https://lore.kernel.org/r/cde9bfacf704c81865f57b15d1b48a4793da4286.1649681476.git.geert+renesas@glider.be
-Link: https://lore.kernel.org/r/20220420070526.9367-1-krzysztof.kozlowski@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 6ed1d7997561 ("ARM: dts: am3517-evm: Add support for UI board and Audio")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Message-Id: <20220226214820.747847-1-aford173@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/renesas-rpc-if.c | 60 +++++++++++++++++++++++++--------
- include/memory/renesas-rpc-if.h |  1 +
- 2 files changed, 47 insertions(+), 14 deletions(-)
+ arch/arm/boot/dts/am3517-evm.dts  | 45 +++++++++++++++++++++++++++----
+ arch/arm/boot/dts/am3517-som.dtsi |  9 +++++++
+ 2 files changed, 49 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
-index 2a4c1f94bfa0..3a416705f61c 100644
---- a/drivers/memory/renesas-rpc-if.c
-+++ b/drivers/memory/renesas-rpc-if.c
-@@ -162,25 +162,39 @@ static const struct regmap_access_table rpcif_volatile_table = {
+diff --git a/arch/arm/boot/dts/am3517-evm.dts b/arch/arm/boot/dts/am3517-evm.dts
+index 0d2fac98ce7d..c8b80f156ec9 100644
+--- a/arch/arm/boot/dts/am3517-evm.dts
++++ b/arch/arm/boot/dts/am3517-evm.dts
+@@ -161,6 +161,8 @@ pwm11: dmtimer-pwm@11 {
  
+ 	/* HS USB Host PHY on PORT 1 */
+ 	hsusb1_phy: hsusb1_phy {
++		pinctrl-names = "default";
++		pinctrl-0 = <&hsusb1_rst_pins>;
+ 		compatible = "usb-nop-xceiv";
+ 		reset-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>; /* gpio_57 */
+ 		#phy-cells = <0>;
+@@ -168,7 +170,9 @@ hsusb1_phy: hsusb1_phy {
+ };
  
- /*
-- * Custom accessor functions to ensure SMRDR0 and SMWDR0 are always accessed
-- * with proper width. Requires SMENR_SPIDE to be correctly set before!
-+ * Custom accessor functions to ensure SM[RW]DR[01] are always accessed with
-+ * proper width.  Requires rpcif.xfer_size to be correctly set before!
-  */
- static int rpcif_reg_read(void *context, unsigned int reg, unsigned int *val)
- {
- 	struct rpcif *rpc = context;
+ &davinci_emac {
+-	     status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&ethernet_pins>;
++	status = "okay";
+ };
  
--	if (reg == RPCIF_SMRDR0 || reg == RPCIF_SMWDR0) {
--		u32 spide = readl(rpc->base + RPCIF_SMENR) & RPCIF_SMENR_SPIDE(0xF);
--
--		if (spide == 0x8) {
-+	switch (reg) {
-+	case RPCIF_SMRDR0:
-+	case RPCIF_SMWDR0:
-+		switch (rpc->xfer_size) {
-+		case 1:
- 			*val = readb(rpc->base + reg);
- 			return 0;
--		} else if (spide == 0xC) {
-+
-+		case 2:
- 			*val = readw(rpc->base + reg);
- 			return 0;
--		} else if (spide != 0xF) {
-+
-+		case 4:
-+		case 8:
-+			*val = readl(rpc->base + reg);
-+			return 0;
-+
-+		default:
- 			return -EILSEQ;
- 		}
-+
-+	case RPCIF_SMRDR1:
-+	case RPCIF_SMWDR1:
-+		if (rpc->xfer_size != 8)
-+			return -EILSEQ;
-+		break;
- 	}
+ &davinci_mdio {
+@@ -193,6 +197,8 @@ dpi_out: endpoint {
+ };
  
- 	*val = readl(rpc->base + reg);
-@@ -192,18 +206,34 @@ static int rpcif_reg_write(void *context, unsigned int reg, unsigned int val)
- {
- 	struct rpcif *rpc = context;
+ &i2c2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins>;
+ 	clock-frequency = <400000>;
+ 	/* User DIP swithes [1:8] / User LEDS [1:2] */
+ 	tca6416: gpio@21 {
+@@ -205,6 +211,8 @@ tca6416: gpio@21 {
+ };
  
--	if (reg == RPCIF_SMRDR0 || reg == RPCIF_SMWDR0) {
--		u32 spide = readl(rpc->base + RPCIF_SMENR) & RPCIF_SMENR_SPIDE(0xF);
--
--		if (spide == 0x8) {
-+	switch (reg) {
-+	case RPCIF_SMWDR0:
-+		switch (rpc->xfer_size) {
-+		case 1:
- 			writeb(val, rpc->base + reg);
- 			return 0;
--		} else if (spide == 0xC) {
-+
-+		case 2:
- 			writew(val, rpc->base + reg);
- 			return 0;
--		} else if (spide != 0xF) {
-+
-+		case 4:
-+		case 8:
-+			writel(val, rpc->base + reg);
-+			return 0;
-+
-+		default:
- 			return -EILSEQ;
- 		}
-+
-+	case RPCIF_SMWDR1:
-+		if (rpc->xfer_size != 8)
-+			return -EILSEQ;
-+		break;
-+
-+	case RPCIF_SMRDR0:
-+	case RPCIF_SMRDR1:
-+		return -EPERM;
- 	}
+ &i2c3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c3_pins>;
+ 	clock-frequency = <400000>;
+ };
  
- 	writel(val, rpc->base + reg);
-@@ -442,6 +472,7 @@ int rpcif_manual_xfer(struct rpcif *rpc)
+@@ -223,6 +231,8 @@ &mmc3 {
+ };
  
- 			smenr |= RPCIF_SMENR_SPIDE(rpcif_bits_set(rpc, nbytes));
- 			regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
-+			rpc->xfer_size = nbytes;
+ &usbhshost {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb1_pins>;
+ 	port1-mode = "ehci-phy";
+ };
  
- 			memcpy(data, rpc->buffer + pos, nbytes);
- 			if (nbytes == 8) {
-@@ -506,6 +537,7 @@ int rpcif_manual_xfer(struct rpcif *rpc)
- 			regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
- 			regmap_write(rpc->regmap, RPCIF_SMCR,
- 				     rpc->smcr | RPCIF_SMCR_SPIE);
-+			rpc->xfer_size = nbytes;
- 			ret = wait_msg_xfer_end(rpc);
- 			if (ret)
- 				goto err_out;
-diff --git a/include/memory/renesas-rpc-if.h b/include/memory/renesas-rpc-if.h
-index 77c694a19149..15dd0076c293 100644
---- a/include/memory/renesas-rpc-if.h
-+++ b/include/memory/renesas-rpc-if.h
-@@ -66,6 +66,7 @@ struct rpcif {
- 	size_t size;
- 	enum rpcif_data_dir dir;
- 	u8 bus_size;
-+	u8 xfer_size;
- 	void *buffer;
- 	u32 xferlen;
- 	u32 smcr;
+@@ -231,8 +241,35 @@ &usbhsehci {
+ };
+ 
+ &omap3_pmx_core {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb1_rst_pins>;
++
++	ethernet_pins: pinmux_ethernet_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21fe, PIN_INPUT | MUX_MODE0) /* rmii_mdio_data */
++			OMAP3_CORE1_IOPAD(0x2200, MUX_MODE0) /* rmii_mdio_clk */
++			OMAP3_CORE1_IOPAD(0x2202, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd0 */
++			OMAP3_CORE1_IOPAD(0x2204, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd1 */
++			OMAP3_CORE1_IOPAD(0x2206, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_crs_dv */
++			OMAP3_CORE1_IOPAD(0x2208, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_rxer */
++			OMAP3_CORE1_IOPAD(0x220a, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd0 */
++			OMAP3_CORE1_IOPAD(0x220c, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd1 */
++			OMAP3_CORE1_IOPAD(0x220e, PIN_OUTPUT_PULLDOWN |MUX_MODE0) /* rmii_txen */
++			OMAP3_CORE1_IOPAD(0x2210, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_50mhz_clk */
++		>;
++	};
++
++	i2c2_pins: pinmux_i2c2_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21be, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_scl */
++			OMAP3_CORE1_IOPAD(0x21c0, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_sda */
++		>;
++	};
++
++	i2c3_pins: pinmux_i2c3_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21c2, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_scl */
++			OMAP3_CORE1_IOPAD(0x21c4, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_sda */
++		>;
++	};
+ 
+ 	leds_pins: pinmux_leds_pins {
+ 		pinctrl-single,pins = <
+@@ -300,8 +337,6 @@ OMAP3_CORE1_IOPAD(0x20ba, PIN_OUTPUT | MUX_MODE4)	/* gpmc_ncs6.gpio_57 */
+ };
+ 
+ &omap3_pmx_core2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb1_pins>;
+ 
+ 	hsusb1_pins: pinmux_hsusb1_pins {
+ 		pinctrl-single,pins = <
+diff --git a/arch/arm/boot/dts/am3517-som.dtsi b/arch/arm/boot/dts/am3517-som.dtsi
+index 8b669e2eafec..f7b680f6c48a 100644
+--- a/arch/arm/boot/dts/am3517-som.dtsi
++++ b/arch/arm/boot/dts/am3517-som.dtsi
+@@ -69,6 +69,8 @@ nand@0,0 {
+ };
+ 
+ &i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
+ 	clock-frequency = <400000>;
+ 
+ 	s35390a: s35390a@30 {
+@@ -179,6 +181,13 @@ bluetooth {
+ 
+ &omap3_pmx_core {
+ 
++	i2c1_pins: pinmux_i2c1_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21ba, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_scl */
++			OMAP3_CORE1_IOPAD(0x21bc, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_sda */
++		>;
++	};
++
+ 	wl12xx_buffer_pins: pinmux_wl12xx_buffer_pins {
+ 		pinctrl-single,pins = <
+ 			OMAP3_CORE1_IOPAD(0x2156, PIN_OUTPUT | MUX_MODE4)  /* mmc1_dat7.gpio_129 */
 -- 
 2.35.1
 
