@@ -2,94 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 094A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357427AbiEDSGf (ORCPT
+        id S1376341AbiEDSGl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
+        Wed, 4 May 2022 14:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359561AbiEDSGL (ORCPT
+        with ESMTP id S1359845AbiEDSGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:06:11 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EC76D3A3
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:21:28 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-e9027efe6aso1831288fac.10
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:21:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DUWKIdH/fEUKAxxzAokiJ2q+i9WASUkxei6O8LHC1rU=;
-        b=a3TSfVCrQqto9wmhJlB9avSH7Rp2BPHfvLxJNNhi9ciOwVonT/3vyD9qvpnRG+ay/p
-         qodVdrmUN8IKY+xc/SwIaS/U9CllguT+CewL9xBoAIC9Y/aeFEng9u/xSDK6UhVeVt+O
-         sO+g09lD0i56YTXLqTzDrIsYeJGoIQ+q0uovZ0NRMQADtfZS08DC4ojVdOuGOjK2acsi
-         jVmiv3QUseFuu2IDWH00tkMrWer8HKAka2giqqNBfRrwkcAuIinbAEwEJ0Y5HyzQfaPh
-         4NF/gMn9Gy/IxS9yXzH99wjHS5ajbfASZKmDgOfbspi4lYoSdUSWNU4uqa0NFqpwu4fK
-         LOgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DUWKIdH/fEUKAxxzAokiJ2q+i9WASUkxei6O8LHC1rU=;
-        b=13l1xLT4NfUihj74C+WFsLsPpTEMSUwNFCkMsPrrYxnrnB6eJkO9Gfehq/U1+dT6j5
-         DA6wbhgim3R562cEAzdf3c4iDyqou831y8MI0yBbOTc9aHQAOcXOTEPzAVi9C1Rfpgxd
-         CEHw+grxc2MMX1+Syubj7AJ5ly0ndoBeBbDyQ9XwhYSJ7+Sw+iraCZvYgdXV6VZkv5Zu
-         zlTVmb+oBQ2ii1z+Te3JJfcbLma8kPnbn7FLQkKzv7htMwjPlxRg+qlSCjjdAuDwfqeu
-         7o/8rgDjsmecsJHOcJHqQAVBb6N2aU8MEziB3FFLUmDfK9O6TRBwr5VR8pugJikUlC1D
-         kTuA==
-X-Gm-Message-State: AOAM531GKgnkkIiAHMPubvb6foDREvZ4ydNlyYgF6/J4BqKNhz39S70D
-        2X7M1mkCUF+BgGfCS9Y9wPKVNBbFNewWEkj9
-X-Google-Smtp-Source: ABdhPJy2UZOyD3CWXrA/eXvFp3d4iW9ppaYryHuEExwQ7s7wGina9JRPiQs5uxLBRUeni6GHxzzWGA==
-X-Received: by 2002:a05:6870:c186:b0:e9:5f39:85b1 with SMTP id h6-20020a056870c18600b000e95f3985b1mr277585oad.144.1651684887889;
-        Wed, 04 May 2022 10:21:27 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id a7-20020a056870b14700b000ead8b89484sm5785452oal.5.2022.05.04.10.21.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 10:21:27 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Satya Priya <quic_c_skakit@quicinc.com>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-leds@vger.kernel.org,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: (subset) [PATCH V4 0/4] Add PM8350C PMIC PWM support for backlight
-Date:   Wed,  4 May 2022 12:21:12 -0500
-Message-Id: <165168485227.3730817.2589652211436766434.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1645509309-16142-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1645509309-16142-1-git-send-email-quic_c_skakit@quicinc.com>
+        Wed, 4 May 2022 14:06:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D051F50453;
+        Wed,  4 May 2022 10:22:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BC6CB8279D;
+        Wed,  4 May 2022 17:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9272C385A5;
+        Wed,  4 May 2022 17:22:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651684924;
+        bh=7ebi4yCgI8D7GOL1tZDTxmOW2rgVmfcl5Te5keZEMNU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=JfwHZ5SOCyIL8P/OP1RJofkC9XAomZekXM4qGdrXC5F2aPwsjJp7se1LV9ou9hNg4
+         4RCEWR+VpxXCfohJ0xC9VpOyUDih3avDDkGqjtM0UfT6QCb5LEMx7+mNUWhqw1LRFr
+         mxiYwNx4tsZ3TJmett6XaF+dRwVbvmTBj3LOu3bgPGz1Xy4Pn8KTUmyB1zQ6/GVfw/
+         PcxBW90bAJYgLMdCVEINGl+WrO6UpvanuOeTW30/73DKgxHOK5azQnDeS6BYB9PNXx
+         eUpeQ4wQcOKt/jwspavfT1+dDqKe4zFl0CYVjtE1WlVET9oTaQV913dMk6mqwxgUtM
+         rw/Hsz2jFhhmw==
+Date:   Wed, 4 May 2022 12:22:01 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: Re: [RFC v2 25/39] pcmcia: add HAS_IOPORT dependencies
+Message-ID: <20220504172201.GA454911@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2205041516110.9548@angie.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 11:25:05 +0530, Satya Priya wrote:
-> This series depends on [1], which adds driver for Qualcomm LPG.
+On Wed, May 04, 2022 at 03:24:39PM +0100, Maciej W. Rozycki wrote:
+> On Wed, 4 May 2022, Arnd Bergmann wrote:
 > 
-> [1] https://patchwork.kernel.org/project/linux-arm-msm/list/?series=615848
+> > >  POWER9 is another architecture with no port I/O space[1]:
+> > 
+> > POWER9 is just an implementation of the power architecture
+> > that has a particular PCI host bridge. I would assume that
+> > arch/powerpc/ would continue to set HAS_IOPORT because
+> > it knows how to access I/O ports at compile-time.
 > 
-> Satya Priya (4):
->   dt-bindings: leds: Add pm8350c pmic support
->   leds: Add pm8350c support to Qualcomm LPG driver
->   arm64: dts: qcom: pm8350c: Add pwm support
->   arm64: dts: qcom: Enable pm8350c pwm for sc7280-idp2
-> 
-> [...]
+>  Well, yes, except I would expect POWER9_CPU (and any higher versions we 
+> eventually get) to clear HAS_IOPORT.  Generic configurations (GENERIC_CPU) 
+> would set HAS_IOPORT of course, as would any lower architecture variants 
+> that do or may support port I/O (it's not clear to me if there are any 
+> that do not).  Ideally a generic configuration would not issue accesses to 
+> random MMIO locations for port I/O accesses via `inb'/`outb', etc. for 
+> systems that do not support port I/O (which it now does, or at least used 
+> to until recently).
 
-Applied, thanks!
+It would seem weird to me that a module would build and run on a
+generic kernel running on POWER9 (with some safe way of handling
+inb/outb that don't actually work), but not on a kernel built
+specifically for POWER9_CPU.
 
-[3/4] arm64: dts: qcom: pm8350c: Add pwm support
-      commit: 5be66d2dc8873edcf215804067b1c076b00c6887
-[4/4] arm64: dts: qcom: Enable pm8350c pwm for sc7280-idp2
-      commit: 82096cc644098ab610e6df5238341907ea662164
+It sounds like inb/outb in a generic kernel on POWER9 may not
+currently do something sensible, but that's fixable, e.g., make inb()
+return 0xff and outb() a no-op.  I would naively expect the same
+behavior in a POWER9_CPU kernel.
 
-Best regards,
--- 
-Bjorn Andersson <bjorn.andersson@linaro.org>
+Bjorn
