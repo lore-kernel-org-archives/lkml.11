@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9830C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F9FC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379970AbiEDW7f (ORCPT
+        id S1379838AbiEDW7E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        Wed, 4 May 2022 18:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379246AbiEDWxh (ORCPT
+        with ESMTP id S1379584AbiEDWy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:53:37 -0400
+        Wed, 4 May 2022 18:54:57 -0400
 Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2632B53E0E
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:53 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id gg5-20020a17090b0a0500b001d9852bd129so1315403pjb.9
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:49:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B8B54688
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:15 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id gn21-20020a17090ac79500b001dc8a800410so1838566pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=tN5g3ph93jNOSEVUREKui1+khzaKjUQx/GJZWoxm6Ug=;
-        b=rVjdi/ZOIIYdCNIqQS4d2g2lT+YOhy9gLOiBhSJbp2RNGFmKzWYAzVEG5huyNgEWoy
-         7oncgiPi5dpBxeGkjXGLZHIuH802r3dWcL5FSIL7pI964jUJajmxUbtD0EAbxBLV9ENo
-         eQQqLH3JnsIXCnkThsGexuq3X658ipPxoM97OHgGRIMsCAPuMWj5BQrTaNmX8j8con3+
-         wM5MJaH7x7gco7zyvz+k6uG6wAv52W22q0Etf4OXdveD0eF71S1ljE+uS4LJOEhOUUYk
-         IlXonds98uO81LAOozrVQeG4ljNozx8yErPYVnGETeEYPeDhOhVp6h2TdhmJdsSYFirC
-         +wGQ==
+        bh=l7RgxgcK25oFGZcZ40Qv2L/Egvma3T9JIfWOW4W25YI=;
+        b=rvNJETqAvCr/W6REjHrnOcHJA0PIx/dBkgIKqtND9WeyY2wzNBFpS0RkwCm6Q1WxMP
+         69LYkKPydVsVb9dDSkORXNW/4ZtRl9xlNB0HiTl+HJ48QHJP/eYEX9F36dopMl1TJvjc
+         VAwcTSC6eQ2iXk3JzJaNxU4Ia5QfybfsObsAnvk30cFrFx0401uRFeM7S4342ddTNfpe
+         AKFVdMB2JNJNC0ispzq1thswx7uohAe4s69+lfykjDyhhycs9aqhhbrxeEKQFUyKLuCR
+         ZdVlVltRyopoOVq5E1EvzPu93JCG1HR3CG0ZJKqRPojZhgFq/4sfGnd7xdElyPxiiMtO
+         Q0xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=tN5g3ph93jNOSEVUREKui1+khzaKjUQx/GJZWoxm6Ug=;
-        b=LibFkxW8Wbz+7g/rXbJe6SrBny4mQL5v4tSGdjGuXVTuAsr11HkjVDagcVzchaiYqH
-         j8ddL6sYbHs9mvQoK7Se2FmhrS/kw0KLLmVxmn4jVJ6ny/ob6GsPEYiK3aVBhbEVjTWn
-         nG07P19CQdZRo2D2jAWfJnI2WyKeEig0MqUTqam6MEmtmUytk/2BCcJE7vTdTrrqlTwj
-         UDQxL18Um+m/RjAxqbit5Adf8xE8fPsOsYUFkjjCSX5Psi1hd8dp0x/56nPL4mEwOEoO
-         fuEz3eFUjyVizKqKsd/VLa8pYU/SnfjbDGWa0YvpHgwDVWsDbNFVg17MYgLK/n4+u3k7
-         ZrRg==
-X-Gm-Message-State: AOAM531eWf/29u7ZutV5FPSmYrlhpvzeHhou+3wuNxBWTNtcvKDYyd2P
-        ELW023xJR0PnQeyhUxmcXqwHL9ysXCQ=
-X-Google-Smtp-Source: ABdhPJzPRkUtgpAsl3Q2gmMdKlhCWtSvOFR4jZ9iXbf7HP9hEc0E+x+rnM6/CeEWMBDWVmhiuCFNheRQtQw=
+        bh=l7RgxgcK25oFGZcZ40Qv2L/Egvma3T9JIfWOW4W25YI=;
+        b=VeieOnIZ3bW8dZZT5oIoUAyBqfkdcZRguqzJO7fx1dqTFqedT0UPm++aRQErLxgK9V
+         EJxRf6e3EHR0eLOmrVfeN5Ydmh2Qk6mECj9AuAsHCJZUUh96IiPNsEwzxtFSFVrqsCdZ
+         k3KO7O7PCVeAAW3sBdkQtYsV3iyjzRKourAf/YSb7YoqrZa1jjL9rGOcakMNT+BkMqe/
+         SeTpXs5Qy33Ft6wWXjuGL2CftPtMtqY0lRc/YAm152N6YeCEMQfIlFvUZ0ita/iURX6u
+         OPUwHypGuarVvlmsH51kPKnZNv1LuvhRlF7MTTbh9WM33qEWOSz8/LXHLArS+lxgJDVo
+         ppvA==
+X-Gm-Message-State: AOAM532bPryEn/kJa7cDDB3VUBnS3QCsslEbDfKTi6PgObqHibpMLCzR
+        hUadF8soCyTur4lYSwFZxST6iv4QWZA=
+X-Google-Smtp-Source: ABdhPJzAzczJf3PuYGvXg6q7ed5A7KZ4mIFwaUf4tasOkcS+rW9K3tQI8j/lhHCJAbyo4cMxOqOv1wX3Ei4=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:d512:b0:15e:93de:762a with SMTP id
- b18-20020a170902d51200b0015e93de762amr21785035plg.132.1651704592846; Wed, 04
- May 2022 15:49:52 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:38d2:b0:1dc:9636:ad29 with SMTP id
+ nn18-20020a17090b38d200b001dc9636ad29mr2194907pjb.193.1651704674553; Wed, 04
+ May 2022 15:51:14 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:18 +0000
+Date:   Wed,  4 May 2022 22:48:06 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-13-seanjc@google.com>
+Message-Id: <20220504224914.1654036-61-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 012/128] KVM: selftests: Remove vcpu_get_fd()
+Subject: [PATCH 060/128] KVM: selftests: Convert set_sregs_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,48 +69,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop vcpu_get_fd(), it no longer has any users, and really should not
-exist as the framework has failed if tests need to manually operate on
-a vCPU fd.
+Convert set_sregs_test to use vm_create_with_one_vcpu() and pass around
+a 'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note, this
+is a "functional" change in the sense that the test now creates a vCPU
+with vcpu_id==0 instead of vcpu_id==5.  The non-zero VCPU_ID was 100%
+arbitrary and added little to no validation coverage.  If testing
+non-zero vCPU IDs is desirable for generic tests, that can be
+done in the future by tweaking the VM creation helpers.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/include/kvm_util_base.h | 1 -
- tools/testing/selftests/kvm/lib/kvm_util.c          | 9 ---------
- 2 files changed, 10 deletions(-)
+ .../selftests/kvm/x86_64/set_sregs_test.c     | 45 +++++++++----------
+ 1 file changed, 22 insertions(+), 23 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 6b7a5297053e..c2dfc4341b31 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -214,7 +214,6 @@ static inline int __vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
- 	return __vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
- }
+diff --git a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
+index f5e65db9f451..8a5c1f76287c 100644
+--- a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
+@@ -22,9 +22,7 @@
+ #include "kvm_util.h"
+ #include "processor.h"
  
--int vcpu_get_fd(struct kvm_vm *vm, uint32_t vcpuid);
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid);
- struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid);
- 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 45895c9ca35a..73123b9d9625 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1608,15 +1608,6 @@ int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
- 	return rc;
- }
- 
--int vcpu_get_fd(struct kvm_vm *vm, uint32_t vcpuid)
--{
--	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-#define VCPU_ID                  5
 -
--	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
--
--	return vcpu->fd;
--}
--
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid)
+-static void test_cr4_feature_bit(struct kvm_vm *vm, struct kvm_sregs *orig,
++static void test_cr4_feature_bit(struct kvm_vcpu *vcpu, struct kvm_sregs *orig,
+ 				 uint64_t feature_bit)
  {
- 	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+ 	struct kvm_sregs sregs;
+@@ -37,11 +35,11 @@ static void test_cr4_feature_bit(struct kvm_vm *vm, struct kvm_sregs *orig,
+ 	memcpy(&sregs, orig, sizeof(sregs));
+ 	sregs.cr4 |= feature_bit;
+ 
+-	rc = _vcpu_sregs_set(vm, VCPU_ID, &sregs);
++	rc = _vcpu_sregs_set(vcpu->vm, vcpu->id, &sregs);
+ 	TEST_ASSERT(rc, "KVM allowed unsupported CR4 bit (0x%lx)", feature_bit);
+ 
+ 	/* Sanity check that KVM didn't change anything. */
+-	vcpu_sregs_get(vm, VCPU_ID, &sregs);
++	vcpu_sregs_get(vcpu->vm, vcpu->id, &sregs);
+ 	TEST_ASSERT(!memcmp(&sregs, orig, sizeof(sregs)), "KVM modified sregs");
+ }
+ 
+@@ -83,6 +81,7 @@ static uint64_t calc_cr4_feature_bits(struct kvm_vm *vm)
+ int main(int argc, char *argv[])
+ {
+ 	struct kvm_sregs sregs;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	uint64_t cr4;
+ 	int rc;
+@@ -96,43 +95,43 @@ int main(int argc, char *argv[])
+ 	 * the vCPU model, i.e. without doing KVM_SET_CPUID2.
+ 	 */
+ 	vm = vm_create_barebones();
+-	vm_vcpu_add(vm, VCPU_ID);
++	vcpu = vm_vcpu_add(vm, 0);
+ 
+-	vcpu_sregs_get(vm, VCPU_ID, &sregs);
++	vcpu_sregs_get(vm, vcpu->id, &sregs);
+ 
+ 	sregs.cr4 |= calc_cr4_feature_bits(vm);
+ 	cr4 = sregs.cr4;
+ 
+-	rc = _vcpu_sregs_set(vm, VCPU_ID, &sregs);
++	rc = _vcpu_sregs_set(vm, vcpu->id, &sregs);
+ 	TEST_ASSERT(!rc, "Failed to set supported CR4 bits (0x%lx)", cr4);
+ 
+-	vcpu_sregs_get(vm, VCPU_ID, &sregs);
++	vcpu_sregs_get(vm, vcpu->id, &sregs);
+ 	TEST_ASSERT(sregs.cr4 == cr4, "sregs.CR4 (0x%llx) != CR4 (0x%lx)",
+ 		    sregs.cr4, cr4);
+ 
+ 	/* Verify all unsupported features are rejected by KVM. */
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_UMIP);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_LA57);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_VMXE);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_SMXE);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_FSGSBASE);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_PCIDE);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_OSXSAVE);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_SMEP);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_SMAP);
+-	test_cr4_feature_bit(vm, &sregs, X86_CR4_PKE);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_UMIP);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_LA57);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_VMXE);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_SMXE);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_FSGSBASE);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_PCIDE);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_OSXSAVE);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_SMEP);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_SMAP);
++	test_cr4_feature_bit(vcpu, &sregs, X86_CR4_PKE);
+ 	kvm_vm_free(vm);
+ 
+ 	/* Create a "real" VM and verify APIC_BASE can be set. */
+-	vm = vm_create_default(VCPU_ID, 0, NULL);
++	vm = vm_create_with_one_vcpu(&vcpu, NULL);
+ 
+-	vcpu_sregs_get(vm, VCPU_ID, &sregs);
++	vcpu_sregs_get(vm, vcpu->id, &sregs);
+ 	sregs.apic_base = 1 << 10;
+-	rc = _vcpu_sregs_set(vm, VCPU_ID, &sregs);
++	rc = _vcpu_sregs_set(vm, vcpu->id, &sregs);
+ 	TEST_ASSERT(rc, "Set IA32_APIC_BASE to %llx (invalid)",
+ 		    sregs.apic_base);
+ 	sregs.apic_base = 1 << 11;
+-	rc = _vcpu_sregs_set(vm, VCPU_ID, &sregs);
++	rc = _vcpu_sregs_set(vm, vcpu->id, &sregs);
+ 	TEST_ASSERT(!rc, "Couldn't set IA32_APIC_BASE to %llx (valid)",
+ 		    sregs.apic_base);
+ 
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
