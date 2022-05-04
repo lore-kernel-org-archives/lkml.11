@@ -2,92 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B14C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351039AbiEDOLK (ORCPT
+        id S1351118AbiEDONS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
+        Wed, 4 May 2022 10:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344973AbiEDOLE (ORCPT
+        with ESMTP id S1351100AbiEDONN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:11:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBB541338;
-        Wed,  4 May 2022 07:07:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6890461A35;
-        Wed,  4 May 2022 14:07:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D14A1C385A4;
-        Wed,  4 May 2022 14:07:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651673247;
-        bh=AOzP1mjGIKqKOsNlo9BHb/hKxiRMov98HMlUP91rW/0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QFkrSmgCkKXjqTPEq4kQlT0ktmBYcUZhWXaNTU/xLrJiMFoy3ekEvJ76ZybZitrbT
-         NgRYx3J2l+pWcvJHZN58Q3tlp7gXbafjbBeGHoY88sZ8VKL1H1qA4bVMMgdf+AtkAF
-         ZIGp2V58aIKQyKmpuIXfbUPMTDLkNzL+QfKxkr08XcEVMAT4VwdM73l8HAjN97MPcc
-         4oEzXkI7lCXLc4Vu4LNIBC9qQ+wxT7crzjS0TbrwArlun6Px6QbG0EoqNFoNWm59XO
-         mB+Q7vkxkSyDoRSX40CorQVysexK45CIzoRJNlKvH1zObWQr0j4dX9eSoaNZVlspNq
-         HOfc7g1HcUzyQ==
-Received: by mail-wr1-f43.google.com with SMTP id d5so2181986wrb.6;
-        Wed, 04 May 2022 07:07:27 -0700 (PDT)
-X-Gm-Message-State: AOAM533lI/2iybd3pb0fmsY0ib2ml2cLZqRCy1nFu8hoFrgtSI6ZSn1B
-        Vw63GiMgW8xJ4VOV7S5gz/mPbwsD88MKQGGI968=
-X-Google-Smtp-Source: ABdhPJyBvuzUVHauiOOhlgsX/356BcYJrvgYX24D9gTDq9FHSvu8LBFLLUOrs+/KZcEXVCs6uf2aemiYa3pCuILeHqY=
-X-Received: by 2002:a5d:49cb:0:b0:20a:cee3:54fc with SMTP id
- t11-20020a5d49cb000000b0020acee354fcmr16094949wrs.12.1651673246077; Wed, 04
- May 2022 07:07:26 -0700 (PDT)
+        Wed, 4 May 2022 10:13:13 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F0A419BD
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:09:36 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id v4so1797664ljd.10
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 07:09:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EXxGrmQdSrMAdgM6NKkZr+YUm7PNfDBSQKuYDgtFekk=;
+        b=v5L6+vlO1JziId6xo4NIZ1qZpZX5de3qvCDfydB6T6nKaixiak/bCnImso2ZrwciFg
+         uem5dH/3BIj33AF3fymM9Dm++rCBnCYYLQ+sduXiCLoAmYfafjEJQKkNxmMD2075jHdD
+         fEd1nJHbUIH3bYTGWGfnoKgr+NUlNkEfB+wUOrZkWoS65Fm9x5XKa3uff2dmBH5sQyu9
+         UeBWF48DCNw40us6UlvkExdtpTC+rP6IDuPt60vjuAYoLAfdDi6YOgXxiBK1jB0sY9K0
+         I9qLLlHLg8TxHmEQPvXXuD+PRIPSanEd/dk9eSD3r3/cYrB42TILanCZbXkMw/7j/Ffb
+         xu7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EXxGrmQdSrMAdgM6NKkZr+YUm7PNfDBSQKuYDgtFekk=;
+        b=jiRpJZPzlqSwaTCHmBTFcF/Rafk0p3B5sau8aKmn4s8suQGHI122uu0UdZUkmy78/9
+         VlC5Q9ClmmnEbiTFBzTtnXhwPa4Xhoh7sM7+TyhBCOKq3l5dDR8aWQpLm3lwKpF0Ay56
+         7+BUHb+6Uqfsqw3JZtJCRo9EWXSZ6jwy/uWzXaPbyR+kWn05YYOLXx7WYrXvQiSL7LyL
+         bXYdTgDBH3nBoixdfdBI8S7vuKyZBXvQH4LXaadFyg/kA+QJopM4ohqNIhk7/fsGo+2/
+         ljL8lkHiV/mi6w+zfy/+327XIYLO4XTrFIguhMpv+UpelkRPitTXW9Y/hpphnZraMn+0
+         BB2A==
+X-Gm-Message-State: AOAM5304s0YaRlCiR2S8YKpPTXH21rWsxsC9JpsWUucSRjhl+oYK69k+
+        D177tPYa0ZHgAxGShC59anpmym+aVbmndRtzNNMLLA==
+X-Google-Smtp-Source: ABdhPJxbrzddvy2FPwyfMsPdzhIS4LXL0C4hUf6AFGOm/2YPmtbyftB56FzxJVYzEacQw0HiNcK/2AxUn68tYGi/Syk=
+X-Received: by 2002:a2e:8798:0:b0:24f:12ec:5268 with SMTP id
+ n24-20020a2e8798000000b0024f12ec5268mr12082888lji.367.1651673374744; Wed, 04
+ May 2022 07:09:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220429135108.2781579-44-schnelle@linux.ibm.com>
- <20220503233802.GA420374@bhelgaas> <CAK8P3a02vidd7u5Kp6UJj=9tj_hFGL24SmzuNpDGu1GOa1w9+w@mail.gmail.com>
- <alpine.DEB.2.21.2205041311280.9548@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2205041311280.9548@angie.orcam.me.uk>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 4 May 2022 16:07:09 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2jwv00En13=5mHVA4OGRzDpAsPKy4nqM79L6xP5=aQFQ@mail.gmail.com>
-Message-ID: <CAK8P3a2jwv00En13=5mHVA4OGRzDpAsPKy4nqM79L6xP5=aQFQ@mail.gmail.com>
-Subject: Re: [RFC v2 25/39] pcmcia: add HAS_IOPORT dependencies
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
+References: <20220223125536.230224-1-shawn.guo@linaro.org>
+In-Reply-To: <20220223125536.230224-1-shawn.guo@linaro.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 4 May 2022 16:08:58 +0200
+Message-ID: <CAPDyKFpTyj86deODjOLwVoWM_PoK8458xYY=kn0srEGYZj9+mQ@mail.gmail.com>
+Subject: Re: [PATCH v6 0/3] Add Qualcomm MPM irqchip driver support
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 2:38 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+On Wed, 23 Feb 2022 at 13:57, Shawn Guo <shawn.guo@linaro.org> wrote:
 >
-> On Wed, 4 May 2022, Arnd Bergmann wrote:
+> It starts from updating cpu_pm to support CPU_LAST_PM_ENTER (and
+> CPU_FIRST_PM_EXIT) event, and then adds DT binding and driver support
+> for Qualcomm MPM (MSM Power Manager) interrupt controller.
 >
-> > Almost all architectures that support CONFIG_PCI also provide
-> > HAS_IOPORT today (at least at compile time, if not at runtime),
-> > with s390 as a notable exception. Any machines that have legacy
-> > PCI device support will also have I/O ports because a lot of
-> > legacy PCI cards used it, and any machine with a pc-card slot
-> > should also support legacy PCI devices.
-> >
-> > If we get new architectures without I/O space in the future, they
-> > would certainly not care about supporting old cardbus devices.
+> Changes for v6:
+> - Add new event CPU_LAST_PM_ENTER (and CPU_FIRST_PM_EXIT) in cpu_pm
+> - Drop vendor driver notes from commit log
+> - Check NULL mpm_gic_map instead to save the use of MPM_NO_PARENT_IRQ
+> - Add lock protection for register read in qcom_mpm_handler()
+> - Return IRQ_NONE if there is no pending interrupt
+> - Drop IRQF_TRIGGER_RISING flag from devm_request_irq() call since it's
+>   being specified in DT
+> - Drop dev_set_drvdata() call which is a leftover from previous version
+> - Fix dt_binding_check errors reported by upgraded dtschema
+
+My apologies for the late reply to this series. FYI, I fully agree
+with the responses from Sudeep, etc, that have been made on this
+series.
+
+The proper thing is to use genpd on/off notifiers, which should get
+fired if you model the PM domain topology correctly in DT - and use
+PSCI OSI.
+
+That said, please keep me posted when/if you submit a new version for
+this. I will make sure to pay more attention next time.
+
+Kind regards
+Uffe
+
 >
->  POWER9 is another architecture with no port I/O space[1]:
-
-POWER9 is just an implementation of the power architecture
-that has a particular PCI host bridge. I would assume that
-arch/powerpc/ would continue to set HAS_IOPORT because
-it knows how to access I/O ports at compile-time.
-
-If a particular host bridge does not declare an I/O port range
-in its DT, then of course it won't be accessible, but that is
-different from architectures that have no concept of I/O ports.
-
-         Arnd
+> Changes for v5:
+> - Drop inline attributes and let compiler to decide
+> - Use _irqsave/_irqrestore flavour for spin lock
+> - Assignment on a single for irq_resolve_mapping() call
+> - Add documentation to explain vMPM ownership transition
+> - Move MPM pin map data into device tree and so use a generic compatible
+> - Drop the code that counts CPUs in PM and use CPU_CLUSTER_PM_ENTER
+>   notification instead
+>
+> Changes for v4:
+> - Add the missing include of <linux/interrupt.h> to fix build errors
+>   on arm architecture.
+> - Leave IRQCHIP_PLATFORM_DRIVER infrastructural unchanged, and use
+>   of_find_device_by_node() to get platform_device pointer.
+>
+> Changes for v3:
+> - Support module build
+> - Use relaxed accessors
+> - Add barrier call to ensure MMIO write completes
+> - Use d->chip_data to pass driver private data
+> - Use raw spinlock
+> - USe BIT() for bit shift
+> - Create a single irq domain to cover both types of MPM pins
+> - Call irq_resolve_mapping() to find out Linux irq number
+> - Save the use of ternary conditional operator and use switch/case for
+>   .irq_set_type call
+> - Drop unnecessary .irq_disable hook
+> - Align qcom_mpm_chip and qcom_mpm_ops members vertically
+> - Use helper irq_domain_translate_twocell()
+> - Move mailbox requesting forward in probe function
+> - Improve the documentation on qcm2290_gic_pins[]
+> - Use IRQCHIP_PLATFORM_DRIVER infrastructural
+> - Use cpu_pm notifier instead of .suspend_late hook to write MPM for
+>   sleep, so that MPM can be set up for both suspend and idle context.
+>   The TIMER0/1 setup is currently omitted for idle use case though,
+>   as I haven't been able to successfully test the idle context.
+>
+> Shawn Guo (3):
+>   PM: cpu: Add CPU_LAST_PM_ENTER and CPU_FIRST_PM_EXIT support
+>   dt-bindings: interrupt-controller: Add Qualcomm MPM support
+>   irqchip: Add Qualcomm MPM controller driver
+>
+>  .../interrupt-controller/qcom,mpm.yaml        |  96 ++++
+>  drivers/irqchip/Kconfig                       |   8 +
+>  drivers/irqchip/Makefile                      |   1 +
+>  drivers/irqchip/qcom-mpm.c                    | 439 ++++++++++++++++++
+>  include/linux/cpu_pm.h                        |  15 +
+>  kernel/cpu_pm.c                               |  33 +-
+>  6 files changed, 590 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
+>  create mode 100644 drivers/irqchip/qcom-mpm.c
+>
+> --
+> 2.25.1
+>
