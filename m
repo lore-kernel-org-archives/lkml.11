@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52026C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8068DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353767AbiEDQwT (ORCPT
+        id S1353728AbiEDQwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
+        Wed, 4 May 2022 12:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353644AbiEDQv4 (ORCPT
+        with ESMTP id S1353635AbiEDQv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:51:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66D746B03;
-        Wed,  4 May 2022 09:48:17 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC75846B39;
+        Wed,  4 May 2022 09:48:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 790526174B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47CC3B8279C;
+        Wed,  4 May 2022 16:48:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFD66C385A4;
         Wed,  4 May 2022 16:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDC1C385A4;
-        Wed,  4 May 2022 16:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682896;
-        bh=VtJerBDQCYbUCgpxXLdGU8t1nlWfii6eDosdmY9hF0w=;
+        s=korg; t=1651682898;
+        bh=hMmz/AZitYdKC3CJnrPaB6oZmtXcd0Tr3iu7sFPIod4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=utthZ9CZETq++VVWtdVAXfYSkj14Xieers63trhoj4q/ITccm1B44xTneu4qADs1d
-         F+Ri0BmpLHpU82dlu3nSc1ON49h9bztPuU+6NfiPwuwySC8Ubk5bQrXTrT6V6+1o47
-         OqR70mK7rcplVXf6htRIU0SkPGni9iBggvZq8cm8=
+        b=nZxVaTQeNIx+9memEI5+LqIL7it1HWXYCW2zbebMISZROx2iYv/mG6/TiqmCUXyRC
+         T3e+OFa+jE4g4mW5rSBOumVMcqlY5Y2482yQehE4xDe6HKH31PW/yghmIj3b5X194C
+         0HvAEVjg0Vqmq23NxLvKjDPG1cfMkv9GEB7KnVk8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 03/84] hamradio: remove needs_free_netdev to avoid UAF
-Date:   Wed,  4 May 2022 18:43:44 +0200
-Message-Id: <20220504152927.990766404@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        =?UTF-8?q?Matias=20Bj=C3=B8rling?= <mb@lightnvm.io>,
+        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 04/84] lightnvm: disable the subsystem
+Date:   Wed,  4 May 2022 18:43:45 +0200
+Message-Id: <20220504152928.060853546@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,42 +51,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+In commit 9ea9b9c48387 ("remove the lightnvm subsystem") the lightnvm
+subsystem was removed as there is no hardware in the wild for it, and
+the code is known to have problems.  This should also be disabled for
+older LTS kernels as well to prevent anyone from accidentally using it.
 
-commit 81b1d548d00bcd028303c4f3150fa753b9b8aa71 upstream.
-
-The former patch "defer 6pack kfree after unregister_netdev" reorders
-the kfree of two buffer after the unregister_netdev to prevent the race
-condition. It also adds free_netdev() function in sixpack_close(), which
-is a direct copy from the similar code in mkiss_close().
-
-However, in sixpack driver, the flag needs_free_netdev is set to true in
-sp_setup(), hence the unregister_netdev() will free the netdev
-automatically. Therefore, as the sp is netdev_priv, use-after-free
-occurs.
-
-This patch removes the needs_free_netdev = true and just let the
-free_netdev to finish this deallocation task.
-
-Fixes: 0b9111922b1f ("hamradio: defer 6pack kfree after unregister_netdev")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20211111141402.7551-1-linma@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Matias Bjørling <mb@lightnvm.io>
+Cc: Javier González <javier@javigon.com>
+Cc: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hamradio/6pack.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/lightnvm/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -311,7 +311,6 @@ static void sp_setup(struct net_device *
- {
- 	/* Finish setting up the DEVICE info. */
- 	dev->netdev_ops		= &sp_netdev_ops;
--	dev->needs_free_netdev	= true;
- 	dev->mtu		= SIXP_MTU;
- 	dev->hard_header_len	= AX25_MAX_HEADER_LEN;
- 	dev->header_ops 	= &ax25_header_ops;
+--- a/drivers/lightnvm/Kconfig
++++ b/drivers/lightnvm/Kconfig
+@@ -5,7 +5,7 @@
+ 
+ menuconfig NVM
+ 	bool "Open-Channel SSD target support"
+-	depends on BLOCK
++	depends on BLOCK && BROKEN
+ 	help
+ 	  Say Y here to get to enable Open-channel SSDs.
+ 
 
 
