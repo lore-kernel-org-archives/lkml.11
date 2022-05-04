@@ -2,114 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5949C35295
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C395C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376815AbiEDRzZ (ORCPT
+        id S1377020AbiEDRzd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
+        Wed, 4 May 2022 13:55:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356741AbiEDROF (ORCPT
+        with ESMTP id S1359299AbiEDRf4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A91953B74;
-        Wed,  4 May 2022 09:58:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3A26B82416;
-        Wed,  4 May 2022 16:58:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DED7C385AA;
-        Wed,  4 May 2022 16:58:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683492;
-        bh=0Y5QnMd8T87CITmK3jIabf6VdsS8nJNvvvMpL+BzWVI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=18UX1DpZBWSdlvlu5tlQYycNZeV255dF0sqrzh9N+R2rOamGnzxupOtkqbo+nutPR
-         K/dhSh7k72Vf0GL9AiQnjJTenr1twsd5IHSomGF+2b0XdadfkShPeWLpGrYRmS3I8/
-         m4pa6W9Ydikqlvz/4nzfTgbvtBSKbsWiT9bO5qZI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 167/225] ksmbd: set fixed sector size to FS_SECTOR_SIZE_INFORMATION
-Date:   Wed,  4 May 2022 18:46:45 +0200
-Message-Id: <20220504153124.856157629@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 4 May 2022 13:35:56 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34D65C670
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:04:15 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id i1so1954823plg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:04:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Uj6YMBCZWAjWY8ro19VauUXc0fzSyeDEeGTwnyspmvk=;
+        b=jFw/YtuAuY8zOu6CBZwrP8/qTS38T5FgjRy6M7i4aX08fnI6fVbU4nJp+GZWb2X/Oi
+         5jA20ZVdF1pc2KkJPGk1ZQI0ASmLV2xvybvi+wq5eEX1tHfMhwWyCaaMegbUUXPvCMid
+         XmP2uUvXaBb+17kdYgA8aF5HDIHfLFUmZvBEQbJmOVOQFNnEjIWtfcTF/0h2q0y9h7xv
+         etMVkh8gaL5cLlgEAODxlKfUa9G8mG51A5Nu5ItKpNLHd9AyJ6QmM+CijTcIlU/TJt8/
+         yDHWs26N40Nz6YMgWLFMJQ+5fI/lH5MVmOp0CMxNNdVYu/al9dbglBGJTaQ5ewqoYy9v
+         J2xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Uj6YMBCZWAjWY8ro19VauUXc0fzSyeDEeGTwnyspmvk=;
+        b=dcUfhNzALtg/0UBhBKVVQEr8xFXkzhJy2DHDdhxrDy52czREFJUCA0LTLVqfcMEMjb
+         FohGV5i+ttuSLxc5GudrbuAMzned2uYuYj52FuiFVVHXTCk7/4D7Ti9lRAbzM1Vc2sMW
+         n10u1LgX/WH+BWwr8JsMTgmuK7SPm4BEHrxNt5ThUOAeTtsK53oFSeriMx+2wOxUf3oN
+         lP9So6L58Qe8JzAZzi+tJ0RzPicgxPCGyiXNWfbOlmJj5CUPGWfyq1CvlIOnHTEGtrmS
+         Ogfbhr9Llo/aLEGQq0dvXzDVtf75mL3wFn7uWqp8CHzTaI/faqV4pvie9gwP0zZmFFjs
+         80Xw==
+X-Gm-Message-State: AOAM533IBZOYgEzeINz/l1KQk3bFODCjZU6QisbI2lFHM+3eV7esK3N/
+        65FCAsWUXbg5Ek57GE7RjA5z7A==
+X-Google-Smtp-Source: ABdhPJwQhJX1Wntu7nztS9/CKxmjFCDWW3e5W7Ktqn6IS03XXkrCVf3vv40N8CYVtf+Hw6G24CphUQ==
+X-Received: by 2002:a17:90b:1bc3:b0:1dc:61fd:7ea4 with SMTP id oa3-20020a17090b1bc300b001dc61fd7ea4mr473665pjb.31.1651683852263;
+        Wed, 04 May 2022 10:04:12 -0700 (PDT)
+Received: from google.com ([2620:15c:2ce:200:c1b7:7a5:89b8:a6c6])
+        by smtp.gmail.com with ESMTPSA id t9-20020a17090340c900b0015e8d4eb222sm8437874pld.108.2022.05.04.10.04.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 10:04:11 -0700 (PDT)
+Date:   Wed, 4 May 2022 10:04:02 -0700
+From:   Peter Collingbourne <pcc@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        andrew.cooper3@citrix.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com, hjl.tools@gmail.com,
+        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
+        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
+Subject: Re: [RFC PATCH 01/11] x86: kernel FineIBT
+Message-ID: <YnKx5a9WvJ1UhWPm@google.com>
+References: <20220420004241.2093-1-joao@overdrivepizza.com>
+ <20220420004241.2093-2-joao@overdrivepizza.com>
+ <20220429013704.4n4lmadpstdioe7a@treble>
+ <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
+ <20220503220244.vyz5flk3gg3y6rbw@treble>
+ <YnJTYzralOhGGmED@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnJTYzralOhGGmED@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+On Wed, May 04, 2022 at 12:20:19PM +0200, Peter Zijlstra wrote:
+> On Tue, May 03, 2022 at 03:02:44PM -0700, Josh Poimboeuf wrote:
+> 
+> > I'm not really qualified to comment on this too directly since I haven't
+> > looked very much at the variations on FineIBT/CFI/KCFI, and what the
+> > protections and drawbacks are for each approach, and when it might even
+> > make sense to combine them for a "paranoid user".
+> > 
+> > Since we have multiple similar and possibly competing technologies being
+> > discussed, one thing I do want to warn against is that we as kernel
+> > developers tend to err on the side of giving people too many choices and
+> > combinations which *never* get used.
+> 
+> So I don't think there's going to be a user choice here. If there's
+> hardware support, FineIBT makes more sense. That also means that kCFI no
+> longer needs to worry about IBT.
+> 
+> If we do something like:
+> 
+> 
+>         kCFI                                            FineIBT
+> 
+> __cfi_\sym:                                     __cfi_\sym:
+>         endbr                           # 4             endbr                   # 4
+>         sub $hash, %r10                 # 7             sub $hash, %r10         # 7
+>         je \sym                         # 2             je \sym                 # 2
+>         ud2                             # 2             ud2                     # 2
+> \sym:                                           \sym:
+> 
+> 
+> caller:                                         caller:
+>         cmpl $hash, -8(%r11)            # 8             movl $hash, %r10d       # 6
+>         je 1f                           # 2             sub 15, %r11            # 4
+>         ud2                             # 2             call *%r11              # 3
+> 1:      call __x86_indirect_thunk_r11   # 5             .nop 4                  # 4 (could even fix up r11 again)
+> 
+> 
+> Then, all that's required is a slight tweak to apply_retpolines() to
+> rewrite a little more text.
+> 
+> Note that this also does away with having to fix up the linker, since
+> all direct call will already point at \sym. It's just the IBT indirect
+> calls that need to frob the pointer in order to hit the ENDBR.
+> 
+> On top of that, we no longer have to special case the objtool
+> instruction decoder, the prelude are proper instructions now.
 
-[ Upstream commit 02655a70b7cc0f534531ee65fa72692f4d31a944 ]
+For kCFI this brings back the gadget problem that I mentioned here:
+https://lore.kernel.org/all/Yh7fLRYl8KgMcOe5@google.com/
 
-Currently ksmbd is using ->f_bsize from vfs_statfs() as sector size.
-If fat/exfat is a local share, ->f_bsize is a cluster size that is too
-large to be used as a sector size. Sector sizes larger than 4K cause
-problem occurs when mounting an iso file through windows client.
+because the hash at the call site is 8 bytes before the call
+instruction.
 
-The error message can be obtained using Mount-DiskImage command,
- the error is:
-"Mount-DiskImage : The sector size of the physical disk on which the
-virtual disk resides is not supported."
-
-This patch reports fixed 4KB sector size if ->s_blocksize is bigger
-than 4KB.
-
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ksmbd/smb2pdu.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index a19a2b9c1e56..83ffa73c9348 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -11,6 +11,7 @@
- #include <linux/statfs.h>
- #include <linux/ethtool.h>
- #include <linux/falloc.h>
-+#include <linux/mount.h>
- 
- #include "glob.h"
- #include "smbfsctl.h"
-@@ -5005,15 +5006,17 @@ static int smb2_get_info_filesystem(struct ksmbd_work *work,
- 	case FS_SECTOR_SIZE_INFORMATION:
- 	{
- 		struct smb3_fs_ss_info *info;
-+		unsigned int sector_size =
-+			min_t(unsigned int, path.mnt->mnt_sb->s_blocksize, 4096);
- 
- 		info = (struct smb3_fs_ss_info *)(rsp->Buffer);
- 
--		info->LogicalBytesPerSector = cpu_to_le32(stfs.f_bsize);
-+		info->LogicalBytesPerSector = cpu_to_le32(sector_size);
- 		info->PhysicalBytesPerSectorForAtomicity =
--				cpu_to_le32(stfs.f_bsize);
--		info->PhysicalBytesPerSectorForPerf = cpu_to_le32(stfs.f_bsize);
-+				cpu_to_le32(sector_size);
-+		info->PhysicalBytesPerSectorForPerf = cpu_to_le32(sector_size);
- 		info->FSEffPhysicalBytesPerSectorForAtomicity =
--				cpu_to_le32(stfs.f_bsize);
-+				cpu_to_le32(sector_size);
- 		info->Flags = cpu_to_le32(SSINFO_FLAGS_ALIGNED_DEVICE |
- 				    SSINFO_FLAGS_PARTITION_ALIGNED_ON_DEVICE);
- 		info->ByteOffsetForSectorAlignment = 0;
--- 
-2.35.1
-
-
-
+Peter
