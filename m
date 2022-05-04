@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCBDC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44B7C35296
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359152AbiEDRfu (ORCPT
+        id S1359330AbiEDRf5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        Wed, 4 May 2022 13:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356983AbiEDRJw (ORCPT
+        with ESMTP id S1356946AbiEDRJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA114830B;
-        Wed,  4 May 2022 09:56:53 -0700 (PDT)
+        Wed, 4 May 2022 13:09:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C01473A6;
+        Wed,  4 May 2022 09:56:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F22C5B827A3;
-        Wed,  4 May 2022 16:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15DBC385A5;
-        Wed,  4 May 2022 16:56:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13E33616B8;
+        Wed,  4 May 2022 16:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B39FC385A4;
+        Wed,  4 May 2022 16:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683410;
-        bh=ILpcJ1EnEQUwhSywYQ3IAqyxmDYiAyN1DkLdFFHSEvU=;
+        s=korg; t=1651683397;
+        bh=c9tifztPdtIZMnIZoFYTn8EbVTxFGghKHU5Yrzs7rmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F5CoNnl27rR9eOUEV65JcK9fdfJ8/iWGdgtpeg/Z/XYie8jcDiimz5sjBp7FHQt3d
-         ZIXpB4XyDOlwg9ohzGlIYFZg4ZZzv7Cz1sB9+VEc3+6D7G35pVCoIR3V3Ch17m/kMt
-         ktgNWpGyIkXvR7Ye/bXTDda3ch197ixCR58zCagQ=
+        b=wMoVHNrHwXeINDIEgRHxkWM4FnVNnZZOFY9mRml4+6qGQC6nVgssznxIFq/RVDrFU
+         nmqbhrXYuvsUe40E1zErZAg60FRGYcaEtS+7cUtRRpn6k8IZxRziHG0+OdRoFkoVGx
+         DLKZk3UiPIewoBtFnWmLLORs/Mf8clc50ik4ubpI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 095/225] phy: amlogic: fix error path in phy_g12a_usb3_pcie_probe()
-Date:   Wed,  4 May 2022 18:45:33 +0200
-Message-Id: <20220504153119.292839850@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 082/225] ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
+Date:   Wed,  4 May 2022 18:45:20 +0200
+Message-Id: <20220504153118.453349345@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,71 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 2c8045d48dee703ad8eab2be7d6547765a89c069 ]
+[ Upstream commit 0e486fe341fabd8e583f3d601a874cd394979c45 ]
 
-If clk_prepare_enable() fails we call clk_disable_unprepare()
-in the error path what results in a warning that the clock
-is disabled and unprepared already.
-And if we fail later in phy_g12a_usb3_pcie_probe() then we
-bail out w/o calling clk_disable_unprepare().
-This patch fixes both errors.
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC and is expected to be set to 12MHz. Previously
+this was mapped using pre-common clock API calls in the audio machine
+driver but the conversion to the common clock framework broke that so
+describe things in the DT instead.
 
-Fixes: 36077e16c050 ("phy: amlogic: Add Amlogic G12A USB3 + PCIE Combo PHY Driver")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Link: https://lore.kernel.org/r/8e416f95-1084-ee28-860e-7884f7fa2e32@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220404102806.581374-2-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../phy/amlogic/phy-meson-g12a-usb3-pcie.c    | 20 +++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ arch/arm/boot/dts/at91sam9g20ek_common.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c b/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
-index 5b471ab80fe2..54d65a6f0fcc 100644
---- a/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
-+++ b/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
-@@ -414,19 +414,19 @@ static int phy_g12a_usb3_pcie_probe(struct platform_device *pdev)
+diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+index 87bb39060e8b..ca03685f0f08 100644
+--- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
++++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+@@ -219,6 +219,12 @@ i2c-gpio-0 {
+ 		wm8731: wm8731@1b {
+ 			compatible = "wm8731";
+ 			reg = <0x1b>;
++
++			/* PCK0 at 12MHz */
++			clocks = <&pmc PMC_TYPE_SYSTEM 8>;
++			clock-names = "mclk";
++			assigned-clocks = <&pmc PMC_TYPE_SYSTEM 8>;
++			assigned-clock-rates = <12000000>;
+ 		};
+ 	};
  
- 	ret = clk_prepare_enable(priv->clk_ref);
- 	if (ret)
--		goto err_disable_clk_ref;
-+		return ret;
- 
- 	priv->reset = devm_reset_control_array_get_exclusive(dev);
--	if (IS_ERR(priv->reset))
--		return PTR_ERR(priv->reset);
-+	if (IS_ERR(priv->reset)) {
-+		ret = PTR_ERR(priv->reset);
-+		goto err_disable_clk_ref;
-+	}
- 
- 	priv->phy = devm_phy_create(dev, np, &phy_g12a_usb3_pcie_ops);
- 	if (IS_ERR(priv->phy)) {
- 		ret = PTR_ERR(priv->phy);
--		if (ret != -EPROBE_DEFER)
--			dev_err(dev, "failed to create PHY\n");
--
--		return ret;
-+		dev_err_probe(dev, ret, "failed to create PHY\n");
-+		goto err_disable_clk_ref;
- 	}
- 
- 	phy_set_drvdata(priv->phy, priv);
-@@ -434,8 +434,12 @@ static int phy_g12a_usb3_pcie_probe(struct platform_device *pdev)
- 
- 	phy_provider = devm_of_phy_provider_register(dev,
- 						     phy_g12a_usb3_pcie_xlate);
-+	if (IS_ERR(phy_provider)) {
-+		ret = PTR_ERR(phy_provider);
-+		goto err_disable_clk_ref;
-+	}
- 
--	return PTR_ERR_OR_ZERO(phy_provider);
-+	return 0;
- 
- err_disable_clk_ref:
- 	clk_disable_unprepare(priv->clk_ref);
 -- 
 2.35.1
 
