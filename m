@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 645FCC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353720AbiEDRFX (ORCPT
+        id S1354867AbiEDRF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        Wed, 4 May 2022 13:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354804AbiEDQ7H (ORCPT
+        with ESMTP id S1354830AbiEDQ7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC4F48315;
-        Wed,  4 May 2022 09:51:01 -0700 (PDT)
+        Wed, 4 May 2022 12:59:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6294E4833B;
+        Wed,  4 May 2022 09:51:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1D0CB82552;
-        Wed,  4 May 2022 16:50:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED7BC385AA;
-        Wed,  4 May 2022 16:50:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2A3AB8279F;
+        Wed,  4 May 2022 16:51:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E257C385B0;
+        Wed,  4 May 2022 16:51:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683058;
-        bh=SwSIqeylpGWr/PstvKYWHwuy1kZQmZBKewcLjQtdtL0=;
+        s=korg; t=1651683061;
+        bh=1Vi5lNYXaB4VTTLQ+lFez2oNueieHQTfkFWql+43bVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i1X/qzMW1EzZkWLKp0QeD2VJEUHXdY82NumY+PqZrIQ//O2IQP4xU/WbtxLSGi1UF
-         q7qfjcatgrWkeEk7/Q4+hKe+6bRmwAQFWUvvtf1BfqyI0Rg0S5wjE0HMBBdHto2xk1
-         J7xCSMrxHd34vEwV88ly8R4YLEjlMaTuDn9vNp/k=
+        b=RqHxqSStS343OHfmm9rNsAxY4HKyXjzFenVEAYa+zuH2NDvm7NuxhZ2m090uZUkQL
+         nvaCwG6A5QEeGbZSq/W5ikLFxLEnYW5t2b5XgvuKVwSJPTlbH5Icyw7SUosmlRetoC
+         +wNV2+Xdib2JUUWo9BkxL+DFiktTjaabjKC94KFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 062/129] memory: renesas-rpc-if: Fix HF/OSPI data transfer in Manual Mode
-Date:   Wed,  4 May 2022 18:44:14 +0200
-Message-Id: <20220504153026.196813873@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 047/129] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
+Date:   Wed,  4 May 2022 18:43:59 +0200
+Message-Id: <20220504153024.868547613@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -53,167 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7e842d70fe599bc13594b650b2144c4b6e6d6bf1 ]
+[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
 
-HyperFlash devices fail to probe:
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-    rpc-if-hyperflash rpc-if-hyperflash: probing of hyperbus device failed
-
-In HyperFlash or Octal-SPI Flash mode, the Transfer Data Enable bits
-(SPIDE) in the Manual Mode Enable Setting Register (SMENR) are derived
-from half of the transfer size, cfr. the rpcif_bits_set() helper
-function.  However, rpcif_reg_{read,write}() does not take the bus size
-into account, and does not double all Manual Mode Data Register access
-sizes when communicating with a HyperFlash or Octal-SPI Flash device.
-
-Fix this, and avoid the back-and-forth conversion between transfer size
-and Transfer Data Enable bits, by explicitly storing the transfer size
-in struct rpcif, and using that value to determine access size in
-rpcif_reg_{read,write}().
-
-Enforce that the "high" Manual Mode Read/Write Data Registers
-(SM[RW]DR1) are only used for 8-byte data accesses.
-While at it, forbid writing to the Manual Mode Read Data Registers,
-as they are read-only.
-
-Fixes: fff53a551db50f5e ("memory: renesas-rpc-if: Correct QSPI data transfer in Manual mode")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Tested-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Link: https://lore.kernel.org/r/cde9bfacf704c81865f57b15d1b48a4793da4286.1649681476.git.geert+renesas@glider.be
-Link: https://lore.kernel.org/r/20220420070526.9367-1-krzysztof.kozlowski@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/renesas-rpc-if.c | 60 +++++++++++++++++++++++++--------
- include/memory/renesas-rpc-if.h |  1 +
- 2 files changed, 47 insertions(+), 14 deletions(-)
+ arch/arm/mach-omap2/omap4-common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
-index 781af51e3f79..1dfb81dea961 100644
---- a/drivers/memory/renesas-rpc-if.c
-+++ b/drivers/memory/renesas-rpc-if.c
-@@ -163,25 +163,39 @@ static const struct regmap_access_table rpcif_volatile_table = {
+diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
+index 5c3845730dbf..0b80f8bcd304 100644
+--- a/arch/arm/mach-omap2/omap4-common.c
++++ b/arch/arm/mach-omap2/omap4-common.c
+@@ -314,10 +314,12 @@ void __init omap_gic_of_init(void)
  
+ 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
+ 	gic_dist_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!gic_dist_base_addr);
  
- /*
-- * Custom accessor functions to ensure SMRDR0 and SMWDR0 are always accessed
-- * with proper width. Requires SMENR_SPIDE to be correctly set before!
-+ * Custom accessor functions to ensure SM[RW]DR[01] are always accessed with
-+ * proper width.  Requires rpcif.xfer_size to be correctly set before!
-  */
- static int rpcif_reg_read(void *context, unsigned int reg, unsigned int *val)
- {
- 	struct rpcif *rpc = context;
+ 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
+ 	twd_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!twd_base);
  
--	if (reg == RPCIF_SMRDR0 || reg == RPCIF_SMWDR0) {
--		u32 spide = readl(rpc->base + RPCIF_SMENR) & RPCIF_SMENR_SPIDE(0xF);
--
--		if (spide == 0x8) {
-+	switch (reg) {
-+	case RPCIF_SMRDR0:
-+	case RPCIF_SMWDR0:
-+		switch (rpc->xfer_size) {
-+		case 1:
- 			*val = readb(rpc->base + reg);
- 			return 0;
--		} else if (spide == 0xC) {
-+
-+		case 2:
- 			*val = readw(rpc->base + reg);
- 			return 0;
--		} else if (spide != 0xF) {
-+
-+		case 4:
-+		case 8:
-+			*val = readl(rpc->base + reg);
-+			return 0;
-+
-+		default:
- 			return -EILSEQ;
- 		}
-+
-+	case RPCIF_SMRDR1:
-+	case RPCIF_SMWDR1:
-+		if (rpc->xfer_size != 8)
-+			return -EILSEQ;
-+		break;
- 	}
- 
- 	*val = readl(rpc->base + reg);
-@@ -193,18 +207,34 @@ static int rpcif_reg_write(void *context, unsigned int reg, unsigned int val)
- {
- 	struct rpcif *rpc = context;
- 
--	if (reg == RPCIF_SMRDR0 || reg == RPCIF_SMWDR0) {
--		u32 spide = readl(rpc->base + RPCIF_SMENR) & RPCIF_SMENR_SPIDE(0xF);
--
--		if (spide == 0x8) {
-+	switch (reg) {
-+	case RPCIF_SMWDR0:
-+		switch (rpc->xfer_size) {
-+		case 1:
- 			writeb(val, rpc->base + reg);
- 			return 0;
--		} else if (spide == 0xC) {
-+
-+		case 2:
- 			writew(val, rpc->base + reg);
- 			return 0;
--		} else if (spide != 0xF) {
-+
-+		case 4:
-+		case 8:
-+			writel(val, rpc->base + reg);
-+			return 0;
-+
-+		default:
- 			return -EILSEQ;
- 		}
-+
-+	case RPCIF_SMWDR1:
-+		if (rpc->xfer_size != 8)
-+			return -EILSEQ;
-+		break;
-+
-+	case RPCIF_SMRDR0:
-+	case RPCIF_SMRDR1:
-+		return -EPERM;
- 	}
- 
- 	writel(val, rpc->base + reg);
-@@ -455,6 +485,7 @@ int rpcif_manual_xfer(struct rpcif *rpc)
- 
- 			smenr |= RPCIF_SMENR_SPIDE(rpcif_bits_set(rpc, nbytes));
- 			regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
-+			rpc->xfer_size = nbytes;
- 
- 			memcpy(data, rpc->buffer + pos, nbytes);
- 			if (nbytes == 8) {
-@@ -519,6 +550,7 @@ int rpcif_manual_xfer(struct rpcif *rpc)
- 			regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
- 			regmap_write(rpc->regmap, RPCIF_SMCR,
- 				     rpc->smcr | RPCIF_SMCR_SPIE);
-+			rpc->xfer_size = nbytes;
- 			ret = wait_msg_xfer_end(rpc);
- 			if (ret)
- 				goto err_out;
-diff --git a/include/memory/renesas-rpc-if.h b/include/memory/renesas-rpc-if.h
-index aceb2c360d3f..0e3dac030219 100644
---- a/include/memory/renesas-rpc-if.h
-+++ b/include/memory/renesas-rpc-if.h
-@@ -65,6 +65,7 @@ struct	rpcif {
- 	size_t size;
- 	enum rpcif_data_dir dir;
- 	u8 bus_size;
-+	u8 xfer_size;
- 	void *buffer;
- 	u32 xferlen;
- 	u32 smcr;
+ skip_errata_init:
 -- 
 2.35.1
 
