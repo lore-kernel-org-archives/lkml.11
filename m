@@ -2,117 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D7EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 01:40:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4804C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 01:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245224AbiEDBoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 21:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S245235AbiEDBs1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 21:48:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235416AbiEDBoO (ORCPT
+        with ESMTP id S237189AbiEDBsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 21:44:14 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325891A80F;
-        Tue,  3 May 2022 18:40:38 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Tue, 3 May 2022 21:48:25 -0400
+X-Greylist: delayed 540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 18:44:51 PDT
+Received: from mx.cjr.nz (mx.cjr.nz [51.158.111.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19441AF22;
+        Tue,  3 May 2022 18:44:50 -0700 (PDT)
+Received: from authenticated-user (mx.cjr.nz [51.158.111.142])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KtKKF1wQhz4xTX;
-        Wed,  4 May 2022 11:40:32 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651628434;
-        bh=QxQ5k3WeRy9fAPYUqZ8f27VNj5G0iGKr5OMkwJuFqZU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZzrTCVnG49PdQY6hsudTqAGovpdIRJR5tPZ6yz2ifD5EL087CmVZFkve8QTptVqd0
-         zy3NIx4Ph2jgL2BADQXz5wbykwSuxUyZB1Li1jklyjXOfhAsB4hosWeQM+kuaAo7Z4
-         cZ/rJ8X1Ra3NsT9+EdoQfkzw01AI+7866YbklF1zWSDCq64Webx+YvEkRKrYqzGC+1
-         4zZlHZiVDmhrwZuCK8qHZhVi/x46O3saXsq6yjPMDgkElpe4MpL9Wy1L22zSkgkMUF
-         nelLrkGAC9wzTpDn30yrceS0iq7pkw23QrCl2iGCFb1cQEE4siqQtYnWG6r7qlMun6
-         sSOr5qcOlKVRQ==
-Date:   Wed, 4 May 2022 11:40:31 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the block tree
-Message-ID: <20220504114031.40747e03@canb.auug.org.au>
+        (Authenticated sender: pc)
+        by mx.cjr.nz (Postfix) with ESMTPSA id 0E5CB7FC20;
+        Wed,  4 May 2022 01:35:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz; s=dkim;
+        t=1651628148;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8i5okGkEbwGEAVhwahD/P5DzkyrCRNwKvZVtcLyVENY=;
+        b=o1s59jr7ki2Zcrx9IZLlhAd6BxaSM68EQhXtCoWuRQDU3bCYLZmzB00KSL2LpXXBHTqVDM
+        D5sr3DUejfUdckgKqQIIMQWeNO/CaApEimZXAx1vNPp92+59ZxgbTyCoqt+7CW0TqClLvB
+        W+NRNrn6DzB9Oo74irtd32gRYBCbv0U2kmYwBdyhdywSDfiie1ukOi9m+pBYu/vo6qL2Qn
+        U9ck6oUOtnaZfkpeOr8/hBIudK6SBmLgje08/TNUP0WKyZYeW5amsW++HV2L0JBzTE7cf/
+        VhaY4OK5qorJnCNmlVTtskjN0YfBjLfJN8Hr0xmTTmU6I12352hAbhZL21FckQ==
+From:   Paulo Alcantara <pc@cjr.nz>
+To:     Byron Stanoszek <gandalf@winds.org>,
+        Steve French <sfrench@samba.org>
+Cc:     linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: CIFS regression mounting vers=1.0 NTLMSSP when hostname is too
+ long
+In-Reply-To: <e6837098-15d9-acb6-7e34-1923cf8c6fe1@winds.org>
+References: <e6837098-15d9-acb6-7e34-1923cf8c6fe1@winds.org>
+Date:   Tue, 03 May 2022 22:35:43 -0300
+Message-ID: <878rri2i6o.fsf@cjr.nz>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/hX0vgwFIKurJsaX.xISZtGw";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/hX0vgwFIKurJsaX.xISZtGw
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Byron Stanoszek <gandalf@winds.org> writes:
 
-Hi all,
+> I would like to report a regression in the CIFS fs. Sometime between Linux 4.14
+> and 5.16, mounting CIFS with option vers=1.0 (and
+> CONFIG_CIFS_ALLOW_INSECURE_LEGACY=y set appropriately) with security type
+> NTLMSSP stopped working for me. The server side is a Windows 2003 Server.
+>
+> I found that this behavior depends on the length of the Linux client's
+> host+domain name (e.g. utsname()->nodename), where the mount works as long as
+> the name is 16 characters or less. Anything 17 or above returns -EIO, per the
+> following example:
 
-After merging the block tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+Looks like your server is expecting the WorkstationName field in
+AUTHENTICATE_MESSAGE payload to be 16 bytes long.  That is, NetBIOS name
+length as per rfc1001.
 
-drivers/block/xen-blkback/xenbus.c: In function 'xen_blkbk_discard':
-drivers/block/xen-blkback/xenbus.c:578:31: error: unused variable 'q' [-Wer=
-ror=3Dunused-variable]
-  578 |         struct request_queue *q =3D bdev_get_queue(bdev);
-      |                               ^
-cc1: all warnings being treated as errors
+> I implemented a workaround using the following patch:
+>
+> Signed-off-by: Byron Stanoszek <gandalf@winds.org>
+> ---
+> --- a/fs/cifs/cifsglob.h
+> +++ b/fs/cifs/cifsglob.h
+> @@ -101,7 +101,7 @@
+>   #define XATTR_DOS_ATTRIB "user.DOSATTRIB"
+>   #endif
+>
+> -#define CIFS_MAX_WORKSTATION_LEN  (__NEW_UTS_LEN + 1)  /* reasonable max for client */
+> +#define CIFS_MAX_WORKSTATION_LEN 16
+>
+>   /*
+>    * CIFS vfs client Status information (based on what we know.)
+>
+> I don't know if this patch is correct or will have any real effect outside of
+> the NTLMSSP session connect sequence, but it worked in my case.
 
-Caused by commit
-
-  c899b2353386 ("xen-blkback: use bdev_discard_alignment")
-
-I have applied the following fix patch for today.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 4 May 2022 11:26:59 +1000
-Subject: [PATCH] xen-blkback: remove unused variable
-
-Fixes: c899b2353386 ("xen-blkback: use bdev_discard_alignment")
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/block/xen-blkback/xenbus.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/block/xen-blkback/xenbus.c b/drivers/block/xen-blkback=
-/xenbus.c
-index 04c90cb8955f..97de13b14175 100644
---- a/drivers/block/xen-blkback/xenbus.c
-+++ b/drivers/block/xen-blkback/xenbus.c
-@@ -575,7 +575,6 @@ static void xen_blkbk_discard(struct xenbus_transaction=
- xbt, struct backend_info
- 	int err;
- 	int state =3D 0;
- 	struct block_device *bdev =3D be->blkif->vbd.bdev;
--	struct request_queue *q =3D bdev_get_queue(bdev);
-=20
- 	if (!xenbus_read_unsigned(dev->nodename, "discard-enable", 1))
- 		return;
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/hX0vgwFIKurJsaX.xISZtGw
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJx2Y8ACgkQAVBC80lX
-0GwNhQf47figcnswL2Xb/amERNfqXFce8a5yN7B8wxqYYEckDD27lB3L6irl7zrE
-V7HGi/B219Pw5Cml7SKBk/pldokFeDd7y1ERUFqeVySDqMSsKuZeAv4W2y6v26cR
-z5iFoZ/gfkE/sS38t0nhwCvRBwpaeoSfedLaMylmn9blS93JINvcSmSQK7gTjZ0S
-o2jgnkcntsf3ZeFlnaD61aWmeVY7Kkcnqb/qYLtmAh4Wikep6csJIusxZdJepymE
-0+V88MPV/uWg6ruBLXIrAHV8JlZQP9Opbu38QD0V5FLlHQYGHJfrrNBdkluCWYCe
-QlvuQowqct6uWLCLofON175y0XRd
-=YgK5
------END PGP SIGNATURE-----
-
---Sig_/hX0vgwFIKurJsaX.xISZtGw--
+Perhaps we should be use TCP_Server_Info::workstation_RFC1001_name in
+fs/cifs/sess.c:build_ntlmssp_auth_blob() instead only when connecting to
+old servers by using insecure dialects -- like SMB1, in your case.
