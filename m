@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F14C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFA2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355202AbiEDRGK (ORCPT
+        id S1355219AbiEDRGN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
+        Wed, 4 May 2022 13:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354956AbiEDQ7e (ORCPT
+        with ESMTP id S1355013AbiEDQ7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F92F48E65;
-        Wed,  4 May 2022 09:51:11 -0700 (PDT)
+        Wed, 4 May 2022 12:59:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E0E4924D;
+        Wed,  4 May 2022 09:51:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9830B827A0;
-        Wed,  4 May 2022 16:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D2CAC385A5;
-        Wed,  4 May 2022 16:51:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1D15B827A6;
+        Wed,  4 May 2022 16:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 673F1C385A4;
+        Wed,  4 May 2022 16:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683068;
-        bh=NfrxoOtdQe79uQ08LcEZjboGA4HW467EvA84KGmxlpI=;
+        s=korg; t=1651683070;
+        bh=vElSciYUSw5PYLIPgzAopPeCZT3L1Ns5W1UDzeUU2sY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mh0HRzPp5plVLgrTUdvpFakhf65AuzcMMDADqR+92Syyn4Zu+Eu2VxfqhACox4cet
-         xu0nB+uHamoY345ebQyChQOH+HVoTvj9UsOME3fwKiJfrECqgeiz1Tmy8zQIHq0A4q
-         mk+dOTvN8jVAUUKbyLP1dphdavCAnGcddzfk3Xjs=
+        b=GVNTif88js8E9s3kabmXFXYvehqQ3nQKqolKZNVujEikvoPWoW+HAkDjPv2JZeCXB
+         Nd7WYfe5U2Rt3Sfw4h4dSmWTidImg8ihpo9bIE/QrzHEr/v249vA3hdd8Y6YcZCNIb
+         HhRSv+K/cE3CZhNGTSd6MxTRvTnQPp03cYYWaLMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 053/129] phy: ti: Add missing pm_runtime_disable() in serdes_am654_probe
-Date:   Wed,  4 May 2022 18:44:05 +0200
-Message-Id: <20220504153025.241669066@linuxfoundation.org>
+Subject: [PATCH 5.10 045/129] phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
+Date:   Wed,  4 May 2022 18:43:57 +0200
+Message-Id: <20220504153024.744039124@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,34 +52,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ce88613e5bd579478653a028291098143f2a5bdf ]
+[ Upstream commit 388ec8f079f2f20d5cd183c3bc6f33cbc3ffd3ef ]
 
-The pm_runtime_enable() will increase power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for serdes_am654_probe().
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: 71e2f5c5c224 ("phy: ti: Add a new SERDES driver for TI's AM654x SoC")
+Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220301025853.1911-1-linmq006@gmail.com
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220407091857.230386-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/ti/phy-am654-serdes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/ti/phy-am654-serdes.c b/drivers/phy/ti/phy-am654-serdes.c
-index 2ff56ce77b30..21c0088f5ca9 100644
---- a/drivers/phy/ti/phy-am654-serdes.c
-+++ b/drivers/phy/ti/phy-am654-serdes.c
-@@ -838,7 +838,7 @@ static int serdes_am654_probe(struct platform_device *pdev)
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 4dd7324d91b2..5077987570fd 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -190,6 +190,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  
- clk_err:
- 	of_clk_del_provider(node);
--
-+	pm_runtime_disable(dev);
- 	return ret;
- }
+ 	sata_phy->client = of_find_i2c_device_by_node(node);
++	of_node_put(node);
+ 	if (!sata_phy->client)
+ 		return -EPROBE_DEFER;
  
 -- 
 2.35.1
