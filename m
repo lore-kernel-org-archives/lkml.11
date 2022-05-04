@@ -2,106 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74506C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C66C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352565AbiEDPkp (ORCPT
+        id S1352650AbiEDPmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
+        Wed, 4 May 2022 11:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346350AbiEDPko (ORCPT
+        with ESMTP id S1352431AbiEDPmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:40:44 -0400
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396561659C;
-        Wed,  4 May 2022 08:37:07 -0700 (PDT)
-Received: by mail-ot1-f50.google.com with SMTP id c5-20020a9d75c5000000b00605ff3b9997so1157959otl.0;
-        Wed, 04 May 2022 08:37:07 -0700 (PDT)
+        Wed, 4 May 2022 11:42:10 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77760165BB;
+        Wed,  4 May 2022 08:38:34 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id q20so1097116wmq.1;
+        Wed, 04 May 2022 08:38:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CGfHsjidANyyHV7qeZ5govjIF6ESMs4sMWxP9NbcJlA=;
+        b=HKTlhRQHU8wuB7Yd31wODGwwRr40WNkmFOUi8rsW6a8U0AAakmd/S8xFQCyz9ygkUq
+         KkbnO3jCpSaaRv9Cu18gBVEYgWedbtQIQ7v1QZzQGuem2lXTH4pVkFSZ8ahpG4gb8Yfe
+         Owfjb/312vx0W+x6paggOO9TZSNp+AsCeZAPybwqxItFZ26jUv0nBmX5jgh1lR3B8Dx4
+         9ZhrgldNc1u5aC2kqKViBqEhO0M1dij+sKZGyYAviJF3LCi6h1y/5MMHTnJIcJWE9QWE
+         Ouvdhmn2ZGLH46qpy5POC5U0eZrN8FnHYvns7eKamBnzL/u+7NlTEPqxhMFs0LQw1Bn9
+         GFrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=c+491uatbBNklSf07jZRBjGyT71SmXQky++32pxlRJE=;
-        b=VkHC6cbWYvI8BT0dTRdv5td4/bPuSH1yuEXRlNqufGbaTglRLua087tf/DW/mvT0rB
-         4uqCz4tUpLAovcOWSp/k5FY1jlxEMw+iBPo7ij+sz3cCVhPnb+H4g5svNRTT7ENHmWBf
-         6JTFFiYby9ceaoV8trQv8JLge1ULL19ncV6Q3RNlOur303nXvFaOhMbGZtDBJVzFuB1P
-         2chHastE1EN/LQ4C073vuP3+3PfKuRoiQ0oJB60O+IheZ+TIeGbqvOdP7hlUeXl8f0M1
-         Ms7v+IcHAionkbzOF0zJAJ9o2bhwlPPMuVqorKLk3Yf8x182xlCqxV1PaEp4Ygj+EqF8
-         Saqg==
-X-Gm-Message-State: AOAM531Geh1S1JW5+x/Flb13B86d3jJZqKuRLCrNi4XlxI+wAv/KY0QE
-        DBY9e615lZwoJP07vSrGeHqmL3M21g==
-X-Google-Smtp-Source: ABdhPJwOA2TQTPagMyY/d/b2379s4djD8KoNRcc2UmGBn4bQGTVBpdokxfhoi0xudJn30hCjsg4d8A==
-X-Received: by 2002:a05:6830:1e18:b0:605:f631:1bed with SMTP id s24-20020a0568301e1800b00605f6311bedmr7512441otr.137.1651678626482;
-        Wed, 04 May 2022 08:37:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x108-20020a9d37f5000000b006060322123csm5109675otb.12.2022.05.04.08.37.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CGfHsjidANyyHV7qeZ5govjIF6ESMs4sMWxP9NbcJlA=;
+        b=WPgaZNgsdEG5l3PZVQS/3V/XwMy09Vz3/f7tcmY2dquTfghzV0+kivFpDyZW7bo10h
+         O9Yg2MwuzM1v/Jf0twwVOW3QwkQJiHLM/6R0+QU9IKdaLxB9baXSjSe7HVGJXvbX7LXx
+         LZBErjZ/Ag8sH87DHkGiq3oz5INvzZ7Ja6q2D05P5EyhPBvUd0LU3brROlNwwUB9/8F+
+         u7r6OTRMDi0G2pigyX6fguuXqSCy2lRU7cPDjxcGATA/L97iWe67mfan5urTnu41HWMp
+         40tD/3Nkxq3XTgOIkOfYHwOKhrZ5IDar6Srddl3JkBzs+N6Z+ZfQnAY6JBsOf9Oz+ocM
+         z24w==
+X-Gm-Message-State: AOAM533BjOB2IGAkuez0/R3xd/RXDI6tNvAaEKg3LS2YGL/u0Rc31WkA
+        19AHX+UUC9kQ5atihfFazN4=
+X-Google-Smtp-Source: ABdhPJzh6RAR1drthFT0i0kt4pF+YyMWOWIHuCbuIALa+gZThkRIq2l8IX27Il5BYGhR0GytSkfC7w==
+X-Received: by 2002:a1c:2706:0:b0:391:822c:83da with SMTP id n6-20020a1c2706000000b00391822c83damr46858wmn.100.1651678713085;
+        Wed, 04 May 2022 08:38:33 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id e18-20020adf9bd2000000b0020c5253d8besm11792725wrc.10.2022.05.04.08.38.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 08:37:06 -0700 (PDT)
-Received: (nullmailer pid 1755199 invoked by uid 1000);
-        Wed, 04 May 2022 15:37:02 -0000
-Date:   Wed, 4 May 2022 10:37:02 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        Wed, 04 May 2022 08:38:32 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     pavel@ucw.cz
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] spi: dt-bindings: qcom,spi-geni-qcom: allow three
- interconnects
-Message-ID: <YnKdnv69vueSURiU@robh.at.kernel.org>
-References: <20220504125119.190526-1-krzysztof.kozlowski@linaro.org>
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v6 (corrected v2) 2/2] leds: ktd2692: Make aux-gpios optional
+Date:   Wed,  4 May 2022 18:38:11 +0300
+Message-Id: <20220504153814.11108-3-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220504153814.11108-1-markuss.broks@gmail.com>
+References: <20220504153814.11108-1-markuss.broks@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504125119.190526-1-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 02:51:19PM +0200, Krzysztof Kozlowski wrote:
-> Recent Qualcomm Geni SPI nodes, e.g. on SM8450, come with three
-> interconnects.  This fixes dtbs_check warnings like:
-> 
->   sm8450-qrd.dtb: geniqup@8c0000: spi@880000:interconnect-names: ['qup-core', 'qup-config'] is too short
+Make the AUX pin optional, since it isn't a core part of functionality,
+and the device is designed to be operational with only one CTRL pin.
 
-I'm confused. A length of 2 was already allowed before this change.
+Also pick up maintenance for the LED driver and the yaml bindings.
 
-> 
-> Fixes: 5bdcae1fe1c5 ("spi: dt-bindings: qcom,spi-geni-qcom: convert to dtschema")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Fix for a commit in MSM/Bjorn's tree.
-> ---
->  .../devicetree/bindings/spi/qcom,spi-geni-qcom.yaml          | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-> index e2c7b934c50d..47e1b3ee8b1b 100644
-> --- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-> +++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-> @@ -45,12 +45,15 @@ properties:
->        - const: rx
->  
->    interconnects:
-> -    maxItems: 2
-> +    minItems: 2
-> +    maxItems: 3
->  
->    interconnect-names:
-> +    minItems: 2
->      items:
->        - const: qup-core
->        - const: qup-config
-> +      - const: qup-memory
->  
->    interrupts:
->      maxItems: 1
-> -- 
-> 2.32.0
-> 
-> 
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+---
+ MAINTAINERS                       | 6 ++++++
+ drivers/leds/flash/leds-ktd2692.c | 6 +++---
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2db49ea7ae55..8ef5667a1d98 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10479,6 +10479,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd253.yaml
+ F:	drivers/video/backlight/ktd253-backlight.c
+ 
++KTD2692 FLASH LED DRIVER
++M:	Markuss Broks <markuss.broks@gmail.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd2692.yaml
++F:	drivers/leds/flash/leds-ktd2692.yaml
++
+ KTEST
+ M:	Steven Rostedt <rostedt@goodmis.org>
+ M:	John Hawley <warthog9@eaglescrag.net>
+diff --git a/drivers/leds/flash/leds-ktd2692.c b/drivers/leds/flash/leds-ktd2692.c
+index f341da1503a4..01ceea83af67 100644
+--- a/drivers/leds/flash/leds-ktd2692.c
++++ b/drivers/leds/flash/leds-ktd2692.c
+@@ -284,9 +284,9 @@ static int ktd2692_parse_dt(struct ktd2692_context *led, struct device *dev,
+ 		return ret;
+ 	}
+ 
+-	led->aux_gpio = devm_gpiod_get(dev, "aux", GPIOD_ASIS);
+-	ret = PTR_ERR_OR_ZERO(led->aux_gpio);
+-	if (ret) {
++	led->aux_gpio = devm_gpiod_get_optional(dev, "aux", GPIOD_ASIS);
++	if (IS_ERR(led->aux_gpio)) {
++		ret = PTR_ERR(led->aux_gpio);
+ 		dev_err(dev, "cannot get aux-gpios %d\n", ret);
+ 		return ret;
+ 	}
+-- 
+2.35.1
+
