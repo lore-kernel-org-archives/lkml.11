@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78598C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6E3C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377018AbiEDRpc (ORCPT
+        id S1377119AbiEDRpl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        Wed, 4 May 2022 13:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355903AbiEDRMb (ORCPT
+        with ESMTP id S1356217AbiEDRMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:12:31 -0400
+        Wed, 4 May 2022 13:12:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32A34BFC9;
-        Wed,  4 May 2022 09:57:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C1F4BB9F;
+        Wed,  4 May 2022 09:57:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AFA5B82552;
-        Wed,  4 May 2022 16:57:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D56C385A5;
-        Wed,  4 May 2022 16:57:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 279A1B8279C;
+        Wed,  4 May 2022 16:57:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9707C385A5;
+        Wed,  4 May 2022 16:57:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683471;
-        bh=fJoV8SQE9N5eiiwoYCiKnZpK7v6tfwQf/bkszfYKZNo=;
+        s=korg; t=1651683463;
+        bh=Q2C5inpbwXkip8RIc27d3PPInrJu334OGMsTnrhAdOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PG0X9XgkW1b/NU4BnUxGfZFWjfotNxGrMvDa5I9GcSeFDAlomlbgFGkMBoIcz4efj
-         E0wXWhWuxm75n2aFhEcA8JzkEpmwaR8RKL6dagRTnv8V9sNfegnBboVO0ZXvC0Gkzt
-         hrD3aMPrxyXPNKrKQZ9oVP/sh2kw1UYKT94QiwU8=
+        b=RLpgb2M6oo70BGPf6BxFDj2IYLz20rEHjbY4Nqy+T7A/xw1u5UalnQKmyz9GM7Pz5
+         vDQv5qZyygszRQmAkyJYAklAwPo0cnJaHlV2toMkuQC2iVjjOFBIPzcIqljL2UjAmy
+         dxXpwZaNWSNM1wJG2p1sz5f69pnleNksZyW3ZWgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Christensen <drc@linux.vnet.ibm.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 146/225] bnx2x: fix napi API usage sequence
-Date:   Wed,  4 May 2022 18:46:24 +0200
-Message-Id: <20220504153123.188263365@linuxfoundation.org>
+Subject: [PATCH 5.17 125/225] tcp: make sure treq->af_specific is initialized
+Date:   Wed,  4 May 2022 18:46:03 +0200
+Message-Id: <20220504153121.569182104@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,150 +51,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit af68656d66eda219b7f55ce8313a1da0312c79e1 ]
+[ Upstream commit ba5a4fdd63ae0c575707030db0b634b160baddd7 ]
 
-While handling PCI errors (AER flow) driver tries to
-disable NAPI [napi_disable()] after NAPI is deleted
-[__netif_napi_del()] which causes unexpected system
-hang/crash.
+syzbot complained about a recent change in TCP stack,
+hitting a NULL pointer [1]
 
-System message log shows the following:
-=======================================
-[ 3222.537510] EEH: Detected PCI bus error on PHB#384-PE#800000 [ 3222.537511] EEH: This PCI device has failed 2 times in the last hour and will be permanently disabled after 5 failures.
-[ 3222.537512] EEH: Notify device drivers to shutdown [ 3222.537513] EEH: Beginning: 'error_detected(IO frozen)'
-[ 3222.537514] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
-bnx2x->error_detected(IO frozen)
-[ 3222.537516] bnx2x: [bnx2x_io_error_detected:14236(eth14)]IO error detected [ 3222.537650] EEH: PE#800000 (PCI 0384:80:00.0): bnx2x driver reports:
-'need reset'
-[ 3222.537651] EEH: PE#800000 (PCI 0384:80:00.1): Invoking
-bnx2x->error_detected(IO frozen)
-[ 3222.537651] bnx2x: [bnx2x_io_error_detected:14236(eth13)]IO error detected [ 3222.537729] EEH: PE#800000 (PCI 0384:80:00.1): bnx2x driver reports:
-'need reset'
-[ 3222.537729] EEH: Finished:'error_detected(IO frozen)' with aggregate recovery state:'need reset'
-[ 3222.537890] EEH: Collect temporary log [ 3222.583481] EEH: of node=0384:80:00.0 [ 3222.583519] EEH: PCI device/vendor: 168e14e4 [ 3222.583557] EEH: PCI cmd/status register: 00100140 [ 3222.583557] EEH: PCI-E capabilities and status follow:
-[ 3222.583744] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.583892] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.583893] EEH: PCI-E 20: 00000000 [ 3222.583893] EEH: PCI-E AER capability register set follows:
-[ 3222.584079] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.584230] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.584378] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.584416] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.584416] EEH: of node=0384:80:00.1 [ 3222.584454] EEH: PCI device/vendor: 168e14e4 [ 3222.584491] EEH: PCI cmd/status register: 00100140 [ 3222.584492] EEH: PCI-E capabilities and status follow:
-[ 3222.584677] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.584825] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.584826] EEH: PCI-E 20: 00000000 [ 3222.584826] EEH: PCI-E AER capability register set follows:
-[ 3222.585011] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.585160] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.585309] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.585347] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.586872] RTAS: event: 5, Type: Platform Error (224), Severity: 2 [ 3222.586873] EEH: Reset without hotplug activity [ 3224.762767] EEH: Beginning: 'slot_reset'
-[ 3224.762770] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
-bnx2x->slot_reset()
-[ 3224.762771] bnx2x: [bnx2x_io_slot_reset:14271(eth14)]IO slot reset initializing...
-[ 3224.762887] bnx2x 0384:80:00.0: enabling device (0140 -> 0142) [ 3224.768157] bnx2x: [bnx2x_io_slot_reset:14287(eth14)]IO slot reset
---> driver unload
+tcp request sockets have an af_specific pointer, which
+was used before the blamed change only for SYNACK generation
+in non SYNCOOKIE mode.
 
-Uninterruptible tasks
-=====================
-crash> ps | grep UN
-     213      2  11  c000000004c89e00  UN   0.0       0      0  [eehd]
-     215      2   0  c000000004c80000  UN   0.0       0      0
-[kworker/0:2]
-    2196      1  28  c000000004504f00  UN   0.1   15936  11136  wickedd
-    4287      1   9  c00000020d076800  UN   0.0    4032   3008  agetty
-    4289      1  20  c00000020d056680  UN   0.0    7232   3840  agetty
-   32423      2  26  c00000020038c580  UN   0.0       0      0
-[kworker/26:3]
-   32871   4241  27  c0000002609ddd00  UN   0.1   18624  11648  sshd
-   32920  10130  16  c00000027284a100  UN   0.1   48512  12608  sendmail
-   33092  32987   0  c000000205218b00  UN   0.1   48512  12608  sendmail
-   33154   4567  16  c000000260e51780  UN   0.1   48832  12864  pickup
-   33209   4241  36  c000000270cb6500  UN   0.1   18624  11712  sshd
-   33473  33283   0  c000000205211480  UN   0.1   48512  12672  sendmail
-   33531   4241  37  c00000023c902780  UN   0.1   18624  11648  sshd
+tcp requests sockets momentarily created when third packet
+coming from client in SYNCOOKIE mode were not using
+treq->af_specific.
 
-EEH handler hung while bnx2x sleeping and holding RTNL lock
-===========================================================
-crash> bt 213
-PID: 213    TASK: c000000004c89e00  CPU: 11  COMMAND: "eehd"
-  #0 [c000000004d477e0] __schedule at c000000000c70808
-  #1 [c000000004d478b0] schedule at c000000000c70ee0
-  #2 [c000000004d478e0] schedule_timeout at c000000000c76dec
-  #3 [c000000004d479c0] msleep at c0000000002120cc
-  #4 [c000000004d479f0] napi_disable at c000000000a06448
-                                        ^^^^^^^^^^^^^^^^
-  #5 [c000000004d47a30] bnx2x_netif_stop at c0080000018dba94 [bnx2x]
-  #6 [c000000004d47a60] bnx2x_io_slot_reset at c0080000018a551c [bnx2x]
-  #7 [c000000004d47b20] eeh_report_reset at c00000000004c9bc
-  #8 [c000000004d47b90] eeh_pe_report at c00000000004d1a8
-  #9 [c000000004d47c40] eeh_handle_normal_event at c00000000004da64
+Make sure this field is populated, in the same way normal
+TCP requests sockets do in tcp_conn_request().
 
-And the sleeping source code
-============================
-crash> dis -ls c000000000a06448
-FILE: ../net/core/dev.c
-LINE: 6702
+[1]
+TCP: request_sock_TCPv6: Possible SYN flooding on port 20002. Sending cookies.  Check SNMP counters.
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 1 PID: 3695 Comm: syz-executor864 Not tainted 5.18.0-rc3-syzkaller-00224-g5fd1fe4807f9 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:tcp_create_openreq_child+0xe16/0x16b0 net/ipv4/tcp_minisocks.c:534
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 e5 07 00 00 4c 8b b3 28 01 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d 7e 08 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c9 07 00 00 48 8b 3c 24 48 89 de 41 ff 56 08 48
+RSP: 0018:ffffc90000de0588 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff888076490330 RCX: 0000000000000100
+RDX: 0000000000000001 RSI: ffffffff87d67ff0 RDI: 0000000000000008
+RBP: ffff88806ee1c7f8 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87d67f00 R11: 0000000000000000 R12: ffff88806ee1bfc0
+R13: ffff88801b0e0368 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f517fe58700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffcead76960 CR3: 000000006f97b000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ tcp_v6_syn_recv_sock+0x199/0x23b0 net/ipv6/tcp_ipv6.c:1267
+ tcp_get_cookie_sock+0xc9/0x850 net/ipv4/syncookies.c:207
+ cookie_v6_check+0x15c3/0x2340 net/ipv6/syncookies.c:258
+ tcp_v6_cookie_check net/ipv6/tcp_ipv6.c:1131 [inline]
+ tcp_v6_do_rcv+0x1148/0x13b0 net/ipv6/tcp_ipv6.c:1486
+ tcp_v6_rcv+0x3305/0x3840 net/ipv6/tcp_ipv6.c:1725
+ ip6_protocol_deliver_rcu+0x2e9/0x1900 net/ipv6/ip6_input.c:422
+ ip6_input_finish+0x14c/0x2c0 net/ipv6/ip6_input.c:464
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:473
+ dst_input include/net/dst.h:461 [inline]
+ ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ipv6_rcv+0x27f/0x3b0 net/ipv6/ip6_input.c:297
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
+ process_backlog+0x3a0/0x7c0 net/core/dev.c:5847
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6413
+ napi_poll net/core/dev.c:6480 [inline]
+ net_rx_action+0x8ec/0xc60 net/core/dev.c:6567
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
 
-   6697  {
-   6698          might_sleep();
-   6699          set_bit(NAPI_STATE_DISABLE, &n->state);
-   6700
-   6701          while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
-* 6702                  msleep(1);
-   6703          while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
-   6704                  msleep(1);
-   6705
-   6706          hrtimer_cancel(&n->timer);
-   6707
-   6708          clear_bit(NAPI_STATE_DISABLE, &n->state);
-   6709  }
-
-EEH calls into bnx2x twice based on the system log above, first through
-bnx2x_io_error_detected() and then bnx2x_io_slot_reset(), and executes
-the following call chains:
-
-bnx2x_io_error_detected()
-  +-> bnx2x_eeh_nic_unload()
-       +-> bnx2x_del_all_napi()
-            +-> __netif_napi_del()
-
-bnx2x_io_slot_reset()
-  +-> bnx2x_netif_stop()
-       +-> bnx2x_napi_disable()
-            +->napi_disable()
-
-Fix this by correcting the sequence of NAPI APIs usage,
-that is delete the NAPI after disabling it.
-
-Fixes: 7fa6f34081f1 ("bnx2x: AER revised")
-Reported-by: David Christensen <drc@linux.vnet.ibm.com>
-Tested-by: David Christensen <drc@linux.vnet.ibm.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Link: https://lore.kernel.org/r/20220426153913.6966-1-manishc@marvell.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 5b0b9e4c2c89 ("tcp: md5: incorrect tcp_header_len for incoming connections")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Francesco Ruggeri <fruggeri@arista.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ include/net/tcp.h     | 1 +
+ net/ipv4/syncookies.c | 8 +++++++-
+ net/ipv6/syncookies.c | 3 ++-
+ 3 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index c19b072f3a23..962253db25b8 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -14153,10 +14153,6 @@ static int bnx2x_eeh_nic_unload(struct bnx2x *bp)
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 40c05972178b..a3fe2f9bc01c 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -480,6 +480,7 @@ int __cookie_v4_check(const struct iphdr *iph, const struct tcphdr *th,
+ 		      u32 cookie);
+ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb);
+ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
++					    const struct tcp_request_sock_ops *af_ops,
+ 					    struct sock *sk, struct sk_buff *skb);
+ #ifdef CONFIG_SYN_COOKIES
  
- 	/* Stop Tx */
- 	bnx2x_tx_disable(bp);
--	/* Delete all NAPI objects */
--	bnx2x_del_all_napi(bp);
--	if (CNIC_LOADED(bp))
--		bnx2x_del_all_napi_cnic(bp);
- 	netdev_reset_tc(bp->dev);
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 2cb3b852d148..f33c31dd7366 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -281,6 +281,7 @@ bool cookie_ecn_ok(const struct tcp_options_received *tcp_opt,
+ EXPORT_SYMBOL(cookie_ecn_ok);
  
- 	del_timer_sync(&bp->timer);
-@@ -14261,6 +14257,11 @@ static pci_ers_result_t bnx2x_io_slot_reset(struct pci_dev *pdev)
- 		bnx2x_drain_tx_queues(bp);
- 		bnx2x_send_unload_req(bp, UNLOAD_RECOVERY);
- 		bnx2x_netif_stop(bp, 1);
-+		bnx2x_del_all_napi(bp);
+ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
++					    const struct tcp_request_sock_ops *af_ops,
+ 					    struct sock *sk,
+ 					    struct sk_buff *skb)
+ {
+@@ -297,6 +298,10 @@ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
+ 		return NULL;
+ 
+ 	treq = tcp_rsk(req);
 +
-+		if (CNIC_LOADED(bp))
-+			bnx2x_del_all_napi_cnic(bp);
++	/* treq->af_specific might be used to perform TCP_MD5 lookup */
++	treq->af_specific = af_ops;
 +
- 		bnx2x_free_irq(bp);
+ 	treq->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	treq->is_mptcp = sk_is_mptcp(sk);
+@@ -364,7 +369,8 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
+ 		goto out;
  
- 		/* Report UNLOAD_DONE to MCP */
+ 	ret = NULL;
+-	req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops, sk, skb);
++	req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops,
++				     &tcp_request_sock_ipv4_ops, sk, skb);
+ 	if (!req)
+ 		goto out;
+ 
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index d1b61d00368e..9cc123f000fb 100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -170,7 +170,8 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
+ 		goto out;
+ 
+ 	ret = NULL;
+-	req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops, sk, skb);
++	req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops,
++				     &tcp_request_sock_ipv6_ops, sk, skb);
+ 	if (!req)
+ 		goto out;
+ 
 -- 
 2.35.1
 
