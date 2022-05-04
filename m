@@ -2,100 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D62C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351034AbiEDOCX (ORCPT
+        id S1351036AbiEDOCo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        Wed, 4 May 2022 10:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350974AbiEDOCT (ORCPT
+        with ESMTP id S1350700AbiEDOCl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:02:19 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D3D2180A;
-        Wed,  4 May 2022 06:58:43 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id l62-20020a1c2541000000b0038e4570af2fso878705wml.5;
-        Wed, 04 May 2022 06:58:43 -0700 (PDT)
+        Wed, 4 May 2022 10:02:41 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0616427B08
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:59:05 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id h10so2506552ybc.4
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:59:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cjx7gNEvj9OasAKbfNVg4zchWMg/Q6EBH67Oa2e8OLQ=;
-        b=OdUGB1XVP71W0cC4X4Q6lqf1SU6b0l6Ls2EWYZWP4GK4EvVZiA0ptOKnxIgnuJuJkm
-         eWcEB9UH13dZVCJtOPIw0kIqIR/JOuC6pj7rO8nA2fxr3ejgN7FUwh5nNKOy+77flgY7
-         qLCWKnd9Jv3Tsg4ARKNL2te0UvHpQ4kxC2SeLcE18/y5d3jiDoqgoqu43QITjXR3M7zT
-         4ub1lWe+D+tLpqCEuRdBTbjhPX+IkcYkVbEmRThUFgCmfHxnW+qGH3zfOEEsGz2rTfS6
-         TKtcdThjM5FmEsO7/A9mSaoNZ0wlZfXSGgonTVhfoYf1IVpYjwJ2HEkLlxYlkPSbEszC
-         oO/A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SPZZPIZ3tMBmU2J1+dZLu8mQ0Ktfd9UqnJWzWh7GFsY=;
+        b=LRu+SOgpWQ2b+0XE6XdI/GPR0EVOYpYkODREs06fm4JhpU/+whc8uYsRe84PoV/JSE
+         ZPYr0vcwK13wBePNL3HhRS1K5KCawgiM+8nA3JodO3TFcvqxV/SXUB6XsDpnbMmKrl/O
+         UwA2935dhr1JZ5IYE7VJe+x5YlZKUuTtthD6ZyullhDMhoGCelzR7b+dyGOKwbpY8+Tl
+         RweTMuhP01HvNGL4Iux7lkE+85f7iPo/miEVmHQz9pI4KJfovUn2gIuynUdyEaLBRKaA
+         ujGpZ1FPiKdjVCRW8uSeCvuoFeYdMaQr3Xp7ltKPvVz9kuiXOYxJwAk3C8iXVlnNOxgF
+         Hv+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cjx7gNEvj9OasAKbfNVg4zchWMg/Q6EBH67Oa2e8OLQ=;
-        b=te6pQQbq3ZVwjZ3O9nafV9fnETlggVBC5aQ4F0LdlpI1SGku7HHvD/Al3rNTunMg4J
-         l/VpgjWct5dXh6J8K9KwnVlpjsXCf56sZUIXH3YD92z5GLv74k93KXELSpuuJXZrXNs9
-         bfBBNO6SgFpCM7gA75/S58rgz/vdlSv1X/hkUQSM/e5qfSTWwaNSeJi3U9Jmht/M0ldm
-         jhVOk4PCPxb8SEfYbm3cs4EBfY4Frfq9JtkL2tLZaAU0a9G+STpLc8z6+XX4tEzz8ke1
-         Q/XL84aNJWvohGehpGsKPV4mFwnx4eekJNnIznr+VgHyQ+DoP4YwgNuoLC9xJCIHyqei
-         m1Cg==
-X-Gm-Message-State: AOAM530y8LOP6B52gNGdcqh+DIwD3Nt4bCca72gOdIGacUVVRYcjLfaY
-        32pFG4LK4ckXOcLU/4VLttE=
-X-Google-Smtp-Source: ABdhPJxucinJz7AG3WirWMPy2Bpa+F0RiANyvK6kdoFCDRcm9ss19mURFInD1kiisZ60NlfKF6DOIw==
-X-Received: by 2002:a05:600c:3584:b0:394:5870:2c44 with SMTP id p4-20020a05600c358400b0039458702c44mr3173325wmq.4.1651672721856;
-        Wed, 04 May 2022 06:58:41 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id j30-20020adfb31e000000b0020c5253d8bfsm11431814wrd.11.2022.05.04.06.58.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 06:58:41 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH][next] USB: gadget: Fix return of -EBUSY
-Date:   Wed,  4 May 2022 14:58:40 +0100
-Message-Id: <20220504135840.232209-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SPZZPIZ3tMBmU2J1+dZLu8mQ0Ktfd9UqnJWzWh7GFsY=;
+        b=4Yo2jUVaPx6AhtT4qkQyuZFH0OTr2pv3zmKBdW4bSwaVq/q/tCn0xU5Y45sMO6iaET
+         aUymTydDIaV1gDNpKw/bhmHhWCLYUgdfTzta9kVJQlt6ip+hTzTXdRDwptBwna45lO1o
+         mEdJPMrbiMwRtwX/Xp9cELWJ5FXfgndXnxkpy6VreFhYMOtebLc/Odv/Fd2vFG7I8uzb
+         koQ9WJg3QGsNdwa1Jr1EXNH7Ud+iN0PhV/U30/jpij1u1qmIkvJw/42hfRsWZJ34yl1Z
+         UHjoKX5lw4iY7kN0lZWt6jrCYpqrzfB4gEzIS0kDm8T92ihT60uuAC1WNXcCo6fpcomf
+         wi9Q==
+X-Gm-Message-State: AOAM530FHOnElFJBNvzapF9iO87GaiKI3IOXYXH4fUugN/bRj3QjOPLB
+        VDv7lUmQXG58daza2biyvnDm/H3ThFN7iAmD5UkZ8aKhic8=
+X-Google-Smtp-Source: ABdhPJwFdnRNBegT96HZOCc6rf5V5GfnGTph+kAaVdv0O4+9BngcElxeohXGSrJ+jPxr8dcRqOpnRK6wxVA02Kq9C40=
+X-Received: by 2002:a25:c1c3:0:b0:648:e9af:111f with SMTP id
+ r186-20020a25c1c3000000b00648e9af111fmr19203938ybf.168.1651672743992; Wed, 04
+ May 2022 06:59:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220504070941.2798233-1-elver@google.com> <CABVgOSnkROn18i62+M9ZfRVLO=E28Eiv7oF_RJV+14Ld73axLw@mail.gmail.com>
+ <CANpmjNPKyGUV4fXui5hEwc9+4y70kP_XgSnHbPObWBGyDeccYA@mail.gmail.com> <CABVgOSkLGryZeWVXdfBDkQKWvSkYTk2LWx+yC9J+4FYQpn2bpQ@mail.gmail.com>
+In-Reply-To: <CABVgOSkLGryZeWVXdfBDkQKWvSkYTk2LWx+yC9J+4FYQpn2bpQ@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Wed, 4 May 2022 15:58:27 +0200
+Message-ID: <CANpmjNNHwpmVnrbRcibyu7F7r3cU9p_+ZHGTx=GGB7Y8LfVxGg@mail.gmail.com>
+Subject: Re: [PATCH -kselftest/kunit] kcsan: test: use new suite_{init,exit} support
+To:     David Gow <davidgow@google.com>
+Cc:     kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently when driver->match_existing_only is true, the error return is
-set to -EBUSY however ret is then set to 0 at the end of the if/else
-statement. I believe the ret = 0 statement should be set in the else
-part of the if statement and not at the end to ensure -EBUSY is being
-returned correctly.
+On Wed, 4 May 2022 at 15:54, David Gow <davidgow@google.com> wrote:
+>
+> On Wed, May 4, 2022 at 9:48 PM Marco Elver <elver@google.com> wrote:
+> >
+> > On Wed, 4 May 2022 at 15:43, David Gow <davidgow@google.com> wrote:
+> > >
+> > > On Wed, May 4, 2022 at 3:09 PM Marco Elver <elver@google.com> wrote:
+> > > >
+> > > > Use the newly added suite_{init,exit} support for suite-wide init and
+> > > > cleanup. This avoids the unsupported method by which the test used to do
+> > > > suite-wide init and cleanup (avoiding issues such as missing TAP
+> > > > headers, and possible future conflicts).
+> > > >
+> > > > Signed-off-by: Marco Elver <elver@google.com>
+> > > > ---
+> > > > This patch should go on the -kselftest/kunit branch, where this new
+> > > > support currently lives, including a similar change to the KFENCE test.
+> > > > ---
+> > >
+> > > Thanks! This is working for me. I ran it as a builtin using kunit_tool
+> > > under (I had to add an x86_64-smp architecture), then use:
+> > > ./tools/testing/kunit/kunit.py run --arch=x86_64-smp
+> > > --kconfig_add=CONFIG_KCSAN=y --kconfig_add=CONFIG_DEBUG_KERNEL=y
+> > > --timeout 900 'kcsan'
+> > >
+> > > To add the x86_64 smp architecture, I added a file
+> > > ./tools/testing/kunit/qemu_configs/x86_64-smp.py, which was a copy of
+> > > x86_64.py but with 'CONFIG_SMP=y' added to XXXX and '-smp 16' added to
+> > > YYYY.
+>
+> (Whoops, forgot to copy this in properly: XXXX was 'kconfig' and YYYY
+> was 'extra_qemu_params'.)
+>
+> The x86_64-smp.py file ends up looking like this:
+> ---8<---
+> from ..qemu_config import QemuArchParams
+>
+> QEMU_ARCH = QemuArchParams(linux_arch='x86_64',
+>                           kconfig='''
+> CONFIG_SERIAL_8250=y
+> CONFIG_SERIAL_8250_CONSOLE=y
+> CONFIG_SMP=y
+>                           ''',
+>                           qemu_arch='x86_64',
+>                           kernel_path='arch/x86/boot/bzImage',
+>                           kernel_command_line='console=ttyS0',
+>                           extra_qemu_params=['-smp 16'])
+> ---8<---
+> > > It took about 10 minutes on my system, so the default 5 minute timeout
+> > > definitely wasn't enough.
+> >
+> > The trick to reduce the KCSAN test time is to set
+> > CONFIG_KCSAN_REPORT_ONCE_IN_MS=100 or lower. So should you consider a
+> > special KUnit config, I'd add that.
+> >
+>
+> Ah: it might be worth adding a dedicated kcsan .kunitconfig, in which
+> case this would be helpful. It'd also need the SMP qemu config above
+> before it's particularly useful, and 16 was a randomly-picked number
+> of CPUs -- not sure if there's a better default.
+>
+> If you're likely to use it, though, we can definitely add it in. I'm
+> sure there'll eventually be other uses for an SMP config under
+> kunit_tool, too.
 
-Detected by clang scan:
-drivers/usb/gadget/udc/core.c:1558:4: warning: Value stored to 'ret' is
-never read [deadcode.DeadStores]
+I currently have some other frankenscript to run it, but I wouldn't
+mind just using kunit_tool to do so. So having real SMP support there
+would be very useful.
 
-Fixes: fc274c1e9973 ("USB: gadget: Add a new bus for gadgets")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/usb/gadget/udc/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
-index 61790592b2c8..3281d8a3dae7 100644
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1559,8 +1559,8 @@ int usb_gadget_register_driver_owner(struct usb_gadget_driver *driver,
- 		} else {
- 			pr_info("%s: couldn't find an available UDC\n",
- 					driver->function);
-+			ret = 0;
- 		}
--		ret = 0;
- 	}
- 	mutex_unlock(&udc_lock);
- 
--- 
-2.35.1
-
+Thanks,
+-- Marco
