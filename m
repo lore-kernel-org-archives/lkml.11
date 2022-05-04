@@ -2,153 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8EFC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A201EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378575AbiEDVWe (ORCPT
+        id S1378582AbiEDVWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
+        Wed, 4 May 2022 17:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiEDVWb (ORCPT
+        with ESMTP id S231436AbiEDVWi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:22:31 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628E751580;
-        Wed,  4 May 2022 14:18:54 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id BABED210E5;
-        Wed,  4 May 2022 21:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651699132;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=npPu7v4PVxjYw5k81v34byZcxUoLWsQ8uewcVPzgU3Y=;
-        b=tM1dspGpfMipCiAbW0HO2dZVPEAgyrff0KMavj6bZk8T37R9hRgCKrWvzwgeAGT0wBlOIm
-        ubeLZ7ieBvBdZyh1MDcuOhs1j09imPderIadxrCmq/Rsm19BAfVTGh1hT5vsADF9X2YLOS
-        su7DARpA5vqfoa0MkPB71ULlFqjV3/w=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651699132;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=npPu7v4PVxjYw5k81v34byZcxUoLWsQ8uewcVPzgU3Y=;
-        b=vS6Y/NRPgUhS2xB+r59V5ZgrZyl8A56t3CcwGyemIqz6M8o7VVvzu6uPNAFvfQz1MtnccG
-        5x8uPy6F8/V4gpDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B60DD131BD;
-        Wed,  4 May 2022 21:18:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ptTKKrvtcmJMMQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Wed, 04 May 2022 21:18:51 +0000
-Date:   Wed, 4 May 2022 23:14:40 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        "jaegeuk@kernel.org" <jaegeuk@kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "snitzer@kernel.org" <snitzer@kernel.org>,
-        "hch@lst.de" <hch@lst.de>, "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        Naohiro Aota <Naohiro.Aota@wdc.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>,
-        "dsterba@suse.com" <dsterba@suse.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        "clm@fb.com" <clm@fb.com>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "chao@kernel.org" <chao@kernel.org>,
-        "linux-f2fs-devel@lists.sourceforge.net" 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        "josef@toxicpanda.com" <josef@toxicpanda.com>,
-        "jonathan.derrick@linux.dev" <jonathan.derrick@linux.dev>,
-        "agk@redhat.com" <agk@redhat.com>,
-        "kbusch@kernel.org" <kbusch@kernel.org>,
-        "kch@nvidia.com" <kch@nvidia.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        Matias =?iso-8859-1?Q?Bj=F8rling?= <Matias.Bjorling@wdc.com>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>
-Subject: Re: [PATCH 00/16] support non power of 2 zoned devices
-Message-ID: <20220504211440.GU18596@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        "jaegeuk@kernel.org" <jaegeuk@kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "snitzer@kernel.org" <snitzer@kernel.org>,
-        "hch@lst.de" <hch@lst.de>, "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        Naohiro Aota <Naohiro.Aota@wdc.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>,
-        "dsterba@suse.com" <dsterba@suse.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        "clm@fb.com" <clm@fb.com>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "chao@kernel.org" <chao@kernel.org>,
-        "linux-f2fs-devel@lists.sourceforge.net" <linux-f2fs-devel@lists.sourceforge.net>,
-        "josef@toxicpanda.com" <josef@toxicpanda.com>,
-        "jonathan.derrick@linux.dev" <jonathan.derrick@linux.dev>,
-        "agk@redhat.com" <agk@redhat.com>,
-        "kbusch@kernel.org" <kbusch@kernel.org>,
-        "kch@nvidia.com" <kch@nvidia.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        Matias =?iso-8859-1?Q?Bj=F8rling?= <Matias.Bjorling@wdc.com>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>
-References: <CGME20220427160256eucas1p2db2b58792ffc93026d870c260767da14@eucas1p2.samsung.com>
- <20220427160255.300418-1-p.raghav@samsung.com>
- <PH0PR04MB74167FC8BA634A3DA09586489BC19@PH0PR04MB7416.namprd04.prod.outlook.com>
- <a702c7f7-9719-9f3e-63de-1e96f2912432@samsung.com>
+        Wed, 4 May 2022 17:22:38 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA0251E47
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:18:59 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id m128so4561110ybm.5
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 14:18:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6bErpLDN6CEEoWSzxhVYEvy5hGMXbYXtcuwfFFGVAPk=;
+        b=sWL0jayo/BfRe3n+jU/541fJTcBDKRz3K3MBqQOBfVFyUp3lXVtijyDPbGwHYO9VVN
+         Y7UVxdogikdk6NI+5DxCaqQLBng9/sh7yXAG6TTlEgHVftOtxRnqs5FKRin60E6MUXE1
+         0jBv8iPox4obg8v1FulX+HmQOlgvhMlC2KKM78UZLu0VIhybG3qNG6oDTXrIThDy7MHe
+         NQLjlQKUEY+lWo1sjIrZyvYvn/yO55hj1PmOUXZU9ffk2LCYOFJhb6TQ9W4X8P4594+9
+         //eI8vN7+IjAguBRByZZIdQQ6x+CVTCZkwDnQXPKEjeTn1C736aqZXckpAnFre9qwByV
+         XTQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6bErpLDN6CEEoWSzxhVYEvy5hGMXbYXtcuwfFFGVAPk=;
+        b=IV8p7spUgX6z3Bh307BAbIomlU8fx3yQWqpSoO+biKKR2NuRL0XTiQoov8muBUXIER
+         P0lirLXVHNlfi1p/uN+8pA/pp6bktBEu1rLWYd9hwAokujs69uC5uBA1f7oue5TYc1Nd
+         3jDykachKW/z52z75ypz63dEHvmFcpHslM+SWhNpWbk4SoALtf0qTL4nZAtM+I7n8LrA
+         zYia+j6AGCv97C5jbltgrD9xBHvHIY7uL4t4dseWnSqL+o+fD2mQEh91LCLG5PNMadkV
+         bAL97Tssn/eWteWTwR5ED/93JhCEqDo5nLcNNf/Ce5BGD69LSGwh9E6AR2w+yR8STqr+
+         46Fw==
+X-Gm-Message-State: AOAM533aYXRqDCx6ehCNHQ2Cp2lUiszWZ+MbkGbyAhdHhicdJU8iBJNK
+        UxLs2GAxvya+LDVPkGqxfiZLUhZJY+WuhkF0x0V0col6qQM=
+X-Google-Smtp-Source: ABdhPJzz+s6AELg+oOJUfJgzIhMlw+qtR1aNwDxIJCIHUMQYEN1ETifkaKkBhr0GUTxTIHvNmBQAt9dhJ2lpCPMTVc8=
+X-Received: by 2002:a25:bcc7:0:b0:648:d728:d39 with SMTP id
+ l7-20020a25bcc7000000b00648d7280d39mr19531071ybm.514.1651699138505; Wed, 04
+ May 2022 14:18:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a702c7f7-9719-9f3e-63de-1e96f2912432@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <20220502164557.3cbb18ca@canb.auug.org.au> <CAHp75VddQMK7b-xbPy91rQ0QskXerhnY_sRiT0ZfGraRmKpL_Q@mail.gmail.com>
+In-Reply-To: <CAHp75VddQMK7b-xbPy91rQ0QskXerhnY_sRiT0ZfGraRmKpL_Q@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 4 May 2022 23:18:47 +0200
+Message-ID: <CACRpkdZnCjvjUSP=0M9dOxV6d5PGAP+yqa2P7F2T-Ksgkbmp5A@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the pinctrl tree with the gpio-intel tree
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 11:12:04AM +0200, Pankaj Raghav wrote:
-> Hi Johannes,
-> On 2022-05-03 00:07, Johannes Thumshirn wrote:
-> >> There was an effort previously [1] to add support to non po2 devices via
-> >> device level emulation but that was rejected with a final conclusion
-> >> to add support for non po2 zoned device in the complete stack[2].
-> > 
-> > Hey Pankaj,
-> > 
-> > One thing I'm concerned with this patches is, once we have npo2 zones (or to be precise 
-> > not fs_info->sectorsize aligned zones) we have to check on every allocation if we still 
-> > have at least have fs_info->sectorsize bytes left in a zone. If not we need to 
-> > explicitly finish the zone, otherwise we'll run out of max active zones. 
-> > 
-> This commit: `btrfs: zoned: relax the alignment constraint for zoned
-> devices` makes sure the zone size is BTRFS_STRIPE_LEN aligned (64K). So
-> even the npo2 zoned device should be aligned to `fs_info->sectorsize`,
-> which is typically 4k.
-> 
-> This was one of the comment that came from David Sterba:
-> https://lore.kernel.org/all/20220315142740.GU12643@twin.jikos.cz/
-> where he suggested to have some sane alignment for the zone sizes.
+On Mon, May 2, 2022 at 5:43 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
 
-My idea of 'sane' value would be 1M, that we have 4K for sectors is
-because of the 1:1 mapping to pages, but RAM sizes are on a different
-scale than storage devices. The 4K is absolute minimum but if the page
-size is taken as a basic constraint, ARM has 64K and there are some 256K
-arches.
+> Thanks for the fix. I think the best course of action is that Linus W.
+> can pull the same branch that GPIO tree has into the pin control tree
+> and resolve that, because the drivers touched are all pin control
+> drivers while the core part of GPIO subsystem was updated.
+
+Yup did this!
+
+Yours,
+Linus Walleij
