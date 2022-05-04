@@ -2,56 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A83BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241234AbiEDUgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        id S1378106AbiEDUgn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 16:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234671AbiEDUgb (ORCPT
+        with ESMTP id S1378062AbiEDUgd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:36:31 -0400
+        Wed, 4 May 2022 16:36:33 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3720B4FC6B;
-        Wed,  4 May 2022 13:32:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7659A4F448;
+        Wed,  4 May 2022 13:32:56 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nmLg3-0003MI-00; Wed, 04 May 2022 22:32:51 +0200
+        id 1nmLg4-0003MI-01; Wed, 04 May 2022 22:32:52 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id DEB9BC01CC; Wed,  4 May 2022 22:28:08 +0200 (CEST)
-Date:   Wed, 4 May 2022 22:28:08 +0200
+        id B9C09C01D0; Wed,  4 May 2022 22:32:24 +0200 (CEST)
+Date:   Wed, 4 May 2022 22:32:24 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Joshua Kinard <kumba@gentoo.org>,
-        Stephen Zhang <starzhangzsd@gmail.com>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] MIPS: Remove incorrect `cpu_has_fpu' overrides
-Message-ID: <20220504202808.GA23391@alpha.franken.de>
-References: <alpine.DEB.2.21.2205012307310.9383@angie.orcam.me.uk>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org
+Subject: Re: [PATCH 07/30] mips: ip22: Reword PANICED to PANICKED and remove
+ useless header
+Message-ID: <20220504203224.GA23475@alpha.franken.de>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-8-gpiccoli@igalia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2205012307310.9383@angie.orcam.me.uk>
+In-Reply-To: <20220427224924.592546-8-gpiccoli@igalia.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 01, 2022 at 11:14:11PM +0100, Maciej W. Rozycki wrote:
-> Hi,
+On Wed, Apr 27, 2022 at 07:49:01PM -0300, Guilherme G. Piccoli wrote:
+> Many other place in the kernel prefer the latter, so let's keep
+> it consistent in MIPS code as well. Also, removes a useless header.
 > 
->  Forcing `cpu_has_fpu' to 1 is unsupported as it breaks the `nofpu' kernel 
-> parameter and more recently also the CONFIG_MIPS_FP_SUPPORT configuration 
-> option.  Remove the broken `cpu_has_fpu' overrides then for IP27 and IP30 
-> systems.
-> 
->  This v3 of the series adds credit to Stephen for reporting the issue,
-> which I forgot on previous iterations.
-> 
->  Please apply.
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> ---
+>  arch/mips/sgi-ip22/ip22-reset.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
 
-series applied to mips-next.
+applied to mips-next.
 
 Thomas.
 
