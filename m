@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2305C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E17EFC4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356639AbiEDROB (ORCPT
+        id S1356853AbiEDROZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52142 "EHLO
+        Wed, 4 May 2022 13:14:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354921AbiEDRDR (ORCPT
+        with ESMTP id S1355068AbiEDREF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:03:17 -0400
+        Wed, 4 May 2022 13:04:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A0D4D9D0;
-        Wed,  4 May 2022 09:52:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22A24DF53;
+        Wed,  4 May 2022 09:52:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 351EDB827A1;
-        Wed,  4 May 2022 16:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6BC0C385A4;
-        Wed,  4 May 2022 16:52:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6368AB827A3;
+        Wed,  4 May 2022 16:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E324FC385A5;
+        Wed,  4 May 2022 16:52:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683143;
-        bh=qPPiKWR0jw073XSfXsjfxMT7giHMIjqEOxDLqnejjco=;
+        s=korg; t=1651683150;
+        bh=8lm3thwt99G1i9oKsvxb5K2n7Qp9sOJOBnjoL2NNz4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iUthXeEGsDR9L5eh/vfOWIIofRNPbON9slWC5mKaJRzxNka7I493LplDEMyi507az
-         F47zw/aH31myqS3IuwmN6K269n5zsE8+eFCw7lC6D7/Wq+pw8G+i5qLCzdq+j/TQu3
-         rAHGMbe5YLh4fKgskkaZYEXJLJa4UjnN2isshKtk=
+        b=YNQc6UfY0Uev01cw0L6Vxc0Fla3pKQGwe9iUaCBcB/B/6ceD9Kof5PoYtWjmIGZJF
+         ocpNYn9OC+Z82M8LdJdyfBd9p6p0MNnMkhBMyxFUcxo+2RfPDOwZX+r1XRLfL/wE0G
+         RNgM71T2h5NJ4QA7GIb21IEPxrb6WsuvvxTLrpZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 124/129] tty: n_gsm: fix wrong command retry handling
-Date:   Wed,  4 May 2022 18:45:16 +0200
-Message-Id: <20220504153031.341880814@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 007/177] USB: serial: option: add Telit 0x1057, 0x1058, 0x1075 compositions
+Date:   Wed,  4 May 2022 18:43:20 +0200
+Message-Id: <20220504153054.312516691@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
-References: <20220504153021.299025455@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,66 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-commit d0bcdffcad5a22f202e3bf37190c0dd8c080ea92 upstream.
+commit f32c5a0423400e01f4d7c607949fa3a1f006e8fa upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
-maximum number of retransmissions (N2) is from 0 to 255 (both including).
-gsm_config() fails to limit this range correctly. Furthermore,
-gsm_control_retransmit() handles this number incorrectly by performing
-N2 - 1 retransmission attempts. Setting N2 to zero results in more than 255
-retransmission attempts.
-Fix the range check in gsm_config() and the value handling in
-gsm_control_send() and gsm_control_retransmit() to comply with 3GPP 27.010.
+Add support for the following Telit FN980 and FN990 compositions:
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+0x1057: tty, adb, rmnet, tty, tty, tty, tty, tty
+0x1058: tty, adb, tty, tty, tty, tty, tty
+0x1075: adb, tty
+
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Link: https://lore.kernel.org/r/20220406141408.580669-1-dnlplm@gmail.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-11-daniel.starke@siemens.com
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1324,7 +1324,6 @@ static void gsm_control_retransmit(struc
- 	spin_lock_irqsave(&gsm->control_lock, flags);
- 	ctrl = gsm->pending_cmd;
- 	if (ctrl) {
--		gsm->cretries--;
- 		if (gsm->cretries == 0) {
- 			gsm->pending_cmd = NULL;
- 			ctrl->error = -ETIMEDOUT;
-@@ -1333,6 +1332,7 @@ static void gsm_control_retransmit(struc
- 			wake_up(&gsm->event);
- 			return;
- 		}
-+		gsm->cretries--;
- 		gsm_control_transmit(gsm, ctrl);
- 		mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
- 	}
-@@ -1373,7 +1373,7 @@ retry:
- 
- 	/* If DLCI0 is in ADM mode skip retries, it won't respond */
- 	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
--		gsm->cretries = 1;
-+		gsm->cretries = 0;
- 	else
- 		gsm->cretries = gsm->n2;
- 
-@@ -2270,7 +2270,7 @@ static int gsm_config(struct gsm_mux *gs
- 	/* Check the MRU/MTU range looks sane */
- 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
- 		return -EINVAL;
--	if (c->n2 < 3)
-+	if (c->n2 > 255)
- 		return -EINVAL;
- 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
- 		return -EINVAL;
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1219,6 +1219,10 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(0) | RSVD(1) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1056, 0xff),	/* Telit FD980 */
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1057, 0xff),	/* Telit FN980 */
++	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1058, 0xff),	/* Telit FN980 (PCIe) */
++	  .driver_info = NCTRL(0) | RSVD(1) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1060, 0xff),	/* Telit LN920 (rmnet) */
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1061, 0xff),	/* Telit LN920 (MBIM) */
+@@ -1235,6 +1239,8 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(2) | RSVD(3) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1073, 0xff),	/* Telit FN990 (ECM) */
+ 	  .driver_info = NCTRL(0) | RSVD(1) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x1075, 0xff),	/* Telit FN990 (PCIe) */
++	  .driver_info = RSVD(0) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_ME910),
+ 	  .driver_info = NCTRL(0) | RSVD(1) | RSVD(3) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_ME910_DUAL_MODEM),
 
 
