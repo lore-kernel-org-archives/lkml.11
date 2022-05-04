@@ -2,123 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9977C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4247C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351889AbiEDPKg (ORCPT
+        id S1351896AbiEDPLD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        Wed, 4 May 2022 11:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351865AbiEDPKd (ORCPT
+        with ESMTP id S1351796AbiEDPLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:10:33 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F8121822;
-        Wed,  4 May 2022 08:06:56 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so3391039wms.3;
-        Wed, 04 May 2022 08:06:56 -0700 (PDT)
+        Wed, 4 May 2022 11:11:00 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593CC222A3
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 08:07:22 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id z2so1889325ejj.3
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 08:07:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Yb/evyWqaNixsLW2kxwJWCdv52JEaXEGCeVAcoqx36g=;
-        b=UoJRUOku+Y5L4dmp7tDz9wPK5709yjvuajXhr+DZmwvqcJieFzkkO1qUpNnwlAJN8W
-         CXVuT1gyUNPyGr1foBcskQwExbC3ZhWTSMRZkL2nzQRKdtKDoscDeofCxtnz3ZiSYzaV
-         T31f6NnQ7iBiaUcZg6+St17jbrSuxrkjdQ/EPdI8ejQQF2gaPExkw1FwGuoMdY2CEHuq
-         HkVtcdc3RbnQQZDz1GZMvwrAqSzm1KZ1KWlRk8nox1MgsePF0e2Tp034hdMGu+mMXgcL
-         ift+Jaokypbs9waLHaYQDKOEDmV3J/Fhwm1yldyuA80+l3ripsWJbqQ/Ae24aKTGHTpW
-         j53A==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SlBkoO1sK5p6C20wzTnNNu31b+DHcR3rosTKprOdHs4=;
+        b=NG/g7+GoQkuRMr4Owok4yF0WlWRYzGFoO4aL/2lfoyecYNKbnXea3E5U1IerqsE0+d
+         RzJK2AYlmvlObdC2gMvsC3ZIQuviWFYpdIKcgoAmAshyqvw77oj/6wDK7eb2NJibvRvA
+         +itEyj2X5jjLjhGHaeqs+90rhCpCTlnyAteMh1Jn0dz45LYMOINi/XN87uwdL7i3KYPM
+         aYkQb6d8WTwDwm0sJVa5r5sHcTB2JwqkEZ5aJgDrDWH+y97Zi7LE84Kj5tkEb6pP+jvf
+         /lJThvZHZMz9gCv1EfiVpTkqHIOcUIpc6oH8eAK8v/1oMXNAzy90Qw4LPu1Mao2NZfgS
+         BAFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Yb/evyWqaNixsLW2kxwJWCdv52JEaXEGCeVAcoqx36g=;
-        b=wQ1Xl/QvApMijcK1xb3gm+2Xh+hmSV7Y4sPmJnS9IcO8NdKY9RkBeUPBqxI5plqfEx
-         W5boXDuipy9X8w1QCn51z25wosHR9eZ4jIsABOGUzmfQqsMvkkWZN4vKF+4le+YTuzaj
-         bJXf/ILL/eWLGC7hlGa461PP9BG0/xkzElSEMQ/azuG2ajHwtbGzK7vF9zp3ohHTfpD5
-         BAMYciuu9h9uNqmz+HMS6SHnb+GY/1b1g6EPmo2+Jsuy+zUSY2XEVpXFXJAdn1AbWsA2
-         TmPsVWm0puxxHUP77HBzz/tJLtf6kx59AtcbFivOo3vOQx50DRxmeRWNgx+ngNNLuQ3T
-         30OQ==
-X-Gm-Message-State: AOAM532Z41NrvmlYILK3t+9RRbBC9GnXK2pQ66yzx/0CHid1WgH9LIb4
-        8QMgm7A9trE9fnWUmWLRZIc=
-X-Google-Smtp-Source: ABdhPJyXHyoVksCuq8+mhIBxrsoR9GlQ7k+6D18WjCHanh4pORoyL0mATlWtjWk6Q5v30M+bi4swAA==
-X-Received: by 2002:a1c:2c6:0:b0:38f:f280:caa2 with SMTP id 189-20020a1c02c6000000b0038ff280caa2mr8031383wmc.87.1651676815484;
-        Wed, 04 May 2022 08:06:55 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id q14-20020adfaa4e000000b0020c5253d91fsm12143596wrd.107.2022.05.04.08.06.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 08:06:55 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     pavel@ucw.cz
-Cc:     Markuss Broks <markuss.broks@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v6 2/2] leds: ktd2692: Make aux-gpios optional
-Date:   Wed,  4 May 2022 18:04:11 +0300
-Message-Id: <20220504150457.5626-3-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220504150457.5626-1-markuss.broks@gmail.com>
-References: <20220504150457.5626-1-markuss.broks@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SlBkoO1sK5p6C20wzTnNNu31b+DHcR3rosTKprOdHs4=;
+        b=2gNQD4NMhYxo0IAdwNIQBjQeAk2Q0tx1gZa6TGAea1fq6QBrRvrY88vsT6q99wbbjM
+         E1HmlzB2EEXzWj0zuJx9aq8/c50AEbucKc53N8jorQUpUCA7kLWbL61uXmPCsr2lk72p
+         lJ3Lsz1SO8xL62hPwPT9MDTBfVW/C/FBrYcG3ozjP0Rxk6j1oSCkubRftmuErRKNn4H2
+         KuFjy1w1CjZuPp9LUmwInF26gHb0F+Rz3L4p8I+goScYvMqPW21wzEMx2jfbXwmeLtyR
+         urblbmyoJ9/XY3F7VjroYFZs5Cp6cAdv4VlSB0pdePSfSC2wZo2nF9JowVmTtNB4WUZ0
+         P+zw==
+X-Gm-Message-State: AOAM532cuRfxl5UEVtlFBPR6RqMg4vCrUBJoH6vqvNVaHkIhv4zJjcJZ
+        EeqdLquPg7pYK1D+Jr9lqjx4Hw==
+X-Google-Smtp-Source: ABdhPJzNR3dty6xg+9nnvi7tgssQ0/Gt/9NPLgoDdq2XQDhe0Sr7Ik0M13Ay/4y+wuygaAnEDSwF5A==
+X-Received: by 2002:a17:907:2cc2:b0:6f3:7657:7eb3 with SMTP id hg2-20020a1709072cc200b006f376577eb3mr21514299ejc.403.1651676840683;
+        Wed, 04 May 2022 08:07:20 -0700 (PDT)
+Received: from [192.168.0.215] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id gv1-20020a1709072bc100b006f3ef214dd2sm5849972ejc.56.2022.05.04.08.07.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 08:07:20 -0700 (PDT)
+Message-ID: <e9494c4b-55c9-b4a6-b836-fd47fa717290@linaro.org>
+Date:   Wed, 4 May 2022 17:07:19 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/3] dt-bindings: Add Sercomm (Suzhou) Corporation
+ vendor prefix
+Content-Language: en-US
+To:     Mikhail Zhilkin <csharper2005@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Karim <Karimdplay@gmail.com>, M <x1@disroot.org>
+References: <20220503154254.2339744-1-csharper2005@gmail.com>
+ <20220503154700.2339796-1-csharper2005@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220503154700.2339796-1-csharper2005@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make the AUX pin optional, since it isn't a core part of functionality,
-and the device is designed to be operational with only one CTRL pin.
+On 03/05/2022 17:47, Mikhail Zhilkin wrote:
+> Update Documentation/devicetree/bindings/vendor-prefixes.yaml 
 
-Also pick up maintenance for the LED driver and the yaml bindings.
+This is visible from the diff, so just "Add sercomm vendor prefix  for ...."
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+to include
+> "sercomm" as a vendor prefix for "Sercomm (Suzhou) Corporation".
+> Company website:
+> Link: https://www.sercomm.com/
+> 
+> Signed-off-by: Mikhail Zhilkin <csharper2005@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- MAINTAINERS                       | 6 ++++++
- drivers/leds/flash/leds-ktd2692.c | 6 +++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2db49ea7ae55..8ef5667a1d98 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10479,6 +10479,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd253.yaml
- F:	drivers/video/backlight/ktd253-backlight.c
- 
-+KTD2692 FLASH LED DRIVER
-+M:	Markuss Broks <markuss.broks@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd2692.yaml
-+F:	drivers/leds/flash/leds-ktd2692.yaml
-+
- KTEST
- M:	Steven Rostedt <rostedt@goodmis.org>
- M:	John Hawley <warthog9@eaglescrag.net>
-diff --git a/drivers/leds/flash/leds-ktd2692.c b/drivers/leds/flash/leds-ktd2692.c
-index f341da1503a4..01ceea83af67 100644
---- a/drivers/leds/flash/leds-ktd2692.c
-+++ b/drivers/leds/flash/leds-ktd2692.c
-@@ -284,9 +284,9 @@ static int ktd2692_parse_dt(struct ktd2692_context *led, struct device *dev,
- 		return ret;
- 	}
- 
--	led->aux_gpio = devm_gpiod_get(dev, "aux", GPIOD_ASIS);
--	ret = PTR_ERR_OR_ZERO(led->aux_gpio);
--	if (ret) {
-+	led->aux_gpio = devm_gpiod_get_optional(dev, "aux", GPIOD_ASIS);
-+	if (IS_ERR(led->aux_gpio)) {
-+		ret = PTR_ERR(led->aux_gpio);
- 		dev_err(dev, "cannot get aux-gpios %d\n", ret);
- 		return ret;
- 	}
--- 
-2.35.1
-
+Best regards,
+Krzysztof
