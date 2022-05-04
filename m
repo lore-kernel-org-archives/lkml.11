@@ -2,326 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:14:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B06FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376833AbiEDSRk (ORCPT
+        id S1376800AbiEDSTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        Wed, 4 May 2022 14:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359867AbiEDSRc (ORCPT
+        with ESMTP id S1376796AbiEDSSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:17:32 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177B8887AE
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:37:59 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id y63so1884576oia.7
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:37:59 -0700 (PDT)
+        Wed, 4 May 2022 14:18:45 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E948BF2F
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:39:18 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id m23so2606095ljc.0
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:39:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=digitalocean.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3Ip9zT2i7zSnGjJK9WeLXZOZAaABPsRWgCx7EqlZjQg=;
-        b=hCK9MT1LglHjjhfUWmXqK8hlepGZtMUw/+n/nTyx5T6t5nVgrr9oBrLd9zHzyEeDX7
-         2GLm10Puhu5yS0ToqLOHrDQvttMuPhf0ndlBDjxP5O9eIWA4/BtmdGDEjmdQET9KWizK
-         tG58PjCOSNi+Zi4R7LE5Oo91ibSmSa8skbVTo=
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=29ruKVriy2g3lqz65t1H7qVG6banp+GDlpPZFrL2iUc=;
+        b=gF9qfuK094RIWE4ckvIjXHamdtau6Old+ZMLvhHQGM/jmWVdnoEtdDj9wuwAQdCn5h
+         EN/s6w0wLYchhFEQ9Fd9x0JOQ1TjEockG/YeQyz2oJ1YAbjyXrsLW0YOSe65+7bfkYlF
+         /bM15nq7BKavjFDEnmkc5+uKpYArSpbky/rXU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3Ip9zT2i7zSnGjJK9WeLXZOZAaABPsRWgCx7EqlZjQg=;
-        b=ivsIQTBRTl36PXDIWtoWkpQG/5+EA/0vy3RXqeaLHELgAWO9DvN0mf2x0km4JiOBtN
-         NfVAyIz9/wTAd0H+yK/jFO/Zl6BZp6xb4Wg/kIFkwBD0L6RkW+ZfGkygUyWujNu4nGvU
-         /741LTtOq0suKMBWsXBAIQHuAxN5dFW+bEvHrK9YLO7QEC4GT/YnPwslCa6Lm7o6a7Aa
-         3MolqFX6rUGshZ+VuBDFD83O3SEsA4gJZhXq0ia9Yrl8J1Pn7PlyHYDjW9cBYoe1us/p
-         HnD7DhvgBIb0MIVEnnpCW+8EcGNCXH5fzheLYQOXEe3TJ1xsbJ55r5EbchAWmCMxzW55
-         ARCg==
-X-Gm-Message-State: AOAM533xCmacp3l+xcepUkuIEyAw5gnhzORuahC/viSPwwA22iE3fhNn
-        jqBdxZaA/bJRJTmEDz2B5FzhuQ==
-X-Google-Smtp-Source: ABdhPJwHPZAHBDKtQ1+dzZYLy7BeIR0CDMWECYJv5dwF29U9QIkcsa19tJoIWWCCjU0bZIO202YqUA==
-X-Received: by 2002:a05:6808:14c9:b0:325:eba5:1325 with SMTP id f9-20020a05680814c900b00325eba51325mr288679oiw.249.1651685879122;
-        Wed, 04 May 2022 10:37:59 -0700 (PDT)
-Received: from localhost ([2605:a601:ac0f:820:373b:a889:93d6:e756])
-        by smtp.gmail.com with ESMTPSA id ay7-20020a056808300700b00325cda1ff8csm4587046oib.11.2022.05.04.10.37.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 10:37:58 -0700 (PDT)
-Date:   Wed, 4 May 2022 12:37:56 -0500
-From:   Seth Forshee <sforshee@digitalocean.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Sean Christopherson <seanjc@google.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a
- livepatch is pending
-Message-ID: <YnK59HzEq8OBF5Is@do-x1extreme>
-References: <20220503174934.2641605-1-sforshee@digitalocean.com>
- <20220504130753.GB8069@pathway.suse.cz>
- <87r159fkmp.fsf@email.froward.int.ebiederm.org>
- <20220504151252.GA13574@pathway.suse.cz>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=29ruKVriy2g3lqz65t1H7qVG6banp+GDlpPZFrL2iUc=;
+        b=s7O6vBih68eRNx5UdV2FvhhU2rdKDkhLw+g+GSlDGBkx6/1rQNk7e1iwHKGXiC3NNo
+         A/F1PGV+Hb9MF/zM8jT4lIxBp/6riPhC+nvzM1Uh+mxnxUE8/WpipB0huiso0AyBAbCf
+         fzk2DwR5HFkx1jxn1jpM60cvqMiGpRQavTzCIqAAq1Ru1Q5ZQgZUi5iuqJG3iQTz+F6F
+         DQXqFvlMzRVCGWwy0RUjQaNOExPNhCgE5+1/LfSmQ0sdldV6MVTCcV1C3YbUCGT01A8a
+         CdHTgDojf6y+T99gODSNsuDfRGYJn4QppWXdVaAMgIJssQPAfz4npemzfMNDFyqW9vM9
+         mqBw==
+X-Gm-Message-State: AOAM532zOvQFaE7Jg39ujIIMB7PvjfaIBhdCrz39mXjMrw3EqBRloeri
+        u8Hvd9+2xvFY718mrtAByhh+5iSj2fsdaL9ptLk=
+X-Google-Smtp-Source: ABdhPJxh4lr3Ab748GfRHzIIO/vfCGjfyknx2tAMdCrvFo1rff/EIW/tuSNtxtKVA9e6ESU0sycPXQ==
+X-Received: by 2002:a05:651c:2cd:b0:24f:1731:ee09 with SMTP id f13-20020a05651c02cd00b0024f1731ee09mr12709798ljo.253.1651685956441;
+        Wed, 04 May 2022 10:39:16 -0700 (PDT)
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
+        by smtp.gmail.com with ESMTPSA id r1-20020a056512102100b0047255d21171sm1266345lfr.160.2022.05.04.10.39.16
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 10:39:16 -0700 (PDT)
+Received: by mail-lj1-f179.google.com with SMTP id s27so2587618ljd.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:39:16 -0700 (PDT)
+X-Received: by 2002:a05:6000:c7:b0:20a:d8c1:d044 with SMTP id
+ q7-20020a05600000c700b0020ad8c1d044mr17464094wrx.422.1651685538029; Wed, 04
+ May 2022 10:32:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504151252.GA13574@pathway.suse.cz>
+References: <20220426124053.v2.1.Iedd71976a78d53c301ce0134832de95a989c9195@changeid>
+In-Reply-To: <20220426124053.v2.1.Iedd71976a78d53c301ce0134832de95a989c9195@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 4 May 2022 10:32:04 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UUTVZPzJvC-S6=p_xRpoW+7EtupDYobgu7aQPWvR6XmA@mail.gmail.com>
+Message-ID: <CAD=FV=UUTVZPzJvC-S6=p_xRpoW+7EtupDYobgu7aQPWvR6XmA@mail.gmail.com>
+Subject: Re: [PATCH v2] arm64: dts: qcom: sc7280: eDP for herobrine boards
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:12:52PM +0200, Petr Mladek wrote:
-> On Wed 2022-05-04 09:16:46, Eric W. Biederman wrote:
-> > Petr Mladek <pmladek@suse.com> writes:
-> > 
-> > > On Tue 2022-05-03 12:49:34, Seth Forshee wrote:
-> > >> A task can be livepatched only when it is sleeping or it exits to
-> > >> userspace. This may happen infrequently for a heavily loaded vCPU task,
-> > >> leading to livepatch transition failures.
-> > >
-> > > This is misleading.
-> > >
-> > > First, the problem is not a loaded CPU. The problem is that the
-> > > task might spend very long time in the kernel when handling
-> > > some syscall.
-> > >
-> > > Second, there is no timeout for the transition in the kernel code.
-> > > It might take very long time but it will not fail.
-> > >
-> > >> Fake signals will be sent to tasks which fail patching via stack
-> > >> checking. This will cause running vCPU tasks to exit guest mode, but
-> > >> since no signal is pending they return to guest execution without
-> > >> exiting to userspace. Fix this by treating a pending livepatch migration
-> > >> like a pending signal, exiting to userspace with EINTR. This allows the
-> > >> task to be patched, and userspace should re-excecute KVM_RUN to resume
-> > >> guest execution.
-> > >
-> > > It seems that the patch works as expected but it is far from clear.
-> > > And the above description helps only partially. Let me try to
-> > > explain it for dummies like me ;-)
-> > >
-> > > <explanation>
-> > > The problem was solved by sending a fake signal, see the commit
-> > > 0b3d52790e1cfd6b80b826 ("livepatch: Remove signal sysfs attribute").
-> > > It was achieved by calling signal_wake_up(). It set TIF_SIGPENDING
-> > > and woke the task. It interrupted the syscall and the task was
-> > > transitioned when leaving to the userspace.
-> > >
-> > > signal_wake_up() was later replaced by set_notify_signal(),
-> > > see the commit 8df1947c71ee53c7e21 ("livepatch: Replace
-> > > the fake signal sending with TIF_NOTIFY_SIGNAL infrastructure").
-> > > The difference is that set_notify_signal() uses TIF_NOTIFY_SIGNAL
-> > > instead of TIF_SIGPENDING.
-> > >
-> > > The effect is the same when running on a real hardware. The syscall
-> > > gets interrupted and exit_to_user_mode_loop() is called where
-> > > the livepatch state is updated (task migrated).
-> > >
-> > > But it works a different way in kvm where the task works are
-> > > called in the guest mode and the task does not return into
-> > > the user space in the host mode.
-> > > </explanation>
-> > >
-> > > The solution provided by this patch is a bit weird, see below.
-> > >
-> > >
-> > >> In my testing, systems where livepatching would timeout after 60 seconds
-> > >> were able to load livepatches within a couple of seconds with this
-> > >> change.
-> > >> 
-> > >> Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
-> > >> ---
-> > >> Changes in v2:
-> > >>  - Added _TIF_SIGPENDING to XFER_TO_GUEST_MODE_WORK
-> > >>  - Reworded commit message and comments to avoid confusion around the
-> > >>    term "migrate"
-> > >> 
-> > >>  include/linux/entry-kvm.h | 4 ++--
-> > >>  kernel/entry/kvm.c        | 7 ++++++-
-> > >>  2 files changed, 8 insertions(+), 3 deletions(-)
-> > >> 
-> > >> diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
-> > >> index 6813171afccb..bf79e4cbb5a2 100644
-> > >> --- a/include/linux/entry-kvm.h
-> > >> +++ b/include/linux/entry-kvm.h
-> > >> @@ -17,8 +17,8 @@
-> > >>  #endif
-> > >>  
-> > >>  #define XFER_TO_GUEST_MODE_WORK						\
-> > >> -	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |	\
-> > >> -	 _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-> > >> +	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |	\
-> > >> +	 _TIF_NOTIFY_SIGNAL | _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-> > >>  
-> > >>  struct kvm_vcpu;
-> > >>  
-> > >> diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
-> > >> index 9d09f489b60e..98439dfaa1a0 100644
-> > >> --- a/kernel/entry/kvm.c
-> > >> +++ b/kernel/entry/kvm.c
-> > >> @@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-> > >>  				task_work_run();
-> > >>  		}
-> > >>  
-> > >> -		if (ti_work & _TIF_SIGPENDING) {
-> > >> +		/*
-> > >> +		 * When a livepatch is pending, force an exit to userspace
-> > >> +		 * as though a signal is pending to allow the task to be
-> > >> +		 * patched.
-> > >> +		 */
-> > >> +		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
-> > >>  			kvm_handle_signal_exit(vcpu);
-> > >>  			return -EINTR;
-> > >>  		}
-> > >
-> > > Anyway, we either should make sure that TIF_NOTIFY_SIGNAL has the same
-> > > effect on the real hardware and in kvm. Or we need another interface
-> > > for the fake signal used by livepatching.
-> > 
-> > The point of TIF_NOTIFY_SIGNAL is to break out of interruptible kernel
-> > loops.  Once out of the interruptible kernel loop the expectation is the
-> > returns to user space and on it's way runs the exit_to_user_mode_loop or
-> > is architecture specific equivalent.
-> 
-> That would make sense. Thanks for explanation.
-> 
-> > Reading through the history of kernel/entry/kvm.c I believe
-> > I made ``conservative'' changes that has not helped this situation.
-> > 
-> > Long story short at one point it was thought that _TIF_SIGPENDING
-> > and _TIF_NOTIFY_SIGNAL could be separated and they could not.
-> > Unfortunately the work to separate their handling has not been
-> > completely undone.
-> > 
-> > In this case it appears that the only reason xfer_to_guest_mode_work
-> > touches task_work_run is because of the separation work done by Jens
-> > Axboe.  I don't see any kvm specific reason for _TIF_NOTIFY_SIGNAL
-> > and _TIF_SIGPENDING to be treated differently.  Meanwhile my cleanups
-> > elsewhere have made the unnecessary _TIF_NOTIFY_SIGNAL special case
-> > bigger in xfer_to_guest_mode_work.
-> > 
-> > I suspect the first step in fixing things really should be just handling
-> > _TIF_SIGPENDING and _TIF_NOTIFY_SIGNAL the same.
-> > 
-> > static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-> > {
-> > 	do {
-> > 		int ret;
-> > 
-> > 		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-> > 			kvm_handle_signal_exit(vcpu);
-> > 			return -EINTR;
-> > 		}
-> 
-> This has the advantage that we will exit only when _TIF_NOTIFY_SIGNAL
-> is explicitly set by the livepatch code. It happens when
-> _TIF_PATCH_PENDING is not handled for few seconds.
+Bjorn,,
 
-I agree. This maps better to the intended behavior of only interrupting
-tasks which fail to transition after a period of time.
+On Tue, Apr 26, 2022 at 12:41 PM Douglas Anderson <dianders@chromium.org> wrote:
+>
+> Add eDP support to herobrine boards, splitting up amongst the
+> different files as makes sense. Rationale for the current split of
+> things:
+> * The eDP connector itself is on qcard. However, not all devices with
+>   a qcard will use an eDP panel. Some might use MIPI and, presumably,
+>   someone could build a device with qcard that had no display at all.
+> * The qcard provides a PWM for backlight that goes to the eDP
+>   connector. This PWM is also provided to the board and it's expected
+>   that it would be used as the backlight PWM even for herobrine
+>   devices with MIPI displays.
+> * It's currently assumed that all herobrine boards will have some sort
+>   of display, either MIPI or eDP (but not both).
+> * We will assume herobrine-rev1 has eDP. The schematics allow for a
+>   MIPI panel to be hooked up but, aside from some testing, nobody is
+>   doing this and most boards don't have all the parts stuffed for
+>   it. The two panels would also share a PWM for backlight, which is
+>   weird.
+> * herobrine-villager and herobrine-hoglin (crd) also have eDP.
+> * herobrine-hoglin (crd) has slightly different regulator setup for
+>   the backlight. It's expected that this is unique to this board. See
+>   comments in the dts file.
+> * There are some regulators that are defined in the qcard schematic
+>   but provided by the board like "vreg_edp_bl" and
+>   "vreg_edp_3p3". While we could put references to these regulators
+>   straight in the qcard.dtsi file, this would force someone using
+>   qcard that didn't provide those regulators to provide a dummy or do
+>   an ugly /delete-node/. Instead, we'll add references in
+>   herobrine.dtsi.
+>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+> This patch most directly depends on ("arm64: dts: qcom: pm8350c: Add
+> pwm support") [1] and it won't even compile without that. To be
+> functional, of course, we also need the driver support for the PWM to
+> land.
+>
+> In order for this patch to function we also need Sankeerth's eDP
+> series [2] to land.
+>
+> To be schema happy, this patch also relies on my patch to add
+> regulators into the schema for the PHY an the eDP controller [3].
+> Several other device tree files reference these supplies without being
+> in the schema, though, so we'll have to decide whether to block on
+> those bindings landing. It does sound as if the regulator names may
+> not be exactly correct right now, though. :(
+>
+> In theory, I could break this patch up into separate patches adding
+> the basic support to the qcard, then to herobrine.dtsi, and then one
+> patch each for herobrine-r1, villager, and crd. Doing so didn't seem
+> to make sense to me--I think it's easier to make sense of the change
+> as one patch. However, if someone feels strongly that it should be
+> broken up I'm happy to do so.
+>
+> I've managed to get the display on my herobrine-rev1 up and running on
+> today's linuxnext (next-20220422) with this series. For whatever
+> reason the eDP PHY wouldn't probe unless I hacked `fw_devlink=off` in
+> the config. I don't believe that problem is related to this patch,
+> though.
+>
+> [1] https://lore.kernel.org/r/1645509309-16142-4-git-send-email-quic_c_skakit@quicinc.com
+> [2] https://lore.kernel.org/r/1650887072-16652-1-git-send-email-quic_sbillaka@quicinc.com/
+> [3] https://lore.kernel.org/r/20220425210643.2420919-1-dianders@chromium.org
+>
+> Changes in v2:
+> - Commit message and comment cleanups from Stephen.
+>
+>  .../boot/dts/qcom/sc7280-herobrine-crd.dts    | 40 ++++++++++++++
+>  .../qcom/sc7280-herobrine-herobrine-r1.dts    |  8 +++
+>  .../dts/qcom/sc7280-herobrine-villager-r0.dts |  8 +++
+>  .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 24 +++++++++
+>  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    | 54 +++++++++++++++++++
+>  5 files changed, 134 insertions(+)
 
-> _TIF_PATCH_PENDING is cleared when the task is transitioned.
-> It might happen when it is not running and there is no livepatched
-> function on the stack.
-> 
-> 
-> > 		if (ti_work & _TIF_NEED_RESCHED)
-> > 			schedule();
-> > 
-> > 		if (ti_work & _TIF_NOTIFY_RESUME)
-> > 			resume_user_mode_work(NULL);
-> > 
-> > 		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
-> > 		if (ret)
-> > 			return ret;
-> > 
-> > 		ti_work = read_thread_flags();
-> > 	} while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());
-> > 	return 0;
-> > }
-> > 
-> > That said I do expect adding support for the live patching into
-> > xfer_to_guest_mode_work, like there is in exit_to_user_mode_loop, is
-> > probably a good idea.  That should prevent the live patching code from
-> > needing to set TIF_NOTIFY_SIGNAL.
-> > 
-> > Something like:
-> > 
-> > Thomas Gleixner's patch to make _TIF_PATCH_PENDING always available.
-> > 
-> > #define XFER_TO_GUEST_MODE_WORK						\
-> > 	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |	\
-> > 	 _TIF_NOTIFY_SIGNAL | _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-> > 
-> > 
-> > static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-> > {
-> > 	do {
-> > 		int ret;
-> > 
-> > 		if (ti_work & _TIF_PATCH_PENDING)
-> > 			klp_update_patch_state(current);
-> 
-> We need to make sure that the syscall really gets restarted.
-> My understanding is that it will happen only when this function
-> returns a non-zero value.
-> 
-> We might need to do:
-> 
-> 		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL | _TIF_PATCH_PENDING)) {
-> 			kvm_handle_signal_exit(vcpu);
-> 			return -EINTR;
-> 		}
-> 
-> But it might be better to do not check _TIF_PATCH_PENDING here at all.
-> It will allow to apply the livepatch without restarting the syscall.
-> The syscall will get restarted only by the fake signal when the
-> transition is blocked for too long.
+Since you're landing patches, I'm curious what you think about this
+one. I believe that the dependencies have all landed except for [3],
+but we the drivers are already expecting these regulators and other
+dts files provide them despite the fact that they're not in the
+bindings.
 
-Yes, if we need to force the syscall to be restarted either way then I
-don't see much of a point in preemptively calling
-klp_update_patch_state(). It will be handled (indirectly) by
-exit_to_user_mode_loop().
+Thanks!
 
-All we should need is to handle _TIF_NOTIFY_SIGNAL the same as
-_TIF_SIGPENDING, then as you say vCPU tasks will only be interrupted and
-forced to restart the syscall when the transition stalls for too long.
-I'll send a patch for this shortly.
-
-Thanks,
-Seth
-
-> 
-> > 		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-> > 			kvm_handle_signal_exit(vcpu);
-> > 			return -EINTR;
-> > 		}
-> > 
-> > 		if (ti_work & _TIF_NEED_RESCHED)
-> > 			schedule();
-> > 
-> > 		if (ti_work & _TIF_NOTIFY_RESUME)
-> > 			resume_user_mode_work(NULL);
-> > 
-> > 		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
-> > 		if (ret)
-> > 			return ret;
-> > 
-> > 		ti_work = read_thread_flags();
-> > 	} while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());
-> > 	return 0;
-> > }
-> > 
-> > If the kvm and the live patching folks could check my thinking that
-> > would be great.
-> 
-> Yeah, I am not sure about the kvm behavior either.
-> 
-> Best Regards,
-> Petr
+-Doug
