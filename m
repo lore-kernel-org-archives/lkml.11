@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE27C47086
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19866C352B6
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382750AbiEDXGg (ORCPT
+        id S1382371AbiEDXGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
+        Wed, 4 May 2022 19:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380177AbiEDW7r (ORCPT
+        with ESMTP id S1379905AbiEDW7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:47 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC20B56C04
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:59 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id f7-20020a6547c7000000b003c600995546so782769pgs.5
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:59 -0700 (PDT)
+        Wed, 4 May 2022 18:59:32 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8B5562C9
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:34 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id gb16-20020a17090b061000b001d78792caebso1318578pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=jBOKPgITQ+t6KgcUpnbhwnACndUi+3U33hpnYQtppvw=;
-        b=NqLl0hkSgRyIFwt8VrOmoOraEml7+XO5lFudxG00uEp0Ai27qJREF3SFyKsWVeCekY
-         8bx4XkdY4GbXxU8AyNFBP22cDZZxznaxVLmDAEBENCPU2638haWImZRrWClJhi+ba0RK
-         vH88cXvptLSIPASh6USpFzws7ZE95meGElI8szA3Yu+tRvvBNxfRu5OWGU9YJk2ZnXiS
-         GZzy5tzqUmvgEM+OuzbPQUJW0ehpKOAFf0vDNvkqMbMIhSvMPt9yv4uupeelvt1Gu/Qu
-         /M5IXNl6ZdnApWsLsDjjcVThMXcCtTs8FNn4orPOWOMgUFHktCnO1S/di0VJaOeKR2E/
-         dwKg==
+        bh=OjfbmCPfsPFbm1g2v6wtPVS0L/Dcelop2dJZ2b57DQw=;
+        b=Ax22X01ToKZWVI/cZ1sWZvxq5vVTyrDAZRUMwiRyEU2G5/Ztfc149wXmJM3Zt22yjo
+         GAZrnjHE3Up4O5tTOlQw8JFhPiYA9XA/RFxs3z+k0K7QlaFooHhmhqUGXygjjCAgyM7L
+         QQt3CmoRAJbw0AuteRpHkOC7Ca3dBCBPAHfpJs1kRzCef9EgzIi9mXK65FjCGnpKQYPy
+         DGjiSaL23biy9Ygr06UWnvT12QIE54zzAE7FSTi/r1UBoJAnHPCc5+c7Xl6tPS1ZZIxc
+         od9i5gWVl+ur8oetN8gqL41bHNF34KWoUHd8rpMZcvVtHD4Dr6YQiANxKmHOVM/IwVD7
+         CoeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=jBOKPgITQ+t6KgcUpnbhwnACndUi+3U33hpnYQtppvw=;
-        b=IXBaaQnHcf/n0+z4xJvVR+jl4bt9vbgPVk00adnhBQdjM4ii6fXt011Ezo/LCHBx/E
-         xpDOKdUxN+mCF4EJBk94IV1bTdY8fokUNtJjlrWFqUKsY0nuiz4Y1FHMvT5OqZGvg9Ak
-         iJe+P90U3A/WPqS2sSkyjymqfl3yLa4YJQQqCf08GHYgRuXoUIMPcz7Ns2hEmxNzKJtt
-         tNuic7XtDzx4MneSvWv6pCRgSa0k1uEYK+9EIwV2N31wFd2yswDEE0Eqeyb/pAod1/Vd
-         A4SNZhIz3Q7jhs7YuMIAfDMxg5i4V9sLOUjfTe/J0ww+6ziebFVuYK8bvSVT7w+As8Pk
-         5BlQ==
-X-Gm-Message-State: AOAM533aHXOqnFE/auvReq+7bHBcGnXqxfuyuMaXs551kIyp93HIIHPm
-        ssD/upMsTiXBZVS/gyp0HAl74PNl75E=
-X-Google-Smtp-Source: ABdhPJxgXnp+T49jFWgHWAzeuM3s5zWXBQymglLXehyG7OiGlJ2Uw1D64mGQ9Y4ECz5Bv0AcJlGLuQYCCyU=
+        bh=OjfbmCPfsPFbm1g2v6wtPVS0L/Dcelop2dJZ2b57DQw=;
+        b=abyzBP26gzlKuflmYHZKfOtiRuC2MGEbi/HjqHH/SDUhfL9NbEKPtlPsWAqf6UTFYq
+         QVXRXUHovdeCkzaPlRH7WlxQTH4UTNl3TLfJodp8tEMsAm16pGSaQeIwSb/Ch9hNuHfO
+         uzBF89KHSjFK49o1y0vFeijcT3WzD4CHX20EXzc6bi9vHmnN0QHMPAW+8NASIGvweK6J
+         s1VuZgPvqcj/2lGTgl+DKGCyN4DztJEUIzY/Ik3mVLTBBT/6CAfMAYxZ5jWS0rwGoWUm
+         McxRZMTKp4D28Dwhwvno46kTHBuIC52lMJX/7KBlchaifYzFy/Yz4FEQlNAj5aGqV2Gn
+         eamw==
+X-Gm-Message-State: AOAM53195ouds4qSwpGn1rNtaeYQyqKlAvwVOqB2GP6aQfbH/+2WghFv
+        mir1VBzhmwNk9yggTy56gIBKTuC6TNE=
+X-Google-Smtp-Source: ABdhPJyEObyDIhU6OmP+vRHG7qigqJkML103tgWt+w08GLLW6bCafdSm2rXNNX0KNNwoxWgeF2UdES5l7JY=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP id
- t16-20020a17090ae51000b001d9ee239fa1mr140576pjy.0.1651704749981; Wed, 04 May
- 2022 15:52:29 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:cccc:b0:15a:30ec:2f56 with SMTP id
+ z12-20020a170902cccc00b0015a30ec2f56mr24062309ple.169.1651704753960; Wed, 04
+ May 2022 15:52:33 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:50 +0000
+Date:   Wed,  4 May 2022 22:48:52 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-105-seanjc@google.com>
+Message-Id: <20220504224914.1654036-107-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 104/128] KVM: selftests: Convert sync_regs_test away from VCPU_ID
+Subject: [PATCH 106/128] KVM: selftests: Convert memop away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,139 +69,222 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert sync_regs_test to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of passing around vCPU IDs.  Note, this
-is a "functional" change in the sense that the test now creates a vCPU
-with vcpu_id==0 instead of vcpu_id==5.  The non-zero VCPU_ID was 100%
-arbitrary and added little to no validation coverage.  If testing
-non-zero vCPU IDs is desirable for generic tests, that can be done in the
-future by tweaking the VM creation helpers.
+Pass around a 'struct kvm_vcpu' object instead of a vCPU ID in s390's
+memop test.  Pass NULL for the vCPU instead of a magic '-1' ID to
+indicate that an ioctl/test should be done at VM scope.
+
+Rename "struct test_vcpu vcpu" to "struct test_info info" in order to
+avoid naming collisions (this is the bulk of the diff :-( ).
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/s390x/sync_regs_test.c      | 37 +++++++++----------
- 1 file changed, 18 insertions(+), 19 deletions(-)
+ tools/testing/selftests/kvm/s390x/memop.c | 82 ++++++++++++-----------
+ 1 file changed, 42 insertions(+), 40 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/s390x/sync_regs_test.c b/tools/testing/selftests/kvm/s390x/sync_regs_test.c
-index caf7b8859a94..bf52cabeaed6 100644
---- a/tools/testing/selftests/kvm/s390x/sync_regs_test.c
-+++ b/tools/testing/selftests/kvm/s390x/sync_regs_test.c
-@@ -22,8 +22,6 @@
- #include "kvm_util.h"
- #include "diag318_test_handler.h"
+diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+index 5eb20a358cfe..ba5f645b7565 100644
+--- a/tools/testing/selftests/kvm/s390x/memop.c
++++ b/tools/testing/selftests/kvm/s390x/memop.c
+@@ -96,21 +96,18 @@ static struct kvm_s390_mem_op ksmo_from_desc(struct mop_desc desc)
+ 	return ksmo;
+ }
  
--#define VCPU_ID 5
+-/* vcpu dummy id signifying that vm instead of vcpu ioctl is to occur */
+-const uint32_t VM_VCPU_ID = (uint32_t)-1;
 -
- static void guest_code(void)
- {
- 	/*
-@@ -76,6 +74,7 @@ static void compare_sregs(struct kvm_sregs *left, struct kvm_sync_regs *right)
+-struct test_vcpu {
++struct test_info {
+ 	struct kvm_vm *vm;
+-	uint32_t id;
++	struct kvm_vcpu *vcpu;
+ };
  
- int main(int argc, char *argv[])
+ #define PRINT_MEMOP false
+-static void print_memop(uint32_t vcpu_id, const struct kvm_s390_mem_op *ksmo)
++static void print_memop(struct kvm_vcpu *vcpu, const struct kvm_s390_mem_op *ksmo)
+ {
+ 	if (!PRINT_MEMOP)
+ 		return;
+ 
+-	if (vcpu_id == VM_VCPU_ID)
++	if (!vcpu)
+ 		printf("vm memop(");
+ 	else
+ 		printf("vcpu memop(");
+@@ -145,25 +142,29 @@ static void print_memop(uint32_t vcpu_id, const struct kvm_s390_mem_op *ksmo)
+ 	puts(")");
+ }
+ 
+-static void memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
++static void memop_ioctl(struct test_info info, struct kvm_s390_mem_op *ksmo)
+ {
+-	if (vcpu.id == VM_VCPU_ID)
+-		vm_ioctl(vcpu.vm, KVM_S390_MEM_OP, ksmo);
++	struct kvm_vcpu *vcpu = info.vcpu;
++
++	if (!vcpu)
++		vm_ioctl(info.vm, KVM_S390_MEM_OP, ksmo);
+ 	else
+-		vcpu_ioctl(vcpu.vm, vcpu.id, KVM_S390_MEM_OP, ksmo);
++		vcpu_ioctl(vcpu->vm, vcpu->id, KVM_S390_MEM_OP, ksmo);
+ }
+ 
+-static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
++static int err_memop_ioctl(struct test_info info, struct kvm_s390_mem_op *ksmo)
+ {
+-	if (vcpu.id == VM_VCPU_ID)
+-		return __vm_ioctl(vcpu.vm, KVM_S390_MEM_OP, ksmo);
++	struct kvm_vcpu *vcpu = info.vcpu;
++
++	if (!vcpu)
++		return __vm_ioctl(info.vm, KVM_S390_MEM_OP, ksmo);
+ 	else
+-		return __vcpu_ioctl(vcpu.vm, vcpu.id, KVM_S390_MEM_OP, ksmo);
++		return __vcpu_ioctl(vcpu->vm, vcpu->id, KVM_S390_MEM_OP, ksmo);
+ }
+ 
+-#define MEMOP(err, vcpu_p, mop_target_p, access_mode_p, buf_p, size_p, ...)	\
++#define MEMOP(err, info_p, mop_target_p, access_mode_p, buf_p, size_p, ...)	\
+ ({										\
+-	struct test_vcpu __vcpu = (vcpu_p);					\
++	struct test_info __info = (info_p);					\
+ 	struct mop_desc __desc = {						\
+ 		.target = (mop_target_p),					\
+ 		.mode = (access_mode_p),					\
+@@ -175,13 +176,13 @@ static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
+ 										\
+ 	if (__desc._gaddr_v) {							\
+ 		if (__desc.target == ABSOLUTE)					\
+-			__desc.gaddr = addr_gva2gpa(__vcpu.vm, __desc.gaddr_v);	\
++			__desc.gaddr = addr_gva2gpa(__info.vm, __desc.gaddr_v);	\
+ 		else								\
+ 			__desc.gaddr = __desc.gaddr_v;				\
+ 	}									\
+ 	__ksmo = ksmo_from_desc(__desc);					\
+-	print_memop(__vcpu.id, &__ksmo);					\
+-	err##memop_ioctl(__vcpu, &__ksmo);					\
++	print_memop(__info.vcpu, &__ksmo);					\
++	err##memop_ioctl(__info, &__ksmo);					\
+ })
+ 
+ #define MOP(...) MEMOP(, __VA_ARGS__)
+@@ -197,7 +198,6 @@ static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
+ 
+ #define CHECK_N_DO(f, ...) ({ f(__VA_ARGS__, CHECK_ONLY); f(__VA_ARGS__); })
+ 
+-#define VCPU_ID 1
+ #define PAGE_SHIFT 12
+ #define PAGE_SIZE (1ULL << PAGE_SHIFT)
+ #define PAGE_MASK (~(PAGE_SIZE - 1))
+@@ -209,21 +209,22 @@ static uint8_t mem2[65536];
+ 
+ struct test_default {
+ 	struct kvm_vm *kvm_vm;
+-	struct test_vcpu vm;
+-	struct test_vcpu vcpu;
++	struct test_info vm;
++	struct test_info vcpu;
+ 	struct kvm_run *run;
+ 	int size;
+ };
+ 
+ static struct test_default test_default_init(void *guest_code)
  {
 +	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct kvm_regs regs;
-@@ -92,43 +91,43 @@ int main(int argc, char *argv[])
- 	}
+ 	struct test_default t;
  
- 	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+ 	t.size = min((size_t)kvm_check_cap(KVM_CAP_S390_MEM_OP), sizeof(mem1));
+-	t.kvm_vm = vm_create_default(VCPU_ID, 0, guest_code);
+-	t.vm = (struct test_vcpu) { t.kvm_vm, VM_VCPU_ID };
+-	t.vcpu = (struct test_vcpu) { t.kvm_vm, VCPU_ID };
+-	t.run = vcpu_state(t.kvm_vm, VCPU_ID);
++	t.kvm_vm = vm_create_with_one_vcpu(&vcpu, guest_code);
++	t.vm = (struct test_info) { t.kvm_vm, NULL };
++	t.vcpu = (struct test_info) { t.kvm_vm, vcpu };
++	t.run = vcpu->run;
+ 	return t;
+ }
  
--	run = vcpu_state(vm, VCPU_ID);
-+	run = vcpu->run;
+@@ -238,14 +239,15 @@ enum stage {
+ 	STAGE_COPIED,
+ };
  
- 	/* Request reading invalid register set from VCPU. */
- 	run->kvm_valid_regs = INVALID_SYNC_FIELD;
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv < 0 && errno == EINVAL,
- 		    "Invalid kvm_valid_regs did not cause expected KVM_RUN error: %d\n",
- 		    rv);
--	vcpu_state(vm, VCPU_ID)->kvm_valid_regs = 0;
-+	run->kvm_valid_regs = 0;
+-#define HOST_SYNC(vcpu_p, stage)					\
++#define HOST_SYNC(info_p, stage)					\
+ ({									\
+-	struct test_vcpu __vcpu = (vcpu_p);				\
++	struct test_info __info = (info_p);				\
++	struct kvm_vcpu *__vcpu = __info.vcpu;				\
+ 	struct ucall uc;						\
+ 	int __stage = (stage);						\
+ 									\
+-	vcpu_run(__vcpu.vm, __vcpu.id);					\
+-	get_ucall(__vcpu.vm, __vcpu.id, &uc);				\
++	vcpu_run(__vcpu->vm, __vcpu->id);				\
++	get_ucall(__vcpu->vm, __vcpu->id, &uc);				\
+ 	ASSERT_EQ(uc.cmd, UCALL_SYNC);					\
+ 	ASSERT_EQ(uc.args[1], __stage);					\
+ })									\
+@@ -264,7 +266,7 @@ static void prepare_mem12(void)
  
- 	run->kvm_valid_regs = INVALID_SYNC_FIELD | TEST_SYNC_FIELDS;
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv < 0 && errno == EINVAL,
- 		    "Invalid kvm_valid_regs did not cause expected KVM_RUN error: %d\n",
- 		    rv);
--	vcpu_state(vm, VCPU_ID)->kvm_valid_regs = 0;
-+	run->kvm_valid_regs = 0;
+ #define DEFAULT_WRITE_READ(copy_cpu, mop_cpu, mop_target_p, size, ...)		\
+ ({										\
+-	struct test_vcpu __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
++	struct test_info __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
+ 	enum mop_target __target = (mop_target_p);				\
+ 	uint32_t __size = (size);						\
+ 										\
+@@ -279,7 +281,7 @@ static void prepare_mem12(void)
  
- 	/* Request setting invalid register set into VCPU. */
- 	run->kvm_dirty_regs = INVALID_SYNC_FIELD;
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv < 0 && errno == EINVAL,
- 		    "Invalid kvm_dirty_regs did not cause expected KVM_RUN error: %d\n",
- 		    rv);
--	vcpu_state(vm, VCPU_ID)->kvm_dirty_regs = 0;
-+	run->kvm_dirty_regs = 0;
+ #define DEFAULT_READ(copy_cpu, mop_cpu, mop_target_p, size, ...)		\
+ ({										\
+-	struct test_vcpu __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
++	struct test_info __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
+ 	enum mop_target __target = (mop_target_p);				\
+ 	uint32_t __size = (size);						\
+ 										\
+@@ -580,34 +582,34 @@ static void guest_idle(void)
+ 		GUEST_SYNC(STAGE_IDLED);
+ }
  
- 	run->kvm_dirty_regs = INVALID_SYNC_FIELD | TEST_SYNC_FIELDS;
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv < 0 && errno == EINVAL,
- 		    "Invalid kvm_dirty_regs did not cause expected KVM_RUN error: %d\n",
- 		    rv);
--	vcpu_state(vm, VCPU_ID)->kvm_dirty_regs = 0;
-+	run->kvm_dirty_regs = 0;
+-static void _test_errors_common(struct test_vcpu vcpu, enum mop_target target, int size)
++static void _test_errors_common(struct test_info info, enum mop_target target, int size)
+ {
+ 	int rv;
  
- 	/* Request and verify all valid register sets. */
- 	run->kvm_valid_regs = TEST_SYNC_FIELDS;
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv == 0, "vcpu_run failed: %d\n", rv);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
- 		    "Unexpected exit reason: %u (%s)\n",
-@@ -141,10 +140,10 @@ int main(int argc, char *argv[])
- 		    run->s390_sieic.icptcode, run->s390_sieic.ipa,
- 		    run->s390_sieic.ipb);
+ 	/* Bad size: */
+-	rv = ERR_MOP(vcpu, target, WRITE, mem1, -1, GADDR_V(mem1));
++	rv = ERR_MOP(info, target, WRITE, mem1, -1, GADDR_V(mem1));
+ 	TEST_ASSERT(rv == -1 && errno == E2BIG, "ioctl allows insane sizes");
  
--	vcpu_regs_get(vm, VCPU_ID, &regs);
-+	vcpu_regs_get(vm, vcpu->id, &regs);
- 	compare_regs(&regs, &run->s.regs);
+ 	/* Zero size: */
+-	rv = ERR_MOP(vcpu, target, WRITE, mem1, 0, GADDR_V(mem1));
++	rv = ERR_MOP(info, target, WRITE, mem1, 0, GADDR_V(mem1));
+ 	TEST_ASSERT(rv == -1 && (errno == EINVAL || errno == ENOMEM),
+ 		    "ioctl allows 0 as size");
  
--	vcpu_sregs_get(vm, VCPU_ID, &sregs);
-+	vcpu_sregs_get(vm, vcpu->id, &sregs);
- 	compare_sregs(&sregs, &run->s.regs);
+ 	/* Bad flags: */
+-	rv = ERR_MOP(vcpu, target, WRITE, mem1, size, GADDR_V(mem1), SET_FLAGS(-1));
++	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR_V(mem1), SET_FLAGS(-1));
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows all flags");
  
- 	/* Set and verify various register values */
-@@ -159,7 +158,7 @@ int main(int argc, char *argv[])
- 		run->kvm_dirty_regs |= KVM_SYNC_DIAG318;
- 	}
+ 	/* Bad guest address: */
+-	rv = ERR_MOP(vcpu, target, WRITE, mem1, size, GADDR((void *)~0xfffUL), CHECK_ONLY);
++	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR((void *)~0xfffUL), CHECK_ONLY);
+ 	TEST_ASSERT(rv > 0, "ioctl does not report bad guest memory access");
  
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv == 0, "vcpu_run failed: %d\n", rv);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
- 		    "Unexpected exit reason: %u (%s)\n",
-@@ -175,10 +174,10 @@ int main(int argc, char *argv[])
- 		    "diag318 sync regs value incorrect 0x%llx.",
- 		    run->s.regs.diag318);
+ 	/* Bad host address: */
+-	rv = ERR_MOP(vcpu, target, WRITE, 0, size, GADDR_V(mem1));
++	rv = ERR_MOP(info, target, WRITE, 0, size, GADDR_V(mem1));
+ 	TEST_ASSERT(rv == -1 && errno == EFAULT,
+ 		    "ioctl does not report bad host memory address");
  
--	vcpu_regs_get(vm, VCPU_ID, &regs);
-+	vcpu_regs_get(vm, vcpu->id, &regs);
- 	compare_regs(&regs, &run->s.regs);
+ 	/* Bad key: */
+-	rv = ERR_MOP(vcpu, target, WRITE, mem1, size, GADDR_V(mem1), KEY(17));
++	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR_V(mem1), KEY(17));
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows invalid key");
+ }
  
--	vcpu_sregs_get(vm, VCPU_ID, &sregs);
-+	vcpu_sregs_get(vm, vcpu->id, &sregs);
- 	compare_sregs(&sregs, &run->s.regs);
- 
- 	/* Clear kvm_dirty_regs bits, verify new s.regs values are
-@@ -188,7 +187,7 @@ int main(int argc, char *argv[])
- 	run->kvm_dirty_regs = 0;
- 	run->s.regs.gprs[11] = 0xDEADBEEF;
- 	run->s.regs.diag318 = 0x4B1D;
--	rv = _vcpu_run(vm, VCPU_ID);
-+	rv = _vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(rv == 0, "vcpu_run failed: %d\n", rv);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
- 		    "Unexpected exit reason: %u (%s)\n",
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
