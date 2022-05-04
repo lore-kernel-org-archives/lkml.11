@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46180C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D1CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354973AbiEDRDl (ORCPT
+        id S1354980AbiEDRDq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
+        Wed, 4 May 2022 13:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354576AbiEDQ6x (ORCPT
+        with ESMTP id S1354591AbiEDQ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C3118E15;
-        Wed,  4 May 2022 09:50:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F001BE84;
+        Wed,  4 May 2022 09:50:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 235846179D;
-        Wed,  4 May 2022 16:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0E0C385A5;
-        Wed,  4 May 2022 16:50:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D782617C4;
+        Wed,  4 May 2022 16:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E0D2C385A5;
+        Wed,  4 May 2022 16:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683033;
-        bh=4QKeYGFyuX8Lgug/SAeFGpeUU2oQDWxhq6HgOSzsGzA=;
+        s=korg; t=1651683041;
+        bh=PP4UbLFNaqvRyLfqB4LcjTAFWDOuH+kdthIojSC+prQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ywhw2qVCWH5wgKBbCfSKMQ49uUqN1RMZ0abChdN5RR7/HYvqI5+1QMtu7im103BMW
-         NwWyhSprPCUWAnbBpQkMjmndCDENiBl/t3MUpnxOa9TlbKMIYBVP/fkb+d+KPwh9dW
-         j454z9eAxN54U2fkr/XHmW3GiVOUfG43hwdAbJP8=
+        b=04rouVzIz/KmsFlAXFB4VIxzvZFMyFF8KAOpBAnA6a6pQclmjohsKkB8KQ+d8H8jT
+         ay2UDVp4V20S67BG9k6O8iSi0bhCDHeDuYR9iAkk5H9j3aZp1bRY5zNfIAeRoLn/1z
+         /cHroRbbksSgHAS6mRzRsNhqpHMa+6gUg+HqlVro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH 5.10 024/129] usb: dwc3: core: Only handle soft-reset in DCTL
-Date:   Wed,  4 May 2022 18:43:36 +0200
-Message-Id: <20220504153023.199211062@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.10 032/129] pinctrl: samsung: fix missing GPIOLIB on ARM64 Exynos config
+Date:   Wed,  4 May 2022 18:43:44 +0200
+Message-Id: <20220504153023.836662281@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -48,35 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit f4fd84ae0765a80494b28c43b756a95100351a94 upstream.
+commit ac875df4d854ab13d9c4af682a1837a1214fecec upstream.
 
-Make sure not to set run_stop bit or link state change request while
-initiating soft-reset. Register read-modify-write operation may
-unintentionally start the controller before the initialization completes
-with its previous DCTL value, which can cause initialization failure.
+The Samsung pinctrl drivers depend on OF_GPIO, which is part of GPIOLIB.
+ARMv7 Exynos platform selects GPIOLIB and Samsung pinctrl drivers. ARMv8
+Exynos selects only the latter leading to possible wrong configuration
+on ARMv8 build:
 
-Fixes: f59dcab17629 ("usb: dwc3: core: improve reset sequence")
+  WARNING: unmet direct dependencies detected for PINCTRL_EXYNOS
+    Depends on [n]: PINCTRL [=y] && OF_GPIO [=n] && (ARCH_EXYNOS [=y] || ARCH_S5PV210 || COMPILE_TEST [=y])
+    Selected by [y]:
+    - ARCH_EXYNOS [=y]
+
+Always select the GPIOLIB from the Samsung pinctrl drivers to fix the
+issue.  This requires removing of OF_GPIO dependency (to avoid recursive
+dependency), so add dependency on OF for COMPILE_TEST cases.
+
+Reported-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
+Fixes: eed6b3eb20b9 ("arm64: Split out platform options to separate Kconfig")
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Link: https://lore.kernel.org/r/6aecbd78328f102003d40ccf18ceeebd411d3703.1650594792.git.Thinh.Nguyen@synopsys.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220420141407.470955-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/mach-exynos/Kconfig    |    1 -
+ drivers/pinctrl/samsung/Kconfig |   11 ++++-------
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -275,7 +275,8 @@ static int dwc3_core_soft_reset(struct d
+--- a/arch/arm/mach-exynos/Kconfig
++++ b/arch/arm/mach-exynos/Kconfig
+@@ -20,7 +20,6 @@ menuconfig ARCH_EXYNOS
+ 	select EXYNOS_PMU
+ 	select EXYNOS_SROM
+ 	select EXYNOS_PM_DOMAINS if PM_GENERIC_DOMAINS
+-	select GPIOLIB
+ 	select HAVE_ARM_ARCH_TIMER if ARCH_EXYNOS5
+ 	select HAVE_ARM_SCU if SMP
+ 	select HAVE_S3C2410_I2C if I2C
+--- a/drivers/pinctrl/samsung/Kconfig
++++ b/drivers/pinctrl/samsung/Kconfig
+@@ -4,14 +4,13 @@
+ #
+ config PINCTRL_SAMSUNG
+ 	bool
+-	depends on OF_GPIO
++	select GPIOLIB
+ 	select PINMUX
+ 	select PINCONF
  
- 	reg = dwc3_readl(dwc->regs, DWC3_DCTL);
- 	reg |= DWC3_DCTL_CSFTRST;
--	dwc3_writel(dwc->regs, DWC3_DCTL, reg);
-+	reg &= ~DWC3_DCTL_RUN_STOP;
-+	dwc3_gadget_dctl_write_safe(dwc, reg);
+ config PINCTRL_EXYNOS
+ 	bool "Pinctrl common driver part for Samsung Exynos SoCs"
+-	depends on OF_GPIO
+-	depends on ARCH_EXYNOS || ARCH_S5PV210 || COMPILE_TEST
++	depends on ARCH_EXYNOS || ARCH_S5PV210 || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
+ 	select PINCTRL_EXYNOS_ARM if ARM && (ARCH_EXYNOS || ARCH_S5PV210)
+ 	select PINCTRL_EXYNOS_ARM64 if ARM64 && ARCH_EXYNOS
+@@ -26,12 +25,10 @@ config PINCTRL_EXYNOS_ARM64
  
- 	/*
- 	 * For DWC_usb31 controller 1.90a and later, the DCTL.CSFRST bit
+ config PINCTRL_S3C24XX
+ 	bool "Samsung S3C24XX SoC pinctrl driver"
+-	depends on OF_GPIO
+-	depends on ARCH_S3C24XX || COMPILE_TEST
++	depends on ARCH_S3C24XX || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
+ 
+ config PINCTRL_S3C64XX
+ 	bool "Samsung S3C64XX SoC pinctrl driver"
+-	depends on OF_GPIO
+-	depends on ARCH_S3C64XX || COMPILE_TEST
++	depends on ARCH_S3C64XX || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
 
 
