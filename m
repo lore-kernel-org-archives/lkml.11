@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBCFC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8959DC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357600AbiEDRYp (ORCPT
+        id S1357562AbiEDRYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        Wed, 4 May 2022 13:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355398AbiEDRET (ORCPT
+        with ESMTP id S1355413AbiEDRET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BBC4ECF9;
-        Wed,  4 May 2022 09:53:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5E64EDC6;
+        Wed,  4 May 2022 09:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2416CB82752;
-        Wed,  4 May 2022 16:52:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C153FC385AA;
-        Wed,  4 May 2022 16:52:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2381FB827AC;
+        Wed,  4 May 2022 16:52:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C773AC385B0;
+        Wed,  4 May 2022 16:52:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683174;
-        bh=d9FRUiv783dU/wMy58x9p6NFoSQWCkLOfWCusjCDE3g=;
+        s=korg; t=1651683175;
+        bh=GYqdHF/kWbxCt6a86UWjM3QOO2fhmQgGD64+8+8qvrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yaB+54cS9MSILoSUutOH4ZF6yIDOws67yu/bmdIxSdT53w206ZgAPqaRBYlUjHUI+
-         GpTwMqB///sQjQPrwdS23Cx/FciK1r0w6DmrJ7P8TJp09ln2ggp1GDlipj7VslZgkb
-         Kkg7jvZQZj6wq3GA/xur7JHUBQLoRQS8VDwEPQfA=
+        b=2LG3dKeR0HCc96BFRvMCCasWjm6W63ykKDPF8XThabZ+VlVn9Koj+Q7MLCzIESTIT
+         zZ+oHK3Q4SI/aqfkVbMQf5vNFovkAOyzJquRVzL8Rcv6Dz7/1rSEKefh5DjSWHO/EE
+         r2qKEhqN0WMMxsYLKktdOaiRb64HEdkNayutnqp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.15 026/177] usb: dwc3: pci: add support for the Intel Meteor Lake-P
-Date:   Wed,  4 May 2022 18:43:39 +0200
-Message-Id: <20220504153055.464711103@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>
+Subject: [PATCH 5.15 027/177] usb: cdns3: Fix issue for clear halt endpoint
+Date:   Wed,  4 May 2022 18:43:40 +0200
+Message-Id: <20220504153055.521161879@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,44 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Pawel Laszczak <pawell@cadence.com>
 
-commit 973e0f7a847ef13ade840d4c30729ce329a66895 upstream.
+commit b3fa25de31fb7e9afebe9599b8ff32eda13d7c94 upstream.
 
-This patch adds the necessary PCI IDs for Intel Meteor Lake-P
-devices.
+Path fixes bug which occurs during resetting endpoint in
+__cdns3_gadget_ep_clear_halt function. During resetting endpoint
+controller will change HW/DMA owned TRB. It set Abort flag in
+trb->control and will change trb->length field. If driver want
+to use the aborted trb it must update the changed field in
+TRB.
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220425103518.44028-1-heikki.krogerus@linux.intel.com
+Fixes: 7733f6c32e36 ("usb: cdns3: Add Cadence USB3 DRD Driver")
+cc: <stable@vger.kernel.org>
+Acked-by: Peter Chen <peter.chen@kernel.org>
+Signed-off-by: Pawel Laszczak <pawell@cadence.com>
+Link: https://lore.kernel.org/r/20220329084605.4022-1-pawell@cadence.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/usb/cdns3/cdns3-gadget.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -44,6 +44,8 @@
- #define PCI_DEVICE_ID_INTEL_ADLM		0x54ee
- #define PCI_DEVICE_ID_INTEL_ADLS		0x7ae1
- #define PCI_DEVICE_ID_INTEL_RPLS		0x7a61
-+#define PCI_DEVICE_ID_INTEL_MTLP		0x7ec1
-+#define PCI_DEVICE_ID_INTEL_MTL			0x7e7e
- #define PCI_DEVICE_ID_INTEL_TGL			0x9a15
- #define PCI_DEVICE_ID_AMD_MR			0x163a
+--- a/drivers/usb/cdns3/cdns3-gadget.c
++++ b/drivers/usb/cdns3/cdns3-gadget.c
+@@ -2684,6 +2684,7 @@ int __cdns3_gadget_ep_clear_halt(struct
+ 	struct usb_request *request;
+ 	struct cdns3_request *priv_req;
+ 	struct cdns3_trb *trb = NULL;
++	struct cdns3_trb trb_tmp;
+ 	int ret;
+ 	int val;
  
-@@ -421,6 +423,12 @@ static const struct pci_device_id dwc3_p
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_RPLS),
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+@@ -2693,8 +2694,10 @@ int __cdns3_gadget_ep_clear_halt(struct
+ 	if (request) {
+ 		priv_req = to_cdns3_request(request);
+ 		trb = priv_req->trb;
+-		if (trb)
++		if (trb) {
++			trb_tmp = *trb;
+ 			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
++		}
+ 	}
  
-+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTLP),
-+	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+
-+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTL),
-+	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL),
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+ 	writel(EP_CMD_CSTALL | EP_CMD_EPRST, &priv_dev->regs->ep_cmd);
+@@ -2709,7 +2712,7 @@ int __cdns3_gadget_ep_clear_halt(struct
  
+ 	if (request) {
+ 		if (trb)
+-			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
++			*trb = trb_tmp;
+ 
+ 		cdns3_rearm_transfer(priv_ep, 1);
+ 	}
 
 
