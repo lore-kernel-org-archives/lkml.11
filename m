@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FD2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D63C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350359AbiEDRgb (ORCPT
+        id S1355079AbiEDRgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
+        Wed, 4 May 2022 13:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356948AbiEDRJu (ORCPT
+        with ESMTP id S1356945AbiEDRJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98354739D;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C4B4739C;
         Wed,  4 May 2022 09:56:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1F7BB82552;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E953561794;
         Wed,  4 May 2022 16:56:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8B9C385A5;
-        Wed,  4 May 2022 16:56:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B46C385AF;
+        Wed,  4 May 2022 16:56:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683393;
-        bh=gsJsR9hIHdRHIG5DHXKcbKlv++R5++gW2cCn58NuCvM=;
+        s=korg; t=1651683394;
+        bh=0ttIZ0ihhyBidXV9m5MwjSKUbj2JnWrIM5mZ6cMm7M8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WR69ga17PI0ux+FhMuExGxgg5vvvAVD0Ea1bCPQJRY9Q8PWymjiv9oDVFUkLB6SQA
-         DbJU9aVtWeB6OnfWMphtuX4lz/ZQvr4GS/A+T/IA95PLTUjnbj8Ch4fkNTiSg6JtrY
-         KIq3SoBsnKBN3AgfgS/vvWFWD1gZD1FEWWNKRt7o=
+        b=lYrmYT9GlpEb0B6xKTGGp4ucJC2pTLAZRcXWp4xpNOchO0A9KlyQ7byFOuQj3aJPS
+         FuAeSc1/kW3Pwss1bCCuGtp7rrHRe6dUFcSl1kjGw3fABAllv2xBiSeh9UL4/t29XS
+         rN5yQjFkrkYZTJ0x07kf2Nzhj8Pv99sPf7jsMinw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 070/225] soc: imx: imx8m-blk-ctrl: Fix IMX8MN_DISPBLK_PD_ISI hang
-Date:   Wed,  4 May 2022 18:45:08 +0200
-Message-Id: <20220504153117.783718798@linuxfoundation.org>
+Subject: [PATCH 5.17 079/225] bus: ti-sysc: Make omap3 gpt12 quirk handling SoC specific
+Date:   Wed,  4 May 2022 18:45:17 +0200
+Message-Id: <20220504153118.282106726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,36 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit e2aa165cd0163cef83cb295eb572aa9fb1604cf4 ]
+[ Upstream commit a12315d6d27093392b6c634e1d35a59f1d1f7a59 ]
 
-The imx8mn clock list for the ISI lists four clocks, but DOMAIN_MAX_CLKS
-was set to 3.  Because of this, attempts to enable the fourth clock failed,
-threw some splat, and ultimately hung.
+On beagleboard revisions A to B4 we need to use gpt12 as the system timer.
+However, the quirk handling added for gpt12 caused a regression for system
+suspend for am335x as the PM coprocessor needs the timers idled for
+suspend.
 
-Fixes: 7f511d514e8c ("soc: imx: imx8m-blk-ctrl: add i.MX8MN DISP blk-ctrl")
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Let's make the gpt12 quirk specific to omap34xx, other SoCs don't need
+it. Beagleboard revisions C and later no longer need to use the gpt12
+related quirk. Then at some point, if we decide to drop support for the old
+beagleboard revisions A to B4, we can also drop the gpt12 related quirks
+completely.
+
+Fixes: 3ff340e24c9d ("bus: ti-sysc: Fix gpt12 system timer issue with reserved status")
+Reported-by: Kevin Hilman <khilman@baylibre.com>
+Suggested-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/imx/imx8m-blk-ctrl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bus/ti-sysc.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/imx/imx8m-blk-ctrl.c b/drivers/soc/imx/imx8m-blk-ctrl.c
-index 511e74f0db8a..e096cca9f18a 100644
---- a/drivers/soc/imx/imx8m-blk-ctrl.c
-+++ b/drivers/soc/imx/imx8m-blk-ctrl.c
-@@ -49,7 +49,7 @@ struct imx8m_blk_ctrl_domain_data {
- 	u32 mipi_phy_rst_mask;
- };
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index 54c0ee6dda30..7a1b1f9e4933 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -3232,13 +3232,27 @@ static int sysc_check_disabled_devices(struct sysc *ddata)
+  */
+ static int sysc_check_active_timer(struct sysc *ddata)
+ {
++	int error;
++
+ 	if (ddata->cap->type != TI_SYSC_OMAP2_TIMER &&
+ 	    ddata->cap->type != TI_SYSC_OMAP4_TIMER)
+ 		return 0;
  
--#define DOMAIN_MAX_CLKS 3
-+#define DOMAIN_MAX_CLKS 4
++	/*
++	 * Quirk for omap3 beagleboard revision A to B4 to use gpt12.
++	 * Revision C and later are fixed with commit 23885389dbbb ("ARM:
++	 * dts: Fix timer regression for beagleboard revision c"). This all
++	 * can be dropped if we stop supporting old beagleboard revisions
++	 * A to B4 at some point.
++	 */
++	if (sysc_soc->soc == SOC_3430)
++		error = -ENXIO;
++	else
++		error = -EBUSY;
++
+ 	if ((ddata->cfg.quirks & SYSC_QUIRK_NO_RESET_ON_INIT) &&
+ 	    (ddata->cfg.quirks & SYSC_QUIRK_NO_IDLE))
+-		return -ENXIO;
++		return error;
  
- struct imx8m_blk_ctrl_domain {
- 	struct generic_pm_domain genpd;
+ 	return 0;
+ }
 -- 
 2.35.1
 
