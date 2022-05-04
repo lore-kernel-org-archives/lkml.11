@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DEE6C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4582C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354384AbiEDQyU (ORCPT
+        id S1353835AbiEDQyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
+        Wed, 4 May 2022 12:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353828AbiEDQwb (ORCPT
+        with ESMTP id S1353837AbiEDQxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F76C47385;
-        Wed,  4 May 2022 09:48:42 -0700 (PDT)
+        Wed, 4 May 2022 12:53:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F41347073;
+        Wed,  4 May 2022 09:48:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADACC6174B;
-        Wed,  4 May 2022 16:48:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0400FC385A5;
-        Wed,  4 May 2022 16:48:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11174B82554;
+        Wed,  4 May 2022 16:48:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C89C385A4;
+        Wed,  4 May 2022 16:48:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682921;
-        bh=H1GWMSx8QPe81iew5Blai1zIxy7NOOTXxmEgd/t/FOM=;
+        s=korg; t=1651682933;
+        bh=z6Zb3W/Yf5SsQMTkUB/kSk+sSHoyvaN4eXx/PUl9qA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oMIQTW+CASQE4IpdN0AaZNGk5GBIOCJJRNzOqZ3qYA0buPfbNshO3EJf740kewR4H
-         xJC/6TaO8+0hsX0UMcZd1iv2K3NIGLNVUA7z2vYkExa7rySELeT87UoxhthTmuxXcc
-         5RXinMOzQ0b94YCv3oPFV2rliJB9s4hj1sd4W6ek=
+        b=eFTYpQgiEqHL6m/e5R1xbDx556s+corgVQ9UwF3BKitCeFLxZXuwfw0N+5vSQy4Na
+         vJ6arBcfyGL+o6psvqI0V/qtyQUrKDNKOGpPW5nGOQ1Nj9PRUfE1CJHFxoqPmZ+bhr
+         TumGG7RhByJRXB/94J3tYSeuYt4C3OdSHfQeJVak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 39/84] ARM: dts: at91: Map MCLK for wm8731 on at91sam9g20ek
-Date:   Wed,  4 May 2022 18:44:20 +0200
-Message-Id: <20220504152930.601883654@linuxfoundation.org>
+Subject: [PATCH 5.4 52/84] arm64: dts: imx8mn-ddr4-evk: Describe the 32.768 kHz PMIC clock
+Date:   Wed,  4 May 2022 18:44:33 +0200
+Message-Id: <20220504152931.457622778@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,43 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 0e486fe341fabd8e583f3d601a874cd394979c45 ]
+[ Upstream commit 0310b5aa0656a94102344f1e9ae2892e342a665d ]
 
-The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
-PCK0 output of the SoC and is expected to be set to 12MHz. Previously
-this was mapped using pre-common clock API calls in the audio machine
-driver but the conversion to the common clock framework broke that so
-describe things in the DT instead.
+The ROHM BD71847 PMIC has a 32.768 kHz clock.
 
-Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220404102806.581374-2-broonie@kernel.org
+Describe the PMIC clock to fix the following boot errors:
+
+bd718xx-clk bd71847-clk.1.auto: No parent clk found
+bd718xx-clk: probe of bd71847-clk.1.auto failed with error -22
+
+Based on the same fix done for imx8mm-evk as per commit
+a6a355ede574 ("arm64: dts: imx8mm-evk: Add 32.768 kHz clock to PMIC")
+
+Fixes: 3e44dd09736d ("arm64: dts: imx8mn-ddr4-evk: Add rohm,bd71847 PMIC support")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91sam9g20ek_common.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-index bda22700110c..287566e09a67 100644
---- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-+++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-@@ -217,6 +217,12 @@ i2c-gpio-0 {
- 		wm8731: wm8731@1b {
- 			compatible = "wm8731";
- 			reg = <0x1b>;
-+
-+			/* PCK0 at 12MHz */
-+			clocks = <&pmc PMC_TYPE_SYSTEM 8>;
-+			clock-names = "mclk";
-+			assigned-clocks = <&pmc PMC_TYPE_SYSTEM 8>;
-+			assigned-clock-rates = <12000000>;
- 		};
- 	};
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
+index 9ad1d43b8ce7..4fa39654b695 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
+@@ -213,6 +213,10 @@ pmic@4b {
+ 		interrupts = <3 GPIO_ACTIVE_LOW>;
+ 		rohm,reset-snvs-powered;
  
++		#clock-cells = <0>;
++		clocks = <&osc_32k 0>;
++		clock-output-names = "clk-32k-out";
++
+ 		regulators {
+ 			buck1_reg: BUCK1 {
+ 				regulator-name = "BUCK1";
 -- 
 2.35.1
 
