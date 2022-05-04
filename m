@@ -2,99 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E69C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377455AbiEDTJS (ORCPT
+        id S1377482AbiEDTL1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 15:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
+        Wed, 4 May 2022 15:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377484AbiEDTI4 (ORCPT
+        with ESMTP id S236470AbiEDTLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 15:08:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE016DE3;
-        Wed,  4 May 2022 12:05:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7A33B8282B;
-        Wed,  4 May 2022 19:05:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7A6BC385A5;
-        Wed,  4 May 2022 19:05:12 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="CRGjQoNR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651691110;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IxergFl485EsXY2KxptRvd0tHpmPVRyaJTdUoOrikA0=;
-        b=CRGjQoNRUpEsYavQXvZk051nbB+Z+hM28IoCV9yZxl4KCq5jebxounT6kA8AqSNG3V6tMx
-        D6VP8NroEjouvUCb68yuju53H+hPnkSFxcQVXa73d146I7PpI6icduzs3UMgZiencdkqoG
-        wzLwBHXOqaVomlZjafSWf5AMOS83Ffw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 93d71f1d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 4 May 2022 19:05:10 +0000 (UTC)
-Date:   Wed, 4 May 2022 21:05:01 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Filipe Manana <fdmanana@suse.com>, linux-crypto@vger.kernel.org
-Subject: Re: [patch 3/3] x86/fpu: Make FPU protection more robust
-Message-ID: <YnLOXZp6WgH7ULVU@zx2c4.com>
-References: <20220501192740.203963477@linutronix.de>
- <20220501193102.704267030@linutronix.de>
- <Ym/sHqKqmLOJubgE@zn.tnic>
- <87k0b4lydr.ffs@tglx>
- <YnDwjjdiSQ5Yml6E@hirez.programming.kicks-ass.net>
- <87fslpjomx.ffs@tglx>
- <YnKh96isoB7jiFrv@zx2c4.com>
- <87czgtjlfq.ffs@tglx>
+        Wed, 4 May 2022 15:11:24 -0400
+X-Greylist: delayed 2043 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 12:07:47 PDT
+Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678543A5F7;
+        Wed,  4 May 2022 12:07:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=lizzy; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=rE2gX/bRFMhYFilz9M+Je3TFSv/LnyF6LKyyIeJ5Ek0=; b=T7n6n7snqTZpSmkVObfdZEp33V
+        vz1bLq2kHQp48GpqsKjXZqo15K4ioh/XYm0DyhORvkOSyhdftlzAjw0otsFpoZzA175lmduE397kW
+        zkXMfq4nIbe8BetGkmlLE2+qwgeT4nNj8AOKKwDwwzA/wNIxWu0mUhuM3bL3Cnf+HsoJsq5DY4MlN
+        TpiKEWJHFW6mPdAHeInhIYuMynq2U4w9CA20OLcbClSE3P9gk7bZEkkZsIGttbmtKx4b6/Zm/+gN9
+        pLP7IDDBw1tvI+qFck/uZ+mvzT8QO6jZJRjaLM+mgpr7TVzhDrKspunqCB4AVDCOn6gmocMUAjcm6
+        gBIHdHhg==;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Howells <dhowells@redhat.com>,
+        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark (was: 9p
+ fscache Duplicate cookie detected))
+Date:   Wed, 04 May 2022 20:33:36 +0200
+Message-ID: <6688504.ZJKUV3z3ry@silver>
+In-Reply-To: <YnECI2+EAzgQExOn@codewreck.org>
+References: <YmKp68xvZEjBFell@codewreck.org> <1817722.O6u07f4CCs@silver>
+ <YnECI2+EAzgQExOn@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87czgtjlfq.ffs@tglx>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Thomas,
+On Dienstag, 3. Mai 2022 12:21:23 CEST asmadeus@codewreck.org wrote:
+[...]
+>  - add some complex code to track the exact byte range that got updated
+> in some conditions e.g. WRONLY or read fails?
+> That'd still be useful depending on how the backend tracks file mode,
+> qemu as user with security_model=mapped-file keeps files 600 but with
+> passthrough or none qemu wouldn't be able to read the file regardless of
+> what we do on client...
+> Christian, if you still have an old kernel around did that use to work?
 
-On Wed, May 04, 2022 at 06:45:45PM +0200, Thomas Gleixner wrote:
-> add_disk_randomness() on !RT kernels. That's what made me look into this
-> in the first place as it unearthed the long standing FPU protection
-> bug. See the first patch in this thread.
+Sorry, what was the question, i.e. what should I test / look for precisely? :)
+
+[...]
+> > > Also, can you get the contents of /proc/fs/fscache/stats from after
+> > > reproducing the problem?
+> > 
+> > FS-Cache statistics
 > 
-> Possibly add_device_randomness() too, but I haven't seen evidence so far.
+> (He probably wanted to confirm the new trace he added got hit with the
+> workaround pattern, I didn't get that far as I couldn't compile my
+> reproducer on that fs...)
 
-It looks like it's being hit from add_input_randomness() via
-input_handle_event() too. There are two positions we could take toward
-this:
+Yeah, I got that. But since his patch did not apply, I just dumped what I got 
+so far in case the existing stats might be useful anyway.
 
-One stance to take would be that if an event happens in an interrupt,
-add_interrupt_randomness() should in theory already be siphashing in a
-cycle counter so additional calls to add_{input,disk}_randomness() don't
-contribute substantially (unless you assume the num field has some
-entropic value). If that's compelling, then the next thing to do would
-be adding a `if (in_interrupt()) return;` early on in some function, and
-then we forever after impose a rule, "never mix into the input pool
-directly from an irq".
+Best regards,
+Christian Schoenebeck
 
-The other stance is that these input/disk events are relatively rare --
-compared to, say, a storm of interrupts from a NIC -- so mixing into the
-input pool from there isn't actually a problem, and we benefit from the
-quasi domain-specific accounting and the superior mixing function,
-there, so keep it around. And the non-raw spinlock on the input pool
-won't negatively affect RT from this context, because all its callers on
-RT should be threaded.
 
-The second stance seems easier and more conservative from a certain
-perspective -- we don't need to change anything -- so I'm more inclined
-toward it. And given that you've fixed the bug now, it sounds like
-that's fine with you too. But if you're thinking about it differently in
-fact, let me know.
-
-Jason
