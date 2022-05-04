@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0D2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0511CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354524AbiEDQ6a (ORCPT
+        id S1349972AbiEDQ6f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
+        Wed, 4 May 2022 12:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354450AbiEDQyW (ORCPT
+        with ESMTP id S1354515AbiEDQyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665B049255;
-        Wed,  4 May 2022 09:49:35 -0700 (PDT)
+        Wed, 4 May 2022 12:54:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A212947543;
+        Wed,  4 May 2022 09:49:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E19EFB827A2;
-        Wed,  4 May 2022 16:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879FDC385AA;
-        Wed,  4 May 2022 16:49:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3307261756;
+        Wed,  4 May 2022 16:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8563FC385AA;
+        Wed,  4 May 2022 16:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682972;
-        bh=6+rjE9zh4GATjXkM46Hk/BnlVF8MeLJ7vpypB9Ynn/I=;
+        s=korg; t=1651682982;
+        bh=C/gXfNrYbGLHuBQ+TwO+vWYrZdeXwcdlqQuLpZRmc6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sZQG5Glp4x2tobHD0Xz6NIahIfO2QOLs8jl0q+jXdABU2wgf8QziwZb6kDLlwuznz
-         n4WVFTTMiHgiGBUh8MVa5FSr4Cpt/3dSYBQBf/y7E7pqUhSMDnJoA4kroix7JXwYxM
-         ABpGyzzMGKlZy4mgbYGEGWt66fvXhZOLX2b5fMps=
+        b=gqKLJZTOJ+FYc9aDpHMG1nrwEpt04MireQb8rTelOf49Nha6H/ZTDXJQRZTlZQy0n
+         TZSdeLSP0sO0B5tsrUfQUry09rnee04kyHzB9ELjZJ+OkjQXc2i7fFAcKGJMfaoHZ4
+         4l7HOxoFjaxbf/RaVXrwQZWwLiVfN7Kn9/eGuBc8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.4 75/84] tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
-Date:   Wed,  4 May 2022 18:44:56 +0200
-Message-Id: <20220504152933.399385984@linuxfoundation.org>
+        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 011/129] xhci: stop polling roothubs after shutdown
+Date:   Wed,  4 May 2022 18:43:23 +0200
+Message-Id: <20220504153022.232526921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
-References: <20220504152927.744120418@linuxfoundation.org>
+In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
+References: <20220504153021.299025455@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,40 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Henry Lin <henryl@nvidia.com>
 
-commit 06d5afd4d640eea67f5623e76cd5fc03359b7f3c upstream.
+commit dc92944a014cd6a6f6c94299aaa36164dd2c238a upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.5.2 describes that the signal octet in
-convergence layer type 2 can be either one or two bytes. The length is
-encoded in the EA bit. This is set 1 for the last byte in the sequence.
-gsmtty_modem_update() handles this correctly but gsm_dlci_data_output()
-fails to set EA to 1. There is no case in which we encode two signal octets
-as there is no case in which we send out a break signal.
-Therefore, always set the EA bit to 1 for the signal octet to fix this.
+While rebooting, XHCI controller and its bus device will be shut down
+in order by .shutdown callback. Stopping roothubs polling in
+xhci_shutdown() can prevent XHCI driver from accessing port status
+after its bus device shutdown.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
+polling, XHCI driver may access PCIe BAR register for port status after
+parent PCIe root port driver is shutdown and cause PCIe bus error.
+
+[check shared hcd exist before stopping its roothub polling -Mathias]
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-5-daniel.starke@siemens.com
+Signed-off-by: Henry Lin <henryl@nvidia.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/xhci.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -823,7 +823,7 @@ static int gsm_dlci_data_output(struct g
- 			break;
- 		case 2:	/* Unstructed with modem bits.
- 		Always one byte as we never send inline break data */
--			*dp++ = gsm_encode_modem(dlci);
-+			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
- 			break;
- 		}
- 		WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -779,6 +779,17 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
+ 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
+ 
++	/* Don't poll the roothubs after shutdown. */
++	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
++			__func__, hcd->self.busnum);
++	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
++	del_timer_sync(&hcd->rh_timer);
++
++	if (xhci->shared_hcd) {
++		clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
++		del_timer_sync(&xhci->shared_hcd->rh_timer);
++	}
++
+ 	spin_lock_irq(&xhci->lock);
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
 
 
