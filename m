@@ -2,89 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCC9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D179EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbiEDMCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S1349194AbiEDMDP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 08:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234431AbiEDMCF (ORCPT
+        with ESMTP id S234431AbiEDMDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:02:05 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5850918B0D
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 04:58:29 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id s14so1195427plk.8
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 04:58:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gkcv1QpvPBRPgCr2aRkAhYilhFBiQKVHreIJFm+mm9g=;
-        b=kLckMQH6fBJiqE70PoR0Fycg0urB8qU1NOckAq8yQJUTCtPjHWmsxGMpSVrt9yaVDT
-         9Tti/VPIJE+996dMKlk1UqsH9LRXg5qwycGgFLI0VzgZVaglcB9+wdupWuNawF95KfzV
-         Z2NweVX7HZIJR10CLXF3aqDR8ZaJxC6b2X42C9kGPkQm2LDR40w6Vg2opEAEnEJQP9fJ
-         cXyhZNIFKikc+vAkH3ea8Q5CFfxxcMgZMdVLVlx7E2aUn/6vkqf/Z9OsZ2WvCl54T27K
-         1uFZ4X1uuJGOBv+St5/8rVXe/G2IuBeqarfh865HEugYC/TXU69Y5zkkSNDe/a1BlYpZ
-         h61w==
+        Wed, 4 May 2022 08:03:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F35AE18B0E
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 04:59:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651665577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Hdaz9MpZoIlHo5W6Yr3E01ttRcC4gjvc5tNziIXBlcs=;
+        b=E6Q6UW0fnBFWwyBX+4YjzfAHsOPnK72iQ709cHYdMVVK8ucpfUGkQyJE8AgrVCDb0y6/qU
+        Dsakzw/4nLfAX1gCrN5VW2bFRpGyjEKEYsRwJKGfU1hzeZYdmYClbbQejlZW7n3S0L+boC
+        xJ12P7ZnifrETV2Z75Qp1KtQ6IDB85s=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-177-ztTNp3W4NkGra9RmB5uXSQ-1; Wed, 04 May 2022 07:59:33 -0400
+X-MC-Unique: ztTNp3W4NkGra9RmB5uXSQ-1
+Received: by mail-wm1-f69.google.com with SMTP id h65-20020a1c2144000000b0038e9ce3b29cso2920666wmh.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 04:59:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gkcv1QpvPBRPgCr2aRkAhYilhFBiQKVHreIJFm+mm9g=;
-        b=dbxNjYbtMe4y6T2Mhy8zM4KJDtlQZk+mAOoVLMuiQsQ9hu5Qf9bqmedHyR6HyKEdaH
-         ORiIhHR65VpOu1pySyyHmy6AU9nWlekDUf/vxCW5gjg9J1DdCwbYwOCOtwBvQK47d5ib
-         NIw4cWjo36DBruawvbR003mLGAY5z6wJK+LTTZ6Eaqe2fN/p+vhVNNTD6AOI8+rQkcOP
-         SGNPaoq5qTZNfVjwvEJndYu0oaMnsnM9bFMWaqG2WSeEkV1c7VCPtHS+pE8z8Eb7GZ8Q
-         prW8o1jEeOXesFp/99arBT2jSUEslwXoH8Pfa6fT1JEARV34YtdFkMHaKGWKHxMBZCRl
-         C1cQ==
-X-Gm-Message-State: AOAM531HdDNBfMVggT5Y3je79oRVQL9/Sq5e0TVh1cl35QSIgqdf1gCD
-        niMBMVLuKk6ZtMQg4yj7zyq+Rw==
-X-Google-Smtp-Source: ABdhPJx1Y8Ca1NZ/5dZjBxdSqSmXQCapxMhGjnPRQy4QecF4OQuOtBaKE7gjrz72aZcN6jTYFs5pDw==
-X-Received: by 2002:a17:90a:530e:b0:1db:de96:dff5 with SMTP id x14-20020a17090a530e00b001dbde96dff5mr9924965pjh.22.1651665508834;
-        Wed, 04 May 2022 04:58:28 -0700 (PDT)
-Received: from localhost ([122.162.207.161])
-        by smtp.gmail.com with ESMTPSA id p11-20020a1709028a8b00b0015e8d4eb297sm8134943plo.225.2022.05.04.04.58.27
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hdaz9MpZoIlHo5W6Yr3E01ttRcC4gjvc5tNziIXBlcs=;
+        b=eeSufTsUH/iQTtVaL4PHHvEAxvNZOKQrAOtl5q9korYnPUdBocuIMHo3zCheBwyEZg
+         O572Uv8fdOVb8OeNcRsUFz3xDQBFATj58FwERFEchSYiZlzwlP/COCpX+S5PJI43mlMZ
+         45N91RNQETFjFTJOU3GZgeMIUPrF9QlezvX7z7NYRmNwzjQ1d3wlLfIkwFYONA1VneNT
+         wB5wPvHl94wz3QcYOIdQ4YEwebzqNeVghadako9XqjJ3YBsmk57ZXwpkA9zOo6TvUW+o
+         jirDhjByPov+zC7ZQ63qooqbAVgQMUq4FsWdMgVMJXtmNQbmDuxcsOez/PdL6kTzg9Do
+         54kg==
+X-Gm-Message-State: AOAM531g4EmwaI0Vk72HTySyHjFhJ4+cANViD7M3OYTEeTJmzQstmBpT
+        Q/303ldJkTkii9T9/xAUTqu+YnccYKgjD9CrloeiEJna/ZXuTRXozBfSj4JNTS9GR/6TreQFXA1
+        Dgfm5J/xq/dU0DjGGDY2KsqD8OmiwO80oMuEYMV8Vxs45FlY7V1sZrZKYQjBCq7KNl1npuxuFOa
+        s=
+X-Received: by 2002:a05:6000:1844:b0:20c:5672:9573 with SMTP id c4-20020a056000184400b0020c56729573mr15065540wri.538.1651665572032;
+        Wed, 04 May 2022 04:59:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxgDtpAe/DLUybOoXaFzCCcl0wELARIERg8DV6OtPnYk2dBjPP7wFdtw5kHDTnYHSwd136yIw==
+X-Received: by 2002:a05:6000:1844:b0:20c:5672:9573 with SMTP id c4-20020a056000184400b0020c56729573mr15065508wri.538.1651665571647;
+        Wed, 04 May 2022 04:59:31 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id n32-20020a05600c3ba000b003943a559b3fsm3765344wms.8.2022.05.04.04.59.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 04:58:28 -0700 (PDT)
-Date:   Wed, 4 May 2022 17:28:26 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     rafael@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
-        roger.lu@mediatek.com, hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH V4 07/14] cpufreq: mediatek: Add .get function
-Message-ID: <20220504115826.5qqj22x4c7jldfxz@vireshk-i7>
-References: <20220425053548.72w2jh2g6lpzgz6g@vireshk-i7>
- <64c690e8edf493ec0a4a14e0fdaad2d8e88e6da7.camel@mediatek.com>
- <20220425100058.4kbvmpi63ygni6k5@vireshk-i7>
- <078b1f9b39690da98cbd3c4528ba28374a097083.camel@mediatek.com>
- <20220427031141.or2owu5wrh2cadfo@vireshk-i7>
- <346736a339bed576817179ded3795d61f71fa06a.camel@mediatek.com>
- <20220428114835.3ktimyz2tzzqdcbg@vireshk-i7>
- <27a5dddd91b3dcbd69f08c10108cdec808237ace.camel@mediatek.com>
- <20220504082249.anrvkf2ssbxyzz5m@vireshk-i7>
- <332f8adec6601f97ab2814d06330883a251e41ec.camel@mediatek.com>
+        Wed, 04 May 2022 04:59:31 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Subject: [PATCH v2] Revert "fbdev: Make fb_release() return -ENODEV if fbdev was unregistered"
+Date:   Wed,  4 May 2022 13:59:17 +0200
+Message-Id: <20220504115917.758787-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <332f8adec6601f97ab2814d06330883a251e41ec.camel@mediatek.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04-05-22, 19:57, Rex-BC Chen wrote:
-> Thanks a lot! It helps to fix this issue.
-> And I will drop this patch in the next version.
+This reverts commit aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a. That commit
+attempted to fix a NULL pointer dereference, caused by the struct fb_info
+associated with a framebuffer device to not longer be valid when the file
+descriptor was closed.
 
-Please provide your Tested-by in that thread then, it will help.
+The issue was exposed by commit 27599aacbaef ("fbdev: Hot-unplug firmware
+fb devices on forced removal"), which added a new path that goes through
+the struct device removal instead of directly unregistering the fb.
 
+Most fbdev drivers have issues with the fb_info lifetime, because call to
+framebuffer_release() from their driver's .remove callback, rather than
+doing from fbops.fb_destroy callback. This meant that due to this switch,
+the fb_info was now destroyed too early, while references still existed,
+while before it was simply leaked.
+
+The patch we're reverting here reinstated that leak, hence "fixed" the
+regression. But the proper solution is to fix the drivers to not release
+the fb_info too soon.
+
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+---
+
+Changes in v2:
+- Add more info in the commit message about why it's crashing and how
+  the reverted commit was papering over the issue (Daniel Vetter).
+- Add Daniel Vetter's Reviewed-by tag.
+
+ drivers/video/fbdev/core/fbmem.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 97eb0dee411c..a6bb0e438216 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1434,10 +1434,7 @@ fb_release(struct inode *inode, struct file *file)
+ __acquires(&info->lock)
+ __releases(&info->lock)
+ {
+-	struct fb_info * const info = file_fb_info(file);
+-
+-	if (!info)
+-		return -ENODEV;
++	struct fb_info * const info = file->private_data;
+ 
+ 	lock_fb_info(info);
+ 	if (info->fbops->fb_release)
 -- 
-viresh
+2.35.1
+
