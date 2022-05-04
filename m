@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53307C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95636C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbiEDG5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
+        id S1345302AbiEDG5e (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 02:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345111AbiEDG4g (ORCPT
+        with ESMTP id S1345109AbiEDG4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 02:56:36 -0400
 Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30FC20BF5
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:53:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6231120BE6;
+        Tue,  3 May 2022 23:53:00 -0700 (PDT)
 Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 5B216C64;
-        Tue,  3 May 2022 23:53:01 -0700 (PDT)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 50BF9223;
+        Tue,  3 May 2022 23:53:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1651647181;
-        bh=T+pl3SJCSzXLJOiH4mZIAgFL9b9XXugAhhglLLH5nDw=;
+        s=thorn; t=1651647180;
+        bh=NGgm9ZytERpttgSYTz22XkDyLz7akFtC0NdMbrSk3Qw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mX7+SrYAMIBw0ZLAA5ZzfrgVbR8MjFejgzDqwOnI8FCj2J1NgvmTaWjXI+clUMs0N
-         jR6qTIFaLnCw7hHAh74Z03lX/zB5GpyDTYCtkHc+Z170TfVPhO+XpLSTpxFWKm2z8K
-         qWSrjHbBxfJbard91MS1vaOx+QKoy65660GrjmCg=
+        b=CBZa54PqXgXcLE6/k/HrFbeNJv4F6EzjUtzedbwiSK6Ap7+y1MjNaXUgqluZA8Ogc
+         3HWlcIB9V3AOqIT0ylHmV7qVu6qk1oC9wW7yCtJBqt/egcUXeUapVuDVO2E64hpJ+0
+         V/O0Pns/givWDrHjDLhDjz7XbCJkOq7YQ2VjHolg=
 From:   Zev Weiss <zev@bewilderbeest.net>
 To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     Zev Weiss <zev@bewilderbeest.net>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         openbmc@lists.ozlabs.org
-Subject: [PATCH 6/6] regulator: core: Add external-consumer driver
-Date:   Tue,  3 May 2022 23:52:52 -0700
-Message-Id: <20220504065252.6955-6-zev@bewilderbeest.net>
+Subject: [PATCH 2/6] dt-bindings: regulator: Add reg-external-output binding
+Date:   Tue,  3 May 2022 23:52:48 -0700
+Message-Id: <20220504065252.6955-2-zev@bewilderbeest.net>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504065252.6955-1-zev@bewilderbeest.net>
 References: <20220504065252.6955-1-zev@bewilderbeest.net>
@@ -47,83 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An external consumer is a dummy device representing a device external
-to the system that is supplied by a regulator designated for external
-output.  It is purely a virtual placeholder to instantiate a regulator
-by calling regulator_get() on it from its probe function.
+This describes an external output supplied by a regulator, such as a
+power outlet on a power distribution unit (PDU).
 
 Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 ---
- drivers/regulator/Kconfig |  9 +++++++++
- drivers/regulator/core.c  | 28 ++++++++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
+ .../regulator/reg-external-output.yaml        | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/reg-external-output.yaml
 
-diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
-index 5ef2306fce04..5ec390687a81 100644
---- a/drivers/regulator/Kconfig
-+++ b/drivers/regulator/Kconfig
-@@ -56,6 +56,15 @@ config REGULATOR_USERSPACE_CONSUMER
- 
- 	  If unsure, say no.
- 
-+config REGULATOR_EXTERNAL_CONSUMER
-+	bool "External regulator consumer support"
-+	help
-+	  Some regulators supply devices that are entirely external to
-+	  the system.  This driver provides a placeholder consumer
-+	  representing such devices.
+diff --git a/Documentation/devicetree/bindings/regulator/reg-external-output.yaml b/Documentation/devicetree/bindings/regulator/reg-external-output.yaml
+new file mode 100644
+index 000000000000..c00bee5bd9f2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/regulator/reg-external-output.yaml
+@@ -0,0 +1,37 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
 +
-+	  If unsure, say no.
++$id: http://devicetree.org/schemas/regulator/reg-external-output.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- config REGULATOR_88PG86X
- 	tristate "Marvell 88PG86X voltage regulators"
- 	depends on I2C
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index d873606eb41f..4f348b3d5290 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -19,6 +19,7 @@
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
- #include <linux/of.h>
-+#include <linux/platform_device.h>
- #include <linux/regmap.h>
- #include <linux/regulator/of_regulator.h>
- #include <linux/regulator/consumer.h>
-@@ -6070,6 +6071,33 @@ static int regulator_summary_show(struct seq_file *s, void *data)
- DEFINE_SHOW_ATTRIBUTE(regulator_summary);
- #endif /* CONFIG_DEBUG_FS */
- 
-+#ifdef CONFIG_REGULATOR_EXTERNAL_CONSUMER
-+static int regulator_external_output_probe(struct platform_device *pdev)
-+{
-+	struct regulator *reg;
++title: Regulator external output
 +
-+	reg = devm_regulator_get_external(&pdev->dev, "vout");
-+	if (IS_ERR(reg))
-+		return PTR_ERR(reg);
++maintainers:
++  - Zev Weiss <zev@bewilderbeest.net>
 +
-+	return 0;
-+}
++description: |
++  This describes an external output supplied by a regulator, such as
++  a power outlet on a power distribution unit (PDU).
 +
-+static const struct of_device_id reg_external_consumer_of_match_table[] = {
-+	{ .compatible = "regulator-external-output" },
-+	{ },
-+};
++properties:
++  compatible:
++    const: reg-external-output
 +
-+static struct platform_driver reg_external_consumer_driver = {
-+	.driver = {
-+		.name = "reg-external-consumer",
-+		.of_match_table = reg_external_consumer_of_match_table,
-+	},
-+	.probe = regulator_external_output_probe,
-+};
-+builtin_platform_driver(reg_external_consumer_driver);
-+#endif /* CONFIG_REGULATOR_EXTERNAL_CONSUMER */
++  vout-supply:
++    description:
++      Phandle of the regulator supplying the output, which should have
++      the regulator-external-output property.
 +
- static int __init regulator_init(void)
- {
- 	int ret;
++required:
++  - compatible
++  - vout-supply
++
++additionalProperties: false
++
++examples:
++  - |
++      output {
++          compatible = "reg-external-output";
++          vout-supply = <&output_reg>;
++      };
 -- 
 2.36.0
 
