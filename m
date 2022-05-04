@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C017C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353724AbiEDQwr (ORCPT
+        id S1353803AbiEDQwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        Wed, 4 May 2022 12:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353675AbiEDQwB (ORCPT
+        with ESMTP id S1353681AbiEDQwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959EA47043;
-        Wed,  4 May 2022 09:48:23 -0700 (PDT)
+        Wed, 4 May 2022 12:52:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E964704A;
+        Wed,  4 May 2022 09:48:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39A35B82553;
-        Wed,  4 May 2022 16:48:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3584C385B2;
-        Wed,  4 May 2022 16:48:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73925B8279A;
+        Wed,  4 May 2022 16:48:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18AA8C385A4;
+        Wed,  4 May 2022 16:48:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682901;
-        bh=iw5r7VXYhZZ7jk1+tRISB95kKILUAHqZqpWpvMsK8Bo=;
+        s=korg; t=1651682905;
+        bh=N2OJ8A9Pgd4tQdz72XK9NSdvVzRl/vedp+YId9WKg1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YTSVEOT65ILm2D6S/rZSfCWHPVElofiQ5N6J0fatR60A+fN+c4Kbo8aE4nlnnwBgg
-         00WQyUvImpEUs3uW5VshpGRkAwJeG+++XxMAHJiDU04+exi5oL9ezZnYe51Al0WX26
-         BHQi4JCZLpAIx+HxPAZmjQtz1qL2FD/L6VFPDWKw=
+        b=GFAUuEcw3LJZOdkr3ANpq6retuuOpciCoEh6gy2e5Mkbt8DZWZIr+x+w503HAGI1m
+         MCKUookecHV4y4QpjkPklM52pDL7OEkll0aaFB5ERskXWw3JQknIwugCnUh9OKXjBa
+         a5u6tzCc1kV7oOWiLfiIfJKmJF7uLi+E7Qw7vA3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 5.4 07/84] USB: quirks: add STRING quirk for VCOM device
-Date:   Wed,  4 May 2022 18:43:48 +0200
-Message-Id: <20220504152928.241906856@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.4 15/84] iio: dac: ad5446: Fix read_raw not returning set value
+Date:   Wed,  4 May 2022 18:43:56 +0200
+Message-Id: <20220504152928.881800756@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -48,31 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-commit ec547af8a9ea6441864bad34172676b5652ceb96 upstream.
+commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
 
-This has been reported to stall if queried
+read_raw should return the un-scaled value.
 
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220414123152.1700-1-oneukum@suse.com
+Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/dac/ad5446.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -511,6 +511,9 @@ static const struct usb_device_id usb_qu
- 	/* DJI CineSSD */
- 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -170,7 +170,7 @@ static int ad5446_read_raw(struct iio_de
  
-+	/* VCOM device */
-+	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
-+
- 	/* INTEL VALUE SSD */
- 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
- 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		*val = st->cached_val;
++		*val = st->cached_val >> chan->scan_type.shift;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = st->vref_mv;
 
 
