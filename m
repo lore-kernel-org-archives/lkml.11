@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 632B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09932C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354334AbiEDQ5q (ORCPT
+        id S1354349AbiEDQ5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
+        Wed, 4 May 2022 12:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354446AbiEDQyW (ORCPT
+        with ESMTP id S1349590AbiEDQyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:22 -0400
+        Wed, 4 May 2022 12:54:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D3949686;
-        Wed,  4 May 2022 09:49:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7531A4968D;
+        Wed,  4 May 2022 09:49:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D3CE6179D;
-        Wed,  4 May 2022 16:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73B62C385A4;
-        Wed,  4 May 2022 16:49:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 146896174C;
+        Wed,  4 May 2022 16:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 653FCC385A4;
+        Wed,  4 May 2022 16:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682973;
-        bh=LYGcPqMxx8tdKlc9uVn1sJlyS/qxhnYrBe7Q5Acr9RY=;
+        s=korg; t=1651682975;
+        bh=L1Ds1EUngD0M7E8EcZPz2evcTmB11XeoOhit7RNR7g8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IGXS4s+63t+MCa3dhfUv8pkcfVc7IhR6gPu5hBCQH7DLziyf3IQ1BaGwVca+nVnLQ
-         Z0EMju34TJoo2vVsE6VJGU9awkaYajHbXWNBZRQd71CT3tMjZ/eXTrjuydr4QAytIn
-         eZEOQkp5ua9jowIabt+u6R1OZ7hQBvJ+L316c8Z4=
+        b=ExOx4PC8GMGJev/cSHaKz283lrrtBp6k/9H7Wcssu5qWqP94MMaAz3aFm5V6kyOHN
+         W2EFKHXmkHgbf2FWBopCNsrjsE7M4SgvVE7GFR38s0ZnehJUzbZytD7pvHrpY9KUiq
+         Mq37SPCGjMw0ZZPfRDS2Y9M2TNCSL3yNX0M+chGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.4 76/84] tty: n_gsm: fix malformed counter for out of frame data
-Date:   Wed,  4 May 2022 18:44:57 +0200
-Message-Id: <20220504152933.538939313@linuxfoundation.org>
+Subject: [PATCH 5.4 78/84] tty: n_gsm: fix insufficient txframe size
+Date:   Wed,  4 May 2022 18:44:59 +0200
+Message-Id: <20220504152933.672339990@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,33 +50,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit a24b4b2f660b7ddf3f484b37600bba382cb28a9d upstream.
+commit 535bf600de75a859698892ee873521a48d289ec1 upstream.
 
-The gsm_mux field 'malformed' represents the number of malformed frames
-received. However, gsm1_receive() also increases this counter for any out
-of frame byte.
-Fix this by ignoring out of frame data for the malformed counter.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
+(N1) refers to the length of the information field (i.e. user payload).
+However, 'txframe' stores the whole frame including frame header, checksum
+and start/end flags. We also need to consider the byte stuffing overhead.
+Define constant for the protocol overhead and adjust the 'txframe' size
+calculation accordingly to reserve enough space for a complete mux frame
+including byte stuffing for advanced option mode. Note that no byte
+stuffing is applied to the start and end flag.
+Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
+transmission.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-7-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-8-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1961,7 +1961,8 @@ static void gsm1_receive(struct gsm_mux
- 		}
- 		/* Any partial frame was a runt so go back to start */
- 		if (gsm->state != GSM_START) {
--			gsm->malformed++;
-+			if (gsm->state != GSM_SEARCH)
-+				gsm->malformed++;
- 			gsm->state = GSM_START;
- 		}
- 		/* A SOF in GSM_START means we are still reading idling or
+@@ -72,6 +72,8 @@ module_param(debug, int, 0600);
+  */
+ #define MAX_MRU 1500
+ #define MAX_MTU 1500
++/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
++#define PROT_OVERHEAD 7
+ #define	GSM_NET_TX_TIMEOUT (HZ*10)
+ 
+ /**
+@@ -2209,7 +2211,7 @@ static struct gsm_mux *gsm_alloc_mux(voi
+ 		kfree(gsm);
+ 		return NULL;
+ 	}
+-	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
++	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
+ 	if (gsm->txframe == NULL) {
+ 		kfree(gsm->buf);
+ 		kfree(gsm);
 
 
