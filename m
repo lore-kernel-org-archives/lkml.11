@@ -2,124 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343899AbiEDJli (ORCPT
+        id S1347656AbiEDJmc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 05:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
+        Wed, 4 May 2022 05:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347210AbiEDJl3 (ORCPT
+        with ESMTP id S238227AbiEDJma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 05:41:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC0C82655A
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 02:37:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651657072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g6g2UJy+0nwhmO5/tF8oPdW8Lnfz1wSfTmKwEMghbcA=;
-        b=T/VXQNCPNAdlx4RkVdgXv17XMb38Cx9VrRlHQUIG7gayHM8kBQ9SRSZXTRrxrT6L4Uc9iH
-        bWUJu3N5K4IKdhQHT8myWTtaYeoFzWvRCajyWBjW2IrlMIwZ6NtTWix9isfKs/3p6g66iS
-        A0HTYkqqY6nMQsyZb5Bwn12w1bO8VOg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-617-cYQkRTP8PcGROPRa6OaIdg-1; Wed, 04 May 2022 05:37:52 -0400
-X-MC-Unique: cYQkRTP8PcGROPRa6OaIdg-1
-Received: by mail-wm1-f71.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso2747017wma.6
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 02:37:52 -0700 (PDT)
+        Wed, 4 May 2022 05:42:30 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2125E275C0
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 02:38:55 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b24so1035624edu.10
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 02:38:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v445vAlme2zlrPL6XrM4JniIviakM8QqlAR33SjZ/5E=;
+        b=hM2bbzfYB9M+Ca6zJVRzpxwIn7EMB8SBN8mUvDSIzsa+xWIcfUGlTfwqzMYyRTSfXm
+         sisamAPFM5rcXf413mOFntR5wifzmK2GIzilqLQcVqKa74yGBGZzrTgfmApi2V4lxIkn
+         D00G1ZxDPYQLCbCzPIezeBFYNL+fl0wRhgsPw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g6g2UJy+0nwhmO5/tF8oPdW8Lnfz1wSfTmKwEMghbcA=;
-        b=fc8USh/qqb4uW+JNY1qXXP4S4vO7biXjWnOZu3HQVi6IrBenM2OA0fXZpGNdGBWnzT
-         8MoJMSyYDnYX8UxF7+VGC2wnAX4AmDkF8keMuC9xL2KfHbt1BsOfODmgq3b1E4Hj1Nq+
-         I7tbxTMOjNe/roQf19C3Ogj7en+7Oto70nzJ9GBphzcxA3dKEUTVICMJmA5SdEKEFMC/
-         AgHXgGaQXETU+F51lGZ8squxUMvhs013lBCN8A8xGFBE1d8wiIe0a7FHY4tHWo1MRG7b
-         kOl84qhftW7NkSWfbPx/t35TM7ZocqT274Y9esCyAfpr4w7hUSq1Iua1sg7l3bfJlL0P
-         wj+g==
-X-Gm-Message-State: AOAM5328nlZsKI6RmKJli1rMEZRUaIluI3CQjpeXKRotnNvrvfBmj2Wh
-        ZuGTZ7SdH95MZdoUX7fKkaZb7idORVthCpKEropA2OF/dJow0nQk45l3MlomZmrTraSt7AqAQHf
-        LksaIkqbilbQdaPLGEQ1beIQ=
-X-Received: by 2002:a05:600c:4ecc:b0:394:3250:d88c with SMTP id g12-20020a05600c4ecc00b003943250d88cmr6688131wmq.105.1651656752836;
-        Wed, 04 May 2022 02:32:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzO+pbxaczdRjaRn57aZ40kzSJJ6kjffsdlMDg10f1bqbYBn8iIHq0NrVydrrKVdtoougHgAA==
-X-Received: by 2002:a05:600c:4ecc:b0:394:3250:d88c with SMTP id g12-20020a05600c4ecc00b003943250d88cmr6688115wmq.105.1651656752625;
-        Wed, 04 May 2022 02:32:32 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id j28-20020a05600c1c1c00b003942a244f39sm3382841wms.18.2022.05.04.02.32.31
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=v445vAlme2zlrPL6XrM4JniIviakM8QqlAR33SjZ/5E=;
+        b=z9yuB+hbIQ4SuLF8mlqMc0wH1cYZNIVpa4rA0squIMRkB6Tj2/378jt3N5KzHZXk/5
+         8AebK0uC0wtdwv/1/yU4Cmg2M8AtskfYel167Tgx1hpEA3f3LQiCVc4kx4CxnUHbGeF/
+         8yhu/VMq2tL+A+A4J96cTBsKE+DROA1ho6LbLm+mt/9XWz0jwS4Rb6SG8kWP0Qdo+qhv
+         SzkBVyHRyzmPglbTkkWHhNhGdv6Z2yNp26DT/9W0fNqjTsI0fbacvRTyv873+czWMtTZ
+         QC8fXKG2KzUDqM8A5HSc1oV5/M5X2xTAM99gocgONaX4eoZSBMWZxkoANFShGuI3RJkK
+         yzaA==
+X-Gm-Message-State: AOAM531/dha1nqLcgrhhO68icprPQFjGT1qHonqPyAIwCdCdgSZu3lmJ
+        r9kToIvEOyJu6x3exNBv0xkLeQ==
+X-Google-Smtp-Source: ABdhPJyvZnRAfF291GMqjz7DLqK6y4u0GKdaL17PBCM4iimO9RBWYJ1fAx8Vy9Brbgoj0DSchPP6sA==
+X-Received: by 2002:a05:6402:42c4:b0:426:a7a8:348f with SMTP id i4-20020a05640242c400b00426a7a8348fmr22175278edc.341.1651657133662;
+        Wed, 04 May 2022 02:38:53 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id gv8-20020a1709072bc800b006f3ef214e5csm5520368ejc.194.2022.05.04.02.38.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 02:32:31 -0700 (PDT)
-Date:   Wed, 4 May 2022 10:32:30 +0100
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     frederic@kernel.org, cl@linux.com, tglx@linutronix.de,
-        mingo@kernel.org, peterz@infradead.org, pauld@redhat.com,
-        neelx@redhat.com, oleksandr@natalenko.name,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v3] tick/sched: Ensure quiet_vmstat() is called when
- the idle tick was stopped too
-Message-ID: <20220504093230.xmksdyagcpgs7sjt@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220422193647.3808657-1-atomlin@redhat.com>
- <YmrYfSSepamn5fVc@fuller.cnet>
+        Wed, 04 May 2022 02:38:53 -0700 (PDT)
+Date:   Wed, 4 May 2022 11:38:51 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH] drm: drm_gem.h: Add explicit includes for
+ DEFINE_DRM_GEM_FOPS
+Message-ID: <YnJJq6UdCVIWcH3G@phenom.ffwll.local>
+Mail-Followup-To: Jani Nikula <jani.nikula@linux.intel.com>,
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+References: <1651262112-29664-1-git-send-email-quic_jhugo@quicinc.com>
+ <87y1zkq6vg.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmrYfSSepamn5fVc@fuller.cnet>
+In-Reply-To: <87y1zkq6vg.fsf@intel.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-04-28 15:10 -0300, Marcelo Tosatti wrote:
-> So you are syncing the vmstats on every system call return:
-
-Hi Marcelo,
-
-Sorry about the delay!
-
-No - indeed, that would be too expensive. If I understand correctly,
-Peter Zijlstra's feedback was in response to a previous suggestion made:
-
-	"Could we *always* fold the vmstat counters when entering
-	 idle mode? ..."
-
-I think an exception should be made for the adaptive-tick mode/or a
-nohz_full CPU case when the scheduling-clock tick is stopped. Also, I feel
-correctness is key, as previously indicated since a significant divergence
-can impact memory reclaim code.
-
-> Have you measured performance of any system call heavy application
-> with this change?
-
-Unfortunately not. That being said, the aforementioned test and work will
-only take place under a nohz_full CPU and if the tick is stopped.
-So this should be somewhat limited, no?
-
-> Then the comment on why its so slow:
+On Mon, May 02, 2022 at 06:41:39PM +0300, Jani Nikula wrote:
+> On Fri, 29 Apr 2022, Jeffrey Hugo <quic_jhugo@quicinc.com> wrote:
+> > DEFINE_DRM_GEM_FOPS() references drm functions from other headers.  For
+> > example drm_open() is defined in drm_file.h and drm_ioctl() is defined
+> > in drm_ioctl.h.  Since drm_gem.h doesn't include these headers, it
+> > relies on an implicit include from the .c file to have included these
+> > required headers before DEFINE_DRM_GEM_FOPS() gets used.  Relying on
+> > these implicit includes can cause build failures for new code that
+> > doesn't know about these requirements, and can lead to future problems
+> > if the headers ever get restructured as there will be a need to update
+> > every downstream file that includes drm_gem.h.
+> >
+> > Lets fix this explicitly including the required headers in drm_gem.h so
+> > that code that includes drm_gem.h does not need to worry about these
+> > implicit dependencies.
 > 
-> "This loop is quite heavy. Maybe reducing the data necessary to be read
-> to a couple of cachelines would improve it considerably."
+> In the general case, I tend to agree, but in this specific instance I
+> think I'd err on the side of fewer includes. I think the more likely
+> outcome here is accumulating implicit dependencies on symbols from
+> drm_file.h and drm_ioctl.h by including drm_gem.h only!
 > 
-> The comment:
+> I do think headers need to be self-contained, and we actually enforce
+> this in i915 (see HDRTEST in drivers/gpu/drm/i915/Makefile), but not to
+> the point of macro expansions.
+
+Yeah we abuse macros in a bunch of places to untangle header dependencies,
+so then going back and pulling in all the headers back in feels a bit
+silly and defeats the point.
+
+iow, I concur.
+-Daniel
+
 > 
-> "Is there anything that prevents a nohz full CPU from running an
-> application with short and frequent idling?"
+> BR,
+> Jani.
 > 
-> Is confusing and can be ignored.
-
-Understood.
-
-
-
-Kind regards,
+> 
+> 
+> >
+> > Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+> > ---
+> >  include/drm/drm_gem.h | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
+> > index 9d7c61a..1cbe3d8 100644
+> > --- a/include/drm/drm_gem.h
+> > +++ b/include/drm/drm_gem.h
+> > @@ -37,6 +37,8 @@
+> >  #include <linux/kref.h>
+> >  #include <linux/dma-resv.h>
+> >  
+> > +#include <drm/drm_file.h>
+> > +#include <drm/drm_ioctl.h>
+> >  #include <drm/drm_vma_manager.h>
+> >  
+> >  struct iosys_map;
+> 
+> -- 
+> Jani Nikula, Intel Open Source Graphics Center
 
 -- 
-Aaron Tomlin
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
