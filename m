@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9613AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356694AbiEDRko (ORCPT
+        id S1358033AbiEDRlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
+        Wed, 4 May 2022 13:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356693AbiEDRJi (ORCPT
+        with ESMTP id S1356665AbiEDRJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:38 -0400
+        Wed, 4 May 2022 13:09:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF231573B;
-        Wed,  4 May 2022 09:55:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32583B9;
+        Wed,  4 May 2022 09:55:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9672618AC;
-        Wed,  4 May 2022 16:55:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 042EFC385A5;
-        Wed,  4 May 2022 16:55:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B040761851;
+        Wed,  4 May 2022 16:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04470C385A4;
+        Wed,  4 May 2022 16:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683322;
-        bh=tKZj744Ki6jJM/kUR5/uSIXL2DmzSoeiIvGPzX9mJc0=;
+        s=korg; t=1651683319;
+        bh=M0/axqTGok4fcs8rG0eauRfmKiO8nOsazqCkI5HiV/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eRpyS4ucYue8RFMSyyCi5RobqG4qkEO+3P1LN503huEMpWrtfGd9AS+lUuMOsSjQs
-         /gFVZaUce+tsUpHzPh88m44siEy6PCqsOngMTbcmdo4rjlcNc0az/BG89zolZ/INqd
-         y5S8DLCYPRbNBjM2D0TlF5dab7XlmokLA17840QE=
+        b=mF4yGrzmeZ0g4gnSiKHdByCvwSpO1Tec8uV4LVfBNgNTpqAbjdrpascX5kyjJyjvi
+         0/moh8u+lCRx3OHcXhSflatH57Ld64sn/xj5w/iEMEm1e/c4cMBrd7z8EM8L0fKsAC
+         3RgNq1o0Bq9PuD22JLIYyM+EoMSdBepORukLaqdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Tainping Fang <tianping.fang@mediatek.com>
-Subject: [PATCH 5.17 001/225] usb: mtu3: fix USB 3.0 dual-role-switch from device to host
-Date:   Wed,  4 May 2022 18:43:59 +0200
-Message-Id: <20220504153110.258558138@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH 5.15 176/177] objtool: Fix type of reloc::addend
+Date:   Wed,  4 May 2022 18:46:09 +0200
+Message-Id: <20220504153109.467732856@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,56 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Macpaul Lin <macpaul.lin@mediatek.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 456244aeecd54249096362a173dfe06b82a5cafa upstream.
+commit c087c6e7b551b7f208c0b852304f044954cf2bb3 upstream.
 
-Issue description:
-  When an OTG port has been switched to device role and then switch back
-  to host role again, the USB 3.0 Host (XHCI) will not be able to detect
-  "plug in event of a connected USB 2.0/1.0 ((Highspeed and Fullspeed)
-  devices until system reboot.
+Elf{32,64}_Rela::r_addend is of type: Elf{32,64}_Sword, that means
+that our reloc::addend needs to be long or face tuncation issues when
+we do elf_rebuild_reloc_section():
 
-Root cause and Solution:
-  There is a condition checking flag "ssusb->otg_switch.is_u3_drd" in
-  toggle_opstate(). At the end of role switch procedure, toggle_opstate()
-  will be called to set DC_SESSION and SOFT_CONN bit. If "is_u3_drd" was
-  set and switched the role to USB host 3.0, bit DC_SESSION and SOFT_CONN
-  will be skipped hence caused the port cannot detect connected USB 2.0
-  (Highspeed and Fullspeed) devices. Simply remove the condition check to
-  solve this issue.
+  - 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt+0x80000067
+  + 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt-0x7fffff99
 
-Fixes: d0ed062a8b75 ("usb: mtu3: dual-role mode support")
-Cc: stable@vger.kernel.org
-Tested-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Signed-off-by: Tainping Fang <tianping.fang@mediatek.com>
-Link: https://lore.kernel.org/r/20220419081245.21015-1-macpaul.lin@mediatek.com
+Fixes: 627fce14809b ("objtool: Add ORC unwind table generation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/20220419203807.596871927@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/mtu3/mtu3_dr.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ tools/objtool/check.c               |    8 ++++----
+ tools/objtool/elf.c                 |    2 +-
+ tools/objtool/include/objtool/elf.h |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/usb/mtu3/mtu3_dr.c b/drivers/usb/mtu3/mtu3_dr.c
-index a6b04831b20b..9b8aded3d95e 100644
---- a/drivers/usb/mtu3/mtu3_dr.c
-+++ b/drivers/usb/mtu3/mtu3_dr.c
-@@ -21,10 +21,8 @@ static inline struct ssusb_mtk *otg_sx_to_ssusb(struct otg_switch_mtk *otg_sx)
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -393,12 +393,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%x",
++				WARN("can't find unreachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%x",
++			WARN("can't find unreachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -428,12 +428,12 @@ reachable:
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%x",
++				WARN("can't find reachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%x",
++			WARN("can't find reachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -485,7 +485,7 @@ static struct section *elf_create_reloc_
+ 						int reltype);
  
- static void toggle_opstate(struct ssusb_mtk *ssusb)
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend)
++		  unsigned int type, struct symbol *sym, long addend)
  {
--	if (!ssusb->otg_switch.is_u3_drd) {
--		mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
--		mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
--	}
-+	mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
-+	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
- }
+ 	struct reloc *reloc;
  
- /* only port0 supports dual-role mode */
--- 
-2.36.0
-
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -69,7 +69,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	int addend;
++	long addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -131,7 +131,7 @@ struct elf *elf_open_read(const char *na
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend);
++		  unsigned int type, struct symbol *sym, long addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
 
 
