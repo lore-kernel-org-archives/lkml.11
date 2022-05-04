@@ -2,129 +2,487 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 00:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4188C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 00:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237509AbiEEAFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 20:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        id S232053AbiEEAFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 20:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383401AbiEEABS (ORCPT
+        with ESMTP id S1380766AbiEDXve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 20:01:18 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2047.outbound.protection.outlook.com [40.107.236.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E156B98;
-        Wed,  4 May 2022 16:57:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q8sSVvS24/76Q4Jh8NWT85pF3rMaDWUHMYtXkxX7kOszUbzaYsaWmYlBFimx538p2JlcmxJo3m8d5+5nvIy3nGW2P9v1VlKEcQJ+O9pgQXka2kBNnHIu3s7XVjX1r/QdRUUH0j+OJhEW0R/lHdb4fr62EMfI6dnt4Rp+A+cCp6hcztrFaOIbnydwJe7bCONcgv7rVOxUzit5zMIaN/gy9tZAwg+9WNk90+EMsffKD93qZWzq+DULFyKTHJYwJVruqV2elHfL+/UaOMFo5CWpEmZNP4Q+Tx9sF73rsa0jRgh/k7gvq1fIFlQ+hCtb89nnqza4QZDTlOYatkrDH3jdIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IhUL3zRn6YfbTb9ROEnuLEIlEEsTIrXOEWmJc83Lkig=;
- b=hT4yK/N9Cr/Irl8JQKRcrJbQd+p9TDHx1M4tWM7Hq5R8T9L+pC7PXfuBowzBxHK1qQ+B7M3qLqYh5xlhO0wpXo+RAIDNb4E8U6ImcjGX/YANcGQZh5lNvoR1tUayElNjPeYrMc0QDPgm++f3YTUkUBBHW8CWqsKnWnggqRQY182xGSO/28lxxF+cWAaD2YtkXwmmTFmVyZXdugb+orOuozSWzzMrpNooPGm9Z1sQv9OpIO8BqyoKeKqBf9lqRuW2nllycA/PzPZLP1ZIUcJbTbjhg1Ti2pWrP956Sp+LatYzFZHc8g8sOkMPcuNi61L+lUyrg19Ek/b32omFARPlww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IhUL3zRn6YfbTb9ROEnuLEIlEEsTIrXOEWmJc83Lkig=;
- b=Z7CE8+2rtuYKRFF2hA5a/JoHp75YyLs6vIlQZW/EOrVrK17CHoaL9850w1+uNSOBBBpp23HPicvuH2WtRgDwsTrNK+4VHYKxkfrXJ0s5UVUWz5SVxmBELnag2rntMafsQ0P4Zkapl3BZK8Xie8pILe7i2OLJG1VGqPuTRTq6XkVXP4p5Y/itsMkyOITR9/n09OIDt+Jc9mG6YuUV7E9hd+wgcXwPWi3kk7sHKmZRjcW8miGq6jEVDGuUk0WQslX08gWJBtJi35ZJqlE28sNHOusauhzkUQINtFaZH+BjYM5GBiMT6eaeOle9gV+ZeOoGWZOM/81IVx6Wqy6kytSW6Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
- by CH2PR12MB4940.namprd12.prod.outlook.com (2603:10b6:610:65::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Wed, 4 May
- 2022 23:57:40 +0000
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::a090:8b53:715c:a961]) by CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::a090:8b53:715c:a961%5]) with mapi id 15.20.5206.026; Wed, 4 May 2022
- 23:57:40 +0000
-Date:   Wed, 4 May 2022 20:57:38 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     Wenpeng Liang <liangwenpeng@huawei.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "open list:HISILICON ROCE DRIVER" <linux-rdma@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        zhengkui_guo@outlook.com
-Subject: Re: [PATCH linux-next] RDMA/hns: fix returnvar.cocci warning
-Message-ID: <20220504235738.GA197080@nvidia.com>
-References: <20220426070858.9098-1-guozhengkui@vivo.com>
+        Wed, 4 May 2022 19:51:34 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E34B2A708
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:47:54 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id a15-20020a17090ad80f00b001dc2e23ad84so6504469pjv.4
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j6CzDM1WQ1731Av9cU1L+oYd+q4PP23xeD40nU98Nko=;
+        b=EljRlgbclc3Y+ZqAglQ4g56iKrAuOSq8YUI91uSSoDHcRPF6yuNc7YRm/yrbEPUu56
+         SnnhaD6E7eJ34TsanHzOddlDSFF1PPnU/CFRzeNf3KNFt1oYFN3YJFkhFOqogyjpr73H
+         MzDJb0+Qu3kIt8F+JBkQKdhzrCs3urvcw5OYsdS6at/q2G4px14CiX7ASdzBXAh45UWC
+         CWkCbw2Vs0OPsiYcdi6ubhBdfmK8zjRx2/1RNk8rggNO3L0VpO5VtwKGN9BQmyT/jmNP
+         RcE/99Oac7RyKAyNUFDKKz9zzkNNCOxRizMNSMgwVs99UepZplyAQCDklDDO1QanJJR4
+         b1PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=j6CzDM1WQ1731Av9cU1L+oYd+q4PP23xeD40nU98Nko=;
+        b=E5zcecqxJEKYIegU6tkp8+4pad+i0yOLWPY6MqU4iD6ytr07FD1c2JyjKnjeSc6BV1
+         v1gEC08Nvy1os7WdoNNtPA++FwppQn9wHYwqQDCWVn2+tRzI64T3FbLVPDjt24rPEazP
+         f1ys4mb0GkZZkozVDuViHm0nXByAYwo/nbrfLuIquVgSlSKmL5NuugzLri/1vAg6kYtu
+         gshbHTKaLsOKq8FWnh4bQQPFqWM4I/bz8odHdDoLrtoEdxtfpig1auHLeZaCoNAgNUEa
+         6AhCXP+UnwfvM/57DNv2jo5RQ/QRM4mJGEPHcG2NW7EO5sRY81P14Mge/RXfIaTJTr1P
+         HKKA==
+X-Gm-Message-State: AOAM532Kk6gCmoVzslirrIMNlhJ9kXcHYQ6qaVFv6FiYtOaff1wnXlMZ
+        jDSU+LDNlA+cdy2mTibgkKQ=
+X-Google-Smtp-Source: ABdhPJwpqv2n+a9T8BsInUCcx/7qMnJIW8A0uFmJ9J7q/7hSe28d0zT/xLc3clrEU/1evPe3jABunQ==
+X-Received: by 2002:a17:90a:4a8a:b0:1d5:a3df:ab5 with SMTP id f10-20020a17090a4a8a00b001d5a3df0ab5mr2538895pjh.64.1651708074031;
+        Wed, 04 May 2022 16:47:54 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:8435:b3e7:62fc:4dfa])
+        by smtp.gmail.com with ESMTPSA id gg7-20020a17090b0a0700b001d97f17f9b5sm3875576pjb.35.2022.05.04.16.47.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 16:47:53 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Wed, 4 May 2022 16:47:51 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        John Dias <joaodias@google.com>,
+        Tim Murray <timmurray@google.com>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>
+Subject: Re: [PATCH] mm: don't be stuck to rmap lock on reclaim path
+Message-ID: <YnMQp/zJVHu9Qq/S@google.com>
+References: <20220503170341.1413961-1-minchan@kernel.org>
+ <YnHzvV2Uz2ynENnG@casper.infradead.org>
+ <YnIBbjRYACzvuZpp@google.com>
+ <YnIYofrw/GGEvc0U@casper.infradead.org>
+ <YnKhLX+jzJc+2KwB@google.com>
+ <YnKwBeRAWwIlEVqy@casper.infradead.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220426070858.9098-1-guozhengkui@vivo.com>
-X-ClientProxiedBy: MN2PR15CA0064.namprd15.prod.outlook.com
- (2603:10b6:208:237::33) To CH2PR12MB4181.namprd12.prod.outlook.com
- (2603:10b6:610:a8::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ab8b71f7-4911-4e59-20ac-08da2e29df06
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4940:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB49401CD4E0707F8A191AE983C2C39@CH2PR12MB4940.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xLUmWa0NOfFqQ6BxLhU+bqyOTcvtbke2B3CXBhqa7juvzJ0nsm/l5TXf78ly0JhzCa0/KVqNNg+HwUMiV/IKVesmfvFPaw1c7QGvcIx6M9Hp2OfJlu22MMg47akrUo9CNbmSbjyqu8h0bYOu5WyMtYbmop+qnk2ZKvxa88HGy1L8YMTHFrChCUuo6aA9D5GwUGtavex/PJsMBfUjX+4BzYKPAiGjxlBfhj6p26W/Y2ORH4pz6TZaZWiiJucHFGGTPPzUMZmFQbs3i/6wV53Ont6bVh0IcYH6e14pXARklo4NYDxjcSrSRFzOmoDm83QPwI0Pkr+ebhZAK1d8hhy/MFJ/LIJ49vPF0EBgoQ5zhIXDLCfzET3m1GOgkxXqTZKqTHWk5XmckVjIHiVhICp+S/JdVNHFoaC4nph/6agXG3TQTTjLOxPZETQoNwLxGUjXPQJsIaMR+LqPATAnUgD9kn9QWskszYBjkXo9j2P33Asv9j5/Jpb+jSlKRalhyzAQLHIbSS+XyG0eQ5q6YA0eZbHqcOwAitbEbR4PyYxW5gNGcblMd48v/uGrjGAj1lwJIPWSlIC+/thXUpOK9aSIpM7f/E+qYYhSYbs7IZ+7UIV7PcSKYy8E8J3xJUWBA1A+8fZ/eVhRpDQw3tnlZzehaOUd++Dg+KxgecE53cyQSs9s0ycOeXgWnThZCnDLXq2q
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(2906002)(508600001)(83380400001)(6486002)(5660300002)(4744005)(86362001)(36756003)(26005)(33656002)(6512007)(186003)(1076003)(38100700002)(6916009)(316002)(2616005)(54906003)(66946007)(6506007)(66556008)(66476007)(4326008)(8676002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8LsQC/hw+M8RJbtqacnNPKnWTAXftmqGhQZYXkrrh34u1IMrlrLsAo+qud2R?=
- =?us-ascii?Q?2UF3kZ0u6DQ1RTslFnA19C/KzRppTjKo6365u02jAdgjH+FBtji7zMo0SMpe?=
- =?us-ascii?Q?VxLw2hFI9oOav1Xzv/hOb0xbedp1W3mJpWx80fU5+f0hTSh7LIhuz9V9QuCa?=
- =?us-ascii?Q?/GpfiiMjDR4Vyzs1sbxk/HeDGyMPlY3d7OpzVMjEq0Oi3XyPDFA8EoNc7Wns?=
- =?us-ascii?Q?wbbioCnu7s5AfVZlyEubh/FmayVdDC5nLSvBoGleUS9vxp3q17nehVLjQSUf?=
- =?us-ascii?Q?zIIdmBYWNnL3VyIU+W/eXVQks9LKJ3CaPDEl38FiVLWGFwh0JebKGu1RRGc/?=
- =?us-ascii?Q?a5/1vabXwIQR5sWAiydHPJKVXUXvXyCVAM9S3epi1BGWNNNSgqhb+XlfsoWO?=
- =?us-ascii?Q?kU2XDxceMgbrBoob5v6w62KE/JDVFP3x5r0RLHAufhyNEkH9Qd3GFXGM7FKM?=
- =?us-ascii?Q?MKfh3YTmm6vqIyPetoLooyN4q3cmpucVD99LB8YtfjIt2/mOPhDiLXQA/K9x?=
- =?us-ascii?Q?CXRTko0DyDMiA4Xf0R+NDctkNZs+2z/QJ4R7xRFzwobhemXG5UkK7tmjUz+y?=
- =?us-ascii?Q?iQbHmHW6K2LMqNgq8UXqIG3bptPfBVh6gtHPFTEqmsa7aSC+AilTfwD3V6Zj?=
- =?us-ascii?Q?EISOl8CH6pxDVstZn/G8fFmF2etQfldGRe6EJs3Z7V0CL5THla5Ge5h/joLy?=
- =?us-ascii?Q?Od4TBkAOMOtcRR/upABB+G6v0Y78kS6ZGXZ6tyz21LXfaBLjtEc2Xuch9w0x?=
- =?us-ascii?Q?GD20lXsCQxwOjWNszTdy9pst2oqTSjSbGRtg1ByIt1i2QltVmL8Mf9RXCe0s?=
- =?us-ascii?Q?CZ3xv13RqVo3cRojV517USBW/YHpa47ljLuQHgjH3TPgGhxaNfuHnLQ9VmVk?=
- =?us-ascii?Q?L7l7GoRTythcCiN8HsNLoCDnNWXOQwOspblrYW0JU/9MxVqV7XY5O78H1fIL?=
- =?us-ascii?Q?NWWEn8CPK5Q9nQEApE39ojzy3aGhzmu8WpIN4XMA/OFwXRCCToTF30TALLeZ?=
- =?us-ascii?Q?Eqz5SU8afmqa37HmKNpsKcl/zi6dZtKyYNjn8WmPuy/1h9dQKzojIQkNE0Oq?=
- =?us-ascii?Q?tjXkBLNhhC8CIAMAYarvNzYtppoC6F5WDEJzp20KDCIgsUx087WN/U3qnPAr?=
- =?us-ascii?Q?lRignXPEDsIDIVbMO1o6kVLHsidKH3fW/wLEVWTNVS5ogiwm9Hyn1kmfBa5j?=
- =?us-ascii?Q?tXGQXiMviwhigiLqEnPkVOa6aYKg0hzhSa4vRUYL8PZO/WOHO5xDb7KvGN2W?=
- =?us-ascii?Q?N1KJS1Svbe6EPHQTon+K4UQONX3ZTP+RXuE20fcq+IvEAKdJlk7SbCFka+AD?=
- =?us-ascii?Q?idEVVX1R8ouDnUhkwixeiTKXRwFMwMRg+lloB6FL0Zl6NfgxnGyboiN1SbfQ?=
- =?us-ascii?Q?7irPJKJZUpl5+rzgTkDADoYr5sRFNj9CXnMzhrlBydGKsIwJh9IJTRIG4A87?=
- =?us-ascii?Q?N7rRRN7F78mCFeXIaIPOd0mYPAR/KynzILd4io53i++rXBcdVaVuRYVJml3T?=
- =?us-ascii?Q?/yQBZM9GkviwLIhWxSe7pGxgjDgtA8GUqthEfuXL9i8sLiB7ucV3OaxIEEF1?=
- =?us-ascii?Q?NOnJpNxSbSid8TNcss1B6iSE8FIR/fr/Jj1UTYpplDWvXEwB4twxyJc7jUea?=
- =?us-ascii?Q?A25QGpqR8iF0bN6TtVVZmPVyGmXWOEGS64BIUm1tYemqMU1zWkfdurNHlO8v?=
- =?us-ascii?Q?3FT6a2EYYz2q90nIBgiFap0meg8zHCbkJpaqi+G4Vo0IITZfpihoNCQbuyHf?=
- =?us-ascii?Q?r9HkG13/Cg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ab8b71f7-4911-4e59-20ac-08da2e29df06
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 23:57:40.0665
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xh7/jcG+NqLac/WX41YD5ql5xDv0Fy/uuZ1Vucyo4AcxsjjodsYQk+CDpYx7lJOt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4940
+In-Reply-To: <YnKwBeRAWwIlEVqy@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 03:08:58PM +0800, Guo Zhengkui wrote:
-> Fix the following coccicheck warning:
-> drivers/infiniband/hw/hns/hns_roce_mr.c:343:5-8: Unneeded variable: "ret".
-> Return "0" on line 351.
+On Wed, May 04, 2022 at 05:55:33PM +0100, Matthew Wilcox wrote:
+> On Wed, May 04, 2022 at 08:52:13AM -0700, Minchan Kim wrote:
+> > On Wed, May 04, 2022 at 07:09:37AM +0100, Matthew Wilcox wrote:
+> > > On Tue, May 03, 2022 at 09:30:38PM -0700, Minchan Kim wrote:
+> > > > On Wed, May 04, 2022 at 04:32:13AM +0100, Matthew Wilcox wrote:
+> > > > > On Tue, May 03, 2022 at 10:03:41AM -0700, Minchan Kim wrote:
+> > > > > > -void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc);
+> > > > > > -void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc);
+> > > > > > +void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc);
+> > > > > > +void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc);
+> > > > > 
+> > > > > I see the build bot already beat me to pointing out why this is wrong,
+> > > > > but do you not look at git log to figure out why code was changed to be
+> > > > > the way it is now, before you change it back?
+> > > > 
+> > > > This patch added a new field as out param like compact_control so
+> > > > the rmap_walk_control is not immutable.
+> > > 
+> > > ... but we have a user which treats it as if it is.
+> > 
+> > True. I don't think it will show sizable benefit on runtime overhead
+> > since rmap_walk is already one of the most expensive operation in MM.
+> > 
+> > I could reintroduce the typecast for page_idle_clear_pte_refs to remove
+> > the const as we had several years.
+> > 
+> > If your concern was to make rmap_walk_control mutable back, I could
+> > change rmap_walk function having return value or adding a addtional
+> > new out param. However, I thought rmap_walk_control is more readable/
+> > easier than them.
 > 
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> ---
->  drivers/infiniband/hw/hns/hns_roce_mr.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> I haven't thought deeply about it, but I suspect the right approach is
+> to remove the rather dubious optimisation in page_idle_clear_pte_refs().
 
-Applied to for-next, thanks
+Ccing Vladimir
 
-Jason
+From a7f755e7e5cbe5d33893f9d4ca6bd95638ce1b16 Mon Sep 17 00:00:00 2001
+From: Minchan Kim <minchan@kernel.org>
+Date: Tue, 3 May 2022 09:47:37 -0700
+Subject: [PATCH v2] mm: don't be stuck to rmap lock on reclaim path
+
+The rmap locks(i_mmap_rwsem and anon_vma->root->rwsem) could be
+contented under memory pressure if processes keep working on
+their vmas(e.g., fork, mmap, munmap). It makes reclaim path
+stuck. In our real workload traces, we see kswapd is waiting the
+lock for 300ms+(worst case, a sec) and it makes other processes
+entering direct reclaim, which were also stuck on the lock.
+
+This patch makes LRU aging path try_lock mode like shink_page_list
+so the reclaim context will keep working with next LRU pages
+without being stuck.
+
+Since this patch introduces a new "contended" field as out param
+in rmap_walk_control, it's not immutable any longer so remove
+const keywords on rmap related functions. Since rmap walking
+is already expensive operation, I doubt the const would help sizable
+benefit(And we didn't have it until 5.17).
+
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+---
+ include/linux/fs.h   |  5 +++++
+ include/linux/ksm.h  |  4 ++--
+ include/linux/rmap.h | 28 +++++++++++++++++-------
+ mm/ksm.c             | 10 +++++++--
+ mm/memory-failure.c  |  2 +-
+ mm/page_idle.c       |  7 ++----
+ mm/rmap.c            | 52 ++++++++++++++++++++++++++++++++++----------
+ mm/vmscan.c          |  6 ++++-
+ 8 files changed, 84 insertions(+), 30 deletions(-)
+
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index f5ec00b2f073..5a169066f463 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -477,6 +477,11 @@ static inline void i_mmap_unlock_write(struct address_space *mapping)
+ 	up_write(&mapping->i_mmap_rwsem);
+ }
+ 
++static inline int i_mmap_trylock_read(struct address_space *mapping)
++{
++	return down_read_trylock(&mapping->i_mmap_rwsem);
++}
++
+ static inline void i_mmap_lock_read(struct address_space *mapping)
+ {
+ 	down_read(&mapping->i_mmap_rwsem);
+diff --git a/include/linux/ksm.h b/include/linux/ksm.h
+index 0630e545f4cb..0b4f17418f64 100644
+--- a/include/linux/ksm.h
++++ b/include/linux/ksm.h
+@@ -51,7 +51,7 @@ static inline void ksm_exit(struct mm_struct *mm)
+ struct page *ksm_might_need_to_copy(struct page *page,
+ 			struct vm_area_struct *vma, unsigned long address);
+ 
+-void rmap_walk_ksm(struct folio *folio, const struct rmap_walk_control *rwc);
++void rmap_walk_ksm(struct folio *folio, struct rmap_walk_control *rwc);
+ void folio_migrate_ksm(struct folio *newfolio, struct folio *folio);
+ 
+ #else  /* !CONFIG_KSM */
+@@ -79,7 +79,7 @@ static inline struct page *ksm_might_need_to_copy(struct page *page,
+ }
+ 
+ static inline void rmap_walk_ksm(struct folio *folio,
+-			const struct rmap_walk_control *rwc)
++			struct rmap_walk_control *rwc)
+ {
+ }
+ 
+diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+index cbe279a6f0de..9ec23138e410 100644
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -128,6 +128,11 @@ static inline void anon_vma_lock_read(struct anon_vma *anon_vma)
+ 	down_read(&anon_vma->root->rwsem);
+ }
+ 
++static inline int anon_vma_trylock_read(struct anon_vma *anon_vma)
++{
++	return down_read_trylock(&anon_vma->root->rwsem);
++}
++
+ static inline void anon_vma_unlock_read(struct anon_vma *anon_vma)
+ {
+ 	up_read(&anon_vma->root->rwsem);
+@@ -366,17 +371,14 @@ int pfn_mkclean_range(unsigned long pfn, unsigned long nr_pages, pgoff_t pgoff,
+ 
+ void remove_migration_ptes(struct folio *src, struct folio *dst, bool locked);
+ 
+-/*
+- * Called by memory-failure.c to kill processes.
+- */
+-struct anon_vma *folio_lock_anon_vma_read(struct folio *folio);
+-void page_unlock_anon_vma_read(struct anon_vma *anon_vma);
+ int page_mapped_in_vma(struct page *page, struct vm_area_struct *vma);
+ 
+ /*
+  * rmap_walk_control: To control rmap traversing for specific needs
+  *
+  * arg: passed to rmap_one() and invalid_vma()
++ * try_lock: bail out if the rmap lock is contended
++ * contended: indicate the rmap traversal bailed out due to lock contention
+  * rmap_one: executed on each vma where page is mapped
+  * done: for checking traversing termination condition
+  * anon_lock: for getting anon_lock by optimized way rather than default
+@@ -384,6 +386,8 @@ int page_mapped_in_vma(struct page *page, struct vm_area_struct *vma);
+  */
+ struct rmap_walk_control {
+ 	void *arg;
++	bool try_lock;
++	bool contended;
+ 	/*
+ 	 * Return false if page table scanning in rmap_walk should be stopped.
+ 	 * Otherwise, return true.
+@@ -391,12 +395,20 @@ struct rmap_walk_control {
+ 	bool (*rmap_one)(struct folio *folio, struct vm_area_struct *vma,
+ 					unsigned long addr, void *arg);
+ 	int (*done)(struct folio *folio);
+-	struct anon_vma *(*anon_lock)(struct folio *folio);
++	struct anon_vma *(*anon_lock)(struct folio *folio,
++				      struct rmap_walk_control *rwc);
+ 	bool (*invalid_vma)(struct vm_area_struct *vma, void *arg);
+ };
+ 
+-void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc);
+-void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc);
++void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc);
++void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc);
++
++/*
++ * Called by memory-failure.c to kill processes.
++ */
++struct anon_vma *folio_lock_anon_vma_read(struct folio *folio,
++					  struct rmap_walk_control *rwc);
++void page_unlock_anon_vma_read(struct anon_vma *anon_vma);
+ 
+ #else	/* !CONFIG_MMU */
+ 
+diff --git a/mm/ksm.c b/mm/ksm.c
+index ee607d3f8720..26da7f813f23 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -2614,7 +2614,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
+ 	return new_page;
+ }
+ 
+-void rmap_walk_ksm(struct folio *folio, const struct rmap_walk_control *rwc)
++void rmap_walk_ksm(struct folio *folio, struct rmap_walk_control *rwc)
+ {
+ 	struct stable_node *stable_node;
+ 	struct rmap_item *rmap_item;
+@@ -2638,7 +2638,13 @@ void rmap_walk_ksm(struct folio *folio, const struct rmap_walk_control *rwc)
+ 		struct vm_area_struct *vma;
+ 
+ 		cond_resched();
+-		anon_vma_lock_read(anon_vma);
++		if (!anon_vma_trylock_read(anon_vma)) {
++			if (rwc->try_lock) {
++				rwc->contended = true;
++				return;
++			}
++			anon_vma_lock_read(anon_vma);
++		}
+ 		anon_vma_interval_tree_foreach(vmac, &anon_vma->rb_root,
+ 					       0, ULONG_MAX) {
+ 			unsigned long addr;
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index a83d32bbc567..09d60bc93140 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -485,7 +485,7 @@ static void collect_procs_anon(struct page *page, struct list_head *to_kill,
+ 	struct anon_vma *av;
+ 	pgoff_t pgoff;
+ 
+-	av = folio_lock_anon_vma_read(folio);
++	av = folio_lock_anon_vma_read(folio, NULL);
+ 	if (av == NULL)	/* Not actually mapped anymore */
+ 		return;
+ 
+diff --git a/mm/page_idle.c b/mm/page_idle.c
+index fc0435abf909..fdff8c6dcd2d 100644
+--- a/mm/page_idle.c
++++ b/mm/page_idle.c
+@@ -86,11 +86,8 @@ static bool page_idle_clear_pte_refs_one(struct folio *folio,
+ static void page_idle_clear_pte_refs(struct page *page)
+ {
+ 	struct folio *folio = page_folio(page);
+-	/*
+-	 * Since rwc.arg is unused, rwc is effectively immutable, so we
+-	 * can make it static const to save some cycles and stack.
+-	 */
+-	static const struct rmap_walk_control rwc = {
++
++	static struct rmap_walk_control rwc = {
+ 		.rmap_one = page_idle_clear_pte_refs_one,
+ 		.anon_lock = folio_lock_anon_vma_read,
+ 	};
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 61e63db5dc6f..bbf32dbeb8ee 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -527,9 +527,11 @@ struct anon_vma *page_get_anon_vma(struct page *page)
+  *
+  * Its a little more complex as it tries to keep the fast path to a single
+  * atomic op -- the trylock. If we fail the trylock, we fall back to getting a
+- * reference like with page_get_anon_vma() and then block on the mutex.
++ * reference like with page_get_anon_vma() and then block on the mutex
++ * on !rwc->try_lock case.
+  */
+-struct anon_vma *folio_lock_anon_vma_read(struct folio *folio)
++struct anon_vma *folio_lock_anon_vma_read(struct folio *folio,
++					  struct rmap_walk_control *rwc)
+ {
+ 	struct anon_vma *anon_vma = NULL;
+ 	struct anon_vma *root_anon_vma;
+@@ -557,6 +559,12 @@ struct anon_vma *folio_lock_anon_vma_read(struct folio *folio)
+ 		goto out;
+ 	}
+ 
++	if (rwc && rwc->try_lock) {
++		anon_vma = NULL;
++		rwc->contended = true;
++		goto out;
++	}
++
+ 	/* trylock failed, we got to sleep */
+ 	if (!atomic_inc_not_zero(&anon_vma->refcount)) {
+ 		anon_vma = NULL;
+@@ -883,7 +891,8 @@ static bool invalid_folio_referenced_vma(struct vm_area_struct *vma, void *arg)
+  *
+  * Quick test_and_clear_referenced for all mappings of a folio,
+  *
+- * Return: The number of mappings which referenced the folio.
++ * Return: The number of mappings which referenced the folio. Return -1 if
++ * the function bailed out due to lock contention.
+  */
+ int folio_referenced(struct folio *folio, int is_locked,
+ 		     struct mem_cgroup *memcg, unsigned long *vm_flags)
+@@ -897,6 +906,7 @@ int folio_referenced(struct folio *folio, int is_locked,
+ 		.rmap_one = folio_referenced_one,
+ 		.arg = (void *)&pra,
+ 		.anon_lock = folio_lock_anon_vma_read,
++		.try_lock = true,
+ 	};
+ 
+ 	*vm_flags = 0;
+@@ -927,7 +937,7 @@ int folio_referenced(struct folio *folio, int is_locked,
+ 	if (we_locked)
+ 		folio_unlock(folio);
+ 
+-	return pra.referenced;
++	return rwc.contended ? -1 : pra.referenced;
+ }
+ 
+ static int page_vma_mkclean_one(struct page_vma_mapped_walk *pvmw)
+@@ -2307,12 +2317,12 @@ void __put_anon_vma(struct anon_vma *anon_vma)
+ }
+ 
+ static struct anon_vma *rmap_walk_anon_lock(struct folio *folio,
+-					const struct rmap_walk_control *rwc)
++					    struct rmap_walk_control *rwc)
+ {
+ 	struct anon_vma *anon_vma;
+ 
+ 	if (rwc->anon_lock)
+-		return rwc->anon_lock(folio);
++		return rwc->anon_lock(folio, rwc);
+ 
+ 	/*
+ 	 * Note: remove_migration_ptes() cannot use folio_lock_anon_vma_read()
+@@ -2324,7 +2334,17 @@ static struct anon_vma *rmap_walk_anon_lock(struct folio *folio,
+ 	if (!anon_vma)
+ 		return NULL;
+ 
++	if (anon_vma_trylock_read(anon_vma))
++		goto out;
++
++	if (rwc->try_lock) {
++		anon_vma = NULL;
++		rwc->contended = true;
++		goto out;
++	}
++
+ 	anon_vma_lock_read(anon_vma);
++out:
+ 	return anon_vma;
+ }
+ 
+@@ -2338,7 +2358,7 @@ static struct anon_vma *rmap_walk_anon_lock(struct folio *folio,
+  * contained in the anon_vma struct it points to.
+  */
+ static void rmap_walk_anon(struct folio *folio,
+-		const struct rmap_walk_control *rwc, bool locked)
++		struct rmap_walk_control *rwc, bool locked)
+ {
+ 	struct anon_vma *anon_vma;
+ 	pgoff_t pgoff_start, pgoff_end;
+@@ -2386,7 +2406,7 @@ static void rmap_walk_anon(struct folio *folio,
+  * contained in the address_space struct it points to.
+  */
+ static void rmap_walk_file(struct folio *folio,
+-		const struct rmap_walk_control *rwc, bool locked)
++		struct rmap_walk_control *rwc, bool locked)
+ {
+ 	struct address_space *mapping = folio_mapping(folio);
+ 	pgoff_t pgoff_start, pgoff_end;
+@@ -2405,8 +2425,18 @@ static void rmap_walk_file(struct folio *folio,
+ 
+ 	pgoff_start = folio_pgoff(folio);
+ 	pgoff_end = pgoff_start + folio_nr_pages(folio) - 1;
+-	if (!locked)
++	if (!locked) {
++		if (i_mmap_trylock_read(mapping))
++			goto lookup;
++
++		if (rwc->try_lock) {
++			rwc->contended = true;
++			return;
++		}
++
+ 		i_mmap_lock_read(mapping);
++	}
++lookup:
+ 	vma_interval_tree_foreach(vma, &mapping->i_mmap,
+ 			pgoff_start, pgoff_end) {
+ 		unsigned long address = vma_address(&folio->page, vma);
+@@ -2428,7 +2458,7 @@ static void rmap_walk_file(struct folio *folio,
+ 		i_mmap_unlock_read(mapping);
+ }
+ 
+-void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc)
++void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc)
+ {
+ 	if (unlikely(folio_test_ksm(folio)))
+ 		rmap_walk_ksm(folio, rwc);
+@@ -2439,7 +2469,7 @@ void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc)
+ }
+ 
+ /* Like rmap_walk, but caller holds relevant rmap lock */
+-void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc)
++void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc)
+ {
+ 	/* no ksm support for now */
+ 	VM_BUG_ON_FOLIO(folio_test_ksm(folio), folio);
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index c6918fff06e1..e68c5715270a 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1391,6 +1391,10 @@ static enum page_references folio_check_references(struct folio *folio,
+ 	if (vm_flags & VM_LOCKED)
+ 		return PAGEREF_ACTIVATE;
+ 
++	/* page_referenced didn't work due to lock contention */
++	if (referenced_ptes == -1)
++		return PAGEREF_KEEP;
++
+ 	if (referenced_ptes) {
+ 		/*
+ 		 * All mapped folios start out with page table
+@@ -2492,7 +2496,7 @@ static void shrink_active_list(unsigned long nr_to_scan,
+ 		}
+ 
+ 		if (folio_referenced(folio, 0, sc->target_mem_cgroup,
+-				     &vm_flags)) {
++				     &vm_flags) > 0) {
+ 			/*
+ 			 * Identify referenced, file-backed active pages and
+ 			 * give them one more trip around the active list. So
+-- 
+2.36.0.512.ge40c2bad7a-goog
+
