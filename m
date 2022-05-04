@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB32C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 562E5C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358720AbiEDRjC (ORCPT
+        id S1359110AbiEDRjd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        Wed, 4 May 2022 13:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356829AbiEDRJp (ORCPT
+        with ESMTP id S1356833AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58812CCBD;
-        Wed,  4 May 2022 09:55:52 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D3037A0B;
+        Wed,  4 May 2022 09:55:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96BE0B8278E;
-        Wed,  4 May 2022 16:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39706C385A4;
-        Wed,  4 May 2022 16:55:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C1D0B8279C;
+        Wed,  4 May 2022 16:55:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AE57C385A5;
+        Wed,  4 May 2022 16:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683350;
-        bh=Lu2E1I2yiHFlJN+E/H9ofPZXowvZgsabxZMdN2uM2cI=;
+        s=korg; t=1651683352;
+        bh=vCTo9Jkj2+vEH1jeTBDcv+8ZSfGliF6JI9iUdcwawNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z+Hk8NDOSpqEpCYOqI/TSDsg2c0L5tQgGBENlbjvURRjj1nrEEqR/9ojPHekju0iK
-         tSiNRVQmZs5Da1Uh05NGNg9giHIRreZ1gLwtlhHhzOx61C/MHQpSfPiJeOF2ElbVM8
-         WSpjCoH1mb7zRjZ9GYNZtFajskFP0Lp7zVnnnuu0=
+        b=haV1Jk79yJU6XnaOrX+nloVJVpaDSuFHUTI/Z6Eyuw4sbjGVNroGgJGbMyFT4+tKf
+         CU5iJpdPgCavsMqaB2ZbETGAMSjX19G0TehRMDFg1Jud2+ON0C1tFvwXXdtSIYVFKJ
+         uSpVBNOq2YNAGc9gHygCKLDvdbzNtka5hazJR7Cs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        stable <stable@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 5.17 037/225] serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
-Date:   Wed,  4 May 2022 18:44:35 +0200
-Message-Id: <20220504153113.515763636@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.17 025/225] usb: dwc3: core: Fix tx/rx threshold settings
+Date:   Wed,  4 May 2022 18:44:23 +0200
+Message-Id: <20220504153112.572217806@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,63 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 637674fa40059cddcc3ad2212728965072f62ea3 upstream.
+commit f28ad9069363dec7deb88032b70612755eed9ee6 upstream.
 
-The EndRun PTP/1588 dual serial port device is based on the Oxford
-Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
-for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
-input derived from the 100MHz PCI Express clock.  The clock rate is
-divided by the oversampling rate of 16 as it is supplied to the baud
-rate generator, yielding the baud base of 3906250.
+The current driver logic checks against 0 to determine whether the
+periodic tx/rx threshold settings are set, but we may get bogus values
+from uninitialized variables if no device property is set. Properly
+default these variables to 0.
 
-Replace the incorrect baud base of 4000000 with the right value of
-3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
-the clock for OxSemi PCIe devices").
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable <stable@kernel.org>
-Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181515270.9383@angie.orcam.me.uk
+Fixes: 938a5ad1d305 ("usb: dwc3: Check for ESS TX/RX threshold config")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/cccfce990b11b730b0dae42f9d217dc6fb988c90.1649727139.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |    8 ++++----
+ drivers/usb/dwc3/core.c |    8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -2667,7 +2667,7 @@ enum pci_board_num_t {
- 	pbn_panacom2,
- 	pbn_panacom4,
- 	pbn_plx_romulus,
--	pbn_endrun_2_4000000,
-+	pbn_endrun_2_3906250,
- 	pbn_oxsemi,
- 	pbn_oxsemi_1_3906250,
- 	pbn_oxsemi_2_3906250,
-@@ -3195,10 +3195,10 @@ static struct pciserial_board pci_boards
- 	* signal now many ports are available
- 	* 2 port 952 Uart support
- 	*/
--	[pbn_endrun_2_4000000] = {
-+	[pbn_endrun_2_3906250] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 2,
--		.base_baud	= 4000000,
-+		.base_baud	= 3906250,
- 		.uart_offset	= 0x200,
- 		.first_offset	= 0x1000,
- 	},
-@@ -4115,7 +4115,7 @@ static const struct pci_device_id serial
- 	*/
- 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_endrun_2_4000000 },
-+		pbn_endrun_2_3906250 },
- 	/*
- 	 * Quatech cards. These actually have configurable clocks but for
- 	 * now we just use the default.
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1295,10 +1295,10 @@ static void dwc3_get_properties(struct d
+ 	u8			lpm_nyet_threshold;
+ 	u8			tx_de_emphasis;
+ 	u8			hird_threshold;
+-	u8			rx_thr_num_pkt_prd;
+-	u8			rx_max_burst_prd;
+-	u8			tx_thr_num_pkt_prd;
+-	u8			tx_max_burst_prd;
++	u8			rx_thr_num_pkt_prd = 0;
++	u8			rx_max_burst_prd = 0;
++	u8			tx_thr_num_pkt_prd = 0;
++	u8			tx_max_burst_prd = 0;
+ 	u8			tx_fifo_resize_max_num;
+ 	const char		*usb_psy_name;
+ 	int			ret;
 
 
