@@ -2,121 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD84C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE621C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378912AbiEDVv3 (ORCPT
+        id S1378914AbiEDVww (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43708 "EHLO
+        Wed, 4 May 2022 17:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234081AbiEDVv1 (ORCPT
+        with ESMTP id S230087AbiEDVwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:51:27 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8F550B0A
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:47:50 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 7so2162078pga.12
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 14:47:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JGBYzFJimhJoad1idzTH3i0huCpJLlUvf/ClUW1YohE=;
-        b=Fd0VCuyx81rIATkfzj1LFSVSpflcHe53RRSPXpEGiZLhs2CfyPUKlSdmKMgRgPuXJB
-         aC2lYEm+gScd6h/QTZqEQmm2tt014kvIHi2cGRgXhM8WRp3zPN7FXiMDZo1WbDWuUKv9
-         nKfAGeLN6XfbuIsfI6SuscFe3CAXPdndM6+85s01iI2cl7CFKF7v+v/zFzAsdMMoEduI
-         CP06zWIqj0ki14Ng6mLL/j4nLrfwaEP8MVc+NT5AMByju2eRJZ8yLDMvlzcXLB3jKWqA
-         ZnXge/u8D9WyE3PxtmFFioJ2XNZ0Nhw7HCPue+RHuDPevxPai7FqJZzES8gr7/9q2evQ
-         hHxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JGBYzFJimhJoad1idzTH3i0huCpJLlUvf/ClUW1YohE=;
-        b=OE/XB05uTc9w+6YZRnk9It3LkzK5FH+qbzGjMGZxAEgXCPzaAzVHuZVj/O6FFcYIWS
-         lJ5dZbH84fIoYDbZp5UPkNuid6KdyPUED0QXUpNWBkJmK6mhcAE7OXgbaIxNgqCHMSrU
-         B+uvXEacujrjsDXvmndfq9/ZK45E329qLjOvAvOnf40yJeJkXXAO2W8WaH4AlLCQ0Hca
-         yDmld5XCLn1naJCHFXENt/TZjfC8YBI34xlEpCqFj8DdkhgItTHQjrgMBAnPSn369kNa
-         rJklxoeZWuKwGy0/PVZTdZdzW+8hbtBQRjV9ou3l48m1fwIezR04jCLwqZFqnnwSVR5U
-         wOJw==
-X-Gm-Message-State: AOAM532IAWArT+/IIUNN67LFRNhmvMKQ2mREsoZMJeWFnQ1SMUWTr2u5
-        m/l9jyoH1/oUDdOxXUX6JUBNeQ==
-X-Google-Smtp-Source: ABdhPJw1SaEbg06uganw6Cw3J+BiB3QyAdz5US+cDiaABZHNDFKYnWvCDn9OKGW5LoZD8ocsfB8Vrw==
-X-Received: by 2002:a63:5747:0:b0:381:54b9:b083 with SMTP id h7-20020a635747000000b0038154b9b083mr19378108pgm.178.1651700869465;
-        Wed, 04 May 2022 14:47:49 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id m11-20020aa7900b000000b0050dc762812esm8726670pfo.8.2022.05.04.14.47.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 14:47:48 -0700 (PDT)
-Date:   Wed, 4 May 2022 21:47:45 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: X86: correct trace_kvm_pv_tlb_flush stats
-Message-ID: <YnL0gUcUq5MbWvdH@google.com>
-References: <20220504182707.680-1-jon@nutanix.com>
+        Wed, 4 May 2022 17:52:49 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911F250B06;
+        Wed,  4 May 2022 14:49:12 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id EFC23C020; Wed,  4 May 2022 23:49:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1651700950; bh=u5EzJCGt1bErRRL17AVGrTn+Rx5euZvZx9/3VtmBl/I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xevsfCukgGD/UgrKS0F+HuWDBgHAZPMM1JT5Kqd5ZZfBU81TjAnFttFP42nQ8rIcu
+         ol1P3n6y/ktfAUwolxNj45SZUnCgqhRhkwYWoSCogsMFmDRr4LtRRLliiIAySldQKM
+         IoHrD9132/7D4p634KQRd96dpSwbM3xAHNHfEVbuM603wJxoNDpbj61jrUCIrvE/4d
+         Z+QpML04BV4I2PajkVAcXiUWw8VpODtO9ct9V+piwY0G9wavuYLCoTFQ7NpQyFMfEr
+         J5gs1KkTtSZU3vuJWS+wlX6dV6hWbCJ6uOOiiRFTFwLEuSHHfPRGcmj5cnEyOV+Ml5
+         cOhzSHaZ+MEcw==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 1B718C009;
+        Wed,  4 May 2022 23:49:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1651700950; bh=u5EzJCGt1bErRRL17AVGrTn+Rx5euZvZx9/3VtmBl/I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xevsfCukgGD/UgrKS0F+HuWDBgHAZPMM1JT5Kqd5ZZfBU81TjAnFttFP42nQ8rIcu
+         ol1P3n6y/ktfAUwolxNj45SZUnCgqhRhkwYWoSCogsMFmDRr4LtRRLliiIAySldQKM
+         IoHrD9132/7D4p634KQRd96dpSwbM3xAHNHfEVbuM603wJxoNDpbj61jrUCIrvE/4d
+         Z+QpML04BV4I2PajkVAcXiUWw8VpODtO9ct9V+piwY0G9wavuYLCoTFQ7NpQyFMfEr
+         J5gs1KkTtSZU3vuJWS+wlX6dV6hWbCJ6uOOiiRFTFwLEuSHHfPRGcmj5cnEyOV+Ml5
+         cOhzSHaZ+MEcw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 3bcfa5ec;
+        Wed, 4 May 2022 21:49:02 +0000 (UTC)
+Date:   Thu, 5 May 2022 06:48:47 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark
+ (was: 9p fscache Duplicate cookie detected))
+Message-ID: <YnL0vzcdJjgyq8rQ@codewreck.org>
+References: <YmKp68xvZEjBFell@codewreck.org>
+ <1817722.O6u07f4CCs@silver>
+ <YnECI2+EAzgQExOn@codewreck.org>
+ <6688504.ZJKUV3z3ry@silver>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220504182707.680-1-jon@nutanix.com>
+In-Reply-To: <6688504.ZJKUV3z3ry@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022, Jon Kohler wrote:
-> The trace point in record_steal_time() is above the conditional
-> that fires kvm_vcpu_flush_tlb_guest(), so even when we might
-> not be flushing tlb, we still record that we are.
-
-No, it records whether not a TLB flush is needed.
-
-> Fix by nestling trace_kvm_pv_tlb_flush() under appropriate
-> conditional. This results in the stats for kvm:kvm_pv_tlb_flush,
-> as trivially observable by perf stat -e "kvm:*" -a sleep Xs, in
-> reporting the amount of times we actually do a pv tlb flush,
-> instead of just the amount of times we happen to call
-> record_steal_time().
+Christian Schoenebeck wrote on Wed, May 04, 2022 at 08:33:36PM +0200:
+> On Dienstag, 3. Mai 2022 12:21:23 CEST asmadeus@codewreck.org wrote:
+> >  - add some complex code to track the exact byte range that got updated
+> > in some conditions e.g. WRONLY or read fails?
+> > That'd still be useful depending on how the backend tracks file mode,
+> > qemu as user with security_model=mapped-file keeps files 600 but with
+> > passthrough or none qemu wouldn't be able to read the file regardless of
+> > what we do on client...
+> > Christian, if you still have an old kernel around did that use to work?
 > 
-> Signed-off-by: Jon Kohler <jon@nutanix.com>
-> ---
->  arch/x86/kvm/x86.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 4790f0d7d40b..8d4e0e58ec34 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -3410,9 +3410,9 @@ static void record_steal_time(struct kvm_vcpu *vcpu)
->  
->  		vcpu->arch.st.preempted = 0;
->  
-> -		trace_kvm_pv_tlb_flush(vcpu->vcpu_id,
-> -				       st_preempted & KVM_VCPU_FLUSH_TLB);
->  		if (st_preempted & KVM_VCPU_FLUSH_TLB)
-> +			trace_kvm_pv_tlb_flush(vcpu->vcpu_id,
-> +				st_preempted & KVM_VCPU_FLUSH_TLB);
+> Sorry, what was the question, i.e. what should I test / look for precisely? :)
 
-If you're going to trace only when a flush is needed, this should simply be:
+I was curious if older kernel does not issue read at all, or issues read
+on writeback fid correctly opened as root/RDRW
 
-			trace_kvm_pv_tlb_flush(vcpu->vcpu_id);
+You can try either the append.c I pasted a few mails back or the dd
+commands, as regular user.
 
-I haven't used this tracepoint often (at all?) so I don't have a strong preference,
-but I can see the "no TLB flush needed" information being extremely valuable when
-debugging a supsected TLB flushing bug.
+$ dd if=/dev/zero of=test bs=1M count=1
+$ chmod 400 test
+# drop cache or remount
+$ dd if=/dev/urandom of=test bs=102 seek=2 count=1 conv=notrunc
+dd: error writing 'test': Bad file descriptor
 
->  			kvm_vcpu_flush_tlb_guest(vcpu);
->  
->  		if (!user_access_begin(st, sizeof(*st)))
-> -- 
-> 2.30.1 (Apple Git-130)
-> 
+... But honestly I should just find the time to do it myself, this has
+been dragging on for too long...
+-- 
+Dominique
