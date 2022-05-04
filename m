@@ -2,42 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 879BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED25C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355398AbiEDR0p (ORCPT
+        id S1357189AbiEDR0y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        Wed, 4 May 2022 13:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355091AbiEDRFi (ORCPT
+        with ESMTP id S1355112AbiEDRFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:05:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF1149CA8;
-        Wed,  4 May 2022 09:54:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA9D47555;
+        Wed,  4 May 2022 09:54:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7728AB827A3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9412C618A8;
+        Wed,  4 May 2022 16:54:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2686C385A4;
         Wed,  4 May 2022 16:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF395C385AF;
-        Wed,  4 May 2022 16:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683256;
-        bh=hNs9+GG7P/OSBBSbROM5/66FARCO1Gc+QL6VOtw+Q+A=;
+        s=korg; t=1651683258;
+        bh=+3exiSTvH1RziwAzmzXEO9NmF8jkw7MocJUim/2IhpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WvSRJ4MdrRTPXgoEtu5+1SJHqAyQxcvXii8llc6ux+pqPFMHR96EmL0n/NsZUbeUY
-         qFTpcp88Rd+l8p6DuP0FC0DYObl2gzgkfUerZqvMfKh/sIYrtltD0JTseNuV7H2/On
-         Gd5T0sZGN4FQ2FLfo9RZoZzQaK/PhNVpvT9x1OKM=
+        b=MQgFuPvd8NCKZon2sTow+Z/Z8B5a/gEQMQwTrml/nlqgSJr0SsrGZZevAln58Q33u
+         sj2PlUq17387Hgbf5wdcVoeI6ilW9SlvaAbWaBgz1HQ4g0sUW2hhtZl03CWh6QaZ8A
+         gk6EsclaLwAFF7Fqs1MFW3MtQmB7hB34Z1q1V7/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Timothy Hayes <timothy.hayes@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>, netdev@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/177] gfs2: Make sure not to return short direct writes
-Date:   Wed,  4 May 2022 18:45:14 +0200
-Message-Id: <20220504153103.971992183@linuxfoundation.org>
+Subject: [PATCH 5.15 123/177] perf arm-spe: Fix addresses of synthesized SPE events
+Date:   Wed,  4 May 2022 18:45:16 +0200
+Message-Id: <20220504153104.142014535@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,35 +63,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Timothy Hayes <timothy.hayes@arm.com>
 
-[ Upstream commit 3bde4c48586074202044456285a97ccdf9048988 ]
+[ Upstream commit 4e13f6706d5aee1a6b835a44f6cf4971a921dcb8 ]
 
-When direct writes fail with -ENOTBLK because we're writing into a
-hole (gfs2_iomap_begin()) or because of a page invalidation failure
-(iomap_dio_rw()), we're falling back to buffered writes.  In that case,
-when we lose the inode glock in gfs2_file_buffered_write(), we want to
-re-acquire it instead of returning a short write.
+This patch corrects a bug whereby synthesized events from SPE
+samples are missing virtual addresses.
 
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Fixes: 54f7815efef7fad9 ("perf arm-spe: Fill address info for samples")
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: bpf@vger.kernel.org
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: John Garry <john.garry@huawei.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220421165205.117662-2-timothy.hayes@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/file.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/arm-spe.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index 964c19e27ce2..42fa4b5b81a0 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -1076,7 +1076,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 			from->count = min(from->count, window_size - leftover);
- 			if (gfs2_holder_queued(gh))
- 				goto retry_under_glock;
--			if (read)
-+			if (read && !(iocb->ki_flags & IOCB_DIRECT))
- 				goto out_uninit;
- 			goto retry;
- 		}
+diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+index 7054f23150e1..235549bb28b9 100644
+--- a/tools/perf/util/arm-spe.c
++++ b/tools/perf/util/arm-spe.c
+@@ -927,7 +927,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
+ 	attr.type = PERF_TYPE_HARDWARE;
+ 	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
+ 	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
+-			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC;
++			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
++			    PERF_SAMPLE_ADDR;
+ 	if (spe->timeless_decoding)
+ 		attr.sample_type &= ~(u64)PERF_SAMPLE_TIME;
+ 	else
 -- 
 2.35.1
 
