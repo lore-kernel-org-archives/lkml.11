@@ -2,59 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A38C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC4AC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345820AbiEDHzL (ORCPT
+        id S1345719AbiEDH4J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        Wed, 4 May 2022 03:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345804AbiEDHzI (ORCPT
+        with ESMTP id S1345869AbiEDHzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:55:08 -0400
-X-Greylist: delayed 561 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 00:51:30 PDT
-Received: from mail.causeonline24.com (mail.causeonline24.com [217.61.23.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC46193FF
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 00:51:29 -0700 (PDT)
-Received: by mail.causeonline24.com (Postfix, from userid 1001)
-        id 45209A2FDA; Wed,  4 May 2022 08:36:54 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=causeonline24.com;
-        s=mail; t=1651649836;
-        bh=dqbL4I2PbKQDd8D+BmP5Ia+tOlRQnYhmr+yxRmvobYw=;
-        h=Date:From:To:Subject:From;
-        b=aAwYBNKpRWAZaxbFPPu+pq9u8Pdgn+6eLC4QwOX+3Chyc3XLPY5XlM4OoP2PutWAm
-         5J7gXelHJ2z/qiNq02SoRQnd3d4GdJgMSNlzvv9R8/7h1gjEelILOhRj5EXy0V2ke+
-         LeH+6bJ5ROtblWj30ej+/hRDqLrqDLMPjPHs9bpMVV7a1A2ZjWfR/Xlo68yt543Zld
-         ab6TM2rC/bhg0nGL1KaUHbny3qZ4gTSUU191ESVHoSqZcXLOGjFyYcaOR4vstf2HAx
-         9j0SnekeH6xW92lKyzIeyEnFxl5g7ofy6m3CnPUXtkGn4ZOY2dNXLu9rU9zfVVrwEj
-         RRCvxOPRMloHg==
-Received: by mail.causeonline24.com for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:36:04 GMT
-Message-ID: <20220504074502-0.1.2q.71nw.0.jk1nq8dx35@causeonline24.com>
-Date:   Wed,  4 May 2022 07:36:04 GMT
-From:   "Antonio Valverde" <antonio.valverde@causeonline24.com>
-To:     <linux-kernel@vger.kernel.org>
-Subject: Servicio de la flota
-X-Mailer: mail.causeonline24.com
+        Wed, 4 May 2022 03:55:46 -0400
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A014A1AF02;
+        Wed,  4 May 2022 00:52:06 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: hector@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id E009741E64;
+        Wed,  4 May 2022 07:52:00 +0000 (UTC)
+From:   Hector Martin <marcan@marcan.st>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] Apple SoC cpufreq driver
+Date:   Wed,  4 May 2022 16:51:49 +0900
+Message-Id: <20220504075153.185208-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Buenos d=C3=ADas:
+Hi folks,
 
-Le escribo para hablarle sobre una de las mejores herramientas GPS en el =
-mercado.
+Here's a second take on the cpufreq driver for Apple SoCs. This is a
+complete rewrite using a stand-alone cpufreq driver instead of using the
+cpufreq-dt infrastructure.
 
-La herramienta, que me gustar=C3=ADa presentarle brevemente, dispone de m=
-uchas funciones =C3=BAtiles para su trabajo, que optimizan los procesos d=
-e transporte y le ayudan a realizar tareas de campo de manera m=C3=A1s ef=
-iciente.
+Since v1 we ran some experiments on the memory controller performance
+switching and it turns out it doesn't make a huge difference, so it
+makes sense to punt that feature to the future (perhaps once a proper
+memory controller driver exists for other reasons, e.g. for error
+handling).
 
-=C2=BFQuiere conocer los detalles?
+One advantage of having a standalone cpufreq driver is that we can
+support fast switching. This also means any future interaction with
+the memory controller will probably use some bespoke mechanism instead
+of the genpd infrastructure, so we can keep the fast path without
+allowing sleeps/etc.
 
+The driver is based on scpi-cpufreq.c, with some bits (e.g. the
+apple,freq-domain stuff) inspired by how cpufreq-qcom-hw does it.
+I'm not sure if that particular property should be described
+in a binding, since it goes in the cpu nodes (qcom doesn't have it
+anywhere...).
 
-Atentamente,
-Antonio Valverde
+Changes since v1:
+- Complete rewrite
+- Reports current frequency to userspace properly (incl. if different
+  from requested due to hardware constraints)
+- Supports fast switching
+- MCC latency control stuff no longer included, punted for later
+- Supports exposing higher states as turbo states
+
+Hector Martin (4):
+  MAINTAINERS: Add entries for Apple SoC cpufreq driver
+  dt-bindings: cpufreq: apple,soc-cpufreq: Add binding for Apple SoC
+    cpufreq
+  cpufreq: apple-soc: Add new driver to control Apple SoC CPU P-states
+  arm64: dts: apple: Add CPU topology & cpufreq nodes for t8103
+
+ .../bindings/cpufreq/apple,soc-cpufreq.yaml   | 121 +++++++
+ MAINTAINERS                                   |   2 +
+ arch/arm64/boot/dts/apple/t8103.dtsi          | 203 ++++++++++-
+ drivers/cpufreq/Kconfig.arm                   |   9 +
+ drivers/cpufreq/Makefile                      |   1 +
+ drivers/cpufreq/apple-soc-cpufreq.c           | 330 ++++++++++++++++++
+ drivers/cpufreq/cpufreq-dt-platdev.c          |   2 +
+ 7 files changed, 658 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/cpufreq/apple,soc-cpufreq.yaml
+ create mode 100644 drivers/cpufreq/apple-soc-cpufreq.c
+
+-- 
+2.35.1
+
