@@ -2,56 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A06C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EC8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356035AbiEDRsA (ORCPT
+        id S1356331AbiEDRsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        Wed, 4 May 2022 13:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357174AbiEDROw (ORCPT
+        with ESMTP id S1357179AbiEDROw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:14:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18012541A6;
-        Wed,  4 May 2022 09:58:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236AD541B5;
+        Wed,  4 May 2022 09:58:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E07FA61950;
-        Wed,  4 May 2022 16:58:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E0DC385B1;
-        Wed,  4 May 2022 16:58:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44A04617D5;
+        Wed,  4 May 2022 16:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 924F6C385A4;
+        Wed,  4 May 2022 16:58:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683484;
-        bh=uyzsFYl8sytYOzQQEprb2qDXzcJ2/da3AqYWM66AXiU=;
+        s=korg; t=1651683487;
+        bh=0wa8R2ae7L5HvBja6cgYpwoZNRFRA5di92a2dlL7/Zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Whlo0Jc3OdX77WQ4D4TQY1agzDydAKFrciatEg3dWuo48ZOend0FLZGQLmeOlYh9x
-         C8sRkhru33mvfBzRcNZp7A2u9VTmDB9EB3QhmcB4LuRbbIdrnAhKvRYXyDYf3szfZ9
-         yVLHqP4A7e/psnZLgcdUhB1odYXmpP2JIWUIMPRg=
+        b=HZmx8dLKHRPBEAa1mru26cd9X7A5jc5jiMit9YTKnS9Oppjv+t1N7vfD+33AqsHQA
+         EVc03MmN3TvsaMSufzpw39nX0EpFRR0jHp6YPoj9cLGQc+X6tKBj4v/gIpEX9B+W3u
+         oaQVPxsN69j7qd2dxovvSzYWrvCtFpqv/LdGQ3zw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Timothy Hayes <timothy.hayes@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        John Garry <john.garry@huawei.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Namhyung Kim <namhyung@kernel.org>, netdev@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>,
-        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 151/225] perf arm-spe: Fix addresses of synthesized SPE events
-Date:   Wed,  4 May 2022 18:46:29 +0200
-Message-Id: <20220504153123.567930418@linuxfoundation.org>
+Subject: [PATCH 5.17 162/225] ASoC: Intel: sof_es8336: Add a quirk for Huawei Matebook D15
+Date:   Wed,  4 May 2022 18:46:40 +0200
+Message-Id: <20220504153124.439720094@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -63,52 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Timothy Hayes <timothy.hayes@arm.com>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit 4e13f6706d5aee1a6b835a44f6cf4971a921dcb8 ]
+[ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
 
-This patch corrects a bug whereby synthesized events from SPE
-samples are missing virtual addresses.
+Based on experimental tests, Huawei Matebook D15 actually uses
+both gpio0 and gpio1: the first one controls the speaker, while
+the other one controls the headphone.
 
-Fixes: 54f7815efef7fad9 ("perf arm-spe: Fill address info for samples")
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: bpf@vger.kernel.org
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: John Garry <john.garry@huawei.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220421165205.117662-2-timothy.hayes@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Also, the headset is mapped as MIC1, instead of MIC2.
+
+So, add a quirk for it.
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/d678aef9fc9a07aced611aa7cb8c9b800c649e5a.1649357263.git.mchehab@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/arm-spe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/intel/boards/sof_es8336.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
-index d2b64e3f588b..151cc38a171c 100644
---- a/tools/perf/util/arm-spe.c
-+++ b/tools/perf/util/arm-spe.c
-@@ -1036,7 +1036,7 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
- 	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
- 	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
- 			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
--			    PERF_SAMPLE_WEIGHT;
-+			    PERF_SAMPLE_WEIGHT | PERF_SAMPLE_ADDR;
- 	if (spe->timeless_decoding)
- 		attr.sample_type &= ~(u64)PERF_SAMPLE_TIME;
- 	else
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 28d7670b8f8f..b18951a8f309 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -252,6 +252,15 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
+ 					SOF_ES8336_TGL_GPIO_QUIRK |
+ 					SOF_ES8336_ENABLE_DMIC)
+ 	},
++	{
++		.callback = sof_es8336_quirk_cb,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
++			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
++		},
++		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
++					SOC_ES8336_HEADSET_MIC1)
++	},
+ 	{}
+ };
+ 
 -- 
 2.35.1
 
