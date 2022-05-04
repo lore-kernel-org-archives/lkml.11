@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC2B3C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 197AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355276AbiEDRHv (ORCPT
+        id S1355547AbiEDRH5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39248 "EHLO
+        Wed, 4 May 2022 13:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355569AbiEDRAQ (ORCPT
+        with ESMTP id S1355500AbiEDRAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:16 -0400
+        Wed, 4 May 2022 13:00:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1504B85E;
-        Wed,  4 May 2022 09:51:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEB54B841;
+        Wed,  4 May 2022 09:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB970617D4;
-        Wed,  4 May 2022 16:51:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144D0C385A5;
-        Wed,  4 May 2022 16:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C00DB617A6;
+        Wed,  4 May 2022 16:51:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11482C385B1;
+        Wed,  4 May 2022 16:51:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683096;
-        bh=AFIzawQbysXjYjCtcBjeB4t+pADeckbAOSyCAuGBxw4=;
+        s=korg; t=1651683095;
+        bh=VCtRyXg3Pr3WcgZ2FulUzVHz7WGeADVI97kfVAKFyaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uliJHoVw607CbJEvzL57rhqffRNF1wM6USb6BYKGymtJuqJWGT8xTTik6C/gWcRE/
-         SLMn6J6VWFKbrFuHA50ryIpjkBuFYYC0l/00YkYYXKoDtCqJsAplDQYsaG48PrbdIb
-         KEk3Z++vZcEtxUDeGkFhNkiSq9pscmkz7MSgfXS8=
+        b=KCvZRBIYJjwA3meAkOH+szscu1TlwW2YOn5FSESa2SpeFJNj6Fycxv3tMOHw/1rVX
+         JJtEEFh/PzgR5PghQ1ld3RRAWOHqIIIAOrdUMoNek2GCGsqiadgDNw6uxAhbQ0dD3v
+         f5DZszMp7JIzGL0+ChZSuwznWwhdJ6iyeAMmpsIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org, Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 088/129] net: phy: marvell10g: fix return value on error
-Date:   Wed,  4 May 2022 18:44:40 +0200
-Message-Id: <20220504153027.986477931@linuxfoundation.org>
+Subject: [PATCH 5.10 087/129] net: bcmgenet: hide status block before TX timestamping
+Date:   Wed,  4 May 2022 18:44:39 +0200
+Message-Id: <20220504153027.919756294@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -52,36 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch.siach@siklu.com>
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-[ Upstream commit 0ed9704b660b259b54743cad8a84a11148f60f0a ]
+[ Upstream commit acac0541d1d65e81e599ec399d34d184d2424401 ]
 
-Return back the error value that we get from phy_read_mmd().
+The hardware checksum offloading requires use of a transmit
+status block inserted before the outgoing frame data, this was
+updated in '9a9ba2a4aaaa ("net: bcmgenet: always enable status blocks")'
 
-Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
-Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il
+However, skb_tx_timestamp() assumes that it is passed a raw frame
+and PTP parsing chokes on this status block.
+
+Fix this by calling __skb_pull(), which hides the TSB before calling
+skb_tx_timestamp(), so an outgoing PTP packet is parsed correctly.
+
+As the data in the skb has already been set up for DMA, and the
+dma_unmap_* calls use a separately stored address, there is no
+no effective change in the data transmission.
+
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220424165307.591145-1-jonathan.lemon@gmail.com
+Fixes: d03825fba459 ("net: bcmgenet: add skb_tx_timestamp call")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index b1bb9b8e1e4e..2b64318efdba 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -650,7 +650,7 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index a2062144d7ca..9ffdaa84ba12 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1987,6 +1987,11 @@ static struct sk_buff *bcmgenet_add_tsb(struct net_device *dev,
+ 	return skb;
+ }
  
- 	cssr1 = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_CSSR1);
- 	if (cssr1 < 0)
--		return val;
-+		return cssr1;
++static void bcmgenet_hide_tsb(struct sk_buff *skb)
++{
++	__skb_pull(skb, sizeof(struct status_64));
++}
++
+ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+@@ -2093,6 +2098,8 @@ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	}
  
- 	/* If the link settings are not resolved, mark the link down */
- 	if (!(cssr1 & MV_PCS_CSSR1_RESOLVED)) {
+ 	GENET_CB(skb)->last_cb = tx_cb_ptr;
++
++	bcmgenet_hide_tsb(skb);
+ 	skb_tx_timestamp(skb);
+ 
+ 	/* Decrement total BD count and advance our write pointer */
 -- 
 2.35.1
 
