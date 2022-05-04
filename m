@@ -2,134 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64483C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3712AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244552AbiEDDbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 23:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
+        id S1344371AbiEDDcB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 23:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344411AbiEDDao (ORCPT
+        with ESMTP id S1343502AbiEDDbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 23:30:44 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C762980D
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 20:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651634777; x=1683170777;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=70wCwFFYJ1c3kSyutV0+R5VqBjClLpK77FnSrlqf7n0=;
-  b=PEOV3rjM44XrHIVH0i1vDUvAt+f5oVpxdknquJ0iBX8Du6hryKhUcXzN
-   rZdAYfjFj2E2+bvTqttBcV/+zXB9ffCkgrD45TiZkcfC9mo0jS7QaLFYM
-   uSBbWtyOIoUTeVfdkEvHwqLvFhxCs4De95+8ILcg0RUEGkEZmzipl9YEu
-   rlmy+fLn7uBbkHUV0cF23BdqCAU0heT3YkbHEPtN1W/HKr4u0bF3VGw8a
-   9yU8uiT2+E+7FvigWJ3wrwMeljvRUaPb7fX6Eq6A4irjt0A9cVGHjkuko
-   UjjT3p/pqcCiYSxKLuGXXG/zZJLNGM1Xfiv/2WLxuvFHqHnCura1NzdjN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267531910"
-X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="267531910"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 20:25:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="693091564"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 03 May 2022 20:25:36 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nm5dv-000B1m-Ps;
-        Wed, 04 May 2022 03:25:35 +0000
-Date:   Wed, 4 May 2022 11:24:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Minchan Kim <minchan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        John Dias <joaodias@google.com>,
-        Tim Murray <timmurray@google.com>,
-        Minchan Kim <minchan@kernel.org>
-Subject: Re: [PATCH] mm: don't be stuck to rmap lock on reclaim path
-Message-ID: <202205041158.b7On1pwy-lkp@intel.com>
-References: <20220503170341.1413961-1-minchan@kernel.org>
+        Tue, 3 May 2022 23:31:51 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E1613A
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 20:28:16 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id r11so365626ybg.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 20:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R9FJwQCrIwdOgk5TBiW4fZIwz7YdVA9O8EgN31+EQpM=;
+        b=A/kA4+FBweAr9lVyBTELBbGu9MrjxfHDgMNZieroE6twWBKa0ozA98z4GsZqBTYDW3
+         S+tkUjiaivxuGA18dVlvBzfgH+HV7zi/eOwfotkb4xUzCI4jLNDndRmkC6uX5AoFPpPD
+         oqpkzdvGprG1P/w7A4UNVO05F4hH/9zHUb1ZXsIDaXWQ0WWHvAuZuK0KyjDHRTbEUIGk
+         ZLhqJxvvriMH1Eggz9hshHRAMZPLyHPkyEJdF1YFpMvVGNgp8/A8Cb3bkKiMj5ayRHCd
+         xiWy0YffXzZk/qMbQfHVulsO2vqDggBXWwv3hg5pXTtM5GVcPV+U1G51GTFqnMyXsauT
+         i4lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R9FJwQCrIwdOgk5TBiW4fZIwz7YdVA9O8EgN31+EQpM=;
+        b=kSKoeS0txatfBEOpqZ5zI/NrCgoKNhoWw+QrmOg5FWrwBBqtjCCjIBUM6B0D0aj9Ve
+         J+eoLjpmUB59DMBqac2DPV0M1VqyW5tTm0DcmlcYo9sY02T3nQkdggE12AT8mLBd1iGo
+         +8p/m2eFa+dGXi2MurAisYFe7Fks7YoL2oDTK/ElDTRn7+6ZYSuVr/8mhctAMRZMoxwO
+         8H/BEvP8Bx07+m9lxZ7AXQChb1ogldr6JlLO+rBCgXhXUHObzDke1nWcqBbYylwpN3MW
+         /iPpYMpn9n56uem7g7HtolIcl/+JliZ0CIFU05sB+yG2vmzugKbzKON8APWs9VivHDnQ
+         3Qtw==
+X-Gm-Message-State: AOAM531khc+sQwx2kOk73oMnmHVYMeN0u5I8M6u9YxsM8q7qg496AQMV
+        qha1URDK26na42XP5zGIS1JRSM+pYbfk4cQFrm25L7K/jvs=
+X-Google-Smtp-Source: ABdhPJxg5zoFR8qLr9OHBxcx2aPHWBf18tbQHiTK5nxyByE5sZWTpONjJFbTOZEPKdz4f+cpktC++OySLL9aSPyzZzs=
+X-Received: by 2002:a25:d1d6:0:b0:649:73e3:e49e with SMTP id
+ i205-20020a25d1d6000000b0064973e3e49emr9738209ybg.315.1651634895588; Tue, 03
+ May 2022 20:28:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503170341.1413961-1-minchan@kernel.org>
+References: <20220502045102.40005-1-ppbuk5246@gmail.com> <20220504120903.057867b1b2e2fb2b2a542470@kernel.org>
+In-Reply-To: <20220504120903.057867b1b2e2fb2b2a542470@kernel.org>
+From:   Yun Levi <ppbuk5246@gmail.com>
+Date:   Wed, 4 May 2022 12:28:01 +0900
+Message-ID: <CAM7-yPT5DDUvQiyVmExa4=6hdK0mSW7eWxmXYSZN=ErAUM9suA@mail.gmail.com>
+Subject: Re: [PATCH] kprobe: sync issue's on ftraced-kprobe.
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, naveen.n.rao@linux.ibm.com,
+        "David S. Miller" <davem@davemloft.net>, rostedt@goodmis.org,
+        yun.wang@linux.alibaba.com, x86@kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Minchan,
+> NAK this, because get_kprobes() doesn't require the kprobe_mutex in
+> the preempt-disabled context. Please read the comment of get_kprobe().
+>
+> /*
+>  * This routine is called either:
+>  *      - under the 'kprobe_mutex' - during kprobe_[un]register().
+>  *                              OR
+>  *      - with preemption disabled - from architecture specific code.
+>  */
+> struct kprobe *get_kprobe(void *addr)
 
-I love your patch! Yet something to improve:
+> Moreover, we can not use mutex inside kprobe handler because it runs
+> in the interrupt context.
 
-[auto build test ERROR on hnaz-mm/master]
+Actually, I think it's in the preemption disabled in situation.
+What I mentioned is actually it seems inside the kprobe handler which
+installed via ftrace isn't interrupt context.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Minchan-Kim/mm-don-t-be-stuck-to-rmap-lock-on-reclaim-path/20220504-010625
-base:   https://github.com/hnaz/linux-mm master
-config: x86_64-randconfig-a016 (https://download.01.org/0day-ci/archive/20220504/202205041158.b7On1pwy-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0e190ce022ef259d63eb2cf50110b292ba17c79c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Minchan-Kim/mm-don-t-be-stuck-to-rmap-lock-on-reclaim-path/20220504-010625
-        git checkout 0e190ce022ef259d63eb2cf50110b292ba17c79c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+#ifdef CONFIG_KPROBES_ON_FTRACE
+static struct ftrace_ops kprobe_ftrace_ops __read_mostly = {
+ >---.func = kprobe_ftrace_handler,
+ >---.flags = FTRACE_OPS_FL_SAVE_REGS,
+ };
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+In case of optimized kprobe it disables preemption when it enter
+"optimized callback"
+And the trampoline isn't the interrupted context.
+It's also the same to install kprobe via ftraced .
+When I see the ftraced patched code, I couldn't find any interrupt and
+preemption disable code.
+But it seems to allow preemption in ftarce handler.
+(In the ftrace_reg_caller, ftace_reg_end, and other ftrace trampoline code also)
 
-All errors (new ones prefixed by >>):
+What I understand is break point based kprobe is only interrupted
+disabled status
+But optimized kprobe and ftarced kprobe isn't interrupted disabled status.
+For this, optimized kprobe disable disable preemption in "optimized_callback"
 
->> mm/page_idle.c:106:19: error: passing 'const struct rmap_walk_control *' to parameter of type 'struct rmap_walk_control *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-           rmap_walk(folio, &rwc);
-                            ^~~~
-   include/linux/rmap.h:403:63: note: passing argument to parameter 'rwc' here
-   void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc);
-                                                                 ^
-   1 error generated.
+But ftrace kprobe isn't preemption disabled nor interrupt-disabled context.
 
+That's why I sent patches and I experienced the problem above.
 
-vim +106 mm/page_idle.c
+Am I missing something?
 
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   85  
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   86  static void page_idle_clear_pte_refs(struct page *page)
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   87  {
-4aed23a2f8aaaa Matthew Wilcox (Oracle  2022-01-29   88) 	struct folio *folio = page_folio(page);
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   89  	/*
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   90  	 * Since rwc.arg is unused, rwc is effectively immutable, so we
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   91  	 * can make it static const to save some cycles and stack.
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   92  	 */
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   93  	static const struct rmap_walk_control rwc = {
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   94  		.rmap_one = page_idle_clear_pte_refs_one,
-2f031c6f042cb8 Matthew Wilcox (Oracle  2022-01-29   95) 		.anon_lock = folio_lock_anon_vma_read,
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   96  	};
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   97  	bool need_lock;
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09   98  
-4aed23a2f8aaaa Matthew Wilcox (Oracle  2022-01-29   99) 	if (!folio_mapped(folio) || !folio_raw_mapping(folio))
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  100  		return;
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  101  
-4aed23a2f8aaaa Matthew Wilcox (Oracle  2022-01-29  102) 	need_lock = !folio_test_anon(folio) || folio_test_ksm(folio);
-4aed23a2f8aaaa Matthew Wilcox (Oracle  2022-01-29  103) 	if (need_lock && !folio_trylock(folio))
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  104  		return;
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  105  
-84fbbe21894bb9 Matthew Wilcox (Oracle  2022-01-29 @106) 	rmap_walk(folio, &rwc);
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  107  
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  108  	if (need_lock)
-4aed23a2f8aaaa Matthew Wilcox (Oracle  2022-01-29  109) 		folio_unlock(folio);
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  110  }
-33c3fc71c8cfa3 Vladimir Davydov        2015-09-09  111  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thx.
