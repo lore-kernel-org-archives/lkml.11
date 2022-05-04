@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357193AbiEDRij (ORCPT
+        id S1358586AbiEDRir (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        Wed, 4 May 2022 13:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356844AbiEDRJp (ORCPT
+        with ESMTP id S1356834AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB17366B9;
-        Wed,  4 May 2022 09:55:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FA02E9E3;
+        Wed,  4 May 2022 09:55:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D51DD61851;
-        Wed,  4 May 2022 16:55:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30A52C385A5;
-        Wed,  4 May 2022 16:55:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AE98B82795;
+        Wed,  4 May 2022 16:55:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41CA1C385AA;
+        Wed,  4 May 2022 16:55:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683357;
-        bh=d7FYk8CcoJFVfmacnUDKuqx+IN8JrgInU5TLM/A7XjQ=;
+        s=korg; t=1651683351;
+        bh=IzHnTEH3xlGhfuyQg4J8ArZeDQO0q0tTgX2u3BJ5BDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DP/ncrzapVGT6p/YS8SUYPYbnWijx/wanNfVLyR4rewGKLJnRlxMoStFiMj56Sk6i
-         J+qE86wM8CODAmeoMZSXb7gNX84flKYK4mxCAnJmOHz/p/w8C3v4W+UEQAoqUdrG71
-         0aYOXXpW8nV+PPJYXA8iiJiR9HWgGKzWs4ic1VUA=
+        b=GpRKz31fOgTmqBE1PL/iJdbzcgPcwKHQ7OzsoZAE/UWu5z7zuLH8aBq1z5p8ePphk
+         J2MAyQrkuWD6fgROMvVPnvWAiZhPxS2lkvBozDe6LHZMKElWz9Shbw237U7WNWLT5y
+         xtv+1F3gLJOByASU715BEl6lXK3THUQXM2nfoqL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable <stable@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH 5.17 030/225] usb: phy: generic: Get the vbus supply
-Date:   Wed,  4 May 2022 18:44:28 +0200
-Message-Id: <20220504153112.964934646@linuxfoundation.org>
+        Sven Peter <sven@svenpeter.dev>
+Subject: [PATCH 5.17 024/225] usb: dwc3: Try usb-role-switch first in dwc3_drd_init
+Date:   Wed,  4 May 2022 18:44:22 +0200
+Message-Id: <20220504153112.490831148@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,38 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Anderson <sean.anderson@seco.com>
+From: Sven Peter <sven@svenpeter.dev>
 
-commit 03e607cbb2931374db1825f371e9c7f28526d3f4 upstream.
+commit ab7aa2866d295438dc60522f85c5421c6b4f1507 upstream.
 
-While support for working with a vbus was added, the regulator was never
-actually gotten (despite what was documented). Fix this by actually
-getting the supply from the device tree.
+If the PHY controller node has a "port" dwc3 tries to find an
+extcon device even when "usb-role-switch" is present. This happens
+because dwc3_get_extcon() sees that "port" node and then calls
+extcon_find_edev_by_node() which will always return EPROBE_DEFER
+in that case.
 
-Fixes: 7acc9973e3c4 ("usb: phy: generic: add vbus support")
+On the other hand, even if an extcon was present and dwc3_get_extcon()
+was successful it would still be ignored in favor of "usb-role-switch".
+
+Let's just first check if "usb-role-switch" is configured in the device
+tree and directly use it instead and only try to look for an extcon
+device otherwise.
+
+Fixes: 8a0a13799744 ("usb: dwc3: Registering a role switch in the DRD code.")
 Cc: stable <stable@kernel.org>
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Link: https://lore.kernel.org/r/20220425171412.1188485-3-sean.anderson@seco.com
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+Link: https://lore.kernel.org/r/20220411155300.9766-1-sven@svenpeter.dev
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/phy/phy-generic.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/usb/dwc3/drd.c |   11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/phy/phy-generic.c
-+++ b/drivers/usb/phy/phy-generic.c
-@@ -268,6 +268,13 @@ int usb_phy_gen_create_phy(struct device
- 			return -EPROBE_DEFER;
- 	}
+--- a/drivers/usb/dwc3/drd.c
++++ b/drivers/usb/dwc3/drd.c
+@@ -571,16 +571,15 @@ int dwc3_drd_init(struct dwc3 *dwc)
+ {
+ 	int ret, irq;
  
-+	nop->vbus_draw = devm_regulator_get_exclusive(dev, "vbus");
-+	if (PTR_ERR(nop->vbus_draw) == -ENODEV)
-+		nop->vbus_draw = NULL;
-+	if (IS_ERR(nop->vbus_draw))
-+		return dev_err_probe(dev, PTR_ERR(nop->vbus_draw),
-+				     "could not get vbus regulator\n");
++	if (ROLE_SWITCH &&
++	    device_property_read_bool(dwc->dev, "usb-role-switch"))
++		return dwc3_setup_role_switch(dwc);
 +
- 	nop->dev		= dev;
- 	nop->phy.dev		= nop->dev;
- 	nop->phy.label		= "nop-xceiv";
+ 	dwc->edev = dwc3_get_extcon(dwc);
+ 	if (IS_ERR(dwc->edev))
+ 		return PTR_ERR(dwc->edev);
+ 
+-	if (ROLE_SWITCH &&
+-	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
+-		ret = dwc3_setup_role_switch(dwc);
+-		if (ret < 0)
+-			return ret;
+-	} else if (dwc->edev) {
++	if (dwc->edev) {
+ 		dwc->edev_nb.notifier_call = dwc3_drd_notifier;
+ 		ret = extcon_register_notifier(dwc->edev, EXTCON_USB_HOST,
+ 					       &dwc->edev_nb);
 
 
