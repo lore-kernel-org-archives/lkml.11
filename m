@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C93E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E873C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356489AbiEDR1A (ORCPT
+        id S1357192AbiEDR1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        Wed, 4 May 2022 13:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355175AbiEDRGI (ORCPT
+        with ESMTP id S1346734AbiEDRF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:06:08 -0400
+        Wed, 4 May 2022 13:05:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964CA50E25;
-        Wed,  4 May 2022 09:54:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A363A4755D;
+        Wed,  4 May 2022 09:54:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 651B9617A6;
-        Wed,  4 May 2022 16:54:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3728C385A4;
-        Wed,  4 May 2022 16:54:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B55A618DF;
+        Wed,  4 May 2022 16:54:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB661C385AF;
+        Wed,  4 May 2022 16:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683261;
-        bh=nkHXMlkQYvJ0VAZul9wxWujXNsFjkiphNohHPwXVGtE=;
+        s=korg; t=1651683259;
+        bh=5Vle1qWJnQKV1VFtVFlv7ED24OJaCLIdTzacdmZoabs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iSF8e2Hn8fegFNxMHQ7DFE/V+TjJ//O9Q4jugEErWniNXr//nLGHvZSZmn17hlAzn
-         tz1Agklp/xGiwhid/wzIo6BObjx2PIryQ+3B2HOh3USO/YPDCSAoa4d/RoKpfNXspw
-         5VfJb2vgFWDCwQ4+uX32TjzT2o6HSWOmvu0FVwZ8=
+        b=l+VS8OvSkrC9ozjwHI4UATcUd4b71tIyPQ5zeuiiBcmW3JN3VxssE43oDb5ky974M
+         BbO4Egfp1B4UAjXr7o7hEYX/tGlr6tgqO32zkSN6tNhmJsKOK8uQOLkigFqzvdWVK5
+         636zOZeQSW9BGek/1r06baWX3JyupMXJGvPhVoTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Song <chao.song@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 127/177] ASoC: Intel: soc-acpi: correct device endpoints for max98373
-Date:   Wed,  4 May 2022 18:45:20 +0200
-Message-Id: <20220504153104.485909751@linuxfoundation.org>
+Subject: [PATCH 5.15 124/177] ixgbe: ensure IPsec VF<->PF compatibility
+Date:   Wed,  4 May 2022 18:45:17 +0200
+Message-Id: <20220504153104.222961804@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,44 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Song <chao.song@linux.intel.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit 97326be14df7bacc6ba5c62c0556298c27ea0432 ]
+[ Upstream commit f049efc7f7cd2f3c419f55040928eaefb13b3636 ]
 
-The left speaker of max98373 uses spk_r_endpoint, and right
-speaker uses spk_l_endpoint, this is obviously wrong.
+The VF driver can forward any IPsec flags and such makes the function
+is not extendable and prone to backward/forward incompatibility.
 
-This patch corrects the endpoints for max98373 codec.
+If new software runs on VF, it won't know that PF configured something
+completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
 
-Signed-off-by: Chao Song <chao.song@linux.intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220406192341.271465-1-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Shannon Nelson <snelson@pensando.io>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220427173152.443102-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/common/soc-acpi-intel-tgl-match.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
-index 11801b905ecc..c93d8019b0e5 100644
---- a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
-+++ b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
-@@ -127,13 +127,13 @@ static const struct snd_soc_acpi_adr_device mx8373_1_adr[] = {
- 	{
- 		.adr = 0x000123019F837300ull,
- 		.num_endpoints = 1,
--		.endpoints = &spk_l_endpoint,
-+		.endpoints = &spk_r_endpoint,
- 		.name_prefix = "Right"
- 	},
- 	{
- 		.adr = 0x000127019F837300ull,
- 		.num_endpoints = 1,
--		.endpoints = &spk_r_endpoint,
-+		.endpoints = &spk_l_endpoint,
- 		.name_prefix = "Left"
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index e596e1a9fc75..69d11ff7677d 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+ 	/* Tx IPsec offload doesn't seem to work on this
+ 	 * device, so block these requests for now.
+ 	 */
+-	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
++	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
++	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
+ 		err = -EOPNOTSUPP;
+ 		goto err_out;
  	}
- };
 -- 
 2.35.1
 
