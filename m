@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352953AbiEDRiL (ORCPT
+        id S1358173AbiEDRiO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        Wed, 4 May 2022 13:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356873AbiEDRJr (ORCPT
+        with ESMTP id S1356870AbiEDRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE772443C3;
-        Wed,  4 May 2022 09:56:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA7843EC9;
+        Wed,  4 May 2022 09:56:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1261B82552;
-        Wed,  4 May 2022 16:56:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53BE9C385A4;
-        Wed,  4 May 2022 16:56:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5D8DB8278E;
+        Wed,  4 May 2022 16:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B37C385A4;
+        Wed,  4 May 2022 16:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683370;
-        bh=mByOyQJpflwm3yp0gkyUjgqQy6QgDdF3JuD8miju9pY=;
+        s=korg; t=1651683368;
+        bh=UZl42qo5/Ar8qtWtm+NFa5TCzVY3jfja3ZRWVrYwy6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HyYh0HjSv7N8IKB23eTSxZIPdNCM6JmD5w28QHG1TpCcC5ZzO1YIurnN5aL4ZpS54
-         4Z8TkuYKc9UgGK/OprBohpPEbKVHAmPySFQIA1/YPdMo4j97zchEepQ+D0yJXQaIfY
-         YPlaJA+jQfs90S0SC9OB8e846hSXKshCkoRr1cxk=
+        b=zHUq/5Vb76IsZii9KsVuMsu71qvVZc7r/b0HCLBZPg5WA4hswZb7R9Ir5wwlzQMfT
+         C7rMZ0DIbCojpRu6P7yzwsw+w86/ZqEA78nQG8g5CbA1S5CYxXAxEQl1Lu0+AMTGv+
+         cYf2h9kgFXANEkAQo+3AriGZRmvwnqYkHl776mo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiubo Li <xiubli@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.17 041/225] ceph: fix possible NULL pointer dereference for req->r_session
-Date:   Wed,  4 May 2022 18:44:39 +0200
-Message-Id: <20220504153113.829524458@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Rik van Riel <riel@surriel.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 053/225] iocost: dont reset the inuse weight of under-weighted debtors
+Date:   Wed,  4 May 2022 18:44:51 +0200
+Message-Id: <20220504153114.897394089@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,44 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Tejun Heo <tj@kernel.org>
 
-commit 7acae6183cf37c48b8da48bbbdb78820fb3913f3 upstream.
+commit 8c936f9ea11ec4e35e288810a7503b5c841a355f upstream.
 
-The request will be inserted into the ci->i_unsafe_dirops before
-assigning the req->r_session, so it's possible that we will hit
-NULL pointer dereference bug here.
+When an iocg is in debt, its inuse weight is owned by debt handling and
+should stay at 1. This invariant was broken when determining the amount of
+surpluses at the beginning of donation calculation - when an iocg's
+hierarchical weight is too low, the iocg is excluded from donation
+calculation and its inuse is reset to its active regardless of its
+indebtedness, triggering warnings like the following:
 
-Cc: stable@vger.kernel.org
-URL: https://tracker.ceph.com/issues/55327
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Tested-by: Aaron Tomlin <atomlin@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+ WARNING: CPU: 5 PID: 0 at block/blk-iocost.c:1416 iocg_kick_waitq+0x392/0x3a0
+ ...
+ RIP: 0010:iocg_kick_waitq+0x392/0x3a0
+ Code: 00 00 be ff ff ff ff 48 89 4d a8 e8 98 b2 70 00 48 8b 4d a8 85 c0 0f 85 4a fe ff ff 0f 0b e9 43 fe ff ff 0f 0b e9 4d fe ff ff <0f> 0b e9 50 fe ff ff e8 a2 ae 70 00 66 90 0f 1f 44 00 00 55 48 89
+ RSP: 0018:ffffc90000200d08 EFLAGS: 00010016
+ ...
+  <IRQ>
+  ioc_timer_fn+0x2e0/0x1470
+  call_timer_fn+0xa1/0x2c0
+ ...
+
+As this happens only when an iocg's hierarchical weight is negligible, its
+impact likely is limited to triggering the warnings. Fix it by skipping
+resetting inuse of under-weighted debtors.
+
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Reported-by: Rik van Riel <riel@surriel.com>
+Fixes: c421a3eb2e27 ("blk-iocost: revamp debt handling")
+Cc: stable@vger.kernel.org # v5.10+
+Link: https://lore.kernel.org/r/YmjODd4aif9BzFuO@slm.duckdns.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/caps.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ block/blk-iocost.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -2267,6 +2267,8 @@ retry:
- 			list_for_each_entry(req, &ci->i_unsafe_dirops,
- 					    r_unsafe_dir_item) {
- 				s = req->r_session;
-+				if (!s)
-+					continue;
- 				if (unlikely(s->s_mds >= max_sessions)) {
- 					spin_unlock(&ci->i_unsafe_lock);
- 					for (i = 0; i < max_sessions; i++) {
-@@ -2287,6 +2289,8 @@ retry:
- 			list_for_each_entry(req, &ci->i_unsafe_iops,
- 					    r_unsafe_target_item) {
- 				s = req->r_session;
-+				if (!s)
-+					continue;
- 				if (unlikely(s->s_mds >= max_sessions)) {
- 					spin_unlock(&ci->i_unsafe_lock);
- 					for (i = 0; i < max_sessions; i++) {
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -2322,7 +2322,17 @@ static void ioc_timer_fn(struct timer_li
+ 				iocg->hweight_donating = hwa;
+ 				iocg->hweight_after_donation = new_hwi;
+ 				list_add(&iocg->surplus_list, &surpluses);
+-			} else {
++			} else if (!iocg->abs_vdebt) {
++				/*
++				 * @iocg doesn't have enough to donate. Reset
++				 * its inuse to active.
++				 *
++				 * Don't reset debtors as their inuse's are
++				 * owned by debt handling. This shouldn't affect
++				 * donation calculuation in any meaningful way
++				 * as @iocg doesn't have a meaningful amount of
++				 * share anyway.
++				 */
+ 				TRACE_IOCG_PATH(inuse_shortage, iocg, &now,
+ 						iocg->inuse, iocg->active,
+ 						iocg->hweight_inuse, new_hwi);
 
 
