@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19969C4708D
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384465AbiEDXIA (ORCPT
+        id S1383989AbiEDXHc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
+        Wed, 4 May 2022 19:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379972AbiEDW7f (ORCPT
+        with ESMTP id S1380364AbiEDW75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:35 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA2854BF7
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:41 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id o8-20020a17090a9f8800b001dc9f554c7fso1083152pjp.4
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:41 -0700 (PDT)
+        Wed, 4 May 2022 18:59:57 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66CE57135
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:14 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id v8-20020a170902b7c800b0015e927ee201so1368111plz.12
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=q6AIj817CevNnhok7TpRrpYhOGlmlSTBBZ+O77AbXM4=;
-        b=j1qEmO9OjecSXax05N2m5U41H3uhMxD63Px2oDCRHoaj82dAvrkb6W4Sq2/n/sJbJM
-         eIJkTe9PD3zvOE4J3rjo7Ha1lvSCLCzGoj+RMW9EVQJUVWB/rIJK2yopfb2b8vVGGzHf
-         Ie7dk/mSVW834eTbZkIWAfzBllpqJXclOBFMocw69MzEJaaLb8xpN6DHbDDfLSiLBirn
-         3oSs4AMLx9GYJK/f/1PrSH7acvSXt/PQ1dgAJkQo/Bi5PF7IzxUkDXKxgEw88ptCSEQ+
-         ta9u2IRASLm3xslhhmL4qLKZItYF0Yrd0Z8/lBNz917rp5Oy4BsZgy9JfFUL9fmUwQkw
-         171w==
+        bh=b5mqyDQydri5T13drbTfXUVGOsVwBBBBvhoVfKOp4Ng=;
+        b=E3cUwHmMsCEN9UooIQHkxsNcWNT7UFkJIUUh57XKJtxJ+lG6bNMc9BIPYbGSCt3w5D
+         yTtiuuMFgs4MLu8U9yAFk8qO7fPYH9+4ej6+fx/vszn0KljBFud3jxHmTbVOWk/EsUE4
+         XqAFnVnWEIUpE1KA8wSbBhuEH1r05BAQbQ1sM7rcpiatoC1rNi7oLCk1mHHZR2kXhscg
+         8RI/6xWxm0EIGgVOynQXQAEQR2V2+GqE8gdv17D0GYQ6kNAYGsS8nBDO3RSREWMujdPa
+         YIdlFyuytchaVPJ4q1tuf+nbXCMBrGmmEurvexu4k/B/dsIRp97kEm7FqYSZ/Bl5j1a/
+         4e3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=q6AIj817CevNnhok7TpRrpYhOGlmlSTBBZ+O77AbXM4=;
-        b=n2zjAlEYXX5bjawSkojYyMtpVk1LdF7CNL1nWMIdcmZphYhSPHZaGpNK71QpiGfvD9
-         CaMg8d0vgeFEDj6dCOhh+qkhSYMavenRkop8cRvsKoxtgFpOWFfNSw7RqamWT35zNrbq
-         wd3JrYNKC/tSPZnsBg029U3oAZyUt/N7Upr/0Jd9wBhK8S9nAO+ldB70WaG5xpHlQCIY
-         CcrJL/Cb/LQQcKgBBh6A8aBWe3ETHun21ciI5EUjCCKRdvjabMqfzjyVSVPggnkrOo1B
-         riCfn0P+9kbYA8lP//RvcLNzuu466N6DrmykS9RB1n+1ZZFnFdNtvM9eENUF/9Gy5IYa
-         dy4A==
-X-Gm-Message-State: AOAM530QYUVWbHcEkWolKCokmgpvs8KizyvYF9QSbQaZep49oR6CQNQH
-        fd90ummnnYfmnYkRWEaw3bqeaEuJ6PQ=
-X-Google-Smtp-Source: ABdhPJyJLvij56MuiBVWtggNFnwOLahy86p2YU+mp6YYF+39YDpo2d3zxpWSNmKlBL+RNhgovKqLO560wXQ=
+        bh=b5mqyDQydri5T13drbTfXUVGOsVwBBBBvhoVfKOp4Ng=;
+        b=nzSyugtJtTiKMs+cIlhyCxhobFSf1DauqbvUCD/hMgZPpiXX1KnC41rsxI7kJijdlc
+         QuM2Qj3HdgxgOzieuAV1ZGJ94DNocggQxuJOBKhMW0nSSzZUFfvpQ+SeyFGjVFJdXjlq
+         C/RNPcwkMn4735djcOOwkHHRMtxBdPIlYzZeTlCE/+g8QoBAq2WjuUSdLPx/bXR638Xf
+         yDZCtdBjxeae7ISSKsePGl8Ok2KSG3/+yrtAGvSv0PglPvWEHguwveM4eD8RH7xBHmMP
+         usW95aDTR6jyIX+U4ZMBm8ISBGYPuD2rYP/9B7dXyWRawkWhu27sAcWJjArGrnKYSubq
+         8uXA==
+X-Gm-Message-State: AOAM532Wtiws/EAvVm68WQn3D+lLHjhs4aTIJbr93j3Y3FUcBDntPuZZ
+        XcgXKGwPTCLTWgaFVqnTf83znOYl8Pc=
+X-Google-Smtp-Source: ABdhPJzGh9RbXHnHWVjsE25ui8Kt42FUo+iqCEdec0OdPK+O2q9UD6d1qGIZaYPIlueNm3i7xaDyT5darfs=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1ac8:b0:4fa:917f:c1aa with SMTP id
- f8-20020a056a001ac800b004fa917fc1aamr23244208pfv.2.1651704741153; Wed, 04 May
- 2022 15:52:21 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:b704:b0:156:624:934b with SMTP id
+ d4-20020a170902b70400b001560624934bmr24729613pls.116.1651704764277; Wed, 04
+ May 2022 15:52:44 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:45 +0000
+Date:   Wed,  4 May 2022 22:48:58 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-100-seanjc@google.com>
+Message-Id: <20220504224914.1654036-113-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 099/128] KVM: selftests: Convert steal_time away from VCPU_ID
+Subject: [PATCH 112/128] KVM: selftests: Drop @vcpuids param from VM creators
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,232 +69,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert steal_time to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of requiring that the index into the
-array of vCPUs for a given vCPU is also the ID of the vCPU.
+Drop the @vcpuids parameter from VM creators now that there are no users.
+Allowing tests to specify IDs was a gigantic mistake as it resulted in
+tests with arbitrary and ultimately meaningless IDs that differed only
+because the author used test X intead of test Y as the source for
+copy+paste (the de facto standard way to create a KVM selftest).
+
+Except for literally two tests, x86's set_boot_cpu_id and s390's resets,
+tests do not and should not care about the vCPU ID.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/steal_time.c | 123 ++++++++++++-----------
- 1 file changed, 62 insertions(+), 61 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 4 ++--
+ tools/testing/selftests/kvm/kvm_page_table_test.c   | 2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 8 +++-----
+ tools/testing/selftests/kvm/lib/perf_test_util.c    | 2 +-
+ 4 files changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/steal_time.c b/tools/testing/selftests/kvm/steal_time.c
-index 741892cec1ea..2aca51d83079 100644
---- a/tools/testing/selftests/kvm/steal_time.c
-+++ b/tools/testing/selftests/kvm/steal_time.c
-@@ -58,36 +58,34 @@ static void guest_code(int cpu)
- 	GUEST_DONE();
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 882b684dc372..6eeaef797ea1 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -542,7 +542,7 @@ static inline struct kvm_vm *vm_create(uint64_t nr_pages)
+ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 				      uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
+ 				      uint32_t num_percpu_pages, void *guest_code,
+-				      uint32_t vcpuids[], struct kvm_vcpu *vcpus[]);
++				      struct kvm_vcpu *vcpus[]);
+ 
+ static inline struct kvm_vm *vm_create_with_vcpus(uint32_t nr_vcpus,
+ 						  void *guest_code,
+@@ -550,7 +550,7 @@ static inline struct kvm_vm *vm_create_with_vcpus(uint32_t nr_vcpus,
+ {
+ 	return __vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus,
+ 				      DEFAULT_GUEST_PHY_PAGES, 0, 0,
+-				      guest_code, NULL, vcpus);
++				      guest_code, vcpus);
  }
  
--static void steal_time_init(struct kvm_vm *vm)
-+static bool is_steal_time_supported(struct kvm_vcpu *vcpu)
+ /*
+diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
+index e91bc7f1400d..76031be195fa 100644
+--- a/tools/testing/selftests/kvm/kvm_page_table_test.c
++++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
+@@ -269,7 +269,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 	/* Create a VM with enough guest pages */
+ 	guest_num_pages = test_mem_size / guest_page_size;
+ 	vm = __vm_create_with_vcpus(mode, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
+-				    guest_num_pages, 0, guest_code, NULL, NULL);
++				    guest_num_pages, 0, guest_code, NULL);
+ 
+ 	/* Align down GPA of the testing memslot */
+ 	if (!p->phys_offset)
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 96d1daf14dc3..ccd194007e90 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -303,7 +303,7 @@ struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
+ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 				      uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
+ 				      uint32_t num_percpu_pages, void *guest_code,
+-				      uint32_t vcpuids[], struct kvm_vcpu *vcpus[])
++				      struct kvm_vcpu *vcpus[])
  {
--	int i;
-+	struct kvm_cpuid_entry2 *cpuid = kvm_get_supported_cpuid_entry(KVM_CPUID_FEATURES);
+ 	uint64_t vcpu_pages, extra_pg_pages, pages;
+ 	struct kvm_vcpu *vcpu;
+@@ -331,9 +331,7 @@ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus
+ 	vm = __vm_create(mode, pages);
  
--	if (!(kvm_get_supported_cpuid_entry(KVM_CPUID_FEATURES)->eax &
--	      KVM_FEATURE_STEAL_TIME)) {
--		print_skip("steal-time not supported");
--		exit(KSFT_SKIP);
--	}
-+	return cpuid && (cpuid->eax & KVM_FEATURE_STEAL_TIME);
-+}
- 
--	for (i = 0; i < NR_VCPUS; ++i) {
--		int ret;
-+static void steal_time_init(struct kvm_vcpu *vcpu, uint32_t i)
-+{
-+	int ret;
- 
--		/* ST_GPA_BASE is identity mapped */
--		st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
--		sync_global_to_guest(vm, st_gva[i]);
-+	/* ST_GPA_BASE is identity mapped */
-+	st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
-+	sync_global_to_guest(vcpu->vm, st_gva[i]);
- 
--		ret = _vcpu_set_msr(vm, i, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_STEAL_RESERVED_MASK);
--		TEST_ASSERT(ret == 0, "Bad GPA didn't fail");
-+	ret = _vcpu_set_msr(vcpu->vm, vcpu->id, MSR_KVM_STEAL_TIME,
-+			    (ulong)st_gva[i] | KVM_STEAL_RESERVED_MASK);
-+	TEST_ASSERT(ret == 0, "Bad GPA didn't fail");
- 
--		vcpu_set_msr(vm, i, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_MSR_ENABLED);
--	}
-+	vcpu_set_msr(vcpu->vm, vcpu->id, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_MSR_ENABLED);
- }
- 
--static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpuid)
-+static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpu_idx)
- {
--	struct kvm_steal_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpuid]);
-+	struct kvm_steal_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpu_idx]);
- 	int i;
- 
--	pr_info("VCPU%d:\n", vcpuid);
-+	pr_info("VCPU%d:\n", vcpu_idx);
- 	pr_info("    steal:     %lld\n", st->steal);
- 	pr_info("    version:   %d\n", st->version);
- 	pr_info("    flags:     %d\n", st->flags);
-@@ -165,49 +163,50 @@ static void guest_code(int cpu)
- 	GUEST_DONE();
- }
- 
--static void steal_time_init(struct kvm_vm *vm)
-+static bool is_steal_time_supported(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_device_attr dev = {
- 		.group = KVM_ARM_VCPU_PVTIME_CTRL,
- 		.attr = KVM_ARM_VCPU_PVTIME_IPA,
- 	};
--	int i, ret;
- 
--	ret = __vcpu_ioctl(vm, 0, KVM_HAS_DEVICE_ATTR, &dev);
--	if (ret != 0 && errno == ENXIO) {
--		print_skip("steal-time not supported");
--		exit(KSFT_SKIP);
--	}
+ 	for (i = 0; i < nr_vcpus; ++i) {
+-		uint32_t vcpuid = vcpuids ? vcpuids[i] : i;
 -
--	for (i = 0; i < NR_VCPUS; ++i) {
--		uint64_t st_ipa;
-+	return !__vcpu_ioctl(vcpu->vm, vcpu->id, KVM_HAS_DEVICE_ATTR, &dev);
-+}
- 
--		vcpu_ioctl(vm, i, KVM_HAS_DEVICE_ATTR, &dev);
-+static void steal_time_init(struct kvm_vcpu *vcpu, uint32_t i)
-+{
-+	struct kvm_vm *vm = vcpu->vm;
-+	uint64_t st_ipa;
-+	int ret;
- 
--		dev.addr = (uint64_t)&st_ipa;
-+	struct kvm_device_attr dev = {
-+		.group = KVM_ARM_VCPU_PVTIME_CTRL,
-+		.attr = KVM_ARM_VCPU_PVTIME_IPA,
-+		.addr = (uint64_t)&st_ipa,
-+	};
- 
--		/* ST_GPA_BASE is identity mapped */
--		st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
--		sync_global_to_guest(vm, st_gva[i]);
-+	vcpu_ioctl(vm, vcpu->id, KVM_HAS_DEVICE_ATTR, &dev);
- 
--		st_ipa = (ulong)st_gva[i] | 1;
--		ret = __vcpu_ioctl(vm, i, KVM_SET_DEVICE_ATTR, &dev);
--		TEST_ASSERT(ret == -1 && errno == EINVAL, "Bad IPA didn't report EINVAL");
-+	/* ST_GPA_BASE is identity mapped */
-+	st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
-+	sync_global_to_guest(vm, st_gva[i]);
- 
--		st_ipa = (ulong)st_gva[i];
--		vcpu_ioctl(vm, i, KVM_SET_DEVICE_ATTR, &dev);
-+	st_ipa = (ulong)st_gva[i] | 1;
-+	ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_DEVICE_ATTR, &dev);
-+	TEST_ASSERT(ret == -1 && errno == EINVAL, "Bad IPA didn't report EINVAL");
- 
--		ret = __vcpu_ioctl(vm, i, KVM_SET_DEVICE_ATTR, &dev);
--		TEST_ASSERT(ret == -1 && errno == EEXIST, "Set IPA twice without EEXIST");
-+	st_ipa = (ulong)st_gva[i];
-+	vcpu_ioctl(vm, vcpu->id, KVM_SET_DEVICE_ATTR, &dev);
- 
--	}
-+	ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_DEVICE_ATTR, &dev);
-+	TEST_ASSERT(ret == -1 && errno == EEXIST, "Set IPA twice without EEXIST");
- }
- 
--static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpuid)
-+static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpu_idx)
- {
--	struct st_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpuid]);
-+	struct st_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpu_idx]);
- 
--	pr_info("VCPU%d:\n", vcpuid);
-+	pr_info("VCPU%d:\n", vcpu_idx);
- 	pr_info("    rev:     %d\n", st->rev);
- 	pr_info("    attr:    %d\n", st->attr);
- 	pr_info("    st_time: %ld\n", st->st_time);
-@@ -231,15 +230,13 @@ static void *do_steal_time(void *arg)
- 	return NULL;
- }
- 
--static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid)
-+static void run_vcpu(struct kvm_vcpu *vcpu)
- {
- 	struct ucall uc;
- 
--	vcpu_args_set(vm, vcpuid, 1, vcpuid);
-+	vcpu_run(vcpu->vm, vcpu->id);
- 
--	vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
--
--	switch (get_ucall(vm, vcpuid, &uc)) {
-+	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
- 	case UCALL_SYNC:
- 	case UCALL_DONE:
- 		break;
-@@ -248,12 +245,13 @@ static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid)
- 			    __FILE__, uc.args[1]);
- 	default:
- 		TEST_ASSERT(false, "Unexpected exit: %s",
--			    exit_reason_str(vcpu_state(vm, vcpuid)->exit_reason));
-+			    exit_reason_str(vcpu->run->exit_reason));
+-		vcpu = vm_vcpu_add(vm, vcpuid, guest_code);
++		vcpu = vm_vcpu_add(vm, i, guest_code);
+ 		if (vcpus)
+ 			vcpus[i] = vcpu;
  	}
- }
- 
- int main(int ac, char **av)
- {
-+	struct kvm_vcpu *vcpus[NR_VCPUS];
+@@ -349,7 +347,7 @@ struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
  	struct kvm_vm *vm;
- 	pthread_attr_t attr;
- 	pthread_t thread;
-@@ -273,26 +271,29 @@ int main(int ac, char **av)
- 	pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpuset);
- 	pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
  
--	/* Create a one VCPU guest and an identity mapped memslot for the steal time structure */
--	vm = vm_create_default(0, 0, guest_code);
-+	/* Create a VM and an identity mapped memslot for the steal time structure */
-+	vm = vm_create_with_vcpus(NR_VCPUS, guest_code, vcpus);
- 	gpages = vm_calc_num_guest_pages(VM_MODE_DEFAULT, STEAL_TIME_SIZE * NR_VCPUS);
- 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, ST_GPA_BASE, 1, gpages, 0);
- 	virt_map(vm, ST_GPA_BASE, ST_GPA_BASE, gpages);
- 	ucall_init(vm, NULL);
+ 	vm = __vm_create_with_vcpus(VM_MODE_DEFAULT, 1, DEFAULT_GUEST_PHY_PAGES,
+-				    extra_mem_pages, 0, guest_code, NULL, vcpus);
++				    extra_mem_pages, 0, guest_code, vcpus);
  
--	/* Add the rest of the VCPUs */
--	for (i = 1; i < NR_VCPUS; ++i)
--		vm_vcpu_add(vm, i, guest_code);
--
--	steal_time_init(vm);
-+	if (!is_steal_time_supported(vcpus[0])) {
-+		print_skip("steal-time not supported");
-+		exit(KSFT_SKIP);
-+	}
+ 	*vcpu = vcpus[0];
+ 	return vm;
+diff --git a/tools/testing/selftests/kvm/lib/perf_test_util.c b/tools/testing/selftests/kvm/lib/perf_test_util.c
+index 5b80ba7f12e4..ffbd3664e162 100644
+--- a/tools/testing/selftests/kvm/lib/perf_test_util.c
++++ b/tools/testing/selftests/kvm/lib/perf_test_util.c
+@@ -140,7 +140,7 @@ struct kvm_vm *perf_test_create_vm(enum vm_guest_mode mode, int vcpus,
+ 	 * effect as KVM allows aliasing HVAs in meslots.
+ 	 */
+ 	vm = __vm_create_with_vcpus(mode, vcpus, DEFAULT_GUEST_PHY_PAGES,
+-				    guest_num_pages, 0, guest_code, NULL, NULL);
++				    guest_num_pages, 0, guest_code, NULL);
  
- 	/* Run test on each VCPU */
- 	for (i = 0; i < NR_VCPUS; ++i) {
-+		steal_time_init(vcpus[i], i);
-+
-+		vcpu_args_set(vm, vcpus[i]->id, 1, i);
-+
- 		/* First VCPU run initializes steal-time */
--		run_vcpu(vm, i);
-+		run_vcpu(vcpus[i]);
+ 	pta->vm = vm;
  
- 		/* Second VCPU run, expect guest stolen time to be <= run_delay */
--		run_vcpu(vm, i);
-+		run_vcpu(vcpus[i]);
- 		sync_global_from_guest(vm, guest_stolen_time[i]);
- 		stolen_time = guest_stolen_time[i];
- 		run_delay = get_run_delay();
-@@ -313,7 +314,7 @@ int main(int ac, char **av)
- 			    MIN_RUN_DELAY_NS, run_delay);
- 
- 		/* Run VCPU again to confirm stolen time is consistent with run_delay */
--		run_vcpu(vm, i);
-+		run_vcpu(vcpus[i]);
- 		sync_global_from_guest(vm, guest_stolen_time[i]);
- 		stolen_time = guest_stolen_time[i] - stolen_time;
- 		TEST_ASSERT(stolen_time >= run_delay,
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
