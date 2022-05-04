@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0574CC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353813AbiEDQys (ORCPT
+        id S1353761AbiEDQyw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
+        Wed, 4 May 2022 12:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353848AbiEDQxe (ORCPT
+        with ESMTP id S1353977AbiEDQxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C658047AEC;
+        Wed, 4 May 2022 12:53:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0091347AED;
         Wed,  4 May 2022 09:48:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F415DB82737;
-        Wed,  4 May 2022 16:48:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5C62C385A5;
-        Wed,  4 May 2022 16:48:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 609B26174B;
+        Wed,  4 May 2022 16:48:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAA57C385AA;
+        Wed,  4 May 2022 16:48:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682934;
-        bh=Vv8esSM2GXxjqp29nDHcWRb6ej6W2N0J0PRGsVfzTGI=;
+        s=korg; t=1651682936;
+        bh=h76GEpf5N76NBpbEK6cuzTroDXKTOFD5aLTGvyLJDkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pHiSKk42XCDDyF00DdzJfWukP7H/kIz07mEWKX+gG0puOGQQ1lcZgH51oSeK/7VD1
-         hjwe/0C8GlDx2S/efSZ9nhwTxQ2n+k4GsoKUE9u+PeFUhzebezJqQ6fofh7p1OoStA
-         XpjC5qiAhFapHjp3muBWQIThmCdHb16IOBycgtK0=
+        b=ogsXlg9gJVg2UGcLVFqc3LS5C9ZaSaKswUG09v2+GPTzTx7lJFUEXOkxkcPJTsbN3
+         IK9MN46lU4F2862pPocqU4JWv+89azymICG9k0Iz+PHsnL8DXYM20mDqt/wIX3AJ3W
+         yta1X6gQI0QaQkuSl1tdcdJ5heDhvgV7LwLEY6g4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 53/84] pinctrl: pistachio: fix use of irq_of_parse_and_map()
-Date:   Wed,  4 May 2022 18:44:34 +0200
-Message-Id: <20220504152931.528646211@linuxfoundation.org>
+Subject: [PATCH 5.4 55/84] net: hns3: add validity check for message data length
+Date:   Wed,  4 May 2022 18:44:36 +0200
+Message-Id: <20220504152931.664805518@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,41 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
+[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+Add validity check for message data length in function
+hclge_send_mbx_msg(), avoid unexpected overflow.
 
-Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
-index 379e9a6a6d89..5f381e4c7577 100644
---- a/drivers/pinctrl/pinctrl-pistachio.c
-+++ b/drivers/pinctrl/pinctrl-pistachio.c
-@@ -1370,10 +1370,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
- 		}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index 23a706a1765a..410a9bf7bf0a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -64,6 +64,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
+ 	enum hclge_cmd_status status;
+ 	struct hclge_desc desc;
  
- 		irq = irq_of_parse_and_map(child, 0);
--		if (irq < 0) {
--			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
-+		if (!irq) {
-+			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
- 			of_node_put(child);
--			ret = irq;
-+			ret = -EINVAL;
- 			goto err;
- 		}
++	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
++		dev_err(&hdev->pdev->dev,
++			"msg data length(=%u) exceeds maximum(=%u)\n",
++			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
++		return -EMSGSIZE;
++	}
++
+ 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
  
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
 -- 
 2.35.1
 
