@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1985AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358338AbiEDReH (ORCPT
+        id S1358303AbiEDReC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        Wed, 4 May 2022 13:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357203AbiEDRKC (ORCPT
+        with ESMTP id S1357090AbiEDRJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:10:02 -0400
+        Wed, 4 May 2022 13:09:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC32249693;
-        Wed,  4 May 2022 09:57:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D34448E76;
+        Wed,  4 May 2022 09:57:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B171B827A3;
-        Wed,  4 May 2022 16:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE30C385A4;
-        Wed,  4 May 2022 16:57:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 221C7B827A3;
+        Wed,  4 May 2022 16:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFECC385A4;
+        Wed,  4 May 2022 16:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683427;
-        bh=2R5kitwa1y1l5S4KPY9jcoJ/BPm7iTyVBAWu2sovui0=;
+        s=korg; t=1651683421;
+        bh=8jV2h+eNgYTlk2g9f/ePE55tVvCnKBAeJ8Q1/2X9DBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0pfO8fNY7sUOimOUHZIvY3qPnWMdgCj40a7aGpyMGmPGBuSYUohS5e692gF3m+kBs
-         cQA51qXV1hNGiuAHmdNbIZnvQel7vFZN7hjkyQHt/WlB2Gdf57MXXng0nxqPbHyjnz
-         AECXJfwU+TrNh7aXh5nxpIfxupJ3zzkFZ0mhhA3w=
+        b=yFzO/+Vr3KGYhD/izHbCtSZqcbSq4IrfwBZ8kowAmxqYudpc7FiAON41wKygpztl3
+         PxCK106Mnxr+YxYISMndcxUNyvhs+TShS1aNeSEkTXKjiCPFffBa7Tu00VTGOEAkTJ
+         ClUWYqzpwkc8F7L3LufDythPXIJgPbmp++dFRA8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Francesco Ruggeri <fruggeri@arista.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 093/225] pinctrl: qcom: sm6350: fix order of UFS & SDC pins
-Date:   Wed,  4 May 2022 18:45:31 +0200
-Message-Id: <20220504153119.135109608@linuxfoundation.org>
+Subject: [PATCH 5.17 105/225] tcp: md5: incorrect tcp_header_len for incoming connections
+Date:   Wed,  4 May 2022 18:45:43 +0200
+Message-Id: <20220504153120.037017876@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,49 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca.weiss@fairphone.com>
+From: Francesco Ruggeri <fruggeri@arista.com>
 
-[ Upstream commit ef0beba1a5fb0c693ddf7d31246bd96c925ffd00 ]
+[ Upstream commit 5b0b9e4c2c895227c8852488b3f09839233bba54 ]
 
-In other places the SDC and UFS pins have been swapped but this was
-missed in the PINCTRL_PIN definitions. Fix that.
+In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
+remote address in newsk. But that address is still 0 in newsk at this
+point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
+Use the address from the request socket instead.
 
-Fixes: 7d74b55afd27 ("pinctrl: qcom: Add SM6350 pinctrl driver")
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-Link: https://lore.kernel.org/r/20220318183004.858707-5-luca.weiss@fairphone.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/qcom/pinctrl-sm6350.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/ipv4/tcp_minisocks.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-sm6350.c b/drivers/pinctrl/qcom/pinctrl-sm6350.c
-index 4d37b817b232..a91a86628f2f 100644
---- a/drivers/pinctrl/qcom/pinctrl-sm6350.c
-+++ b/drivers/pinctrl/qcom/pinctrl-sm6350.c
-@@ -264,14 +264,14 @@ static const struct pinctrl_pin_desc sm6350_pins[] = {
- 	PINCTRL_PIN(153, "GPIO_153"),
- 	PINCTRL_PIN(154, "GPIO_154"),
- 	PINCTRL_PIN(155, "GPIO_155"),
--	PINCTRL_PIN(156, "SDC1_RCLK"),
--	PINCTRL_PIN(157, "SDC1_CLK"),
--	PINCTRL_PIN(158, "SDC1_CMD"),
--	PINCTRL_PIN(159, "SDC1_DATA"),
--	PINCTRL_PIN(160, "SDC2_CLK"),
--	PINCTRL_PIN(161, "SDC2_CMD"),
--	PINCTRL_PIN(162, "SDC2_DATA"),
--	PINCTRL_PIN(163, "UFS_RESET"),
-+	PINCTRL_PIN(156, "UFS_RESET"),
-+	PINCTRL_PIN(157, "SDC1_RCLK"),
-+	PINCTRL_PIN(158, "SDC1_CLK"),
-+	PINCTRL_PIN(159, "SDC1_CMD"),
-+	PINCTRL_PIN(160, "SDC1_DATA"),
-+	PINCTRL_PIN(161, "SDC2_CLK"),
-+	PINCTRL_PIN(162, "SDC2_CMD"),
-+	PINCTRL_PIN(163, "SDC2_DATA"),
- };
- 
- #define DECLARE_MSM_GPIO_PINS(pin) \
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 7c2d3ac2363a..492737d2b7d3 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -531,7 +531,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+ 	newtp->tsoffset = treq->ts_off;
+ #ifdef CONFIG_TCP_MD5SIG
+ 	newtp->md5sig_info = NULL;	/*XXX*/
+-	if (newtp->af_specific->md5_lookup(sk, newsk))
++	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
+ 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
+ #endif
+ 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
 -- 
 2.35.1
 
