@@ -2,134 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38126C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C44C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346020AbiEDIHi (ORCPT
+        id S1346021AbiEDIJu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
+        Wed, 4 May 2022 04:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239820AbiEDIHf (ORCPT
+        with ESMTP id S238588AbiEDIJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:07:35 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EC71FCDC
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:04:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651651440; x=1683187440;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gL0S9ZXu3OIbgnNyXFOlMdlDsvB1Vg2oL5Upehzauzc=;
-  b=aQgOuQszhnuDscl1SyBmeZjXppngwaLJcKW1rExHs6HmLB5G7AEH0G6H
-   lKGt75LaNL9B3w9iTgovfrdlyOmNw5LEAC5SKwOZuhF46XMbi7gYIZKV4
-   IX/r9YxxeUUaRhc1IFa9XRxqSWyLz67yATmJ86WuWOm+Ssn2PJGpc4viU
-   02ymt6pQKETWKJRDnYLREOYYwOJWm5InY7yKLjXXkSMvBskTM8QwB+Xhz
-   2Vf+tev2t9QMRc8NNno8UPKxk6abEOSE8rI3yUcmwe3GfJ2jRAQXsMovk
-   P76V5/rZrlDlgko1KPwtHT0B4vyETwz5IrWH0dZrN38VlzTzV728h5X/z
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="248237090"
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="248237090"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 01:04:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="599432517"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 04 May 2022 01:03:58 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nm9zK-000BC3-5Z;
-        Wed, 04 May 2022 08:03:58 +0000
-Date:   Wed, 4 May 2022 16:02:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Wesley Cheng <wcheng@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [andersson:wip/sc8180x-next-20220502 7/29]
- drivers/phy/qualcomm/phy-qcom-qmp.c:6189: undefined reference to
- `typec_switch_get_drvdata'
-Message-ID: <202205041511.NkA9shqv-lkp@intel.com>
+        Wed, 4 May 2022 04:09:45 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49591220DC;
+        Wed,  4 May 2022 01:06:04 -0700 (PDT)
+X-UUID: cdfc2389b2034d31a6b07f80195c7111-20220504
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:17060d19-c653-499a-879c-289a6448ce38,OB:10,L
+        OB:10,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:53
+X-CID-INFO: VERSION:1.1.4,REQID:17060d19-c653-499a-879c-289a6448ce38,OB:10,LOB
+        :10,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:53
+X-CID-META: VersionHash:faefae9,CLOUDID:1d2ea92f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:a9dbf60cbf27,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: cdfc2389b2034d31a6b07f80195c7111-20220504
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1990241526; Wed, 04 May 2022 16:05:59 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 4 May 2022 16:05:58 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 4 May 2022 16:05:58 +0800
+Message-ID: <fa84e8e0e71cc483f9bef3714cce1622c17bcfb2.camel@mediatek.com>
+Subject: Re: [PATCH v5 1/4] dt-bindings: display: mediatek: dsi: Convert
+ dsi_dtbinding to .yaml
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     <krzysztof.kozlowski+dt@linaro.org>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <matthias.bgg@gmail.com>, <jitao.shi@mediatek.com>,
+        <xinlei.lee@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Wed, 4 May 2022 16:05:58 +0800
+In-Reply-To: <YnFt5vL+6uVioqsf@robh.at.kernel.org>
+References: <20220428133753.8348-1-rex-bc.chen@mediatek.com>
+         <20220428133753.8348-2-rex-bc.chen@mediatek.com>
+         <YnFt5vL+6uVioqsf@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/andersson/kernel wip/sc8180x-next-20220502
-head:   6199153320a3b7d1dce23ad1ea4d894a86793cb6
-commit: 5cc3b17921dda08e833aa7933dc2da40d7e47b43 [7/29] phy: qcom-qmp: Register as a typec switch for orientation detection
-config: csky-randconfig-r021-20220501 (https://download.01.org/0day-ci/archive/20220504/202205041511.NkA9shqv-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/andersson/kernel/commit/5cc3b17921dda08e833aa7933dc2da40d7e47b43
-        git remote add andersson https://github.com/andersson/kernel
-        git fetch --no-tags andersson wip/sc8180x-next-20220502
-        git checkout 5cc3b17921dda08e833aa7933dc2da40d7e47b43
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash
+On Tue, 2022-05-03 at 13:01 -0500, Rob Herring wrote:
+> On Thu, Apr 28, 2022 at 09:37:50PM +0800, Rex-BC Chen wrote:
+> > From: Xinlei Lee <xinlei.lee@mediatek.com>
+> > 
+> > Convert mediatek,dsi.txt to mediatek,dsi.yaml format
+> > 
+> > Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >  .../display/mediatek/mediatek,dsi.txt         |  62 ---------
+> >  .../display/mediatek/mediatek,dsi.yaml        | 122
+> > ++++++++++++++++++
+> >  2 files changed, 122 insertions(+), 62 deletions(-)
+> >  delete mode 100644
+> > Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+> >  create mode 100644
+> > Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yam
+> > l
+> > 
+> > diff --git
+> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.t
+> > xt
+> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.t
+> > xt
+> > deleted file mode 100644
+> > index 36b01458f45c..000000000000
+> > ---
+> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.t
+> > xt
+> > +++ /dev/null
+> > @@ -1,62 +0,0 @@
+> > -Mediatek DSI Device
+> > -===================
+> > -
+> > -The Mediatek DSI function block is a sink of the display subsystem
+> > and can
+> > -drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized
+> > for dual-
+> > -channel output.
+> > -
+> > -Required properties:
+> > -- compatible: "mediatek,<chip>-dsi"
+> > -- the supported chips are mt2701, mt7623, mt8167, mt8173 and
+> > mt8183.
+> > -- reg: Physical base address and length of the controller's
+> > registers
+> > -- interrupts: The interrupt signal from the function block.
+> > -- clocks: device clocks
+> > -  See Documentation/devicetree/bindings/clock/clock-bindings.txt
+> > for details.
+> > -- clock-names: must contain "engine", "digital", and "hs"
+> > -- phys: phandle link to the MIPI D-PHY controller.
+> > -- phy-names: must contain "dphy"
+> > -- port: Output port node with endpoint definitions as described in
+> > -  Documentation/devicetree/bindings/graph.txt. This port should be
+> > connected
+> > -  to the input port of an attached DSI panel or DSI-to-eDP encoder
+> > chip.
+> > -
+> > -Optional properties:
+> > -- resets: list of phandle + reset specifier pair, as described in
+> > [1].
+> > -
+> > -[1] Documentation/devicetree/bindings/reset/reset.txt
+> > -
+> > -MIPI TX Configuration Module
+> > -============================
+> > -
+> > -See phy/mediatek,dsi-phy.yaml
+> > -
+> > -Example:
+> > -
+> > -mipi_tx0: mipi-dphy@10215000 {
+> > -	compatible = "mediatek,mt8173-mipi-tx";
+> > -	reg = <0 0x10215000 0 0x1000>;
+> > -	clocks = <&clk26m>;
+> > -	clock-output-names = "mipi_tx0_pll";
+> > -	#clock-cells = <0>;
+> > -	#phy-cells = <0>;
+> > -	drive-strength-microamp = <4600>;
+> > -	nvmem-cells= <&mipi_tx_calibration>;
+> > -	nvmem-cell-names = "calibration-data";
+> > -};
+> > -
+> > -dsi0: dsi@1401b000 {
+> > -	compatible = "mediatek,mt8173-dsi";
+> > -	reg = <0 0x1401b000 0 0x1000>;
+> > -	interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_LOW>;
+> > -	clocks = <&mmsys MM_DSI0_ENGINE>, <&mmsys MM_DSI0_DIGITAL>,
+> > -		 <&mipi_tx0>;
+> > -	clock-names = "engine", "digital", "hs";
+> > -	resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
+> > -	phys = <&mipi_tx0>;
+> > -	phy-names = "dphy";
+> > -
+> > -	port {
+> > -		dsi0_out: endpoint {
+> > -			remote-endpoint = <&panel_in>;
+> > -		};
+> > -	};
+> > -};
+> > diff --git
+> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.y
+> > aml
+> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.y
+> > aml
+> > new file mode 100644
+> > index 000000000000..2ca9229ef69e
+> > --- /dev/null
+> > +++
+> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.y
+> > aml
+> > @@ -0,0 +1,122 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: 
+> > https://urldefense.com/v3/__http://devicetree.org/schemas/display/mediatek/mediatek,dsi.yaml*__;Iw!!CTRNKA9wMg0ARbw!w60__6oza0dggkQt6zWF-ZnYUKobclO7i3x9kiS1CETGQlCVcifs6UfqytY8vunKIJlM$
+> >  
+> > +$schema: 
+> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!w60__6oza0dggkQt6zWF-ZnYUKobclO7i3x9kiS1CETGQlCVcifs6UfqytY8vns85I56$
+> >  
+> > +
+> > +title: MediaTek DSI Controller Device Tree Bindings
+> > +
+> > +maintainers:
+> > +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> > +  - Philipp Zabel <p.zabel@pengutronix.de>
+> > +  - Jitao Shi <jitao.shi@mediatek.com>
+> > +  - Xinlei Lee <xinlei.lee@mediatek.com>
+> > +
+> > +description: |
+> > +  The MediaTek DSI function block is a sink of the display
+> > subsystem and can
+> > +  drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized
+> > for dual-
+> > +  channel output.
+> > +
+> > +allOf:
+> > +  - $ref: /schemas/display/dsi-controller.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - mediatek,mt2701-dsi
+> > +      - mediatek,mt7623-dsi
+> > +      - mediatek,mt8167-dsi
+> > +      - mediatek,mt8173-dsi
+> > +      - mediatek,mt8183-dsi
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  power-domains:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: Engine Clock
+> > +      - description: Digital Clock
+> > +      - description: HS Clock
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: engine
+> > +      - const: digital
+> > +      - const: hs
+> > +
+> > +  resets:
+> > +    maxItems: 1
+> > +
+> > +  phys:
+> > +    maxItems: 1
+> > +
+> > +  phy-names:
+> > +    items:
+> > +      - const: dphy
+> > +
+> > +  port:
+> > +    $ref: /schemas/graph.yaml#/properties/port
+> > +    description:
+> > +      Output port node. This port should be connected to the input
+> > +      port of an attached DSI panel or DSI-to-eDP encoder chip.
+> > +
+> > +
+> 
+> 1 blank line
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hello Rob,
 
-All errors (new ones prefixed by >>):
+Thanks for your review.
 
-   csky-linux-ld: drivers/phy/qualcomm/phy-qcom-qmp.o: in function `qcom_qmp_phy_typec_switch_set':
->> drivers/phy/qualcomm/phy-qcom-qmp.c:6189: undefined reference to `typec_switch_get_drvdata'
-   csky-linux-ld: drivers/phy/qualcomm/phy-qcom-qmp.o: in function `qcom_qmp_dp_phy_configure':
-   drivers/phy/qualcomm/phy-qcom-qmp.c:5065: undefined reference to `typec_switch_get_drvdata'
-   csky-linux-ld: drivers/phy/qualcomm/phy-qcom-qmp.o: in function `qcom_qmp_phy_typec_switch_register':
->> drivers/phy/qualcomm/phy-qcom-qmp.c:6205: undefined reference to `typec_switch_register'
-   csky-linux-ld: drivers/phy/qualcomm/phy-qcom-qmp.o: in function `usleep_range':
-   include/linux/delay.h:67: undefined reference to `typec_switch_register'
+ok. I will do this in next version.
 
+> 
+> > +  "#address-cells":
+> > +    const: 2
+> > +
+> > +  "#size-cells":
+> > +    const: 2
+> 
+> Did you try adding these? Because they are wrong and will contradict 
+> dsi-controller.yaml.
+> 
 
-vim +6189 drivers/phy/qualcomm/phy-qcom-qmp.c
+We have some mistake.
+There will not be any sub node for mediatek dsi, so I will drop this
+modification in next version.
 
-  6183	
-  6184	//#if IS_ENABLED(CONFIG_PHY_QCOM_QMP_TYPEC)
-  6185	#if 1
-  6186	static int qcom_qmp_phy_typec_switch_set(struct typec_switch_dev *sw,
-  6187			enum typec_orientation orientation)
-  6188	{
-> 6189		struct qcom_qmp *qmp = typec_switch_get_drvdata(sw);
-  6190	
-  6191		qmp->orientation = orientation;
-  6192	
-  6193		return 0;
-  6194	}
-  6195	
-  6196	static int qcom_qmp_phy_typec_switch_register(struct qcom_qmp *qmp, const struct qmp_phy_cfg *cfg)
-  6197	{
-  6198		struct typec_switch_desc sw_desc;
-  6199		struct device *dev = qmp->dev;
-  6200	
-  6201		if (cfg->has_phy_dp_com_ctrl) {
-  6202			sw_desc.drvdata = qmp;
-  6203			sw_desc.fwnode = dev->fwnode;
-  6204			sw_desc.set = qcom_qmp_phy_typec_switch_set;
-> 6205			qmp->sw = typec_switch_register(dev, &sw_desc);
-  6206			if (IS_ERR(qmp->sw)) {
-  6207				dev_err(dev, "Error registering typec switch: %ld\n",
-  6208						PTR_ERR(qmp->sw));
-  6209			}
-  6210		}
-  6211	
-  6212		return 0;
-  6213	}
-  6214	#else
-  6215	static int qcom_qmp_phy_typec_switch_register(struct qcom_qmp *qmp, const struct qmp_phy_cfg *cfg)
-  6216	{
-  6217		return 0;
-  6218	}
-  6219	#endif
-  6220	
+BRs,
+Rex
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> Rob
+
