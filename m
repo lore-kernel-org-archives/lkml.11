@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44132C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C28C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355687AbiEDRIl (ORCPT
+        id S1355726AbiEDRIt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
+        Wed, 4 May 2022 13:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355663AbiEDRAT (ORCPT
+        with ESMTP id S1355684AbiEDRAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:19 -0400
+        Wed, 4 May 2022 13:00:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA59F4BBB3;
-        Wed,  4 May 2022 09:52:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B868B4BFC6;
+        Wed,  4 May 2022 09:52:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1E2461701;
-        Wed,  4 May 2022 16:52:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4B75C385A5;
-        Wed,  4 May 2022 16:51:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A551961851;
+        Wed,  4 May 2022 16:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF398C385AA;
+        Wed,  4 May 2022 16:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683120;
-        bh=UvbEPPP0Phld+EI24rEyUua/Umh4MxaId4S52B0wD58=;
+        s=korg; t=1651683113;
+        bh=BKQz0nAn/eAiLvSRMPbGpJQjoQ6VusTJ+giCR77huYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iXY5ZZqDPTaI8jANtx/IbxaGa4RRqtGNgeAIVVrULlA+FFzj+qW6FGe0TCOSKdt4Y
-         glomw9NFJ2GDWPwMaamCx0WUHiHGn9ag6eihjCbXLSreOh1T2imBZmBRFjubNZnXAT
-         TrleYsJfNTEw7BDMHq5PpU2nbr9vW7JlwUn3/NoU=
+        b=K1wFDYoAT2mbT/hYtOi27GZyaOG8rLv8+wea7xST2++FdMnnSjIhPeWMxzOFMbQx8
+         G1t0RrV0YGFHMlYoiFFChCZzfbdZFEWQn0OJeJIYiRvho4D5FG5cjfKees5hNIvn9J
+         cyR1JNsvB1dXlV22mvioCc1DGUHy7h2QyT1Z+LZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Joao Moreira <joao@overdrivepizza.com>
-Subject: [PATCH 5.10 111/129] thermal: int340x: Fix attr.show callback prototype
-Date:   Wed,  4 May 2022 18:45:03 +0200
-Message-Id: <20220504153030.088795829@linuxfoundation.org>
+        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 095/129] ixgbe: ensure IPsec VF<->PF compatibility
+Date:   Wed,  4 May 2022 18:44:47 +0200
+Message-Id: <20220504153028.459291037@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,46 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-commit d0f6cfb2bd165b0aa307750e07e03420859bd554 upstream.
+[ Upstream commit f049efc7f7cd2f3c419f55040928eaefb13b3636 ]
 
-Control Flow Integrity (CFI) instrumentation of the kernel noticed that
-the caller, dev_attr_show(), and the callback, odvp_show(), did not have
-matching function prototypes, which would cause a CFI exception to be
-raised. Correct the prototype by using struct device_attribute instead
-of struct kobj_attribute.
+The VF driver can forward any IPsec flags and such makes the function
+is not extendable and prone to backward/forward incompatibility.
 
-Reported-and-tested-by: Joao Moreira <joao@overdrivepizza.com>
-Link: https://lore.kernel.org/lkml/067ce8bd4c3968054509831fa2347f4f@overdrivepizza.com/
-Fixes: 006f006f1e5c ("thermal/int340x_thermal: Export OEM vendor variables")
-Cc: 5.8+ <stable@vger.kernel.org> # 5.8+
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If new software runs on VF, it won't know that PF configured something
+completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
+
+Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Shannon Nelson <snelson@pensando.io>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220427173152.443102-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -67,7 +67,7 @@ static int evaluate_odvp(struct int3400_
- struct odvp_attr {
- 	int odvp;
- 	struct int3400_thermal_priv *priv;
--	struct kobj_attribute attr;
-+	struct device_attribute attr;
- };
- 
- static ssize_t data_vault_read(struct file *file, struct kobject *kobj,
-@@ -269,7 +269,7 @@ static int int3400_thermal_run_osc(acpi_
- 	return result;
- }
- 
--static ssize_t odvp_show(struct kobject *kobj, struct kobj_attribute *attr,
-+static ssize_t odvp_show(struct device *dev, struct device_attribute *attr,
- 			 char *buf)
- {
- 	struct odvp_attr *odvp_attr;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index 54d47265a7ac..319620856cba 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+ 	/* Tx IPsec offload doesn't seem to work on this
+ 	 * device, so block these requests for now.
+ 	 */
+-	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
++	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
++	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
+ 		err = -EOPNOTSUPP;
+ 		goto err_out;
+ 	}
+-- 
+2.35.1
+
 
 
