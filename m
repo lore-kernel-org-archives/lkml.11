@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7928C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD40C46467
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355239AbiEDQ7t (ORCPT
+        id S1355397AbiEDRAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        Wed, 4 May 2022 13:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354363AbiEDQyS (ORCPT
+        with ESMTP id S1354398AbiEDQyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:18 -0400
+        Wed, 4 May 2022 12:54:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD78D48E54;
-        Wed,  4 May 2022 09:49:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A9F48E7C;
+        Wed,  4 May 2022 09:49:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B639B827A1;
-        Wed,  4 May 2022 16:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB0C7C385A5;
-        Wed,  4 May 2022 16:49:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 147F2B82552;
+        Wed,  4 May 2022 16:49:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91840C385AA;
+        Wed,  4 May 2022 16:49:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682960;
-        bh=Dwb6QnWQj04rmhFqxpl4mg+tzBFecln+ljQjgMk9tXY=;
+        s=korg; t=1651682964;
+        bh=4GhiSALp0mQ7VVgd+/Nd0W7qVVDTDiqqMWqvRSHbMnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AWJehQ1E+SeJ3X1H37I/l8AS67U6SiL2/8S2ceXnZFWYTViF4ZuvdejA7wY7rdARe
-         n44TncFqb+ajxYCZQBF5FyH6j8l+OU6zkapHBAO7q/u++UIOrbFHxrRY5yC0d6gLfi
-         eoCq8716aKvzHB5pmM882Sq2z2K3+OuzQGZgtJ5A=
+        b=i1NjaSbnEgpriatIrdT8j7aXpNB2/h/UTfirVdQxHPsj6BqR/Wd7kIkahRvpu0Gm7
+         4+97GbD4rf/4Upg0zH2yweSsHpRnFKtOU8wQSxWPEdZ0GSQTGn67S8rg+wIKozXJnz
+         WQ3Aoj3Ew4ceRy5TqTx70EpArXBtcK2agMbmPsR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Hoffmann <jan@3e8.eu>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
+        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 62/84] net: dsa: lantiq_gswip: Dont set GSWIP_MII_CFG_RMII_CLK
-Date:   Wed,  4 May 2022 18:44:43 +0200
-Message-Id: <20220504152932.159983651@linuxfoundation.org>
+Subject: [PATCH 5.4 66/84] ixgbe: ensure IPsec VF<->PF compatibility
+Date:   Wed,  4 May 2022 18:44:47 +0200
+Message-Id: <20220504152932.570810049@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -52,58 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit 71cffebf6358a7f5031f5b208bbdc1cb4db6e539 ]
+[ Upstream commit f049efc7f7cd2f3c419f55040928eaefb13b3636 ]
 
-Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
-GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
-register. It helped bring this register into a well-defined state so the
-driver has to rely less on the bootloader to do things right.
-Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
-possibility to configure it. Upon further testing it turns out that all
-boards which are supported by the GSWIP driver in OpenWrt which use an
-RMII PHY have a dedicated oscillator on the board which provides the
-50MHz RMII reference clock.
+The VF driver can forward any IPsec flags and such makes the function
+is not extendable and prone to backward/forward incompatibility.
 
-Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
-clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
-a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
-the MAC also generates the RMII reference clock whose signal then
-conflicts with the signal from the oscillator on the board. This results
-in a constant cycle of the PHY detecting link up/down (and as a result
-of that: the two ports using the AR8030 PHYs are not working).
+If new software runs on VF, it won't know that PF configured something
+completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
 
-At the time of writing this patch there's no known board where the MAC
-(GSWIP) has to generate the RMII reference clock. If needed this can be
-implemented in future by providing a device-tree flag so the
-GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
-
-Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
-Tested-by: Jan Hoffmann <jan@3e8.eu>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-Link: https://lore.kernel.org/r/20220425152027.2220750-1-martin.blumenstingl@googlemail.com
+Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Shannon Nelson <snelson@pensando.io>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220427173152.443102-1-anthony.l.nguyen@intel.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 60e36f46f8ab..0c191d395f8f 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1607,9 +1607,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
- 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
--
--		/* Configure the RMII clock as output: */
--		miicfg |= GSWIP_MII_CFG_RMII_CLK;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index b14b164c9601..5799b434165e 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+ 	/* Tx IPsec offload doesn't seem to work on this
+ 	 * device, so block these requests for now.
+ 	 */
+-	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
++	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
++	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
+ 		err = -EOPNOTSUPP;
+ 		goto err_out;
+ 	}
 -- 
 2.35.1
 
