@@ -2,129 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9B9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:16:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244543AbiEDAQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 20:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
+        id S244539AbiEDAUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 20:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243628AbiEDAQ2 (ORCPT
+        with ESMTP id S230071AbiEDAUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 20:16:28 -0400
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE1912ACF;
-        Tue,  3 May 2022 17:12:54 -0700 (PDT)
-Received: by mail-oo1-f49.google.com with SMTP id m3-20020a4ac683000000b0035f13dde9ccso589853ooq.6;
-        Tue, 03 May 2022 17:12:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=NpgcwOXxUIOD9DVencnySKK5YuvmcBy25ONszQmYt3g=;
-        b=W5r0UwBdWk2ChgPxWAHrX+eMgKZyW7tItP4QwYhn49lQJa3pmMcf4o263c7pY4/ME3
-         ZXWTJ3kh1/E4AHyTApLkrbAun4A4M6A2pXAGkhidm6gFiuY9HBgn6HtKTAJc9OGqIFEK
-         2EhHncG1yHPWkGV204AnSgRpTeRCg9+26slTA01pYI5Y9sB+VxhWh/9+WofPsOqgchte
-         CBxwkEr3BGYACV7B7lFSnBszVU6mXZz5gX5Dh9BqREg1iLR1Xc71WgNl7lB28+X6fuee
-         cS3boRPg5czj26BvHQWoHDRB8FdDHL814bum3AtRRNvSemLUH8jbQz1XiKTgAVJeeCSZ
-         y0yA==
-X-Gm-Message-State: AOAM531imGKOsX8OymfQOgC/4RsSM8pAzRdp+Hc1ccu1abVjCYZCjnpc
-        9FkGEjBFsYdaDM4tizYmx6SXACdmXg==
-X-Google-Smtp-Source: ABdhPJyGBo9TWKVr3K3lIp/Txn9XdD6mgw1baqvv55+V+9a5WK6OdIb8Y4bF69xigWn6fvkFAmDQKw==
-X-Received: by 2002:a4a:8783:0:b0:324:b9a2:d605 with SMTP id b3-20020a4a8783000000b00324b9a2d605mr6498711ooi.38.1651623173315;
-        Tue, 03 May 2022 17:12:53 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q17-20020a9d6651000000b006060322127dsm4487354otm.77.2022.05.03.17.12.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 17:12:52 -0700 (PDT)
-Received: (nullmailer pid 290579 invoked by uid 1000);
-        Wed, 04 May 2022 00:12:51 -0000
-Date:   Tue, 3 May 2022 19:12:51 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     icenowy@outlook.com, Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Icenowy Zheng <icenowy@aosc.io>
-Subject: Re: Re: [PATCH 05/12] dt-bindings: clock: sunxi-ng: add bindings for
- R329 CCUs
-Message-ID: <YnHFA9NKHYDUuLKW@robh.at.kernel.org>
-References: <20220422140902.1058101-1-icenowy@aosc.io>
- <BYAPR20MB2472A5F7269F56C2C6BB3104BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
- <YnBOY2EjW5ZWCAkx@robh.at.kernel.org>
- <1910544.usQuhbGJ8B@kista>
+        Tue, 3 May 2022 20:20:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233CA42A0F;
+        Tue,  3 May 2022 17:16:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 123AE61831;
+        Wed,  4 May 2022 00:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E05AC385A9;
+        Wed,  4 May 2022 00:16:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651623386;
+        bh=f0fsh6Uc4bvfHGbrVz3cXfk5QnV5TefLA9ufcSBuzxo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jscYW4T6U4umNohgMaY+Q1fsw/2XLRV9HG6KGqA7hbElV2MUqKTNqWUNrWIzCPO+D
+         DxLer4Vou9TOXU04cV+vjPps/7rBvHKiPvGihZ9HITtGt6tu0ViOxpR+c5EnMuevv3
+         H9cciHi9w6Yamms/5Oxq6isF9k0chkjeMeEnzaVtrVTV7GrDvEm+5p0wJWn1eUYJIe
+         CqiXkYZlgCehLWtI7Ml1KbtHSptjfzGyePKOZmkzfHB4EWKs4WFd0WohQ9PexgVhTc
+         ejw3pgQO3A6oec9GV++fR7Ffj+7H025rTCT82vPLLCQ5miMpoi3TQN3i8jPL3rMsZT
+         5XWJwcpifeyyw==
+From:   SeongJae Park <sj@kernel.org>
+To:     Yuanchu Xie <yuanchu@google.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Markus Boehme <markubo@amazon.de>,
+        SeongJae Park <sj@kernel.org>, rientjes@google.com,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] selftests/damon: add damon to selftests root Makefile
+Date:   Wed,  4 May 2022 00:16:22 +0000
+Message-Id: <20220504001622.132117-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220504000358.1174849-2-yuanchu@google.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1910544.usQuhbGJ8B@kista>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 09:55:08PM +0200, Jernej Škrabec wrote:
-> Dne ponedeljek, 02. maj 2022 ob 23:34:27 CEST je Rob Herring napisal(a):
-> > On Fri, Apr 22, 2022 at 11:41:08PM +0800, icenowy@outlook.com wrote:
-> > > From: Icenowy Zheng <icenowy@aosc.io>
-> > > 
-> > > R329 has a CPUX CCU and a R-CCU, with all PLLs in R-CCU.
-> > > 
-> > > Add bindings for them, with R-CCU only taking 3 oscillators as input and
-> > > main CCU taking oscillators + PLLs as input.
-> > > 
-> > > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> > > ---
+On Wed, 4 May 2022 00:03:58 +0000 Yuanchu Xie <yuanchu@google.com> wrote:
 
-> > > --- /dev/null
-> > > +++ b/include/dt-bindings/clock/sun50i-r329-ccu.h
-> > > @@ -0,0 +1,73 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > +/*
-> > > + * Copyright (c) 2021 Sipeed
-> > 
-> > It's 2022.
-> > 
-> > > diff --git a/include/dt-bindings/clock/sun50i-r329-r-ccu.h b/include/dt-
-> bindings/clock/sun50i-r329-r-ccu.h
-> > > new file mode 100644
-> > > index 000000000000..c327d1a1b602
-> > > --- /dev/null
-> > > +++ b/include/dt-bindings/clock/sun50i-r329-r-ccu.h
-> > > @@ -0,0 +1,45 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > 
-> > > diff --git a/include/dt-bindings/reset/sun50i-r329-ccu.h b/include/dt-
-> bindings/reset/sun50i-r329-ccu.h
-> > > new file mode 100644
-> > > index 000000000000..bb704a82443f
-> > > --- /dev/null
-> > > +++ b/include/dt-bindings/reset/sun50i-r329-ccu.h
-> > > @@ -0,0 +1,45 @@
-> > > +/* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
-> > 
-> > > diff --git a/include/dt-bindings/reset/sun50i-r329-r-ccu.h b/include/dt-
-> bindings/reset/sun50i-r329-r-ccu.h
-> > > new file mode 100644
-> > > index 000000000000..40644f2f21c6
-> > > --- /dev/null
-> > > +++ b/include/dt-bindings/reset/sun50i-r329-r-ccu.h
-> > > @@ -0,0 +1,24 @@
-> > > +/* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
-> > 
-> > Why the different licenses? GPL-2.0 OR BSD-2-Clause is preferred. MIT is 
-> > fine if that's what matches the dts files.
+> Currently the damon selftests are not built with the rest of the
+> selftests. We add damon to the list of targets.
 > 
-> Yes, most, if not all, DT files for Allwinner are dual licensed under GPL2+ and 
-> MIT. There are still some files under include/dt-bindings which are dual 
-> licensed under GPL2+ and X11, but I believe those files are for older SoCs.
+> Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
+> Signed-off-by: Yuanchu Xie <yuanchu@google.com>
 
-Okay. FWIW, the SPDX definition of X11 means copyrighted by Xorg 
-Consortium or something where as MIT is the same license with any other 
-copyright.
+Reviewed-by: SeongJae Park <sj@kernel.org>
 
-Rob
+
+Thanks,
+SJ
+
+> ---
+>  tools/testing/selftests/Makefile | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+> index 2319ec87f53d..bd2ac8b3bf1f 100644
+> --- a/tools/testing/selftests/Makefile
+> +++ b/tools/testing/selftests/Makefile
+> @@ -9,6 +9,7 @@ TARGETS += clone3
+>  TARGETS += core
+>  TARGETS += cpufreq
+>  TARGETS += cpu-hotplug
+> +TARGETS += damon
+>  TARGETS += drivers/dma-buf
+>  TARGETS += efivarfs
+>  TARGETS += exec
+> -- 
+> 2.36.0.464.gb9c8b46e94-goog
