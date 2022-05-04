@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A494C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238449AbiEDRiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
+        id S1357007AbiEDRi1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356855AbiEDRJq (ORCPT
+        with ESMTP id S1356839AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:46 -0400
+        Wed, 4 May 2022 13:09:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34AA41325;
-        Wed,  4 May 2022 09:56:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685ED4093D;
+        Wed,  4 May 2022 09:55:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C491A61851;
-        Wed,  4 May 2022 16:56:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C95AC385A5;
-        Wed,  4 May 2022 16:56:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D920A616B8;
+        Wed,  4 May 2022 16:55:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F5CC385A5;
+        Wed,  4 May 2022 16:55:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683361;
-        bh=+J6mkW7g7FZT8T1bJ9fP3KdetTDCgArgqcBdHrc4ShY=;
+        s=korg; t=1651683355;
+        bh=d9FRUiv783dU/wMy58x9p6NFoSQWCkLOfWCusjCDE3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UAucvXpYbpmvldG4iJ0xOw/Z3wwLfeQgKaqJB/fFYRENh88UATYFpRm33KNZDKrNN
-         JMUOTcZCnTZd2h+tRRzu+Uj6GyNb88iKN1ZFvY6tyjG4wvas07Ms/a5O0w0RS1amRv
-         bEuxTa3BlhZm6MouXBNpNWPHjIvKTd4CI0kkLZpk=
+        b=BwYEDfMAnpmRSMr9WUnlvAt0qtEfzua/ETnUm2h9URgMXplw6CP7gV53VYVl0rxtF
+         7TTpIf/fJmMFcF/nUbOhzfx4AhIyIAgz0JoIoWr72gW+7ZYjDb64IOIiLBERQoVb2p
+         vYtTpk3KOD6v8hmzficbepvVMyeh4UmPTYb93E30=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 048/225] hex2bin: fix access beyond string end
-Date:   Wed,  4 May 2022 18:44:46 +0200
-Message-Id: <20220504153114.387555140@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        stable <stable@kernel.org>
+Subject: [PATCH 5.17 028/225] usb: dwc3: pci: add support for the Intel Meteor Lake-P
+Date:   Wed,  4 May 2022 18:44:26 +0200
+Message-Id: <20220504153112.808856424@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,48 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-commit e4d8a29997731b3bb14059024b24df9f784288d0 upstream.
+commit 973e0f7a847ef13ade840d4c30729ce329a66895 upstream.
 
-If we pass too short string to "hex2bin" (and the string size without
-the terminating NUL character is even), "hex2bin" reads one byte after
-the terminating NUL character.  This patch fixes it.
+This patch adds the necessary PCI IDs for Intel Meteor Lake-P
+devices.
 
-Note that hex_to_bin returns -1 on error and hex2bin return -EINVAL on
-error - so we can't just return the variable "hi" or "lo" on error.
-This inconsistency may be fixed in the next merge window, but for the
-purpose of fixing this bug, we just preserve the existing behavior and
-return -1 and -EINVAL.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Fixes: b78049831ffe ("lib: add error checking to hex2bin")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220425103518.44028-1-heikki.krogerus@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/hexdump.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -63,10 +63,13 @@ EXPORT_SYMBOL(hex_to_bin);
- int hex2bin(u8 *dst, const char *src, size_t count)
- {
- 	while (count--) {
--		int hi = hex_to_bin(*src++);
--		int lo = hex_to_bin(*src++);
-+		int hi, lo;
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -44,6 +44,8 @@
+ #define PCI_DEVICE_ID_INTEL_ADLM		0x54ee
+ #define PCI_DEVICE_ID_INTEL_ADLS		0x7ae1
+ #define PCI_DEVICE_ID_INTEL_RPLS		0x7a61
++#define PCI_DEVICE_ID_INTEL_MTLP		0x7ec1
++#define PCI_DEVICE_ID_INTEL_MTL			0x7e7e
+ #define PCI_DEVICE_ID_INTEL_TGL			0x9a15
+ #define PCI_DEVICE_ID_AMD_MR			0x163a
  
--		if ((hi < 0) || (lo < 0))
-+		hi = hex_to_bin(*src++);
-+		if (unlikely(hi < 0))
-+			return -EINVAL;
-+		lo = hex_to_bin(*src++);
-+		if (unlikely(lo < 0))
- 			return -EINVAL;
+@@ -421,6 +423,12 @@ static const struct pci_device_id dwc3_p
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_RPLS),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
  
- 		*dst++ = (hi << 4) | lo;
++	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTLP),
++	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
++
++	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MTL),
++	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
++
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+ 
 
 
