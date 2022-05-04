@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C87C352A8
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F2DC3527D
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376466AbiEDRpD (ORCPT
+        id S1376765AbiEDRpU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
+        Wed, 4 May 2022 13:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355792AbiEDRIv (ORCPT
+        with ESMTP id S1356274AbiEDRL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861B551E73;
-        Wed,  4 May 2022 09:54:35 -0700 (PDT)
+        Wed, 4 May 2022 13:11:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601754B85D;
+        Wed,  4 May 2022 09:57:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4B961851;
-        Wed,  4 May 2022 16:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 977CFC385A4;
-        Wed,  4 May 2022 16:54:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDBF6B827A4;
+        Wed,  4 May 2022 16:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A8CC385A5;
+        Wed,  4 May 2022 16:57:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683274;
-        bh=y1D8LeGMgAJ4kn6HvDYXfJHSZWVRSoy07IEQjK7OxQE=;
+        s=korg; t=1651683457;
+        bh=6Elx0oXf8pbyDQpAEzwHlIxpEwN9MDAQQX+4yMGajzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OH+1C1qVje9NlIWUCtWCDENIq2U7rZeG/OkUXVEiIMC9vkH/4B5IQM2l5fC4oRW79
-         7A3HnhkD+BuIhhmlkYyR+MEsxyGbUWAMfkyPOcPHPpE39hXmX5nhZ6IHkhB+UrR7UY
-         RFBknQ9KI8AeSFydQ156ZJQcqPcOgLtpEl0hTaX4=
+        b=eqUpLq8v88kBcvpOnmbmzWzKv601k56rkdbRMguzY1eyZkGItsh+yRDV1xihFZEnZ
+         FGikyi3fuwi7Zi2HusVlqOKXx8mqn2WcorjZhP74IDgR6UI9LUtQLozvIp2/1vt26k
+         +ZItnTfrl6AutsNHoaYYrWlfaEyzhli0HevmV82M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Woody Suwalski <wsuwalski@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 140/177] Revert "ACPI: processor: idle: fix lockup regression on 32-bit ThinkPad T40"
-Date:   Wed,  4 May 2022 18:45:33 +0200
-Message-Id: <20220504153105.772291535@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Rossi <nathan@nathanrossi.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 132/225] net: dsa: mv88e6xxx: Fix port_hidden_wait to account for port_base_addr
+Date:   Wed,  4 May 2022 18:46:10 +0200
+Message-Id: <20220504153122.110919171@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,38 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Nathan Rossi <nathan@nathanrossi.com>
 
-commit 20e582e16af24b074e583f9551fad557882a3c9d upstream.
+[ Upstream commit 24cbdb910bb62b5be3865275e5682be1a7708c0f ]
 
-This reverts commit bfe55a1f7fd6bfede16078bf04c6250fbca11588.
+The other port_hidden functions rely on the port_read/port_write
+functions to access the hidden control port. These functions apply the
+offset for port_base_addr where applicable. Update port_hidden_wait to
+use the port_wait_bit so that port_base_addr offsets are accounted for
+when waiting for the busy bit to change.
 
-This was presumably misdiagnosed as an inability to use C3 at
-all when I suspect the real problem is just misconfiguration of
-C3 vs. ARB_DIS.
+Without the offset the port_hidden_wait function would timeout on
+devices that have a non-zero port_base_addr (e.g. MV88E6141), however
+devices that have a zero port_base_addr would operate correctly (e.g.
+MV88E6390).
 
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
-Tested-by: Woody Suwalski <wsuwalski@gmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 609070133aff ("net: dsa: mv88e6xxx: update code operating on hidden registers")
+Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
+Reviewed-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220425070454.348584-1-nathan@nathanrossi.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/processor_idle.c |    5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/dsa/mv88e6xxx/port_hidden.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -95,11 +95,6 @@ static const struct dmi_system_id proces
- 	  DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
- 	  DMI_MATCH(DMI_PRODUCT_NAME,"L8400B series Notebook PC")},
- 	 (void *)1},
--	/* T40 can not handle C3 idle state */
--	{ set_max_cstate, "IBM ThinkPad T40", {
--	  DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
--	  DMI_MATCH(DMI_PRODUCT_NAME, "23737CU")},
--	 (void *)2},
- 	{},
- };
+diff --git a/drivers/net/dsa/mv88e6xxx/port_hidden.c b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+index b49d05f0e117..7a9f9ff6dedf 100644
+--- a/drivers/net/dsa/mv88e6xxx/port_hidden.c
++++ b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+@@ -40,8 +40,9 @@ int mv88e6xxx_port_hidden_wait(struct mv88e6xxx_chip *chip)
+ {
+ 	int bit = __bf_shf(MV88E6XXX_PORT_RESERVED_1A_BUSY);
  
+-	return mv88e6xxx_wait_bit(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
+-				  MV88E6XXX_PORT_RESERVED_1A, bit, 0);
++	return mv88e6xxx_port_wait_bit(chip,
++				       MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
++				       MV88E6XXX_PORT_RESERVED_1A, bit, 0);
+ }
+ 
+ int mv88e6xxx_port_hidden_read(struct mv88e6xxx_chip *chip, int block, int port,
+-- 
+2.35.1
+
 
 
