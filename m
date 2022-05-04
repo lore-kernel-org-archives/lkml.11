@@ -2,125 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E087AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2414C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351147AbiEDONY (ORCPT
+        id S1351105AbiEDOOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        Wed, 4 May 2022 10:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351105AbiEDONN (ORCPT
+        with ESMTP id S1351207AbiEDONn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:13:13 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204D241FA1
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:09:36 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nmFgM-0000h2-LG; Wed, 04 May 2022 16:08:46 +0200
-Received: from pengutronix.de (unknown [IPv6:2a00:20:7019:a9b6:6aae:fc9e:d3ef:96db])
+        Wed, 4 May 2022 10:13:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CABE43AD4;
+        Wed,  4 May 2022 07:10:04 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 347A975CE1;
-        Wed,  4 May 2022 14:08:34 +0000 (UTC)
-Date:   Wed, 4 May 2022 16:08:33 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id BA529210DB;
+        Wed,  4 May 2022 14:10:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651673402; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=X8N/2j1iMVEWPhLHwXlf1lbWHCy97qgMOd6RtCKAAHI=;
+        b=YUvahhi8lIQnKT+/35TWCpA0GcF25PHrlG0nI6I37i/XqOeTn+w+dV7CC77XJJbhzSF9d6
+        hg6QJYGL24C0qMCZELbiXO5XFTcgbVtkpXWBBhhbCSTgPBQPb3AtS78QY6poz0CYHIWK+m
+        IWbijGNan7qNqCzpWSk4Oe9ejmyXlUI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 70740131BD;
+        Wed,  4 May 2022 14:10:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hitmGjqJcmLpDQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 04 May 2022 14:10:02 +0000
+Date:   Wed, 4 May 2022 16:10:01 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
- mpc5xxx_get_bus_frequency() to use fwnode
-Message-ID: <20220504140833.b2itvapuqlssm74k@pengutronix.de>
-References: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
- <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+        Tejun Heo <tj@kernel.org>
+Subject: Re: kernfs memcg accounting
+Message-ID: <20220504141001.GA10890@blackbody.suse.cz>
+References: <7e867cb0-89d6-402c-33d2-9b9ba0ba1523@openvz.org>
+ <20220427140153.GC9823@blackbody.suse.cz>
+ <7509fa9f-9d15-2f29-cb2f-ac0e8d99a948@openvz.org>
+ <YnBLge4ZQNbbxufc@blackbook>
+ <52a9f35b-458b-44c4-7fc8-d05c8db0c73f@openvz.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vz3cm7jicnfhqyjt"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <52a9f35b-458b-44c4-7fc8-d05c8db0c73f@openvz.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 04, 2022 at 12:00:18PM +0300, Vasily Averin <vvs@openvz.org> wrote:
+> My patches protect the host mostly from misuse, when someone creates
+> a huge number of nedevices inside a container.
 
---vz3cm7jicnfhqyjt
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Understood.
 
-On 04.05.2022 16:44:47, Andy Shevchenko wrote:
-> Switch mpc5xxx_get_bus_frequency() to use fwnode in order to help
-> cleaning up other parts of the kernel from OF specific code.
->=20
-> No functional change intended.
->=20
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  arch/powerpc/include/asm/mpc5xxx.h            |  9 +++-
->  arch/powerpc/platforms/52xx/mpc52xx_gpt.c     |  2 +-
->  arch/powerpc/sysdev/mpc5xxx_clocks.c          | 41 ++++++++++---------
->  drivers/ata/pata_mpc52xx.c                    |  2 +-
->  drivers/i2c/busses/i2c-mpc.c                  |  7 ++--
->  drivers/net/can/mscan/mpc5xxx_can.c           |  2 +-
->  drivers/net/ethernet/freescale/fec_mpc52xx.c  |  2 +-
->  .../net/ethernet/freescale/fec_mpc52xx_phy.c  |  3 +-
->  .../net/ethernet/freescale/fs_enet/mii-fec.c  |  4 +-
->  drivers/spi/spi-mpc52xx.c                     |  2 +-
->  drivers/tty/serial/mpc52xx_uart.c             |  4 +-
->  11 files changed, 44 insertions(+), 34 deletions(-)
+> Frankly speaking I do not see a big difference between memcg of current process,
+> memcg of newly created child and memcg of its parent.
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for mscan/mpc5xxx_can
+I agree that's not substantial difference. It's relevant for outer
+entities "injecting" something into a subtree.
+As I wrote previously, charging to the creator in the generic case is
+sensible.
 
-regards,
-Marc
+> As far as I understand, Roman chose the parent memcg because it was a special
+> case of creating a new memory group. He temporally changed active memcg
+> in mem_cgroup_css_alloc() and properly accounted all required memcg-specific
+> allocations.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> However, he ignored accounting for a rather large struct mem_cgroup
+> therefore I think we can do not worry about 128 bytes of kernfs node.
 
---vz3cm7jicnfhqyjt
-Content-Type: application/pgp-signature; name="signature.asc"
+Are you referring to the current code (>= v5.18-rc2)? All big structs
+related to mem_cgroup should be accounted. What is ignored?
 
------BEGIN PGP SIGNATURE-----
+> Primary I mean here struct mem_cgroup allocation in mem_cgroup_alloc().
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJyiN4ACgkQrX5LkNig
-010OIAf8CBk7q4SlnkqYRtXPIROz3oNFhMidCM6GZg2jjdclJJWBQBKZcqVIqVOE
-d8lOgUvYv1HV6YvQfoaTflFSAabkzzrzJHOzvrPjpQN8m/g/jQWrtgnLsnXR6DQ8
-+IlS6l/ePviEK1b1wBflbpnXNDvqyuZ1JI6raS33OtF23UfR9i3okaA7vtWhBH2p
-w/pqkLeh9WHNBneeJaf9q5ag2Z99PothsCek8lEUrwJYaw9/bn0is0JWC8Zjze4C
-skOkxpOERxfSedvx4WSFuU7U+CNYXk4/BkWQa/1dcLbzFuW/WdgAJDKFOtWTOI9C
-od+uCAGiK4UNsWkGX3PG24Mrvry9iw==
-=o7Bz
------END PGP SIGNATURE-----
+Just note that memory controller may not be always enabled so
+cgroup_mkdir != mem_cgroup_alloc().
 
---vz3cm7jicnfhqyjt--
+> However, I think we need to take into account any other distributions called
+> inside cgroup_mkdir: struct cgroup and kernefs node in common part and 
+> any other cgroup-cpecific allocations in other .css_alloc functions.
+> They all can be called from inside container, allocates non-accountable
+> memory and by this way theoretically can be misused.
+
+Also note that (if you're purely on unified hierachy) you can protect
+against that with cgroup.max.descendants and cgroup.max.depth.
+
+Thanks,
+Michal
