@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC64BC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BEBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355569AbiEDRLn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        id S239627AbiEDRLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355221AbiEDQ7s (ORCPT
+        with ESMTP id S1355035AbiEDQ7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7AB49275;
-        Wed,  4 May 2022 09:51:23 -0700 (PDT)
+        Wed, 4 May 2022 12:59:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF95348E76;
+        Wed,  4 May 2022 09:51:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F7D617BE;
-        Wed,  4 May 2022 16:51:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E223C385A4;
-        Wed,  4 May 2022 16:51:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15100617C2;
+        Wed,  4 May 2022 16:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F068C385A5;
+        Wed,  4 May 2022 16:51:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683082;
-        bh=EhPme3Fm74FYoNwPGq+P4J38yUvRFTbwq3ETX9RbL5s=;
+        s=korg; t=1651683073;
+        bh=PbnDXMsiqXRFV37wHPynCfNOIQWwNRS0+/3UQ4ufAPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oPHZ+NlX73R61FC92X5PufMEKGE3xcBZ0Iw6BI/D+W0ucoK6UQ4AK84prRMjAQGDM
-         AjWZCq00DMuH+5LI+isLFH8Ia27vWBt+4149vzhe5jPG/t6/cBDqnEEFjstn3Fp8Ud
-         Bs+wZx5jjXc7C19OAjlE88Vdo5lR+Ln7TBKBCJ6c=
+        b=BZj+rOLrzBuUxyOdNXPnDgdKZYcFlSBt0nx+8Lv84FizWa65nQTQVXDebT2xvdC/C
+         NJBTjDYvms7RtKLuhh+Tw9knsgN7j/DBRF7OumqE5mQBpmzUJzr0trEm5uSXdo7zTg
+         ZIItlB6Fc5egp0R6c86Yq8RjmKVc76qQ8EfRkUek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 073/129] arm64: dts: imx8mn-ddr4-evk: Describe the 32.768 kHz PMIC clock
-Date:   Wed,  4 May 2022 18:44:25 +0200
-Message-Id: <20220504153027.018404656@linuxfoundation.org>
+Subject: [PATCH 5.10 077/129] net: hns3: add validity check for message data length
+Date:   Wed,  4 May 2022 18:44:29 +0200
+Message-Id: <20220504153027.279669420@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,43 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 0310b5aa0656a94102344f1e9ae2892e342a665d ]
+[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
 
-The ROHM BD71847 PMIC has a 32.768 kHz clock.
+Add validity check for message data length in function
+hclge_send_mbx_msg(), avoid unexpected overflow.
 
-Describe the PMIC clock to fix the following boot errors:
-
-bd718xx-clk bd71847-clk.1.auto: No parent clk found
-bd718xx-clk: probe of bd71847-clk.1.auto failed with error -22
-
-Based on the same fix done for imx8mm-evk as per commit
-a6a355ede574 ("arm64: dts: imx8mm-evk: Add 32.768 kHz clock to PMIC")
-
-Fixes: 3e44dd09736d ("arm64: dts: imx8mn-ddr4-evk: Add rohm,bd71847 PMIC support")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
-index 7dfee715a2c4..d8ce217c6016 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dts
-@@ -59,6 +59,10 @@ pmic@4b {
- 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
- 		rohm,reset-snvs-powered;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index 2ea347b822db..b948fe3ac56b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -91,6 +91,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
+ 	enum hclge_cmd_status status;
+ 	struct hclge_desc desc;
  
-+		#clock-cells = <0>;
-+		clocks = <&osc_32k 0>;
-+		clock-output-names = "clk-32k-out";
++	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
++		dev_err(&hdev->pdev->dev,
++			"msg data length(=%u) exceeds maximum(=%u)\n",
++			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
++		return -EMSGSIZE;
++	}
 +
- 		regulators {
- 			buck1_reg: BUCK1 {
- 				regulator-name = "buck1";
+ 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
+ 
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
 -- 
 2.35.1
 
