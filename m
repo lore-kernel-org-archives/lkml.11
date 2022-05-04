@@ -2,41 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B95C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 124AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355994AbiEDRNM (ORCPT
+        id S1349961AbiEDRNY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        Wed, 4 May 2022 13:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354488AbiEDRCF (ORCPT
+        with ESMTP id S1354783AbiEDRCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:02:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4C94CD68;
-        Wed,  4 May 2022 09:52:24 -0700 (PDT)
+        Wed, 4 May 2022 13:02:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4314D258;
+        Wed,  4 May 2022 09:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A234617C3;
-        Wed,  4 May 2022 16:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5655C385A4;
-        Wed,  4 May 2022 16:52:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CEDDB827AB;
+        Wed,  4 May 2022 16:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA11BC385A5;
+        Wed,  4 May 2022 16:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683138;
-        bh=oLZiBmzCCSAKWuBDvcY+Z3V8jNlCc60+HGkO6tQErks=;
+        s=korg; t=1651683142;
+        bh=nLzvOaKvfVG2fx6lB26GDmFQx5Yq8nqY4CRUL62jSm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o+Jq2XcdGhgexqwkSzgF22PMHT+xTqn4z5R2RiFgBNJO+iixoqFNyWrtmvVImhn4x
-         KeZ0kD78AS95Xnf58xRJaGmx0VtB78WdqnNrQD0cYUfXAUK+iYYV4Dwg6kmGF82wXl
-         yal9+XSEGmtgBw8pXK+uSucyrOhGgjIb2xAHcWAQ=
+        b=eiNwUWDyiT3qx8IaBLPtIdxtMT5aUDfiSqlnxrM477b8yOCQaYapNSxUqmpynBw77
+         A95Je27BwyVBaRR0dJrKXW2dFS28G/7A8tMlCrjBIQZ6OKh6JIUXzZ9+gdlsFgLMj3
+         78L1z4edDITRYHB+FRUkS+yvpffoGuCW0omohpxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 126/129] tty: n_gsm: fix reset fifo race condition
-Date:   Wed,  4 May 2022 18:45:18 +0200
-Message-Id: <20220504153031.563728783@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 129/129] perf symbol: Remove arch__symbols__fixup_end()
+Date:   Wed,  4 May 2022 18:45:21 +0200
+Message-Id: <20220504153031.905812335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -48,61 +63,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-commit 73029a4d7161f8b6c0934553145ef574d2d0c645 upstream.
+commit a5d20d42a2f2dc2b2f9e9361912062732414090d upstream.
 
-gsmtty_write() and gsm_dlci_data_output() properly guard the fifo access.
-However, gsm_dlci_close() and gsmtty_flush_buffer() modifies the fifo but
-do not guard this.
-Add a guard here to prevent race conditions on parallel writes to the fifo.
+Now the generic code can handle kallsyms fixup properly so no need to
+keep the arch-functions anymore.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-17-daniel.starke@siemens.com
+Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-s390@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Link: https://lore.kernel.org/r/20220416004048.1514900-4-namhyung@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ tools/perf/arch/arm64/util/Build     |    1 -
+ tools/perf/arch/arm64/util/machine.c |   27 ---------------------------
+ tools/perf/arch/s390/util/machine.c  |   16 ----------------
+ tools/perf/util/symbol.c             |    5 -----
+ tools/perf/util/symbol.h             |    1 -
+ 5 files changed, 50 deletions(-)
+ delete mode 100644 tools/perf/arch/powerpc/util/machine.c
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1422,13 +1422,17 @@ static int gsm_control_wait(struct gsm_m
+--- a/tools/perf/arch/arm64/util/Build
++++ b/tools/perf/arch/arm64/util/Build
+@@ -1,5 +1,4 @@
+ perf-y += header.o
+-perf-y += machine.o
+ perf-y += perf_regs.o
+ perf-y += tsc.o
+ perf-$(CONFIG_DWARF)     += dwarf-regs.o
+--- a/tools/perf/arch/arm64/util/machine.c
++++ /dev/null
+@@ -1,27 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-
+-#include <stdio.h>
+-#include <string.h>
+-#include "debug.h"
+-#include "symbol.h"
+-
+-/* On arm64, kernel text segment start at high memory address,
+- * for example 0xffff 0000 8xxx xxxx. Modules start at a low memory
+- * address, like 0xffff 0000 00ax xxxx. When only samll amount of
+- * memory is used by modules, gap between end of module's text segment
+- * and start of kernel text segment may be reach 2G.
+- * Therefore do not fill this gap and do not assign it to the kernel dso map.
+- */
+-
+-#define SYMBOL_LIMIT (1 << 12) /* 4K */
+-
+-void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
+-{
+-	if ((strchr(p->name, '[') && strchr(c->name, '[') == NULL) ||
+-			(strchr(p->name, '[') == NULL && strchr(c->name, '[')))
+-		/* Limit range of last symbol in module and kernel */
+-		p->end += SYMBOL_LIMIT;
+-	else
+-		p->end = c->start;
+-	pr_debug4("%s sym:%s end:%#lx\n", __func__, p->name, p->end);
+-}
+--- a/tools/perf/arch/s390/util/machine.c
++++ b/tools/perf/arch/s390/util/machine.c
+@@ -34,19 +34,3 @@ int arch__fix_module_text_start(u64 *sta
  
- static void gsm_dlci_close(struct gsm_dlci *dlci)
- {
-+	unsigned long flags;
-+
- 	del_timer(&dlci->t1);
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
- 	dlci->state = DLCI_CLOSED;
- 	if (dlci->addr != 0) {
- 		tty_port_tty_hangup(&dlci->port, false);
-+		spin_lock_irqsave(&dlci->lock, flags);
- 		kfifo_reset(&dlci->fifo);
-+		spin_unlock_irqrestore(&dlci->lock, flags);
- 		/* Ensure that gsmtty_open() can return. */
- 		tty_port_set_initialized(&dlci->port, 0);
- 		wake_up_interruptible(&dlci->port.open_wait);
-@@ -3078,13 +3082,17 @@ static int gsmtty_chars_in_buffer(struct
- static void gsmtty_flush_buffer(struct tty_struct *tty)
- {
- 	struct gsm_dlci *dlci = tty->driver_data;
-+	unsigned long flags;
-+
- 	if (dlci->state == DLCI_CLOSED)
- 		return;
- 	/* Caution needed: If we implement reliable transport classes
- 	   then the data being transmitted can't simply be junked once
- 	   it has first hit the stack. Until then we can just blow it
- 	   away */
-+	spin_lock_irqsave(&dlci->lock, flags);
- 	kfifo_reset(&dlci->fifo);
-+	spin_unlock_irqrestore(&dlci->lock, flags);
- 	/* Need to unhook this DLCI from the transmit queue logic */
+ 	return 0;
+ }
+-
+-/* On s390 kernel text segment start is located at very low memory addresses,
+- * for example 0x10000. Modules are located at very high memory addresses,
+- * for example 0x3ff xxxx xxxx. The gap between end of kernel text segment
+- * and beginning of first module's text segment is very big.
+- * Therefore do not fill this gap and do not assign it to the kernel dso map.
+- */
+-void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
+-{
+-	if (strchr(p->name, '[') == NULL && strchr(c->name, '['))
+-		/* Last kernel symbol mapped to end of page */
+-		p->end = roundup(p->end, page_size);
+-	else
+-		p->end = c->start;
+-	pr_debug4("%s sym:%s end:%#lx\n", __func__, p->name, p->end);
+-}
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -101,11 +101,6 @@ static int prefix_underscores_count(cons
+ 	return tail - str;
  }
  
+-void __weak arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
+-{
+-	p->end = c->start;
+-}
+-
+ const char * __weak arch__normalize_symbol_name(const char *name)
+ {
+ 	return name;
+--- a/tools/perf/util/symbol.h
++++ b/tools/perf/util/symbol.h
+@@ -230,7 +230,6 @@ const char *arch__normalize_symbol_name(
+ #define SYMBOL_A 0
+ #define SYMBOL_B 1
+ 
+-void arch__symbols__fixup_end(struct symbol *p, struct symbol *c);
+ int arch__compare_symbol_names(const char *namea, const char *nameb);
+ int arch__compare_symbol_names_n(const char *namea, const char *nameb,
+ 				 unsigned int n);
 
 
