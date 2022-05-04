@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0225C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB922C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354092AbiEDQy7 (ORCPT
+        id S1354192AbiEDQzG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
+        Wed, 4 May 2022 12:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354035AbiEDQxr (ORCPT
+        with ESMTP id S1354026AbiEDQxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:53:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A3847054;
-        Wed,  4 May 2022 09:48:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE26247AFF;
+        Wed,  4 May 2022 09:48:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 679B661720;
-        Wed,  4 May 2022 16:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B338DC385A4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BB7661701;
         Wed,  4 May 2022 16:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD4B4C385A4;
+        Wed,  4 May 2022 16:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682938;
-        bh=XJ36Ncq/NTi/l4xpfsFV75yso6rXe2+OwlqkmuHYyW8=;
+        s=korg; t=1651682937;
+        bh=Bla4DnsSnnIoXDc4ghLJ1hbfQgBlIQ8VsAkR4WxaL+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tsMAtBJvbtcoWkwxQWlhqI8mzhfWu1X57lg/yxXtfcJtrmf0Wjm66UpSjOzQoUO06
-         5wC07iPMyXBGpRGdnSIsbf/OXRR4heOkhgsgFPhoLrKq/rMHg3E0uFe+LvA2HRviRc
-         R609IDvI6XE/IH0fJvRtXVBJIckWRjh/CYz/yLvc=
+        b=zy9mrC8VIqvoMum/jfNyVPLgMHu9cthYhtFTWhMFxF4vLkMZd+vNnyGDsH64fVr0H
+         k7zCISEgIXHV01d8PZ8ZGx9NOkkXuvaSKGL9OABXbeJYtP98mmSCLd0sEWCfuLl/uC
+         UcTjt7yXNQcyOoxvTIARoWzXHO861nso98Gwu6ic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 57/84] ip_gre: Make o_seqno start from 0 in native mode
-Date:   Wed,  4 May 2022 18:44:38 +0200
-Message-Id: <20220504152931.827925795@linuxfoundation.org>
+Subject: [PATCH 5.4 56/84] net/smc: sync err code when tcp connection was refused
+Date:   Wed,  4 May 2022 18:44:37 +0200
+Message-Id: <20220504152931.767254648@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,49 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
+[ Upstream commit 4e2e65e2e56c6ceb4ea1719360080c0af083229e ]
 
-For GRE and GRETAP devices, currently o_seqno starts from 1 in native
-mode.  According to RFC 2890 2.2., "The first datagram is sent with a
-sequence number of 0."  Fix it.
+In the current implementation, when TCP initiates a connection
+to an unavailable [ip,port], ECONNREFUSED will be stored in the
+TCP socket, but SMC will not. However, some apps (like curl) use
+getsockopt(,,SO_ERROR,,) to get the error information, which makes
+them miss the error message and behave strangely.
 
-It is worth mentioning that o_seqno already starts from 0 in collect_md
-mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
-gre_build_header() before getting incremented.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
+Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_gre.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ net/smc/af_smc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index f67f1d27f565..5b38d03f6d79 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -432,14 +432,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
- 		       __be16 proto)
- {
- 	struct ip_tunnel *tunnel = netdev_priv(dev);
--
--	if (tunnel->parms.o_flags & TUNNEL_SEQ)
--		tunnel->o_seqno++;
-+	__be16 flags = tunnel->parms.o_flags;
- 
- 	/* Push GRE header. */
- 	gre_build_header(skb, tunnel->tun_hlen,
--			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
--			 htonl(tunnel->o_seqno));
-+			 flags, proto, tunnel->parms.o_key,
-+			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
- 
- 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
- }
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 5221092cc66d..a5a8cca46bd5 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -816,6 +816,8 @@ static void smc_connect_work(struct work_struct *work)
+ 		smc->sk.sk_state = SMC_CLOSED;
+ 		if (rc == -EPIPE || rc == -EAGAIN)
+ 			smc->sk.sk_err = EPIPE;
++		else if (rc == -ECONNREFUSED)
++			smc->sk.sk_err = ECONNREFUSED;
+ 		else if (signal_pending(current))
+ 			smc->sk.sk_err = -sock_intr_errno(timeo);
+ 		sock_put(&smc->sk); /* passive closing */
 -- 
 2.35.1
 
