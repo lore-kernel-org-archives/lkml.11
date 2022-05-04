@@ -2,127 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 306CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 02:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A08BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 02:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344108AbiEDCxa (ORCPT
+        id S1344155AbiEDC4N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 22:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        Tue, 3 May 2022 22:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbiEDCx3 (ORCPT
+        with ESMTP id S1344128AbiEDC4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 22:53:29 -0400
-Received: from out199-15.us.a.mail.aliyun.com (out199-15.us.a.mail.aliyun.com [47.90.199.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7254120BFE
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 19:49:54 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R521e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VC9zWyy_1651632588;
-Received: from 30.32.81.226(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VC9zWyy_1651632588)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 04 May 2022 10:49:49 +0800
-Message-ID: <33af56f6-3ab9-0859-013a-598e46dd8da2@linux.alibaba.com>
-Date:   Wed, 4 May 2022 10:50:33 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 2/3] mm: rmap: Move the cache flushing to the correct
- place for hugetlb PMD sharing
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>
-Cc:     akpm@linux-foundation.org, almasrymina@google.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <cover.1651056365.git.baolin.wang@linux.alibaba.com>
- <4f7ae6dfdc838ab71e1655188b657c032ff1f28f.1651056365.git.baolin.wang@linux.alibaba.com>
- <YmosZpGwSoB8TlnK@FVFYT0MHHV2J.usts.net>
- <16644a23-e7df-a330-fba0-a9cd5da4800e@oracle.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <16644a23-e7df-a330-fba0-a9cd5da4800e@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 3 May 2022 22:56:06 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4FC1A3AF
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 19:52:31 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7ee6bc6ddso2564687b3.1
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 19:52:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=/Q4saw0fsQI0XrMOLhFqHHv+cO7ddF3QCmobj7JaRns=;
+        b=XDSsX88KFKTwe5aZ2ZygvEyfXf6FHBoUmIND30OXzKzox6Yo4WbD+Pib1a8WASGJFc
+         VKoB+1qEoxW/ocNGMHpCSJdqwB/kxMi5PpKlNqoHCck12QUuGBsjRJ2RwQNNnNRz28MI
+         L/i68IP34jt0MDy22Q02kFVBboJ23S/jl5UKdFJDmAEYQiG0cxfOdP7IrG3S48MBshm3
+         WfamIMCBPifcEb0cMcK4AIWAnq7MpTyxpE/siLw7uDH6Y6r0z1+cLIqVyElVlDvd/Y+l
+         lUHv7iKG6inlf+ZCzt3F1xpivIkgtJJprPHKeUwi/d1h02ZZN/0Z6CfFppt6C2jh5wnW
+         as5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=/Q4saw0fsQI0XrMOLhFqHHv+cO7ddF3QCmobj7JaRns=;
+        b=lH8NJwkUuSaGXx54VdytWAEOuQAmjJRMLMtURlcqS4Dnp4BInGBw86VxMgY7qDrHTb
+         05aXkMTPDoEHVDodCOCo++g/bFIfkx5YhtfUTTLKcKHaLa62q3iDdWAWJ/IVIJK9TSyu
+         FhgY5PYmrJR7564OtWYVuyEW7ThCTc3GihCHTtK5uFARy/OZVNYl3NHhBUmP3g/1WYn8
+         1LBsL8Dc/GiY+6g9l2gvBarDNQaiSxcPJHwLzXClSkrlEErQMFL+Ox8aIJv/nyxpluwk
+         cLMx9djvXscmNpjU9rX6M62LrSb0FtWHoatONPwD7ZsMOvs5XQhVU+RtCH7KOfihj0Ng
+         sJfA==
+X-Gm-Message-State: AOAM533Sqo7P8EBD3ZUNzwW28M44Am0AZa7FZZUQAEAQ1WM9pKSi28/w
+        DW5Lh9bFfzQXlaYDjtpiu4+SwriwJza4
+X-Google-Smtp-Source: ABdhPJwgqMmO3z4Ub4tTjcRRDmxDpIXiHM0sdXbEV85BmMgIbTmhyi4FKMfTTz6HgzM6dTN9ZPEFS8XrY+W9
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:51c7:3b17:aa10:ed9b])
+ (user=irogers job=sendgmr) by 2002:a81:78ce:0:b0:2f8:fbad:c446 with SMTP id
+ t197-20020a8178ce000000b002f8fbadc446mr6711945ywc.498.1651632750619; Tue, 03
+ May 2022 19:52:30 -0700 (PDT)
+Date:   Tue,  3 May 2022 19:52:20 -0700
+In-Reply-To: <20220504025220.2754910-1-irogers@google.com>
+Message-Id: <20220504025220.2754910-3-irogers@google.com>
+Mime-Version: 1.0
+References: <20220504025220.2754910-1-irogers@google.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH 3/3] perf vendor events: Update events for Jaketown to v21
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Events are version 21:
+    https://download.01.org/perfmon/JKT
+Json files generated by the latest code at:
+    https://github.com/intel/event-converter-for-linux-perf
 
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ .../pmu-events/arch/x86/jaketown/pipeline.json   | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-On 5/4/2022 2:42 AM, Mike Kravetz wrote:
-> On 4/27/22 22:55, Muchun Song wrote:
->> On Wed, Apr 27, 2022 at 06:52:06PM +0800, Baolin Wang wrote:
->>> The cache level flush will always be first when changing an existing
->>> virtual–>physical mapping to a new value, since this allows us to
->>> properly handle systems whose caches are strict and require a
->>> virtual–>physical translation to exist for a virtual address. So we
->>> should move the cache flushing before huge_pmd_unshare().
->>>
->>
->> Right.
->>
->>> As Muchun pointed out[1], now the architectures whose supporting hugetlb
->>> PMD sharing have no cache flush issues in practice. But I think we
->>> should still follow the cache/TLB flushing rules when changing a valid
->>> virtual address mapping in case of potential issues in future.
->>
->> Right. One point i need to clarify. I do not object this change but
->> want you to clarify this (not an issue in practice) in commit log
->> to let others know they do not need to bp this.
->>
->>>
->>> [1] https://lore.kernel.org/all/YmT%2F%2FhuUbFX+KHcy@FVFYT0MHHV2J.usts.net/
->>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
->>> ---
->>>   mm/rmap.c | 40 ++++++++++++++++++++++------------------
->>>   1 file changed, 22 insertions(+), 18 deletions(-)
->>>
->>> diff --git a/mm/rmap.c b/mm/rmap.c
->>> index 61e63db..4f0d115 100644
->>> --- a/mm/rmap.c
->>> +++ b/mm/rmap.c
->>> @@ -1535,15 +1535,16 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
->>>   			 * do this outside rmap routines.
->>>   			 */
->>>   			VM_BUG_ON(!(flags & TTU_RMAP_LOCKED));
->>> +			/*
->>> +			 * huge_pmd_unshare may unmap an entire PMD page.
->>> +			 * There is no way of knowing exactly which PMDs may
->>> +			 * be cached for this mm, so we must flush them all.
->>> +			 * start/end were already adjusted above to cover this
->>> +			 * range.
->>> +			 */
->>> +			flush_cache_range(vma, range.start, range.end);
->>> +
->>
->> flush_cache_range() is always called even if we do not need to flush.
->> How about introducing a new helper like hugetlb_pmd_shared() which
->> returns true for shared PMD? Then:
->>
->> 	if (hugetlb_pmd_shared(mm, vma, pvmw.pte)) {
->> 		flush_cache_range(vma, range.start, range.end);
->> 		huge_pmd_unshare(mm, vma, &address, pvmw.pte);
->> 		flush_tlb_range(vma, range.start, range.end);
->> 	}
->>
->> The code could be a little simpler. Right?
->>
->> Thanks.
->>
-> 
-> I thought about adding a 'hugetlb_pmd_shared()' interface for another use.
-> I believe it could even be used earlier in this call sequence.  Since we
-> hold i_mmap_rwsem, we would even test for shared BEFORE calling
-> adjust_range_if_pmd_sharing_possible.  We can not make an authoritative test
-> in adjust range... because not all callers will be holding i_mmap_rwsem.
-> 
-> I think we COULD optimize to minimize the flush range.  However, I think
-> that would complicate this code even more, and it is difficult enough to
-> follow.
-> 
-> My preference would be to over flush as is done here for correctness and
-> simplification.  We can optimize later if desired.
+diff --git a/tools/perf/pmu-events/arch/x86/jaketown/pipeline.json b/tools/=
+perf/pmu-events/arch/x86/jaketown/pipeline.json
+index 87737c92c067..61a3db4d67d5 100644
+--- a/tools/perf/pmu-events/arch/x86/jaketown/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/jaketown/pipeline.json
+@@ -410,8 +410,8 @@
+     },
+     {
+         "BriefDescription": "Reference cycles when the core is not in halt=
+ state.",
+-        "Counter": "Fixed counter 3",
+-        "CounterHTOff": "Fixed counter 3",
++        "Counter": "Fixed counter 2",
++        "CounterHTOff": "Fixed counter 2",
+         "EventName": "CPU_CLK_UNHALTED.REF_TSC",
+         "PublicDescription": "This event counts the number of reference cy=
+cles when the core is not in a halt state. The core enters the halt state w=
+hen it is running the HLT instruction or the MWAIT instruction. This event =
+is not affected by core frequency changes (for example, P states, TM2 trans=
+itions) but has the same incrementing frequency as the time stamp counter. =
+This event can approximate elapsed time while the core was not in a halt st=
+ate. This event has a constant ratio with the CPU_CLK_UNHALTED.REF_XCLK eve=
+nt. It is counted on a dedicated fixed counter, leaving the four (eight whe=
+n Hyperthreading is disabled) programmable counters available for other eve=
+nts.",
+         "SampleAfterValue": "2000003",
+@@ -439,8 +439,8 @@
+     },
+     {
+         "BriefDescription": "Core cycles when the thread is not in halt st=
+ate.",
+-        "Counter": "Fixed counter 2",
+-        "CounterHTOff": "Fixed counter 2",
++        "Counter": "Fixed counter 1",
++        "CounterHTOff": "Fixed counter 1",
+         "EventName": "CPU_CLK_UNHALTED.THREAD",
+         "PublicDescription": "This event counts the number of core cycles =
+while the thread is not in a halt state. The thread enters the halt state w=
+hen it is running the HLT instruction. This event is a component in many ke=
+y event ratios. The core frequency may change from time to time due to tran=
+sitions associated with Enhanced Intel SpeedStep Technology or TM2. For thi=
+s reason this event may have a changing ratio with regards to time. When th=
+e core frequency is constant, this event can approximate elapsed time while=
+ the core was not in the halt state. It is counted on a dedicated fixed cou=
+nter, leaving the four (eight when Hyperthreading is disabled) programmable=
+ counters available for other events.",
+         "SampleAfterValue": "2000003",
+@@ -542,8 +542,8 @@
+     },
+     {
+         "BriefDescription": "Instructions retired from execution.",
+-        "Counter": "Fixed counter 1",
+-        "CounterHTOff": "Fixed counter 1",
++        "Counter": "Fixed counter 0",
++        "CounterHTOff": "Fixed counter 0",
+         "EventName": "INST_RETIRED.ANY",
+         "PublicDescription": "This event counts the number of instructions=
+ retired from execution. For instructions that consist of multiple micro-op=
+s, this event counts the retirement of the last micro-op of the instruction=
+. Counting continues during hardware interrupts, traps, and inside interrup=
+t handlers.",
+         "SampleAfterValue": "2000003",
+@@ -599,7 +599,7 @@
+         "UMask": "0x3"
+     },
+     {
+-        "BriefDescription": "Number of occurences waiting for the checkpoi=
+nts in Resource Allocation Table (RAT) to be recovered after Nuke due to al=
+l other cases except JEClear (e.g. whenever a ucode assist is needed like S=
+SE exception, memory disambiguation, etc...).",
++        "BriefDescription": "Number of occurrences waiting for the checkpo=
+ints in Resource Allocation Table (RAT) to be recovered after Nuke due to a=
+ll other cases except JEClear (e.g. whenever a ucode assist is needed like =
+SSE exception, memory disambiguation, etc...).",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "CounterMask": "1",
+@@ -1199,4 +1199,4 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+--=20
+2.36.0.464.gb9c8b46e94-goog
 
-OK. Agree.
-
-> 
-> With Muchun's comment that this is not an issue in practice today,
-> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-
-Thanks.
