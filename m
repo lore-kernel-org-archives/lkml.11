@@ -2,100 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2AA1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C26EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351828AbiEDPH1 (ORCPT
+        id S1351839AbiEDPHn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
+        Wed, 4 May 2022 11:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351542AbiEDPHX (ORCPT
+        with ESMTP id S1351862AbiEDPHi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:07:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39692AE23;
-        Wed,  4 May 2022 08:03:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E93161B6B;
-        Wed,  4 May 2022 15:03:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E58C385AA;
-        Wed,  4 May 2022 15:03:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651676626;
-        bh=gS9cgRft2gHupLhQNBtsqLQ0zVLeGAsSN5zeFP4h4k0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sBTekUaifCimlhjajkdL2NZyWiN3UFz7vjqLSot0sBDx9tF8DMYExUV2qDoaPNn5b
-         KYO/QdA7xVibP7boWTEEtGaJGWb+tPRd3xB1YLqOwY7orcA7r6m4ILsbaf7rmMCy1e
-         zIvneMbbhxbXioMm7LBxTjne2J0GLD4i525V1CTJMxU8AM94aF2R9HWSPxK43y80Xt
-         rFOOsJnWrxpu7lJszvL6UPaFYbQ7mCfcQCdphzeLNRJwC3Qb9dAJoV3siInlSIlqVf
-         2EedtYa8TST1srSugZyIjH+iBTS0FYtdUhxy14vaJEjJKP2wDfRWRZuwDo5V8Hk3xh
-         SLciCY6XIkF2A==
-Date:   Wed, 4 May 2022 16:03:38 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: Re: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
- mpc5xxx_get_bus_frequency() to use fwnode
-Message-ID: <YnKVytydpZeNWsBP@sirena.org.uk>
-References: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
- <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+        Wed, 4 May 2022 11:07:38 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED00D42EF0;
+        Wed,  4 May 2022 08:04:00 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-edf9ddb312so497947fac.8;
+        Wed, 04 May 2022 08:04:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sn1FprFMfZ401oZdnKMfgZTW8Bn5vjqnty4V/SEXSyw=;
+        b=Hg1/WkAlXtJEmCEIw35b9V2UDFPMGEtmMJ2IYWIfmuKHDMzjftnZlHV+o427dpuVbh
+         jS1d4W+HiALzQS5QCBOEF/K2ufVaAUI4Q6jYJCuicQOtr8FaWHx9fvc86oyqfR+/wfLc
+         019LCPKPtfzJ4xbZcyEVl+m1mFqbv4z6yD3r8sGwpwMsZFTfFvC6mq9EbiJdYXB86DFv
+         TzS51aJGbFcAFkXJESC7beEaWtuX8Sa+rB7T2/Z7yCyEOND2Iq/l50Ovw6Y64BU4Ojlq
+         6LYFIZM8+35I3SWUFi4Ahn1rN7NpkWFLnM6aJgYZzTErBq+076TyUZ7kkWo0Do8xYuFr
+         HDJw==
+X-Gm-Message-State: AOAM531dqxJdXcrFz3dvN7ZBPre+/UaK8R+oM8vnQMEu4+JYRAKhmitg
+        oYa3B+pscrzCn6P1AToK6Q==
+X-Google-Smtp-Source: ABdhPJyeqN7a3WcUXtGg2ql4GhTZFEERXuwzOgpadB9FFz4RoHjJ2DvW2NTpiEz1s2KkYbL9qDwYhA==
+X-Received: by 2002:a05:6870:6324:b0:e9:16de:4053 with SMTP id s36-20020a056870632400b000e916de4053mr4070223oao.164.1651676640211;
+        Wed, 04 May 2022 08:04:00 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a15-20020a056808128f00b003264a325ecdsm897053oiw.5.2022.05.04.08.03.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 08:03:59 -0700 (PDT)
+Received: (nullmailer pid 1708315 invoked by uid 1000);
+        Wed, 04 May 2022 15:03:59 -0000
+Date:   Wed, 4 May 2022 10:03:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-iio@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, patches@lists.linux.dev
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: sx9324: Add CS idle/sleep mode
+Message-ID: <YnKV32XmMLW6bJAT@robh.at.kernel.org>
+References: <20220503193937.3794477-1-swboyd@chromium.org>
+ <20220503193937.3794477-2-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="YyVuIp0t4l9kBDGR"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
-X-Cookie: Mother is the invention of necessity.
+In-Reply-To: <20220503193937.3794477-2-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 03 May 2022 12:39:36 -0700, Stephen Boyd wrote:
+> We need to configure the sleep and idle mode of the CS pins for this
+> device. Add a DT property to do this so pins are in a proper state
+> during sleep (either hi-z, grounded, or pulled up to vdd).
+> 
+> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  .../bindings/iio/proximity/semtech,sx9324.yaml           | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
 
---YyVuIp0t4l9kBDGR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Wed, May 04, 2022 at 04:44:47PM +0300, Andy Shevchenko wrote:
-> Switch mpc5xxx_get_bus_frequency() to use fwnode in order to help
-> cleaning up other parts of the kernel from OF specific code.
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---YyVuIp0t4l9kBDGR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJylckACgkQJNaLcl1U
-h9BYbQf/d+R2/K8I9P6XsFeNBBDkbkBKu4u+dnvyBvda1uA0bN681S7UN/+65MPC
-sNd9OZXoE0bx/AnrXyZlW+IJC2jWyLcwL9rGR4hrIkW1w50MqD6WWl6XRe+cmYSF
-W+/goNVZ9EcqhviJXuhSTy7Cu14LU7V4uFUWR/MOcjmFD0hxnUJNub6xJsdUsf8I
-pAEjZJB7TEiPpN6SXvENzukmdyQewPL6RqLTTIki9dUXE9fn1ixsvQX0bBd5yY1e
-vWYnszaplvlFBXwDLftPDtQ+880HVZK0VrXJpCfPW2MqfFsDovNNQyZdlR4T0W9w
-rUS8W2LQXMCfj7BSLZ+tUgPA+OoNKg==
-=mP8/
------END PGP SIGNATURE-----
-
---YyVuIp0t4l9kBDGR--
+Reviewed-by: Rob Herring <robh@kernel.org>
