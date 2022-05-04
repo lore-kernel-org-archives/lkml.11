@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2022BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E3C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359850AbiEDRyC (ORCPT
+        id S1359798AbiEDRxw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        Wed, 4 May 2022 13:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357748AbiEDRPO (ORCPT
+        with ESMTP id S1357818AbiEDRPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7327355372;
-        Wed,  4 May 2022 09:58:57 -0700 (PDT)
+        Wed, 4 May 2022 13:15:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965CD5549F;
+        Wed,  4 May 2022 09:59:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4591C61896;
-        Wed,  4 May 2022 16:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90ADDC385AA;
-        Wed,  4 May 2022 16:58:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 568CB618AC;
+        Wed,  4 May 2022 16:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A17C385B1;
+        Wed,  4 May 2022 16:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683511;
-        bh=WLr61c6CuQ38LxV24MPtjTp9XfsL/E0q9iwXZbFIaMA=;
+        s=korg; t=1651683541;
+        bh=j4di2SiZYsOQ8iqn5pxU5YuTVDJsOrrUoFgbjmZGRSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eAiPgT/Y8zzKo9pMfW9rXK+Pso4SxTBJ4ik3WM5QDcv6uVS5axhxjylaxNxKZi5sG
-         vBbBSaVMiDfZDTewkW31bweiKAW4tbR/GwajEJRnvpA3J34FFHzzXAFmBWdCH1RJoI
-         X/dFe+/Gnqj7Jg1KfWk+2kQumG5eNcE14i/idwe0=
+        b=P31LxUDxtyZPSYCwiQemMrYrOCsV5lN7d3J+pXmmFkSbHR0JcIgNsi0P+rQik1mFH
+         s9PGjSwXjZjlSqb1kAGgP1vVSvJflh0E7y/QxyY9ZtY0nQAx9+HL76HebU7ymtHnPa
+         wPBEBhfQBD7it1s1AXD0d6ylH9wCNC02fMwgQeYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Gongjun Song <gongjun.song@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 174/225] ALSA: hda: intel-dsp-config: Add RaptorLake PCI IDs
-Date:   Wed,  4 May 2022 18:46:52 +0200
-Message-Id: <20220504153125.782609580@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 212/225] tty: n_gsm: fix wrong command retry handling
+Date:   Wed,  4 May 2022 18:47:30 +0200
+Message-Id: <20220504153128.914688313@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,44 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gongjun Song <gongjun.song@intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit b07908ab26ceab51165c13714277c19252e62594 ]
+commit d0bcdffcad5a22f202e3bf37190c0dd8c080ea92 upstream.
 
-Add RaptorLake-P PCI IDs
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_config() fails to limit this range correctly. Furthermore,
+gsm_control_retransmit() handles this number incorrectly by performing
+N2 - 1 retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix the range check in gsm_config() and the value handling in
+gsm_control_send() and gsm_control_retransmit() to comply with 3GPP 27.010.
 
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Signed-off-by: Gongjun Song <gongjun.song@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220421163546.319604-1-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-11-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/hda/intel-dsp-config.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/tty/n_gsm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
-index 8b0a16ba27d3..a8fe01764b25 100644
---- a/sound/hda/intel-dsp-config.c
-+++ b/sound/hda/intel-dsp-config.c
-@@ -424,6 +424,15 @@ static const struct config_entry config_table[] = {
- 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
- 		.device = 0x54c8,
- 	},
-+	/* RaptorLake-P */
-+	{
-+		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
-+		.device = 0x51ca,
-+	},
-+	{
-+		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
-+		.device = 0x51cb,
-+	},
- #endif
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1354,7 +1354,6 @@ static void gsm_control_retransmit(struc
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		gsm->cretries--;
+ 		if (gsm->cretries == 0) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+@@ -1363,6 +1362,7 @@ static void gsm_control_retransmit(struc
+ 			wake_up(&gsm->event);
+ 			return;
+ 		}
++		gsm->cretries--;
+ 		gsm_control_transmit(gsm, ctrl);
+ 		mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
+ 	}
+@@ -1403,7 +1403,7 @@ retry:
  
- };
--- 
-2.35.1
-
+ 	/* If DLCI0 is in ADM mode skip retries, it won't respond */
+ 	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
+-		gsm->cretries = 1;
++		gsm->cretries = 0;
+ 	else
+ 		gsm->cretries = gsm->n2;
+ 
+@@ -2343,7 +2343,7 @@ static int gsm_config(struct gsm_mux *gs
+ 	/* Check the MRU/MTU range looks sane */
+ 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
+ 		return -EINVAL;
+-	if (c->n2 < 3)
++	if (c->n2 > 255)
+ 		return -EINVAL;
+ 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
+ 		return -EINVAL;
 
 
