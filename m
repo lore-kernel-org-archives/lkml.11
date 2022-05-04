@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93437C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC19C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351816AbiEDRic (ORCPT
+        id S1357193AbiEDRij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
+        Wed, 4 May 2022 13:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356854AbiEDRJq (ORCPT
+        with ESMTP id S1356844AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11832CE39;
-        Wed,  4 May 2022 09:56:00 -0700 (PDT)
+        Wed, 4 May 2022 13:09:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB17366B9;
+        Wed,  4 May 2022 09:55:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1987617DE;
-        Wed,  4 May 2022 16:56:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23220C385AA;
-        Wed,  4 May 2022 16:56:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D51DD61851;
+        Wed,  4 May 2022 16:55:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30A52C385A5;
+        Wed,  4 May 2022 16:55:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683360;
-        bh=HYJR58QEHHoSYs3l8IRgOcIy5CFAG2cxLrnEXmuFJVU=;
+        s=korg; t=1651683357;
+        bh=d7FYk8CcoJFVfmacnUDKuqx+IN8JrgInU5TLM/A7XjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=guqSvtVkuvafm6bYenYJG5oCKaFrGSBvLFgh5rpJjopTpkeR02NSESBv4ro9BiK6F
-         0nutNYsEcqT2nbH7z5tPXaGO741QUqwl/wUKPr/s2NezfeUCSlYyGvuMbJgG1L1kH8
-         E0TsebAAciUClyv3dD/6O0pRHFLFSCVkvKfmbneM=
+        b=DP/ncrzapVGT6p/YS8SUYPYbnWijx/wanNfVLyR4rewGKLJnRlxMoStFiMj56Sk6i
+         J+qE86wM8CODAmeoMZSXb7gNX84flKYK4mxCAnJmOHz/p/w8C3v4W+UEQAoqUdrG71
+         0aYOXXpW8nV+PPJYXA8iiJiR9HWgGKzWs4ic1VUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Wang Qing <wangqing@vivo.com>
-Subject: [PATCH 5.17 039/225] arch_topology: Do not set llc_sibling if llc_id is invalid
-Date:   Wed,  4 May 2022 18:44:37 +0200
-Message-Id: <20220504153113.670016499@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH 5.17 030/225] usb: phy: generic: Get the vbus supply
+Date:   Wed,  4 May 2022 18:44:28 +0200
+Message-Id: <20220504153112.964934646@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,35 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
+From: Sean Anderson <sean.anderson@seco.com>
 
-commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
+commit 03e607cbb2931374db1825f371e9c7f28526d3f4 upstream.
 
-When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
-will set llc_sibling 0xff(...), this is misleading.
+While support for working with a vbus was added, the regulator was never
+actually gotten (despite what was documented). Fix this by actually
+getting the supply from the device tree.
 
-Don't set llc_sibling(default 0) if we don't know the cache topology.
-
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Wang Qing <wangqing@vivo.com>
-Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
+Fixes: 7acc9973e3c4 ("usb: phy: generic: add vbus support")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+Link: https://lore.kernel.org/r/20220425171412.1188485-3-sean.anderson@seco.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/arch_topology.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/phy/phy-generic.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -645,7 +645,7 @@ void update_siblings_masks(unsigned int
- 	for_each_online_cpu(cpu) {
- 		cpu_topo = &cpu_topology[cpu];
+--- a/drivers/usb/phy/phy-generic.c
++++ b/drivers/usb/phy/phy-generic.c
+@@ -268,6 +268,13 @@ int usb_phy_gen_create_phy(struct device
+ 			return -EPROBE_DEFER;
+ 	}
  
--		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
-+		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
- 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
- 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
- 		}
++	nop->vbus_draw = devm_regulator_get_exclusive(dev, "vbus");
++	if (PTR_ERR(nop->vbus_draw) == -ENODEV)
++		nop->vbus_draw = NULL;
++	if (IS_ERR(nop->vbus_draw))
++		return dev_err_probe(dev, PTR_ERR(nop->vbus_draw),
++				     "could not get vbus regulator\n");
++
+ 	nop->dev		= dev;
+ 	nop->phy.dev		= nop->dev;
+ 	nop->phy.label		= "nop-xceiv";
 
 
