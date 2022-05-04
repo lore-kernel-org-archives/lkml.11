@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9440CC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0FCC46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358566AbiEDRel (ORCPT
+        id S1358659AbiEDRez (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Wed, 4 May 2022 13:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355853AbiEDRIx (ORCPT
+        with ESMTP id S1356971AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAED49FA5;
-        Wed,  4 May 2022 09:54:38 -0700 (PDT)
+        Wed, 4 May 2022 13:09:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329914755F;
+        Wed,  4 May 2022 09:56:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6284061899;
-        Wed,  4 May 2022 16:54:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C09C385A5;
-        Wed,  4 May 2022 16:54:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAFF1B8278E;
+        Wed,  4 May 2022 16:56:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE4CC385A5;
+        Wed,  4 May 2022 16:56:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683277;
-        bh=U7F8eZYEpVTSmb/J39TUf2NGEuMLVkqIGrd2moRZY9U=;
+        s=korg; t=1651683407;
+        bh=1Vi5lNYXaB4VTTLQ+lFez2oNueieHQTfkFWql+43bVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lavSqlHe99BIe9cu1Gz+Ba0Tup3OL4UCtCmNDE6zrXFlTAvye4RkwcOOf1tCysYQZ
-         GKVshGeF3FhwK/1ZLQMJMbnrZHlslC0HxsvZVZ+J/PanndhPgvIuN5O3qcf61labS1
-         HP3Xd0k8pSF1r3mYkkdBMkeNxbbKen1Zcxxem8D0=
+        b=pmOddYi5u+2KkENLHRahMOS33DnLigcOWF0OxG9rRZ0W5sk+dsO9g56ZN8Y9yFNxh
+         j4tLBY9MolyzEiPYr5mxT64X+Ze9YaZZMW4HAmwaOUgLq528zb2ITRDMH9NhKJ8GHh
+         r86kDUA+8akF/PoeLip6dHskYRDfMNv9suwiodQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 130/177] arch: xtensa: platforms: Fix deadlock in rs_close()
-Date:   Wed,  4 May 2022 18:45:23 +0200
-Message-Id: <20220504153104.791464567@linuxfoundation.org>
+Subject: [PATCH 5.17 078/225] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
+Date:   Wed,  4 May 2022 18:45:16 +0200
+Message-Id: <20220504153118.226650389@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,84 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit eb5adc70754d26a260f8b42d39db42da0d0af500 ]
+[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
 
-There is a deadlock in rs_close(), which is shown
-below:
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-   (Thread 1)              |      (Thread 2)
-                           | rs_open()
-rs_close()                 |  mod_timer()
- spin_lock_bh() //(1)      |  (wait a time)
- ...                       | rs_poll()
- del_timer_sync()          |  spin_lock() //(2)
- (wait timer to stop)      |  ...
-
-We hold timer_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need timer_lock in position (2) of thread 2.
-As a result, rs_close() will block forever.
-
-This patch deletes the redundant timer_lock in order to
-prevent the deadlock. Because there is no race condition
-between rs_close, rs_open and rs_poll.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Message-Id: <20220407154430.22387-1-duoming@zju.edu.cn>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/platforms/iss/console.c | 8 --------
- 1 file changed, 8 deletions(-)
+ arch/arm/mach-omap2/omap4-common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
-index 81d7c7e8f7e9..10b79d3c74e0 100644
---- a/arch/xtensa/platforms/iss/console.c
-+++ b/arch/xtensa/platforms/iss/console.c
-@@ -36,24 +36,19 @@ static void rs_poll(struct timer_list *);
- static struct tty_driver *serial_driver;
- static struct tty_port serial_port;
- static DEFINE_TIMER(serial_timer, rs_poll);
--static DEFINE_SPINLOCK(timer_lock);
+diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
+index 5c3845730dbf..0b80f8bcd304 100644
+--- a/arch/arm/mach-omap2/omap4-common.c
++++ b/arch/arm/mach-omap2/omap4-common.c
+@@ -314,10 +314,12 @@ void __init omap_gic_of_init(void)
  
- static int rs_open(struct tty_struct *tty, struct file * filp)
- {
--	spin_lock_bh(&timer_lock);
- 	if (tty->count == 1)
- 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
--	spin_unlock_bh(&timer_lock);
+ 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
+ 	gic_dist_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!gic_dist_base_addr);
  
- 	return 0;
- }
+ 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
+ 	twd_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!twd_base);
  
- static void rs_close(struct tty_struct *tty, struct file * filp)
- {
--	spin_lock_bh(&timer_lock);
- 	if (tty->count == 1)
- 		del_timer_sync(&serial_timer);
--	spin_unlock_bh(&timer_lock);
- }
- 
- 
-@@ -73,8 +68,6 @@ static void rs_poll(struct timer_list *unused)
- 	int rd = 1;
- 	unsigned char c;
- 
--	spin_lock(&timer_lock);
--
- 	while (simc_poll(0)) {
- 		rd = simc_read(0, &c, 1);
- 		if (rd <= 0)
-@@ -87,7 +80,6 @@ static void rs_poll(struct timer_list *unused)
- 		tty_flip_buffer_push(port);
- 	if (rd)
- 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
--	spin_unlock(&timer_lock);
- }
- 
- 
+ skip_errata_init:
 -- 
 2.35.1
 
