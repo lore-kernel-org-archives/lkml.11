@@ -2,161 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32702C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346248AbiEDIV4 (ORCPT
+        id S1346221AbiEDIWM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        Wed, 4 May 2022 04:22:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346175AbiEDIVf (ORCPT
+        with ESMTP id S1346152AbiEDIVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:21:35 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17EA22B3A
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:17:59 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id j6so1380299ejc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 01:17:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=db4sc5OrkSnoCCAKUJDacMNlzRQIVW40R0PO9szPpSw=;
-        b=KGe1IO2UQP6MpGQv+BVltLwD9dOiM7SMH1UbK9CnTQOl8t4b+rgRa096yc/0T7rmKA
-         y4oqULZRKgXEJPdnA3ilr+g5cu2qvVA5dzvUCafkP9P707OmXoqXiEMtwAhajmTmt0PS
-         KU/6xKMRuHuk9OIBNjRd9S3KDEJZWEC6AzacTw2JmJrfullQbhFYGNYdc9y2VrE8H/5J
-         YHrzlSbNL9zKcrExFI4EZ86BsbykSMrQxsaWyQ0dWcmiIGEZzZDQipfsiZuLy/kWjZBG
-         EHKb13kDDn51oBgLLUkxYjvTF49F7jioGbJWceAIxfNwjzcIooOE+UYYN27V6vJeY3vy
-         GHMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=db4sc5OrkSnoCCAKUJDacMNlzRQIVW40R0PO9szPpSw=;
-        b=IAuhQWsxelQEAM020vdBCFuWR2RmmJsJ31fyJEVA8qxAKgkTcAOF42CS3JH88lSyyg
-         DTKfINjlcdi5CrFF0UyH+yTr8zfszl3bC3Qxije5PxkNAd4zLFlL83pdGZeTnnDxHQ81
-         R6ErVoQxH7cja5GXBMhauwafWet/pL3uHRNVfDxowhZgiHvsSX2YwP4kGnF7cVXIfCl4
-         RkcWo486AQhpRAw4kt5cpS/FaGtYFbH0UIXG8cVeVyxjs+Ytdli0iOQp1/NcsPkrkM36
-         JDMELkxUclZm5nc2VBHtjbxQeR572D3xf11T63OhdXZscnkzseLPSlvrZv5x+bvKvc0e
-         OSlA==
-X-Gm-Message-State: AOAM5305GmXtRalGOdhf5cHKxAgBoOnPcFWNyLCLa7rMlhF0ecjljapJ
-        /e/7Ymr7DhAvi+rlyD4q9cxo+A==
-X-Google-Smtp-Source: ABdhPJykdvNWku+TlTP7WoUCk8uQAX3gxkIBwzvlnxQzOMfyQc/XrabUiCA6VmEEOpKo+JqKj41WNA==
-X-Received: by 2002:a17:907:7ea6:b0:6f4:9d64:8e20 with SMTP id qb38-20020a1709077ea600b006f49d648e20mr5150330ejc.634.1651652278223;
-        Wed, 04 May 2022 01:17:58 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l21-20020a056402345500b0042617ba6393sm8781322edc.29.2022.05.04.01.17.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 01:17:57 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Thara Gopinath <thara.gopinath@linaro.org>
-Subject: [PATCH v2 5/5] arm64: dts: qcom: sdm845: Add CPU BWMON
-Date:   Wed,  4 May 2022 10:17:35 +0200
-Message-Id: <20220504081735.26906-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220504081735.26906-1-krzysztof.kozlowski@linaro.org>
-References: <20220504081735.26906-1-krzysztof.kozlowski@linaro.org>
+        Wed, 4 May 2022 04:21:48 -0400
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37A62317F
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:18:06 -0700 (PDT)
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220504081804bd89c3fceea64181bf
+        for <linux-kernel@vger.kernel.org>;
+        Wed, 04 May 2022 10:18:04 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=givcKcPjIx5sD2l4pl+6VjcrPMHyRzWU5ISndNhsXmE=;
+ b=Uqv1JdNruTqnKaiNdczbMn3KY9J758mW2IfxbjXsfdMN/5m/YyE++8YhwrUKW9D2lATKea
+ cLlWRTCHypejgHj3MuZat3Dn8lvFwzVvn4Sy+vNSjV1Phq28DqVECqq5ZMBLu79OmHmFVQqK
+ grPpItO5O8IO5FpKlqwvqa9PUNA/o=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 2/3] tty: n_gsm: fix mux activation issues in gsm_config()
+Date:   Wed,  4 May 2022 10:17:32 +0200
+Message-Id: <20220504081733.3494-2-daniel.starke@siemens.com>
+In-Reply-To: <20220504081733.3494-1-daniel.starke@siemens.com>
+References: <20220504081733.3494-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device node for CPU-memory BWMON device (bandwidth monitoring) on
-SDM845.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Co-developed-by: Thara Gopinath <thara.gopinath@linaro.org>
-Signed-off-by: Thara Gopinath <thara.gopinath@linaro.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The current implementation activates the mux if it was restarted and opens
+the control channel if the mux was previously closed and we are now acting
+as initiator instead of responder, which is the default setting.
+This has two issues.
+1) No mux is activated if we keep all default values and only switch to
+initiator. The control channel is not allocated but will be opened next
+which results in a NULL pointer dereference.
+2) Switching the configuration after it was once configured while keeping
+the initiator value the same will not reopen the control channel if it was
+closed due to parameter incompatibilities. The mux remains dead.
+
+Fix 1) by always activating the mux if it is dead after configuration.
+Fix 2) by always opening the control channel after mux activation.
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 60 ++++++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ drivers/tty/n_gsm.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index 692cf4be4eef..bd4577f0a92f 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -2026,6 +2026,66 @@ llcc: system-cache-controller@1100000 {
- 			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
- 		};
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 9b0b435cf26e..bcb714031d69 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2352,6 +2352,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
  
-+		pmu@1436400 {
-+			compatible = "qcom,sdm845-cpu-bwmon";
-+			reg = <0 0x01436400 0 0x600>;
-+
-+			interrupts = <GIC_SPI 581 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			interconnects = <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_EBI1 3>,
-+					<&osm_l3 MASTER_OSM_L3_APPS &osm_l3 SLAVE_OSM_L3>;
-+			interconnect-names = "ddr", "l3c";
-+
-+			operating-points-v2 = <&cpu_bwmon_opp_table>;
-+
-+			cpu_bwmon_opp_table: opp-table {
-+				compatible = "operating-points-v2";
-+
-+				/*
-+				 * The interconnect paths bandwidths calculated
-+				 * from msm-4.9 downstream kernel:
-+				 *  - the gladiator_noc-mem_noc from bandwidth
-+				 *    table of qcom,llccbw (property qcom,bw-tbl);
-+				 *    bus width: 4 bytes;
-+				 *  - the OSM L3 from bandiwdth table of
-+				 *    qcom,cpu4-l3lat-mon (qcom,core-dev-table);
-+				 *    bus width: 16 bytes;
-+				 */
-+				opp-0 {
-+					opp-peak-kBps = <800000 4800000>;
-+					opp-avg-kBps = <800000 4800000>;
-+				};
-+				opp-1 {
-+					opp-peak-kBps = <1804000 9216000>;
-+					opp-avg-kBps = <1804000 9216000>;
-+				};
-+				opp-2 {
-+					opp-peak-kBps = <2188000 11980800>;
-+					opp-avg-kBps = <2188000 11980800>;
-+				};
-+				opp-3 {
-+					opp-peak-kBps = <3072000 15052800>;
-+					opp-avg-kBps = <3072000 15052800>;
-+				};
-+				opp-4 {
-+					opp-peak-kBps = <4068000 19353600>;
-+					opp-avg-kBps = <4068000 19353600>;
-+				};
-+				opp-5 {
-+					opp-peak-kBps = <5412000 20889600>;
-+					opp-avg-kBps = <5412000 20889600>;
-+				};
-+				opp-6 {
-+					opp-peak-kBps = <6220000 22425600>;
-+					opp-avg-kBps = <6220000 22425600>;
-+				};
-+				opp-7 {
-+					opp-peak-kBps = <7216000 25497600>;
-+					opp-avg-kBps = <7216000 25497600>;
-+				};
-+			};
-+		};
-+
- 		pcie0: pci@1c00000 {
- 			compatible = "qcom,pcie-sdm845";
- 			reg = <0 0x01c00000 0 0x2000>,
+ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ {
++	int ret = 0;
+ 	int need_close = 0;
+ 	int need_restart = 0;
+ 
+@@ -2419,10 +2420,13 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 	 * FIXME: We need to separate activation/deactivation from adding
+ 	 * and removing from the mux array
+ 	 */
+-	if (need_restart)
+-		gsm_activate_mux(gsm);
+-	if (gsm->initiator && need_close)
+-		gsm_dlci_begin_open(gsm->dlci[0]);
++	if (gsm->dead) {
++		ret = gsm_activate_mux(gsm);
++		if (ret)
++			return ret;
++		if (gsm->initiator)
++			gsm_dlci_begin_open(gsm->dlci[0]);
++	}
+ 	return 0;
+ }
+ 
 -- 
-2.32.0
+2.34.1
 
