@@ -2,68 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 140E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE704C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378473AbiEDVDf (ORCPT
+        id S1378479AbiEDVDs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49460 "EHLO
+        Wed, 4 May 2022 17:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359713AbiEDVDe (ORCPT
+        with ESMTP id S1343672AbiEDVDo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:03:34 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6313E517EF
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:59:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
-        bh=WNWx0x7W17X3MaNlQNM4Sq+GiTxh8gtdGrx9WBRQX18=; b=C16xbeWESD3ld8uLEPr/VxjBpt
-        H2GI2Dx9vYPCc0wXnnyBioomz2UYBtnPA7NcI5tRT25H70Xk+1A5P29nQsVf1tDv+5BZUThPPEMj9
-        l2kQr56miiAuQUuz7sqlrDe9JsXjbSEpup10JCX5hLzXLr50hbOdz7gUS7nsE7ONjmv/Ur5Uk0ycK
-        k+SWQXF89ZlepvXbqc/5wri7Dh/zR4XtnYfujT/dPlr1njtxQR4f9T6cG6KASKLR8xrDQGrFbrh1T
-        q3+tmOPb1q4MO+IJTKPoFByrcw2BqTBlfpFwSXecog+yiWRuOU5mIPoeeK/gIZGrnVnyDIyIZXZGc
-        ikuvB6hw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nmM61-00Chgz-HG; Wed, 04 May 2022 20:59:41 +0000
-Date:   Wed, 4 May 2022 13:59:41 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, nizhen@uniontech.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH sysctl-next] sched: Fix build warning without
- CONFIG_SYSCTL
-Message-ID: <YnLpPdQeD+Sz83Cn@bombadil.infradead.org>
-References: <20220427131002.16192-1-yuehaibing@huawei.com>
+        Wed, 4 May 2022 17:03:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB3A517FD;
+        Wed,  4 May 2022 14:00:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96C5FB8293F;
+        Wed,  4 May 2022 21:00:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4714DC385A4;
+        Wed,  4 May 2022 21:00:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651698005;
+        bh=5Nf3iyTvgGnwT20t1hf3sHDL9Ia6CNjfhok9FG1zJ9Y=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=aiFVKPs62c0odAocD0BRu2jLYyKCUrTTOPiJvbDNsUrPmaaG13/o+l14i0ovljyNe
+         mSBkFdQgO6z4Ocz6x/poZ4hRcYR8J/bK5UkxqFiTXtgqdpFMqjKPDkdNSKte7GUE6F
+         dqva4pjX5ji5KNg8Z6Cok/D68R+QLrQ0cfUbZbPDxwflGV11D82H2qv2xiVqrjU/MF
+         Roiz18j6W3OYH+VxsqZfdYg0Kt9Av+46hCRcnHbZnp5v/hsIVCBnbxNH7sdIj886s6
+         HsZSOtr3QcXrRp6zBQdy70ybPeVcuJ6Vtsn5guB4vSJTZJLJ6F6bRG0CCqcz6Usa7h
+         EBhLOWD71+d2A==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-kernel@vger.kernel.org, krzysztof.kozlowski@linaro.org,
+        linux-arm-msm@vger.kernel.org, lgirdwood@gmail.com,
+        devicetree@vger.kernel.org, robh+dt@kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, krzysztof.kozlowski+dt@linaro.org
+In-Reply-To: <20220426105501.73200-1-krzysztof.kozlowski@linaro.org>
+References: <20220426105501.73200-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v3 0/3] regulator: dt-bindings: qcom,rpmh: minor cleanups and extend supplies
+Message-Id: <165169800298.1752583.17813272460576782096.b4-ty@kernel.org>
+Date:   Wed, 04 May 2022 22:00:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220427131002.16192-1-yuehaibing@huawei.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 09:10:02PM +0800, YueHaibing wrote:
-> IF CONFIG_SYSCTL is n, build warn:
+On Tue, 26 Apr 2022 12:54:58 +0200, Krzysztof Kozlowski wrote:
+> Extend the RPMH regulator bindings with minor fixes and adding narrow supply
+> matching.
 > 
-> kernel/sched/core.c:1782:12: warning: ‘sysctl_sched_uclamp_handler’ defined but not used [-Wunused-function]
->  static int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
->             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Changes since v2
+> ================
+> 1. Remove "defs" method, because schema nows allows unevaluatedProperties
+>    without references to other schemas.
+> 2. Include maintainer change patch, previously sent separately.
 > 
-> sysctl_sched_uclamp_handler() is used while CONFIG_SYSCTL enabled,
-> wrap all related code with CONFIG_SYSCTL to fix this.
-> 
-> Fixes: 3267e0156c33 ("sched: Move uclamp_util sysctls to core.c")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> [...]
 
-Thanks! Merged and pushed onto sysctl-testing. If there are no issues
-I'll move  it to sysctl-next.  
+Applied to
 
-  Luis
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+
+Thanks!
+
+[1/3] regulator: dt-bindings: qcom,rpmh: update maintainers
+      commit: a6d889a8fdbb8cb4b0d01f30f93357f3ffd61f06
+[2/3] regulator: dt-bindings: qcom,rpmh: document supplies per variant
+      commit: ba5d99609a5e6a3d0d9ac2574250208457d839cc
+[3/3] regulator: dt-bindings: qcom,rpmh: document vdd-l7-bob-supply on PMR735A
+      commit: e84f3c41a583408c7c67ed7824a7ff14ff40d045
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
