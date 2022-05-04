@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B26B9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89404C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349675AbiEDMgo (ORCPT
+        id S1349739AbiEDMgw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48538 "EHLO
+        Wed, 4 May 2022 08:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349627AbiEDMgf (ORCPT
+        with ESMTP id S1349617AbiEDMgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:36:35 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99AC32EF6;
-        Wed,  4 May 2022 05:32:52 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id bv19so2587229ejb.6;
-        Wed, 04 May 2022 05:32:52 -0700 (PDT)
+        Wed, 4 May 2022 08:36:37 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE9933A28;
+        Wed,  4 May 2022 05:32:59 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id be20so1503288edb.12;
+        Wed, 04 May 2022 05:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PUVxfJrhsniJtnQ7nz0gUaC/9RR8AYztqQ8GdhvVU68=;
-        b=HEJn9ahozroDJ2MNeRspCwpjwGh54adJdjlEW5nC2Z4kGL8cZKo2DhcvGKBTAJSEq+
-         R1crI71Geo4C7IwGhUVxJLo/jffNS4jwOcK8ynC95bgwCQlFUVbpdfFsMBZEc35eUUQ1
-         J7pfHqMr71Ju+L/evYzQBx+CBku6/iL+J2uSxz6mvXp4033IYEYHhB6FqhK2uBNssh4p
-         uIch3cnITzd7PoJ3rC+LV8h284zjM/qVws//9XfPYbc/CgAlSygl7IPwy9wmVGCHrnpZ
-         WwEfAC/WMnMeNGvwUb6bJqeEUlast7AGBB2VWksrXwsnt72Zy3hbGoqEtE4mzNYrUUS0
-         iB+A==
+        bh=aPFSi/mWYMYdcINHgbvPpjSUWnzyR9p2rv5umtn3cjI=;
+        b=UEFVed+rgiC1aLFETWO3cJXmKIhCocpF3HO/nI8utDBVg39ruLl5QFVsv4iuKvsveR
+         5qATWQ8FXfIGg/WmYfD4hppEDR+bjU9R2cpZK2b80cZj7hMm+DyQg4GkyCqvOrn9a6Hn
+         Jf33IeqUyVSd18068d9DNkH5Ci1mOYNBziuQ4Kaaevxnfjp8ORdU3Y25YF4pBNcjVqPh
+         K8jQg1FaR/BuZ27aXWahyAQCbLO6jopxmHRzaaxQPMilhwrwlBSIB0tsiMLKv1NQ4Njf
+         ekXwbKBISFCg5eZx9ktY6Ge82DA4gMnJYoZ6k/x/ApvaQftQjfV5cP8tDj0Y4xVYp4Jy
+         sDnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PUVxfJrhsniJtnQ7nz0gUaC/9RR8AYztqQ8GdhvVU68=;
-        b=EN3J63ax8mz6oPF7CZwEzrYVgqQnrCUMNpatLbVkiVw8JxwvU8KIvfwIobNO/6ftmn
-         owtSdvpRA5c6g36zsyoDgEhZa/3ia30Kcg+htnH7x5pNvbBOMjEJpe4qgp+Sd/hhoAjy
-         1eCc/9jARWkzFLIo8QN5BtlnC/EZv4jjb2XxPIeeppVuA2RnqsKkgEdj01vrRF0wOg5b
-         QfBWXl/4IeZEOWhcbQzyS5NuNUQfKN3WMGevAbjzK7/KjHsk3qWI+8D0QW0RDyETJ/VB
-         ULpIe8AKAerkKSiUwQQoohnAQfuO28PW8fbN34qr4eQ2jb8Z0sCQJ/Jw+SEx+WZBVM1L
-         TUmA==
-X-Gm-Message-State: AOAM532IG194akHwhn2zt5zXaCrB0km0bLpfqo3Ltcp2Iu8BTwK36fWV
-        2BoTzoZ+G7FAqVHHZymbB5c=
-X-Google-Smtp-Source: ABdhPJysMRSbHfcoJzQlOOSojNDvkOkjioWOUaFZqOEhre5gzFXjpjw3ryjINkEIAXIBd/cSPm5NNw==
-X-Received: by 2002:a17:907:761c:b0:6d6:e553:7bd1 with SMTP id jx28-20020a170907761c00b006d6e5537bd1mr19590051ejc.5.1651667572462;
-        Wed, 04 May 2022 05:32:52 -0700 (PDT)
+        bh=aPFSi/mWYMYdcINHgbvPpjSUWnzyR9p2rv5umtn3cjI=;
+        b=RwFR3sACu6AVUrRD8IMeDnpXg7G1KwQ3SX1FkB/pPhrH/uMPSzS1+JygdaSrOMnnXa
+         KlRweMn9xyHjvLMsnxJjLDDazRpjuYA2jMxjMyPdpvVl9pz6AgUg/eDykDWGjvPmBT/p
+         oK9LodtlATLu2Dpa9/nWeqLrIuOxC82CcFXR8N9BCW4WuAnlGzUeh6itfg/03bN5/yLN
+         /agJz1CsOoCQkvfAmzQQZ0KlboPo44fQ82oDnErNF47MyBzE5SE/Bd8IZpxJRg3hkIIE
+         u/XDArccnWwzRj1tWlf8TocObtkoa0wsEHZOt4QrvKX+orkelTbInMr5f/yEJpr3OaG2
+         mcCA==
+X-Gm-Message-State: AOAM530Pe6hJQXLLmSGPbEcdh7xQ336Vl8kVd5fsJnSJY9rppgxY8xpW
+        Mu4d148L4/UAy1wOdXacX9M=
+X-Google-Smtp-Source: ABdhPJw1ji77MznXPOLUih012rHNfyRY1v0DSI/u5kQreEXOVa6/qDVm+wA0fswuDakV4xVmX1s1FA==
+X-Received: by 2002:aa7:c318:0:b0:426:4aae:de6d with SMTP id l24-20020aa7c318000000b004264aaede6dmr22660856edq.208.1651667578090;
+        Wed, 04 May 2022 05:32:58 -0700 (PDT)
 Received: from localhost.localdomain (185-177-124-12.hosted-by-worldstream.net. [185.177.124.12])
-        by smtp.gmail.com with ESMTPSA id ig1-20020a1709072e0100b006f3ef214e7asm5688693ejc.224.2022.05.04.05.32.48
+        by smtp.gmail.com with ESMTPSA id ig1-20020a1709072e0100b006f3ef214e7asm5688693ejc.224.2022.05.04.05.32.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 05:32:52 -0700 (PDT)
+        Wed, 04 May 2022 05:32:57 -0700 (PDT)
 From:   Yassine Oudjana <yassine.oudjana@gmail.com>
 X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
@@ -72,9 +72,9 @@ Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 08/13] clk: mediatek: gate: Export mtk_clk_register_gates_with_dev
-Date:   Wed,  4 May 2022 16:25:57 +0400
-Message-Id: <20220504122601.335495-9-y.oudjana@protonmail.com>
+Subject: [PATCH 09/13] clk: mediatek: reset: Export mtk_register_reset_controller symbols
+Date:   Wed,  4 May 2022 16:25:58 +0400
+Message-Id: <20220504122601.335495-10-y.oudjana@protonmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504122601.335495-1-y.oudjana@protonmail.com>
 References: <20220504122601.335495-1-y.oudjana@protonmail.com>
@@ -86,25 +86,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-This allows it to be used in drivers built as modules.
+Export mtk_register_reset_controller and
+mtk_register_reset_controller_set_clr to support building reset
+drivers as modules.
 
 Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
 ---
- drivers/clk/mediatek/clk-gate.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clk/mediatek/reset.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
-index da52023f8455..8af907b82f8f 100644
---- a/drivers/clk/mediatek/clk-gate.c
-+++ b/drivers/clk/mediatek/clk-gate.c
-@@ -261,6 +261,7 @@ int mtk_clk_register_gates_with_dev(struct device_node *node,
- 
- 	return PTR_ERR(clk);
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index bcec4b89f449..6c2effe6afef 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -129,6 +129,7 @@ void mtk_register_reset_controller(struct device_node *np,
+ 	mtk_register_reset_controller_common(np, num_regs, regofs,
+ 		&mtk_reset_ops);
  }
-+EXPORT_SYMBOL_GPL(mtk_clk_register_gates_with_dev);
++EXPORT_SYMBOL_GPL(mtk_register_reset_controller);
  
- int mtk_clk_register_gates(struct device_node *node,
- 			   const struct mtk_gate *clks, int num,
+ void mtk_register_reset_controller_set_clr(struct device_node *np,
+ 	unsigned int num_regs, int regofs)
+@@ -136,5 +137,6 @@ void mtk_register_reset_controller_set_clr(struct device_node *np,
+ 	mtk_register_reset_controller_common(np, num_regs, regofs,
+ 		&mtk_reset_ops_set_clr);
+ }
++EXPORT_SYMBOL_GPL(mtk_register_reset_controller_set_clr);
+ 
+ MODULE_LICENSE("GPL");
 -- 
 2.36.0
 
