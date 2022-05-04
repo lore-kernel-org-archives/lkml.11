@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1165C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA65C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356819AbiEDRlz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
+        id S245574AbiEDRmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356857AbiEDRJq (ORCPT
+        with ESMTP id S1356613AbiEDRJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE8941631;
-        Wed,  4 May 2022 09:56:04 -0700 (PDT)
+        Wed, 4 May 2022 13:09:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D821E26FC;
+        Wed,  4 May 2022 09:55:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E759B8278E;
-        Wed,  4 May 2022 16:56:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE57C385A5;
-        Wed,  4 May 2022 16:56:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8FF461899;
+        Wed,  4 May 2022 16:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB20C385A4;
+        Wed,  4 May 2022 16:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683362;
-        bh=MHJqpfJfKuElTaqjHbxfjwwRYPPXj/+pu17OoUxRRzI=;
+        s=korg; t=1651683314;
+        bh=mBt5odG1NpN2Xxc1qTN/8ZCV/ARaiXb8egGhXjljbvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2wITdWzYeUpzDvV89fx/MfNj9aW3Xt3kyxV5Yp+QUHbqYLWIBDG/WqpfPJPVqKD9j
-         j+Lge1dLMzds+y0hWbrZBJIVbWTvS4GMz3RQ3J4W4iTSHUVbxxosIWFSA7ZUzsjZya
-         HtDPPRWw2d69QI3lvbm7X4NeDOj/Zm5dcHJhhnw8=
+        b=RElK8c5vOi73NJy9DDZr5Gi7+IkfUtn1GVrQweyklIZZMfPzm3ujNhzUB64Z3LV7N
+         kYA6tws0XDoc2eX3P31e2GVaU/WklBYGiPlDBk/72akLODDQtr7Ldg5x/X+JmsMvf6
+         xgcGYFFp3CrA6ogjoxDvi4oEwF1O6jGZvfXOU6t8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 5.17 049/225] bus: fsl-mc-msi: Fix MSI descriptor mutex lock for msi_first_desc()
-Date:   Wed,  4 May 2022 18:44:47 +0200
-Message-Id: <20220504153114.491213159@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.15 166/177] tty: n_gsm: fix wrong command retry handling
+Date:   Wed,  4 May 2022 18:45:59 +0200
+Message-Id: <20220504153108.382459489@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,53 +47,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit c7d2f89fea26c84d5accc55d9976dd7e5305e63a upstream.
+commit d0bcdffcad5a22f202e3bf37190c0dd8c080ea92 upstream.
 
-Commit e8604b1447b4 introduced a call to the helper function
-msi_first_desc(), which needs MSI descriptor mutex lock before
-call. However, the required mutex lock was not added. This results in
-lockdep assertion:
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_config() fails to limit this range correctly. Furthermore,
+gsm_control_retransmit() handles this number incorrectly by performing
+N2 - 1 retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix the range check in gsm_config() and the value handling in
+gsm_control_send() and gsm_control_retransmit() to comply with 3GPP 27.010.
 
- WARNING: CPU: 4 PID: 119 at kernel/irq/msi.c:274 msi_first_desc+0xd0/0x10c
-  msi_first_desc+0xd0/0x10c
-  fsl_mc_msi_domain_alloc_irqs+0x7c/0xc0
-  fsl_mc_populate_irq_pool+0x80/0x3cc
-
-Fix this by adding the mutex lock and unlock around the function call.
-
-Fixes: e8604b1447b4 ("bus: fsl-mc-msi: Simplify MSI descriptor handling")
-Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220412075636.755454-1-shinichiro.kawasaki@wdc.com
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-11-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/fsl-mc/fsl-mc-msi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/bus/fsl-mc/fsl-mc-msi.c b/drivers/bus/fsl-mc/fsl-mc-msi.c
-index 5e0e4393ce4d..0cfe859a4ac4 100644
---- a/drivers/bus/fsl-mc/fsl-mc-msi.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
-@@ -224,8 +224,12 @@ int fsl_mc_msi_domain_alloc_irqs(struct device *dev,  unsigned int irq_count)
- 	if (error)
- 		return error;
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1329,7 +1329,6 @@ static void gsm_control_retransmit(struc
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		gsm->cretries--;
+ 		if (gsm->cretries == 0) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+@@ -1338,6 +1337,7 @@ static void gsm_control_retransmit(struc
+ 			wake_up(&gsm->event);
+ 			return;
+ 		}
++		gsm->cretries--;
+ 		gsm_control_transmit(gsm, ctrl);
+ 		mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
+ 	}
+@@ -1378,7 +1378,7 @@ retry:
  
-+	msi_lock_descs(dev);
- 	if (msi_first_desc(dev, MSI_DESC_ALL))
--		return -EINVAL;
-+		error = -EINVAL;
-+	msi_unlock_descs(dev);
-+	if (error)
-+		return error;
+ 	/* If DLCI0 is in ADM mode skip retries, it won't respond */
+ 	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
+-		gsm->cretries = 1;
++		gsm->cretries = 0;
+ 	else
+ 		gsm->cretries = gsm->n2;
  
- 	/*
- 	 * NOTE: Calling this function will trigger the invocation of the
--- 
-2.36.0
-
+@@ -2278,7 +2278,7 @@ static int gsm_config(struct gsm_mux *gs
+ 	/* Check the MRU/MTU range looks sane */
+ 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
+ 		return -EINVAL;
+-	if (c->n2 < 3)
++	if (c->n2 > 255)
+ 		return -EINVAL;
+ 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
+ 		return -EINVAL;
 
 
