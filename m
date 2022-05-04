@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE34C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355860AbiEDRgF (ORCPT
+        id S1356970AbiEDRho (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
+        Wed, 4 May 2022 13:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356970AbiEDRJw (ORCPT
+        with ESMTP id S1356876AbiEDRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADBE4757B;
-        Wed,  4 May 2022 09:56:50 -0700 (PDT)
+        Wed, 4 May 2022 13:09:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2406C44747;
+        Wed,  4 May 2022 09:56:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58BDD61794;
-        Wed,  4 May 2022 16:56:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0ADAC385A5;
-        Wed,  4 May 2022 16:56:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6ADBB827A1;
+        Wed,  4 May 2022 16:56:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E75AC385A4;
+        Wed,  4 May 2022 16:56:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683409;
-        bh=oPh+0DOINGtcV6Qtd1M6YHaLnLsJXlCPBuWQrv+ekqw=;
+        s=korg; t=1651683372;
+        bh=z8W341Ff4rmUGeYvixTSXtHcgH7Y0qDlJv67ciz3vJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lYBcT0ykpE+NDzfhi7Yo3py5GrORO//s1MitR4VyXDkJkDut+74IbETiKhnmKkX2H
-         NpTeQtPz329RsYet2J17n8JC2mejW4ny3YcQkHYdT8MG/3BOGwSiUZTJg9IdRBWQ02
-         JEN/Lk5KuNMfPuaXy1EQdgiEo0R9S9rZsti8LT5U=
+        b=D9TTw3vbD59G6y9KEer/ON4X3aaNkHwCPf9wgPOqFt/tRhv2G5fE6g+aCpiWZcGWe
+         Ri9AEtO1+frDCfiSBvdIdGGumBliIGWRgzUdA93vyR8rgCMMXtkD34JLMM2oEHufMn
+         MlaCnRhDqQfJ4GwBAFOBbbek1E+IuLF1dys7V5Do=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 086/225] phy: ti: Add missing pm_runtime_disable() in serdes_am654_probe
-Date:   Wed,  4 May 2022 18:45:24 +0200
-Message-Id: <20220504153118.675713475@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.17 043/225] bus: mhi: host: pci_generic: Flush recovery worker during freeze
+Date:   Wed,  4 May 2022 18:44:41 +0200
+Message-Id: <20220504153113.980245250@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,39 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit ce88613e5bd579478653a028291098143f2a5bdf ]
+commit c38f83bae4037023827c85e045841d0421f85034 upstream.
 
-The pm_runtime_enable() will increase power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for serdes_am654_probe().
+It is possible that the recovery work might be running while the freeze
+gets executed (during hibernation etc.,). Currently, we don't powerdown
+the stack if it is not up but if the recovery work completes after freeze,
+then the device will be up afterwards. This will not be a sane situation.
 
-Fixes: 71e2f5c5c224 ("phy: ti: Add a new SERDES driver for TI's AM654x SoC")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220301025853.1911-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So let's flush the recovery worker before trying to powerdown the device.
+
+Cc: stable@vger.kernel.org
+Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
+Reported-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
+Reviewed-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
+Link: https://lore.kernel.org/r/20220408150039.17297-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/phy/ti/phy-am654-serdes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bus/mhi/pci_generic.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/ti/phy-am654-serdes.c b/drivers/phy/ti/phy-am654-serdes.c
-index c1211c4f863c..0be727bb9f79 100644
---- a/drivers/phy/ti/phy-am654-serdes.c
-+++ b/drivers/phy/ti/phy-am654-serdes.c
-@@ -838,7 +838,7 @@ static int serdes_am654_probe(struct platform_device *pdev)
- 
- clk_err:
- 	of_clk_del_provider(node);
--
-+	pm_runtime_disable(dev);
- 	return ret;
- }
- 
--- 
-2.35.1
-
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -1060,6 +1060,7 @@ static int __maybe_unused mhi_pci_freeze
+ 	 * the intermediate restore kernel reinitializes MHI device with new
+ 	 * context.
+ 	 */
++	flush_work(&mhi_pdev->recovery_work);
+ 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
+ 		mhi_power_down(mhi_cntrl, true);
+ 		mhi_unprepare_after_power_down(mhi_cntrl);
 
 
