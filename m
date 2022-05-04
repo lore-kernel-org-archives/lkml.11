@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C46C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354241AbiEDQ4u (ORCPT
+        id S1354287AbiEDQ46 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
+        Wed, 4 May 2022 12:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354403AbiEDQyU (ORCPT
+        with ESMTP id S1354408AbiEDQyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:54:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EB949245;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2BE4924B;
         Wed,  4 May 2022 09:49:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFCAEB827A7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F26F7B827A9;
         Wed,  4 May 2022 16:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91BCAC385A4;
-        Wed,  4 May 2022 16:49:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A41C385B1;
+        Wed,  4 May 2022 16:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682965;
-        bh=L3zXSQls9XfXWHq71OpLpjNBiieiInCvz1Bm0B5p6gE=;
+        s=korg; t=1651682966;
+        bh=5E/l/N1Kx3Pl2s6qM0ow1LbGNNft0GWY5gRu3tHdUaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iRAkeOwWiXzws7yMRLVwOM/qNMNqMwmPv02P5VmhinC+lEyqUJNWXrXWcrd/j+5yI
-         nR8GRUfKrVvDEeNUNnjl7s3rFUQIo4NE58URJ6vJ7N/+bJeXUFba/uA+1feONFBiTf
-         6nCRfR4L2p25P0CDhYxh0ETutSZCXs0d6v79MFk8=
+        b=SPiu3FmNXxR/z0S5IhKKp833lK+Lq0iABlpm3VXYr+r2edM15bKEuCDDFeqw9e2VV
+         lL6DO4QEcqRL1Vmv5UdDcyQ+EiTLyfHuzNcMecXkrMoEv0vlNLAxIG5Zw/CX3RrsSz
+         3dXslraPZr2/TxW2P92wZV5hHrk9nOA7338nLwTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Doug Porter <dsp@fb.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
         Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 67/84] tcp: fix F-RTO may not work correctly when receiving DSACK
-Date:   Wed,  4 May 2022 18:44:48 +0200
-Message-Id: <20220504152932.653057672@linuxfoundation.org>
+Subject: [PATCH 5.4 58/84] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
+Date:   Wed,  4 May 2022 18:44:39 +0200
+Message-Id: <20220504152931.892966382@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -52,86 +53,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pengcheng Yang <yangpc@wangsu.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit d9157f6806d1499e173770df1f1b234763de5c79 ]
+[ Upstream commit 4bfe744ff1644fbc0a991a2677dc874475dd6776 ]
 
-Currently DSACK is regarded as a dupack, which may cause
-F-RTO to incorrectly enter "loss was real" when receiving
-DSACK.
+I had this bug sitting for too long in my pile, it is time to fix it.
 
-Packetdrill to demonstrate:
+Thanks to Doug Porter for reminding me of it!
 
-// Enable F-RTO and TLP
-    0 `sysctl -q net.ipv4.tcp_frto=2`
-    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
-    0 `sysctl -q net.ipv4.tcp_congestion_control=cubic`
+We had various attempts in the past, including commit
+0cbe6a8f089e ("tcp: remove SOCK_QUEUE_SHRUNK"),
+but the issue is that TCP stack currently only generates
+EPOLLOUT from input path, when tp->snd_una has advanced
+and skb(s) cleaned from rtx queue.
 
-// Establish a connection
-   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
-   +0 bind(3, ..., ...) = 0
-   +0 listen(3, 1) = 0
+If a flow has a big RTT, and/or receives SACKs, it is possible
+that the notsent part (tp->write_seq - tp->snd_nxt) reaches 0
+and no more data can be sent until tp->snd_una finally advances.
 
-// RTT 10ms, RTO 210ms
-  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
-   +0 > S. 0:0(0) ack 1 <...>
- +.01 < . 1:1(0) ack 1 win 257
-   +0 accept(3, ..., ...) = 4
+What is needed is to also check if POLLOUT needs to be generated
+whenever tp->snd_nxt is advanced, from output path.
 
-// Send 2 data segments
-   +0 write(4, ..., 2000) = 2000
-   +0 > P. 1:2001(2000) ack 1
+This bug triggers more often after an idle period, as
+we do not receive ACK for at least one RTT. tcp_notsent_lowat
+could be a fraction of what CWND and pacing rate would allow to
+send during this RTT.
 
-// TLP
-+.022 > P. 1001:2001(1000) ack 1
+In a followup patch, I will remove the bogus call
+to tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED)
+from tcp_check_space(). Fact that we have decided to generate
+an EPOLLOUT does not mean the application has immediately
+refilled the transmit queue. This optimistic call
+might have been the reason the bug seemed not too serious.
 
-// Continue to send 8 data segments
-   +0 write(4, ..., 10000) = 10000
-   +0 > P. 2001:10001(8000) ack 1
+Tested:
 
-// RTO
-+.188 > . 1:1001(1000) ack 1
+200 ms rtt, 1% packet loss, 32 MB tcp_rmem[2] and tcp_wmem[2]
 
-// The original data is acked and new data is sent(F-RTO step 2.b)
-   +0 < . 1:1(0) ack 2001 win 257
-   +0 > P. 10001:12001(2000) ack 1
+$ echo 500000 >/proc/sys/net/ipv4/tcp_notsent_lowat
+$ cat bench_rr.sh
+SUM=0
+for i in {1..10}
+do
+ V=`netperf -H remote_host -l30 -t TCP_RR -- -r 10000000,10000 -o LOCAL_BYTES_SENT | egrep -v "MIGRATED|Bytes"`
+ echo $V
+ SUM=$(($SUM + $V))
+done
+echo SUM=$SUM
 
-// D-SACK caused by TLP is regarded as a dupack, this results in
-// the incorrect judgment of "loss was real"(F-RTO step 3.a)
-+.022 < . 1:1(0) ack 2001 win 257 <sack 1001:2001,nop,nop>
+Before patch:
+$ bench_rr.sh
+130000000
+80000000
+140000000
+140000000
+140000000
+140000000
+130000000
+40000000
+90000000
+110000000
+SUM=1140000000
 
-// Never-retransmitted data(3001:4001) are acked and
-// expect to switch to open state(F-RTO step 3.b)
-   +0 < . 1:1(0) ack 4001 win 257
-+0 %{ assert tcpi_ca_state == 0, tcpi_ca_state }%
+After patch:
+$ bench_rr.sh
+430000000
+590000000
+530000000
+450000000
+450000000
+350000000
+450000000
+490000000
+480000000
+460000000
+SUM=4680000000  # This is 410 % of the value before patch.
 
-Fixes: e33099f96d99 ("tcp: implement RFC5682 F-RTO")
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Tested-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/1650967419-2150-1-git-send-email-yangpc@wangsu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Doug Porter <dsp@fb.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/net/tcp.h     |  1 +
+ net/ipv4/tcp_input.c  | 12 +++++++++++-
+ net/ipv4/tcp_output.c |  1 +
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index b686a21a8593..9237362e5606 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -603,6 +603,7 @@ void tcp_synack_rtt_meas(struct sock *sk, struct request_sock *req);
+ void tcp_reset(struct sock *sk);
+ void tcp_skb_mark_lost_uncond_verify(struct tcp_sock *tp, struct sk_buff *skb);
+ void tcp_fin(struct sock *sk);
++void tcp_check_space(struct sock *sk);
+ 
+ /* tcp_timer.c */
+ void tcp_init_xmit_timers(struct sock *);
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index f84047aec63c..b0e6fc2c5e10 100644
+index c0fcfa296468..f84047aec63c 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -3717,7 +3717,8 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
- 		tcp_process_tlp_ack(sk, ack, flag);
+@@ -5230,7 +5230,17 @@ static void tcp_new_space(struct sock *sk)
+ 	sk->sk_write_space(sk);
+ }
  
- 	if (tcp_ack_is_dubious(sk, flag)) {
--		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
-+		if (!(flag & (FLAG_SND_UNA_ADVANCED |
-+			      FLAG_NOT_DUP | FLAG_DSACKING_ACK))) {
- 			num_dupack = 1;
- 			/* Consider if pure acks were aggregated in tcp_add_backlog() */
- 			if (!(flag & FLAG_DATA))
+-static void tcp_check_space(struct sock *sk)
++/* Caller made space either from:
++ * 1) Freeing skbs in rtx queues (after tp->snd_una has advanced)
++ * 2) Sent skbs from output queue (and thus advancing tp->snd_nxt)
++ *
++ * We might be able to generate EPOLLOUT to the application if:
++ * 1) Space consumed in output/rtx queues is below sk->sk_sndbuf/2
++ * 2) notsent amount (tp->write_seq - tp->snd_nxt) became
++ *    small enough that tcp_stream_memory_free() decides it
++ *    is time to generate EPOLLOUT.
++ */
++void tcp_check_space(struct sock *sk)
+ {
+ 	if (sock_flag(sk, SOCK_QUEUE_SHRUNK)) {
+ 		sock_reset_flag(sk, SOCK_QUEUE_SHRUNK);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 139e962d1aef..67493ec6318a 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -81,6 +81,7 @@ static void tcp_event_new_data_sent(struct sock *sk, struct sk_buff *skb)
+ 
+ 	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPORIGDATASENT,
+ 		      tcp_skb_pcount(skb));
++	tcp_check_space(sk);
+ }
+ 
+ /* SND.NXT, if window was not shrunk or the amount of shrunk was less than one
 -- 
 2.35.1
 
