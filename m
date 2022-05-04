@@ -2,170 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8130C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351219AbiEDOUI (ORCPT
+        id S1351233AbiEDOUp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
+        Wed, 4 May 2022 10:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351229AbiEDOUB (ORCPT
+        with ESMTP id S1351159AbiEDOUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:20:01 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E79641326;
-        Wed,  4 May 2022 07:16:24 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 04852320094C;
-        Wed,  4 May 2022 10:16:22 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 04 May 2022 10:16:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1651673782; x=1651760182; bh=uDeyjHOeVy
-        bzoqxHeyGOefDTj5BN9Fw/C/Zp18dpHTY=; b=eITRaxdgUzEU4eG/uT/+xFX6v/
-        71nlFzGZ98zm0VDsv9wEpw8zzWmpQNjySjCcQCw5iOQ5fAyb6X/4Q878XhjXtCFe
-        3XsBeDadmJJk/HFkpL11m/3gt8i7Yd/KjWZ447solliQpE4Se3ADe3FaQlPhbN7+
-        EcgN1l3Alq+v36NETASIpfZSejdi+sIOgdZFYfqGwiQhIJNbrZOmHFqOP9NLwNx/
-        uzxDRUbRtnjT5tUFHJryB0U2l+IQAcHL+WupRaj450DC5jNfURLez1cd73SpH5MN
-        UjJPj3+uWrskPtHsw4UPsmiWoXsu46KV2cG069vx9AdhdllktT5a/9iuUbdw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651673782; x=
-        1651760182; bh=uDeyjHOeVybzoqxHeyGOefDTj5BN9Fw/C/Zp18dpHTY=; b=o
-        3Z75IzsxWfdqO6p/Y3Aa7WOi1lkZnPE26Mkm3Wm4WLdAeZmZMSCNt+D3j8HnSlXz
-        wetMnY10wfqtbWjxFxbTg/rEpeeLjBd77UHFrMjIjxSWnACsl1g3HkI7N7NJMpU7
-        i2Sso/rAh0y348CdTRma64p4/S5r9P4vzqo27dK0G3J216klRtPyLBpMlYI2eUui
-        GwBBwONIZM6m2voQVrTbG9zKFQ+ELrKDt946yintezAAZekJ37gMlWiLWaj90a7C
-        6IVIBoSHIYa6e+dsQ1U769/gms4facO9Ua5txS6mer2s8OWZRspt4fVgt496wy/Y
-        +tdQ8/63sYbwKSSRyc0ow==
-X-ME-Sender: <xms:topyYs_b5TxUKslFiOaorGFOCnH6VIikrcdtNrGadw8RWBhu7fyXCg>
-    <xme:topyYkutJN6jw4gv8MQHSKdQnYJ82QIyhhCjsMsINhlNSj8JjzV6eyhJnXbCItkap
-    S54Y_dtH0r0Bm3Vhe4>
-X-ME-Received: <xmr:topyYiCD00uUbzR3S8FmJFhyhiQQ6Od8q9tQcLIL1NQcKRXEEUHdWUlW5tw-xMHmEadacEzI_TRJRuZ3ZSZZ6SI4MSGUZwb6BZVPEeA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdelgdejfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnheptdelkeejiedufedvhfeiffetlefhiedvleeigfeiuefghfdvleeiffejieeg
-    teejnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:topyYscAQTesXKr79bwX9q0CZEUVRt-eptlvYEMKtGhX5u41-FfoLw>
-    <xmx:topyYhPjF3NLb4gnO-V0-oXGWYFhncUa-qvvrCtKRetmNaffVOLfYw>
-    <xmx:topyYmldmceDn57NqovWEYpBPd2Q3MXL_crPpYFw4sda2bZ9mdMPbQ>
-    <xmx:topyYk1HMhGTgbw-J5V-JUNdDdpjBHZ7Hky046nx_vie5_SF_AU-cg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 4 May 2022 10:16:21 -0400 (EDT)
-Date:   Wed, 4 May 2022 16:16:19 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Airlie <airlied@linux.ie>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH] drm/todo: Add entry for using kunit in the subsystem
-Message-ID: <20220504141619.pib3xwsqyqysto2h@houat>
-References: <20220504080212.713275-1-javierm@redhat.com>
- <20220504081030.ky57nenipnif5r2e@houat>
- <b9aebad9-30df-2906-d935-0483a5429a1a@redhat.com>
+        Wed, 4 May 2022 10:20:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938D919281
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:17:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FFDEB825A4
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:17:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5928DC385A5;
+        Wed,  4 May 2022 14:17:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651673825;
+        bh=bILCd1sxeIvbA+5tD85VdyDhv+PjR1QceeyC4i77F7s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PLaT0ROECinBJfleAOFsjO8U4x0scBFNpxF4+15z0Su2w/B7oQ2INoyEjMXkuYAx3
+         T6aZVqJIMp3545+ISNDEKzwef3R0jQu2UIQ+SFoR2onOzlfgD+XwyuFB+mq5lnX1Zd
+         QCnAuTM3BrtCryngmeJs8xrx8xnq+2qre5Ng9L8uFNExQKjA+VYesn4luSRw6BBOE/
+         dJCm9vXCVDiFq4yxNIhYWsot7K+7+/3ZqfZSlW66Gu8GfLrH5F/CTf9d50xAfc5N4h
+         ISyZ5JMtDV2R7x1gI2gs5eNItXAGhDGGNkvxXRu9NZfFwWA39X+eNQarV01lyJKmR5
+         VBoZ6TItaJNTw==
+Date:   Wed, 4 May 2022 15:16:56 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     mark.rutland@arm.com, will@kernel.org, maz@kernel.org,
+        qperret@google.com, tabba@google.com, surenb@google.com,
+        kernel-team@android.com, James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marco Elver <elver@google.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Keir Fraser <keirf@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] KVM: arm64: Compile stacktrace.nvhe.o
+Message-ID: <YnKK2IxdbVvcsOC2@sirena.org.uk>
+References: <20220502191222.4192768-1-kaleshsingh@google.com>
+ <20220502191222.4192768-3-kaleshsingh@google.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rn4hj2f24joedluv"
+        protocol="application/pgp-signature"; boundary="/Hx6xiGRCvg0C4uF"
 Content-Disposition: inline
-In-Reply-To: <b9aebad9-30df-2906-d935-0483a5429a1a@redhat.com>
+In-Reply-To: <20220502191222.4192768-3-kaleshsingh@google.com>
+X-Cookie: Mother is the invention of necessity.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---rn4hj2f24joedluv
+--/Hx6xiGRCvg0C4uF
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 04, 2022 at 10:34:39AM +0200, Javier Martinez Canillas wrote:
-> Hello Maxime,
->=20
-> Thanks for your feedback.
->=20
-> On 5/4/22 10:10, Maxime Ripard wrote:
-> > Hi,
-> >=20
-> > On Wed, May 04, 2022 at 10:02:12AM +0200, Javier Martinez Canillas wrot=
-e:
-> >> The Kernel Unit Testing (KUnit) framework provides a common framework =
-for
-> >> unit tests within the Linux kernel. Having a test suite would allow to
-> >> identify regressions earlier.
-> >>
-> >> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> >> ---
-> >>
-> >>  Documentation/gpu/todo.rst | 14 ++++++++++++++
-> >>  1 file changed, 14 insertions(+)
-> >>
-> >> diff --git a/Documentation/gpu/todo.rst b/Documentation/gpu/todo.rst
-> >> index 127e76ee0b2d..10bfb50908d1 100644
-> >> --- a/Documentation/gpu/todo.rst
-> >> +++ b/Documentation/gpu/todo.rst
-> >> @@ -603,6 +603,20 @@ Level: Advanced
-> >>  Better Testing
-> >>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >> =20
-> >> +Add unit tests using the Kernel Unit Testing (KUnit) framework
-> >> +--------------------------------------------------------------
-> >> +
-> >> +The `KUnit <https://www.kernel.org/doc/html/latest/dev-tools/kunit/in=
-dex.html>`_
-> >> +provides a common framework for unit tests within the Linux kernel. H=
-aving a
-> >> +test suite would allow to identify regressions earlier.
-> >> +
-> >> +A good candidate for the first unit tests are the format-conversion h=
-elpers in
-> >> +``drm_format_helper.c``.
-> >> +
-> >> +Contact: Javier Martinez Canillas <javierm@redhat.com>
-> >> +
-> >> +Level: Intermediate
-> >=20
-> > Kunit is fairly easy to grasp if you have some knowledge of other unit
-> > testing frameworks already (pytest, cmocka, etc.)
-> >
->=20
-> Yes, I didn't set to intermediate due kunit but rather due the format
-> conversions, since the functions are not easy to read and understand.
->=20
-> And the person writing the unit tests will have to get familiar with
-> the different formats to verify that conversions are done correctly.
-> =20
-> > Another good candidate would be to convert (some ?) selftests to kunit.
-> > I'm not sure the others, but at least test-drm_cmdline_parser should be
-> > fairly easy to convert.
-> >
->=20
-> Indeed. Maybe I would add it as a separate entr though, as a follow-up.
+On Mon, May 02, 2022 at 12:12:02PM -0700, Kalesh Singh wrote:
 
-Yeah, that works for me
+> Recompile stack unwinding code for use with the nVHE hypervisor. This is
+> a preparatory patch that will allow reusing most of the kernel unwinding
+> logic in the nVHE hypervisor.
 
-Acked-by: Maxime Ripard <maxime@cerno.tech>
+>  enum stack_type {
+> -	STACK_TYPE_UNKNOWN,
+> +#ifndef __KVM_NVHE_HYPERVISOR__
+>  	STACK_TYPE_TASK,
+>  	STACK_TYPE_IRQ,
+>  	STACK_TYPE_OVERFLOW,
+>  	STACK_TYPE_SDEI_NORMAL,
+>  	STACK_TYPE_SDEI_CRITICAL,
+> +#endif /* !__KVM_NVHE_HYPERVISOR__ */
+> +	STACK_TYPE_UNKNOWN,
+>  	__NR_STACK_TYPES
+>  };
 
-Maxime
+I don't immediately see a problem with it but I'm curious as to why
+STACK_TYPE_UNKNOWN got moved to the end of the list here?  It does mean
+that zeroed memory will default to STACK_TYPE_TASK but we're not
+actually relying on that.  Otherwise
 
---rn4hj2f24joedluv
+Reviwed-by: Mark Brown <broonie@kernel.org>
+
+--/Hx6xiGRCvg0C4uF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYnKKswAKCRDj7w1vZxhR
-xZv1AQC/VDLymlERMy8+BiF13eIs4P30bQ2sgrNAlmrRBlV8rwD9GRGCMnCwtRZ2
-ujcfJDOn8eY3BklODEByBqe57Ij7JwI=
-=6IU7
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJyitgACgkQJNaLcl1U
+h9B05gf9He8i0lJSgnAoCwOnWz42y8l46CHTUSZJK53nFwnevW7nvl0Xdf1Rajhv
+b1dBcynlwm2uAAHoeGen9HfX4sL0uj5e+mrg9IzoKq6GbqZfv9J2LNrCnI479gAU
+GURaSasiSq3bEyxogf1eMsH2G4Kkams6LtgdSI7fr/P1JHIU+KItROmRh2zNC2jS
+obAW/wC6HUJfsz1moQrO9/W1VLT8DeqBuYmTOIDZsiyJ3IKQhkZeQb2ztDU/TWeO
+AUvI14Z1BWGgEisgaJx06/Y9x6nlayfkC1kEc2kMcOVPjWqqAoeHEWsL1ZmfLs9U
+wlE20k5QYG+a2rgiqCSjVBtRSExj6Q==
+=JjBs
 -----END PGP SIGNATURE-----
 
---rn4hj2f24joedluv--
+--/Hx6xiGRCvg0C4uF--
