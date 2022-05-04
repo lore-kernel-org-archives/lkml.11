@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE85CC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E752FC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355395AbiEDRpy (ORCPT
+        id S1359428AbiEDRoU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
+        Wed, 4 May 2022 13:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356256AbiEDRNk (ORCPT
+        with ESMTP id S1355953AbiEDRI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:13:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72804B848;
-        Wed,  4 May 2022 09:57:54 -0700 (PDT)
+        Wed, 4 May 2022 13:08:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5898E49F97;
+        Wed,  4 May 2022 09:54:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 761F4616AC;
-        Wed,  4 May 2022 16:57:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFF36C385AF;
-        Wed,  4 May 2022 16:57:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD9BCB82792;
+        Wed,  4 May 2022 16:54:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9151DC385A5;
+        Wed,  4 May 2022 16:54:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683461;
-        bh=twrLPXQvI09GptGJkdEq4Vl9zrLT/UgjaNtt1MPj0/g=;
+        s=korg; t=1651683282;
+        bh=Gzzt0waAa8K+0dMB3qQiJ0MfV9GnsZLefeXzHn4bzdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ogn8O/bBO4SJxyfceGlXVw0lYRsiahe+Y5wRHeIqZgLWZa/pIxIDQB9DFxUu9jBMI
-         IViDpi4nCUlLkcmGKMtkX9Geb6gqRFNFQyroZKeo9i8I0xnzril/F76tnOapvyTPLU
-         sOVXaQjnBQXxL0NcBUXB/ziDVyhFxRRGszFQ2yNw=
+        b=TNVAOVbbIfHFdXpklG10n0aJObAaGZehHqDQP+3rTVeZBd1aebXhOFC1JtimsDitQ
+         kul06CfHTPoacbiDlQydvAxAzustIO17ItYnixtTnJX0UG+IWY+5Q7Mv3d0H8Ufwef
+         tZCL59mwNkiVZI7P3qiz7Hk3doZuF1w/om/B5T68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 123/225] ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
-Date:   Wed,  4 May 2022 18:46:01 +0200
-Message-Id: <20220504153121.418030414@linuxfoundation.org>
+Subject: [PATCH 5.15 135/177] cifs: destage any unwritten data to the server before calling copychunk_write
+Date:   Wed,  4 May 2022 18:45:28 +0200
+Message-Id: <20220504153105.277538828@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,150 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-[ Upstream commit 31c417c948d7f6909cb63f0ac3298f3c38f8ce20 ]
+[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
 
-As pointed out by Jakub Kicinski, currently using TUNNEL_SEQ in
-collect_md mode is racy for [IP6]GRE[TAP] devices.  Consider the
-following sequence of events:
+because the copychunk_write might cover a region of the file that has not yet
+been sent to the server and thus fail.
 
-1. An [IP6]GRE[TAP] device is created in collect_md mode using "ip link
-   add ... external".  "ip" ignores "[o]seq" if "external" is specified,
-   so TUNNEL_SEQ is off, and the device is marked as NETIF_F_LLTX (i.e.
-   it uses lockless TX);
-2. Someone sets TUNNEL_SEQ on outgoing skb's, using e.g.
-   bpf_skb_set_tunnel_key() in an eBPF program attached to this device;
-3. gre_fb_xmit() or __gre6_xmit() processes these skb's:
+A simple way to reproduce this is:
+truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
 
-	gre_build_header(skb, tun_hlen,
-			 flags, protocol,
-			 tunnel_id_to_key32(tun_info->key.tun_id),
-			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
-					      : 0);   ^^^^^^^^^^^^^^^^^
+the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
+the 'fcollapse 16k 24k' due to write-back caching.
 
-Since we are not using the TX lock (&txq->_xmit_lock), multiple CPUs may
-try to do this tunnel->o_seqno++ in parallel, which is racy.  Fix it by
-making o_seqno atomic_t.
+fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
+and it will fail serverside since the file is still 0b in size serverside
+until the writes have been destaged.
+To avoid this we must ensure that we destage any unwritten data to the
+server before calling COPYCHUNK_WRITE.
 
-As mentioned by Eric Dumazet in commit b790e01aee74 ("ip_gre: lockless
-xmit"), making o_seqno atomic_t increases "chance for packets being out
-of order at receiver" when NETIF_F_LLTX is on.
-
-Maybe a better fix would be:
-
-1. Do not ignore "oseq" in external mode.  Users MUST specify "oseq" if
-   they want the kernel to allow sequencing of outgoing packets;
-2. Reject all outgoing TUNNEL_SEQ packets if the device was not created
-   with "oseq".
-
-Unfortunately, that would break userspace.
-
-We could now make [IP6]GRE[TAP] devices always NETIF_F_LLTX, but let us
-do it in separate patches to keep this fix minimal.
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Fixes: 77a5196a804e ("gre: add sequence number for collect md mode.")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
+Reported-by: Xiaoli Feng <xifeng@redhat.com>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip6_tunnel.h | 2 +-
- include/net/ip_tunnels.h | 2 +-
- net/ipv4/ip_gre.c        | 6 +++---
- net/ipv6/ip6_gre.c       | 7 ++++---
- 4 files changed, 9 insertions(+), 8 deletions(-)
+ fs/cifs/smb2ops.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
-index a38c4f1e4e5c..74b369bddf49 100644
---- a/include/net/ip6_tunnel.h
-+++ b/include/net/ip6_tunnel.h
-@@ -58,7 +58,7 @@ struct ip6_tnl {
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index db3ead52ec7c..0c1af2dd9069 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -1849,9 +1849,17 @@ smb2_copychunk_range(const unsigned int xid,
+ 	int chunks_copied = 0;
+ 	bool chunk_sizes_updated = false;
+ 	ssize_t bytes_written, total_bytes_written = 0;
++	struct inode *inode;
  
- 	/* These fields used only by GRE */
- 	__u32 i_seqno;	/* The last seen seqno	*/
--	__u32 o_seqno;	/* The last output seqno */
-+	atomic_t o_seqno;	/* The last output seqno */
- 	int hlen;       /* tun_hlen + encap_hlen */
- 	int tun_hlen;	/* Precalculated header length */
- 	int encap_hlen; /* Encap header length (FOU,GUE) */
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 0219fe907b26..3ec6146f8734 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -116,7 +116,7 @@ struct ip_tunnel {
+ 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
  
- 	/* These four fields used only by GRE */
- 	u32		i_seqno;	/* The last seen seqno	*/
--	u32		o_seqno;	/* The last output seqno */
-+	atomic_t	o_seqno;	/* The last output seqno */
- 	int		tun_hlen;	/* Precalculated header length */
++	/*
++	 * We need to flush all unwritten data before we can send the
++	 * copychunk ioctl to the server.
++	 */
++	inode = d_inode(trgtfile->dentry);
++	filemap_write_and_wait(inode->i_mapping);
++
+ 	if (pcchunk == NULL)
+ 		return -ENOMEM;
  
- 	/* These four fields used only by ERSPAN */
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index ca70b92e80d9..8cf86e42c1d1 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -464,7 +464,7 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
- 	/* Push GRE header. */
- 	gre_build_header(skb, tunnel->tun_hlen,
- 			 flags, proto, tunnel->parms.o_key,
--			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
-+			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
- 
- 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
- }
-@@ -502,7 +502,7 @@ static void gre_fb_xmit(struct sk_buff *skb, struct net_device *dev,
- 		(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
- 	gre_build_header(skb, tunnel_hlen, flags, proto,
- 			 tunnel_id_to_key32(tun_info->key.tun_id),
--			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
-+			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
- 
- 	ip_md_tunnel_xmit(skb, dev, IPPROTO_GRE, tunnel_hlen);
- 
-@@ -579,7 +579,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	gre_build_header(skb, 8, TUNNEL_SEQ,
--			 proto, 0, htonl(tunnel->o_seqno++));
-+			 proto, 0, htonl(atomic_fetch_inc(&tunnel->o_seqno)));
- 
- 	ip_md_tunnel_xmit(skb, dev, IPPROTO_GRE, tunnel_hlen);
- 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index d9e4ac94eab4..5136959b3dc5 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -766,7 +766,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
--				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
-+				 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno))
- 						      : 0);
- 
- 	} else {
-@@ -777,7 +777,8 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 
- 		gre_build_header(skb, tunnel->tun_hlen, flags,
- 				 protocol, tunnel->parms.o_key,
--				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
-+				 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno))
-+						      : 0);
- 	}
- 
- 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
-@@ -1055,7 +1056,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 	/* Push GRE header. */
- 	proto = (t->parms.erspan_ver == 1) ? htons(ETH_P_ERSPAN)
- 					   : htons(ETH_P_ERSPAN2);
--	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(t->o_seqno++));
-+	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(atomic_fetch_inc(&t->o_seqno)));
- 
- 	/* TooBig packet may have updated dst->dev's mtu */
- 	if (!t->parms.collect_md && dst && dst_mtu(dst) > dst->dev->mtu)
 -- 
 2.35.1
 
