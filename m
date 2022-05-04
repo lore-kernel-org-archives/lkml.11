@@ -2,220 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F55C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C229FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378288AbiEDUjo (ORCPT
+        id S1345368AbiEDUjv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:39:44 -0400
+        Wed, 4 May 2022 16:39:51 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378159AbiEDUjC (ORCPT
+        with ESMTP id S1378158AbiEDUjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:39:02 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AAEB7F0
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:35:23 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so3929108wmj.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:35:23 -0700 (PDT)
+        Wed, 4 May 2022 16:39:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F401276B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:35:28 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id kq17so5087421ejb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fsh4pbs3Reo8M+2WhELoDR9Jgw5waXtKp+zOH5sp9UY=;
-        b=BVwVA9Mihadsw+0aZxp3gkgbyCJ+Dg52FAHNdNppEqfjL91z9zMOjvJwUsz7TtzE9o
-         bLajepeEas5+xQlj67PBRX07sXnY5tkzCXadRDHg+LO7lXwkI3kSJt1qTUfbKNZx9ZqD
-         EjDUg3YXP3yq5wG/qpj4wrbVtoeF/0P/PLIlq3t1kEuEgwYglnpwSKgKeUYxgPOaHKMy
-         wVzLEHX3D7ADUTMrsXbrhFdz1MvvG03zKypEg4SEq5b+2MJNwmOCQuOG8PT53ykhjSTt
-         PzC74e7eqwqrWqNJEAofERfKaHOU5YhAco7aY9P5j7G64a6sDZXZxE5j+3K/DE7rbLsQ
-         dz3A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2XKUIdD/PrZvfksE0kLToWrHRPo+LseLcYPHpvJMGDU=;
+        b=slwAkji8j9h7PjWtZYlQU8MuOh/j0Z5+3iPfRDHmVxxtCL4mwvPWZJFxvI4QkZP9Jb
+         SrYFbrrASdQ92/tvFom0q3IAVkJ2RE8beMDsIcjJb3Y9i9jRTZGhcTgU8vLNGpUSAq1n
+         FmbUU796iBBgwJ1injR5ERnZYz8lhZOIeTn+KD+9P48ef+ygpXQfNQlaFiUiS7hvo/ne
+         hR7ocCmtcFoQCVArHqGUEB1uHl2dil2DI5fE1YpX3c3vX3yI/8fL0o5uOxDnJXco+inB
+         +x5HibEMFAh3MK5vSyOj10QQjNkqI4BacrSa0nGp2SF/X/El5CpQAK3o6PlVwAUcs1tF
+         LA0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fsh4pbs3Reo8M+2WhELoDR9Jgw5waXtKp+zOH5sp9UY=;
-        b=74Qt4oK64tmHpB9qI5fyJQtN/4m9xurTRTBit2MaLImo764hR4WX0zBOdvqUMGLyQ0
-         1UY1pn6ao3kLWSiNdNIFNdwXZ0E+nReCyN0FDl9LcAjXu8z6HFewJ7KGcXNuOHb22s10
-         YlE3r+q9TYMx0p8jgaFoxbDkyGGGbjN7sUzRodjaH5bCNr3Es/08exfIC9TTStX480+T
-         q1aO+JhF56qEIK7w+cC48ervUbL026nL1ECbXZeAPqRValApwxDtrf2Cz577AvDwNfv2
-         /l1uwlgvnxuDFJGfQtk5xq9jWKOZ185efGzwkI18AukuGW9/AND7cG+WsjPSOcFm6Vb9
-         UApA==
-X-Gm-Message-State: AOAM531bTwYIxoGGR285lx+UJ32POaiHWyUOv/pte/Cu/xuOMmEOCkwp
-        ELeHrdQxrAwN5O0SNinEv9RjiQ==
-X-Google-Smtp-Source: ABdhPJzBd2X1g1vv5U4f2un+q/En59yasOly1MTqtmipkBqEI+cZhShIPdGKAXebzJkRSYAqxPMV1g==
-X-Received: by 2002:a05:600c:9:b0:393:ea67:1c68 with SMTP id g9-20020a05600c000900b00393ea671c68mr1127451wmc.92.1651696522583;
-        Wed, 04 May 2022 13:35:22 -0700 (PDT)
-Received: from henark71.. ([109.77.36.132])
-        by smtp.gmail.com with ESMTPSA id l20-20020adfc794000000b0020c5253d8dfsm13330101wrg.43.2022.05.04.13.35.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 13:35:22 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     krzk+dt@kernel.org, palmer@dabbelt.com, robh+dt@kernel.org
-Cc:     conor.dooley@microchip.com, Cyril.Jean@microchip.com,
-        daire.mcnamara@microchip.com, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, palmer@rivosinc.com, arnd@arndb.de,
-        heiko@sntech.de, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: [PATCH v4 8/8] riscv: dts: microchip: add the sundance polarberry
-Date:   Wed,  4 May 2022 21:30:52 +0100
-Message-Id: <20220504203051.1210355-9-mail@conchuod.ie>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504203051.1210355-1-mail@conchuod.ie>
-References: <20220504203051.1210355-1-mail@conchuod.ie>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2XKUIdD/PrZvfksE0kLToWrHRPo+LseLcYPHpvJMGDU=;
+        b=Wr9FtzX7CU96JHDNFXkgBRICpUzMpWoUs4v108UntMN0+ewXwsRxhn1+gDbdGEMO4k
+         RpOt32Z/xyE/TV8zmuJWt96Wa+qO3biC6OgNXWE+O07wBo1wfqYJMokLZrhP09FWIsgV
+         lm96lprvS5hFGMy/ovMGeUF+BNrj54LMka2wT+csA/Q6ZpWL5+uJal2Jaudig4phwXgn
+         kABipkQ6Yh3XBDI/2Zh8Vj10k8WEspAMeEHOmNs+cAJLjVJabfw51BpO8t1G3T39jTSX
+         6F2pB7Fo9olHkw+fPtObLXUV+/I8g6Ym0B2c1zhg58pahLPARp836EP3D0Qc62YSF7BY
+         2N+w==
+X-Gm-Message-State: AOAM531BApA/FJ0f0LmlRwAJI7L93gyufDkqiU0CNDLaEj61b8nUOPSy
+        RZF5A6seu31Ax/sPuncD+SLFdALgZaTby6iihyA8pA==
+X-Google-Smtp-Source: ABdhPJw9BpH1ydpzXJmlHaninRm8OrrHuG8ab7adA9uQmXGiJeWu2t40/yap/knh9cXs0fUIbevOZGjy1ZkIK8/98uQ=
+X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id
+ nc6-20020a1709071c0600b006dfb257cbb3mr21550850ejc.631.1651696526639; Wed, 04
+ May 2022 13:35:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220318021314.3225240-1-davidgow@google.com> <20220318021314.3225240-2-davidgow@google.com>
+In-Reply-To: <20220318021314.3225240-2-davidgow@google.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 4 May 2022 15:35:15 -0500
+Message-ID: <CAGS_qxqm1ys1qUz__4uXWOgs=34M5MB3QMnhg40FHtRhatF3+g@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] kunit: Expose 'static stub' API to redirect functions
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Thu, Mar 17, 2022 at 9:13 PM David Gow <davidgow@google.com> wrote:
+> +#define kunit_activate_static_stub(test, real_fn_addr, replacement_addr)=
+ do {  \
+> +       typecheck(typeof(real_fn_addr), replacement_addr);               =
+       \
 
-Add a minimal device tree for the PolarFire SoC based Sundance
-PolarBerry.
+We can't call this macro in the same scope for functions w/ different
+signatures.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/boot/dts/microchip/Makefile        |  1 +
- .../dts/microchip/mpfs-polarberry-fabric.dtsi | 16 +++
- .../boot/dts/microchip/mpfs-polarberry.dts    | 97 +++++++++++++++++++
- 3 files changed, 114 insertions(+)
- create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
- create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
+E.g. if we add this func to the example test
+  static void other_func(void) {}
+then trying to call kunit_activate_static_stub() on it in the same
+test case, we get
 
-diff --git a/arch/riscv/boot/dts/microchip/Makefile b/arch/riscv/boot/dts/microchip/Makefile
-index af3a5059b350..39aae7b04f1c 100644
---- a/arch/riscv/boot/dts/microchip/Makefile
-+++ b/arch/riscv/boot/dts/microchip/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
- dtb-$(CONFIG_SOC_MICROCHIP_POLARFIRE) += mpfs-icicle-kit.dtb
-+dtb-$(CONFIG_SOC_MICROCHIP_POLARFIRE) += mpfs-polarberry.dtb
- obj-$(CONFIG_BUILTIN_DTB) += $(addsuffix .o, $(dtb-y))
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-new file mode 100644
-index 000000000000..49380c428ec9
---- /dev/null
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Copyright (c) 2020-2022 Microchip Technology Inc */
-+
-+/ {
-+	fabric_clk3: fabric-clk3 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <62500000>;
-+	};
-+
-+	fabric_clk1: fabric-clk1 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <125000000>;
-+	};
-+};
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-new file mode 100644
-index 000000000000..1cad5b0d42e1
---- /dev/null
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Copyright (c) 2020-2022 Microchip Technology Inc */
-+
-+/dts-v1/;
-+
-+#include "mpfs.dtsi"
-+#include "mpfs-polarberry-fabric.dtsi"
-+
-+/* Clock frequency (in Hz) of the rtcclk */
-+#define MTIMER_FREQ	1000000
-+
-+/ {
-+	model = "Sundance PolarBerry";
-+	compatible = "sundance,polarberry", "microchip,mpfs";
-+
-+	aliases {
-+		ethernet0 = &mac1;
-+		serial0 = &mmuart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	cpus {
-+		timebase-frequency = <MTIMER_FREQ>;
-+	};
-+
-+	ddrc_cache_lo: memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x0 0x80000000 0x0 0x2e000000>;
-+	};
-+
-+	ddrc_cache_hi: memory@1000000000 {
-+		device_type = "memory";
-+		reg = <0x10 0x00000000 0x0 0xC0000000>;
-+	};
-+};
-+
-+/*
-+ * phy0 is connected to mac0, but the port itself is on the (optional) carrier
-+ * board.
-+ */
-+&mac0 {
-+	status = "disabled";
-+	phy-mode = "sgmii";
-+	phy-handle = <&phy0>;
-+};
-+
-+&mac1 {
-+	status = "okay";
-+	phy-mode = "sgmii";
-+	phy-handle = <&phy1>;
-+	phy1: ethernet-phy@5 {
-+		reg = <5>;
-+		ti,fifo-depth = <0x01>;
-+	};
-+	phy0: ethernet-phy@4 {
-+		reg = <4>;
-+		ti,fifo-depth = <0x01>;
-+	};
-+};
-+
-+&mbox {
-+	status = "okay";
-+};
-+
-+&mmc {
-+	bus-width = <4>;
-+	disable-wp;
-+	cap-sd-highspeed;
-+	cap-mmc-highspeed;
-+	card-detect-delay = <200>;
-+	mmc-ddr-1_8v;
-+	mmc-hs200-1_8v;
-+	sd-uhs-sdr12;
-+	sd-uhs-sdr25;
-+	sd-uhs-sdr50;
-+	sd-uhs-sdr104;
-+	status = "okay";
-+};
-+
-+&mmuart0 {
-+	status = "okay";
-+};
-+
-+&refclk {
-+	clock-frequency = <125000000>;
-+};
-+
-+&rtc {
-+	status = "okay";
-+};
-+
-+&syscontroller {
-+	status = "okay";
-+};
--- 
-2.36.0
+./include/linux/typecheck.h:10:14: error: conflicting types for
+=E2=80=98__dummy=E2=80=99; have =E2=80=98void(void)=E2=80=99
+   10 | ({      type __dummy; \
+      |              ^~~~~~~
+./include/kunit/static_stub.h:99:9: note: in expansion of macro =E2=80=98ty=
+pecheck=E2=80=99
+   99 |         typecheck(typeof(real_fn_addr), replacement_addr);
+                 \
+      |         ^~~~~~~~~
+lib/kunit/example-test.c:64:9: note: in expansion of macro
+=E2=80=98kunit_activate_static_stub=E2=80=99
+   64 |         kunit_activate_static_stub(test, other_func, other_func);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+./include/linux/typecheck.h:10:14: note: previous declaration of
+=E2=80=98__dummy=E2=80=99 with type =E2=80=98int(int)=E2=80=99
+   10 | ({      type __dummy; \
+      |              ^~~~~~~
+./include/kunit/static_stub.h:99:9: note: in expansion of macro =E2=80=98ty=
+pecheck=E2=80=99
+   99 |         typecheck(typeof(real_fn_addr), replacement_addr);
+                 \
+      |         ^~~~~~~~~
+lib/kunit/example-test.c:62:9: note: in expansion of macro
+=E2=80=98kunit_activate_static_stub=E2=80=99
+   62 |         kunit_activate_static_stub(test, add_one, subtract_one);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Afaict, the problem is that GCC thinks we're declaring a *function*
+called __dummy, not a variable.
+So it bleeds across the scope boundary of do-while unlike normal variables.
+
+There's the typecheck_fn macro, but it doesn't work either.
