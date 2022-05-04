@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A089CC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8B1C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357441AbiEDRPC (ORCPT
+        id S1358793AbiEDRQO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
+        Wed, 4 May 2022 13:16:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355178AbiEDREL (ORCPT
+        with ESMTP id S1355782AbiEDREm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E5B4E3AC;
-        Wed,  4 May 2022 09:52:48 -0700 (PDT)
+        Wed, 4 May 2022 13:04:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EBC4990C;
+        Wed,  4 May 2022 09:53:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7F4DB827A1;
-        Wed,  4 May 2022 16:52:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D597C385A5;
-        Wed,  4 May 2022 16:52:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEACCB827AC;
+        Wed,  4 May 2022 16:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766EFC385A5;
+        Wed,  4 May 2022 16:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683165;
-        bh=HCoN8/Wq4Acpa5T6uG4M7Zn2PwaQBMq/3dfZoQIgsyM=;
+        s=korg; t=1651683201;
+        bh=kPLz94WvLTpi4nn5bI9RZUlYwgXMZk6o7VGKl86N18I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZhThXt4HFzDINnpYisv0qlfXPya09eCVa3Pdm/uWAQp9vLJe8LN9UiQncXH8LUIU4
-         /e0obuALBFDUjBt0LBAOMeHSdKeBPPr3M43PxOCIPwBT/1jTKCUDX2oivuQT29tBsm
-         AUNc5Cqy6oWqr4HG/XNhl+WzN17+ZTI9KDe6Phyc=
+        b=lE7Og0WfdLYCti3fBza8jqt5dmhRvPuG1sq8j0qKEQGFlCMj65UmGMJq8u6Lpsh2r
+         CH/mOmZ3FKz3PRCy2lGv0I2+1vWLHGOYBpix8rBpvlnnDvFNJ6kNvLr78SV9KkFeTj
+         B1X9Nvlu6uuUozSUnMSb2RbDcY7+wrC82oeqJTQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Tasos Sahanidis <tasos@tasossah.com>
-Subject: [PATCH 5.15 017/177] usb: core: Dont hold the device lock while sleeping in do_proc_control()
-Date:   Wed,  4 May 2022 18:43:30 +0200
-Message-Id: <20220504153054.941573165@linuxfoundation.org>
+        stable@vger.kernel.org, Ajay Kathat <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 066/177] ARM: dts: at91: fix pinctrl phandles
+Date:   Wed,  4 May 2022 18:44:19 +0200
+Message-Id: <20220504153058.970518474@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,76 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tasos Sahanidis <tasos@tasossah.com>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-commit 0543e4e8852ef5ff1809ae62f1ea963e2ab23b66 upstream.
+[ Upstream commit 0c640d9544d0109da3889d71ae77301e556db977 ]
 
-Since commit ae8709b296d8 ("USB: core: Make do_proc_control() and
-do_proc_bulk() killable") if a device has the USB_QUIRK_DELAY_CTRL_MSG
-quirk set, it will temporarily block all other URBs (e.g. interrupts)
-while sleeping due to a control.
+Commit bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all
+gpios") introduces pinctrl phandles for pins used by individual
+controllers to avoid failures due to commit 2ab73c6d8323 ("gpio:
+Support GPIO controllers without pin-ranges"). For SPI controllers
+available on SAMA5D4 and SAMA5D3 some of the pins are defined in
+SoC specific dtsi on behalf of pinctrl-0. Adding extra pinctrl phandles
+on board specific dts also on behalf of pinctrl-0 overwrite the pinctrl-0
+phandle specified in SoC specific dtsi. Thus add the board specific
+pinctrl to pinctrl-1.
 
-This results in noticeable delays when, for example, a userspace usbfs
-application is sending URB interrupts at a high rate to a keyboard and
-simultaneously updates the lock indicators using controls. Interrupts
-with direction set to IN are also affected by this, meaning that
-delivery of HID reports (containing scancodes) to the usbfs application
-is delayed as well.
-
-This patch fixes the regression by calling msleep() while the device
-mutex is unlocked, as was the case originally with usb_control_msg().
-
-Fixes: ae8709b296d8 ("USB: core: Make do_proc_control() and do_proc_bulk() killable")
-Cc: stable <stable@kernel.org>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
-Link: https://lore.kernel.org/r/3e299e2a-13b9-ddff-7fee-6845e868bc06@tasossah.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all gpios")
+Depends-on: 5c8b49852910 ("ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name")
+Reported-by: Ajay Kathat <ajay.kathat@microchip.com>
+Co-developed-by: Ajay Kathat <ajay.kathat@microchip.com>
+Signed-off-by: Ajay Kathat <ajay.kathat@microchip.com>
+Tested-by: Ajay Kathat <ajay.kathat@microchip.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220331141323.194355-2-claudiu.beznea@microchip.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/devio.c |   14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/at91-sama5d3_xplained.dts | 8 ++++----
+ arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/core/devio.c
-+++ b/drivers/usb/core/devio.c
-@@ -1197,12 +1197,16 @@ static int do_proc_control(struct usb_de
+diff --git a/arch/arm/boot/dts/at91-sama5d3_xplained.dts b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
+index d72c042f2850..a49c2966b41e 100644
+--- a/arch/arm/boot/dts/at91-sama5d3_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
+@@ -57,8 +57,8 @@ slot@0 {
+ 			};
  
- 		usb_unlock_device(dev);
- 		i = usbfs_start_wait_urb(urb, tmo, &actlen);
-+
-+		/* Linger a bit, prior to the next control message. */
-+		if (dev->quirks & USB_QUIRK_DELAY_CTRL_MSG)
-+			msleep(200);
- 		usb_lock_device(dev);
- 		snoop_urb(dev, NULL, pipe, actlen, i, COMPLETE, tbuf, actlen);
- 		if (!i && actlen) {
- 			if (copy_to_user(ctrl->data, tbuf, actlen)) {
- 				ret = -EFAULT;
--				goto recv_fault;
-+				goto done;
- 			}
- 		}
- 	} else {
-@@ -1219,6 +1223,10 @@ static int do_proc_control(struct usb_de
+ 			spi0: spi@f0004000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi0_cs>;
++				pinctrl-names = "default", "cs";
++				pinctrl-1 = <&pinctrl_spi0_cs>;
+ 				cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
+ 				status = "okay";
+ 			};
+@@ -171,8 +171,8 @@ slot@0 {
+ 			};
  
- 		usb_unlock_device(dev);
- 		i = usbfs_start_wait_urb(urb, tmo, &actlen);
-+
-+		/* Linger a bit, prior to the next control message. */
-+		if (dev->quirks & USB_QUIRK_DELAY_CTRL_MSG)
-+			msleep(200);
- 		usb_lock_device(dev);
- 		snoop_urb(dev, NULL, pipe, actlen, i, COMPLETE, NULL, 0);
- 	}
-@@ -1230,10 +1238,6 @@ static int do_proc_control(struct usb_de
- 	}
- 	ret = (i < 0 ? i : actlen);
+ 			spi1: spi@f8008000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi1_cs>;
++				pinctrl-names = "default", "cs";
++				pinctrl-1 = <&pinctrl_spi1_cs>;
+ 				cs-gpios = <&pioC 25 0>;
+ 				status = "okay";
+ 			};
+diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+index accb92cfac44..e519d2747936 100644
+--- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
+@@ -81,8 +81,8 @@ usart4: serial@fc010000 {
+ 			};
  
-- recv_fault:
--	/* Linger a bit, prior to the next control message. */
--	if (dev->quirks & USB_QUIRK_DELAY_CTRL_MSG)
--		msleep(200);
-  done:
- 	kfree(dr);
- 	usb_free_urb(urb);
+ 			spi1: spi@fc018000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_spi1_cs>;
++				pinctrl-names = "default", "cs";
++				pinctrl-1 = <&pinctrl_spi1_cs>;
+ 				cs-gpios = <&pioB 21 0>;
+ 				status = "okay";
+ 			};
+-- 
+2.35.1
+
 
 
