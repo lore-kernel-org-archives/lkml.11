@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7306DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A932C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353046AbiEDQxY (ORCPT
+        id S1353951AbiEDQxc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        Wed, 4 May 2022 12:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353735AbiEDQwL (ORCPT
+        with ESMTP id S1353731AbiEDQwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:52:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0795647068;
-        Wed,  4 May 2022 09:48:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D2647053;
+        Wed,  4 May 2022 09:48:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99AE961771;
-        Wed,  4 May 2022 16:48:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7BE1C385AA;
-        Wed,  4 May 2022 16:48:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C3A1B8279F;
+        Wed,  4 May 2022 16:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EB0C385BD;
+        Wed,  4 May 2022 16:48:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682911;
-        bh=9E39mHLbOPtkiWOEOKFy56IbZL3g5wvMyD0A5kF6R7k=;
+        s=korg; t=1651682908;
+        bh=yd24OcPBlVIUgxJ+YzdgSDislzfz6tX0jHWJ+szSPI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SfqJK91F/YwS7hhUynWLhE+qpQxFF1z5eg+MOIc72P/OJq02DBH9lWAhh1YmAG0fD
-         DfsXZTcs4t/iNlhcINYPlS8I3KnPN9SYA4Wq5nLRITXrR/rjmZk49n+v65Dw5ax59W
-         mcFLyBo3qgITZAonwW1a25IVygIBlPBT99Lr5vvg=
+        b=sXJt1j5kuQv5ALCD9/V8GFdWA17rWLN1zbH/0mlSMWwWSSmVSMz94YN3YFgIifquL
+         cl8kQvA+kJilK0ZUttR9660Crc3AP9sOJLxV696PTBlk2ir3ZdnMsTLLlUea0rzkz/
+         iHdlBnMmhYV3I01yiswY6z4J8OYPsfaHkosLxH8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH 5.4 17/84] usb: misc: fix improper handling of refcount in uss720_probe()
-Date:   Wed,  4 May 2022 18:43:58 +0200
-Message-Id: <20220504152929.009802977@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Wang Qing <wangqing@vivo.com>
+Subject: [PATCH 5.4 26/84] arch_topology: Do not set llc_sibling if llc_id is invalid
+Date:   Wed,  4 May 2022 18:44:07 +0200
+Message-Id: <20220504152929.640436437@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,52 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Wang Qing <wangqing@vivo.com>
 
-commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
+commit 1dc9f1a66e1718479e1c4f95514e1750602a3cb9 upstream.
 
-usb_put_dev shouldn't be called when uss720_probe succeeds because of
-priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
-before destroy_priv in uss720_disconnect because usb_put_dev is in
-destroy_priv.
+When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
+will set llc_sibling 0xff(...), this is misleading.
 
-Fix this by moving priv->usbdev = NULL after usb_put_dev.
+Don't set llc_sibling(default 0) if we don't know the cache topology.
 
-Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+Fixes: 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1649644580-54626-1-git-send-email-wangqing@vivo.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/misc/uss720.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/base/arch_topology.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/misc/uss720.c
-+++ b/drivers/usb/misc/uss720.c
-@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kr
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -457,7 +457,7 @@ void update_siblings_masks(unsigned int
+ 	for_each_online_cpu(cpu) {
+ 		cpu_topo = &cpu_topology[cpu];
  
- 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
- 	usb_put_dev(priv->usbdev);
-+	priv->usbdev = NULL;
- 	kfree(priv);
- }
- 
-@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_inter
- 	parport_announce_port(pp);
- 
- 	usb_set_intfdata(intf, pp);
--	usb_put_dev(usbdev);
- 	return 0;
- 
- probe_abort:
-@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb
- 	usb_set_intfdata(intf, NULL);
- 	if (pp) {
- 		priv = pp->private_data;
--		priv->usbdev = NULL;
- 		priv->pp = NULL;
- 		dev_dbg(&intf->dev, "parport_remove_port\n");
- 		parport_remove_port(pp);
+-		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
++		if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
+ 			cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
+ 			cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
+ 		}
 
 
