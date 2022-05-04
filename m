@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB91C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357678AbiEDRdE (ORCPT
+        id S1357774AbiEDRdK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Wed, 4 May 2022 13:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356930AbiEDRJt (ORCPT
+        with ESMTP id S1356973AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D294704A;
-        Wed,  4 May 2022 09:56:30 -0700 (PDT)
+        Wed, 4 May 2022 13:09:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6BB47542;
+        Wed,  4 May 2022 09:56:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D468B8279A;
-        Wed,  4 May 2022 16:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30146C385A4;
-        Wed,  4 May 2022 16:56:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47ED461808;
+        Wed,  4 May 2022 16:56:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E60C385AA;
+        Wed,  4 May 2022 16:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683388;
-        bh=Za0VdiC3YL/IFH8GD9TAZhUplfNPPkWz+O8jG/yfWG4=;
+        s=korg; t=1651683405;
+        bh=TWdPe4Xc82lbZV5izywkdR/TuTC561cxN6pB2TDCNhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cAY/tld0AcVpVovLRtB8xCt5Wy3BRbJFuH8iWLa99CzM6/kaq6h/7jNZGq2ut5SNn
-         lXlQUIyrJyk2LX43OIJZ8It0OuY6DDCwOnMCV0RUHyOoIJGeoZ2TE0F7DQVLHyGNGl
-         JCmmAHIrm3wzVcsHDs26VO/3ic8zskBERpXN9GcM=
+        b=qJ2KTlvWGPo1pWO+at1BCtOSt37M0zGxx+gDXQLjeXEKhVoO0/LKTeBwC0tooWi3P
+         NIxz8cUJFjEE+KkOKWzJvz4iFUD9dlt61eKm92SHaVPaq56uBdPXNDg7/ggSFw1NMm
+         4C8kTulk5OWw3zGuIZcZABZ4ch5l/m1sk/Kn6CZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 060/225] arm64: dts: meson: remove CPU opps below 1GHz for G12B boards
-Date:   Wed,  4 May 2022 18:44:58 +0200
-Message-Id: <20220504153115.521635638@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 076/225] phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
+Date:   Wed,  4 May 2022 18:45:14 +0200
+Message-Id: <20220504153118.115217172@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,144 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6c4d636bc00dc17c63ffb2a73a0da850240e26e3 ]
+[ Upstream commit 388ec8f079f2f20d5cd183c3bc6f33cbc3ffd3ef ]
 
-Amlogic G12B devices experience CPU stalls and random board wedges when
-the system idles and CPU cores clock down to lower opp points. Recent
-vendor kernels include a change to remove 100-250MHz and other distro
-sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
-are removed or the CPU governor forced to performance stalls are still
-observed, so let's remove them to improve stability and uptime.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: b96d4e92709b ("arm64: dts: meson-g12b: support a311d and s922x cpu operating points")
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220210100638.19130-2-christianshewitt@gmail.com
+Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220407091857.230386-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../boot/dts/amlogic/meson-g12b-a311d.dtsi    | 40 -------------------
- .../boot/dts/amlogic/meson-g12b-s922x.dtsi    | 40 -------------------
- 2 files changed, 80 deletions(-)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-index d61f43052a34..8e9ad1e51d66 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-@@ -11,26 +11,6 @@ cpu_opp_table_0: opp-table-0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 9ec234243f7c..6c305a3fe187 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -187,6 +187,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <761000>;
-@@ -71,26 +51,6 @@ cpub_opp_table_1: opp-table-1 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+ 	sata_phy->client = of_find_i2c_device_by_node(node);
++	of_node_put(node);
+ 	if (!sata_phy->client)
+ 		return -EPROBE_DEFER;
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <731000>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-index 1e5d0ee5d541..44c23c984034 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-@@ -11,26 +11,6 @@ cpu_opp_table_0: opp-table-0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <731000>;
-@@ -76,26 +56,6 @@ cpub_opp_table_1: opp-table-1 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <751000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <771000>;
 -- 
 2.35.1
 
