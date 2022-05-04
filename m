@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA68C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C486C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352860AbiEDP5f (ORCPT
+        id S1352874AbiEDP5i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
+        Wed, 4 May 2022 11:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240198AbiEDP5d (ORCPT
+        with ESMTP id S1344065AbiEDP5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 11:57:33 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD38D45AFD;
-        Wed,  4 May 2022 08:53:56 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244Ed567018222;
-        Wed, 4 May 2022 17:53:37 +0200
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A15E4614C;
+        Wed,  4 May 2022 08:53:57 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244EaEtA026474;
+        Wed, 4 May 2022 17:53:40 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=lsywa9G5dBxfR26yhT7KBuxASYe6RDw8F8vw3t47nis=;
- b=f/5ge46UA1X2LstThTJly+iXBdExk5ivNMr9bbkjRU0fCu1EoITghDRyVata/dWqx+QV
- aHeLRjkOQYDnaY2RSBiUk9PepSZ5GOxHY0gus68yc5eqoxyXVenLDOA0kfLMyy11JhRR
- M4n6YUwV6ij+IvgffZXvPadPKgYPAn795ACSdXeGtIAgWU3vX8niFhdVj2AgSleQOGaO
- zl0WXQXSYSB7Of+Tg3VqVoH89g+jqQw/XBuqIWO4qrc7yOKd97NSDdpq2+xbiLK9YC3H
- JcaeyGC179bVXWwe7ZzbbvCzVcO8tf6O7Iupx7GCbgtBrmLL28gQuZK9PmyQFHIfOY6A oA== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=pXUx8kWfnqdiCoNzlXrT4VSy1bUDFwsBeS/sZv4Bm+E=;
+ b=gNsO7KDlclnEG1JxjL/chJTpYRQiNJdxtb6V3Dl+vB6Ncyzvrw5dljiB/0ZKGfGnVqLu
+ NZv9H4vP81Dvwokcj61ow21uAq5Znt2ZG1ySdEW7oFrmj6cCK3w+Y0Xfq5tJUe8qagrb
+ z1wYS/rMcrDsf9WzxMm5Hbv6NuBuYUcb5Pivrx1Fy4GaDNPsbJFX1CNyVEDBo07YunjW
+ s8NTU3px4tWf16J1msyg13cw2v5w5rZdsi39AFA+2F+AQhmGc7KAY07lIlPp6B/aFBnc
+ SIC+1RyxqgsdY8wVbRj5+YEjjJd84w3uJbauzSACV9xRfjSyr8HEqveASoj9XZkQI1Y/ tg== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frthjweeq-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frt88xpj6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 May 2022 17:53:37 +0200
+        Wed, 04 May 2022 17:53:40 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4EF3B10002A;
-        Wed,  4 May 2022 17:53:37 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7E1B510002A;
+        Wed,  4 May 2022 17:53:39 +0200 (CEST)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4818422A6EA;
-        Wed,  4 May 2022 17:53:37 +0200 (CEST)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 17:53:36
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 77F5322A6E3;
+        Wed,  4 May 2022 17:53:39 +0200 (CEST)
+Received: from localhost (10.75.127.47) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 17:53:38
  +0200
 From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
 To:     Vinod Koul <vkoul@kernel.org>,
@@ -50,14 +50,16 @@ CC:     <dmaengine@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [PATCH 0/3] STM32 MDMA IRQ handler code cleaning
-Date:   Wed, 4 May 2022 17:53:19 +0200
-Message-ID: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
+Subject: [PATCH 2/3] dmaengine: stm32-mdma: fix chan initialization in stm32_mdma_irq_handler()
+Date:   Wed, 4 May 2022 17:53:21 +0200
+Message-ID: <20220504155322.121431-3-amelie.delaunay@foss.st.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
+References: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
+X-Originating-IP: [10.75.127.47]
 X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -67,21 +69,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset cleans stm32-mdma interrupt handler:
-- GISR1 register is not used on any STM32 SoC with MDMA
-- Remove chan wrong initialization
-- Lower the log level to debug instead of warn in case of spurious it
-  on stopped channel
+The parameter to pass back to the handler function when irq has been
+requested is a struct stm32_mdma_device pointer, not a struct
+stm32_mdma_chan pointer.
+Even if chan is reinit later in the function, remove this wrong
+initialization.
 
-Amelie Delaunay (3):
-  dmaengine: stm32-mdma: remove GISR1 register
-  dmaengine: stm32-mdma: fix chan initialization in
-    stm32_mdma_irq_handler()
-  dmaengine: stm32-mdma: use dev_dbg on non-busy channel spurious it
+Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+---
+ drivers/dma/stm32-mdma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/dma/stm32-mdma.c | 32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
+index 57f0eb8a18fc..a5cbfbbb93d1 100644
+--- a/drivers/dma/stm32-mdma.c
++++ b/drivers/dma/stm32-mdma.c
+@@ -1318,7 +1318,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
+ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
+ {
+ 	struct stm32_mdma_device *dmadev = devid;
+-	struct stm32_mdma_chan *chan = devid;
++	struct stm32_mdma_chan *chan;
+ 	u32 reg, id, ccr, ien, status;
+ 
+ 	/* Find out which channel generates the interrupt */
 -- 
 2.25.1
 
