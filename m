@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE9AC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D31C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356279AbiEDRL4 (ORCPT
+        id S1356213AbiEDRMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        Wed, 4 May 2022 13:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355026AbiEDQ7h (ORCPT
+        with ESMTP id S1354992AbiEDQ7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:37 -0400
+        Wed, 4 May 2022 12:59:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681184924F;
-        Wed,  4 May 2022 09:51:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1890148E7A;
+        Wed,  4 May 2022 09:51:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2FF2B827A3;
-        Wed,  4 May 2022 16:51:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58678C385AA;
-        Wed,  4 May 2022 16:51:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8A24B82792;
+        Wed,  4 May 2022 16:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 674ACC385AA;
+        Wed,  4 May 2022 16:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683071;
-        bh=OM7cXWUgQsh7S2dSER4HhmICHOFNPlw7hzYj/A2eg9M=;
+        s=korg; t=1651683069;
+        bh=qKRNoo6AJog9cupwDJH/dQVPuRBuUHh+anIhDpvOv7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tg/t1P2acfW2pV1SyOGKFv4JPAq85AbBJdP1yBCltK4N2lECxRI4hmPdioIawxpTH
-         bjQDYZBlhj+1d25V1d54MvWnn/mx4MpP7O3e+8McWRSCmBvdB8oUD7ow7q/OoZoV/j
-         rj7ibC+6JKfyWNgBBU1tgez+UuGvnu04nCJTnF28=
+        b=1JyxlVpUNRxjW7yERoGRhtZQw69jeedMy0oMmFspSb8NbvZqbyDYfNOPKdrvuZP5i
+         gwGJ3y8ZmSrZIqfwYWhIbW/dqXvnUb0KDG4YoNcgq4A1N2ayjztA4Iwj6yCVHxzq1z
+         N5cQm4uVCb9Y1n6o6vtaSuQGoUq2UXQ1sCOQLnjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Francesco Ruggeri <fruggeri@arista.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 067/129] tcp: md5: incorrect tcp_header_len for incoming connections
-Date:   Wed,  4 May 2022 18:44:19 +0200
-Message-Id: <20220504153026.578788965@linuxfoundation.org>
+Subject: [PATCH 5.10 054/129] ARM: dts: Fix mmc order for omap3-gta04
+Date:   Wed,  4 May 2022 18:44:06 +0200
+Message-Id: <20220504153025.338409370@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,38 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Ruggeri <fruggeri@arista.com>
+From: H. Nikolaus Schaller <hns@goldelico.com>
 
-[ Upstream commit 5b0b9e4c2c895227c8852488b3f09839233bba54 ]
+[ Upstream commit 09269dd050094593fc747f2a5853d189fefcb6b5 ]
 
-In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
-remote address in newsk. But that address is still 0 in newsk at this
-point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
-Use the address from the request socket instead.
+Commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
+introduces general mmc aliases. Let's tailor them to the need
+of the GTA04 board which does not make use of mmc2 and mmc3 interfaces.
 
-Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Message-Id: <dc9173ee3d391d9e92b7ab8ed4f84b29f0a21c83.1646744420.git.hns@goldelico.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_minisocks.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/omap3-gta04.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index f0f67b25c97a..62f5ef9e6f93 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -538,7 +538,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
- 	newtp->tsoffset = treq->ts_off;
- #ifdef CONFIG_TCP_MD5SIG
- 	newtp->md5sig_info = NULL;	/*XXX*/
--	if (newtp->af_specific->md5_lookup(sk, newsk))
-+	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
- 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
- #endif
- 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
+diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
+index 80c9e5e34136..cc8a378dd076 100644
+--- a/arch/arm/boot/dts/omap3-gta04.dtsi
++++ b/arch/arm/boot/dts/omap3-gta04.dtsi
+@@ -31,6 +31,8 @@ chosen {
+ 	aliases {
+ 		display0 = &lcd;
+ 		display1 = &tv0;
++		/delete-property/ mmc2;
++		/delete-property/ mmc3;
+ 	};
+ 
+ 	ldo_3v3: fixedregulator {
 -- 
 2.35.1
 
