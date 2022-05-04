@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E44C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358981AbiEDRwy (ORCPT
+        id S1354387AbiEDRw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
+        Wed, 4 May 2022 13:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358143AbiEDRPm (ORCPT
+        with ESMTP id S1358105AbiEDRPk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:42 -0400
+        Wed, 4 May 2022 13:15:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B4D4CD61;
-        Wed,  4 May 2022 09:59:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A01556420;
+        Wed,  4 May 2022 09:59:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DC8CB8279F;
-        Wed,  4 May 2022 16:59:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE6DC385B2;
-        Wed,  4 May 2022 16:59:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E900CB827AD;
+        Wed,  4 May 2022 16:59:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8279AC385A5;
+        Wed,  4 May 2022 16:59:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683540;
-        bh=dyOBYSsT28SsWFTSbD01pL/bEcA04i8+1uX9QAN1emM=;
+        s=korg; t=1651683561;
+        bh=y4vr4Xk+f0/BMqSuJLn4liLH6P5R85wOalIZCnJQAZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2hsQTD33+Ch5vnBlT86IoswgmwcdQXXy5vJ/CvcvoWYRrHJAXP5qeChBThKYZ11YA
-         6kzMkflRYuQ4lvL2qO8EmC1V1NykuC5CDMrbzrSSy0okTlTxBr1qTmEbSX+20OeV+1
-         sOERtrznEfdWf/LscXOz54Ii1ujtAenIE4EPxUr0=
+        b=DdTrA2mkKb7nIOepgeJx8bU/reL7QWWlQt1iJezHKBemuCHiRlhZyh6in+BiUIiFp
+         7OYdNtGL3+LavJRjtUpS20mrPIm8TBRBlVja53XVbAuXUzgo6fEU7pgbJUahqYHrxZ
+         sTgp5tMDttD1E+uVykcYb7SB9S8ogAJ5Xx03mllc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.17 211/225] tty: n_gsm: fix missing explicit ldisc flush
-Date:   Wed,  4 May 2022 18:47:29 +0200
-Message-Id: <20220504153128.840262210@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH 5.17 224/225] objtool: Fix type of reloc::addend
+Date:   Wed,  4 May 2022 18:47:42 +0200
+Message-Id: <20220504153129.833664076@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,35 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 17eac652028501df7ea296b1d9b9c134db262b7d upstream.
+commit c087c6e7b551b7f208c0b852304f044954cf2bb3 upstream.
 
-In gsm_cleanup_mux() the muxer is closed down and all queues are removed.
-However, removing the queues is done without explicit control of the
-underlying buffers. Flush those before freeing up our queues to ensure
-that all outgoing queues are cleared consistently. Otherwise, a new mux
-connection establishment attempt may time out while the underlying tty is
-still busy sending out the remaining data from the previous connection.
+Elf{32,64}_Rela::r_addend is of type: Elf{32,64}_Sword, that means
+that our reloc::addend needs to be long or face tuncation issues when
+we do elf_rebuild_reloc_section():
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-10-daniel.starke@siemens.com
+  - 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt+0x80000067
+  + 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt-0x7fffff99
+
+Fixes: 627fce14809b ("objtool: Add ORC unwind table generation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/20220419203807.596871927@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/objtool/check.c               |    8 ++++----
+ tools/objtool/elf.c                 |    2 +-
+ tools/objtool/include/objtool/elf.h |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2152,6 +2152,7 @@ static void gsm_cleanup_mux(struct gsm_m
- 			gsm_dlci_release(gsm->dlci[i]);
- 	mutex_unlock(&gsm->mutex);
- 	/* Now wipe the queues */
-+	tty_ldisc_flush(gsm->tty);
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
- 		kfree(txq);
- 	INIT_LIST_HEAD(&gsm->tx_list);
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -546,12 +546,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%x",
++				WARN("can't find unreachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%x",
++			WARN("can't find unreachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -581,12 +581,12 @@ reachable:
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%x",
++				WARN("can't find reachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%x",
++			WARN("can't find reachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -486,7 +486,7 @@ static struct section *elf_create_reloc_
+ 						int reltype);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend)
++		  unsigned int type, struct symbol *sym, long addend)
+ {
+ 	struct reloc *reloc;
+ 
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -73,7 +73,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	int addend;
++	long addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend);
++		  unsigned int type, struct symbol *sym, long addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
 
 
