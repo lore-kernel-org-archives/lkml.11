@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C8BC47085
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A62BC38A06
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382455AbiEDXG0 (ORCPT
+        id S1384023AbiEDXHi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45414 "EHLO
+        Wed, 4 May 2022 19:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379989AbiEDW7g (ORCPT
+        with ESMTP id S1380319AbiEDW7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:36 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA5156406
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:43 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id j24-20020a637a58000000b003ab45990247so1336355pgn.17
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:43 -0700 (PDT)
+        Wed, 4 May 2022 18:59:55 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C267A57108
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:10 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id y17-20020a637d11000000b003ab06870074so1337313pgc.15
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=jMEQySaj1Rxs5aGpP5khdJki27/sUpGqRcC5WiSoU3o=;
-        b=c16ep8pv9Mq2l2AD//OApNL/YycrUvJr5MCjdpfAYkqE439mqkAdRwFXe4/MTeaRco
-         ig0tXHGFXUgygkF1G6Cig5flclR0D32TziyFhHZ+mULBqiWgeH1r3M3n42i2oo5KuJsg
-         mFMrhWAH/f9AwE7O+oukkvuGPa83qHrYsA1HWEXsdGAql5cnLrROGwkw4OhtPs4WjRr5
-         HK72RfWOgiai4Ecvk3XHpCvKNZa43ib6/Mah4igxWUHBu7S73phiNhi5OfvjFr5RpYtF
-         d/r1hHivR/yEu1K4NkSbWQFy+qBpZDc4ZWo/yQ/KDKQv/1hBFA4MM1Jn1JMXXxge3rQJ
-         RXFg==
+        bh=6HSIjMhV1FkDSn9Q2dZiNlWH0XvamyXxhC0LlfB3b9Q=;
+        b=DkRxlPcdbrbXKsKMK7kQ7JDeVGO2p2CzUK+kcqRqxCoet3tc5Dt5oyxJtVZNwIeigO
+         ttI0bdDGSThuuBloWZkUkbqqdPf1hU2Kf/o1C1wZTrmfdrP9ZNAqQgYuFvlfyFcUAnDF
+         mrViP4skJBJSSrb+Q20n9Kv7C4H/CSfkpChjZr+RykBIVIuLu0lNp7Z+B3ZXTf8dFxRT
+         WqDuZ5ibzRj6oRqVBqIR2lXZ/nzRJgiJMwXSu9GjhJPwBJLdv/gWfpGVwsc6W1G/yl8f
+         ntCIGN1lSE+SxsjhadwHWLNXNRJwClPh6wPftNDAqm32mzeVrgO11Ib1WFcgemsbqHmp
+         wUuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=jMEQySaj1Rxs5aGpP5khdJki27/sUpGqRcC5WiSoU3o=;
-        b=tSMoiSLtKMme1+RvttlATU97FGWpDfCpSQBm/Lj5nMXrNdH9qIPgWESgx8k3iTRvr9
-         wED3zptHa5MGZIQOgQ4xXBRE7a08f+1UIe5IDdyQNB+JYmki+bhQJUNZk5+dOkcIuiyC
-         vMC8VXGx8ggweBP8vz1d55yuNsfc94gT21EpToJPfFbYCTeeWZS79+lJrT/Fwm5/3Twu
-         rsR7bVliTRIZSCnMmuhOmrXutQKiywFePD3ciZD5OuiBfp2P8kQY7C/Y1lMhNWJdRKhW
-         2bBrvLhuYR/5cCazZ6EVfDoQDnMRjowDEo724W1QJphNn/v9l8Y4Rks8icPTmQz8olZ/
-         KxVA==
-X-Gm-Message-State: AOAM532ixkPRixacWYJ1UEHu3gvYmhPUPtDYPXOH8kCVlJVx8+WlBMph
-        mh84xr8mb3eNmybbI/ntkDID9MWH/0M=
-X-Google-Smtp-Source: ABdhPJwxPw5SYRUumfnsshwju/m/hT5MRtSZ0zseZdiMFidvFkNg7cef7sU0Mh351TWknbDslQxcIdgzKLA=
+        bh=6HSIjMhV1FkDSn9Q2dZiNlWH0XvamyXxhC0LlfB3b9Q=;
+        b=T5VUGr1xjSsnbFHs5VMAkz/87NNnSYEuhtFqz5re+ejUQgkeyXo5TNN2kGHousIaYi
+         KBf+iphAePaVhuWvOzqhVc4idHoKlOefkc5h73kSH3k4fLioWFPKhT+UwcqkJIHuILS6
+         eCh3I2aeaFR40Eo7AfCO8w1UhVUG/P8k+uMP7aQfLI784XIDHKFwnnsL/mrzvRq3Jw0a
+         Lqd9fhTBNgxROLAP1Ac6HGh+MBtHsE6+mx0QOCaX3vqpSveY1Kgcc3fXwLGOgD4tOA52
+         qBlemMxUK3jUnyzTZ67Zstswh7Xual95RI49v6mcYjNVIu9zXDHP8n/ahAtn8vmjVANr
+         p7RA==
+X-Gm-Message-State: AOAM531EeOieo8qpSqHMxs1I0foNjJyYWMJjMc/2bNDOra89rhYuWbPz
+        rEKat1yRxZkRx2BVZg82UXDS3W22o10=
+X-Google-Smtp-Source: ABdhPJxYHAVE8NMpqzvg79GDxP5iYL+Sq/Qsi6yll75i+qhzI1I08BjzeT6eLToG03Jc89JlQP+pbfWksSY=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:230e:b0:15e:d0a1:922f with SMTP id
- d14-20020a170903230e00b0015ed0a1922fmr3114818plh.75.1651704742910; Wed, 04
- May 2022 15:52:22 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:e80d:0:b0:50d:8f8e:ffb8 with SMTP id
+ c13-20020a62e80d000000b0050d8f8effb8mr22843748pfi.37.1651704762430; Wed, 04
+ May 2022 15:52:42 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:46 +0000
+Date:   Wed,  4 May 2022 22:48:57 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-101-seanjc@google.com>
+Message-Id: <20220504224914.1654036-112-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 100/128] KVM: selftests: Convert arch_timer away from VCPU_ID
+Subject: [PATCH 111/128] KVM: selftests: Drop vm_create_default* helpers
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,174 +69,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert arch_timer to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of requiring that the index into the
-array of vCPUs for a given vCPU is also the ID of the vCPU
+Drop all vm_create_default*() helpers, the "default" naming turned out to
+terrible as wasn't extensible (hard to have multiple defaults), was a lie
+(half the settings were default, half weren't), and failed to capture
+relationships between helpers, e.g. compared with the kernel's standard
+underscores pattern.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/aarch64/arch_timer.c        | 62 ++++++++-----------
- 1 file changed, 27 insertions(+), 35 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     | 23 -------------------
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 23 +++++--------------
+ 2 files changed, 6 insertions(+), 40 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/arch_timer.c b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-index f04ca07c7f14..a873d9adc558 100644
---- a/tools/testing/selftests/kvm/aarch64/arch_timer.c
-+++ b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-@@ -76,13 +76,8 @@ struct test_vcpu_shared_data {
- 	uint64_t xcnt;
- };
- 
--struct test_vcpu {
--	uint32_t vcpuid;
--	pthread_t pt_vcpu_run;
--	struct kvm_vm *vm;
--};
--
--static struct test_vcpu test_vcpu[KVM_MAX_VCPUS];
-+static struct kvm_vcpu *vcpus[KVM_MAX_VCPUS];
-+static pthread_t pt_vcpu_run[KVM_MAX_VCPUS];
- static struct test_vcpu_shared_data vcpu_shared_data[KVM_MAX_VCPUS];
- 
- static int vtimer_irq, ptimer_irq;
-@@ -217,20 +212,20 @@ static void guest_code(void)
- 
- static void *test_vcpu_run(void *arg)
- {
-+	unsigned int vcpu_idx = (unsigned long)arg;
- 	struct ucall uc;
--	struct test_vcpu *vcpu = arg;
-+	struct kvm_vcpu *vcpu = vcpus[vcpu_idx];
- 	struct kvm_vm *vm = vcpu->vm;
--	uint32_t vcpuid = vcpu->vcpuid;
--	struct test_vcpu_shared_data *shared_data = &vcpu_shared_data[vcpuid];
-+	struct test_vcpu_shared_data *shared_data = &vcpu_shared_data[vcpu_idx];
- 
--	vcpu_run(vm, vcpuid);
-+	vcpu_run(vm, vcpu->id);
- 
- 	/* Currently, any exit from guest is an indication of completion */
- 	pthread_mutex_lock(&vcpu_done_map_lock);
--	set_bit(vcpuid, vcpu_done_map);
-+	set_bit(vcpu_idx, vcpu_done_map);
- 	pthread_mutex_unlock(&vcpu_done_map_lock);
- 
--	switch (get_ucall(vm, vcpuid, &uc)) {
-+	switch (get_ucall(vm, vcpu->id, &uc)) {
- 	case UCALL_SYNC:
- 	case UCALL_DONE:
- 		break;
-@@ -238,7 +233,7 @@ static void *test_vcpu_run(void *arg)
- 		sync_global_from_guest(vm, *shared_data);
- 		TEST_FAIL("%s at %s:%ld\n\tvalues: %lu, %lu; %lu, vcpu: %u; stage: %u; iter: %u",
- 			(const char *)uc.args[0], __FILE__, uc.args[1],
--			uc.args[2], uc.args[3], uc.args[4], vcpuid,
-+			uc.args[2], uc.args[3], uc.args[4], vcpu_idx,
- 			shared_data->guest_stage, shared_data->nr_iter);
- 		break;
- 	default:
-@@ -265,7 +260,7 @@ static uint32_t test_get_pcpu(void)
- 	return pcpu;
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 2ddf0854c24d..882b684dc372 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -538,29 +538,6 @@ static inline struct kvm_vm *vm_create(uint64_t nr_pages)
+ 	return __vm_create(VM_MODE_DEFAULT, nr_pages);
  }
  
--static int test_migrate_vcpu(struct test_vcpu *vcpu)
-+static int test_migrate_vcpu(unsigned int vcpu_idx)
- {
- 	int ret;
- 	cpu_set_t cpuset;
-@@ -274,15 +269,15 @@ static int test_migrate_vcpu(struct test_vcpu *vcpu)
- 	CPU_ZERO(&cpuset);
- 	CPU_SET(new_pcpu, &cpuset);
- 
--	pr_debug("Migrating vCPU: %u to pCPU: %u\n", vcpu->vcpuid, new_pcpu);
-+	pr_debug("Migrating vCPU: %u to pCPU: %u\n", vcpu_idx, new_pcpu);
- 
--	ret = pthread_setaffinity_np(vcpu->pt_vcpu_run,
--					sizeof(cpuset), &cpuset);
-+	ret = pthread_setaffinity_np(pt_vcpu_run[vcpu_idx],
-+				     sizeof(cpuset), &cpuset);
- 
- 	/* Allow the error where the vCPU thread is already finished */
- 	TEST_ASSERT(ret == 0 || ret == ESRCH,
--			"Failed to migrate the vCPU:%u to pCPU: %u; ret: %d\n",
--			vcpu->vcpuid, new_pcpu, ret);
-+		    "Failed to migrate the vCPU:%u to pCPU: %u; ret: %d\n",
-+		    vcpu_idx, new_pcpu, ret);
- 
- 	return ret;
- }
-@@ -305,7 +300,7 @@ static void *test_vcpu_migration(void *arg)
- 				continue;
- 			}
- 
--			test_migrate_vcpu(&test_vcpu[i]);
-+			test_migrate_vcpu(i);
- 		}
- 	} while (test_args.nr_vcpus != n_done);
- 
-@@ -314,16 +309,17 @@ static void *test_vcpu_migration(void *arg)
- 
- static void test_run(struct kvm_vm *vm)
- {
--	int i, ret;
- 	pthread_t pt_vcpu_migration;
-+	unsigned int i;
-+	int ret;
- 
- 	pthread_mutex_init(&vcpu_done_map_lock, NULL);
- 	vcpu_done_map = bitmap_zalloc(test_args.nr_vcpus);
- 	TEST_ASSERT(vcpu_done_map, "Failed to allocate vcpu done bitmap\n");
- 
--	for (i = 0; i < test_args.nr_vcpus; i++) {
--		ret = pthread_create(&test_vcpu[i].pt_vcpu_run, NULL,
--				test_vcpu_run, &test_vcpu[i]);
-+	for (i = 0; i < (unsigned long)test_args.nr_vcpus; i++) {
-+		ret = pthread_create(&pt_vcpu_run[i], NULL, test_vcpu_run,
-+				     (void *)(unsigned long)i);
- 		TEST_ASSERT(!ret, "Failed to create vCPU-%d pthread\n", i);
- 	}
- 
-@@ -338,7 +334,7 @@ static void test_run(struct kvm_vm *vm)
- 
- 
- 	for (i = 0; i < test_args.nr_vcpus; i++)
--		pthread_join(test_vcpu[i].pt_vcpu_run, NULL);
-+		pthread_join(pt_vcpu_run[i], NULL);
- 
- 	if (test_args.migration_freq_ms)
- 		pthread_join(pt_vcpu_migration, NULL);
-@@ -349,9 +345,9 @@ static void test_run(struct kvm_vm *vm)
- static void test_init_timer_irq(struct kvm_vm *vm)
- {
- 	/* Timer initid should be same for all the vCPUs, so query only vCPU-0 */
--	vcpu_device_attr_get(vm, 0, KVM_ARM_VCPU_TIMER_CTRL,
-+	vcpu_device_attr_get(vm, vcpus[0]->id, KVM_ARM_VCPU_TIMER_CTRL,
- 			     KVM_ARM_VCPU_TIMER_IRQ_PTIMER, &ptimer_irq);
--	vcpu_device_attr_get(vm, 0, KVM_ARM_VCPU_TIMER_CTRL,
-+	vcpu_device_attr_get(vm, vcpus[0]->id, KVM_ARM_VCPU_TIMER_CTRL,
- 			     KVM_ARM_VCPU_TIMER_IRQ_VTIMER, &vtimer_irq);
- 
- 	sync_global_to_guest(vm, ptimer_irq);
-@@ -368,17 +364,13 @@ static struct kvm_vm *test_vm_create(void)
- 	unsigned int i;
- 	int nr_vcpus = test_args.nr_vcpus;
- 
--	vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
-+	vm = vm_create_with_vcpus(nr_vcpus, guest_code, vcpus);
- 
- 	vm_init_descriptor_tables(vm);
- 	vm_install_exception_handler(vm, VECTOR_IRQ_CURRENT, guest_irq_handler);
- 
--	for (i = 0; i < nr_vcpus; i++) {
--		vcpu_init_descriptor_tables(vm, i);
+-/*
+- * Create a VM with reasonable defaults
+- *
+- * Input Args:
+- *   vcpuid - The id of the single VCPU to add to the VM.
+- *   extra_mem_pages - The number of extra pages to add (this will
+- *                     decide how much extra space we will need to
+- *                     setup the page tables using memslot 0)
+- *   guest_code - The vCPU's entry point
+- *
+- * Output Args: None
+- *
+- * Return:
+- *   Pointer to opaque structure that describes the created VM.
+- */
+-struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
+-				 void *guest_code);
 -
--		test_vcpu[i].vcpuid = i;
--		test_vcpu[i].vm = vm;
--	}
-+	for (i = 0; i < nr_vcpus; i++)
-+		vcpu_init_descriptor_tables(vm, vcpus[i]->id);
+-/* Same as vm_create_default, but can be used for more than one vcpu */
+-struct kvm_vm *vm_create_default_with_vcpus(uint32_t nr_vcpus, uint64_t extra_mem_pages,
+-					    uint32_t num_percpu_pages, void *guest_code,
+-					    uint32_t vcpuids[]);
+-
+ /* Like vm_create_default_with_vcpus, but accepts mode and slot0 memory as a parameter */
+ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 				      uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 838a3eda9381..96d1daf14dc3 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -341,28 +341,17 @@ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus
+ 	return vm;
+ }
  
- 	ucall_init(vm, NULL);
- 	test_init_timer_irq(vm);
+-struct kvm_vm *vm_create_default_with_vcpus(uint32_t nr_vcpus, uint64_t extra_mem_pages,
+-					    uint32_t num_percpu_pages, void *guest_code,
+-					    uint32_t vcpuids[])
+-{
+-	return __vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
+-				      extra_mem_pages, num_percpu_pages, guest_code, vcpuids, NULL);
+-}
+-
+-struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
+-				 void *guest_code)
+-{
+-	return vm_create_default_with_vcpus(1, extra_mem_pages, 0, guest_code,
+-					    (uint32_t []){ vcpuid });
+-}
+-
+ struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
+ 					 uint64_t extra_mem_pages,
+ 					 void *guest_code)
+ {
+-	struct kvm_vm *vm = vm_create_default(0, extra_mem_pages, guest_code);
++	struct kvm_vcpu *vcpus[1];
++	struct kvm_vm *vm;
+ 
+-	*vcpu = vcpu_get(vm, 0);
++	vm = __vm_create_with_vcpus(VM_MODE_DEFAULT, 1, DEFAULT_GUEST_PHY_PAGES,
++				    extra_mem_pages, 0, guest_code, NULL, vcpus);
++
++	*vcpu = vcpus[0];
+ 	return vm;
+ }
+ 
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
