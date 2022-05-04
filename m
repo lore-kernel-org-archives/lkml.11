@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40058C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA86FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348997AbiEDRV3 (ORCPT
+        id S1356635AbiEDRVh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
+        Wed, 4 May 2022 13:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355111AbiEDREI (ORCPT
+        with ESMTP id S1355106AbiEDREI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458664E382;
-        Wed,  4 May 2022 09:52:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1544D9C1;
+        Wed,  4 May 2022 09:52:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27F0C617DE;
-        Wed,  4 May 2022 16:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 772A2C385A5;
-        Wed,  4 May 2022 16:52:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8457D61852;
+        Wed,  4 May 2022 16:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1120C385AA;
+        Wed,  4 May 2022 16:52:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683164;
-        bh=9E39mHLbOPtkiWOEOKFy56IbZL3g5wvMyD0A5kF6R7k=;
+        s=korg; t=1651683154;
+        bh=WHbh4A6ClgjOu6hZJxIoyBalRcJQ3ef8RTnB7wCBapM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q7plFIHgIAGNeYsW4s2Ipi65QK9KsX3Cd7RDY30gljkdyzvhHXRxX7OynSdR2N6ZB
-         NBKmWJVylA6c7ykJJc7ChBt6R14vWV4OMd1eD+lFHtvMXICB6iuZALYUC2ZS3+ixgj
-         UEpP7R+sObMzx2YHgrdGnB9w6TyJN+h88MIG568Y=
+        b=ILDNNaCdr6W+qCIjF2lL0rYWgiGb1UaLDzvstx+KV5HvXAljjByIdtDB0ad4iVYFI
+         EBhQVvX6JPfwjzYesZdkbHWei4MtfuXIGSpTvYLgzuR0SfIKKlXVbL8VZloWfaTeRz
+         uBZ1iAiIAg4HmNCbrQhexVs25brw3CGw7P+bb+YE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH 5.15 016/177] usb: misc: fix improper handling of refcount in uss720_probe()
-Date:   Wed,  4 May 2022 18:43:29 +0200
-Message-Id: <20220504153054.873494597@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH 5.15 019/177] usb: typec: ucsi: Fix role swapping
+Date:   Wed,  4 May 2022 18:43:32 +0200
+Message-Id: <20220504153055.052584435@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,52 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
+commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
 
-usb_put_dev shouldn't be called when uss720_probe succeeds because of
-priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
-before destroy_priv in uss720_disconnect because usb_put_dev is in
-destroy_priv.
+All attempts to swap the roles timed out because the
+completion was done without releasing the port lock. Fixing
+that by releasing the lock before starting to wait for the
+completion.
 
-Fix this by moving priv->usbdev = NULL after usb_put_dev.
-
-Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
+Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
+Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/misc/uss720.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
---- a/drivers/usb/misc/uss720.c
-+++ b/drivers/usb/misc/uss720.c
-@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kr
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -964,14 +964,18 @@ static int ucsi_dr_swap(struct typec_por
+ 	if (ret < 0)
+ 		goto out_unlock;
  
- 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
- 	usb_put_dev(priv->usbdev);
-+	priv->usbdev = NULL;
- 	kfree(priv);
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
+-		ret = -ETIMEDOUT;
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	return 0;
+ 
+ out_unlock:
+ 	mutex_unlock(&con->lock);
+ 
+-	return ret < 0 ? ret : 0;
++	return ret;
  }
  
-@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_inter
- 	parport_announce_port(pp);
+ static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
+@@ -1002,11 +1006,13 @@ static int ucsi_pr_swap(struct typec_por
+ 	if (ret < 0)
+ 		goto out_unlock;
  
- 	usb_set_intfdata(intf, pp);
--	usb_put_dev(usbdev);
- 	return 0;
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
+-		ret = -ETIMEDOUT;
+-		goto out_unlock;
+-	}
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	mutex_lock(&con->lock);
  
- probe_abort:
-@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb
- 	usb_set_intfdata(intf, NULL);
- 	if (pp) {
- 		priv = pp->private_data;
--		priv->usbdev = NULL;
- 		priv->pp = NULL;
- 		dev_dbg(&intf->dev, "parport_remove_port\n");
- 		parport_remove_port(pp);
+ 	/* Something has gone wrong while swapping the role */
+ 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
 
 
