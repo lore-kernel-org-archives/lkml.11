@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5447EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A86C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355363AbiEDRGg (ORCPT
+        id S1355281AbiEDRGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
+        Wed, 4 May 2022 13:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355195AbiEDQ7r (ORCPT
+        with ESMTP id S1355203AbiEDQ7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:59:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8222E4AE22;
-        Wed,  4 May 2022 09:51:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E904AE3C;
+        Wed,  4 May 2022 09:51:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C3C7B82792;
-        Wed,  4 May 2022 16:51:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 480EFC385A5;
-        Wed,  4 May 2022 16:51:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9230B827AD;
+        Wed,  4 May 2022 16:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C90C385AF;
+        Wed,  4 May 2022 16:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683077;
-        bh=ho3BR3KqDN71DAkSH+NJWR+zGh00X5djrcPFnS6Nuw4=;
+        s=korg; t=1651683079;
+        bh=2AbzTeh1eHwNLj47u0aDJWZ/sZhiCnga/ZsnwBBqyIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nDDzC4XozXEswWwjA48nCbqB6ynROKhODxiLchSMDv6gU5iQVydc5KvFWxt+/KSFB
-         NX1BT790XVtDhDGN1mDSlpldvMmPLaErypUIIzSUDQ2kdoWuk18AOiy31HxwaMhXEh
-         2pWU6gMmDump65WpH+KP/pozEnrwjoX1zOXbrmiA=
+        b=L2Z64MGHuwPw6L+q1z6a/8KGhjQFGDxXYZy7iBTFqWnAV9XlQOJ9G8qakjW29tS4Z
+         MFqu68ZLkRxQvkII5h1tDwmMxUJFGGXT3qbuVbJl5IQhncxA71fMum/2Ib0O1wl2se
+         QjndQQuEGP8MkW5gG5ZiPYNCrswlGKzSFRbYN3vc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
+        stable@vger.kernel.org, Martynas Pumputis <m@lambda.lt>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 068/129] pinctrl: stm32: Keep pinctrl block clock enabled when LEVEL IRQ requested
-Date:   Wed,  4 May 2022 18:44:20 +0200
-Message-Id: <20220504153026.638578916@linuxfoundation.org>
+Subject: [PATCH 5.10 070/129] wireguard: device: check for metadata_dst with skb_valid_dst()
+Date:   Wed,  4 May 2022 18:44:22 +0200
+Message-Id: <20220504153026.785770112@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -55,137 +53,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Nikolay Aleksandrov <razor@blackwall.org>
 
-[ Upstream commit 05d8af449d93e04547b4c6b328e39c890bc803f4 ]
+[ Upstream commit 45ac774c33d834fe9d4de06ab5f1022fe8cd2071 ]
 
-The current EOI handler for LEVEL triggered interrupts calls clk_enable(),
-register IO, clk_disable(). The clock manipulation requires locking which
-happens with IRQs disabled in clk_enable_lock(). Instead of turning the
-clock on and off all the time, enable the clock in case LEVEL interrupt is
-requested and keep the clock enabled until all LEVEL interrupts are freed.
-The LEVEL interrupts are an exception on this platform and seldom used, so
-this does not affect the common case.
+When we try to transmit an skb with md_dst attached through wireguard
+we hit a null pointer dereference in wg_xmit() due to the use of
+dst_mtu() which calls into dst_blackhole_mtu() which in turn tries to
+dereference dst->dev.
 
-This simplifies the LEVEL interrupt handling considerably and also fixes
-the following splat found when using preempt-rt:
- ------------[ cut here ]------------
- WARNING: CPU: 0 PID: 0 at kernel/locking/rtmutex.c:2040 __rt_mutex_trylock+0x37/0x62
- Modules linked in:
- CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.109-rt65-stable-standard-00068-g6a5afc4b1217 #85
- Hardware name: STM32 (Device Tree Support)
- [<c010a45d>] (unwind_backtrace) from [<c010766f>] (show_stack+0xb/0xc)
- [<c010766f>] (show_stack) from [<c06353ab>] (dump_stack+0x6f/0x84)
- [<c06353ab>] (dump_stack) from [<c01145e3>] (__warn+0x7f/0xa4)
- [<c01145e3>] (__warn) from [<c063386f>] (warn_slowpath_fmt+0x3b/0x74)
- [<c063386f>] (warn_slowpath_fmt) from [<c063b43d>] (__rt_mutex_trylock+0x37/0x62)
- [<c063b43d>] (__rt_mutex_trylock) from [<c063c053>] (rt_spin_trylock+0x7/0x16)
- [<c063c053>] (rt_spin_trylock) from [<c036a2f3>] (clk_enable_lock+0xb/0x80)
- [<c036a2f3>] (clk_enable_lock) from [<c036ba69>] (clk_core_enable_lock+0x9/0x18)
- [<c036ba69>] (clk_core_enable_lock) from [<c034e9f3>] (stm32_gpio_get+0x11/0x24)
- [<c034e9f3>] (stm32_gpio_get) from [<c034ef43>] (stm32_gpio_irq_trigger+0x1f/0x48)
- [<c034ef43>] (stm32_gpio_irq_trigger) from [<c014aa53>] (handle_fasteoi_irq+0x71/0xa8)
- [<c014aa53>] (handle_fasteoi_irq) from [<c0147111>] (generic_handle_irq+0x19/0x22)
- [<c0147111>] (generic_handle_irq) from [<c014752d>] (__handle_domain_irq+0x55/0x64)
- [<c014752d>] (__handle_domain_irq) from [<c0346f13>] (gic_handle_irq+0x53/0x64)
- [<c0346f13>] (gic_handle_irq) from [<c0100ba5>] (__irq_svc+0x65/0xc0)
- Exception stack(0xc0e01f18 to 0xc0e01f60)
- 1f00:                                                       0000300c 00000000
- 1f20: 0000300c c010ff01 00000000 00000000 c0e00000 c0e07714 00000001 c0e01f78
- 1f40: c0e07758 00000000 ef7cd0ff c0e01f68 c010554b c0105542 40000033 ffffffff
- [<c0100ba5>] (__irq_svc) from [<c0105542>] (arch_cpu_idle+0xc/0x1e)
- [<c0105542>] (arch_cpu_idle) from [<c063be95>] (default_idle_call+0x21/0x3c)
- [<c063be95>] (default_idle_call) from [<c01324f7>] (do_idle+0xe3/0x1e4)
- [<c01324f7>] (do_idle) from [<c01327b3>] (cpu_startup_entry+0x13/0x14)
- [<c01327b3>] (cpu_startup_entry) from [<c0a00c13>] (start_kernel+0x397/0x3d4)
- [<c0a00c13>] (start_kernel) from [<00000000>] (0x0)
- ---[ end trace 0000000000000002 ]---
+Since wireguard doesn't use md_dsts we should use skb_valid_dst(), which
+checks for DST_METADATA flag, and if it's set, then falls back to
+wireguard's device mtu. That gives us the best chance of transmitting
+the packet; otherwise if the blackhole netdev is used we'd get
+ETH_MIN_MTU.
 
-Power consumption measured on STM32MP157C DHCOM SoM is not increased or
-is below noise threshold.
+ [  263.693506] BUG: kernel NULL pointer dereference, address: 00000000000000e0
+ [  263.693908] #PF: supervisor read access in kernel mode
+ [  263.694174] #PF: error_code(0x0000) - not-present page
+ [  263.694424] PGD 0 P4D 0
+ [  263.694653] Oops: 0000 [#1] PREEMPT SMP NOPTI
+ [  263.694876] CPU: 5 PID: 951 Comm: mausezahn Kdump: loaded Not tainted 5.18.0-rc1+ #522
+ [  263.695190] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
+ [  263.695529] RIP: 0010:dst_blackhole_mtu+0x17/0x20
+ [  263.695770] Code: 00 00 00 0f 1f 44 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 47 10 48 83 e0 fc 8b 40 04 85 c0 75 09 48 8b 07 <8b> 80 e0 00 00 00 c3 66 90 0f 1f 44 00 00 48 89 d7 be 01 00 00 00
+ [  263.696339] RSP: 0018:ffffa4a4422fbb28 EFLAGS: 00010246
+ [  263.696600] RAX: 0000000000000000 RBX: ffff8ac9c3553000 RCX: 0000000000000000
+ [  263.696891] RDX: 0000000000000401 RSI: 00000000fffffe01 RDI: ffffc4a43fb48900
+ [  263.697178] RBP: ffffa4a4422fbb90 R08: ffffffff9622635e R09: 0000000000000002
+ [  263.697469] R10: ffffffff9b69a6c0 R11: ffffa4a4422fbd0c R12: ffff8ac9d18b1a00
+ [  263.697766] R13: ffff8ac9d0ce1840 R14: ffff8ac9d18b1a00 R15: ffff8ac9c3553000
+ [  263.698054] FS:  00007f3704c337c0(0000) GS:ffff8acaebf40000(0000) knlGS:0000000000000000
+ [  263.698470] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ [  263.698826] CR2: 00000000000000e0 CR3: 0000000117a5c000 CR4: 00000000000006e0
+ [  263.699214] Call Trace:
+ [  263.699505]  <TASK>
+ [  263.699759]  wg_xmit+0x411/0x450
+ [  263.700059]  ? bpf_skb_set_tunnel_key+0x46/0x2d0
+ [   263.700382]  ? dev_queue_xmit_nit+0x31/0x2b0
+ [  263.700719]  dev_hard_start_xmit+0xd9/0x220
+ [  263.701047]  __dev_queue_xmit+0x8b9/0xd30
+ [  263.701344]  __bpf_redirect+0x1a4/0x380
+ [  263.701664]  __dev_queue_xmit+0x83b/0xd30
+ [  263.701961]  ? packet_parse_headers+0xb4/0xf0
+ [  263.702275]  packet_sendmsg+0x9a8/0x16a0
+ [  263.702596]  ? _raw_spin_unlock_irqrestore+0x23/0x40
+ [  263.702933]  sock_sendmsg+0x5e/0x60
+ [  263.703239]  __sys_sendto+0xf0/0x160
+ [  263.703549]  __x64_sys_sendto+0x20/0x30
+ [  263.703853]  do_syscall_64+0x3b/0x90
+ [  263.704162]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ [  263.704494] RIP: 0033:0x7f3704d50506
+ [  263.704789] Code: 48 c7 c0 ff ff ff ff eb b7 66 2e 0f 1f 84 00 00 00 00 00 90 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 11 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 72 c3 90 55 48 83 ec 30 44 89 4c 24 2c 4c 89
+ [  263.705652] RSP: 002b:00007ffe954b0b88 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+ [  263.706141] RAX: ffffffffffffffda RBX: 0000558bb259b490 RCX: 00007f3704d50506
+ [  263.706544] RDX: 000000000000004a RSI: 0000558bb259b7b2 RDI: 0000000000000003
+ [  263.706952] RBP: 0000000000000000 R08: 00007ffe954b0b90 R09: 0000000000000014
+ [  263.707339] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe954b0b90
+ [  263.707735] R13: 000000000000004a R14: 0000558bb259b7b2 R15: 0000000000000001
+ [  263.708132]  </TASK>
+ [  263.708398] Modules linked in: bridge netconsole bonding [last unloaded: bridge]
+ [  263.708942] CR2: 00000000000000e0
 
-Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-To: linux-gpio@vger.kernel.org
-Reviewed-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
-Link: https://lore.kernel.org/r/20220421140827.214088-1-marex@denx.de
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Link: https://github.com/cilium/cilium/issues/19428
+Reported-by: Martynas Pumputis <m@lambda.lt>
+Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/stm32/pinctrl-stm32.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/net/wireguard/device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 12d4d92c4a17..b017dd400c46 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -225,6 +225,13 @@ static void stm32_gpio_free(struct gpio_chip *chip, unsigned offset)
- 	pinctrl_gpio_free(chip->base + offset);
- }
- 
-+static int stm32_gpio_get_noclk(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
-+
-+	return !!(readl_relaxed(bank->base + STM32_GPIO_IDR) & BIT(offset));
-+}
-+
- static int stm32_gpio_get(struct gpio_chip *chip, unsigned offset)
- {
- 	struct stm32_gpio_bank *bank = gpiochip_get_data(chip);
-@@ -232,7 +239,7 @@ static int stm32_gpio_get(struct gpio_chip *chip, unsigned offset)
- 
- 	clk_enable(bank->clk);
- 
--	ret = !!(readl_relaxed(bank->base + STM32_GPIO_IDR) & BIT(offset));
-+	ret = stm32_gpio_get_noclk(chip, offset);
- 
- 	clk_disable(bank->clk);
- 
-@@ -316,7 +323,7 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
- 		return;
- 
- 	/* If level interrupt type then retrig */
--	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
-+	level = stm32_gpio_get_noclk(&bank->gpio_chip, d->hwirq);
- 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
- 	    (level == 1 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_HIGH))
- 		irq_chip_retrigger_hierarchy(d);
-@@ -358,6 +365,7 @@ static int stm32_gpio_irq_request_resources(struct irq_data *irq_data)
- {
- 	struct stm32_gpio_bank *bank = irq_data->domain->host_data;
- 	struct stm32_pinctrl *pctl = dev_get_drvdata(bank->gpio_chip.parent);
-+	unsigned long flags;
- 	int ret;
- 
- 	ret = stm32_gpio_direction_input(&bank->gpio_chip, irq_data->hwirq);
-@@ -371,6 +379,10 @@ static int stm32_gpio_irq_request_resources(struct irq_data *irq_data)
- 		return ret;
+diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+index e189eb95678d..e0693cd965ec 100644
+--- a/drivers/net/wireguard/device.c
++++ b/drivers/net/wireguard/device.c
+@@ -19,6 +19,7 @@
+ #include <linux/if_arp.h>
+ #include <linux/icmp.h>
+ #include <linux/suspend.h>
++#include <net/dst_metadata.h>
+ #include <net/icmp.h>
+ #include <net/rtnetlink.h>
+ #include <net/ip_tunnels.h>
+@@ -152,7 +153,7 @@ static netdev_tx_t wg_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		goto err_peer;
  	}
  
-+	flags = irqd_get_trigger_type(irq_data);
-+	if (flags & IRQ_TYPE_LEVEL_MASK)
-+		clk_enable(bank->clk);
-+
- 	return 0;
- }
+-	mtu = skb_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
++	mtu = skb_valid_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
  
-@@ -378,6 +390,9 @@ static void stm32_gpio_irq_release_resources(struct irq_data *irq_data)
- {
- 	struct stm32_gpio_bank *bank = irq_data->domain->host_data;
- 
-+	if (bank->irq_type[irq_data->hwirq] & IRQ_TYPE_LEVEL_MASK)
-+		clk_disable(bank->clk);
-+
- 	gpiochip_unlock_as_irq(&bank->gpio_chip, irq_data->hwirq);
- }
- 
+ 	__skb_queue_head_init(&packets);
+ 	if (!skb_is_gso(skb)) {
 -- 
 2.35.1
 
