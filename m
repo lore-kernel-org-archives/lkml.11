@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 633D8C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A69ABC35280
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376662AbiEDRzC (ORCPT
+        id S1376744AbiEDRzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55172 "EHLO
+        Wed, 4 May 2022 13:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357377AbiEDRPA (ORCPT
+        with ESMTP id S1357795AbiEDRPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6F64C439;
-        Wed,  4 May 2022 09:58:29 -0700 (PDT)
+        Wed, 4 May 2022 13:15:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B3855491;
+        Wed,  4 May 2022 09:59:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34BA461912;
-        Wed,  4 May 2022 16:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84062C385A4;
-        Wed,  4 May 2022 16:58:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 226B0B827A0;
+        Wed,  4 May 2022 16:58:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1441C385A4;
+        Wed,  4 May 2022 16:58:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683508;
-        bh=xZZ2i1Rlmt1chjOQcZ+PBoeIkXNP2liprcvgy86RiRc=;
+        s=korg; t=1651683538;
+        bh=gTSwULzluSSgYRiQsdp4wV9Mnneb1sdZlUUEE99Wd9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=opqfKUDLXVweULYeCWr5AgsnxePIR3XQBUJ81fUy/nG1DZe1FrzyA8HrtyDg2cC5a
-         ZK9Uq+jvgoO08NCStzWqrG5J7fRGQwQkeWl2HPriAqs3imbPPAtj2S3CZGkqvqizQA
-         Fh8buUMGWpeNLizDGk7ZCEW6bL9ja3Lvglovq8HM=
+        b=u8cagx1KZOPDnwGKlieoF0/K4d4nNqqcEMSyEvF5XGRelIFqYVHkVmsMEqtR1Ibv+
+         eY4nHUut86GLzdYltlsahHouPcoEER3MKMx3KCYpLMP0gog8ScqCjoQTOFI0YZyaNM
+         6DgYJJvN5SOuTSuYPHxlfQeHqDpFCw5X7FtPum6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 171/225] cifs: destage any unwritten data to the server before calling copychunk_write
-Date:   Wed,  4 May 2022 18:46:49 +0200
-Message-Id: <20220504153125.495272834@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 209/225] tty: n_gsm: fix insufficient txframe size
+Date:   Wed,  4 May 2022 18:47:27 +0200
+Message-Id: <20220504153128.691067193@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,58 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
+commit 535bf600de75a859698892ee873521a48d289ec1 upstream.
 
-because the copychunk_write might cover a region of the file that has not yet
-been sent to the server and thus fail.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
+(N1) refers to the length of the information field (i.e. user payload).
+However, 'txframe' stores the whole frame including frame header, checksum
+and start/end flags. We also need to consider the byte stuffing overhead.
+Define constant for the protocol overhead and adjust the 'txframe' size
+calculation accordingly to reserve enough space for a complete mux frame
+including byte stuffing for advanced option mode. Note that no byte
+stuffing is applied to the start and end flag.
+Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
+transmission.
 
-A simple way to reproduce this is:
-truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
-
-the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
-the 'fcollapse 16k 24k' due to write-back caching.
-
-fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
-and it will fail serverside since the file is still 0b in size serverside
-until the writes have been destaged.
-To avoid this we must ensure that we destage any unwritten data to the
-server before calling COPYCHUNK_WRITE.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-8-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2ops.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/tty/n_gsm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 5d120cd8bc78..13080d6a140b 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -1861,9 +1861,17 @@ smb2_copychunk_range(const unsigned int xid,
- 	int chunks_copied = 0;
- 	bool chunk_sizes_updated = false;
- 	ssize_t bytes_written, total_bytes_written = 0;
-+	struct inode *inode;
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -73,6 +73,8 @@ module_param(debug, int, 0600);
+  */
+ #define MAX_MRU 1500
+ #define MAX_MTU 1500
++/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
++#define PROT_OVERHEAD 7
+ #define	GSM_NET_TX_TIMEOUT (HZ*10)
  
- 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
- 
-+	/*
-+	 * We need to flush all unwritten data before we can send the
-+	 * copychunk ioctl to the server.
-+	 */
-+	inode = d_inode(trgtfile->dentry);
-+	filemap_write_and_wait(inode->i_mapping);
-+
- 	if (pcchunk == NULL)
- 		return -ENOMEM;
- 
--- 
-2.35.1
-
+ /*
+@@ -2264,7 +2266,7 @@ static struct gsm_mux *gsm_alloc_mux(voi
+ 		kfree(gsm);
+ 		return NULL;
+ 	}
+-	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
++	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
+ 	if (gsm->txframe == NULL) {
+ 		kfree(gsm->buf);
+ 		kfree(gsm);
 
 
