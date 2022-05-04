@@ -2,103 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7104C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA01C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377672AbiEDTrt (ORCPT
+        id S1377718AbiEDTrz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 15:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
+        Wed, 4 May 2022 15:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377615AbiEDTrd (ORCPT
+        with ESMTP id S1377626AbiEDTqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 15:47:33 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFC64E3A6
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 12:43:55 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 244JhL7n001234;
-        Thu, 5 May 2022 04:43:23 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 244JhL7n001234
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651693403;
-        bh=w4C7GITZYrtU5qB494mOB6XmSgN1m8R6tiEfRuraIfQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FwM5SnP/wA1ExO6evdZcg+Z1du3s/S9auQ+Mz+ZwzhVymGUmVapkiar6soeOiJacK
-         7U6XPBZXw4RoYb8Ynp0P5Zo+gzrBTWekW2FtwY80c7C0qPAHMuTy8sB3Bl/AlGL0G1
-         W8xuNtAJVxZqDHuVbQBQZ/0rPf3nIVyfnG8Wl2EAcmNCuVsTYKVRBfHOd03vKdoVly
-         NUfDPV37sERTpFgz+3yFem5fdQoAvnH21VajAVsh0bYY/+HTguZ7BCiEVkTtvZOpME
-         J+Ht/z49DsTsdFaLDAUhNe82xe5v4mLyHxPJGB32KzSttu3vxkvieovoL/P8mL1ssp
-         WCsJe5/Diutvw==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 3/3] module: merge check_exported_symbol() into find_exported_symbol_in_section()
-Date:   Thu,  5 May 2022 04:42:45 +0900
-Message-Id: <20220504194245.1088063-4-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220504194245.1088063-1-masahiroy@kernel.org>
-References: <20220504194245.1088063-1-masahiroy@kernel.org>
+        Wed, 4 May 2022 15:46:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C288C4D9E0;
+        Wed,  4 May 2022 12:43:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5793161BE2;
+        Wed,  4 May 2022 19:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A48FC385AE;
+        Wed,  4 May 2022 19:43:09 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="gOI+pPvW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1651693386;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eh5hrFL6SoGsF2luvmj8kgX+XfJv5UAB+hp+Z2Gh8l8=;
+        b=gOI+pPvWytZbiHHfM24+WPgjRKejf38DstYmHsH5ZBXsDe5gZP1iedq1tfHUGmqfQJedbh
+        f8uHzOLiGsCtmX2chVLt9QM25p0gz4405G8O2vWOCq8v/k68FrsW063wbzth0A1LZsfGRH
+        nSdu3/EYkJ8n+f/8yQHPpEs0PVc6jmw=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c2082e74 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 4 May 2022 19:43:06 +0000 (UTC)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2f7d621d1caso27108307b3.11;
+        Wed, 04 May 2022 12:43:05 -0700 (PDT)
+X-Gm-Message-State: AOAM533OICeQnfc44NfeVL81aAHB3SnOB26Rjeuf+gx5//q3ECTuu4ja
+        zrttoPHLOPq8yoXAV2T8w5SxCm5I/qkmsaRcO1o=
+X-Google-Smtp-Source: ABdhPJx/LLlf9uU3BgMKrDlesdbIqJ0CMZ2ujuXNSd91VO0CROyM9dP7lS+9effRUl7IhGh/0TkAsL77MotuiIOKYfI=
+X-Received: by 2002:a0d:ef03:0:b0:2fa:245:adf3 with SMTP id
+ y3-20020a0def03000000b002fa0245adf3mr11176034ywe.100.1651693384800; Wed, 04
+ May 2022 12:43:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <alpine.LRH.2.02.2204241648270.17244@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wh+Z+OKH3jRttWGHbWSQq2wVMtdnA=ntDiadZu=VxAC7w@mail.gmail.com>
+ <alpine.LRH.2.02.2204250723120.26714@file01.intranet.prod.int.rdu2.redhat.com>
+ <YnI7hE4cIfjsdKSF@antec> <YnJI4Ru0AlUgrr9C@zx2c4.com> <YnJOCbLtdATzC+jn@zx2c4.com>
+ <YnJQXr3igEMTqY3+@smile.fi.intel.com> <YnJSQ3jJyvhmIstD@zx2c4.com> <CAHk-=wgb_eBdjM_mzEvXfRG2EhrSK5MHNGyAj7=4vxvN4U9Rug@mail.gmail.com>
+In-Reply-To: <CAHk-=wgb_eBdjM_mzEvXfRG2EhrSK5MHNGyAj7=4vxvN4U9Rug@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 4 May 2022 21:42:54 +0200
+X-Gmail-Original-Message-ID: <CAHmME9q_-nfGxp8_VCqaritm4N8v8g67AzRjXs9du846JhhpoQ@mail.gmail.com>
+Message-ID: <CAHmME9q_-nfGxp8_VCqaritm4N8v8g67AzRjXs9du846JhhpoQ@mail.gmail.com>
+Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Stafford Horne <shorne@gmail.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        device-mapper development <dm-devel@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mike Snitzer <msnitzer@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Milan Broz <gmazyland@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now check_exported_symbol() always succeeds.
+Hi Linus,
 
-Merge it into find_exported_symbol_in_search() to make the code concise.
+On Wed, May 4, 2022 at 8:00 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Wed, May 4, 2022 at 3:15 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote=
+:
+> >
+> > > Alignment? Compiler bug? HW issue?
+> >
+> > Probably one of those, yea. Removing the instruction addresses, the onl=
+y
+> > difference between the two compiles is: https://xn--4db.cc/Rrn8usaX/dif=
+f#line-440
+>
+> Well, that address doesn't work for me at all. It turns into =D7=90.cc.
+>
+> I'd love to see the compiler problem, since I find those fascinating
+> (mainly because they scare the hell out of me), but those web
+> addresses you use are not working for me.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+=D7=90.cc is correct. If you can't load it, your browser or something in
+your stack is broken. Choosing a non-ASCII domain like that clearly a
+bad decision because people with broken stacks can't load it? Yea,
+maybe. But maybe it's like the arch/alpha/ reordering of dependent
+loads applied to the web... A bit of stretch.
 
- kernel/module.c | 22 +++++++---------------
- 1 file changed, 7 insertions(+), 15 deletions(-)
+> It most definitely looks like an OpenRISC compiler bug - that code
+> doesn't look like it does anything remotely undefined (and with the
+> "unsigned char", nothing implementation-defined either).
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 4380ceb825b9..6b2afce80c32 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -444,17 +444,6 @@ struct find_symbol_arg {
- 	enum mod_license license;
- };
- 
--static bool check_exported_symbol(const struct symsearch *syms,
--				  struct module *owner, unsigned int symnum,
--				  struct find_symbol_arg *fsa)
--{
--	fsa->owner = owner;
--	fsa->crc = symversion(syms->crcs, symnum);
--	fsa->sym = &syms->start[symnum];
--	fsa->license = syms->license;
--	return true;
--}
--
- static unsigned long kernel_symbol_value(const struct kernel_symbol *sym)
- {
- #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
-@@ -500,12 +489,15 @@ static bool find_exported_symbol_in_section(const struct symsearch *syms,
- 
- 	sym = bsearch(fsa->name, syms->start, syms->stop - syms->start,
- 			sizeof(struct kernel_symbol), cmp_name);
-+	if (!sym)
-+		return false;
- 
--	if (sym != NULL && check_exported_symbol(syms, owner,
--						 sym - syms->start, fsa))
--		return true;
-+	fsa->owner = owner;
-+	fsa->crc = symversion(syms->crcs, sym - syms->start);
-+	fsa->sym = sym;
-+	fsa->license = syms->license;
- 
--	return false;
-+	return true;
- }
- 
- /*
--- 
-2.32.0
+I'm not so certain it's in the compiler anymore, actually. The bug
+exhibits itself even when that code isn't actually called. Adding nops
+to unrelated code also makes the problem go away. And removing these
+nops [1] makes the problem go away too. So maybe it's looking more
+like a linker bug (or linker script bug) related to alignment. Or
+whatever is jumping between contexts in the preemption code and
+restoring registers and such is assuming certain things about code
+layout that doesn't always hold. More fiddling is necessary still.
 
+Jason
+
+[1] https://lore.kernel.org/lkml/20220504110911.283525-1-Jason@zx2c4.com/
