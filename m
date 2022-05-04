@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FFFC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49449C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359675AbiEDRtl (ORCPT
+        id S1359702AbiEDRtr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        Wed, 4 May 2022 13:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357711AbiEDRPM (ORCPT
+        with ESMTP id S1357782AbiEDRPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:12 -0400
+        Wed, 4 May 2022 13:15:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B35C4C78F;
-        Wed,  4 May 2022 09:58:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760C355489;
+        Wed,  4 May 2022 09:59:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 666BB61770;
-        Wed,  4 May 2022 16:58:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3A4CC385B0;
-        Wed,  4 May 2022 16:58:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E786195B;
+        Wed,  4 May 2022 16:58:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 731D3C385AA;
+        Wed,  4 May 2022 16:58:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683534;
-        bh=uApf3v+9kesqtJgfXozi9r+RG/9L8H2PAKWXC7sppRQ=;
+        s=korg; t=1651683517;
+        bh=u9mrsRgfGoMizZbDVPeNz/JA+WQ2trwoY2joYBPE0rY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=womKuCWyVAHDoom+6bd6XQuccus/Zui99EhHwGpadZ+wwMFPu/HttxVOEM9hERlK5
-         Q7+dYEBVy0BEFD0v0I/80O2B/dMT6qnf4zFyWVbXnDbJMF88PSwPhTW8i2FzBtJi0X
-         P6RpJXg1vf4EYS9hFFE9SLc3D7mBdrwRNUwyhJnA=
+        b=1iD4PtX5v94434qdQ3RhjrX0+x8BzqLpeLApCCkNhi3QWrre2Y8TIhMaf2NoosrkZ
+         Hfx2Rjj8pEPD9TQiinfpZhbhrcve+jLHQcqnSSKYfzWtLu7aaeDLJdtq9b1SrpMFU9
+         l/1mvVD5+lAQ7Xrx4oenBcngP9txpWKVtCqaVf/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>, Qu Wenruo <wqu@suse.com>,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Christoph Hellwig <hch@lst.de>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 192/225] btrfs: fix direct I/O writes for split bios on zoned devices
-Date:   Wed,  4 May 2022 18:47:10 +0200
-Message-Id: <20220504153127.384584893@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Willi <martin@strongswan.org>,
+        David Ahern <dsahern@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.17 184/225] netfilter: Update ip6_route_me_harder to consider L3 domain
+Date:   Wed,  4 May 2022 18:47:02 +0200
+Message-Id: <20220504153126.822446878@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,51 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Martin Willi <martin@strongswan.org>
 
-commit 0fdf977d4576ee0decd612e22f6a837a239573cc upstream.
+commit 8ddffdb9442a9d60b4a6e679ac48d7d21403a674 upstream.
 
-When a bio is split in btrfs_submit_direct, dip->file_offset contains
-the file offset for the first bio.  But this means the start value used
-in btrfs_end_dio_bio to record the write location for zone devices is
-incorrect for subsequent bios.
+The commit referenced below fixed packet re-routing if Netfilter mangles
+a routing key property of a packet and the packet is routed in a VRF L3
+domain. The fix, however, addressed IPv4 re-routing, only.
 
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Naohiro Aota <naohiro.aota@wdc.com>
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: David Sterba <dsterba@suse.com>
+This commit applies the same behavior for IPv6. While at it, untangle
+the nested ternary operator to make the code more readable.
+
+Fixes: 6d8b49c3a3a3 ("netfilter: Update ip_route_me_harder to consider L3 domain")
+Cc: stable@vger.kernel.org
+Signed-off-by: Martin Willi <martin@strongswan.org>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/inode.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv6/netfilter.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -7845,6 +7845,7 @@ static blk_status_t btrfs_submit_bio_sta
- static void btrfs_end_dio_bio(struct bio *bio)
+--- a/net/ipv6/netfilter.c
++++ b/net/ipv6/netfilter.c
+@@ -24,14 +24,13 @@ int ip6_route_me_harder(struct net *net,
  {
- 	struct btrfs_dio_private *dip = bio->bi_private;
-+	struct btrfs_bio *bbio = btrfs_bio(bio);
- 	blk_status_t err = bio->bi_status;
+ 	const struct ipv6hdr *iph = ipv6_hdr(skb);
+ 	struct sock *sk = sk_to_full_sk(sk_partial);
++	struct net_device *dev = skb_dst(skb)->dev;
+ 	struct flow_keys flkeys;
+ 	unsigned int hh_len;
+ 	struct dst_entry *dst;
+ 	int strict = (ipv6_addr_type(&iph->daddr) &
+ 		      (IPV6_ADDR_MULTICAST | IPV6_ADDR_LINKLOCAL));
+ 	struct flowi6 fl6 = {
+-		.flowi6_oif = sk && sk->sk_bound_dev_if ? sk->sk_bound_dev_if :
+-			strict ? skb_dst(skb)->dev->ifindex : 0,
+ 		.flowi6_mark = skb->mark,
+ 		.flowi6_uid = sock_net_uid(net, sk),
+ 		.daddr = iph->daddr,
+@@ -39,6 +38,13 @@ int ip6_route_me_harder(struct net *net,
+ 	};
+ 	int err;
  
- 	if (err)
-@@ -7855,12 +7856,12 @@ static void btrfs_end_dio_bio(struct bio
- 			   bio->bi_iter.bi_size, err);
- 
- 	if (bio_op(bio) == REQ_OP_READ)
--		err = btrfs_check_read_dio_bio(dip, btrfs_bio(bio), !err);
-+		err = btrfs_check_read_dio_bio(dip, bbio, !err);
- 
- 	if (err)
- 		dip->dio_bio->bi_status = err;
- 
--	btrfs_record_physical_zoned(dip->inode, dip->file_offset, bio);
-+	btrfs_record_physical_zoned(dip->inode, bbio->file_offset, bio);
- 
- 	bio_put(bio);
- 	btrfs_dio_private_put(dip);
++	if (sk && sk->sk_bound_dev_if)
++		fl6.flowi6_oif = sk->sk_bound_dev_if;
++	else if (strict)
++		fl6.flowi6_oif = dev->ifindex;
++	else
++		fl6.flowi6_oif = l3mdev_master_ifindex(dev);
++
+ 	fib6_rules_early_flow_dissect(net, skb, &fl6, &flkeys);
+ 	dst = ip6_route_output(net, sk, &fl6);
+ 	err = dst->error;
 
 
