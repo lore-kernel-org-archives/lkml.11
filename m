@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D63C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355079AbiEDRgk (ORCPT
+        id S1357750AbiEDRgx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
+        Wed, 4 May 2022 13:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356945AbiEDRJu (ORCPT
+        with ESMTP id S1356947AbiEDRJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C4B4739C;
-        Wed,  4 May 2022 09:56:35 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D253A473A3;
+        Wed,  4 May 2022 09:56:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E953561794;
-        Wed,  4 May 2022 16:56:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B46C385AF;
-        Wed,  4 May 2022 16:56:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89DECB82737;
+        Wed,  4 May 2022 16:56:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FBDC385A4;
+        Wed,  4 May 2022 16:56:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683394;
-        bh=0ttIZ0ihhyBidXV9m5MwjSKUbj2JnWrIM5mZ6cMm7M8=;
+        s=korg; t=1651683395;
+        bh=sCjBYryfbrDNUGqpThNG1E4jFTg2IH/IIsr3Om6bE/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lYrmYT9GlpEb0B6xKTGGp4ucJC2pTLAZRcXWp4xpNOchO0A9KlyQ7byFOuQj3aJPS
-         FuAeSc1/kW3Pwss1bCCuGtp7rrHRe6dUFcSl1kjGw3fABAllv2xBiSeh9UL4/t29XS
-         rN5yQjFkrkYZTJ0x07kf2Nzhj8Pv99sPf7jsMinw=
+        b=K6/1ni9l1DxkjupGcSw0iZsWWzJTumbJUQz5gOdgtNGXm1YiRGbs00s78gvnFIMYo
+         2p4wZuHKu15SHthIbAiZeALFVPl36nkt/eTBRSXzV7ZUTWOysQ4SEP0x8nZVK+VziU
+         VzNiQT1Ry9wFbboHslwRXRKS69+3M8fIQFTvktWw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        stable@vger.kernel.org, Benoit Parrot <bparrot@ti.com>,
+        Kevin Hilman <khilman@baylibre.com>,
         Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 079/225] bus: ti-sysc: Make omap3 gpt12 quirk handling SoC specific
-Date:   Wed,  4 May 2022 18:45:17 +0200
-Message-Id: <20220504153118.282106726@linuxfoundation.org>
+Subject: [PATCH 5.17 080/225] ARM: dts: dra7: Fix suspend warning for vpe powerdomain
+Date:   Wed,  4 May 2022 18:45:18 +0200
+Message-Id: <20220504153118.338546818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,61 +53,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit a12315d6d27093392b6c634e1d35a59f1d1f7a59 ]
+[ Upstream commit 8d2453d9a307c2eafd21242dd73f35f05fb7ce74 ]
 
-On beagleboard revisions A to B4 we need to use gpt12 as the system timer.
-However, the quirk handling added for gpt12 caused a regression for system
-suspend for am335x as the PM coprocessor needs the timers idled for
-suspend.
+We currently are getting the following warning after a system suspend:
 
-Let's make the gpt12 quirk specific to omap34xx, other SoCs don't need
-it. Beagleboard revisions C and later no longer need to use the gpt12
-related quirk. Then at some point, if we decide to drop support for the old
-beagleboard revisions A to B4, we can also drop the gpt12 related quirks
-completely.
+Powerdomain (vpe_pwrdm) didn't enter target state 0
 
-Fixes: 3ff340e24c9d ("bus: ti-sysc: Fix gpt12 system timer issue with reserved status")
+Looks like this is because the STANDBYMODE bit for SMART_IDLE should
+not be used. The TRM "Table 12-348. VPE_SYSCONFIG" says that the value
+for SMART_IDLE is "0x2: Same behavior as bit-field value of 0x1". But
+if the SMART_IDLE value is used, PM_VPE_PWRSTST LASTPOWERSTATEENTERED
+bits always show value of 3.
+
+Let's fix the issue by dropping SMART_IDLE for vpe. And let's also add
+the missing the powerdomain for vpe.
+
+Fixes: 1a2095160594 ("ARM: dts: dra7: Add ti-sysc node for VPE")
+Cc: Benoit Parrot <bparrot@ti.com>
 Reported-by: Kevin Hilman <khilman@baylibre.com>
-Suggested-by: Kevin Hilman <khilman@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Tested-by: Kevin Hilman <khilman@baylibre.com>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/ti-sysc.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/dra7-l4.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index 54c0ee6dda30..7a1b1f9e4933 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -3232,13 +3232,27 @@ static int sysc_check_disabled_devices(struct sysc *ddata)
-  */
- static int sysc_check_active_timer(struct sysc *ddata)
- {
-+	int error;
-+
- 	if (ddata->cap->type != TI_SYSC_OMAP2_TIMER &&
- 	    ddata->cap->type != TI_SYSC_OMAP4_TIMER)
- 		return 0;
- 
-+	/*
-+	 * Quirk for omap3 beagleboard revision A to B4 to use gpt12.
-+	 * Revision C and later are fixed with commit 23885389dbbb ("ARM:
-+	 * dts: Fix timer regression for beagleboard revision c"). This all
-+	 * can be dropped if we stop supporting old beagleboard revisions
-+	 * A to B4 at some point.
-+	 */
-+	if (sysc_soc->soc == SOC_3430)
-+		error = -ENXIO;
-+	else
-+		error = -EBUSY;
-+
- 	if ((ddata->cfg.quirks & SYSC_QUIRK_NO_RESET_ON_INIT) &&
- 	    (ddata->cfg.quirks & SYSC_QUIRK_NO_IDLE))
--		return -ENXIO;
-+		return error;
- 
- 	return 0;
- }
+diff --git a/arch/arm/boot/dts/dra7-l4.dtsi b/arch/arm/boot/dts/dra7-l4.dtsi
+index 0a11bacffc1f..5733e3a4ea8e 100644
+--- a/arch/arm/boot/dts/dra7-l4.dtsi
++++ b/arch/arm/boot/dts/dra7-l4.dtsi
+@@ -4188,11 +4188,11 @@ target-module@1d0010 {			/* 0x489d0000, ap 27 30.0 */
+ 			reg = <0x1d0010 0x4>;
+ 			reg-names = "sysc";
+ 			ti,sysc-midle = <SYSC_IDLE_FORCE>,
+-					<SYSC_IDLE_NO>,
+-					<SYSC_IDLE_SMART>;
++					<SYSC_IDLE_NO>;
+ 			ti,sysc-sidle = <SYSC_IDLE_FORCE>,
+ 					<SYSC_IDLE_NO>,
+ 					<SYSC_IDLE_SMART>;
++			power-domains = <&prm_vpe>;
+ 			clocks = <&vpe_clkctrl DRA7_VPE_VPE_CLKCTRL 0>;
+ 			clock-names = "fck";
+ 			#address-cells = <1>;
 -- 
 2.35.1
 
