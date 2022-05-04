@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CA5C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359582AbiEDRtY (ORCPT
+        id S1359653AbiEDRti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
+        Wed, 4 May 2022 13:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357617AbiEDRPI (ORCPT
+        with ESMTP id S1357665AbiEDRPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3384255232;
-        Wed,  4 May 2022 09:58:47 -0700 (PDT)
+        Wed, 4 May 2022 13:15:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B394B55353;
+        Wed,  4 May 2022 09:58:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF773B8279A;
-        Wed,  4 May 2022 16:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53591C385A5;
-        Wed,  4 May 2022 16:58:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3445ECE2625;
+        Wed,  4 May 2022 16:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59836C385AF;
+        Wed,  4 May 2022 16:58:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683525;
-        bh=ophCrHnMvM70K0MIWqyD3/Tssb7yaHW4PHEOPQ8QnR8=;
+        s=korg; t=1651683503;
+        bh=XtYdCKKZ7/RbwsonQHN6VD23oGwc3Zi25SgQJ6Oj4q8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gxb9IouYjegSHCBrI028rGVZMOyR9GV7Gz5VAatE/p9wY9it5GZh1NVnIbI9NHERa
-         6UR31T4hhv8zFEyrXqxykivAIegzSORkJJ83LvsXhs0q6uBXbDLk2DpuvzSuftfpTY
-         Kq4UlQsbzxhOleE+hxgyeFiOCBQIpY2/JjIknKN4=
+        b=W4IulEXbWmjtpLT+MDAFwQgOCIM4YZJoDoyD/7whpghmMZRkMAKcKhIegzsjPTH2v
+         aW4TM0agUIzZ5Trg/sby7xAIwom/fK6/oWN5XEK3yko1bhhO8ilvgTTA9VT9c4WZ5N
+         A+qHBwgiV9WFhHH6SujJi1ZEGQ7tunvH1mf5yXrE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.17 187/225] drm/i915: Fix SEL_FETCH_PLANE_*(PIPE_B+) register addresses
-Date:   Wed,  4 May 2022 18:47:05 +0200
-Message-Id: <20220504153127.025088737@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 170/225] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
+Date:   Wed,  4 May 2022 18:46:48 +0200
+Message-Id: <20220504153125.412043593@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,35 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Imre Deak <imre.deak@intel.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 4ae4dd2e26fdfebf0b8c6af6c325383eadfefdb4 upstream.
+[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
 
-Fix typo in the _SEL_FETCH_PLANE_BASE_1_B register base address.
+The first "if" condition in __memcpy_flushcache is supposed to align the
+"dest" variable to 8 bytes and copy data up to this alignment.  However,
+this condition may misbehave if "size" is greater than 4GiB.
 
-Fixes: a5523e2ff074a5 ("drm/i915: Add PSR2 selective fetch registers")
-Cc: José Roberto de Souza <jose.souza@intel.com>
-Cc: <stable@vger.kernel.org> # v5.9+
-Signed-off-by: Imre Deak <imre.deak@intel.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220421162221.2261895-1-imre.deak@intel.com
-(cherry picked from commit af2cbc6ef967f61711a3c40fca5366ea0bc7fecc)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
+arguments to unsigned int and selects the smaller one.  However, the
+cast truncates high bits in "size" and it results in misbehavior.
+
+For example:
+
+	suppose that size == 0x100000001, dest == 0x200000002
+	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
+	...
+	dest += 0x1;
+
+so we copy just one byte "and" dest remains unaligned.
+
+This patch fixes the bug by replacing unsigned with size_t.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/i915_reg.h |    2 +-
+ arch/x86/lib/usercopy_64.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -7578,7 +7578,7 @@ enum {
- #define _SEL_FETCH_PLANE_BASE_6_A		0x70940
- #define _SEL_FETCH_PLANE_BASE_7_A		0x70960
- #define _SEL_FETCH_PLANE_BASE_CUR_A		0x70880
--#define _SEL_FETCH_PLANE_BASE_1_B		0x70990
-+#define _SEL_FETCH_PLANE_BASE_1_B		0x71890
+diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
+index 0402a749f3a0..0ae6cf804197 100644
+--- a/arch/x86/lib/usercopy_64.c
++++ b/arch/x86/lib/usercopy_64.c
+@@ -119,7 +119,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
  
- #define _SEL_FETCH_PLANE_BASE_A(plane) _PICK(plane, \
- 					     _SEL_FETCH_PLANE_BASE_1_A, \
+ 	/* cache copy and flush to align dest */
+ 	if (!IS_ALIGNED(dest, 8)) {
+-		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
++		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
+ 
+ 		memcpy((void *) dest, (void *) source, len);
+ 		clean_cache_range((void *) dest, len);
+-- 
+2.35.1
+
 
 
