@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D060C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354833AbiEDRHM (ORCPT
+        id S1354587AbiEDRHT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
+        Wed, 4 May 2022 13:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355331AbiEDQ7y (ORCPT
+        with ESMTP id S1355297AbiEDQ7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:54 -0400
+        Wed, 4 May 2022 12:59:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5584AE16;
-        Wed,  4 May 2022 09:51:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5B2496AD;
+        Wed,  4 May 2022 09:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD518617C3;
-        Wed,  4 May 2022 16:51:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3209DC385A5;
-        Wed,  4 May 2022 16:51:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF957617E7;
+        Wed,  4 May 2022 16:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45BB8C385A5;
+        Wed,  4 May 2022 16:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683088;
-        bh=8/4Fbs9/GbSJ2Y8kjigEuSA44LNwUjllrxVYoEi/q6k=;
+        s=korg; t=1651683085;
+        bh=1NXmhjDJG8sVMXeuR7P7595+33BQJhz9J+Aca7pXwWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVTAjgYIRjR7a9G9STfhXY2oVngKlwRjABkrybN6gRBsJWHeffmyAIQ4wQ08aD5C0
-         bhEGKRvzuBzmseRyx6vtY5cp8YdUjKxfDL0i2HAo8GpPcmqAx4PKsmJoZq8XRRq2yI
-         vpNTwOtlVTBGwvDrykdK92t+mINCDJffKoo59uzM=
+        b=bqJG6Rl3LrJzhG/CRDPc4E2jhUKvt/FSyjSD/a6tDtA71mL697TsILmw7qKwZGi8C
+         lj/gK4wJz3smLx5ea9HEA10vBVjpiO1x43mK4xCM/rvUt2ZbO5u6bCT+dAW+m2jPLc
+         9q173br2Y5JEpm/oLlKdg7DmbRSY+fTnXmpslBwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 092/129] tls: Skip tls_append_frag on zero copy size
-Date:   Wed,  4 May 2022 18:44:44 +0200
-Message-Id: <20220504153028.256636406@linuxfoundation.org>
+Subject: [PATCH 5.10 066/129] pinctrl: rockchip: fix RK3308 pinmux bits
+Date:   Wed,  4 May 2022 18:44:18 +0200
+Message-Id: <20220504153026.508369870@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,57 +51,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Luca Ceresoli <luca.ceresoli@bootlin.com>
 
-[ Upstream commit a0df71948e9548de819a6f1da68f5f1742258a52 ]
+[ Upstream commit 1f3e25a068832f8892a5ff71467622d012f5bc9f ]
 
-Calling tls_append_frag when max_open_record_len == record->len might
-add an empty fragment to the TLS record if the call happens to be on the
-page boundary. Normally tls_append_frag coalesces the zero-sized
-fragment to the previous one, but not if it's on page boundary.
+Some of the pinmuxing bits described in rk3308_mux_recalced_data are wrong,
+pointing to non-existing registers.
 
-If a resync happens then, the mlx5 driver posts dump WQEs in
-tx_post_resync_dump, and the empty fragment may become a data segment
-with byte_count == 0, which will confuse the NIC and lead to a CQE
-error.
+Fix the entire table.
 
-This commit fixes the described issue by skipping tls_append_frag on
-zero size to avoid adding empty fragments. The fix is not in the driver,
-because an empty fragment is hardly the desired behavior.
+Also add a comment in front of each entry with the same string that appears
+in the datasheet to make the table easier to compare with the docs.
 
-Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Link: https://lore.kernel.org/r/20220426154949.159055-1-maximmi@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This fix has been tested on real hardware for the gpio3b3_sel entry.
+
+Fixes: 7825aeb7b208 ("pinctrl: rockchip: add rk3308 SoC support")
+Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20220420142432.248565-1-luca.ceresoli@bootlin.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tls/tls_device.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/pinctrl/pinctrl-rockchip.c | 45 ++++++++++++++++++++----------
+ 1 file changed, 30 insertions(+), 15 deletions(-)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index f718c7346088..1f56225a10e3 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -483,11 +483,13 @@ static int tls_push_data(struct sock *sk,
- 		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
- 		copy = min_t(size_t, copy, (max_open_record_len - record->len));
+diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
+index 9df48e0cf4cb..07b1204174bf 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -663,95 +663,110 @@ static  struct rockchip_mux_recalced_data rk3128_mux_recalced_data[] = {
  
--		rc = tls_device_copy_data(page_address(pfrag->page) +
--					  pfrag->offset, copy, msg_iter);
--		if (rc)
--			goto handle_error;
--		tls_append_frag(record, pfrag, copy);
-+		if (copy) {
-+			rc = tls_device_copy_data(page_address(pfrag->page) +
-+						  pfrag->offset, copy, msg_iter);
-+			if (rc)
-+				goto handle_error;
-+			tls_append_frag(record, pfrag, copy);
-+		}
+ static struct rockchip_mux_recalced_data rk3308_mux_recalced_data[] = {
+ 	{
++		/* gpio1b6_sel */
+ 		.num = 1,
+ 		.pin = 14,
+ 		.reg = 0x28,
+ 		.bit = 12,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1b7_sel */
+ 		.num = 1,
+ 		.pin = 15,
+ 		.reg = 0x2c,
+ 		.bit = 0,
+ 		.mask = 0x3
+ 	}, {
++		/* gpio1c2_sel */
+ 		.num = 1,
+ 		.pin = 18,
+ 		.reg = 0x30,
+ 		.bit = 4,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c3_sel */
+ 		.num = 1,
+ 		.pin = 19,
+ 		.reg = 0x30,
+ 		.bit = 8,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c4_sel */
+ 		.num = 1,
+ 		.pin = 20,
+ 		.reg = 0x30,
+ 		.bit = 12,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c5_sel */
+ 		.num = 1,
+ 		.pin = 21,
+ 		.reg = 0x34,
+ 		.bit = 0,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c6_sel */
+ 		.num = 1,
+ 		.pin = 22,
+ 		.reg = 0x34,
+ 		.bit = 4,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c7_sel */
+ 		.num = 1,
+ 		.pin = 23,
+ 		.reg = 0x34,
+ 		.bit = 8,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio3b4_sel */
+ 		.num = 3,
+ 		.pin = 12,
+ 		.reg = 0x68,
+ 		.bit = 8,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio3b5_sel */
+ 		.num = 3,
+ 		.pin = 13,
+ 		.reg = 0x68,
+ 		.bit = 12,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio2a2_sel */
+ 		.num = 2,
+ 		.pin = 2,
+-		.reg = 0x608,
+-		.bit = 0,
+-		.mask = 0x7
++		.reg = 0x40,
++		.bit = 4,
++		.mask = 0x3
+ 	}, {
++		/* gpio2a3_sel */
+ 		.num = 2,
+ 		.pin = 3,
+-		.reg = 0x608,
+-		.bit = 4,
+-		.mask = 0x7
++		.reg = 0x40,
++		.bit = 6,
++		.mask = 0x3
+ 	}, {
++		/* gpio2c0_sel */
+ 		.num = 2,
+ 		.pin = 16,
+-		.reg = 0x610,
+-		.bit = 8,
+-		.mask = 0x7
++		.reg = 0x50,
++		.bit = 0,
++		.mask = 0x3
+ 	}, {
++		/* gpio3b2_sel */
+ 		.num = 3,
+ 		.pin = 10,
+-		.reg = 0x610,
+-		.bit = 0,
+-		.mask = 0x7
++		.reg = 0x68,
++		.bit = 4,
++		.mask = 0x3
+ 	}, {
++		/* gpio3b3_sel */
+ 		.num = 3,
+ 		.pin = 11,
+-		.reg = 0x610,
+-		.bit = 4,
+-		.mask = 0x7
++		.reg = 0x68,
++		.bit = 6,
++		.mask = 0x3
+ 	},
+ };
  
- 		size -= copy;
- 		if (!size) {
 -- 
 2.35.1
 
