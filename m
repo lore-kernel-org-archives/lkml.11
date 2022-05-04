@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82C4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CA5C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359380AbiEDRtH (ORCPT
+        id S1359582AbiEDRtY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
+        Wed, 4 May 2022 13:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357552AbiEDRPG (ORCPT
+        with ESMTP id S1357617AbiEDRPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:06 -0400
+        Wed, 4 May 2022 13:15:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E535C55201;
-        Wed,  4 May 2022 09:58:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3384255232;
+        Wed,  4 May 2022 09:58:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE298B827A5;
-        Wed,  4 May 2022 16:58:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E099C385A5;
-        Wed,  4 May 2022 16:58:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF773B8279A;
+        Wed,  4 May 2022 16:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53591C385A5;
+        Wed,  4 May 2022 16:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683495;
-        bh=34yqrLUrOLP4CJ6yBqeL5xAplowQx5MqJmelcFAmDbQ=;
+        s=korg; t=1651683525;
+        bh=ophCrHnMvM70K0MIWqyD3/Tssb7yaHW4PHEOPQ8QnR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uCGEuWHZCeyqZ/+u1uB3aCdbEFG8+I6oIVxSk7nDqX7+6M3+VmuaEcHcQ5gxjOefJ
-         MLKpm6fntya7HFVlbRZEeCOf2rPo6HXeN4fs/GHUnjJNfaRhbBLU2bbIM4R/wsxN/S
-         5nf2BgXAwn2xWsxLaN1FIH+QDgjunCdSll3uG4o8=
+        b=Gxb9IouYjegSHCBrI028rGVZMOyR9GV7Gz5VAatE/p9wY9it5GZh1NVnIbI9NHERa
+         6UR31T4hhv8zFEyrXqxykivAIegzSORkJJ83LvsXhs0q6uBXbDLk2DpuvzSuftfpTY
+         Kq4UlQsbzxhOleE+hxgyeFiOCBQIpY2/JjIknKN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 153/225] net: enetc: allow tc-etf offload even with NETIF_F_CSUM_MASK
-Date:   Wed,  4 May 2022 18:46:31 +0200
-Message-Id: <20220504153123.731449210@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: [PATCH 5.17 187/225] drm/i915: Fix SEL_FETCH_PLANE_*(PIPE_B+) register addresses
+Date:   Wed,  4 May 2022 18:47:05 +0200
+Message-Id: <20220504153127.025088737@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,53 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Imre Deak <imre.deak@intel.com>
 
-[ Upstream commit 66a2f5ef68faaf950746747d790a0c95f7ec96d2 ]
+commit 4ae4dd2e26fdfebf0b8c6af6c325383eadfefdb4 upstream.
 
-The Time-Specified Departure feature is indeed mutually exclusive with
-TX IP checksumming in ENETC, but TX checksumming in itself is broken and
-was removed from this driver in commit 82728b91f124 ("enetc: Remove Tx
-checksumming offload code").
+Fix typo in the _SEL_FETCH_PLANE_BASE_1_B register base address.
 
-The blamed commit declared NETIF_F_HW_CSUM in dev->features to comply
-with software TSO's expectations, and still did the checksumming in
-software by calling skb_checksum_help(). So there isn't any restriction
-for the Time-Specified Departure feature.
-
-However, enetc_setup_tc_txtime() doesn't understand that, and blindly
-looks for NETIF_F_CSUM_MASK.
-
-Instead of checking for things which can literally never happen in the
-current code base, just remove the check and let the driver offload
-tc-etf qdiscs.
-
-Fixes: acede3c5dad5 ("net: enetc: declare NETIF_F_HW_CSUM and do it in software")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220427203017.1291634-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a5523e2ff074a5 ("drm/i915: Add PSR2 selective fetch registers")
+Cc: José Roberto de Souza <jose.souza@intel.com>
+Cc: <stable@vger.kernel.org> # v5.9+
+Signed-off-by: Imre Deak <imre.deak@intel.com>
+Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220421162221.2261895-1-imre.deak@intel.com
+(cherry picked from commit af2cbc6ef967f61711a3c40fca5366ea0bc7fecc)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_qos.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/gpu/drm/i915/i915_reg.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index d3d7172e0fcc..3b148d4e0f0c 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -308,10 +308,6 @@ int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data)
- 	if (tc < 0 || tc >= priv->num_tx_rings)
- 		return -EINVAL;
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -7578,7 +7578,7 @@ enum {
+ #define _SEL_FETCH_PLANE_BASE_6_A		0x70940
+ #define _SEL_FETCH_PLANE_BASE_7_A		0x70960
+ #define _SEL_FETCH_PLANE_BASE_CUR_A		0x70880
+-#define _SEL_FETCH_PLANE_BASE_1_B		0x70990
++#define _SEL_FETCH_PLANE_BASE_1_B		0x71890
  
--	/* Do not support TXSTART and TX CSUM offload simutaniously */
--	if (ndev->features & NETIF_F_CSUM_MASK)
--		return -EBUSY;
--
- 	/* TSD and Qbv are mutually exclusive in hardware */
- 	if (enetc_rd(&priv->si->hw, ENETC_QBV_PTGCR_OFFSET) & ENETC_QBV_TGE)
- 		return -EBUSY;
--- 
-2.35.1
-
+ #define _SEL_FETCH_PLANE_BASE_A(plane) _PICK(plane, \
+ 					     _SEL_FETCH_PLANE_BASE_1_A, \
 
 
