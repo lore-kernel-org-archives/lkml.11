@@ -2,130 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A41C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 00:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E53C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 00:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233804AbiEEAFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 20:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
+        id S237805AbiEEAFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 20:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382706AbiEDX4R (ORCPT
+        with ESMTP id S1382746AbiEDXuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:56:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58F04E3BD;
-        Wed,  4 May 2022 16:52:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A2E0B827B2;
-        Wed,  4 May 2022 23:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27B5AC385A4;
-        Wed,  4 May 2022 23:52:36 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Xc8ZsKYy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651708354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RhWrhB/pJDJtUIEjANxHfC2hV+/L/PFBqp4ZrDUMmMs=;
-        b=Xc8ZsKYyfQYJsg94Vj7Frp+VSERu3KKWi7wDL1PzWR3et9yruS8xtiHdbfGZTobV5aghAA
-        SVmw0WOSvhkAw97LNk2Nq3Pg1pZ+I/QZVuf1zX6Tc3g8pakLowDOHMyBaGxQjv/8hIck4J
-        a9sPVHQj/eUEKnQJR7j7whiHw0/BQbU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2e9307e2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 4 May 2022 23:52:34 +0000 (UTC)
-Date:   Thu, 5 May 2022 01:52:32 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Filipe Manana <fdmanana@suse.com>, linux-crypto@vger.kernel.org
-Subject: Re: [patch 3/3] x86/fpu: Make FPU protection more robust
-Message-ID: <YnMRwPFfvB0RlBow@zx2c4.com>
-References: <20220501192740.203963477@linutronix.de>
- <20220501193102.704267030@linutronix.de>
- <Ym/sHqKqmLOJubgE@zn.tnic>
- <87k0b4lydr.ffs@tglx>
- <YnDwjjdiSQ5Yml6E@hirez.programming.kicks-ass.net>
- <87fslpjomx.ffs@tglx>
- <YnKh96isoB7jiFrv@zx2c4.com>
- <87czgtjlfq.ffs@tglx>
- <YnLOXZp6WgH7ULVU@zx2c4.com>
- <87wnf1huwj.ffs@tglx>
+        Wed, 4 May 2022 19:50:54 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC2C220EE
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:47:16 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id u3so3977268wrg.3
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a3PQkN+gf21RggCfRlbnzAg3Y0IDK9AvrHUeXDspmDA=;
+        b=s8D0hdEErUtB/tOqqi5koPP1ObIltDHxJsF3vu7tUYKf+QVqE2BCZwe8TwmjVrWD/p
+         tZYhf6h5cY5lziFt0dxJxyYtlSU3McdElqedVlwADKJdcMW3hEghSebK86BKQW5Gk1rb
+         h5RLyhUpDnIbB+E5g3WraStYDvzpqQwqSxKw/FT08LqpZ21OKQdNbLlDufQWqebOYO6o
+         RL8UdgO3Vne1Od0ianbjpjNNU5emYhQSEnSwmyU8z94ORg7Xfr45C6XXUIPg44vwPA+9
+         HfwPApdY1k0FIIsOo8YZalDDuZ7z2+ZizWaJ+xN+YlhWvw0IZBOcBjYhbgdEwstQh2OK
+         m1Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a3PQkN+gf21RggCfRlbnzAg3Y0IDK9AvrHUeXDspmDA=;
+        b=u+2aNCZSM30ZLc6XvI5y7o53IXP5XPcfo7maR+C6D0ycutKZcQGO7YHukqdsMFuTxL
+         bcL+yyLB47mCTMGvjAs7wo2fJQS7lhtfxTclNY3jEKX7+WxDsTs1Hfqlxx1XIaz8UvOv
+         2b+9SPJzZTI0Yi5U3IJNeBdWcI63GE48+n/zDgCVhEhkes9Sv0QCSpTpDGmbpiab6zy0
+         4BZa8ulZlWgcXnrP1KEYs3qvxVnuf8NgzLnnAflzGJbfCtoQ4PvjYpDHOD9TJuWkqysZ
+         3Cx3e6Ciq0CeT7oxBTUZ7+TzqfJgPziBc6MK5eupCU4hHz6uNeM2EirI8S1eNAybKzPR
+         bASA==
+X-Gm-Message-State: AOAM533NhRvx4gahCxGjEnvj/bKwO4Uo+8cqBeOKCVd0C75HisskcV0R
+        BqQGQt0BHNB0rx3RLobJdDFaTrJxq3GuSlDoMIdvlw==
+X-Google-Smtp-Source: ABdhPJzN9nXRY0rWdpKSs9VMyqTX6gCV58pFw17JVL2dLkl7aPqx0Pb6NzKnucrrh1/uy2r/4hTaEa/rbvBUIDIILUQ=
+X-Received: by 2002:a5d:6b0e:0:b0:20a:dd17:e452 with SMTP id
+ v14-20020a5d6b0e000000b0020add17e452mr18161313wrw.501.1651708034493; Wed, 04
+ May 2022 16:47:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87wnf1huwj.ffs@tglx>
+References: <20220502093625.GA23225@kernel.org> <CAGS_qxoc=AnkzUtaFpJvF08Z_Z15h9sZxYNQT5-S9C7aM4poEg@mail.gmail.com>
+ <CANiq72m70q+zviHVNSV_AEwOByVBiMuSQL5vyo2UMMpD-vd+_Q@mail.gmail.com>
+ <CABVgOSmkZ9EXijBRx_pvS=Opizb1z2632B5rVsd1WRNOL5o8GA@mail.gmail.com> <CANiq72kVLzOu_3UjoUiSp5y+H0tA+SQYNQ=fsuhtg=i6MQe=Fg@mail.gmail.com>
+In-Reply-To: <CANiq72kVLzOu_3UjoUiSp5y+H0tA+SQYNQ=fsuhtg=i6MQe=Fg@mail.gmail.com>
+From:   David Gow <davidgow@google.com>
+Date:   Thu, 5 May 2022 07:47:03 +0800
+Message-ID: <CABVgOS=77WFFV1Xu5vQD6DPJODRr0f+qxJTRgJWS0qobv6vDaA@mail.gmail.com>
+Subject: Re: [PATCH] kunit: take `kunit_assert` as `const`
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Daniel Latypov <dlatypov@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Thu, May 5, 2022 at 3:26 AM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+>
+> Hi David,
+>
+> On Wed, May 4, 2022 at 4:05 PM David Gow <davidgow@google.com> wrote:
+> >
+> > I definitely agree here -- I can't recall any particular plan that
+> > would require this to be non-const, and we can always change it back
+> > if we really need to.
+>
+> That is good to know, thanks! Out-of-tree users can always be a surprise... :)
+>
+> > Very exciting! I assume that's the PR here:
+> > https://github.com/Rust-for-Linux/linux/pull/757
+>
+> Indeed! I hope you like it -- we are taking the documentation tests in
+> Rust (which are a very lightweight way of writing examples which
+> double as tests) and generating KUnit test cases on the fly. For the
+> moment it is just for the `kernel` crate, but the idea is to
+> generalize it for modules etc.
+>
+> By the way, since you saw the PR... do you know if KUnit relies (or
+> will rely) on "stack-dumping" functions like `longjmp`?
 
-On Wed, May 04, 2022 at 11:04:12PM +0200, Thomas Gleixner wrote:
+I don't think so -- though there's no fundamental individual tests
+couldn't use them if it made sense for them.
 
-> > The second stance seems easier and more conservative from a certain
-> > perspective -- we don't need to change anything -- so I'm more inclined
-> > toward it.
-> 
-> That's not conservative, that's lazy and lame. Staying with the status
-> quo and piling more stuff on top because we can is just increasing
-> technical debt. Works for a while by some definition of works.
+KUnit spins off a new kthread per test, and uses
+kthread_complete_and_exit() to unwind when an assertion fails. See
+lib/kunit/try-catch.c for the actual implementation. The only really
+dodgy bit is the test timeout support, which attempts to stop a thread
+with kthread_stop(), and IIRC has some problems.
 
-I actually find this minorly upsetting :(. Considering the amount of
-technical debt I've been tirelessly cleaning up over the last 5 months,
-"lazy" certainly can't be correct here. None of this has anything to do
-with laziness, but rather how the entropy collection logic works out.
-It'd be lazy to just wave my hands around and say, "oh well it's handled
-in add_interrupt_randomness() anyway, so let's torch the other thing,"
-without having taken the time to do the analysis to see if that's
-actually true or not. One way or another, it _will_ require real
-analysis. Which obviously I'm volunteering to do here (it's an
-interesting question to me) and have already started poking around with
-it.
-
-> > And given that you've fixed the bug now, it sounds like that's fine
-> > with you too. But if you're thinking about it differently in fact, let
-> > me know.
-> 
-> That still does not address my observation that using the FPU for this
-> mixing, which is handling a couple of bytes per invocation, is not
-> really benefitial.
-> 
-> Which in turn bears the question, why we have to maintain an asymmetric
-> FPU protection mechanism in order to support hard interrupt FPU usage
-> for no or questionable benefit.
-> 
-> The current implementation, courtesy to hard interrupt support, has the
-> following downside:
-> 
->   Any FPU usage in task context where soft interrupts are enabled will
->   prevent FPU usage in soft interrupt processing when the interrupt hits
->   into the FPU usage region. That means the softirq processing has to
->   fall back to the generic implementations.
-> 
-> Sure, the protection could be context dependent, but that's generally
-> frowned upon. If we go there, then there has to be a really convincing
-> technical argument.
-
-That's curious about the softirq; I hadn't realized that. Indeed it
-sounds like the technical burden of supporting it may not be worth it.
-From the perspective of high-speed crypto, I know two areas pretty well:
-pacrypt/padata and wireguard's queueing. Both of these run in workqueues
-pinned to a CPU with queue_work_on(). In some cases, I believe locks may
-be held during various crypto operations though. Also, I suspect some
-paths of xfrm and mac80211 may process during softirq. Anyway, none of
-those cases is hardirq. I haven't looked at dmcrypt, but I'd be
-surprised if that was doing anything in hardirqs either.
-
-So if truly the only user of this is random.c as of 5.18 (is it? I'm
-assuming from a not very thorough survey...), and if the performance
-boost doesn't even exist, then yeah, I think it'd make sense to just get
-rid of it, and have kernel_fpu_usable() return false in those cases.
-
-I'll run some benchmarks on a little bit more hardware in representative
-cases and see.
-
-Jason
+Hope that helps!
+-- David
