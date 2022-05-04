@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBA7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A55C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376831AbiEDRpX (ORCPT
+        id S1376881AbiEDRpZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        Wed, 4 May 2022 13:45:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356345AbiEDRMA (ORCPT
+        with ESMTP id S1355918AbiEDRMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:12:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DCD4BBAD;
+        Wed, 4 May 2022 13:12:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67394BBB3;
         Wed,  4 May 2022 09:57:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 85E97CE28B0;
-        Wed,  4 May 2022 16:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4561C385AF;
-        Wed,  4 May 2022 16:57:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D59961929;
+        Wed,  4 May 2022 16:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8919C385A5;
+        Wed,  4 May 2022 16:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683458;
-        bh=se5v7BD30ixTkjSOWrFGeSsOS9HZQ/4c5BU5f7DwOwM=;
+        s=korg; t=1651683469;
+        bh=uwsVagE2WLpVNfyJ8wiHvUZu5rZnzEZ8D1mBiEydAUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVbgw1Rk2scdqF6QXmUZAwWRY/YeV0ftmMudidx3dokbWkkfMTphTNE8Coj03e0Wx
-         TENt2MXGv8fAMvu4fpR6wAEufaSinNbwrUOcJypQ6o4auBXX5+GvDBqFME1MWP0uxl
-         dxMFR7mwAq5KCHMr4yWhIach2ceiZemRX1me6SpI=
+        b=mAZPd/hSY23woyLL0lzo/T1dUMu2FHQYhd6h1j403s7bsBmhizWpXK8fVCGGm2az5
+         fNQoLIZ17CpIe3ASVJHIUE3HmqOIMNkqmmZ/fewU7o3X4chYgC7dFlSnj7QakkEbkS
+         1xYYGnWCYgE8iqcJ7aGPFJwD/ogJIl7QNCxXm1pM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Jan Hoffmann <jan@3e8.eu>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 133/225] drm/sun4i: Remove obsolete references to PHYS_OFFSET
-Date:   Wed,  4 May 2022 18:46:11 +0200
-Message-Id: <20220504153122.186885580@linuxfoundation.org>
+Subject: [PATCH 5.17 136/225] net: dsa: lantiq_gswip: Dont set GSWIP_MII_CFG_RMII_CLK
+Date:   Wed,  4 May 2022 18:46:14 +0200
+Message-Id: <20220504153122.415829502@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,63 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit dc3ae06c5f2170d879ff58696f629d8c3868aec3 ]
+[ Upstream commit 71cffebf6358a7f5031f5b208bbdc1cb4db6e539 ]
 
-commit b4bdc4fbf8d0 ("soc: sunxi: Deal with the MBUS DMA offsets in a
-central place") added a platform device notifier that sets the DMA
-offset for all of the display engine frontend and backend devices.
+Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
+GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
+register. It helped bring this register into a well-defined state so the
+driver has to rely less on the bootloader to do things right.
+Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
+possibility to configure it. Upon further testing it turns out that all
+boards which are supported by the GSWIP driver in OpenWrt which use an
+RMII PHY have a dedicated oscillator on the board which provides the
+50MHz RMII reference clock.
 
-The code applying the offset to DMA buffer physical addresses was then
-removed from the backend driver in commit 756668ba682e ("drm/sun4i:
-backend: Remove the MBUS quirks"), but the code subtracting PHYS_OFFSET
-was left in the frontend driver.
+Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
+clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
+a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
+the MAC also generates the RMII reference clock whose signal then
+conflicts with the signal from the oscillator on the board. This results
+in a constant cycle of the PHY detecting link up/down (and as a result
+of that: the two ports using the AR8030 PHYs are not working).
 
-As a result, the offset was applied twice in the frontend driver. This
-likely went unnoticed because it only affects specific configurations
-(scaling or certain pixel formats) where the frontend is used, on boards
-with both one of these older SoCs and more than 1 GB of DRAM.
+At the time of writing this patch there's no known board where the MAC
+(GSWIP) has to generate the RMII reference clock. If needed this can be
+implemented in future by providing a device-tree flag so the
+GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
 
-In addition, the references to PHYS_OFFSET prevent compiling the driver
-on architectures where PHYS_OFFSET is not defined.
-
-Fixes: b4bdc4fbf8d0 ("soc: sunxi: Deal with the MBUS DMA offsets in a central place")
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-4-samuel@sholland.org
+Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
+Tested-by: Jan Hoffmann <jan@3e8.eu>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Link: https://lore.kernel.org/r/20220425152027.2220750-1-martin.blumenstingl@googlemail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun4i_frontend.c | 3 ---
+ drivers/net/dsa/lantiq_gswip.c | 3 ---
  1 file changed, 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_frontend.c b/drivers/gpu/drm/sun4i/sun4i_frontend.c
-index 56ae38389db0..462fae73eae9 100644
---- a/drivers/gpu/drm/sun4i/sun4i_frontend.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_frontend.c
-@@ -222,13 +222,11 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
- 
- 	/* Set the physical address of the buffer in memory */
- 	paddr = drm_fb_cma_get_gem_addr(fb, state, 0);
--	paddr -= PHYS_OFFSET;
- 	DRM_DEBUG_DRIVER("Setting buffer #0 address to %pad\n", &paddr);
- 	regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR0_REG, paddr);
- 
- 	if (fb->format->num_planes > 1) {
- 		paddr = drm_fb_cma_get_gem_addr(fb, state, swap ? 2 : 1);
--		paddr -= PHYS_OFFSET;
- 		DRM_DEBUG_DRIVER("Setting buffer #1 address to %pad\n", &paddr);
- 		regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR1_REG,
- 			     paddr);
-@@ -236,7 +234,6 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
- 
- 	if (fb->format->num_planes > 2) {
- 		paddr = drm_fb_cma_get_gem_addr(fb, state, swap ? 1 : 2);
--		paddr -= PHYS_OFFSET;
- 		DRM_DEBUG_DRIVER("Setting buffer #2 address to %pad\n", &paddr);
- 		regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR2_REG,
- 			     paddr);
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 8a7a8093a156..8acec33a4702 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1637,9 +1637,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+ 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
+-
+-		/* Configure the RMII clock as output: */
+-		miicfg |= GSWIP_MII_CFG_RMII_CLK;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
 -- 
 2.35.1
 
