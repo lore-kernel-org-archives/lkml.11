@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB269C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF724C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355576AbiEDR2n (ORCPT
+        id S1356749AbiEDR24 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
+        Wed, 4 May 2022 13:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356199AbiEDRJD (ORCPT
+        with ESMTP id S1356172AbiEDRJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5657652E4E;
-        Wed,  4 May 2022 09:54:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF4452B3D;
+        Wed,  4 May 2022 09:54:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7B6FB82792;
-        Wed,  4 May 2022 16:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D55EC385A5;
-        Wed,  4 May 2022 16:54:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17C16617BD;
+        Wed,  4 May 2022 16:54:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67F23C385AF;
+        Wed,  4 May 2022 16:54:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683296;
-        bh=ioCklDfM/c7f+A49wR/jj5HbJspAmX8Z9JJJOKPcJbQ=;
+        s=korg; t=1651683294;
+        bh=puxZb8keBI0MxGWFKEJg7XUlq5HvNRAXuB4e6S/Tg5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FIeOwpME2buOnt7ecIrwWLs0dLjix/lZ5LB6fNE+IL641++OMgDZ0p1tMF74bco5r
-         zcXWU/25TWwNxGuOwBPRZduMfCE7bM8hRISbhumtsbI9jmb8KhFBwYswesTXZiVjdD
-         r0cfZRJdS+bzFjQXunaFaHLf5Gxv1Xh1v09kpL1M=
+        b=ANc/UoNJSpvX2Amep1G8sXwWqRHuEs859iBDeJJjSydfZuLwku17sFIlhsnO/NG6Q
+         q/KIOyEl63t2A8Le6x2ZmnS+UGmDZ0Pu3EtrCrQQzSj0RurzyWSlv0nBz5zKk7Bvco
+         B2WZPQwp8a9sg7LH+Pqujb9wYUvcltzaY4cNBUl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Joao Moreira <joao@overdrivepizza.com>
-Subject: [PATCH 5.15 150/177] thermal: int340x: Fix attr.show callback prototype
-Date:   Wed,  4 May 2022 18:45:43 +0200
-Message-Id: <20220504153106.756396583@linuxfoundation.org>
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 148/177] net: ethernet: stmmac: fix write to sgmii_adapter_base
+Date:   Wed,  4 May 2022 18:45:41 +0200
+Message-Id: <20220504153106.556326710@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,46 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-commit d0f6cfb2bd165b0aa307750e07e03420859bd554 upstream.
+commit 5fd1fe4807f91ea0cca043114d929faa11bd4190 upstream.
 
-Control Flow Integrity (CFI) instrumentation of the kernel noticed that
-the caller, dev_attr_show(), and the callback, odvp_show(), did not have
-matching function prototypes, which would cause a CFI exception to be
-raised. Correct the prototype by using struct device_attribute instead
-of struct kobj_attribute.
+I made a mistake with the commit a6aaa0032424 ("net: ethernet: stmmac:
+fix altr_tse_pcs function when using a fixed-link"). I should have
+tested against both scenario of having a SGMII interface and one
+without.
 
-Reported-and-tested-by: Joao Moreira <joao@overdrivepizza.com>
-Link: https://lore.kernel.org/lkml/067ce8bd4c3968054509831fa2347f4f@overdrivepizza.com/
-Fixes: 006f006f1e5c ("thermal/int340x_thermal: Export OEM vendor variables")
-Cc: 5.8+ <stable@vger.kernel.org> # 5.8+
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Without the SGMII PCS TSE adpater, the sgmii_adapter_base address is
+NULL, thus a write to this address will fail.
+
+Cc: stable@vger.kernel.org
+Fixes: a6aaa0032424 ("net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220420152345.27415-1-dinguyen@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -67,7 +67,7 @@ static int evaluate_odvp(struct int3400_
- struct odvp_attr {
- 	int odvp;
- 	struct int3400_thermal_priv *priv;
--	struct kobj_attribute attr;
-+	struct device_attribute attr;
- };
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -65,8 +65,9 @@ static void socfpga_dwmac_fix_mac_speed(
+ 	struct phy_device *phy_dev = ndev->phydev;
+ 	u32 val;
  
- static ssize_t data_vault_read(struct file *file, struct kobject *kobj,
-@@ -272,7 +272,7 @@ static int int3400_thermal_run_osc(acpi_
- 	return result;
+-	writew(SGMII_ADAPTER_DISABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	if (sgmii_adapter_base)
++		writew(SGMII_ADAPTER_DISABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 
+ 	if (splitter_base) {
+ 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+@@ -88,10 +89,11 @@ static void socfpga_dwmac_fix_mac_speed(
+ 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
+ 	}
+ 
+-	writew(SGMII_ADAPTER_ENABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+-	if (phy_dev)
++	if (phy_dev && sgmii_adapter_base) {
++		writew(SGMII_ADAPTER_ENABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
++	}
  }
  
--static ssize_t odvp_show(struct kobject *kobj, struct kobj_attribute *attr,
-+static ssize_t odvp_show(struct device *dev, struct device_attribute *attr,
- 			 char *buf)
- {
- 	struct odvp_attr *odvp_attr;
+ static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
 
 
