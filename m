@@ -2,187 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F21FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E62C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352103AbiEDPVJ (ORCPT
+        id S1352159AbiEDPVt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
+        Wed, 4 May 2022 11:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352074AbiEDPVH (ORCPT
+        with ESMTP id S1346612AbiEDPVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 11:21:07 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1424C36E26
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 08:17:30 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id x33so2918678lfu.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 08:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ON3l4VmfZTG6tfwh+lXTECz7xGtbdAVvVE9pqJrPtBU=;
-        b=J2SSXllFqS1rJDj7D1UO39D19e0lq8vqwXrRiHfahcSGqgbVPU0EW3OLFTSV0kZyw4
-         n4wRz06XtabBNEHttqGQyC/+ZbbXMbv3ml2MaaPbP0Hjy7f3gy+C/yPNc97VFn5oTvxr
-         uNhfKBUqXoNR4nI9ktONtligR2UzOGlgTKfJFFT59eHZND01Hm6OFtxK7SCs9N1NJPe9
-         RY1qXdckssbDIO8n9IOurAWo+9zlCdGRwb4IDboOTWSr6iBBCQPg9g2im/cRpr9BHH/1
-         jWzxLeBK+I0PXma6RoK3U9+ySNujPb+4j8KNW/eHJFaZK/NAuG1BHYNSxrX7ccd51jY4
-         SJGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ON3l4VmfZTG6tfwh+lXTECz7xGtbdAVvVE9pqJrPtBU=;
-        b=SQ5ogo4aeg6215sL4F088HWzhdtzRdPSYu0q6K7bqkDf3Stk3H5hvi+EvuO+fuSQMh
-         ha8/QK45oFIOotmO8A1LxIGQZzTjSzReB2D8IqLijMcubvQltUz6+Y4IUyn9BrERGN/o
-         v+SiHx1Q6Hwo59/7U+tUMIv8ccmgaKWtbJkGtMjuGRlTpUga35myqUXQo9+3fZebGhIj
-         FYF+yca/qr79BFFdUpmH9eM29BXFCf6UbMN6h6ia5ufBz7mAZlVIgfASIbX54683sr0s
-         ppaCYh3shL9EzaLkDLLSw9AunpfSzTa0QO6BH7uIfLqRzEa9JUOKphsz6UvmUY0wZ//3
-         BW9A==
-X-Gm-Message-State: AOAM5321S9Xf9T5IUtVu4x0VhOG2ILnO2wpEpaTXVjNo8nTEnFNIAff7
-        b1vw4u5nWkDFWBfGk2ZNZbgozegewKuy7RC+3R9uGA==
-X-Google-Smtp-Source: ABdhPJwVVFpZrp63qehiOaApGMb7R3PSPk3Y0CqHNyMQMAWHboLPGnr21On/mQGhundTtGQK1k6X5wdFojmyk8m8nNA=
-X-Received: by 2002:a05:6512:3b87:b0:473:9e36:5f0d with SMTP id
- g7-20020a0565123b8700b004739e365f0dmr8663687lfv.424.1651677448063; Wed, 04
- May 2022 08:17:28 -0700 (PDT)
+        Wed, 4 May 2022 11:21:31 -0400
+X-Greylist: delayed 1467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 08:17:50 PDT
+Received: from vps19.webwerkers.nl (vps19.webwerkers.nl [136.144.231.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0AC36E26
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 08:17:50 -0700 (PDT)
+Received: from [89.255.59.226] (helo=server.mep)
+        by vps19.webwerkers.nl with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <indan.zupancic@mep-info.com>)
+        id 1nmGNV-000625-O2; Wed, 04 May 2022 16:53:21 +0200
+Received: from _ (localhost [127.0.0.1])
+        by server.mep (Postfix) with ESMTPA id EC363D0FEBA;
+        Wed,  4 May 2022 16:52:53 +0200 (CEST)
 MIME-Version: 1.0
-References: <d62431af-5ce4-3d8f-542f-df8e7a7faaf1@leemhuis.info>
- <CAHRSSEw5CBnCpXcowKKG5KzOoazecC6jDn+4_fd0Gp3+e9Yixw@mail.gmail.com> <f42e91ae-a22d-b664-003a-e1698dc021aa@leemhuis.info>
-In-Reply-To: <f42e91ae-a22d-b664-003a-e1698dc021aa@leemhuis.info>
-From:   Todd Kjos <tkjos@google.com>
-Date:   Wed, 4 May 2022 08:17:16 -0700
-Message-ID: <CAHRSSEyVc0pNwp23Tu2SH3ti0aKfTw+XRrHTuSkMjoCe7huHyA@mail.gmail.com>
-Subject: Re: Regression in BinderFS: Kernel bug at binder.c:2352
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "quackdoctech@gmail.com" <quackdoctech@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 04 May 2022 16:52:53 +0200
+From:   Indan Zupancic <indan.zupancic@mep-info.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] UIO: Let uio_pdrv_genirq support cached memory
+Message-ID: <436ea1f019d26d28ab4fce4ee28f609b@mep-info.com>
+X-Sender: indan.zupancic@mep-info.com
+User-Agent: Roundcube Webmail/1.3.16
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Id: meptelco
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 3:47 AM Thorsten Leemhuis
-<regressions@leemhuis.info> wrote:
->
->
->
-> On 08.04.22 17:28, Todd Kjos wrote:
-> > On Fri, Apr 8, 2022 at 3:27 AM Thorsten Leemhuis
-> > <regressions@leemhuis.info> wrote:
-> >>
-> >> Hi, this is your Linux kernel regression tracker.
-> >>
-> >> Todd, seems there is a regression that is caused by one of your Linux
-> >> kernel changes:
-> >
-> > Yes, it was reported a few days ago by the ChromeOS team. Already
-> > looking into it.
->
-> What happen to this? It looks like it has fallen through the cracks. Or
-> was progress made and it just didn't link to the ticket or mention the
-> reporter?
+If 'cacheable' DT property exists, the memory mapping will be
+done with UIO_MEM_IOVA instead of the default UIO_MEM_PHYS.
+---
+  Documentation/driver-api/uio-howto.rst | 3 ++-
+  drivers/uio/uio_pdrv_genirq.c          | 8 ++++++--
+  2 files changed, 8 insertions(+), 3 deletions(-)
 
-It was found and fixed independently by Alessandro Astone in
-https://lore.kernel.org/lkml/20220415120015.52684-2-ales.astone@gmail.com/
+diff --git a/Documentation/driver-api/uio-howto.rst 
+b/Documentation/driver-api/uio-howto.rst
+index 907ffa3b38f5..3cb48fc757d9 100644
+--- a/Documentation/driver-api/uio-howto.rst
++++ b/Documentation/driver-api/uio-howto.rst
+@@ -413,7 +413,8 @@ probed with the ``"of_id"`` module parameter set to 
+the ``"compatible"``
+  string of the node the driver is supposed to handle. By default, the
+  node's name (without the unit address) is exposed as name for the
+  UIO device in userspace. To set a custom name, a property named
+-``"linux,uio-name"`` may be specified in the DT node.
++``"linux,uio-name"`` may be specified in the DT node. If a property
++named ``cacheable`` exists, the memory will be mapped cacheable.
 
->
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
->
-> P.S.: As the Linux kernel's regression tracker I deal with a lot of
-> reports and sometimes miss something important when writing mails like
-> this. If that's the case here, don't hesitate to tell me in a public
-> reply, it's in everyone's interest to set the public record straight.
->
-> #regzbot poke
->
-> >> I noticed a regression report in bugzilla.kernel.org that afaics nobod=
-y
-> >> acted upon since it was reported about a week ago, that's why I decide=
-d
-> >> to forward it to the lists and all people that seemed to be relevant
-> >> here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=3D2157=
-95 :
-> >>
-> >>>  quackdoctech@gmail.com 2022-04-02 19:56:29 UTC
-> >>>
-> >>> Created attachment 300686 [details]
-> >>> Dmesg output cut to error
-> >>>
-> >>> Apologies if this should have been reported under Drivers where the s=
-ource is, selftests has it listed under filesystems so I chose here. Using =
-Waydroid which is android run via LXC, on android 10 the bug comes when try=
-ing to use video playback. I know of issues on android 11 but have not yet =
-had the chance to get the logs from it. the issue does not occur in Linux k=
-ernel 5.16 series. but does occur on linux 5.17. the issue is confirmed on =
-both Arch's linux-zen 5.17.1.zen1-1 kernel as well as some users reporting =
-a fedora kernel with the issue.
-> >>>
-> >>> [reply] [=E2=88=92] Comment 1 quackdoctech@gmail.com 2022-04-03 19:38=
-:37 UTC
-> >>>
-> >>> I've narrowed down the issue to this patch series.
-> >>>
-> >>> https://lore.kernel.org/all/20211130185152.437403-1-tkjos@google.com/
-> >>>
-> >>
-> >> Could somebody take a look into this? Or was this discussed somewhere
-> >> else already? Or even fixed?
-> >>
-> >> Anyway, to get this tracked:
-> >>
-> >> #regzbot introduced: v5.16..v5.17
-> >> #regzbot from: quackdoctech@gmail.com <quackdoctech@gmail.com>
-> >> #regzbot title: BinderFS: Kernel bug at binder.c:2352
-> >> #regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=3D215795
-> >>
-> >> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' ha=
-t)
-> >>
-> >> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-> >> reports on my table. I can only look briefly into most of them and lac=
-k
-> >> knowledge about most of the areas they concern. I thus unfortunately
-> >> will sometimes get things wrong or miss something important. I hope
-> >> that's not the case here; if you think it is, don't hesitate to tell m=
-e
-> >> in a public reply, it's in everyone's interest to set the public recor=
-d
-> >> straight.
-> >>
-> >> --
-> >> Additional information about regzbot:
-> >>
-> >> If you want to know more about regzbot, check out its web-interface, t=
-he
-> >> getting start guide, and the references documentation:
-> >>
-> >> https://linux-regtracking.leemhuis.info/regzbot/
-> >> https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-> >> https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-> >>
-> >> The last two documents will explain how you can interact with regzbot
-> >> yourself if your want to.
-> >>
-> >> Hint for reporters: when reporting a regression it's in your interest =
-to
-> >> CC the regression list and tell regzbot about the issue, as that ensur=
-es
-> >> the regression makes it onto the radar of the Linux kernel's regressio=
-n
-> >> tracker -- that's in your interest, as it ensures your report won't fa=
-ll
-> >> through the cracks unnoticed.
-> >>
-> >> Hint for developers: you normally don't need to care about regzbot onc=
-e
-> >> it's involved. Fix the issue as you normally would, just remember to
-> >> include 'Link:' tag in the patch descriptions pointing to all reports
-> >> about the issue. This has been expected from developers even before
-> >> regzbot showed up for reasons explained in
-> >> 'Documentation/process/submitting-patches.rst' and
-> >> 'Documentation/process/5.Posting.rst'.
-> >
-> >
+  Using uio_dmem_genirq for platform devices
+  ------------------------------------------
+diff --git a/drivers/uio/uio_pdrv_genirq.c 
+b/drivers/uio/uio_pdrv_genirq.c
+index 63258b6accc4..269784ce0ba3 100644
+--- a/drivers/uio/uio_pdrv_genirq.c
++++ b/drivers/uio/uio_pdrv_genirq.c
+@@ -115,6 +115,7 @@ static int uio_pdrv_genirq_probe(struct 
+platform_device *pdev)
+  	struct uio_mem *uiomem;
+  	int ret = -EINVAL;
+  	int i;
++	int memtype = UIO_MEM_PHYS;
+
+  	if (node) {
+  		const char *name;
+@@ -132,7 +133,10 @@ static int uio_pdrv_genirq_probe(struct 
+platform_device *pdev)
+  		else
+  			uioinfo->name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
+  						       "%pOFn", node);
+-
++		if (of_get_property(node, "cacheable", NULL)) {
++			dev_info(&pdev->dev, "%s cacheable\n", uioinfo->name);
++			memtype = UIO_MEM_IOVA;
++		}
+  		uioinfo->version = "devicetree";
+  		/* Multiple IRQs are not supported */
+  	}
+@@ -204,7 +208,7 @@ static int uio_pdrv_genirq_probe(struct 
+platform_device *pdev)
+  			break;
+  		}
+
+-		uiomem->memtype = UIO_MEM_PHYS;
++		uiomem->memtype = memtype;
+  		uiomem->addr = r->start & PAGE_MASK;
+  		uiomem->offs = r->start & ~PAGE_MASK;
+  		uiomem->size = (uiomem->offs + resource_size(r)
+-- 
