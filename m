@@ -2,121 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15051C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353672AbiEDUqc (ORCPT
+        id S1346923AbiEDUtU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34192 "EHLO
+        Wed, 4 May 2022 16:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378362AbiEDUqU (ORCPT
+        with ESMTP id S1378392AbiEDUtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:46:20 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003F051339
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:42:42 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id g20so3024576edw.6
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:42:42 -0700 (PDT)
+        Wed, 4 May 2022 16:49:12 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F94749686;
+        Wed,  4 May 2022 13:45:35 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id p3so190131qvi.7;
+        Wed, 04 May 2022 13:45:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wgCvSGeoLgTvUhr6ldUxnnG33sX0YtUZwS6z+cjGVKU=;
-        b=ODR59VkSmmMDoe+nKh6pekgpw4CMJsSCFZ2twwlnrrKsgoEIOi/6/LOKfdCtQayvwy
-         Su2MIIlzRimbOG4EYf0HZo/aww18+o8zKrV3u0AaBGRWKjuK0/RPvn78qK7uf3+3v8UT
-         FXkpj8Q+27ZxNnsUC0sYHtRnBKeBc2et4lMq1M3azLBokJ+VEmhY0whcJsIXvrUiIjJj
-         LuH0ardcLXJtH5hC9va90hnsC6mw6F/zbv22Rj0bxBmFO3WuFj61fYVdZG+Su53mxPYg
-         QhDuoFc+4BLURuGsda8KJsPUWgFbZJBUleY4rFvAx40mZdyAlhlq3Gek9QbNlt67Umlj
-         KOaw==
+         :cc;
+        bh=ek3zlaw/6IaI125lea4IBa7APabeF2bKg/BU8vuMPPc=;
+        b=VZBY3N6v9fJ/HjnjRRCE9q9dOqXvwKTx8kesBgYAMknB93gRcC0zL91xoWNZgXXNxV
+         VMMy1dU7uJPS7D4COtMHVA/I38WH5APC4yQC+9LrtEUoi+WeszHQbhnAF+JiIb7nLkBX
+         czVVN+7BgYEfefvom1gsuw44SxZTVmF2qrWwWbL5ZeJpHu4kOCI1cRTJKgO2VtGvoxpp
+         zbds7Ipg3ODS97KMFqIhnjg5Yd3s9QH/yoWf7uue/QcKYYf58m0Uj1gZoD/pGeLfUU/l
+         HG+AdQSiKGChfvCjtowv6jd0hdPXHMsWY5ZLDZ6MyGU183KL+xflthX3Kjnl1XGMFrKi
+         YLsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wgCvSGeoLgTvUhr6ldUxnnG33sX0YtUZwS6z+cjGVKU=;
-        b=kJ2wJIT6X6Qy2DB2XhqMiUlDBhNkzN0/rMLlRsirH1h32ghDf1I/yrTRyXInHBzNJr
-         ++3n6KRQEpGNaO7lZBUjw5ASQZRGOs48HonbuvMxGCA3xKD8Idxh3Mj7ktUn23kUGcyc
-         S2EW3jGKkeA3JYT9dAw/qBspU6W6DfBZw/A6ogw/IbexfVtCphYjr0OqX6kFKONq6JeK
-         W+WAHQtxvkpNGnvl1ECKIOwXsUkuR1M1HdL13odumW2sD3qbixvdNEzUz3eW60ge0ZZb
-         +CzGHATVqi6uTVxPcne4Y6UIgP+hBsPlPOBVsEDj6h8jTEGF9bioV5ZjzqUkGDnWr2HH
-         XtrA==
-X-Gm-Message-State: AOAM532oor1vrkU0iH2i3o7cwGDDYXsrDzHSHqhqH/H3TiF1Elki1Yrs
-        595XPANZQn2nXy55is0mCu/3hYkdCw737qV1bpuM4g==
-X-Google-Smtp-Source: ABdhPJxDrzakPqYRb56RH8Ng2H63kxh5peJ3DhjNTf4bXod+p7+aXU1xh3g8b/19aKKB7wOx4j1peJ94uaDFdKBKqp8=
-X-Received: by 2002:a05:6402:2945:b0:41d:aad:c824 with SMTP id
- ed5-20020a056402294500b0041d0aadc824mr25325497edb.364.1651696961339; Wed, 04
- May 2022 13:42:41 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=ek3zlaw/6IaI125lea4IBa7APabeF2bKg/BU8vuMPPc=;
+        b=R4xyigeKWlk2rXKWMJOSDkeAT7YpN5HRWit7eECXIho9JMMZ5UhKa72aZ93CU4Eo7H
+         BjG6/hb2FJeg63CxL+WsxVe/CLHRuYFa6579LXhoGiJMF+dFkfpbPID735s6T6t3R+ZU
+         1B5K+FmRK3Pk+XCZBswic0ZawXq/wQcSoVSz8GzYaL64NHt01f8wkGCg2jKJ+USroK/1
+         Qh4xaEUHZvMS7UrTYww0AKvHRlLxAqQ3a3WfWM2UhBB+4FTv0fgPHjdgMEtPz1yiJAZf
+         d3lvQeuakQ5HzfGUJAf4JGnBApWoM+E8YVaas2QC9NYexuhNJepjjxCgMHsr0B1tsLAv
+         4Yjg==
+X-Gm-Message-State: AOAM530GqrDXTK9NJofCwxj9nMFQjqP6TTHNCINunyklEaQbk+6BbCvN
+        q+GueqLcIjwQhKFXRWyG/MXW+i5VcGBxzz+6cLY=
+X-Google-Smtp-Source: ABdhPJys+oy8Pd0fOi6s08rhaeH/hcRRwbVUSpYYF7kmMN8MF/TTz4oMZrU5eerbqAayeouw5ul2UeJLD7GTpw1YA4E=
+X-Received: by 2002:ad4:4f48:0:b0:458:12bb:1321 with SMTP id
+ eu8-20020ad44f48000000b0045812bb1321mr19435280qvb.50.1651697134000; Wed, 04
+ May 2022 13:45:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220318021314.3225240-1-davidgow@google.com> <20220318021314.3225240-2-davidgow@google.com>
- <CAGS_qxqm1ys1qUz__4uXWOgs=34M5MB3QMnhg40FHtRhatF3+g@mail.gmail.com>
-In-Reply-To: <CAGS_qxqm1ys1qUz__4uXWOgs=34M5MB3QMnhg40FHtRhatF3+g@mail.gmail.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Wed, 4 May 2022 16:42:30 -0400
-Message-ID: <CAFd5g452ecbNbSyODT3Prraj5cOEugHm=asE_h+ik-yriUvf6w@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] kunit: Expose 'static stub' API to redirect functions
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     David Gow <davidgow@google.com>, Kees Cook <keescook@chromium.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220503195605.4015616-1-robimarko@gmail.com> <20220503195605.4015616-2-robimarko@gmail.com>
+ <YnLdTIKx80wszbj7@robh.at.kernel.org>
+In-Reply-To: <YnLdTIKx80wszbj7@robh.at.kernel.org>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Wed, 4 May 2022 22:45:22 +0200
+Message-ID: <CAOX2RU5RMra4zj-jWZFH_fev-EavsnLnjob0z4FsaYnn8cs5gg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] dt-bindings: clock: Add support for IPQ8074 APSS
+ clock controller
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        linux-clk@vger.kernel.org, dmitry.baryshkov@linaro.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 4:35 PM Daniel Latypov <dlatypov@google.com> wrote:
+On Wed, 4 May 2022 at 22:08, Rob Herring <robh@kernel.org> wrote:
 >
-> On Thu, Mar 17, 2022 at 9:13 PM David Gow <davidgow@google.com> wrote:
-> > +#define kunit_activate_static_stub(test, real_fn_addr, replacement_add=
-r) do {  \
-> > +       typecheck(typeof(real_fn_addr), replacement_addr);             =
-         \
+> On Tue, May 03, 2022 at 09:56:01PM +0200, Robert Marko wrote:
+> > Add dt-binding for the IPQ8074 APSS clock controller which provides
+> > clocks to the CPU cores.
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > ---
+> > Changes in v2:
+> > * Correct subject
+> > ---
+> >  include/dt-bindings/clock/qcom,apss-ipq8074.h | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >  create mode 100644 include/dt-bindings/clock/qcom,apss-ipq8074.h
+> >
+> > diff --git a/include/dt-bindings/clock/qcom,apss-ipq8074.h b/include/dt-bindings/clock/qcom,apss-ipq8074.h
+> > new file mode 100644
+> > index 000000000000..df07766b0146
+> > --- /dev/null
+> > +++ b/include/dt-bindings/clock/qcom,apss-ipq8074.h
+> > @@ -0,0 +1,14 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
 >
-> We can't call this macro in the same scope for functions w/ different
-> signatures.
->
-> E.g. if we add this func to the example test
->   static void other_func(void) {}
-> then trying to call kunit_activate_static_stub() on it in the same
-> test case, we get
->
-> ./include/linux/typecheck.h:10:14: error: conflicting types for
-> =E2=80=98__dummy=E2=80=99; have =E2=80=98void(void)=E2=80=99
->    10 | ({      type __dummy; \
->       |              ^~~~~~~
-> ./include/kunit/static_stub.h:99:9: note: in expansion of macro =E2=80=98=
-typecheck=E2=80=99
->    99 |         typecheck(typeof(real_fn_addr), replacement_addr);
->                  \
->       |         ^~~~~~~~~
-> lib/kunit/example-test.c:64:9: note: in expansion of macro
-> =E2=80=98kunit_activate_static_stub=E2=80=99
->    64 |         kunit_activate_static_stub(test, other_func, other_func);
->       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
-> ./include/linux/typecheck.h:10:14: note: previous declaration of
-> =E2=80=98__dummy=E2=80=99 with type =E2=80=98int(int)=E2=80=99
->    10 | ({      type __dummy; \
->       |              ^~~~~~~
-> ./include/kunit/static_stub.h:99:9: note: in expansion of macro =E2=80=98=
-typecheck=E2=80=99
->    99 |         typecheck(typeof(real_fn_addr), replacement_addr);
->                  \
->       |         ^~~~~~~~~
-> lib/kunit/example-test.c:62:9: note: in expansion of macro
-> =E2=80=98kunit_activate_static_stub=E2=80=99
->    62 |         kunit_activate_static_stub(test, add_one, subtract_one);
->       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> Afaict, the problem is that GCC thinks we're declaring a *function*
-> called __dummy, not a variable.
-> So it bleeds across the scope boundary of do-while unlike normal variable=
-s.
+> Dual license please.
 
-Yeah, I ran into that problem too. I posted a fix to gerrit. I have
-been meaning to share it here.
+Hi Rob,
+Krzysztof asked about this in v1, I have derived this off IPQ6018
+binding which is marked GPL-2.0.
+So, I was not sure if it was appropriate to mark it as GPL/BSD dual license.
+If you say that its not an issue to dual-license, I will gladly do it.
 
-> There's the typecheck_fn macro, but it doesn't work either.
-
-That's weird. It worked for me.
+Regards,
+Robert
+>
+> > +/*
+> > + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> > + */
+> > +
+> > +#ifndef _DT_BINDINGS_CLOCK_QCA_APSS_IPQ8074_H
+> > +#define _DT_BINDINGS_CLOCK_QCA_APSS_IPQ8074_H
+> > +
+> > +#define APSS_PLL_EARLY                               0
+> > +#define APSS_PLL                             1
+> > +#define APCS_ALIAS0_CLK_SRC                  2
+> > +#define APCS_ALIAS0_CORE_CLK                 3
+> > +
+> > +#endif
+> > --
+> > 2.35.1
+> >
+> >
