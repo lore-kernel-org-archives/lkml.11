@@ -2,72 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7023C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231479AbiEDRzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
+        id S1359534AbiEDSB7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 14:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359713AbiEDRkP (ORCPT
+        with ESMTP id S1377378AbiEDSAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:40:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF4947558
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:06:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62488B827B3
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 17:06:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65FFC385B4;
-        Wed,  4 May 2022 17:06:48 +0000 (UTC)
-Date:   Wed, 4 May 2022 13:06:42 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [PATCH 2/2] recordmcount: Handle sections with no non-weak
- symbols
-Message-ID: <20220504130642.7b9a301d@rorschach.local.home>
-In-Reply-To: <72d17597-874c-f3a3-9398-0cc944350c5b@csgroup.eu>
-References: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-        <1b9566f0e7185fb8fd8ef2535add7a081501ccc8.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-        <20220427095415.594e5120@gandalf.local.home>
-        <1651129169.fpixr00hgx.naveen@linux.ibm.com>
-        <20220428100602.7b215e52@gandalf.local.home>
-        <819939e3-285b-2a65-9c4c-85640d2a3a02@csgroup.eu>
-        <20220502195251.5d862365@rorschach.local.home>
-        <6d5ff91a-560e-56ea-0047-175f712872c2@csgroup.eu>
-        <20220503122533.6033647e@rorschach.local.home>
-        <72d17597-874c-f3a3-9398-0cc944350c5b@csgroup.eu>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 4 May 2022 14:00:53 -0400
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57F6631A;
+        Wed,  4 May 2022 10:15:36 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id m128so3508242ybm.5;
+        Wed, 04 May 2022 10:15:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OFV/p74juyEoPxSYXHrzkAx2l6TnhNSxPpzNHi+zhs4=;
+        b=4+b1SFPFX4jUr8n7X41dAVG7CcgfqSCIxnhZGEjv+FtmCuDSmycDybFkrhdgaHGWEU
+         4QTrUmd8XHulaAZP1oVgWJh814JGp6K+D7qRLtWMbAvwKVZ96RjnL4n9x1Zgcdw8ZZuy
+         ABd/nH8sXqXK0XE8KP+359Hewt9LfoRhl46gWAmwJlfm1qf5W9nvvwTeMgtFxR1OKSgQ
+         EYJjerXyqkf6m9i68ubaJltVS2p0Kwl4a0n7FJTiGoI0O5gw4uO4lXvZwLe0DtUeB6yN
+         D/KuDUO440NYwp50eVnvg2fjxLPuaLsIKVfeuXRHSH6aEWb5HJi5PIZ4oD62y4Ow4Kve
+         WVIw==
+X-Gm-Message-State: AOAM530JkiU2tX7wjZDuLau/eoMpoEHmyvO/JjFNtIuCMNoEFZ/17d1a
+        MN8yh3dvLnbiHDzAEJ9c1Nn3htugiE46rJWv/C8=
+X-Google-Smtp-Source: ABdhPJzjRfM0DpouS6xdyXwR/B26C26P2+1p0G7fDh2ZXfbBTY+AxBBIPZjUd3fdQqUDpXtFohq4/YXNynsvaWYmFMg=
+X-Received: by 2002:a05:6902:187:b0:63d:9c95:edca with SMTP id
+ t7-20020a056902018700b0063d9c95edcamr17647508ybh.81.1651684535365; Wed, 04
+ May 2022 10:15:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <YnFtjzGYwe28tVAA@dev-arch.thelio-3990X> <20220504165409.GA453565@bhelgaas>
+In-Reply-To: <20220504165409.GA453565@bhelgaas>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 4 May 2022 19:15:24 +0200
+Message-ID: <CAJZ5v0g7oN534uyNh4YBeArH8xqGxYCXrrqAz2jiH=D4cyx=+w@mail.gmail.com>
+Subject: Re: [PATCH v3 4/9] PCI/PM: Rework changing power states of PCI devices
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 4 May 2022 16:50:58 +0000
-Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
+On Wed, May 4, 2022 at 7:03 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> [+cc Anders]
+>
+> On Tue, May 03, 2022 at 10:59:43AM -0700, Nathan Chancellor wrote:
+> > On Thu, Apr 14, 2022 at 03:11:21PM +0200, Rafael J. Wysocki wrote:
+> > > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > >
+> > > There are some issues related to changing power states of PCI
+> > > devices, mostly related to carrying out unnecessary actions in some
+> > > places, and the code is generally hard to follow.
+> > >
+> > >  1. pci_power_up() has two callers, pci_set_power_state() and
+> > >     pci_pm_default_resume_early().  The latter updates the current
+> > >     power state of the device right after calling pci_power_up()
+> > >     and it restores the entire config space of the device right
+> > >     after that, so pci_power_up() itself need not read the
+> > >     PCI_PM_CTRL register or restore the BARs after programming the
+> > >     device into D0 in that case.
+> > >
+> > >  2. It is generally hard to get a clear view of the pci_power_up()
+> > >     code flow, especially in some corner cases, due to all of the
+> > >     involved PCI_PM_CTRL register reads and writes occurring in
+> > >     pci_platform_power_transition() and in pci_raw_set_power_state(),
+> > >     some of which are redundant.
+> > >
+> > >  3. The transitions from low-power states to D0 and the other way
+> > >     around are unnecessarily tangled in pci_raw_set_power_state()
+> > >     which causes it to use a redundant local variable and makes it
+> > >     rather hard to follow.
+> > >
+> > > To address the above shortcomings, make the following changes:
+> > >
+> > >  a. Remove the code handling transitions into D0
+> > >     from pci_raw_set_power_state() and rename it as
+> > >     pci_set_low_power_state().
+> > >
+> > >  b. Add the code handling transitions into D0 directly
+> > >     to pci_power_up() and to a new wrapper function
+> > >     pci_set_full_power_state() calling it internally that is
+> > >     only used in pci_set_power_state().
+> > >
+> > >  c. Make pci_power_up() avoid redundant PCI_PM_CTRL register reads
+> > >     and make it work in the same way for transitions from any
+> > >     low-power states (transitions from D1 and D2 are handled
+> > >     slightly differently before the change).
+> > >
+> > >  d. Put the restoration of the BARs and the PCI_PM_CTRL
+> > >     register read confirming the power state change into
+> > >     pci_set_full_power_state() to avoid doing that in
+> > >     pci_pm_default_resume_early() unnecessarily.
+> > >
+> > > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> >
+> > This change as commit 5bffe4c611f5 ("PCI/PM: Rework changing power
+> > states of PCI devices") causes my AMD-based system to fail to fully
+> > boot.
+>
+> I dropped 5bffe4c611f5 and subsequent pci/pm patches temporarily while
+> this gets worked out.
 
-> In vmlinux, relocations are resolved, trampolines are installed for 
-> unreachable destinations and you don't anymore have a section with all 
-> the relocations to mcount. It means 'recordmcount' or whatever tool we 
-> use will have to read the code to find all direct calls to mcount, then 
-> find all trampolines to mcount then find all calls to those trampolines.
+OK
 
-OK, so what you are saying is that in the object file, we can see the
-site that calls mcount, but when it is linked, it may not call mcount,
-but instead it will call a trampoline that will call mcount, thus the
-tool will need to find these calls to the trampolines that call mcount
-as well as the locations that call mcount directly.
-
-Did I get that right?
-
--- Steve
+It looks like I missed something subtle that triggers on a subset of
+systems only.
