@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AFBC388F3
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4DFC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383192AbiEDXGz (ORCPT
+        id S1383629AbiEDXHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        Wed, 4 May 2022 19:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380392AbiEDW76 (ORCPT
+        with ESMTP id S1380511AbiEDXAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:58 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135D657159
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:18 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id s2-20020a17090302c200b00158ea215fa2so1380270plk.3
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:18 -0700 (PDT)
+        Wed, 4 May 2022 19:00:04 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D5C57B2D
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:28 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b33-20020a25aea1000000b0064588c45fbaso2271859ybj.16
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=F+kK/XPWXcKK2ny6diLAkFYmqndC2dDl4o6tQn0cWkc=;
-        b=BWCmEOfrEeiIqLn0P4PWgbGYuu7qE1llTLedCapeUbf8Qrvh9Nmt2tKrqlBiGQ0gO5
-         MUIPAvEbTKyLzrtBddgAEoknXooe1QDEbJFOEfYMlkFA2rF9V7KLzfg+nJr9OrkmT3t0
-         px76pV3l5HemfSDAQZntU+eJND2iScwTQ+XC5cWhjtotDHrG1WKz5j1LbcOC5p5ZsMQP
-         kMS6OG0aBsFr7g2lAADMBfw9KjVuQFaQEvM8b5Elemzd8BqMxTtfKdEeyCgs8tpLIB9g
-         bAjwaBeuOpayQzfPL29PWe7BeASgEy+4rjs9Tx1813FrN2MmE8e/eiS6icobBpy3CqMh
-         85FA==
+        bh=1Ko89WgoR4QoPr6VqUAmRTjNB65KGevR+vu8Lfe+KrY=;
+        b=hpwTYNVKayJGrqxOPwmZTNGFN/7HtMmZwmydASwz0toZ91ismPoEA3BHf7yB3mF0uI
+         0ZZwLS7tDoAO9i9jqoXZLfJh0hnPWnyvQoGSUwnAwkFvYIFwM+ghzuoRM+KIXOi9y5bG
+         w2zCfbsMMH+e3h+27GWN/m/TvbtQdMFculxXV3ABs29LwJOdf9lllFbHo+jQH/kHirNb
+         xoA0grfeZl8pLt/Uq+fWXcupWBFmHXvjHK3ANNVFC7/C0qx60/zHA0F5+dfiiS8Jsg8S
+         8kju4HrgNQwiCDoKQDiGnYlEVPBYFafuUR0QQKJZnwiPwHpozct6r4AABGnbqZ2NX38Z
+         CV+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=F+kK/XPWXcKK2ny6diLAkFYmqndC2dDl4o6tQn0cWkc=;
-        b=t9F8gsw8yR88uinmdceTHbs9roPIXh/t07bkP29NknQIRC6Zl4DgDeNNuSNeyopM15
-         KII3qCVJKbjuJfvAAiCY5P/NvzPNT0F4XAollg5O//tB5TQ6L0sjZfTxYSd37Cuhtx1t
-         HwrTjLfSSiJMEhUNmxnqseLF7uGwbzGXkb7l9lbbZxeltXe/ebBBgPE7z/OySwJ3Yme7
-         b243kctssQbbXxWhTUvurwgh+Juh9VDXImhVWpsd0PgmdNuVbWuU8VlkoTvvHANqKv7z
-         Jl43qx4wEbNunD2wdMCEuBwjjPkJreUtHZaItZE8guSVx7PBDuLMluwP50yXGx0Kkf79
-         VgEQ==
-X-Gm-Message-State: AOAM533uGc8LQ4gwJ0MsAUX8qNpQdNanP1CsDeB2vmX5ZY342+5Xtnve
-        kyyiwwu4rOTIQEx5MShgmS0rjrXwG18=
-X-Google-Smtp-Source: ABdhPJyUhuTwwz7UIV57bC3ZMTsptmctbegVNnYinR+99suZaX48lZRMBPr6CQkG4EY6TbpBD28DxRnoY6I=
+        bh=1Ko89WgoR4QoPr6VqUAmRTjNB65KGevR+vu8Lfe+KrY=;
+        b=5NvDq6XVuR2hZ+GMN3dlDzJv9ZuOMMUwqeIoZin4aio6i0Be5GmHyEitztaDOLrOr8
+         Is+FbXms2QHDiDL7RIxk9ZyagW5J9kjFrxP+ODMDSXNg1ZPZBppdsH3H5a9UcU7kpbll
+         9A8vPaXa6MzJAmrZ4mQFCDWGf2+4A7Pza4uMxIgiuFY5bwt88t+6khzfQojUj/OTWw2N
+         3G0EYFoiCqwFboj8WGWOH+8M/zDroN8Vf99MvpDoxyHoWPdQhK/sR9UcPUeeK2eFePA0
+         6VZlqY8Kz85t4b/WqNTbhsdwm5KPMrkzt/UyXSFbr7qQ8IqByjEWLAljrG8aW0tCVTxu
+         UV+w==
+X-Gm-Message-State: AOAM532egIZVEac93nviRH3NTaL2EmM+vrK1DQEKAXAT0jK+mLCHU5xi
+        Hv++4MwLcC+tcwJQhcXKk9o58Nd0x2Q=
+X-Google-Smtp-Source: ABdhPJxIyNosEuODp1hRl7pKdS4yHHRTzfhNLT+Ogmit5H7vWGukQNk7xEe18n7Uyy+dvIAC6pWKQmdzoOE=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1991:b0:50e:697:53f9 with SMTP id
- d17-20020a056a00199100b0050e069753f9mr11918083pfl.22.1651704767934; Wed, 04
- May 2022 15:52:47 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a25:2646:0:b0:645:8261:d7ff with SMTP id
+ m67-20020a252646000000b006458261d7ffmr20289498ybm.351.1651704774982; Wed, 04
+ May 2022 15:52:54 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:49:00 +0000
+Date:   Wed,  4 May 2022 22:49:04 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-115-seanjc@google.com>
+Message-Id: <20220504224914.1654036-119-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 114/128] KVM: selftests: Convert kvm_binary_stats_test away
- from vCPU IDs
+Subject: [PATCH 118/128] KVM: selftests: Remove vcpu_get() usage from dirty_log_test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -70,63 +69,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Track vCPUs by their 'struct kvm_vcpu' object in kvm_binary_stats_test,
-not by their ID.  The per-vCPU helpers will soon take a vCPU instead of a
-VM+vcpu_id pair.
+Grab the vCPU from vm_vcpu_add() directly instead of doing vcpu_get()
+after the fact.  This will allow removing vcpu_get() entirely.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/kvm_binary_stats_test.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ tools/testing/selftests/kvm/dirty_log_test.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 407e9ea8e6f3..dfc3cf531ced 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -172,9 +172,9 @@ static void vm_stats_test(struct kvm_vm *vm)
- 	TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
+diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
+index b61af23ba434..73c6fd9c850c 100644
+--- a/tools/testing/selftests/kvm/dirty_log_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_test.c
+@@ -668,7 +668,7 @@ static void vm_dirty_log_verify(enum vm_guest_mode mode, unsigned long *bmap)
+ 	}
  }
  
--static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
-+static void vcpu_stats_test(struct kvm_vcpu *vcpu)
+-static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
++static struct kvm_vm *create_vm(enum vm_guest_mode mode, struct kvm_vcpu **vcpu,
+ 				uint64_t extra_mem_pages, void *guest_code)
  {
--	int stats_fd = vcpu_get_stats_fd(vm, vcpu_id);
-+	int stats_fd = vcpu_get_stats_fd(vcpu->vm, vcpu->id);
+ 	struct kvm_vm *vm;
+@@ -679,7 +679,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
+ 	vm = __vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
  
- 	stats_test(stats_fd);
- 	close(stats_fd);
-@@ -195,6 +195,7 @@ static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
- int main(int argc, char *argv[])
- {
- 	int i, j;
-+	struct kvm_vcpu **vcpus;
- 	struct kvm_vm **vms;
- 	int max_vm = DEFAULT_NUM_VM;
- 	int max_vcpu = DEFAULT_NUM_VCPU;
-@@ -220,17 +221,21 @@ int main(int argc, char *argv[])
- 	/* Create VMs and VCPUs */
- 	vms = malloc(sizeof(vms[0]) * max_vm);
- 	TEST_ASSERT(vms, "Allocate memory for storing VM pointers");
-+
-+	vcpus = malloc(sizeof(struct kvm_vcpu *) * max_vm * max_vcpu);
-+	TEST_ASSERT(vcpus, "Allocate memory for storing vCPU pointers");
-+
- 	for (i = 0; i < max_vm; ++i) {
- 		vms[i] = vm_create_barebones();
- 		for (j = 0; j < max_vcpu; ++j)
--			__vm_vcpu_add(vms[i], j);
-+			vcpus[j * max_vcpu + i] = __vm_vcpu_add(vms[i], j);
- 	}
+ 	log_mode_create_vm_done(vm);
+-	vm_vcpu_add(vm, vcpuid, guest_code);
++	*vcpu = vm_vcpu_add(vm, 0, guest_code);
+ 	return vm;
+ }
  
- 	/* Check stats read for every VM and VCPU */
- 	for (i = 0; i < max_vm; ++i) {
- 		vm_stats_test(vms[i]);
- 		for (j = 0; j < max_vcpu; ++j)
--			vcpu_stats_test(vms[i], j);
-+			vcpu_stats_test(vcpus[j * max_vcpu + i]);
- 	}
+@@ -713,10 +713,8 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	 * (e.g., 64K page size guest will need even less memory for
+ 	 * page tables).
+ 	 */
+-	vm = create_vm(mode, 0,
+-		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K),
+-		       guest_code);
+-	vcpu = vcpu_get(vm, 0);
++	vm = create_vm(mode, &vcpu,
++		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K), guest_code);
  
- 	for (i = 0; i < max_vm; ++i)
+ 	guest_page_size = vm_get_page_size(vm);
+ 	/*
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
