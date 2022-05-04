@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E154C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8483BC4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358110AbiEDRZc (ORCPT
+        id S1358159AbiEDRZk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        Wed, 4 May 2022 13:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354934AbiEDRDT (ORCPT
+        with ESMTP id S1354690AbiEDRDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:03:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6DE4D9E1;
-        Wed,  4 May 2022 09:52:37 -0700 (PDT)
+        Wed, 4 May 2022 13:03:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22324D623;
+        Wed,  4 May 2022 09:52:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C3D0617DE;
-        Wed,  4 May 2022 16:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68B6EC385A5;
-        Wed,  4 May 2022 16:52:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4874FB82792;
+        Wed,  4 May 2022 16:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D125FC385AA;
+        Wed,  4 May 2022 16:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683156;
-        bh=Kcy6gpDq2hZTzRSVUre66DeO+UZylJ37PCmsU/ozR+4=;
+        s=korg; t=1651683151;
+        bh=n9Q/W/occ0bb07vn7HK5qwDHGDLUQo+K6rMhV1GBuo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z543K7uBkUsAbiki18PNUUspyXmXpW3dJ5nXKKFImo6ARRYIw3kr9xZzEs2Hmxe07
-         X8dmBFYnC7g9EGqHTPpUrqtGK+EhTwyIjMxQbBTErON4tBgxVW5eT3JazLg1XbCNzN
-         mNbORV7o18BCTEfqzv9Yv7L0qODuEp/lIas2stok=
+        b=r5uV13vbn90VL3Rg9fXzKGvcnWouFCpl9xJJA0RqY5rDRIhcIZPamxijnYqyzfCF0
+         nyd0TNBpk8KMvbF27lGRpjxYIMrTkPET3N2VRGjvETy2js4Sq+LHOFrUw1uz2z6c/X
+         vbB4peUcHIJ/Jv8SResx67KJVGh4KurxgNJUT+8c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vijayavardhan Vennapusa <vvreddy@codeaurora.org>,
-        Dan Vacura <w36195@motorola.com>, stable <stable@kernel.org>
-Subject: [PATCH 5.15 021/177] usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
-Date:   Wed,  4 May 2022 18:43:34 +0200
-Message-Id: <20220504153055.166161977@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>
+Subject: [PATCH 5.15 008/177] usb: xhci: tegra:Fix PM usage reference leak of tegra_xusb_unpowergate_partitions
+Date:   Wed,  4 May 2022 18:43:21 +0200
+Message-Id: <20220504153054.379355158@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,37 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
+From: zhangqilong <zhangqilong3@huawei.com>
 
-commit bf95c4d4630c7a2c16e7b424fdea5177d9ce0864 upstream.
+commit 8771039482d965bdc8cefd972bcabac2b76944a8 upstream.
 
-If any function like UVC is deactivating gadget as part of composition
-switch which results in not calling pullup enablement, it is not getting
-enabled after switch to new composition due to this deactivation flag
-not cleared. This results in USB enumeration not happening after switch
-to new USB composition. Hence clear deactivation flag inside gadget
-structure in configfs_composite_unbind() before switch to new USB
-composition.
+pm_runtime_get_sync will increment pm usage counter
+even it failed. Forgetting to putting operation will
+result in reference leak here. We fix it by replacing
+it with pm_runtime_resume_and_get to keep usage counter
+balanced.
 
-Signed-off-by: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220413211038.72797-1-w36195@motorola.com
+Fixes: 41a7426d25fa ("usb: xhci: tegra: Unlink power domain devices")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+Link: https://lore.kernel.org/r/20220319023822.145641-1-zhangqilong3@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/configfs.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/host/xhci-tegra.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/configfs.c
-+++ b/drivers/usb/gadget/configfs.c
-@@ -1447,6 +1447,8 @@ static void configfs_composite_unbind(st
- 	usb_ep_autoconfig_reset(cdev->gadget);
- 	spin_lock_irqsave(&gi->spinlock, flags);
- 	cdev->gadget = NULL;
-+	cdev->deactivations = 0;
-+	gadget->deactivated = false;
- 	set_gadget_data(gadget, NULL);
- 	spin_unlock_irqrestore(&gi->spinlock, flags);
- }
+--- a/drivers/usb/host/xhci-tegra.c
++++ b/drivers/usb/host/xhci-tegra.c
+@@ -1034,13 +1034,13 @@ static int tegra_xusb_unpowergate_partit
+ 	int rc;
+ 
+ 	if (tegra->use_genpd) {
+-		rc = pm_runtime_get_sync(tegra->genpd_dev_ss);
++		rc = pm_runtime_resume_and_get(tegra->genpd_dev_ss);
+ 		if (rc < 0) {
+ 			dev_err(dev, "failed to enable XUSB SS partition\n");
+ 			return rc;
+ 		}
+ 
+-		rc = pm_runtime_get_sync(tegra->genpd_dev_host);
++		rc = pm_runtime_resume_and_get(tegra->genpd_dev_host);
+ 		if (rc < 0) {
+ 			dev_err(dev, "failed to enable XUSB Host partition\n");
+ 			pm_runtime_put_sync(tegra->genpd_dev_ss);
 
 
