@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B745AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B73C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346297AbiEDIel (ORCPT
+        id S1346373AbiEDIer (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        Wed, 4 May 2022 04:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346309AbiEDIeX (ORCPT
+        with ESMTP id S1346326AbiEDIe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:34:23 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC071658C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:30:47 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id g23so849405edy.13
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 01:30:47 -0700 (PDT)
+        Wed, 4 May 2022 04:34:26 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5274B15FCC
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:30:50 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id m20so1453186ejj.10
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 01:30:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/IQuJLPOCQi188hnGZN/JFweKm0Co9fpiQn8r5RZ13Y=;
-        b=ZLVCd3wpTWOdv4ORi/nB2/g9QfyeP9vVgaHGBnfWW/n/K2MLCeh/fepZNQnBO6a+m8
-         UVlAYkXvzCjhOAtIulhWc8w371vbLJztnipq9RwAt4ecAecp2CtTAn6hf9EzFFsYizjX
-         PVjPt8pzO92mdV+BKPX744F0oN7i9bbxksbh5Jln/d6rlfiZw0beh2ysJaOkXm10V6ID
-         4nQSgw1yUcSbi67KNxZZ2bYX9IGmRBVBYMKmF9P8PRmFEWgH9Z68zJIx00vNXII0m0Wn
-         Ofx7Re823JqiEV+vanbMQOm/T9y8xVaHf5TARAkRQr6XPDsqBIPw6fIIvcnrkPzK7kFq
-         7flg==
+        bh=GXoJXDUDrgkUSMvyeYyAVqyRWBa+AE87coAVNtHrkMw=;
+        b=NPczZLhU9GPldOjl9K3xHycnK7S7VeM5Wq/1pOrV69+fIfMPH0zY+nUanRgK+NK0ac
+         pAfwuYM07mXYglV/p5nHQV47k8E99RayZx6MwTWjIjVDzRIUlaGIQj/g5kghmaXdds4x
+         Hq+wolaOl21PVyj8kOM/wP7aH6WEz7R9rWrFpBeyJJauvavf6w4oH2UDzQudQiEC6dtO
+         LXgGmkx/xzUF2IR0fG68+PIbQ/0n+IICqtfC7ki12LoIB/znMsqyxDQ7/ddPe1NUy/id
+         goYmMpzIDKPTQ2HhADNvz63HKWxaSCiVpoJb9EscgiId3ShCPSvVvpL3BxqtRNmxOrG3
+         6hJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/IQuJLPOCQi188hnGZN/JFweKm0Co9fpiQn8r5RZ13Y=;
-        b=R6Gc+5/EMh6K6js3SqjGJHXOBxj/NmsMGHKTlo/A8yZsPaqI2Rront8aKQLZB6HW2G
-         7oXBbE6U5vy5leB1ZaqtXZ5d+9WqnOOMgW80ML09e76LCXq2aHrhbk0HCiQp5x4bhM19
-         b5dHOsDW9oQtkt2pAFxtVa70XjpNSE6kDuCAzbt9WTYCxyQsPmRshY6ICQc6k+e4ctnB
-         ABoR05zQocH+oGHRKmoC6VXua2wyT+cRq6A298UpyRUVurLkZ2kJP2J+BtODpJyh8yAx
-         K4qyojg6tzHNSKthCc4sEMuizSRR7P0BKHcOWcjFNY4tAAEI5P5fj0Jy0JKTq/k7HPWA
-         PnxA==
-X-Gm-Message-State: AOAM531OGRAfja74Nk+fK8j06XIXYZ448BYbhdCnG+DXd7RHVoWob6hQ
-        oQ8N4GZzZVs/TO6Gf+VKdeND3Q==
-X-Google-Smtp-Source: ABdhPJwphje+YzfcUodWjBx9z1j2dLg8etnWZRokSrHfxsCHYrLK0ByDEP/1V3v69Lwm7V//8rNVvQ==
-X-Received: by 2002:a50:9e61:0:b0:419:d8e5:6236 with SMTP id z88-20020a509e61000000b00419d8e56236mr21846515ede.327.1651653046249;
-        Wed, 04 May 2022 01:30:46 -0700 (PDT)
+        bh=GXoJXDUDrgkUSMvyeYyAVqyRWBa+AE87coAVNtHrkMw=;
+        b=tXiSfXbBDzRbBuF1vqRvw4Mi/5+5Aa6bKMWexPPCgCkyfwuGNuq/gmvqYiivqowrUR
+         nVb0ZDl5vWipD8i7fW886RxkpjzxkDH7eA+l62Io09Dn7assNyk5GisBR3f4aTGObLFl
+         W8sLObg0wV36WnxkJLCBfiUF86j8B5rD5MjxUqnP5YPuObKFduqQ4AH34OEFs8VR9me6
+         HjFWpli9rtgZx3nkRvFmBeo067MDcDbvXNDd5s9kmmmLQyCKk2dKgCcZwN3H5xA5a/rh
+         W1yNMdKFybWo+8rSMOQwfgTVPpzYuHYOA/4WiAK7gI8t408IjuL3fdN5tN25iN4WENcz
+         wkRw==
+X-Gm-Message-State: AOAM532YpfIT8sDhuFvdqY6ABM9b5RauTu6QCslHq0xkY7JSJm6PIR6m
+        l8OgdqZ1CSQhle2Fs97lIYQr3Q==
+X-Google-Smtp-Source: ABdhPJy+824ENK7sN1D0LnLIeQEVCt6H7JiS+QZCacTvO4AyCNUK5LBfOVQrlEqXAnAqqelnDzRW3Q==
+X-Received: by 2002:a17:906:2881:b0:6f3:f24a:756 with SMTP id o1-20020a170906288100b006f3f24a0756mr18899164ejd.444.1651653049903;
+        Wed, 04 May 2022 01:30:49 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id jz15-20020a17090775ef00b006f3ef214e4fsm5377029ejc.181.2022.05.04.01.30.45
+        by smtp.gmail.com with ESMTPSA id jz15-20020a17090775ef00b006f3ef214e4fsm5377029ejc.181.2022.05.04.01.30.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 01:30:45 -0700 (PDT)
+        Wed, 04 May 2022 01:30:49 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>,
+To:     Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Liviu Dudau <liviu.dudau@arm.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
         Dinh Nguyen <dinguyen@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -64,12 +64,12 @@ To:     Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
         Michal Simek <michal.simek@xilinx.com>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Cc:     Rob Herring <robh@kernel.org>
-Subject: Re: (subset) [PATCH v2 5/9] arm64: dts: broadcom: drop useless 'dma-channels/requests' properties
-Date:   Wed,  4 May 2022 10:30:33 +0200
-Message-Id: <165165303187.30033.13973116387246805218.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH v2 8/9] arm64: dts: exynos: drop useless 'dma-channels/requests' properties
+Date:   Wed,  4 May 2022 10:30:36 +0200
+Message-Id: <165165303186.30033.9411024965777090941.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220430121902.59895-6-krzysztof.kozlowski@linaro.org>
-References: <20220430121902.59895-1-krzysztof.kozlowski@linaro.org> <20220430121902.59895-6-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220430121902.59895-9-krzysztof.kozlowski@linaro.org>
+References: <20220430121902.59895-1-krzysztof.kozlowski@linaro.org> <20220430121902.59895-9-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -77,7 +77,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 30 Apr 2022 14:18:58 +0200, Krzysztof Kozlowski wrote:
+On Sat, 30 Apr 2022 14:19:01 +0200, Krzysztof Kozlowski wrote:
 > The pl330 DMA controller provides number of DMA channels and requests
 > through its registers, so duplicating this information (with a chance of
 > mistakes) in DTS is pointless.  Additionally the DTS used always wrong
@@ -89,8 +89,8 @@ On Sat, 30 Apr 2022 14:18:58 +0200, Krzysztof Kozlowski wrote:
 
 Applied, thanks!
 
-[5/9] arm64: dts: broadcom: drop useless 'dma-channels/requests' properties
-      commit: 8dba791a7280542bc125b68b3547bfa2680bc1af
+[8/9] arm64: dts: exynos: drop useless 'dma-channels/requests' properties
+      commit: 03e1d34d27a5e8065c5ef691648ee8a519e3c1b0
 
 Best regards,
 -- 
