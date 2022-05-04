@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC76DC4707A
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AE8C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357162AbiEDRKA (ORCPT
+        id S1355320AbiEDRKV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        Wed, 4 May 2022 13:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355612AbiEDRAS (ORCPT
+        with ESMTP id S1355619AbiEDRAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:00:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E00D4B437;
-        Wed,  4 May 2022 09:51:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EB54BB8B;
+        Wed,  4 May 2022 09:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B25C661794;
-        Wed,  4 May 2022 16:51:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F36B1C385A4;
-        Wed,  4 May 2022 16:51:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAF79617BD;
+        Wed,  4 May 2022 16:51:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00C65C385AF;
+        Wed,  4 May 2022 16:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683100;
-        bh=bgToEcgNzqSGduzPEvX5C+xMWm9pac0XloT9o040au0=;
+        s=korg; t=1651683117;
+        bh=BvmIjTtTWEk5XrrW7SiDfkdntqy8Ebp0VljKqKVynZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cba9Obf/3bVh9UzdWeR629wbEQWEbeFbk4NDzG70UybFqBcWYUy0XjDzvE+O4dBSe
-         ubeonkjrmkJa88DDGoV8UOF5wZ1Gpx3jeSdmAZQKFdP1U7SrF7QDghtL/lzRx2w4U7
-         04BM9GkLoqOonMVznUMF86on/iLazjKtectjVp+A=
+        b=n1nZU0HsX5/454wT/AeC+/XoVVNhB1p2k47dmLBpyIFhUrgyXYUChsEl2YkWei6bc
+         Px0YGhoHSaDle3ComiWYW2nl8wBtYP+1szoI7Gt23vG9HdvXjiXv/cw4Nf7r2OowV+
+         Yp21ObWJSIMOBRGFHSznYHQocK8oWAGXWWGBXubA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lijun Pan <lijunp213@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 096/129] ibmvnic: fix miscellaneous checks
-Date:   Wed,  4 May 2022 18:44:48 +0200
-Message-Id: <20220504153028.558964269@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 121/129] tty: n_gsm: fix insufficient txframe size
+Date:   Wed,  4 May 2022 18:45:13 +0200
+Message-Id: <20220504153031.058349843@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,106 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lijun Pan <lijunp213@gmail.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 91dc5d2553fbf20e2e8384ac997f278a50c70561 ]
+commit 535bf600de75a859698892ee873521a48d289ec1 upstream.
 
-Fix the following checkpatch checks:
-CHECK: Macro argument 'off' may be better as '(off)' to
-avoid precedence issues
-CHECK: Alignment should match open parenthesis
-CHECK: multiple assignments should be avoided
-CHECK: Blank lines aren't necessary before a close brace '}'
-CHECK: Please use a blank line after function/struct/union/enum
-declarations
-CHECK: Unnecessary parentheses around 'rc != H_FUNCTION'
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
+(N1) refers to the length of the information field (i.e. user payload).
+However, 'txframe' stores the whole frame including frame header, checksum
+and start/end flags. We also need to consider the byte stuffing overhead.
+Define constant for the protocol overhead and adjust the 'txframe' size
+calculation accordingly to reserve enough space for a complete mux frame
+including byte stuffing for advanced option mode. Note that no byte
+stuffing is applied to the start and end flag.
+Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
+transmission.
 
-Signed-off-by: Lijun Pan <lijunp213@gmail.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-8-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/tty/n_gsm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 95bee3d91593..2cd849215913 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -117,7 +117,7 @@ struct ibmvnic_stat {
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -72,6 +72,8 @@ module_param(debug, int, 0600);
+  */
+ #define MAX_MRU 1500
+ #define MAX_MTU 1500
++/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
++#define PROT_OVERHEAD 7
+ #define	GSM_NET_TX_TIMEOUT (HZ*10)
  
- #define IBMVNIC_STAT_OFF(stat) (offsetof(struct ibmvnic_adapter, stats) + \
- 			     offsetof(struct ibmvnic_statistics, stat))
--#define IBMVNIC_GET_STAT(a, off) (*((u64 *)(((unsigned long)(a)) + off)))
-+#define IBMVNIC_GET_STAT(a, off) (*((u64 *)(((unsigned long)(a)) + (off))))
- 
- static const struct ibmvnic_stat ibmvnic_stats[] = {
- 	{"rx_packets", IBMVNIC_STAT_OFF(rx_packets)},
-@@ -2063,14 +2063,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 			rc = reset_tx_pools(adapter);
- 			if (rc) {
- 				netdev_dbg(adapter->netdev, "reset tx pools failed (%d)\n",
--						rc);
-+					   rc);
- 				goto out;
- 			}
- 
- 			rc = reset_rx_pools(adapter);
- 			if (rc) {
- 				netdev_dbg(adapter->netdev, "reset rx pools failed (%d)\n",
--						rc);
-+					   rc);
- 				goto out;
- 			}
- 		}
-@@ -2331,7 +2331,8 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 
- 	if (adapter->state == VNIC_PROBING) {
- 		netdev_warn(netdev, "Adapter reset during probe\n");
--		ret = adapter->init_done_rc = EAGAIN;
-+		adapter->init_done_rc = EAGAIN;
-+		ret = EAGAIN;
- 		goto err;
+ /**
+@@ -2191,7 +2193,7 @@ static struct gsm_mux *gsm_alloc_mux(voi
+ 		kfree(gsm);
+ 		return NULL;
  	}
- 
-@@ -2744,7 +2745,6 @@ static int ibmvnic_set_channels(struct net_device *netdev,
- 			    channels->rx_count, channels->tx_count,
- 			    adapter->req_rx_queues, adapter->req_tx_queues);
- 	return ret;
--
- }
- 
- static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
-@@ -2833,8 +2833,8 @@ static void ibmvnic_get_ethtool_stats(struct net_device *dev,
- 		return;
- 
- 	for (i = 0; i < ARRAY_SIZE(ibmvnic_stats); i++)
--		data[i] = be64_to_cpu(IBMVNIC_GET_STAT(adapter,
--						ibmvnic_stats[i].offset));
-+		data[i] = be64_to_cpu(IBMVNIC_GET_STAT
-+				      (adapter, ibmvnic_stats[i].offset));
- 
- 	for (j = 0; j < adapter->req_tx_queues; j++) {
- 		data[i] = adapter->tx_stats_buffers[j].packets;
-@@ -2874,6 +2874,7 @@ static int ibmvnic_set_priv_flags(struct net_device *netdev, u32 flags)
- 
- 	return 0;
- }
-+
- static const struct ethtool_ops ibmvnic_ethtool_ops = {
- 	.get_drvinfo		= ibmvnic_get_drvinfo,
- 	.get_msglevel		= ibmvnic_get_msglevel,
-@@ -3119,7 +3120,7 @@ static int enable_scrq_irq(struct ibmvnic_adapter *adapter,
- 		/* H_EOI would fail with rc = H_FUNCTION when running
- 		 * in XIVE mode which is expected, but not an error.
- 		 */
--		if (rc && (rc != H_FUNCTION))
-+		if (rc && rc != H_FUNCTION)
- 			dev_err(dev, "H_EOI FAILED irq 0x%llx. rc=%ld\n",
- 				val, rc);
- 	}
--- 
-2.35.1
-
+-	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
++	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
+ 	if (gsm->txframe == NULL) {
+ 		kfree(gsm->buf);
+ 		kfree(gsm);
 
 
