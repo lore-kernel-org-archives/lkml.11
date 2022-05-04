@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 15:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352888AbiEDP5k (ORCPT
+        id S1352898AbiEDP5n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 11:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53880 "EHLO
+        Wed, 4 May 2022 11:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352591AbiEDP5d (ORCPT
+        with ESMTP id S1350669AbiEDP5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 11:57:33 -0400
 Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3234614D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4D045AFC;
         Wed,  4 May 2022 08:53:57 -0700 (PDT)
 Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244EghZP001510;
-        Wed, 4 May 2022 17:53:41 +0200
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244EghZO001510;
+        Wed, 4 May 2022 17:53:39 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=mzzwNarX6y/uXSlhjavJ8tl8qTIckcIr1Wld2u6gD7I=;
- b=Oy5HHofgB19KxswbY1DM0SRBCX3W4aKIrv/JHpB3oCMB+K15LVs8mz/3J03PrPd0wdi8
- NXNxtWx176SxFvxUpXn3xTkqm8jeOP9uchRH1UH5Mo0WzJi841GNf7kHGTThJGVj9bDB
- MwxnanbmY4RB0r9w0EjpI+We+l4laLndbdA4PHnu8WXjgiJK14t7OKZ+Ym7Y/esMzLKY
- YAMlNc2qrsHDqHT1HefW970F3KiFf9/xyTLshVeTEPNkTGIFhw6CxsOkvjSNicnRqF3C
- VFV5rz0yjk5tYTjK4L0mILNzj1dcFi5UrQfPXp6fxy0WjK1zzAtvxjQOShOjIk7Br8Mz Fg== 
+ bh=Q6KyqjPjjOTk3BmOK5hia+7CtTxIiidvABdtdvOQnNs=;
+ b=ETmzha3D6ASiP/NoeMi/nftDnWTbYvh2iiVwr0qAy5McMFVYJKYkQ8MBAp/n0FKF5CxM
+ yiC0AZiF+FdCvJadRFA3mNzZCon0LDLvFaN+KXocO42XevRNqRC8Y4VB7XVeUq2Q80XQ
+ 3GVU9RHA5dYZ8wiX/iwqRZKDN6jJDqmotnvJQCoY+nwRoNjRLqjIUqySnzJ0sDOy9zos
+ +YrXtfmFeVwxPJlDJ/SLvmszBSgzAswJnkM7iOPY2y+UjBuVZszyYHV3i7DNx7X6Mqlx
+ JsIrLugWW/Z6y/QmEDrvPamAIWIiqDUlguumlk5VH8T/z8uGdOt3TthvAIxBlOJ6SCtl DQ== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frv0gecft-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frv0gecfp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 May 2022 17:53:41 +0200
+        Wed, 04 May 2022 17:53:38 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 900D810002A;
-        Wed,  4 May 2022 17:53:40 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6A99210002A;
+        Wed,  4 May 2022 17:53:38 +0200 (CEST)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8987D22A6E3;
-        Wed,  4 May 2022 17:53:40 +0200 (CEST)
-Received: from localhost (10.75.127.47) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 17:53:39
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 63AFE22A6E3;
+        Wed,  4 May 2022 17:53:38 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 17:53:37
  +0200
 From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
 To:     Vinod Koul <vkoul@kernel.org>,
@@ -50,16 +50,16 @@ CC:     <dmaengine@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [PATCH 3/3] dmaengine: stm32-mdma: use dev_dbg on non-busy channel spurious it
-Date:   Wed, 4 May 2022 17:53:22 +0200
-Message-ID: <20220504155322.121431-4-amelie.delaunay@foss.st.com>
+Subject: [PATCH 1/3] dmaengine: stm32-mdma: remove GISR1 register
+Date:   Wed, 4 May 2022 17:53:20 +0200
+Message-ID: <20220504155322.121431-2-amelie.delaunay@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
 References: <20220504155322.121431-1-amelie.delaunay@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
+X-Originating-IP: [10.75.127.46]
 X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -69,35 +69,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If interrupt occurs while !chan->busy, it means channel has been disabled
-between the raise of the interruption and the read of status and ien, so,
-spurious interrupt can be silently discarded.
+GISR1 was described in a not up-to-date documentation when the stm32-mdma
+driver has been developed. This register has not been added in reference
+manual of STM32 SoC with MDMA, which have only 32 MDMA channels.
+So remove it from stm32-mdma driver.
 
+Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
 Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
 ---
- drivers/dma/stm32-mdma.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/dma/stm32-mdma.c | 21 +++++----------------
+ 1 file changed, 5 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index a5cbfbbb93d1..caf0cce8f528 100644
+index 95e5831e490a..57f0eb8a18fc 100644
 --- a/drivers/dma/stm32-mdma.c
 +++ b/drivers/dma/stm32-mdma.c
-@@ -1345,9 +1345,12 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
+@@ -34,7 +34,6 @@
+ #include "virt-dma.h"
  
- 	if (!(status & ien)) {
- 		spin_unlock(&chan->vchan.lock);
--		dev_warn(chan2dev(chan),
--			 "spurious it (status=0x%04x, ien=0x%04x)\n",
--			 status, ien);
-+		if (chan->busy)
-+			dev_warn(chan2dev(chan),
-+				 "spurious it (status=0x%04x, ien=0x%04x)\n", status, ien);
-+		else
-+			dev_dbg(chan2dev(chan),
-+				"spurious it (status=0x%04x, ien=0x%04x)\n", status, ien);
- 		return IRQ_NONE;
+ #define STM32_MDMA_GISR0		0x0000 /* MDMA Int Status Reg 1 */
+-#define STM32_MDMA_GISR1		0x0004 /* MDMA Int Status Reg 2 */
+ 
+ /* MDMA Channel x interrupt/status register */
+ #define STM32_MDMA_CISR(x)		(0x40 + 0x40 * (x)) /* x = 0..62 */
+@@ -169,7 +168,7 @@
+ 
+ #define STM32_MDMA_MAX_BUF_LEN		128
+ #define STM32_MDMA_MAX_BLOCK_LEN	65536
+-#define STM32_MDMA_MAX_CHANNELS		63
++#define STM32_MDMA_MAX_CHANNELS		32
+ #define STM32_MDMA_MAX_REQUESTS		256
+ #define STM32_MDMA_MAX_BURST		128
+ #define STM32_MDMA_VERY_HIGH_PRIORITY	0x3
+@@ -1324,21 +1323,11 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
+ 
+ 	/* Find out which channel generates the interrupt */
+ 	status = readl_relaxed(dmadev->base + STM32_MDMA_GISR0);
+-	if (status) {
+-		id = __ffs(status);
+-	} else {
+-		status = readl_relaxed(dmadev->base + STM32_MDMA_GISR1);
+-		if (!status) {
+-			dev_dbg(mdma2dev(dmadev), "spurious it\n");
+-			return IRQ_NONE;
+-		}
+-		id = __ffs(status);
+-		/*
+-		 * As GISR0 provides status for channel id from 0 to 31,
+-		 * so GISR1 provides status for channel id from 32 to 62
+-		 */
+-		id += 32;
++	if (!status) {
++		dev_dbg(mdma2dev(dmadev), "spurious it\n");
++		return IRQ_NONE;
  	}
++	id = __ffs(status);
  
+ 	chan = &dmadev->chan[id];
+ 	if (!chan) {
 -- 
 2.25.1
 
