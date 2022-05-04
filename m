@@ -2,94 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD61C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE437C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241317AbiEDW4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
+        id S1379547AbiEDW4Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 18:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379472AbiEDWyI (ORCPT
+        with ESMTP id S1379469AbiEDWyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 18:54:08 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7FCD74
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:30 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id q14-20020a17090a178e00b001dc970bf587so1942859pja.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=1aNRK/v5PJV+kxqA6liInwVdvDu0u370B7s4ZQwy8dY=;
-        b=o2163Irn7XxC//LJc+Tjo7pLivoUvw3p/c5fGf8IovDvdplxbQFlL9ZQp6ypiU51U4
-         jKbAIWMkpgoc0q8VVUR9uT9eznXfUsPDHdpEdLU8zpCfpaIzwf6XuiKzHAx3kDnLIJf1
-         yQxNaxFXU/M9JNhKAats9oXfLZOo68wofk4EMPxk+fGzLNKnO++MADnZr1qDY546e46y
-         9J1RHybWx95zGWf6bEh0IJ5DHNBwTzgZhr5/+5uBT3bE39FKxfVVqlsYIVWkxn27CDoD
-         m42nouqq34Q/NRFVtCyptDtloXsFyZSnsPn1iQJaalrVLJyHBECRyX1pS+6WQHrC+Fpp
-         xkkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=1aNRK/v5PJV+kxqA6liInwVdvDu0u370B7s4ZQwy8dY=;
-        b=ZmgUqlGk6+CAZNJ5SmKltA6CcAgcnyXiNRP2VAqg0R0G3Z16o06XVTjAhbXPgcjgln
-         cWoLNjQkDYFP1JKmvKf89w8L17+O+mQTqVcqMv2y2OfussdY4naQOM8h4KWvszasOcdg
-         E5KmimVI8t2Mx9gD9FpvuxLSCYXZ3U7BNbCQ804vAGcwuZbYGDklnxXjg11GAPyCi/3d
-         KTPSvguYMfxOCv/9EYGY8zBlAmlk3fdiGA7sVLdqGnG7EZBlapbdrSKckW9/lI+SgG/R
-         oxBs2NyQY2o5JRX33c/liwQFrF4+RJLt8raHAj5XR4MC1bMpEqc2HNj7mkRVI2F7goVX
-         2/kw==
-X-Gm-Message-State: AOAM531gqP545qO/fTmqQbSF56uRIkvsvQl6yT4uTf7US0uzg1139rVm
-        /Tlx8TF20/UocCxbchtfesklOIM4rKU=
-X-Google-Smtp-Source: ABdhPJyiJRX6wi6I/Yfk/jzv+rbmknQ3xM/rsEhoAMsjXeMRkrqbQWi8O9GK5F8UZH2jawvA2g3f0YE9xgc=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2484:b0:50e:68e:d5a5 with SMTP id
- c4-20020a056a00248400b0050e068ed5a5mr11922192pfv.47.1651704630068; Wed, 04
- May 2022 15:50:30 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:40 +0000
-In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-35-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220504224914.1654036-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 034/128] KVM: selftests: Use vm_create_without_vcpus() in psci_cpu_on_test
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE0B6B;
+        Wed,  4 May 2022 15:50:29 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VCDZUHE_1651704626;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VCDZUHE_1651704626)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 05 May 2022 06:50:27 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     tytso@mit.edu
+Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] fs: Remove duplicated include in inode.c
+Date:   Thu,  5 May 2022 06:50:25 +0800
+Message-Id: <20220504225025.44753-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use vm_create_without_vcpus() instead of open coding a rough equivalent
-in psci_cpu_on_test.
+Fix following includecheck warning:
+./fs/ext4/inode.c: linux/dax.h is included more than once.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/ext4/inode.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
-index bde7bae20a6e..b4b0fa5d7c21 100644
---- a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
-+++ b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
-@@ -76,8 +76,7 @@ int main(void)
- 	struct kvm_vm *vm;
- 	struct ucall uc;
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 987ea77e672d..60d909a528d1 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -41,7 +41,6 @@
+ #include <linux/bitops.h>
+ #include <linux/iomap.h>
+ #include <linux/iversion.h>
+-#include <linux/dax.h>
  
--	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
--	kvm_vm_elf_load(vm, program_invocation_name);
-+	vm = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
- 	ucall_init(vm, NULL);
- 
- 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init);
+ #include "ext4_jbd2.h"
+ #include "xattr.h"
 -- 
-2.36.0.464.gb9c8b46e94-goog
+2.20.1.7.g153144c
 
