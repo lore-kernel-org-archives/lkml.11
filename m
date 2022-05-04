@@ -2,89 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4804C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 01:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8742EC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 01:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245235AbiEDBs1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 21:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
+        id S1343566AbiEDBzu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 21:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237189AbiEDBsZ (ORCPT
+        with ESMTP id S1343657AbiEDBw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 21:48:25 -0400
-X-Greylist: delayed 540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 18:44:51 PDT
-Received: from mx.cjr.nz (mx.cjr.nz [51.158.111.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19441AF22;
-        Tue,  3 May 2022 18:44:50 -0700 (PDT)
-Received: from authenticated-user (mx.cjr.nz [51.158.111.142])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 3 May 2022 21:52:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE29244A3A;
+        Tue,  3 May 2022 18:48:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pc)
-        by mx.cjr.nz (Postfix) with ESMTPSA id 0E5CB7FC20;
-        Wed,  4 May 2022 01:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz; s=dkim;
-        t=1651628148;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8i5okGkEbwGEAVhwahD/P5DzkyrCRNwKvZVtcLyVENY=;
-        b=o1s59jr7ki2Zcrx9IZLlhAd6BxaSM68EQhXtCoWuRQDU3bCYLZmzB00KSL2LpXXBHTqVDM
-        D5sr3DUejfUdckgKqQIIMQWeNO/CaApEimZXAx1vNPp92+59ZxgbTyCoqt+7CW0TqClLvB
-        W+NRNrn6DzB9Oo74irtd32gRYBCbv0U2kmYwBdyhdywSDfiie1ukOi9m+pBYu/vo6qL2Qn
-        U9ck6oUOtnaZfkpeOr8/hBIudK6SBmLgje08/TNUP0WKyZYeW5amsW++HV2L0JBzTE7cf/
-        VhaY4OK5qorJnCNmlVTtskjN0YfBjLfJN8Hr0xmTTmU6I12352hAbhZL21FckQ==
-From:   Paulo Alcantara <pc@cjr.nz>
-To:     Byron Stanoszek <gandalf@winds.org>,
-        Steve French <sfrench@samba.org>
-Cc:     linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: CIFS regression mounting vers=1.0 NTLMSSP when hostname is too
- long
-In-Reply-To: <e6837098-15d9-acb6-7e34-1923cf8c6fe1@winds.org>
-References: <e6837098-15d9-acb6-7e34-1923cf8c6fe1@winds.org>
-Date:   Tue, 03 May 2022 22:35:43 -0300
-Message-ID: <878rri2i6o.fsf@cjr.nz>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F9461987;
+        Wed,  4 May 2022 01:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 817C5C385A9;
+        Wed,  4 May 2022 01:48:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651628888;
+        bh=1sRYRjLbt8trZsAxQP405ve5/+hZRzhVT+rXdU002IU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZIqODaO4EeJ3AGQlFrE98zItIkLii9TzICBsRd4HttDYp3pWa1CS91mDp0ZUG6rw7
+         0CfC61X+QTB8CfkhI0IfKJTrK1XkCVKDbALRtn1/jIDPB5DgnezjcBpdxiqCgiSSQq
+         RYy0Sr5k8tF72NreVxLBMxbHzhHejpdQD7l1ztACPs4V7bzwugXp19PXHC0yLQuLEw
+         Zqphrb0YORYhyJR/9DFSPDwVegg6iCuFN3kzs+NeOaUfToWmH4IvpL7jbcKERBjYhU
+         us+cOa1ec/2irqMEf8UQ3DkvRfQ/CKtyYEZQD26cQhblA2dk3l3Tz1Vrlsmix1UJY1
+         FKD8FhW6pSJqQ==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH v2] f2fs: fix deadloop in foreground GC
+Date:   Wed,  4 May 2022 09:47:55 +0800
+Message-Id: <20220504014755.1727-1-chao@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Byron Stanoszek <gandalf@winds.org> writes:
+As Yanming reported in bugzilla:
 
-> I would like to report a regression in the CIFS fs. Sometime between Linux 4.14
-> and 5.16, mounting CIFS with option vers=1.0 (and
-> CONFIG_CIFS_ALLOW_INSECURE_LEGACY=y set appropriately) with security type
-> NTLMSSP stopped working for me. The server side is a Windows 2003 Server.
->
-> I found that this behavior depends on the length of the Linux client's
-> host+domain name (e.g. utsname()->nodename), where the mount works as long as
-> the name is 16 characters or less. Anything 17 or above returns -EIO, per the
-> following example:
+https://bugzilla.kernel.org/show_bug.cgi?id=215914
 
-Looks like your server is expecting the WorkstationName field in
-AUTHENTICATE_MESSAGE payload to be 16 bytes long.  That is, NetBIOS name
-length as per rfc1001.
+The root cause is: in a very small sized image, it's very easy to
+exceed threshold of foreground GC, if we calculate free space and
+dirty data based on section granularity, in corner case,
+has_not_enough_free_secs() will always return true, result in
+deadloop in f2fs_gc().
 
-> I implemented a workaround using the following patch:
->
-> Signed-off-by: Byron Stanoszek <gandalf@winds.org>
-> ---
-> --- a/fs/cifs/cifsglob.h
-> +++ b/fs/cifs/cifsglob.h
-> @@ -101,7 +101,7 @@
->   #define XATTR_DOS_ATTRIB "user.DOSATTRIB"
->   #endif
->
-> -#define CIFS_MAX_WORKSTATION_LEN  (__NEW_UTS_LEN + 1)  /* reasonable max for client */
-> +#define CIFS_MAX_WORKSTATION_LEN 16
->
->   /*
->    * CIFS vfs client Status information (based on what we know.)
->
-> I don't know if this patch is correct or will have any real effect outside of
-> the NTLMSSP session connect sequence, but it worked in my case.
+So this patch refactors has_not_enough_free_secs() as below to fix
+this issue:
+1. calculate needed space based on block granularity, and separate
+all blocks to two parts, section part, and block part, comparing
+section part to free section, and comparing block part to free space
+in openned log.
+2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
+as node block consumer;
+3. account F2FS_DIRTY_DENTS as data block consumer;
 
-Perhaps we should be use TCP_Server_Info::workstation_RFC1001_name in
-fs/cifs/sess.c:build_ntlmssp_auth_blob() instead only when connecting to
-old servers by using insecure dialects -- like SMB1, in your case.
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+v2:
+- fix performance regression
+ fs/f2fs/segment.h | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
+index 8a591455d796..c38263dbc5ca 100644
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -575,11 +575,10 @@ static inline int reserved_sections(struct f2fs_sb_info *sbi)
+ 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
+ }
+ 
+-static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
++static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
++			unsigned int node_blocks, unsigned int dent_blocks)
+ {
+-	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
+-					get_pages(sbi, F2FS_DIRTY_DENTS);
+-	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++
+ 	unsigned int segno, left_blocks;
+ 	int i;
+ 
+@@ -605,19 +604,28 @@ static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
+ static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
+ 					int freed, int needed)
+ {
+-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
+-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
+-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
++					get_pages(sbi, F2FS_DIRTY_DENTS) +
++					get_pages(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
++	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
++	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
++	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
++	unsigned int free, need_lower, need_upper;
+ 
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
+ 		return false;
+ 
+-	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
+-			has_curseg_enough_space(sbi))
++	free = free_sections(sbi) + freed;
++	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
++	need_upper = need_lower + node_blocks ? 1 : 0 + dent_blocks ? 1 : 0;
++
++	if (free > need_upper)
+ 		return false;
+-	return (free_sections(sbi) + freed) <=
+-		(node_secs + 2 * dent_secs + imeta_secs +
+-		reserved_sections(sbi) + needed);
++	else if (free <= need_lower)
++		return true;
++	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
+ }
+ 
+ static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
+-- 
+2.32.0
+
