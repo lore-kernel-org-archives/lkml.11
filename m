@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6BDC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356464AbiEDRNo (ORCPT
+        id S1356533AbiEDRNx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        Wed, 4 May 2022 13:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354805AbiEDRCo (ORCPT
+        with ESMTP id S1354998AbiEDRDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:02:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BBF4D279;
-        Wed,  4 May 2022 09:52:29 -0700 (PDT)
+        Wed, 4 May 2022 13:03:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7734D9E8;
+        Wed,  4 May 2022 09:52:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90E416187A;
-        Wed,  4 May 2022 16:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC705C385A5;
-        Wed,  4 May 2022 16:52:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8150961794;
+        Wed,  4 May 2022 16:52:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA75C385AA;
+        Wed,  4 May 2022 16:52:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683145;
-        bh=0ADtk7N5G3X2CP8D5RX9L+TI3ddYO/GrfFJQis71W10=;
+        s=korg; t=1651683139;
+        bh=Y0Bi39iTWz4cj+MRckiLDH8gQu2Z0CGTg8tiDnDMg9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aH+o/LBLoV1fbn/Zgo68LvYYiFEo/dGyBhOorHZt0xyNCdZFUfcO9YHeMSXUcdLfM
-         m2IPKQZN7RbilyOaIjjwOpUVzEstjTaWbzp8hGOQBg6F91mBcQQC4fGnKzR7ASwtnM
-         oVnTmhF3ZSrz0TQTemj2wV0SEmK8wrmvNYr4iibc=
+        b=DER4vhqKCqLjyjXHvOlC/b9x5qRYPIbjTH3xQhethf7F/+M2zHHp1fB8SsrGC8zdS
+         kxmsRjZcFjln8CyyXVrEFee4v2yaDFwNFduD5B6T34t/446dTAwUSbpgP8qsGJ+c42
+         2jutqw+T2w5KW9dPxBbp8wTDxnhxD6iu9o8AFe68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 5.15 002/177] USB: quirks: add a Realtek card reader
-Date:   Wed,  4 May 2022 18:43:15 +0200
-Message-Id: <20220504153054.015358467@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 127/129] tty: n_gsm: fix incorrect UA handling
+Date:   Wed,  4 May 2022 18:45:19 +0200
+Message-Id: <20220504153031.655306116@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
+References: <20220504153021.299025455@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,31 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 2a7ccf6bb6f147f64c025ad68f4255d8e1e0ce6d upstream.
+commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
 
-This device is reported to stall when enummerated.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
+acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
+discarded. Currently, all UA frame are handled in the same way regardless
+of the PF bit. This does not comply with the standard.
+Remove the UA case in gsm_queue() to process only UA frames with PF bit set
+to 1 to abide the standard.
 
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220414110209.30924-1-oneukum@suse.com
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/n_gsm.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -404,6 +404,9 @@ static const struct usb_device_id usb_qu
- 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
- 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
- 
-+	/* Realtek Semiconductor Corp. Mass Storage Device (Multicard Reader)*/
-+	{ USB_DEVICE(0x0bda, 0x0151), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
-+
- 	/* Realtek hub in Dell WD19 (Type-C) */
- 	{ USB_DEVICE(0x0bda, 0x0487), .driver_info = USB_QUIRK_NO_LPM },
- 
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1817,7 +1817,6 @@ static void gsm_queue(struct gsm_mux *gs
+ 		gsm_response(gsm, address, UA);
+ 		gsm_dlci_close(dlci);
+ 		break;
+-	case UA:
+ 	case UA|PF:
+ 		if (cr == 0 || dlci == NULL)
+ 			break;
 
 
