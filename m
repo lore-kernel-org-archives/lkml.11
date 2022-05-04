@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B1BC47084
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4852C38162
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357093AbiEDRTU (ORCPT
+        id S1344849AbiEDRUq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        Wed, 4 May 2022 13:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356327AbiEDRFI (ORCPT
+        with ESMTP id S1356406AbiEDRFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:05:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1644149F18;
-        Wed,  4 May 2022 09:54:01 -0700 (PDT)
+        Wed, 4 May 2022 13:05:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB8350E11;
+        Wed,  4 May 2022 09:54:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2C51B82795;
-        Wed,  4 May 2022 16:53:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DB1C385A5;
-        Wed,  4 May 2022 16:53:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD4061896;
+        Wed,  4 May 2022 16:54:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A181C385AA;
+        Wed,  4 May 2022 16:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683238;
-        bh=+UBJ4i3Fl2GsTUI0Gp8N2JfuB7Nvbo2PZZ9YAnUaWY8=;
+        s=korg; t=1651683245;
+        bh=25ux8NFNKLydnTHHEQeLqGsVmScposqAAuPdXMHZvJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HcTvBeayIZIxoArx+PrgVV/M1beS5Q0v/blShaA/0f9QeFu3bow1Xvw8akQiMi2ZM
-         BcvLTAeinTFHNyYKkPLyihBSyzzyxSfQ25jWcFoMlDSO4pbhakycdVr9uZeD6HxQuZ
-         J538HJM9+mE0s60W4yOoDiytOJFRJLQZxZqJsyq0=
+        b=LxioS/J+4QDjDI8uyqLst8p1jswCXJ62U00GeeTH9/DotPWqifHx0gVxC+Gtg4y/j
+         /tH4rATvDEK154MW+w9RoOtjwA8Gd8PGT2GJEfvZRfbDB4UbodZ4Rqtf2zzC1p3LJ0
+         vpl2NNeaNdx5r5qq4ZM9iTTeGfrEYBYRp6nCw4DY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/177] pinctrl: pistachio: fix use of irq_of_parse_and_map()
-Date:   Wed,  4 May 2022 18:44:44 +0200
-Message-Id: <20220504153101.240475507@linuxfoundation.org>
+Subject: [PATCH 5.15 098/177] ip_gre: Make o_seqno start from 0 in native mode
+Date:   Wed,  4 May 2022 18:44:51 +0200
+Message-Id: <20220504153101.902753048@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,41 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
+[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+For GRE and GRETAP devices, currently o_seqno starts from 1 in native
+mode.  According to RFC 2890 2.2., "The first datagram is sent with a
+sequence number of 0."  Fix it.
 
-Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+It is worth mentioning that o_seqno already starts from 0 in collect_md
+mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
+gre_build_header() before getting incremented.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: William Tu <u9012063@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/ip_gre.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
-index 8d271c6b0ca4..5de691c630b4 100644
---- a/drivers/pinctrl/pinctrl-pistachio.c
-+++ b/drivers/pinctrl/pinctrl-pistachio.c
-@@ -1374,10 +1374,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
- 		}
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index e7f3e37e4aa8..4b7d7ed4bab8 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -459,14 +459,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		       __be16 proto)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+-
+-	if (tunnel->parms.o_flags & TUNNEL_SEQ)
+-		tunnel->o_seqno++;
++	__be16 flags = tunnel->parms.o_flags;
  
- 		irq = irq_of_parse_and_map(child, 0);
--		if (irq < 0) {
--			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
-+		if (!irq) {
-+			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
- 			of_node_put(child);
--			ret = irq;
-+			ret = -EINVAL;
- 			goto err;
- 		}
+ 	/* Push GRE header. */
+ 	gre_build_header(skb, tunnel->tun_hlen,
+-			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
+-			 htonl(tunnel->o_seqno));
++			 flags, proto, tunnel->parms.o_key,
++			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
  
+ 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+ }
 -- 
 2.35.1
 
