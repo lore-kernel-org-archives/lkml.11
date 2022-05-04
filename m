@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CBDC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B3BC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358586AbiEDRir (ORCPT
+        id S1358618AbiEDRiv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        Wed, 4 May 2022 13:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356834AbiEDRJp (ORCPT
+        with ESMTP id S1356843AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FA02E9E3;
-        Wed,  4 May 2022 09:55:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E2640A1E;
+        Wed,  4 May 2022 09:55:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AE98B82795;
-        Wed,  4 May 2022 16:55:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41CA1C385AA;
-        Wed,  4 May 2022 16:55:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1A0616F8;
+        Wed,  4 May 2022 16:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD10C385AA;
+        Wed,  4 May 2022 16:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683351;
-        bh=IzHnTEH3xlGhfuyQg4J8ArZeDQO0q0tTgX2u3BJ5BDk=;
+        s=korg; t=1651683356;
+        bh=GYqdHF/kWbxCt6a86UWjM3QOO2fhmQgGD64+8+8qvrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GpRKz31fOgTmqBE1PL/iJdbzcgPcwKHQ7OzsoZAE/UWu5z7zuLH8aBq1z5p8ePphk
-         J2MAyQrkuWD6fgROMvVPnvWAiZhPxS2lkvBozDe6LHZMKElWz9Shbw237U7WNWLT5y
-         xtv+1F3gLJOByASU715BEl6lXK3THUQXM2nfoqL4=
+        b=wxndevaQjYAPC7wPE/YFoReh99w4A/be34cHyIlXkMvmmjXL8VuEOPehFaJMb9g/K
+         4b7VePrOMKn18dsdAM3RHtxuRqR5QnAd1AoLwQMYhapNOpIn+m/D+Bv13zpJ3TVuvn
+         UnwvCDQoU0aVOdrYv+4ajSUiLKt3QbMMuyFCtpe0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH 5.17 024/225] usb: dwc3: Try usb-role-switch first in dwc3_drd_init
-Date:   Wed,  4 May 2022 18:44:22 +0200
-Message-Id: <20220504153112.490831148@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>
+Subject: [PATCH 5.17 029/225] usb: cdns3: Fix issue for clear halt endpoint
+Date:   Wed,  4 May 2022 18:44:27 +0200
+Message-Id: <20220504153112.887225733@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,55 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Peter <sven@svenpeter.dev>
+From: Pawel Laszczak <pawell@cadence.com>
 
-commit ab7aa2866d295438dc60522f85c5421c6b4f1507 upstream.
+commit b3fa25de31fb7e9afebe9599b8ff32eda13d7c94 upstream.
 
-If the PHY controller node has a "port" dwc3 tries to find an
-extcon device even when "usb-role-switch" is present. This happens
-because dwc3_get_extcon() sees that "port" node and then calls
-extcon_find_edev_by_node() which will always return EPROBE_DEFER
-in that case.
+Path fixes bug which occurs during resetting endpoint in
+__cdns3_gadget_ep_clear_halt function. During resetting endpoint
+controller will change HW/DMA owned TRB. It set Abort flag in
+trb->control and will change trb->length field. If driver want
+to use the aborted trb it must update the changed field in
+TRB.
 
-On the other hand, even if an extcon was present and dwc3_get_extcon()
-was successful it would still be ignored in favor of "usb-role-switch".
-
-Let's just first check if "usb-role-switch" is configured in the device
-tree and directly use it instead and only try to look for an extcon
-device otherwise.
-
-Fixes: 8a0a13799744 ("usb: dwc3: Registering a role switch in the DRD code.")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
-Link: https://lore.kernel.org/r/20220411155300.9766-1-sven@svenpeter.dev
+Fixes: 7733f6c32e36 ("usb: cdns3: Add Cadence USB3 DRD Driver")
+cc: <stable@vger.kernel.org>
+Acked-by: Peter Chen <peter.chen@kernel.org>
+Signed-off-by: Pawel Laszczak <pawell@cadence.com>
+Link: https://lore.kernel.org/r/20220329084605.4022-1-pawell@cadence.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/drd.c |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/usb/cdns3/cdns3-gadget.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/dwc3/drd.c
-+++ b/drivers/usb/dwc3/drd.c
-@@ -571,16 +571,15 @@ int dwc3_drd_init(struct dwc3 *dwc)
- {
- 	int ret, irq;
+--- a/drivers/usb/cdns3/cdns3-gadget.c
++++ b/drivers/usb/cdns3/cdns3-gadget.c
+@@ -2684,6 +2684,7 @@ int __cdns3_gadget_ep_clear_halt(struct
+ 	struct usb_request *request;
+ 	struct cdns3_request *priv_req;
+ 	struct cdns3_trb *trb = NULL;
++	struct cdns3_trb trb_tmp;
+ 	int ret;
+ 	int val;
  
-+	if (ROLE_SWITCH &&
-+	    device_property_read_bool(dwc->dev, "usb-role-switch"))
-+		return dwc3_setup_role_switch(dwc);
-+
- 	dwc->edev = dwc3_get_extcon(dwc);
- 	if (IS_ERR(dwc->edev))
- 		return PTR_ERR(dwc->edev);
+@@ -2693,8 +2694,10 @@ int __cdns3_gadget_ep_clear_halt(struct
+ 	if (request) {
+ 		priv_req = to_cdns3_request(request);
+ 		trb = priv_req->trb;
+-		if (trb)
++		if (trb) {
++			trb_tmp = *trb;
+ 			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
++		}
+ 	}
  
--	if (ROLE_SWITCH &&
--	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
--		ret = dwc3_setup_role_switch(dwc);
--		if (ret < 0)
--			return ret;
--	} else if (dwc->edev) {
-+	if (dwc->edev) {
- 		dwc->edev_nb.notifier_call = dwc3_drd_notifier;
- 		ret = extcon_register_notifier(dwc->edev, EXTCON_USB_HOST,
- 					       &dwc->edev_nb);
+ 	writel(EP_CMD_CSTALL | EP_CMD_EPRST, &priv_dev->regs->ep_cmd);
+@@ -2709,7 +2712,7 @@ int __cdns3_gadget_ep_clear_halt(struct
+ 
+ 	if (request) {
+ 		if (trb)
+-			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
++			*trb = trb_tmp;
+ 
+ 		cdns3_rearm_transfer(priv_ep, 1);
+ 	}
 
 
