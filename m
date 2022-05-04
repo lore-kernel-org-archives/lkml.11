@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCD8C35295
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B007C47080
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357429AbiEDRTg (ORCPT
+        id S1357512AbiEDRTm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
+        Wed, 4 May 2022 13:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356386AbiEDRFK (ORCPT
+        with ESMTP id S1356379AbiEDRFK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:05:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA5250E07;
-        Wed,  4 May 2022 09:54:03 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C180F506FD;
+        Wed,  4 May 2022 09:54:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FFE8617A6;
-        Wed,  4 May 2022 16:54:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D889C385A5;
-        Wed,  4 May 2022 16:54:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 163AD616F8;
+        Wed,  4 May 2022 16:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6056CC385A5;
+        Wed,  4 May 2022 16:54:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683242;
-        bh=bpjUbE/Xn+hEI8S5xOfpY2zy1g5hUwfAs4TcqRSWHuw=;
+        s=korg; t=1651683244;
+        bh=IiDFosyBKEsDaEHgStrTUiiJs7CTh4KNL6+mOht+meQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mzwZQtSKUZzvTGYYUAnbgLa21HR/qEA10fHS0cxEL/U+L8lAUyMGrLbZ+gBf1+gi6
-         dZuTTGJ8v50Vvp0CaoHMb2ShiLsGaeiArV2kv/zzHP/9CshkFKtTA4SZlazFNmaCTd
-         mrrYU2TxIFdPFkCQ17r88/mJ27caUVqwvgYSXqe4=
+        b=pSDJ5iyRXm8J/cq26pEAIm42B9zIbR+f16s03aVy8GAqAQbkS+RCPT7mS47gbtp38
+         +PB1SxR0wfQmAihPJ2fh+fTOUSePmAxz1eAeErz8qmfvpDlIqQyz4bm5uFvbp8ZpV2
+         WzFJyCDN07vVJU3TyWqBad7/ReTPJCwhdWvjrXRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 107/177] net: phy: marvell10g: fix return value on error
-Date:   Wed,  4 May 2022 18:45:00 +0200
-Message-Id: <20220504153102.805435201@linuxfoundation.org>
+Subject: [PATCH 5.15 109/177] drm/sun4i: Remove obsolete references to PHYS_OFFSET
+Date:   Wed,  4 May 2022 18:45:02 +0200
+Message-Id: <20220504153102.988331294@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,36 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch.siach@siklu.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 0ed9704b660b259b54743cad8a84a11148f60f0a ]
+[ Upstream commit dc3ae06c5f2170d879ff58696f629d8c3868aec3 ]
 
-Return back the error value that we get from phy_read_mmd().
+commit b4bdc4fbf8d0 ("soc: sunxi: Deal with the MBUS DMA offsets in a
+central place") added a platform device notifier that sets the DMA
+offset for all of the display engine frontend and backend devices.
 
-Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
-Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+The code applying the offset to DMA buffer physical addresses was then
+removed from the backend driver in commit 756668ba682e ("drm/sun4i:
+backend: Remove the MBUS quirks"), but the code subtracting PHYS_OFFSET
+was left in the frontend driver.
+
+As a result, the offset was applied twice in the frontend driver. This
+likely went unnoticed because it only affects specific configurations
+(scaling or certain pixel formats) where the frontend is used, on boards
+with both one of these older SoCs and more than 1 GB of DRAM.
+
+In addition, the references to PHYS_OFFSET prevent compiling the driver
+on architectures where PHYS_OFFSET is not defined.
+
+Fixes: b4bdc4fbf8d0 ("soc: sunxi: Deal with the MBUS DMA offsets in a central place")
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-4-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/sun4i/sun4i_frontend.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index bd310e8d5e43..df33637c5269 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -789,7 +789,7 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
+diff --git a/drivers/gpu/drm/sun4i/sun4i_frontend.c b/drivers/gpu/drm/sun4i/sun4i_frontend.c
+index edb60ae0a9b7..faecc2935039 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_frontend.c
++++ b/drivers/gpu/drm/sun4i/sun4i_frontend.c
+@@ -222,13 +222,11 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
  
- 	cssr1 = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_CSSR1);
- 	if (cssr1 < 0)
--		return val;
-+		return cssr1;
+ 	/* Set the physical address of the buffer in memory */
+ 	paddr = drm_fb_cma_get_gem_addr(fb, state, 0);
+-	paddr -= PHYS_OFFSET;
+ 	DRM_DEBUG_DRIVER("Setting buffer #0 address to %pad\n", &paddr);
+ 	regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR0_REG, paddr);
  
- 	/* If the link settings are not resolved, mark the link down */
- 	if (!(cssr1 & MV_PCS_CSSR1_RESOLVED)) {
+ 	if (fb->format->num_planes > 1) {
+ 		paddr = drm_fb_cma_get_gem_addr(fb, state, swap ? 2 : 1);
+-		paddr -= PHYS_OFFSET;
+ 		DRM_DEBUG_DRIVER("Setting buffer #1 address to %pad\n", &paddr);
+ 		regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR1_REG,
+ 			     paddr);
+@@ -236,7 +234,6 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
+ 
+ 	if (fb->format->num_planes > 2) {
+ 		paddr = drm_fb_cma_get_gem_addr(fb, state, swap ? 1 : 2);
+-		paddr -= PHYS_OFFSET;
+ 		DRM_DEBUG_DRIVER("Setting buffer #2 address to %pad\n", &paddr);
+ 		regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR2_REG,
+ 			     paddr);
 -- 
 2.35.1
 
