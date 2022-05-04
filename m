@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239066AbiEDRrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S1359088AbiEDRrV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356591AbiEDRN6 (ORCPT
+        with ESMTP id S1356442AbiEDRNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:13:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D2F53A67;
-        Wed,  4 May 2022 09:58:07 -0700 (PDT)
+        Wed, 4 May 2022 13:13:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A86BA4C415;
+        Wed,  4 May 2022 09:57:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58222618B0;
-        Wed,  4 May 2022 16:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF16C385B1;
-        Wed,  4 May 2022 16:58:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 269FDB827AD;
+        Wed,  4 May 2022 16:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA2BCC385A5;
+        Wed,  4 May 2022 16:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683486;
-        bh=HzXEB+jiefZVdvXEiPjM7zJ7btDrrLOGhLbd7Aa/u8A=;
+        s=korg; t=1651683467;
+        bh=d7JgQBk6naJ/rT9zZwoorkKX4JJ7nvbUbjkN0+THQEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Et34VXqAu4ivN4dwnn9ugJCuRgF0z+j4luvOIf0olvT44bJqCvIgQE6hgmiIV/mvF
-         mze5mX1SJSrB/Gm3EojF+QbjkeVIYfZS7EgN8JGp9w/sGqaoWUrTrQfgw3Lwu5W1Jb
-         b7FVdQtF0zIe8JCwIE7KIW4gZap2hHaemKtGUWlg=
+        b=djHmZ5a1lCuXRuDunwbcLpO1q414eN56UtKUuV5q+O5Rv0dPv6+gom/595bb/zKhA
+         2BHinjs7gnGG2TiDz33tau58UlQjbpeUFYcDc2U/ibMlOyBB7HF7u/rt/fgZCtjkT6
+         ID8dr/13Zjze1+k/GKNcq0f0JkoMld/obqi2OCvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 161/225] ASoC: wm8731: Disable the regulator when probing fails
-Date:   Wed,  4 May 2022 18:46:39 +0200
-Message-Id: <20220504153124.363141736@linuxfoundation.org>
+Subject: [PATCH 5.17 129/225] mctp: defer the kfree of object mdev->addrs
+Date:   Wed,  4 May 2022 18:46:07 +0200
+Message-Id: <20220504153121.879448475@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,88 +51,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
+[ Upstream commit b561275d633bcd8e0e8055ab86f1a13df75a0269 ]
 
-When the driver fails during probing, the driver should disable the
-regulator, not just handle it in wm8731_hw_init().
+The function mctp_unregister() reclaims the device's relevant resource
+when a netcard detaches. However, a running routine may be unaware of
+this and cause the use-after-free of the mdev->addrs object.
 
-The following log reveals it:
+The race condition can be demonstrated below
 
-[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   17.824467] Call Trace:
-[   17.824774]  <TASK>
-[   17.825040]  regulator_bulk_free+0x82/0xe0
-[   17.825514]  devres_release_group+0x319/0x3d0
-[   17.825882]  i2c_device_probe+0x766/0x940
-[   17.829198]  i2c_register_driver+0xb5/0x130
+ cleanup thread               another thread
+                          |
+unregister_netdev()       |  mctp_sendmsg()
+...                       |    ...
+  mctp_unregister()       |    rt = mctp_route_lookup()
+    ...                   |    mctl_local_output()
+    kfree(mdev->addrs)    |      ...
+                          |      saddr = rt->dev->addrs[0];
+                          |
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+An attacker can adopt the (recent provided) mtcpserial driver with pty
+to fake the device detaching and use the userfaultfd to increase the
+race success chance (in mctp_sendmsg). The KASan report for such a POC
+is shown below:
+
+[   86.051955] ==================================================================
+[   86.051955] BUG: KASAN: use-after-free in mctp_local_output+0x4e9/0xb7d
+[   86.051955] Read of size 1 at addr ffff888005f298c0 by task poc/295
+[   86.051955]
+[   86.051955] Call Trace:
+[   86.051955]  <TASK>
+[   86.051955]  dump_stack_lvl+0x33/0x42
+[   86.051955]  print_report.cold.13+0xb2/0x6b3
+[   86.051955]  ? preempt_schedule_irq+0x57/0x80
+[   86.051955]  ? mctp_local_output+0x4e9/0xb7d
+[   86.051955]  kasan_report+0xa5/0x120
+[   86.051955]  ? mctp_local_output+0x4e9/0xb7d
+[   86.051955]  mctp_local_output+0x4e9/0xb7d
+[   86.051955]  ? mctp_dev_set_key+0x79/0x79
+[   86.051955]  ? copyin+0x38/0x50
+[   86.051955]  ? _copy_from_iter+0x1b6/0xf20
+[   86.051955]  ? sysvec_apic_timer_interrupt+0x97/0xb0
+[   86.051955]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
+[   86.051955]  ? mctp_local_output+0x1/0xb7d
+[   86.051955]  mctp_sendmsg+0x64d/0xdb0
+[   86.051955]  ? mctp_sk_close+0x20/0x20
+[   86.051955]  ? __fget_light+0x2fd/0x4f0
+[   86.051955]  ? mctp_sk_close+0x20/0x20
+[   86.051955]  sock_sendmsg+0xdd/0x110
+[   86.051955]  __sys_sendto+0x1cc/0x2a0
+[   86.051955]  ? __ia32_sys_getpeername+0xa0/0xa0
+[   86.051955]  ? new_sync_write+0x335/0x550
+[   86.051955]  ? alloc_file+0x22f/0x500
+[   86.051955]  ? __ip_do_redirect+0x820/0x1820
+[   86.051955]  ? vfs_write+0x44d/0x7b0
+[   86.051955]  ? vfs_write+0x44d/0x7b0
+[   86.051955]  ? fput_many+0x15/0x120
+[   86.051955]  ? ksys_write+0x155/0x1b0
+[   86.051955]  ? __ia32_sys_read+0xa0/0xa0
+[   86.051955]  __x64_sys_sendto+0xd8/0x1b0
+[   86.051955]  ? exit_to_user_mode_prepare+0x2f/0x120
+[   86.051955]  ? syscall_exit_to_user_mode+0x12/0x20
+[   86.051955]  do_syscall_64+0x3a/0x80
+[   86.051955]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   86.051955] RIP: 0033:0x7f82118a56b3
+[   86.051955] RSP: 002b:00007ffdb154b110 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+[   86.051955] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f82118a56b3
+[   86.051955] RDX: 0000000000000010 RSI: 00007f8211cd4000 RDI: 0000000000000007
+[   86.051955] RBP: 00007ffdb154c1d0 R08: 00007ffdb154b164 R09: 000000000000000c
+[   86.051955] R10: 0000000000000000 R11: 0000000000000293 R12: 000055d779800db0
+[   86.051955] R13: 00007ffdb154c2b0 R14: 0000000000000000 R15: 0000000000000000
+[   86.051955]  </TASK>
+[   86.051955]
+[   86.051955] Allocated by task 295:
+[   86.051955]  kasan_save_stack+0x1c/0x40
+[   86.051955]  __kasan_kmalloc+0x84/0xa0
+[   86.051955]  mctp_rtm_newaddr+0x242/0x610
+[   86.051955]  rtnetlink_rcv_msg+0x2fd/0x8b0
+[   86.051955]  netlink_rcv_skb+0x11c/0x340
+[   86.051955]  netlink_unicast+0x439/0x630
+[   86.051955]  netlink_sendmsg+0x752/0xc00
+[   86.051955]  sock_sendmsg+0xdd/0x110
+[   86.051955]  __sys_sendto+0x1cc/0x2a0
+[   86.051955]  __x64_sys_sendto+0xd8/0x1b0
+[   86.051955]  do_syscall_64+0x3a/0x80
+[   86.051955]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   86.051955]
+[   86.051955] Freed by task 301:
+[   86.051955]  kasan_save_stack+0x1c/0x40
+[   86.051955]  kasan_set_track+0x21/0x30
+[   86.051955]  kasan_set_free_info+0x20/0x30
+[   86.051955]  __kasan_slab_free+0x104/0x170
+[   86.051955]  kfree+0x8c/0x290
+[   86.051955]  mctp_dev_notify+0x161/0x2c0
+[   86.051955]  raw_notifier_call_chain+0x8b/0xc0
+[   86.051955]  unregister_netdevice_many+0x299/0x1180
+[   86.051955]  unregister_netdevice_queue+0x210/0x2f0
+[   86.051955]  unregister_netdev+0x13/0x20
+[   86.051955]  mctp_serial_close+0x6d/0xa0
+[   86.051955]  tty_ldisc_kill+0x31/0xa0
+[   86.051955]  tty_ldisc_hangup+0x24f/0x560
+[   86.051955]  __tty_hangup.part.28+0x2ce/0x6b0
+[   86.051955]  tty_release+0x327/0xc70
+[   86.051955]  __fput+0x1df/0x8b0
+[   86.051955]  task_work_run+0xca/0x150
+[   86.051955]  exit_to_user_mode_prepare+0x114/0x120
+[   86.051955]  syscall_exit_to_user_mode+0x12/0x20
+[   86.051955]  do_syscall_64+0x46/0x80
+[   86.051955]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   86.051955]
+[   86.051955] The buggy address belongs to the object at ffff888005f298c0
+[   86.051955]  which belongs to the cache kmalloc-8 of size 8
+[   86.051955] The buggy address is located 0 bytes inside of
+[   86.051955]  8-byte region [ffff888005f298c0, ffff888005f298c8)
+[   86.051955]
+[   86.051955] The buggy address belongs to the physical page:
+[   86.051955] flags: 0x100000000000200(slab|node=0|zone=1)
+[   86.051955] raw: 0100000000000200 dead000000000100 dead000000000122 ffff888005c42280
+[   86.051955] raw: 0000000000000000 0000000080660066 00000001ffffffff 0000000000000000
+[   86.051955] page dumped because: kasan: bad access detected
+[   86.051955]
+[   86.051955] Memory state around the buggy address:
+[   86.051955]  ffff888005f29780: 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc 00
+[   86.051955]  ffff888005f29800: fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc 00 fc
+[   86.051955] >ffff888005f29880: fc fc fc fb fc fc fc fc fa fc fc fc fc fa fc fc
+[   86.051955]                                            ^
+[   86.051955]  ffff888005f29900: fc fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc
+[   86.051955]  ffff888005f29980: fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc
+[   86.051955] ==================================================================
+
+To this end, just like the commit e04480920d1e ("Bluetooth: defer
+cleanup of resources in hci_unregister_dev()")  this patch defers the
+destructive kfree(mdev->addrs) in mctp_unregister to the mctp_dev_put,
+where the refcount of mdev is zero and the entire device is reclaimed.
+This prevents the use-after-free because the sendmsg thread holds the
+reference of mdev in the mctp_route object.
+
+Fixes: 583be982d934 (mctp: Add device handling and netlink interface)
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Acked-by: Jeremy Kerr <jk@codeconstruct.com.au>
+Link: https://lore.kernel.org/r/20220422114340.32346-1-linma@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8731.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ net/mctp/device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
-index 86b1f6eaa599..518167d90b10 100644
---- a/sound/soc/codecs/wm8731.c
-+++ b/sound/soc/codecs/wm8731.c
-@@ -602,7 +602,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 	ret = wm8731_reset(wm8731->regmap);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to issue reset: %d\n", ret);
--		goto err_regulator_enable;
-+		goto err;
+diff --git a/net/mctp/device.c b/net/mctp/device.c
+index f86ef6d751bd..9150b9789d25 100644
+--- a/net/mctp/device.c
++++ b/net/mctp/device.c
+@@ -312,6 +312,7 @@ void mctp_dev_hold(struct mctp_dev *mdev)
+ void mctp_dev_put(struct mctp_dev *mdev)
+ {
+ 	if (mdev && refcount_dec_and_test(&mdev->refs)) {
++		kfree(mdev->addrs);
+ 		dev_put(mdev->dev);
+ 		kfree_rcu(mdev, rcu);
  	}
+@@ -440,7 +441,6 @@ static void mctp_unregister(struct net_device *dev)
  
- 	/* Clear POWEROFF, keep everything else disabled */
-@@ -619,10 +619,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	mctp_route_remove_dev(mdev);
+ 	mctp_neigh_remove_dev(mdev);
+-	kfree(mdev->addrs);
  
- 	regcache_mark_dirty(wm8731->regmap);
- 
--err_regulator_enable:
--	/* Regulators will be enabled by bias management */
--	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
--
-+err:
- 	return ret;
+ 	mctp_dev_put(mdev);
  }
- 
-@@ -760,21 +757,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
- 		ret = PTR_ERR(wm8731->regmap);
- 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
- 			ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	ret = wm8731_hw_init(&i2c->dev, wm8731);
- 	if (ret != 0)
--		return ret;
-+		goto err_regulator_enable;
- 
- 	ret = devm_snd_soc_register_component(&i2c->dev,
- 			&soc_component_dev_wm8731, &wm8731_dai, 1);
- 	if (ret != 0) {
- 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	return 0;
-+
-+err_regulator_enable:
-+	/* Regulators will be enabled by bias management */
-+	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
-+
-+	return ret;
- }
- 
- static int wm8731_i2c_remove(struct i2c_client *client)
 -- 
 2.35.1
 
