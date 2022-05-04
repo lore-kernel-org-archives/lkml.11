@@ -2,90 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C61C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 973A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350114AbiEDM77 (ORCPT
+        id S1350115AbiEDNBO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        Wed, 4 May 2022 09:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349930AbiEDM74 (ORCPT
+        with ESMTP id S235988AbiEDNBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:59:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCBB3B023;
-        Wed,  4 May 2022 05:56:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 881F4B824B2;
-        Wed,  4 May 2022 12:56:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D48C385AF;
-        Wed,  4 May 2022 12:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651668978;
-        bh=gdxj5YVJJXTcWteagPD81sMBdc9Aq1VtB4tSVNICDTw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j4hq9cpxhq7G29FUlZFS8TbG6vfR1K8u5AaC8crxTXMBO8geP2iXkvV5HrxQhV7C2
-         OYV9YCzCTcqQOzl7h21grCFKxuXr81cupttv+s7iGkul7dU+ttNGGKFCzgPUFmyhgM
-         +bPU0LKLn51pn4zYmtEdLgXViWNUnbBPMkKLyv1rWojkcr5RB8qSizIzF1yzkPmeVY
-         JNr3D1amGpASDewu/l9N74CqKXGtuB4AyKI5BX3joIAqmkLDDY02po6BxuqSFqDkWn
-         JQq5VEkE2gBeQzUM0VErYAHoufbIIR/8PLdurA9AugZmb6avbELzkkWOQs7wgfqqAN
-         O2AETqevLiLdQ==
-Date:   Wed, 4 May 2022 13:56:13 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 4 May 2022 09:01:10 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBE13BA50;
+        Wed,  4 May 2022 05:57:34 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id u3so1920051wrg.3;
+        Wed, 04 May 2022 05:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:message-id:in-reply-to:references
+         :mime-version;
+        bh=kZZv9mgu5CwmRiMWt33fgzODsP/Bo5LczhPKHEYKI2g=;
+        b=P8vaQY9TUngwqCpijFd2d4LAeqJbERfj96ozEtY4mzt2p/c1Ywp7QSOfCTgTq+FJOO
+         Gbr4t70Tgv4ll5c1Q9qyQD+7wVYumYk6crLyqkNjC/HrTBPf8y2ybrG0cvsu2Ik5SRN/
+         JIP5BUgHCTVfVFcWhysaVBqlUCqdySDe929u/WByEhUtpO4obfaVaYFn3OgPodqJv5M8
+         sawCqySWh+/b8sbZwqH1cH7YPpXnGYwTbiE+WimD5cwoH5r5656z1snH0h6R4lvfm5X+
+         u/RD95dKWlF3dInYCUqun/LQgeX0c5ledhTrLWy1Wv6DMggWNPELirWNJGplpXEX0imC
+         RW6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
+         :references:mime-version;
+        bh=kZZv9mgu5CwmRiMWt33fgzODsP/Bo5LczhPKHEYKI2g=;
+        b=dSqeIUgMzWOpYh8MeLR21bxQdsYCJTXriodewfggnBXZ8sOOMEMGMo4WVZUoBcJlCC
+         eSfaUWSA2Yr0L9fAShFkLJ5Il+lLymQgMo3lQiEqQyimm/uQjCkP2k5r+eGsSn95drhA
+         9BiPGXov2vAD8+ANR1IEoMK90DTRSQrcyk4NAPBzOx1oGuIyAOhAldWCzkhn+U4DMrCA
+         brMD6XrmIu9D6ti+z8YAKoidWABdE3KGdAsF2zzl8sAqKtwxIbpvZqax9IsR6NFhdSrS
+         +Ra3pMXxX2yt5s6xT0K/8ANuqlYM5hLGaIXUbx65lnYN+M42E9i08aOAugx0MCq2ouQR
+         Z1dQ==
+X-Gm-Message-State: AOAM530/EGim4anPESUL5NBpiZmG6AkLL1ELRbEcbbyfB9c61wEvOzHe
+        54+3CrqC/JtzlKGH6X9H9W8=
+X-Google-Smtp-Source: ABdhPJyg2nw7z5umMABTaNhWVzD3nqvwRSbwwdit8bqaZZDXTjb6FZqLpoDfrj9rWMr0ZmKS70ECbw==
+X-Received: by 2002:a5d:510a:0:b0:20c:4452:3161 with SMTP id s10-20020a5d510a000000b0020c44523161mr16584044wrt.31.1651669053295;
+        Wed, 04 May 2022 05:57:33 -0700 (PDT)
+Received: from [192.168.98.247] (185-177-124-12.hosted-by-worldstream.net. [185.177.124.12])
+        by smtp.gmail.com with ESMTPSA id e13-20020adf9bcd000000b0020c5253d8basm11723098wrc.6.2022.05.04.05.57.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 05:57:32 -0700 (PDT)
+Date:   Wed, 04 May 2022 16:55:08 +0400
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+Subject: Re: [PATCH 09/13] clk: mediatek: reset: Export
+ mtk_register_reset_controller symbols
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
-Subject: Re: [PATCH 0/6] regulator: core: Add support for external outputs
-Message-ID: <YnJ37QysSaa+gAps@sirena.org.uk>
-References: <20220504065041.6718-1-zev@bewilderbeest.net>
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        Ikjoon Jang <ikjn@chromium.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Sam Shih <sam.shih@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Message-Id: <WVZCBR.JP1KZVF249S43@gmail.com>
+In-Reply-To: <fda797664ad3cde1143838bdf63cc587459b2c2f.camel@mediatek.com>
+References: <20220504122601.335495-1-y.oudjana@protonmail.com>
+        <20220504122601.335495-10-y.oudjana@protonmail.com>
+        <fda797664ad3cde1143838bdf63cc587459b2c2f.camel@mediatek.com>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="w/VS4GgcCdfjbUlx"
-Content-Disposition: inline
-In-Reply-To: <20220504065041.6718-1-zev@bewilderbeest.net>
-X-Cookie: Your present plans will be successful.
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---w/VS4GgcCdfjbUlx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Wed, May 4 2022 at 20:46:22 +0800, Rex-BC Chen 
+<rex-bc.chen@mediatek.com> wrote:
+> On Wed, 2022-05-04 at 16:25 +0400, Yassine Oudjana wrote:
+>>  From: Yassine Oudjana <y.oudjana@protonmail.com>
+>> 
+>>  Export mtk_register_reset_controller and
+>>  mtk_register_reset_controller_set_clr to support building reset
+>>  drivers as modules.
+>> 
+>>  Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+>>  ---
+>>   drivers/clk/mediatek/reset.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>> 
+>>  diff --git a/drivers/clk/mediatek/reset.c
+>>  b/drivers/clk/mediatek/reset.c
+>>  index bcec4b89f449..6c2effe6afef 100644
+>>  --- a/drivers/clk/mediatek/reset.c
+>>  +++ b/drivers/clk/mediatek/reset.c
+>>  @@ -129,6 +129,7 @@ void mtk_register_reset_controller(struct
+>>  device_node *np,
+>>   	mtk_register_reset_controller_common(np, num_regs, regofs,
+>>   		&mtk_reset_ops);
+>>   }
+>>  +EXPORT_SYMBOL_GPL(mtk_register_reset_controller);
+>> 
+>>   void mtk_register_reset_controller_set_clr(struct device_node *np,
+>>   	unsigned int num_regs, int regofs)
+>>  @@ -136,5 +137,6 @@ void 
+>> mtk_register_reset_controller_set_clr(struct
+>>  device_node *np,
+>>   	mtk_register_reset_controller_common(np, num_regs, regofs,
+>>   		&mtk_reset_ops_set_clr);
+>>   }
+>>  +EXPORT_SYMBOL_GPL(mtk_register_reset_controller_set_clr);
+>> 
+>>   MODULE_LICENSE("GPL");
+> 
+> Hello Yassine,
+> 
+> Thanks for your patch for mediatek clk reset.
+> But I have another series to cleanup mediatek clk reset drivers and
+> most of my patches are reviewed.
+> Please refer to
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=637849
 
-On Tue, May 03, 2022 at 11:50:35PM -0700, Zev Weiss wrote:
+Great! In that case I'll rebase my patches onto your series and see
+if anything is missing.
 
-> The DT bindings changes (patches 1 and 2) consist of a boolean
-> regulator property to mark it as supplying an external output, and a
-> reg-external-output binding to act as a downstream device representing
-> that output.  The redundancy between the two maybe isn't entirely
-> ideal, but it was the cleanest approach I've been able to come up with
-> so far in terms of working with the regulator subsystem; I'm certainly
-> open to suggestions for better ways of going about this.
+Thanks,
+Yassine
 
-Nothing in the series articulates what the purpose of the redundancy is
-- your description of this is a consumer, why would the regulator itself
-care what's connected to it?
 
---w/VS4GgcCdfjbUlx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJyd+wACgkQJNaLcl1U
-h9BkfQf8C9n7pk9sOlU770h8zAnMrgTZX6YUlmWUCZ20GO3OG+Y9Ufo6DjYIFFMP
-/23xU738nEL1GCU0/vktgE+r09jGXVQNtAXZRILLt2CxulR7Pe2ojiCmxHAOc5Dv
-bBwKwPk+N5L+9dvMQeTQDuLjfTrdbabEE6yEEfv5xu9cqjG2phSuqjvaIS6GA2Nj
-g9AP/t2UHV34bc2xeGRhLdJGcsu02FVjXxP/DPnofadK+p6YwiHBOd6MCxMrpoty
-iKwdy6ruqlM4NURMVpi89+pcwimfcH7M/XiXd6YnV53HAwx6Fsbd7zlk9QyRKxx4
-BOFFM9X5TWf7//qC2U+sIqn35dco7w==
-=dy9O
------END PGP SIGNATURE-----
-
---w/VS4GgcCdfjbUlx--
