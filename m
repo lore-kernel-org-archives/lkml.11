@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0574CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0225C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353761AbiEDQyw (ORCPT
+        id S1354092AbiEDQy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        Wed, 4 May 2022 12:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353977AbiEDQxk (ORCPT
+        with ESMTP id S1354035AbiEDQxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:40 -0400
+        Wed, 4 May 2022 12:53:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0091347AED;
-        Wed,  4 May 2022 09:48:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A3847054;
+        Wed,  4 May 2022 09:48:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 609B26174B;
-        Wed,  4 May 2022 16:48:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAA57C385AA;
-        Wed,  4 May 2022 16:48:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 679B661720;
+        Wed,  4 May 2022 16:48:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B338DC385A4;
+        Wed,  4 May 2022 16:48:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682936;
-        bh=h76GEpf5N76NBpbEK6cuzTroDXKTOFD5aLTGvyLJDkQ=;
+        s=korg; t=1651682938;
+        bh=XJ36Ncq/NTi/l4xpfsFV75yso6rXe2+OwlqkmuHYyW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogsXlg9gJVg2UGcLVFqc3LS5C9ZaSaKswUG09v2+GPTzTx7lJFUEXOkxkcPJTsbN3
-         IK9MN46lU4F2862pPocqU4JWv+89azymICG9k0Iz+PHsnL8DXYM20mDqt/wIX3AJ3W
-         yta1X6gQI0QaQkuSl1tdcdJ5heDhvgV7LwLEY6g4=
+        b=tsMAtBJvbtcoWkwxQWlhqI8mzhfWu1X57lg/yxXtfcJtrmf0Wjm66UpSjOzQoUO06
+         5wC07iPMyXBGpRGdnSIsbf/OXRR4heOkhgsgFPhoLrKq/rMHg3E0uFe+LvA2HRviRc
+         R609IDvI6XE/IH0fJvRtXVBJIckWRjh/CYz/yLvc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
+        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 55/84] net: hns3: add validity check for message data length
-Date:   Wed,  4 May 2022 18:44:36 +0200
-Message-Id: <20220504152931.664805518@linuxfoundation.org>
+Subject: [PATCH 5.4 57/84] ip_gre: Make o_seqno start from 0 in native mode
+Date:   Wed,  4 May 2022 18:44:38 +0200
+Message-Id: <20220504152931.827925795@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,40 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
+[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
 
-Add validity check for message data length in function
-hclge_send_mbx_msg(), avoid unexpected overflow.
+For GRE and GRETAP devices, currently o_seqno starts from 1 in native
+mode.  According to RFC 2890 2.2., "The first datagram is sent with a
+sequence number of 0."  Fix it.
 
-Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+It is worth mentioning that o_seqno already starts from 0 in collect_md
+mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
+gre_build_header() before getting incremented.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: William Tu <u9012063@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/ipv4/ip_gre.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 23a706a1765a..410a9bf7bf0a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -64,6 +64,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
- 	enum hclge_cmd_status status;
- 	struct hclge_desc desc;
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index f67f1d27f565..5b38d03f6d79 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -432,14 +432,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		       __be16 proto)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+-
+-	if (tunnel->parms.o_flags & TUNNEL_SEQ)
+-		tunnel->o_seqno++;
++	__be16 flags = tunnel->parms.o_flags;
  
-+	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
-+		dev_err(&hdev->pdev->dev,
-+			"msg data length(=%u) exceeds maximum(=%u)\n",
-+			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
-+		return -EMSGSIZE;
-+	}
-+
- 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
+ 	/* Push GRE header. */
+ 	gre_build_header(skb, tunnel->tun_hlen,
+-			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
+-			 htonl(tunnel->o_seqno));
++			 flags, proto, tunnel->parms.o_key,
++			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
  
- 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
+ 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+ }
 -- 
 2.35.1
 
