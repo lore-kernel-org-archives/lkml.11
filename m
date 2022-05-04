@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF02C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE134C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358519AbiEDRvP (ORCPT
+        id S1358712AbiEDRvW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        Wed, 4 May 2022 13:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356391AbiEDRNl (ORCPT
+        with ESMTP id S1356681AbiEDROD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:13:41 -0400
+        Wed, 4 May 2022 13:14:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AC24BFF8;
-        Wed,  4 May 2022 09:57:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B53C53B4E;
+        Wed,  4 May 2022 09:58:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7868C617D5;
-        Wed,  4 May 2022 16:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C34BCC385AF;
-        Wed,  4 May 2022 16:57:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9D12617B7;
+        Wed,  4 May 2022 16:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FDBC385AA;
+        Wed,  4 May 2022 16:58:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683466;
-        bh=IFDQx+t+jIV59/FGQu7F94Tpy4KKvVaXwrHpWpusycU=;
+        s=korg; t=1651683490;
+        bh=U7F8eZYEpVTSmb/J39TUf2NGEuMLVkqIGrd2moRZY9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lh0hv58V3E23J2/I2rjiQPDMO7mIkBfF+SIMU/pHnxq8zYBo/PjfbtqNFVHF6Ubgh
-         e9TY1+JIPeaCCKaZJ9k0QJkVWRo9e240aiAYkRrYa8UWmRckgyODPANbtxDwbrc0gL
-         pX2cn+rR9nyptUP1E5vPiIRPxX8p223AVOi30cNc=
+        b=CNVs4hv8sjWzhzseeNnkTXBC1eoSjP6UsFpCG8jxB358ymIQuu4hHqAa0uI7CoHWU
+         l5Ir8NGqTEo6mquYI5nb4Vyz6LAA5JDDCu/GU+RmqI8DY9EnJ/vs+jh4HUrdB93pfR
+         vsZkYVGqyE1rS0cyZN2CNTAS2+ZkBM4xgUwUIUMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Max Filippov <jcmvbkbc@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 128/225] cpufreq: qcom-cpufreq-hw: Clear dcvs interrupts
-Date:   Wed,  4 May 2022 18:46:06 +0200
-Message-Id: <20220504153121.802111085@linuxfoundation.org>
+Subject: [PATCH 5.17 165/225] arch: xtensa: platforms: Fix deadlock in rs_close()
+Date:   Wed,  4 May 2022 18:46:43 +0200
+Message-Id: <20220504153124.692859690@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,63 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit e4e6448638a01905faeda9bf96aa9df7c8ef463c ]
+[ Upstream commit eb5adc70754d26a260f8b42d39db42da0d0af500 ]
 
-It's noted that dcvs interrupts are not self-clearing, thus an interrupt
-handler runs constantly, which leads to a severe regression in runtime.
-To fix the problem an explicit write to clear interrupt register is
-required, note that on OSM platforms the register may not be present.
+There is a deadlock in rs_close(), which is shown
+below:
 
-Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+   (Thread 1)              |      (Thread 2)
+                           | rs_open()
+rs_close()                 |  mod_timer()
+ spin_lock_bh() //(1)      |  (wait a time)
+ ...                       | rs_poll()
+ del_timer_sync()          |  spin_lock() //(2)
+ (wait timer to stop)      |  ...
+
+We hold timer_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need timer_lock in position (2) of thread 2.
+As a result, rs_close() will block forever.
+
+This patch deletes the redundant timer_lock in order to
+prevent the deadlock. Because there is no race condition
+between rs_close, rs_open and rs_poll.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Message-Id: <20220407154430.22387-1-duoming@zju.edu.cn>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qcom-cpufreq-hw.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/xtensa/platforms/iss/console.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
-index 1e99b71e7844..ca0f1be1c3b2 100644
---- a/drivers/cpufreq/qcom-cpufreq-hw.c
-+++ b/drivers/cpufreq/qcom-cpufreq-hw.c
-@@ -24,6 +24,8 @@
- #define CLK_HW_DIV			2
- #define LUT_TURBO_IND			1
+diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
+index 81d7c7e8f7e9..10b79d3c74e0 100644
+--- a/arch/xtensa/platforms/iss/console.c
++++ b/arch/xtensa/platforms/iss/console.c
+@@ -36,24 +36,19 @@ static void rs_poll(struct timer_list *);
+ static struct tty_driver *serial_driver;
+ static struct tty_port serial_port;
+ static DEFINE_TIMER(serial_timer, rs_poll);
+-static DEFINE_SPINLOCK(timer_lock);
  
-+#define GT_IRQ_STATUS			BIT(2)
-+
- #define HZ_PER_KHZ			1000
+ static int rs_open(struct tty_struct *tty, struct file * filp)
+ {
+-	spin_lock_bh(&timer_lock);
+ 	if (tty->count == 1)
+ 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+-	spin_unlock_bh(&timer_lock);
  
- struct qcom_cpufreq_soc_data {
-@@ -31,6 +33,7 @@ struct qcom_cpufreq_soc_data {
- 	u32 reg_domain_state;
- 	u32 reg_freq_lut;
- 	u32 reg_volt_lut;
-+	u32 reg_intr_clr;
- 	u32 reg_current_vote;
- 	u32 reg_perf_state;
- 	u8 lut_row_size;
-@@ -347,6 +350,10 @@ static irqreturn_t qcom_lmh_dcvs_handle_irq(int irq, void *data)
- 	disable_irq_nosync(c_data->throttle_irq);
- 	schedule_delayed_work(&c_data->throttle_work, 0);
- 
-+	if (c_data->soc_data->reg_intr_clr)
-+		writel_relaxed(GT_IRQ_STATUS,
-+			       c_data->base + c_data->soc_data->reg_intr_clr);
-+
- 	return IRQ_HANDLED;
+ 	return 0;
  }
  
-@@ -364,6 +371,7 @@ static const struct qcom_cpufreq_soc_data epss_soc_data = {
- 	.reg_domain_state = 0x20,
- 	.reg_freq_lut = 0x100,
- 	.reg_volt_lut = 0x200,
-+	.reg_intr_clr = 0x308,
- 	.reg_perf_state = 0x320,
- 	.lut_row_size = 4,
- };
+ static void rs_close(struct tty_struct *tty, struct file * filp)
+ {
+-	spin_lock_bh(&timer_lock);
+ 	if (tty->count == 1)
+ 		del_timer_sync(&serial_timer);
+-	spin_unlock_bh(&timer_lock);
+ }
+ 
+ 
+@@ -73,8 +68,6 @@ static void rs_poll(struct timer_list *unused)
+ 	int rd = 1;
+ 	unsigned char c;
+ 
+-	spin_lock(&timer_lock);
+-
+ 	while (simc_poll(0)) {
+ 		rd = simc_read(0, &c, 1);
+ 		if (rd <= 0)
+@@ -87,7 +80,6 @@ static void rs_poll(struct timer_list *unused)
+ 		tty_flip_buffer_push(port);
+ 	if (rd)
+ 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+-	spin_unlock(&timer_lock);
+ }
+ 
+ 
 -- 
 2.35.1
 
