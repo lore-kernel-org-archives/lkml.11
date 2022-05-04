@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D887C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353963AbiEDQxg (ORCPT
+        id S1353975AbiEDQxi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
+        Wed, 4 May 2022 12:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353746AbiEDQwN (ORCPT
+        with ESMTP id S1353751AbiEDQwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:52:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37C247383;
-        Wed,  4 May 2022 09:48:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997384738C;
+        Wed,  4 May 2022 09:48:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96246B82553;
-        Wed,  4 May 2022 16:48:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309B4C385A4;
-        Wed,  4 May 2022 16:48:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CACCD61771;
+        Wed,  4 May 2022 16:48:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225B1C385A4;
+        Wed,  4 May 2022 16:48:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682912;
-        bh=XFgNyRslClTV0rrP3goGZV9aGZ2Y8CKS/AcF5V7U3OE=;
+        s=korg; t=1651682914;
+        bh=eFPjMgElhDEszECLNXLR9KghKw55KcyONnperHZm5LM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7VXIXkiWAkvNrtGQLxgQmAn4CR7uBdTKBsILVhu/0AoexAt/VbZYOxdZZ4ssvhA3
-         k70NSqwpEpScXp6LlM8D1FUORlWmK/FLvI3gm8P9PGyIK613tAAGz3XeugbBnRXHU/
-         RLBZtA/aFK4jxmMc0ibHexjStxpodh6i+rjMw6CU=
+        b=USPsLbyeRBhiPBNX7SRzSFnr3aKX1ygyenALc8f0VmL88hHuUTNqNPXrFx1Qh1jSr
+         Tzpz7CuHIlKr1LnhWkrydbiYIwW5k97tHg/Tt4DouA7GmHWIkS/jbl6E+xpVe8ij5U
+         6IACsJ0b5W0zLgsLZQIGZY5zoQO0mmMZe0KB1yZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH 5.4 18/84] usb: typec: ucsi: Fix role swapping
-Date:   Wed,  4 May 2022 18:43:59 +0200
-Message-Id: <20220504152929.070520635@linuxfoundation.org>
+        Vijayavardhan Vennapusa <vvreddy@codeaurora.org>,
+        Dan Vacura <w36195@motorola.com>, stable <stable@kernel.org>
+Subject: [PATCH 5.4 20/84] usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
+Date:   Wed,  4 May 2022 18:44:01 +0200
+Message-Id: <20220504152929.188480953@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,67 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
 
-commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
+commit bf95c4d4630c7a2c16e7b424fdea5177d9ce0864 upstream.
 
-All attempts to swap the roles timed out because the
-completion was done without releasing the port lock. Fixing
-that by releasing the lock before starting to wait for the
-completion.
+If any function like UVC is deactivating gadget as part of composition
+switch which results in not calling pullup enablement, it is not getting
+enabled after switch to new composition due to this deactivation flag
+not cleared. This results in USB enumeration not happening after switch
+to new USB composition. Hence clear deactivation flag inside gadget
+structure in configfs_composite_unbind() before switch to new USB
+composition.
 
-Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
-Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
-Cc: stable@vger.kernel.org
-Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220413211038.72797-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ drivers/usb/gadget/configfs.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -748,14 +748,18 @@ ucsi_dr_swap(const struct typec_capabili
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
--		ret = -ETIMEDOUT;
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	return 0;
- 
- out_unlock:
- 	mutex_unlock(&con->lock);
- 
--	return ret < 0 ? ret : 0;
-+	return ret;
+--- a/drivers/usb/gadget/configfs.c
++++ b/drivers/usb/gadget/configfs.c
+@@ -1412,6 +1412,8 @@ static void configfs_composite_unbind(st
+ 	usb_ep_autoconfig_reset(cdev->gadget);
+ 	spin_lock_irqsave(&gi->spinlock, flags);
+ 	cdev->gadget = NULL;
++	cdev->deactivations = 0;
++	gadget->deactivated = false;
+ 	set_gadget_data(gadget, NULL);
+ 	spin_unlock_irqrestore(&gi->spinlock, flags);
  }
- 
- static int
-@@ -780,11 +784,13 @@ ucsi_pr_swap(const struct typec_capabili
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
--		ret = -ETIMEDOUT;
--		goto out_unlock;
--	}
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	mutex_lock(&con->lock);
- 
- 	/* Something has gone wrong while swapping the role */
- 	if (con->status.pwr_op_mode != UCSI_CONSTAT_PWR_OPMODE_PD) {
 
 
