@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DADC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355338AbiEDRZw (ORCPT
+        id S1356600AbiEDR0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
+        Wed, 4 May 2022 13:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354435AbiEDRCa (ORCPT
+        with ESMTP id S1354719AbiEDRFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:02:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B724C79D;
-        Wed,  4 May 2022 09:52:28 -0700 (PDT)
+        Wed, 4 May 2022 13:05:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6BB5133A;
+        Wed,  4 May 2022 09:54:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 920B36187C;
-        Wed,  4 May 2022 16:52:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2B24C385BF;
-        Wed,  4 May 2022 16:52:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 864B0B8278E;
+        Wed,  4 May 2022 16:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21897C385A4;
+        Wed,  4 May 2022 16:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683141;
-        bh=PhRXsatzWHvqXGivsWYtvZ8yGMRSGmpPSv6ugCS06DM=;
+        s=korg; t=1651683253;
+        bh=cQKzmDC6nWwnIM5+CUyyN+OnLwgvDDKKjIundLrhefs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fingn4BT3pioKZTsqKGZcuFaqEJVR8BtJsOgd8QvzBeeuMvrucN9Ce8k/vHhl1UC/
-         7wK6P1mwJ9rHS9oH+j83w2jqtt2ZUGdEs4p5KCp+b+EFZh6dgZcF/kob289eVUSVnl
-         Rht+b7gniJKLGiGr7hymaoLePM6mHVRqmFTN6AIQ=
+        b=1z9PNxSHs48N/RQsVC7yDiQ85GSwCTgC1ySt07ZIDxZDB31GLxdFmefdX3IVKy6ha
+         6KUeRl+3iN4XoW1UK1wUh+5J71HA9mA3IKCJXh62zgIPV9rQw6Ze2ybpcGfTA96Y8/
+         868haQD6JCOb12BkUnntuVcogJX2uweUoflQPygg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 128/129] tty: n_gsm: fix software flow control handling
-Date:   Wed,  4 May 2022 18:45:20 +0200
-Message-Id: <20220504153031.816518089@linuxfoundation.org>
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 096/177] net: hns3: add return value for mailbox handling in PF
+Date:   Wed,  4 May 2022 18:44:49 +0200
+Message-Id: <20220504153101.716777921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
-References: <20220504153021.299025455@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,86 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-commit f4f7d63287217ba25e5c80f5faae5e4f7118790e upstream.
+[ Upstream commit c59d606296842409a6e5a4828235b0bd46b12bc4 ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.8.1 states that XON/XOFF characters
-shall be used instead of Fcon/Fcoff command in advanced option mode to
-handle flow control. Chapter 5.4.8.2 describes how XON/XOFF characters
-shall be handled. Basic option mode only used Fcon/Fcoff commands and no
-XON/XOFF characters. These are treated as data bytes here.
-The current implementation uses the gsm_mux field 'constipated' to handle
-flow control from the remote peer and the gsm_dlci field 'constipated' to
-handle flow control from each DLCI. The later is unrelated to this patch.
-The gsm_mux field is correctly set for Fcon/Fcoff commands in
-gsm_control_message(). However, the same is not true for XON/XOFF
-characters in gsm1_receive().
-Disable software flow control handling in the tty to allow explicit
-handling by n_gsm.
-Add the missing handling in advanced option mode for gsm_mux in
-gsm1_receive() to comply with the standard.
+Currently, there are some querying mailboxes sent from VF to PF,
+and VF will wait the PF's handling result. For mailbox
+HCLGE_MBX_GET_QID_IN_PF and HCLGE_MBX_GET_RSS_KEY, it may fail
+when the input parameter is invalid, but the prototype of their
+handler function is void. In this case, PF always return success
+to VF, which may cause the VF get incorrect result.
 
-This patch depends on the following commit:
-Commit 8838b2af23ca ("tty: n_gsm: fix SW flow control encoding/handling")
+Fixes it by adding return value for these function.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220422071025.5490-3-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 63b1279d9905 ("net: hns3: check queue id range before using")
+Fixes: 532cfc0df1e4 ("net: hns3: add a check for index in hclge_get_rss_key()")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 22 ++++++++++---------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -232,6 +232,7 @@ struct gsm_mux {
- 	int initiator;			/* Did we initiate connection */
- 	bool dead;			/* Has the mux been shut down */
- 	struct gsm_dlci *dlci[NUM_DLCI];
-+	int old_c_iflag;		/* termios c_iflag value before attach */
- 	bool constipated;		/* Asked by remote to shut up */
- 
- 	spinlock_t tx_lock;
-@@ -1960,6 +1961,16 @@ static void gsm0_receive(struct gsm_mux
- 
- static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
- {
-+	/* handle XON/XOFF */
-+	if ((c & ISO_IEC_646_MASK) == XON) {
-+		gsm->constipated = true;
-+		return;
-+	} else if ((c & ISO_IEC_646_MASK) == XOFF) {
-+		gsm->constipated = false;
-+		/* Kick the link in case it is idling */
-+		gsm_data_kick(gsm, NULL);
-+		return;
-+	}
- 	if (c == GSM1_SOF) {
- 		/* EOF is only valid in frame if we have got to the data state
- 		   and received at least one byte (the FCS) */
-@@ -2378,6 +2389,9 @@ static int gsmld_attach_gsm(struct tty_s
- 	int ret, i;
- 
- 	gsm->tty = tty_kref_get(tty);
-+	/* Turn off tty XON/XOFF handling to handle it explicitly. */
-+	gsm->old_c_iflag = tty->termios.c_iflag;
-+	tty->termios.c_iflag &= (IXON | IXOFF);
- 	ret =  gsm_activate_mux(gsm);
- 	if (ret != 0)
- 		tty_kref_put(gsm->tty);
-@@ -2418,6 +2432,8 @@ static void gsmld_detach_gsm(struct tty_
- 	WARN_ON(tty != gsm->tty);
- 	for (i = 1; i < NUM_DLCI; i++)
- 		tty_unregister_device(gsm_tty_driver, base + i);
-+	/* Restore tty XON/XOFF handling. */
-+	gsm->tty->termios.c_iflag = gsm->old_c_iflag;
- 	tty_kref_put(gsm->tty);
- 	gsm->tty = NULL;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index c256305a2212..4a5b11b6fed3 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -593,9 +593,9 @@ static int hclge_set_vf_mtu(struct hclge_vport *vport,
+ 	return hclge_set_vport_mtu(vport, mtu);
  }
+ 
+-static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
+-				     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
+-				     struct hclge_respond_to_vf_msg *resp_msg)
++static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
++				    struct hclge_mbx_vf_to_pf_cmd *mbx_req,
++				    struct hclge_respond_to_vf_msg *resp_msg)
+ {
+ 	struct hnae3_handle *handle = &vport->nic;
+ 	struct hclge_dev *hdev = vport->back;
+@@ -605,17 +605,18 @@ static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
+ 	if (queue_id >= handle->kinfo.num_tqps) {
+ 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
+ 			queue_id, mbx_req->mbx_src_vfid);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
+ 	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
+ 	resp_msg->len = sizeof(qid_in_pf);
++	return 0;
+ }
+ 
+-static void hclge_get_rss_key(struct hclge_vport *vport,
+-			      struct hclge_mbx_vf_to_pf_cmd *mbx_req,
+-			      struct hclge_respond_to_vf_msg *resp_msg)
++static int hclge_get_rss_key(struct hclge_vport *vport,
++			     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
++			     struct hclge_respond_to_vf_msg *resp_msg)
+ {
+ #define HCLGE_RSS_MBX_RESP_LEN	8
+ 	struct hclge_dev *hdev = vport->back;
+@@ -631,13 +632,14 @@ static void hclge_get_rss_key(struct hclge_vport *vport,
+ 		dev_warn(&hdev->pdev->dev,
+ 			 "failed to get the rss hash key, the index(%u) invalid !\n",
+ 			 index);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	memcpy(resp_msg->data,
+ 	       &hdev->vport[0].rss_hash_key[index * HCLGE_RSS_MBX_RESP_LEN],
+ 	       HCLGE_RSS_MBX_RESP_LEN);
+ 	resp_msg->len = HCLGE_RSS_MBX_RESP_LEN;
++	return 0;
+ }
+ 
+ static void hclge_link_fail_parse(struct hclge_dev *hdev, u8 link_fail_code)
+@@ -812,10 +814,10 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
+ 					"VF fail(%d) to set mtu\n", ret);
+ 			break;
+ 		case HCLGE_MBX_GET_QID_IN_PF:
+-			hclge_get_queue_id_in_pf(vport, req, &resp_msg);
++			ret = hclge_get_queue_id_in_pf(vport, req, &resp_msg);
+ 			break;
+ 		case HCLGE_MBX_GET_RSS_KEY:
+-			hclge_get_rss_key(vport, req, &resp_msg);
++			ret = hclge_get_rss_key(vport, req, &resp_msg);
+ 			break;
+ 		case HCLGE_MBX_GET_LINK_MODE:
+ 			hclge_get_link_mode(vport, req);
+-- 
+2.35.1
+
 
 
