@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64566C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355042AbiEDRGs (ORCPT
+        id S1354703AbiEDRGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38310 "EHLO
+        Wed, 4 May 2022 13:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355211AbiEDQ7s (ORCPT
+        with ESMTP id S1355244AbiEDQ7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBE44926F;
-        Wed,  4 May 2022 09:51:23 -0700 (PDT)
+        Wed, 4 May 2022 12:59:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157E049686;
+        Wed,  4 May 2022 09:51:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE1F9B827AF;
-        Wed,  4 May 2022 16:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5360AC385AA;
-        Wed,  4 May 2022 16:51:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC300617C2;
+        Wed,  4 May 2022 16:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 457B7C385AF;
+        Wed,  4 May 2022 16:51:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683081;
-        bh=vf6hkWhcNON+I6U+vfrNex5iORJSrT5LFcZb9nsajRc=;
+        s=korg; t=1651683083;
+        bh=JSCa2iDFyLjNaathPK9LBYB8qEdrw+UHxwx06chyEuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IlWLEglrnvnK0Z/Fl6txgmkZBrGGXm4zsRKJSE/LrG8sqP9QaE8hjtFwyKPUoTJDO
-         4xGsJZmCp1bNigj4CwurPlaMRpnWwke62Ko8r1JgOCo6W1cDYD0SVI8m4dMLmBKMEo
-         k/CH7+VwhufFBnd7RSsJ5fIkUb1llPJoFRk1sF9Q=
+        b=hp+4w2BnX4CDB9qWJH1EQr2oXNJXq7T9zSUa2OOnUYFMvLlKQN5+TAUBqXhMtbDvu
+         i/cUg/an+MABgzS1vJbdJTZpv9YmkaqmV04iCrXBwqp2IllCohGF3p6FHm8OtCn3cx
+         BC21GPiyo90R/GfcBrTbGBC4pBk8lIYzoR00pJLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 072/129] ARM: dts: imx6ull-colibri: fix vqmmc regulator
-Date:   Wed,  4 May 2022 18:44:24 +0200
-Message-Id: <20220504153026.963009343@linuxfoundation.org>
+Subject: [PATCH 5.10 074/129] pinctrl: pistachio: fix use of irq_of_parse_and_map()
+Date:   Wed,  4 May 2022 18:44:26 +0200
+Message-Id: <20220504153027.095704950@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -53,37 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 45974e4276a8d6653394f66666fc57d8ffa6de9a ]
+[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
 
-The correct spelling for the property is gpios. Otherwise, the regulator
-will neither reserve nor control any GPIOs. Thus, any SD/MMC card which
-can use UHS-I modes will fail.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-Fixes: c2e4987e0e02 ("ARM: dts: imx6ull: add Toradex Colibri iMX6ULL support")
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ull-colibri.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index 4436556624d6..548cfcc7a01d 100644
---- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -37,7 +37,7 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
+diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
+index ec761ba2a2da..989a37fb402d 100644
+--- a/drivers/pinctrl/pinctrl-pistachio.c
++++ b/drivers/pinctrl/pinctrl-pistachio.c
+@@ -1374,10 +1374,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
+ 		}
  
- 	reg_sd1_vmmc: regulator-sd1-vmmc {
- 		compatible = "regulator-gpio";
--		gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
-+		gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_snvs_reg_sd>;
- 		regulator-always-on;
+ 		irq = irq_of_parse_and_map(child, 0);
+-		if (irq < 0) {
+-			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
++		if (!irq) {
++			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
+ 			of_node_put(child);
+-			ret = irq;
++			ret = -EINVAL;
+ 			goto err;
+ 		}
+ 
 -- 
 2.35.1
 
