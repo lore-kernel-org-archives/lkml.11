@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F807C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351926AbiEDRsV (ORCPT
+        id S1358281AbiEDRsb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        Wed, 4 May 2022 13:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357271AbiEDRO5 (ORCPT
+        with ESMTP id S1357306AbiEDRO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD9C54697;
-        Wed,  4 May 2022 09:58:25 -0700 (PDT)
+        Wed, 4 May 2022 13:14:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4CE4BBA8;
+        Wed,  4 May 2022 09:58:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B495161920;
-        Wed,  4 May 2022 16:58:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68702C385AF;
-        Wed,  4 May 2022 16:58:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C73B5B827AD;
+        Wed,  4 May 2022 16:58:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64699C385B0;
+        Wed,  4 May 2022 16:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683494;
-        bh=5Vle1qWJnQKV1VFtVFlv7ED24OJaCLIdTzacdmZoabs=;
+        s=korg; t=1651683497;
+        bh=6Qm773bFft6WIk5/8XpRI5B+8Ixq/DSQYma6AF5aifw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kko1rdlAxwTFuAoNNVrN9Zg2G9En5BFNbveEnioVFU/HXUHIkk4VvuvlOzDREpjkI
-         6HfMoJ5+ogbUdeNJTCH+hPOjUaNiiEWjJB6ZSzomKQdTwi1XLpX9MBMt05mqYZ0Wdb
-         tLImYBqOfsh21Hn3KzBjc803ZDHawGDYlV5aA28s=
+        b=ffouwe6sMsHUIznXAmzZ15h2rIkxKMDD8CkpIzOrnzzBtZpjm2/FoFD9PGOySYNuc
+         YdTjRlnkHY2qtIS/skV5R3qqW3sDExlrSOr5eEN1GzZTv+Km63AKpNEJRl6KZ5houl
+         hNOh7Nyc4uaouXvUi61H0jtWOm+rsRwZInkWUZLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 152/225] ixgbe: ensure IPsec VF<->PF compatibility
-Date:   Wed,  4 May 2022 18:46:30 +0200
-Message-Id: <20220504153123.651407660@linuxfoundation.org>
+Subject: [PATCH 5.17 155/225] tcp: fix F-RTO may not work correctly when receiving DSACK
+Date:   Wed,  4 May 2022 18:46:33 +0200
+Message-Id: <20220504153123.898291430@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -54,43 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit f049efc7f7cd2f3c419f55040928eaefb13b3636 ]
+[ Upstream commit d9157f6806d1499e173770df1f1b234763de5c79 ]
 
-The VF driver can forward any IPsec flags and such makes the function
-is not extendable and prone to backward/forward incompatibility.
+Currently DSACK is regarded as a dupack, which may cause
+F-RTO to incorrectly enter "loss was real" when receiving
+DSACK.
 
-If new software runs on VF, it won't know that PF configured something
-completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
+Packetdrill to demonstrate:
 
-Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Shannon Nelson <snelson@pensando.io>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220427173152.443102-1-anthony.l.nguyen@intel.com
+// Enable F-RTO and TLP
+    0 `sysctl -q net.ipv4.tcp_frto=2`
+    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
+    0 `sysctl -q net.ipv4.tcp_congestion_control=cubic`
+
+// Establish a connection
+   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+   +0 bind(3, ..., ...) = 0
+   +0 listen(3, 1) = 0
+
+// RTT 10ms, RTO 210ms
+  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
+   +0 > S. 0:0(0) ack 1 <...>
+ +.01 < . 1:1(0) ack 1 win 257
+   +0 accept(3, ..., ...) = 4
+
+// Send 2 data segments
+   +0 write(4, ..., 2000) = 2000
+   +0 > P. 1:2001(2000) ack 1
+
+// TLP
++.022 > P. 1001:2001(1000) ack 1
+
+// Continue to send 8 data segments
+   +0 write(4, ..., 10000) = 10000
+   +0 > P. 2001:10001(8000) ack 1
+
+// RTO
++.188 > . 1:1001(1000) ack 1
+
+// The original data is acked and new data is sent(F-RTO step 2.b)
+   +0 < . 1:1(0) ack 2001 win 257
+   +0 > P. 10001:12001(2000) ack 1
+
+// D-SACK caused by TLP is regarded as a dupack, this results in
+// the incorrect judgment of "loss was real"(F-RTO step 3.a)
++.022 < . 1:1(0) ack 2001 win 257 <sack 1001:2001,nop,nop>
+
+// Never-retransmitted data(3001:4001) are acked and
+// expect to switch to open state(F-RTO step 3.b)
+   +0 < . 1:1(0) ack 4001 win 257
++0 %{ assert tcpi_ca_state == 0, tcpi_ca_state }%
+
+Fixes: e33099f96d99 ("tcp: implement RFC5682 F-RTO")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Tested-by: Neal Cardwell <ncardwell@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/1650967419-2150-1-git-send-email-yangpc@wangsu.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+ net/ipv4/tcp_input.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-index e596e1a9fc75..69d11ff7677d 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-@@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
- 	/* Tx IPsec offload doesn't seem to work on this
- 	 * device, so block these requests for now.
- 	 */
--	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
-+	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
-+	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
- 		err = -EOPNOTSUPP;
- 		goto err_out;
- 	}
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 525bf37c0fdb..7bf84ce34d9e 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3867,7 +3867,8 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		tcp_process_tlp_ack(sk, ack, flag);
+ 
+ 	if (tcp_ack_is_dubious(sk, flag)) {
+-		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
++		if (!(flag & (FLAG_SND_UNA_ADVANCED |
++			      FLAG_NOT_DUP | FLAG_DSACKING_ACK))) {
+ 			num_dupack = 1;
+ 			/* Consider if pure acks were aggregated in tcp_add_backlog() */
+ 			if (!(flag & FLAG_DATA))
 -- 
 2.35.1
 
