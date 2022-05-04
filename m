@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C4DC4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D57C35275
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376375AbiEDRos (ORCPT
+        id S1376510AbiEDRpG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        Wed, 4 May 2022 13:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355612AbiEDRLn (ORCPT
+        with ESMTP id S1355750AbiEDRIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:11:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DA24B850;
-        Wed,  4 May 2022 09:57:37 -0700 (PDT)
+        Wed, 4 May 2022 13:08:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D4651E56;
+        Wed,  4 May 2022 09:54:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E84618B4;
-        Wed,  4 May 2022 16:57:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96ADAC385A5;
-        Wed,  4 May 2022 16:57:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A535B82795;
+        Wed,  4 May 2022 16:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2707C385A5;
+        Wed,  4 May 2022 16:54:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683456;
-        bh=UENWpMK2j0GaH55wcuPVhfFipYceSV+SOq3v7+THSbo=;
+        s=korg; t=1651683270;
+        bh=72BgeiOFSJ4WFzU+WPaat28zryKpAY9PRcYmdMr6cE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zGCrdOOUVn5qMC0j9uXLVUupBcHcvOOPz9yaFez+HZQ8oudKI53gExA4CpDTRbv2A
-         OHHp9aY7eh5Xz2DjfpEsFQM1AQg68GhigTEayMv+a4fBpancZzYcGCW+CCLEDRYrO0
-         svyEDsjsoRlpHPsqHYm7397MY2zCwLJzQNCEhdPU=
+        b=VbW7h6w8jMfYjzJivsDwQy3C26Vy5vc4nqpBc2Lj12hMTVwrlS9J7KayTMKsqLibs
+         1I6w4p45WUDHy+AtlgMoi5yRv0YaynZE/74EzZAhI5czXFTlWULBk1XtuX3W9j4GVq
+         6pUZ1LE01hBJdTHnfSSpfe1UhiR/kEkQPOrZqkvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Jan Hoffmann <jan@3e8.eu>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 131/225] net: phy: marvell10g: fix return value on error
-Date:   Wed,  4 May 2022 18:46:09 +0200
-Message-Id: <20220504153122.034933314@linuxfoundation.org>
+Subject: [PATCH 5.15 110/177] net: dsa: lantiq_gswip: Dont set GSWIP_MII_CFG_RMII_CLK
+Date:   Wed,  4 May 2022 18:45:03 +0200
+Message-Id: <20220504153103.072046858@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,36 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch.siach@siklu.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 0ed9704b660b259b54743cad8a84a11148f60f0a ]
+[ Upstream commit 71cffebf6358a7f5031f5b208bbdc1cb4db6e539 ]
 
-Return back the error value that we get from phy_read_mmd().
+Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
+GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
+register. It helped bring this register into a well-defined state so the
+driver has to rely less on the bootloader to do things right.
+Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
+possibility to configure it. Upon further testing it turns out that all
+boards which are supported by the GSWIP driver in OpenWrt which use an
+RMII PHY have a dedicated oscillator on the board which provides the
+50MHz RMII reference clock.
 
-Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
-Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
+clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
+a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
+the MAC also generates the RMII reference clock whose signal then
+conflicts with the signal from the oscillator on the board. This results
+in a constant cycle of the PHY detecting link up/down (and as a result
+of that: the two ports using the AR8030 PHYs are not working).
+
+At the time of writing this patch there's no known board where the MAC
+(GSWIP) has to generate the RMII reference clock. If needed this can be
+implemented in future by providing a device-tree flag so the
+GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
+
+Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
+Tested-by: Jan Hoffmann <jan@3e8.eu>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Link: https://lore.kernel.org/r/20220425152027.2220750-1-martin.blumenstingl@googlemail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/lantiq_gswip.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index b6fea119fe13..2b7d0720720b 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -880,7 +880,7 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
- 
- 	cssr1 = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_CSSR1);
- 	if (cssr1 < 0)
--		return val;
-+		return cssr1;
- 
- 	/* If the link settings are not resolved, mark the link down */
- 	if (!(cssr1 & MV_PCS_CSSR1_RESOLVED)) {
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 9e006a25b636..8a8f392813d8 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1663,9 +1663,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+ 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
+-
+-		/* Configure the RMII clock as output: */
+-		miicfg |= GSWIP_MII_CFG_RMII_CLK;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
 -- 
 2.35.1
 
