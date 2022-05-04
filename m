@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CDCC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A79C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378191AbiEDUjE (ORCPT
+        id S1378160AbiEDUjH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
+        Wed, 4 May 2022 16:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378165AbiEDUiv (ORCPT
+        with ESMTP id S1378211AbiEDUiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:38:51 -0400
+        Wed, 4 May 2022 16:38:55 -0400
 Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5684BB1C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:35:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D69E302
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 13:35:16 -0700 (PDT)
 Received: by mail-wr1-x42f.google.com with SMTP id k2so3513004wrd.5
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:35:14 -0700 (PDT)
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 13:35:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Kj6gvTW508ioZB9vcsmBa5dLyYw96Kxg9vwOPe1U7nc=;
-        b=ZgdbVjocHD1S3M+lP8I4gH6GE2rr3avbmlNrIjk2/LFKV1MqKier3SIMbVlIHRTDan
-         vdqKRepi5sP97IeC7HIy5liqihPb9OVfLTqUaeTx92WoS2k1wCMka0qf9kkzNUW0l0cx
-         BAmYYLHeCV2rj2Qd3V6sL8ZIA71qB3Fa4G3bC8Z4oEI0sjGzNquuLw2GCdvmLKBHJ+Hf
-         zdc/yM0nQiCO5YgyFMK6+Q1J5wv+7QxVDpfatED7jKxqnAK4AJUha/KGw/gLEpjAuETa
-         EIbi/8UV1zNuR/iBM8m0k9TC8xpydg2uOxhD+lYhdNbDFSvZNG8pesj1n7qDAPsmVbrI
-         gVOg==
+        bh=q+pycwnKwDuKNdF3Y2w0IfQQiZ0eOLqkgeZDr/yI5II=;
+        b=YWkiZKS3EMmfrCefyHqphbQyh5SswFCcaAsa0DngSr/zLNYdOi8JRAAAo7uJ1Tn9Sf
+         tdm13xCaRGKdYRx0CWnG36Yc5zzbWTOBrobB7bzmYdOGjCVxbZ1rRlBVmf20YJL0rZq/
+         a4PFp6PbPrsK0bXUaifCqMmVSU18OMpPIRmthwLcza06jkZB7OjUWtdPbk+O2AaOQjQ8
+         Zruzet6oFpzHmMhxsNqQHfwfV4yBXG/LfqYNxURiC95CTVdsjdRo0OYYrp4lOQhkGVaR
+         QiGqGDDaYVfW/tEmndVW6AqVCuHit6zBLLTxDnnkESpnErZMHnTlU36SV6bqZs5q2eiw
+         IzFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Kj6gvTW508ioZB9vcsmBa5dLyYw96Kxg9vwOPe1U7nc=;
-        b=4vuAtgMntefOgHOWF6NEBQPwBvmorF25pXpLy64RVGiDHzRAUUCoN82jhUK+gYkaUv
-         MeilDv+HWjuiPslT37McmV+SV9491S145SA3InkNREA3aX0k0PpdlYfwwwdDPS34n6xj
-         Hgk+n48+hDF2VTxYweI5OlgvMFmSNRaHJQWfRHNntvAzjtKybPkXsbTzFa68v59aBOlQ
-         I0DeyP01FHdsLLP1RrDMQ+4XWK6qCWD+5VjvXhGnGssc//6OyqrioOgI9nO3UgucULye
-         k4UOR1UGAe+dzm8D9VnvQyaZ+HawntIiaaYqH0DgT7Ugwd2nhKOnEvhrlf1PTiCROiVp
-         QN3w==
-X-Gm-Message-State: AOAM530aRuMnD7P4sj27EaBR3ltjHEMt4GgY6jnWfEC2bGI5d2/96bPC
-        bfWXTfKmQu+ixe7y7FWUxZiP7w==
-X-Google-Smtp-Source: ABdhPJyHwjBb3mBRYup5T5Ul0WqJx3T9zZ3OHhmfsSdK2MfyRNs1CmC2GTuBHMEQSuFPmjaaCSlndQ==
-X-Received: by 2002:adf:f0cb:0:b0:20a:ef39:d42b with SMTP id x11-20020adff0cb000000b0020aef39d42bmr18219145wro.8.1651696512891;
-        Wed, 04 May 2022 13:35:12 -0700 (PDT)
+        bh=q+pycwnKwDuKNdF3Y2w0IfQQiZ0eOLqkgeZDr/yI5II=;
+        b=D0Fg0zQq9yG4CjAE/av/ApBKwOm6dzchqPNZfC6zJcQTZDabFZsJU+hWG9rICoC9W6
+         /7tx9LR5FAQe9OnkQxS3HpgTruI/kW93tOaDD23/QWlNXg9Cf2duEOpvZP1DPuwYPTCe
+         NMkF0QMimUifBzYP2r61FS08T/rM6LrOZKvDJKXPDtc74+Jc5j9e6UvTB2eXyKyyWuMK
+         3C6wjQxY8lfttTrqnbwbv5ujgBq3zC81qFFXiFVjFfkb77ikuwTDV8I3GAoYdOz6coJh
+         ZAYst3pPqfnV32vXMUtlMo9DbnpdskSqECYIKMfHh1rNIAMo3f4l1Owz/kXbkgq0zYqV
+         /etg==
+X-Gm-Message-State: AOAM532myZfThDvHwC0M/e+/hUgvCEvkokyTS/zSLzTIVJa8+M8pzmyL
+        6L7bEvJFnARVb9nkDESrUsXwQA==
+X-Google-Smtp-Source: ABdhPJz925mygdEuN6CsxYthlUWASDvvEV0Pc9CThWjW2wo5tYgfu3S1X/n5dwMx9r4I1cjO+EP+hw==
+X-Received: by 2002:adf:fc09:0:b0:20a:deba:8d3c with SMTP id i9-20020adffc09000000b0020adeba8d3cmr17798556wrr.44.1651696516139;
+        Wed, 04 May 2022 13:35:16 -0700 (PDT)
 Received: from henark71.. ([109.77.36.132])
-        by smtp.gmail.com with ESMTPSA id l20-20020adfc794000000b0020c5253d8dfsm13330101wrg.43.2022.05.04.13.35.11
+        by smtp.gmail.com with ESMTPSA id l20-20020adfc794000000b0020c5253d8dfsm13330101wrg.43.2022.05.04.13.35.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 13:35:12 -0700 (PDT)
+        Wed, 04 May 2022 13:35:15 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     krzk+dt@kernel.org, palmer@dabbelt.com, robh+dt@kernel.org
 Cc:     conor.dooley@microchip.com, Cyril.Jean@microchip.com,
@@ -56,9 +56,9 @@ Cc:     conor.dooley@microchip.com, Cyril.Jean@microchip.com,
         aou@eecs.berkeley.edu, palmer@rivosinc.com, arnd@arndb.de,
         heiko@sntech.de, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: [PATCH v4 1/8] riscv: dts: microchip: remove icicle memory clocks
-Date:   Wed,  4 May 2022 21:30:45 +0100
-Message-Id: <20220504203051.1210355-2-mail@conchuod.ie>
+Subject: [PATCH v4 3/8] riscv: dts: microchip: remove soc vendor from filenames
+Date:   Wed,  4 May 2022 21:30:47 +0100
+Message-Id: <20220504203051.1210355-4-mail@conchuod.ie>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504203051.1210355-1-mail@conchuod.ie>
 References: <20220504203051.1210355-1-mail@conchuod.ie>
@@ -70,40 +70,68 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-The clock properties in the icicle kit's memory entries cause dtbs_check
-errors:
-arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dtb: /: memory@80000000: 'clocks' does not match any of the regexes: 'pinctrl-[0-9]+'
+Having the SoC vendor both as the directory and in the filename adds
+little. Remove microchip from the filenames so that the files will
+resemble the other directories in riscv (and arm64). The new names
+follow a soc-board.dts & soc{,-fabric}.dtsi pattern.
 
-Get rid of the clocks to avoid the errors.
-
-Reported-by: Palmer Dabbelt <palmer@rivosinc.com>
-Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
-Fixes: 5b28df37d311 ("riscv: dts: microchip: update peripherals in icicle kit device tree")
 Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts | 2 --
- 1 file changed, 2 deletions(-)
+ arch/riscv/boot/dts/microchip/Makefile                          | 2 +-
+ .../microchip/{microchip-mpfs-fabric.dtsi => mpfs-fabric.dtsi}  | 0
+ .../{microchip-mpfs-icicle-kit.dts => mpfs-icicle-kit.dts}      | 2 +-
+ .../riscv/boot/dts/microchip/{microchip-mpfs.dtsi => mpfs.dtsi} | 2 +-
+ 4 files changed, 3 insertions(+), 3 deletions(-)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs-fabric.dtsi => mpfs-fabric.dtsi} (100%)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs-icicle-kit.dts => mpfs-icicle-kit.dts} (98%)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs.dtsi => mpfs.dtsi} (99%)
 
-diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
-index 3392153dd0f1..c71d6aa6137a 100644
+diff --git a/arch/riscv/boot/dts/microchip/Makefile b/arch/riscv/boot/dts/microchip/Makefile
+index 855c1502d912..af3a5059b350 100644
+--- a/arch/riscv/boot/dts/microchip/Makefile
++++ b/arch/riscv/boot/dts/microchip/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
+-dtb-$(CONFIG_SOC_MICROCHIP_POLARFIRE) += microchip-mpfs-icicle-kit.dtb
++dtb-$(CONFIG_SOC_MICROCHIP_POLARFIRE) += mpfs-icicle-kit.dtb
+ obj-$(CONFIG_BUILTIN_DTB) += $(addsuffix .o, $(dtb-y))
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-fabric.dtsi
+similarity index 100%
+rename from arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+rename to arch/riscv/boot/dts/microchip/mpfs-fabric.dtsi
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
+similarity index 98%
+rename from arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+rename to arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
+index c71d6aa6137a..84b0015dfd47 100644
 --- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
-@@ -32,14 +32,12 @@ cpus {
- 	ddrc_cache_lo: memory@80000000 {
- 		device_type = "memory";
- 		reg = <0x0 0x80000000 0x0 0x2e000000>;
--		clocks = <&clkcfg CLK_DDRC>;
- 		status = "okay";
- 	};
++++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
+@@ -3,7 +3,7 @@
  
- 	ddrc_cache_hi: memory@1000000000 {
- 		device_type = "memory";
- 		reg = <0x10 0x0 0x0 0x40000000>;
--		clocks = <&clkcfg CLK_DDRC>;
- 		status = "okay";
- 	};
- };
+ /dts-v1/;
+ 
+-#include "microchip-mpfs.dtsi"
++#include "mpfs.dtsi"
+ 
+ /* Clock frequency (in Hz) of the rtcclk */
+ #define RTCCLK_FREQ		1000000
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+similarity index 99%
+rename from arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+rename to arch/riscv/boot/dts/microchip/mpfs.dtsi
+index bf21a2edd180..cc3386068c2d 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+@@ -3,7 +3,7 @@
+ 
+ /dts-v1/;
+ #include "dt-bindings/clock/microchip,mpfs-clock.h"
+-#include "microchip-mpfs-fabric.dtsi"
++#include "mpfs-fabric.dtsi"
+ 
+ / {
+ 	#address-cells = <2>;
 -- 
 2.36.0
 
