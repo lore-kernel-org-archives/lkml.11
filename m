@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E980C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355637AbiEDR1z (ORCPT
+        id S1344702AbiEDR2E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        Wed, 4 May 2022 13:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355765AbiEDRIu (ORCPT
+        with ESMTP id S1355756AbiEDRIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:08:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3640351E58;
-        Wed,  4 May 2022 09:54:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93133515A5;
+        Wed,  4 May 2022 09:54:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56472617A6;
-        Wed,  4 May 2022 16:54:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DCAC385A4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BBBCB827A5;
         Wed,  4 May 2022 16:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD6EC385A4;
+        Wed,  4 May 2022 16:54:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683271;
-        bh=8Qi40GuCBKO27M31PrwFafaGgFmNjpZ7xGl1tBazvkk=;
+        s=korg; t=1651683269;
+        bh=bRQrtA7Sj1ZggibkRz6ZFK9KJkXGdhVaf5iHCb6wSws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ykR28OFLgbcYeFD/I1Y505tda8JJZPxXcbNQvwlQvnU1CMLIHnJLeB4MyD91hgKKd
-         XpHzfjIvbWPnGBMe/EeuEFGXjk3OuGzK4a2sn21WHteP0aRYnWH4rSXAqS4kn9thDm
-         QNRv08b/pJ+UlbGaUIiL6heU26MMj//s7NtAWte0=
+        b=eXY4ksjVQkqH97LIz4owDIvDmY777u3yRqnXpOa/t/zCijpG8fiqjKicaj+O5RxST
+         MHvCiwD/yyIkwqdwzmEwKY/UYQ7s0ZLAE5a6+BlIEqlr/Bdtwl7RgfUCB/Uz05hQeB
+         1Rfw1c5RvodkQjnwqeHdmw1KXxUr9WCawQ7JjHSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 129/177] ext4: fix bug_on in start_this_handle during umount filesystem
-Date:   Wed,  4 May 2022 18:45:22 +0200
-Message-Id: <20220504153104.684482994@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 119/177] gfs2: Prevent endless loops in gfs2_file_buffered_write
+Date:   Wed,  4 May 2022 18:45:12 +0200
+Message-Id: <20220504153103.816946873@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,116 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit b98535d091795a79336f520b0708457aacf55c67 ]
+[ Upstream commit 554c577cee95bdc1d03d9f457e57dc96eb791845 ]
 
-We got issue as follows:
-------------[ cut here ]------------
-kernel BUG at fs/jbd2/transaction.c:389!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
-Workqueue: events flush_stashed_error_work
-RIP: 0010:start_this_handle+0x41c/0x1160
-RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
-RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
-RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
-RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
-R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
-FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- jbd2__journal_start+0x38a/0x790
- jbd2_journal_start+0x19/0x20
- flush_stashed_error_work+0x110/0x2b3
- process_one_work+0x688/0x1080
- worker_thread+0x8b/0xc50
- kthread+0x26f/0x310
- ret_from_fork+0x22/0x30
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
+Currently, instead of performing a short write,
+iomap_file_buffered_write will fail when part of its iov iterator cannot
+be read.  In contrast, gfs2_file_buffered_write will loop around if it
+can read part of the iov iterator, so we can end up in an endless loop.
 
-Above issue may happen as follows:
-      umount            read procfs            error_work
-ext4_put_super
-  flush_work(&sbi->s_error_work);
+This should be fixed in iomap_file_buffered_write (and also
+generic_perform_write), but this comes a bit late in the 5.16
+development cycle, so work around it in the filesystem by
+trimming the iov iterator to the known-good size for now.
 
-                      ext4_mb_seq_groups_show
-	                ext4_mb_load_buddy_gfp
-			  ext4_mb_init_group
-			    ext4_mb_init_cache
-	                      ext4_read_block_bitmap_nowait
-			        ext4_validate_block_bitmap
-				  ext4_error
-			            ext4_handle_error
-			              schedule_work(&EXT4_SB(sb)->s_error_work);
-
-  ext4_unregister_sysfs(sb);
-  jbd2_journal_destroy(sbi->s_journal);
-    journal_kill_thread
-      journal->j_flags |= JBD2_UNMOUNT;
-
-                                          flush_stashed_error_work
-				            jbd2_journal_start
-					      start_this_handle
-					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
-
-To solve this issue, we call 'ext4_unregister_sysfs() before flushing
-s_error_work in ext4_put_super().
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220322012419.725457-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ fs/gfs2/file.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index fa21d8180319..d12f11c6fbf2 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -1167,20 +1167,25 @@ static void ext4_put_super(struct super_block *sb)
- 	int aborted = 0;
- 	int i, err;
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index 247b8d95b5ef..97e2793e22d7 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -1021,6 +1021,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 	struct gfs2_sbd *sdp = GFS2_SB(inode);
+ 	struct gfs2_holder *statfs_gh = NULL;
+ 	size_t prev_count = 0, window_size = 0;
++	size_t orig_count = iov_iter_count(from);
+ 	size_t read = 0;
+ 	ssize_t ret;
  
--	ext4_unregister_li_request(sb);
--	ext4_quota_off_umount(sb);
--
--	flush_work(&sbi->s_error_work);
--	destroy_workqueue(sbi->rsv_conversion_wq);
--	ext4_release_orphan_info(sb);
--
- 	/*
- 	 * Unregister sysfs before destroying jbd2 journal.
- 	 * Since we could still access attr_journal_task attribute via sysfs
- 	 * path which could have sbi->s_journal->j_task as NULL
-+	 * Unregister sysfs before flush sbi->s_error_work.
-+	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
-+	 * read metadata verify failed then will queue error work.
-+	 * flush_stashed_error_work will call start_this_handle may trigger
-+	 * BUG_ON.
- 	 */
- 	ext4_unregister_sysfs(sb);
+@@ -1065,6 +1066,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 	if (inode == sdp->sd_rindex)
+ 		gfs2_glock_dq_uninit(statfs_gh);
  
-+	ext4_unregister_li_request(sb);
-+	ext4_quota_off_umount(sb);
-+
-+	flush_work(&sbi->s_error_work);
-+	destroy_workqueue(sbi->rsv_conversion_wq);
-+	ext4_release_orphan_info(sb);
-+
- 	if (sbi->s_journal) {
- 		aborted = is_journal_aborted(sbi->s_journal);
- 		err = jbd2_journal_destroy(sbi->s_journal);
++	from->count = orig_count - read;
+ 	if (should_fault_in_pages(ret, from, &prev_count, &window_size)) {
+ 		size_t leftover;
+ 
+@@ -1072,6 +1074,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 		leftover = fault_in_iov_iter_readable(from, window_size);
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
++			from->count = min(from->count, window_size - leftover);
+ 			if (!gfs2_holder_queued(gh)) {
+ 				if (read)
+ 					goto out_uninit;
 -- 
 2.35.1
 
