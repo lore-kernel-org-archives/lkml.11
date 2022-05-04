@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65757C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252BDC35280
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357372AbiEDRPA (ORCPT
+        id S1357098AbiEDROr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
+        Wed, 4 May 2022 13:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355201AbiEDREM (ORCPT
+        with ESMTP id S1355085AbiEDREI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:12 -0400
+        Wed, 4 May 2022 13:04:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF014E3B8;
-        Wed,  4 May 2022 09:52:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318D74DF55;
+        Wed,  4 May 2022 09:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA701B827AB;
-        Wed,  4 May 2022 16:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760E2C385A4;
-        Wed,  4 May 2022 16:52:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBB8EB82792;
+        Wed,  4 May 2022 16:52:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBFFC385A5;
+        Wed,  4 May 2022 16:52:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683166;
-        bh=j9fGvGTJIWWMls+EO3uh4k7EJ/UNIJzX+68+UCC0GGE=;
+        s=korg; t=1651683160;
+        bh=9vZ4s2S3OkqcFoWeX3a+FHD4PzlE9/XUKS4qPEXLkgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kNdKtSC0SNjgUlQNLdHQRrNY/ThtkecunJKHD+XoIzaiF4RqAhP0C+RaWynAfMgef
-         efObYVY2Zr44M52OCn1FyZnxYLXGYESQl/T5lIIGJlsBdhlfIjncWsIgQIzwyepxL8
-         HpVvZwmxlMnISjycnht5W+L6cRWBXh6mYT6ws8YE=
+        b=QHiIybnI2C29u4sqamlPxNHAndYGfUnteVESd4hgdfM9LkjBHBBhawDWoXKtgOF+v
+         7XMIvmzq5UghN92rQR0SEIHCjnY+SEVU3tmQW0tlwF3voMg5TEYQLAOQRqG9IrQOcG
+         1B73h0dbJKTp5wa4GLr4gjXKlqOzrfjKdS7/E3Qs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jack Pham <quic_jackp@quicinc.com>
-Subject: [PATCH 5.15 018/177] usb: typec: ucsi: Fix reuse of completion structure
-Date:   Wed,  4 May 2022 18:43:31 +0200
-Message-Id: <20220504153054.996787420@linuxfoundation.org>
+        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 012/177] iio: dac: ad5592r: Fix the missing return value.
+Date:   Wed,  4 May 2022 18:43:25 +0200
+Message-Id: <20220504153054.620947004@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,45 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Zizhuang Deng <sunsetdzz@gmail.com>
 
-commit e25adcca917d7e4cdc1dc6444d0692ffda7594bf upstream.
+commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
 
-The role swapping completion variable is reused, so it needs
-to be reinitialised every time. Otherwise it will be marked
-as done after the first time it's used and completing
-immediately.
+The third call to `fwnode_property_read_u32` did not record
+the return value, resulting in `channel_offstate` possibly
+being assigned the wrong value.
 
-Link: https://lore.kernel.org/linux-usb/20220325203959.GA19752@jackp-linux.qualcomm.com/
-Fixes: 6df475f804e6 ("usb: typec: ucsi: Start using struct typec_operations")
-Cc: stable@vger.kernel.org
-Reported-and-suggested-by: Jack Pham <quic_jackp@quicinc.com>
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Link: https://lore.kernel.org/r/20220405134824.68067-2-heikki.krogerus@linux.intel.com
+Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
+Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
+Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/dac/ad5592r-base.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -955,6 +955,8 @@ static int ucsi_dr_swap(struct typec_por
- 	     role == TYPEC_HOST))
- 		goto out_unlock;
+--- a/drivers/iio/dac/ad5592r-base.c
++++ b/drivers/iio/dac/ad5592r-base.c
+@@ -523,7 +523,7 @@ static int ad5592r_alloc_channels(struct
+ 		if (!ret)
+ 			st->channel_modes[reg] = tmp;
  
-+	reinit_completion(&con->complete);
-+
- 	command = UCSI_SET_UOR | UCSI_CONNECTOR_NUMBER(con->num);
- 	command |= UCSI_SET_UOR_ROLE(role);
- 	command |= UCSI_SET_UOR_ACCEPT_ROLE_SWAPS;
-@@ -991,6 +993,8 @@ static int ucsi_pr_swap(struct typec_por
- 	if (cur_role == role)
- 		goto out_unlock;
- 
-+	reinit_completion(&con->complete);
-+
- 	command = UCSI_SET_PDR | UCSI_CONNECTOR_NUMBER(con->num);
- 	command |= UCSI_SET_PDR_ROLE(role);
- 	command |= UCSI_SET_PDR_ACCEPT_ROLE_SWAPS;
+-		fwnode_property_read_u32(child, "adi,off-state", &tmp);
++		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
+ 		if (!ret)
+ 			st->channel_offstate[reg] = tmp;
+ 	}
 
 
