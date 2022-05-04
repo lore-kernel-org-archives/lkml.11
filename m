@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B36C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 012AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354227AbiEDQ4o (ORCPT
+        id S1354241AbiEDQ4u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        Wed, 4 May 2022 12:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354293AbiEDQyA (ORCPT
+        with ESMTP id S1354403AbiEDQyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BBA488B5;
-        Wed,  4 May 2022 09:49:20 -0700 (PDT)
+        Wed, 4 May 2022 12:54:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EB949245;
+        Wed,  4 May 2022 09:49:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E7D461776;
-        Wed,  4 May 2022 16:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73B4C385A5;
-        Wed,  4 May 2022 16:49:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFCAEB827A7;
+        Wed,  4 May 2022 16:49:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91BCAC385A4;
+        Wed,  4 May 2022 16:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682959;
-        bh=TvL9yjl2bK077pgShO+lHk2bgQfaU69azEG+j51K/+w=;
+        s=korg; t=1651682965;
+        bh=L3zXSQls9XfXWHq71OpLpjNBiieiInCvz1Bm0B5p6gE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xwor0YOvMEhx+5jJP/wIBHKEiMJuNy2462xK8S6+cT/dD5C+aty+PpLcU+K8kVFV7
-         81EO9I2p0fkpSOWurlqeR5tJUN5FEz7DhGMVW9zXnF30N4VtOLun3gKYkbZD8xpU5o
-         MmuBCkGaBuz1B9Ooq/CNtVn62t7ndNiKVqaHxGHI=
+        b=iRAkeOwWiXzws7yMRLVwOM/qNMNqMwmPv02P5VmhinC+lEyqUJNWXrXWcrd/j+5yI
+         nR8GRUfKrVvDEeNUNnjl7s3rFUQIo4NE58URJ6vJ7N/+bJeXUFba/uA+1feONFBiTf
+         6nCRfR4L2p25P0CDhYxh0ETutSZCXs0d6v79MFk8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 61/84] net: bcmgenet: hide status block before TX timestamping
-Date:   Wed,  4 May 2022 18:44:42 +0200
-Message-Id: <20220504152932.094949340@linuxfoundation.org>
+Subject: [PATCH 5.4 67/84] tcp: fix F-RTO may not work correctly when receiving DSACK
+Date:   Wed,  4 May 2022 18:44:48 +0200
+Message-Id: <20220504152932.653057672@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,59 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Lemon <jonathan.lemon@gmail.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit acac0541d1d65e81e599ec399d34d184d2424401 ]
+[ Upstream commit d9157f6806d1499e173770df1f1b234763de5c79 ]
 
-The hardware checksum offloading requires use of a transmit
-status block inserted before the outgoing frame data, this was
-updated in '9a9ba2a4aaaa ("net: bcmgenet: always enable status blocks")'
+Currently DSACK is regarded as a dupack, which may cause
+F-RTO to incorrectly enter "loss was real" when receiving
+DSACK.
 
-However, skb_tx_timestamp() assumes that it is passed a raw frame
-and PTP parsing chokes on this status block.
+Packetdrill to demonstrate:
 
-Fix this by calling __skb_pull(), which hides the TSB before calling
-skb_tx_timestamp(), so an outgoing PTP packet is parsed correctly.
+// Enable F-RTO and TLP
+    0 `sysctl -q net.ipv4.tcp_frto=2`
+    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
+    0 `sysctl -q net.ipv4.tcp_congestion_control=cubic`
 
-As the data in the skb has already been set up for DMA, and the
-dma_unmap_* calls use a separately stored address, there is no
-no effective change in the data transmission.
+// Establish a connection
+   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+   +0 bind(3, ..., ...) = 0
+   +0 listen(3, 1) = 0
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220424165307.591145-1-jonathan.lemon@gmail.com
-Fixes: d03825fba459 ("net: bcmgenet: add skb_tx_timestamp call")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+// RTT 10ms, RTO 210ms
+  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
+   +0 > S. 0:0(0) ack 1 <...>
+ +.01 < . 1:1(0) ack 1 win 257
+   +0 accept(3, ..., ...) = 4
+
+// Send 2 data segments
+   +0 write(4, ..., 2000) = 2000
+   +0 > P. 1:2001(2000) ack 1
+
+// TLP
++.022 > P. 1001:2001(1000) ack 1
+
+// Continue to send 8 data segments
+   +0 write(4, ..., 10000) = 10000
+   +0 > P. 2001:10001(8000) ack 1
+
+// RTO
++.188 > . 1:1001(1000) ack 1
+
+// The original data is acked and new data is sent(F-RTO step 2.b)
+   +0 < . 1:1(0) ack 2001 win 257
+   +0 > P. 10001:12001(2000) ack 1
+
+// D-SACK caused by TLP is regarded as a dupack, this results in
+// the incorrect judgment of "loss was real"(F-RTO step 3.a)
++.022 < . 1:1(0) ack 2001 win 257 <sack 1001:2001,nop,nop>
+
+// Never-retransmitted data(3001:4001) are acked and
+// expect to switch to open state(F-RTO step 3.b)
+   +0 < . 1:1(0) ack 4001 win 257
++0 %{ assert tcpi_ca_state == 0, tcpi_ca_state }%
+
+Fixes: e33099f96d99 ("tcp: implement RFC5682 F-RTO")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Tested-by: Neal Cardwell <ncardwell@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/1650967419-2150-1-git-send-email-yangpc@wangsu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 2affdddc12bf..e03e2bfcc6a1 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -1547,6 +1547,11 @@ static struct sk_buff *bcmgenet_put_tx_csum(struct net_device *dev,
- 	return skb;
- }
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index f84047aec63c..b0e6fc2c5e10 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3717,7 +3717,8 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		tcp_process_tlp_ack(sk, ack, flag);
  
-+static void bcmgenet_hide_tsb(struct sk_buff *skb)
-+{
-+	__skb_pull(skb, sizeof(struct status_64));
-+}
-+
- static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
-@@ -1655,6 +1660,8 @@ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	GENET_CB(skb)->last_cb = tx_cb_ptr;
-+
-+	bcmgenet_hide_tsb(skb);
- 	skb_tx_timestamp(skb);
- 
- 	/* Decrement total BD count and advance our write pointer */
+ 	if (tcp_ack_is_dubious(sk, flag)) {
+-		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
++		if (!(flag & (FLAG_SND_UNA_ADVANCED |
++			      FLAG_NOT_DUP | FLAG_DSACKING_ACK))) {
+ 			num_dupack = 1;
+ 			/* Consider if pure acks were aggregated in tcp_add_backlog() */
+ 			if (!(flag & FLAG_DATA))
 -- 
 2.35.1
 
