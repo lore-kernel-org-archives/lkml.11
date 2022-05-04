@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9C0C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C82C4C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359557AbiEDRtU (ORCPT
+        id S1359380AbiEDRtH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
+        Wed, 4 May 2022 13:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357581AbiEDRPH (ORCPT
+        with ESMTP id S1357552AbiEDRPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A725521B;
-        Wed,  4 May 2022 09:58:44 -0700 (PDT)
+        Wed, 4 May 2022 13:15:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E535C55201;
+        Wed,  4 May 2022 09:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B443617A6;
-        Wed,  4 May 2022 16:58:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46940C385A5;
-        Wed,  4 May 2022 16:58:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE298B827A5;
+        Wed,  4 May 2022 16:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E099C385A5;
+        Wed,  4 May 2022 16:58:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683524;
-        bh=3TzXMKvd6eC55mqijotQiI6jDkYbdylBFY4G2KQvp5E=;
+        s=korg; t=1651683495;
+        bh=34yqrLUrOLP4CJ6yBqeL5xAplowQx5MqJmelcFAmDbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RNn6tCc/kVSoSo9Ia8eSQJTYOAoXak4rpVKNNmJrbJqWiseUzPawjzo7yPQYCzKrv
-         zWQcjaCIR/2tAzgLMdfllqcQcn6AK3zib9cNJI1JEhHINFFGCLQh3AvWRQjmmCMrDH
-         1cn0NLNeGqfF0wHkbClk6+wHu94Cs3eIsVkeNBQk=
+        b=uCGEuWHZCeyqZ/+u1uB3aCdbEFG8+I6oIVxSk7nDqX7+6M3+VmuaEcHcQ5gxjOefJ
+         MLKpm6fntya7HFVlbRZEeCOf2rPo6HXeN4fs/GHUnjJNfaRhbBLU2bbIM4R/wsxN/S
+         5nf2BgXAwn2xWsxLaN1FIH+QDgjunCdSll3uG4o8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        Mika Kahola <mika.kahola@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Filippo Falezza <filippo.falezza@outlook.it>,
-        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.17 186/225] drm/i915: Check EDID for HDR static metadata when choosing blc
-Date:   Wed,  4 May 2022 18:47:04 +0200
-Message-Id: <20220504153126.956417972@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 153/225] net: enetc: allow tc-etf offload even with NETIF_F_CSUM_MASK
+Date:   Wed,  4 May 2022 18:46:31 +0200
+Message-Id: <20220504153123.731449210@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -55,100 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jouni Högander <jouni.hogander@intel.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit c05d8332f5d23fa3b521911cbe55a2b67fb21248 upstream.
+[ Upstream commit 66a2f5ef68faaf950746747d790a0c95f7ec96d2 ]
 
-We have now seen panel (XMG Core 15 e21 laptop) advertizing support
-for Intel proprietary eDP backlight control via DPCD registers, but
-actually working only with legacy pwm control.
+The Time-Specified Departure feature is indeed mutually exclusive with
+TX IP checksumming in ENETC, but TX checksumming in itself is broken and
+was removed from this driver in commit 82728b91f124 ("enetc: Remove Tx
+checksumming offload code").
 
-This patch adds panel EDID check for possible HDR static metadata and
-Intel proprietary eDP backlight control is used only if that exists.
-Missing HDR static metadata is ignored if user specifically asks for
-Intel proprietary eDP backlight control via enable_dpcd_backlight
-parameter.
+The blamed commit declared NETIF_F_HW_CSUM in dev->features to comply
+with software TSO's expectations, and still did the checksumming in
+software by calling skb_checksum_help(). So there isn't any restriction
+for the Time-Specified Departure feature.
 
-v2 :
-- Ignore missing HDR static metadata if Intel proprietary eDP
-  backlight control is forced via i915.enable_dpcd_backlight
-- Printout info message if panel is missing HDR static metadata and
-  support for Intel proprietary eDP backlight control is detected
+However, enetc_setup_tc_txtime() doesn't understand that, and blindly
+looks for NETIF_F_CSUM_MASK.
 
-Fixes: 4a8d79901d5b ("drm/i915/dp: Enable Intel's HDR backlight interface (only SDR for now)")
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5284
-Cc: Lyude Paul <lyude@redhat.com>
-Cc: Mika Kahola <mika.kahola@intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Filippo Falezza <filippo.falezza@outlook.it>
-Cc: stable@vger.kernel.org
-Signed-off-by: Jouni Högander <jouni.hogander@intel.com>
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220413082826.120634-1-jouni.hogander@intel.com
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-(cherry picked from commit b4b157577cb1de13bee8bebc3576f1de6799a921)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Instead of checking for things which can literally never happen in the
+current code base, just remove the check and let the driver offload
+tc-etf qdiscs.
+
+Fixes: acede3c5dad5 ("net: enetc: declare NETIF_F_HW_CSUM and do it in software")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220427203017.1291634-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c |   34 +++++++++++++-----
- 1 file changed, 26 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc_qos.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c
-@@ -97,6 +97,14 @@
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index d3d7172e0fcc..3b148d4e0f0c 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -308,10 +308,6 @@ int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data)
+ 	if (tc < 0 || tc >= priv->num_tx_rings)
+ 		return -EINVAL;
  
- #define INTEL_EDP_BRIGHTNESS_OPTIMIZATION_1                            0x359
- 
-+enum intel_dp_aux_backlight_modparam {
-+	INTEL_DP_AUX_BACKLIGHT_AUTO = -1,
-+	INTEL_DP_AUX_BACKLIGHT_OFF = 0,
-+	INTEL_DP_AUX_BACKLIGHT_ON = 1,
-+	INTEL_DP_AUX_BACKLIGHT_FORCE_VESA = 2,
-+	INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL = 3,
-+};
-+
- /* Intel EDP backlight callbacks */
- static bool
- intel_dp_aux_supports_hdr_backlight(struct intel_connector *connector)
-@@ -126,6 +134,24 @@ intel_dp_aux_supports_hdr_backlight(stru
- 		return false;
- 	}
- 
-+	/*
-+	 * If we don't have HDR static metadata there is no way to
-+	 * runtime detect used range for nits based control. For now
-+	 * do not use Intel proprietary eDP backlight control if we
-+	 * don't have this data in panel EDID. In case we find panel
-+	 * which supports only nits based control, but doesn't provide
-+	 * HDR static metadata we need to start maintaining table of
-+	 * ranges for such panels.
-+	 */
-+	if (i915->params.enable_dpcd_backlight != INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL &&
-+	    !(connector->base.hdr_sink_metadata.hdmi_type1.metadata_type &
-+	      BIT(HDMI_STATIC_METADATA_TYPE1))) {
-+		drm_info(&i915->drm,
-+			 "Panel is missing HDR static metadata. Possible support for Intel HDR backlight interface is not used. If your backlight controls don't work try booting with i915.enable_dpcd_backlight=%d. needs this, please file a _new_ bug report on drm/i915, see " FDO_BUG_URL " for details.\n",
-+			 INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL);
-+		return false;
-+	}
-+
- 	panel->backlight.edp.intel.sdr_uses_aux =
- 		tcon_cap[2] & INTEL_EDP_SDR_TCON_BRIGHTNESS_AUX_CAP;
- 
-@@ -413,14 +439,6 @@ static const struct intel_panel_bl_funcs
- 	.get = intel_dp_aux_vesa_get_backlight,
- };
- 
--enum intel_dp_aux_backlight_modparam {
--	INTEL_DP_AUX_BACKLIGHT_AUTO = -1,
--	INTEL_DP_AUX_BACKLIGHT_OFF = 0,
--	INTEL_DP_AUX_BACKLIGHT_ON = 1,
--	INTEL_DP_AUX_BACKLIGHT_FORCE_VESA = 2,
--	INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL = 3,
--};
+-	/* Do not support TXSTART and TX CSUM offload simutaniously */
+-	if (ndev->features & NETIF_F_CSUM_MASK)
+-		return -EBUSY;
 -
- int intel_dp_aux_init_backlight_funcs(struct intel_connector *connector)
- {
- 	struct drm_device *dev = connector->base.dev;
+ 	/* TSD and Qbv are mutually exclusive in hardware */
+ 	if (enetc_rd(&priv->si->hw, ENETC_QBV_PTGCR_OFFSET) & ENETC_QBV_TGE)
+ 		return -EBUSY;
+-- 
+2.35.1
+
 
 
