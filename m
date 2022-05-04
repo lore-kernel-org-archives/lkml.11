@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 536CEC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DB1C4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376647AbiEDRy5 (ORCPT
+        id S1376618AbiEDRyw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
+        Wed, 4 May 2022 13:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357378AbiEDRPA (ORCPT
+        with ESMTP id S1357366AbiEDRPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:15:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A164C786;
-        Wed,  4 May 2022 09:58:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C4454BD5;
+        Wed,  4 May 2022 09:58:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C6C26190E;
-        Wed,  4 May 2022 16:58:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 504BFC385AA;
-        Wed,  4 May 2022 16:58:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D95D0616AC;
+        Wed,  4 May 2022 16:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D820C385B3;
+        Wed,  4 May 2022 16:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683500;
-        bh=Yin+YIOwRDSLjxFgNOB0DFj+qPCPFVJCMRkOd+EWZdQ=;
+        s=korg; t=1651683510;
+        bh=+Rmjm5j+NVCX092c+nELx71iEIRBfHPkU0zB4Hx6TB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2DUE0qU6ryTTV3jkWrIfd+/IxRiJTZnTAdI58vah/s2fC7IdEEMJIWhE/4iJHg1kT
-         UhVmzb3ae+SvDBWa0nsG1fpzY25xyem8HXSgNurDycqjQXYccZV/pVXB5da70Nk2Mg
-         StZ3Uj25SYXT2PTFWojmze7bSZUemQswzWJwHyV8=
+        b=IOYUAmhyUN3mB5VpWa0y0n8nj6u5k3NmLvZuPM3he2YoSRY7rwHrPK4OcR6kUAKwp
+         0wfLhcAJS8yr0VVcQqRgWgr3O1KNcbT0zg+/uQP8FI90FqEDuW+lw49f5QMGXsK7jc
+         07ISTyQTOmjxKBPqV8qITfEBXmnryoTcVOmRqgw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hui Wang <hui.wang@canonical.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 158/225] ASoC: cs35l41: Fix a shift-out-of-bounds warning found by UBSAN
-Date:   Wed,  4 May 2022 18:46:36 +0200
-Message-Id: <20220504153124.131187127@linuxfoundation.org>
+Subject: [PATCH 5.17 173/225] powerpc/perf: Fix 32bit compile
+Date:   Wed,  4 May 2022 18:46:51 +0200
+Message-Id: <20220504153125.711968616@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,69 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Wang <hui.wang@canonical.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit 0b3d5d2e358ca6772fc3662fca27acb12a682fbf ]
+[ Upstream commit bb82c574691daf8f7fa9a160264d15c5804cb769 ]
 
-We enabled UBSAN in the ubuntu kernel, and the cs35l41 driver triggers
-a warning calltrace like below:
+The "read_bhrb" global symbol is only called under CONFIG_PPC64 of
+arch/powerpc/perf/core-book3s.c but it is compiled for both 32 and 64 bit
+anyway (and LLVM fails to link this on 32bit).
 
-cs35l41-hda i2c-CSC3551:00-cs35l41-hda.0: bitoffset= 8, word_offset=23, bit_sum mod 32=0, otp_map[i].size = 24
-cs35l41-hda i2c-CSC3551:00-cs35l41-hda.0: bitoffset= 0, word_offset=24, bit_sum mod 32=24, otp_map[i].size = 0
-================================================================================
-UBSAN: shift-out-of-bounds in linux-kernel-src/sound/soc/codecs/cs35l41-lib.c:836:8
-shift exponent 64 is too large for 64-bit type 'long unsigned int'
-CPU: 10 PID: 595 Comm: systemd-udevd Not tainted 5.15.0-23-generic #23
-Hardware name: LENOVO \x02MFG_IN_GO/\x02MFG_IN_GO, BIOS N3GET19W (1.00 ) 03/11/2022
-Call Trace:
- <TASK>
- show_stack+0x52/0x58
- dump_stack_lvl+0x4a/0x5f
- dump_stack+0x10/0x12
- ubsan_epilogue+0x9/0x45
- __ubsan_handle_shift_out_of_bounds.cold+0x61/0xef
- ? regmap_unlock_mutex+0xe/0x10
- cs35l41_otp_unpack.cold+0x1c6/0x2b2 [snd_soc_cs35l41_lib]
- cs35l41_hda_probe+0x24f/0x33a [snd_hda_scodec_cs35l41]
- cs35l41_hda_i2c_probe+0x65/0x90 [snd_hda_scodec_cs35l41_i2c]
+This fixes it by moving bhrb.o to obj64 targets.
 
-When both bitoffset and otp_map[i].size are 0, the line 836 will
-result in GENMASK(-1, 0), this triggers the shift-out-of-bounds
-calltrace.
-
-Here add a checking, if both bitoffset and otp_map[i].size are 0,
-do not run GENMASK() and directly set otp_val to 0, this will not
-bring any function change on the driver but could avoid the calltrace.
-
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
-Link: https://lore.kernel.org/r/20220324081839.62009-2-hui.wang@canonical.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220421025756.571995-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs35l41-lib.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/powerpc/perf/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index e5a56bcbb223..281a710a4123 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -831,12 +831,14 @@ int cs35l41_otp_unpack(struct device *dev, struct regmap *regmap)
- 					GENMASK(bit_offset + otp_map[i].size - 33, 0)) <<
- 					(32 - bit_offset);
- 			bit_offset += otp_map[i].size - 32;
--		} else {
-+		} else if (bit_offset + otp_map[i].size - 1 >= 0) {
- 			otp_val = (otp_mem[word_offset] &
- 				   GENMASK(bit_offset + otp_map[i].size - 1, bit_offset)
- 				  ) >> bit_offset;
- 			bit_offset += otp_map[i].size;
--		}
-+		} else /* both bit_offset and otp_map[i].size are 0 */
-+			otp_val = 0;
-+
- 		bit_sum += otp_map[i].size;
+diff --git a/arch/powerpc/perf/Makefile b/arch/powerpc/perf/Makefile
+index 2f46e31c7612..4f53d0b97539 100644
+--- a/arch/powerpc/perf/Makefile
++++ b/arch/powerpc/perf/Makefile
+@@ -3,11 +3,11 @@
+ obj-y				+= callchain.o callchain_$(BITS).o perf_regs.o
+ obj-$(CONFIG_COMPAT)		+= callchain_32.o
  
- 		if (bit_offset == 32) {
+-obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o bhrb.o
++obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o
+ obj64-$(CONFIG_PPC_PERF_CTRS)	+= ppc970-pmu.o power5-pmu.o \
+ 				   power5+-pmu.o power6-pmu.o power7-pmu.o \
+ 				   isa207-common.o power8-pmu.o power9-pmu.o \
+-				   generic-compat-pmu.o power10-pmu.o
++				   generic-compat-pmu.o power10-pmu.o bhrb.o
+ obj32-$(CONFIG_PPC_PERF_CTRS)	+= mpc7450-pmu.o
+ 
+ obj-$(CONFIG_PPC_POWERNV)	+= imc-pmu.o
 -- 
 2.35.1
 
