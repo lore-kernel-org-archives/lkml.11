@@ -2,86 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 600D8C46467
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359661AbiEDRkN (ORCPT
+        id S1358964AbiEDRjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Wed, 4 May 2022 13:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356793AbiEDRJo (ORCPT
+        with ESMTP id S1357350AbiEDRKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:44 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205BA1D33C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:55:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Vxwk6Ijca/aYX+YfbJBlvvvvNjiuUacuBmt+5rQYXNM=; b=oDQFuDC/CbyMdA5t8SUc6eRJ5k
-        GEy0MMahpBfiLT+xl7o9H01Qis311BLD46CZS9dMm7n5XRUJFMaXMXzkClGlxtydgQr54gPBNVGt9
-        8nD5LiI1/nxKXZJJV/mUAuquq7yTPIrQ/W+3+CbW8U6WzHb00I8BssP90tik+BOuze4dVKJeJ3+wm
-        t/BswQz/9H3KUGwY5SXMVPasHKpjQ+zM1t+wrjYHk3qlbRQhjX2iG13ZM+u4oPBj95KXNxtVD6tfy
-        Aylv4xN3syksY8sOchC55gU3Snt3/+JrP2ZgG+FcoXg8brg/Pyx4gpwLgwo6ibQIgGlSTiGE9q5Rv
-        oxXvVO9w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nmIHl-00GkfM-On; Wed, 04 May 2022 16:55:33 +0000
-Date:   Wed, 4 May 2022 17:55:33 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        John Dias <joaodias@google.com>,
-        Tim Murray <timmurray@google.com>
-Subject: Re: [PATCH] mm: don't be stuck to rmap lock on reclaim path
-Message-ID: <YnKwBeRAWwIlEVqy@casper.infradead.org>
-References: <20220503170341.1413961-1-minchan@kernel.org>
- <YnHzvV2Uz2ynENnG@casper.infradead.org>
- <YnIBbjRYACzvuZpp@google.com>
- <YnIYofrw/GGEvc0U@casper.infradead.org>
- <YnKhLX+jzJc+2KwB@google.com>
+        Wed, 4 May 2022 13:10:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23B94AE0C;
+        Wed,  4 May 2022 09:57:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 666E7618E5;
+        Wed,  4 May 2022 16:57:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF895C385A5;
+        Wed,  4 May 2022 16:57:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651683437;
+        bh=QaSWXVTa1jFCnz66oF5QYBpqSJ/mOHkh5HeNfDbiWT4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GXFBAVhcuIxXdUwntsO8ACEFV65W4a9mHsIJsPjMcGI+qkIJrga/FCtOwAbRZZGjd
+         mbUyktb2YGN8D+3NmSqGBhwl37QvaQsbf5LiCkMb6xTf1NPDK4rWdhh6n2UFg5AOpq
+         MX2r+/VJX5Bhj9tY/prsxymgQCLpiU0PVYW1Grcs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 117/225] net: hns3: add validity check for message data length
+Date:   Wed,  4 May 2022 18:45:55 +0200
+Message-Id: <20220504153120.969847666@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnKhLX+jzJc+2KwB@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 08:52:13AM -0700, Minchan Kim wrote:
-> On Wed, May 04, 2022 at 07:09:37AM +0100, Matthew Wilcox wrote:
-> > On Tue, May 03, 2022 at 09:30:38PM -0700, Minchan Kim wrote:
-> > > On Wed, May 04, 2022 at 04:32:13AM +0100, Matthew Wilcox wrote:
-> > > > On Tue, May 03, 2022 at 10:03:41AM -0700, Minchan Kim wrote:
-> > > > > -void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc);
-> > > > > -void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc);
-> > > > > +void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc);
-> > > > > +void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc);
-> > > > 
-> > > > I see the build bot already beat me to pointing out why this is wrong,
-> > > > but do you not look at git log to figure out why code was changed to be
-> > > > the way it is now, before you change it back?
-> > > 
-> > > This patch added a new field as out param like compact_control so
-> > > the rmap_walk_control is not immutable.
-> > 
-> > ... but we have a user which treats it as if it is.
-> 
-> True. I don't think it will show sizable benefit on runtime overhead
-> since rmap_walk is already one of the most expensive operation in MM.
-> 
-> I could reintroduce the typecast for page_idle_clear_pte_refs to remove
-> the const as we had several years.
-> 
-> If your concern was to make rmap_walk_control mutable back, I could
-> change rmap_walk function having return value or adding a addtional
-> new out param. However, I thought rmap_walk_control is more readable/
-> easier than them.
+From: Jian Shen <shenjian15@huawei.com>
 
-I haven't thought deeply about it, but I suspect the right approach is
-to remove the rather dubious optimisation in page_idle_clear_pte_refs().
+[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
+
+Add validity check for message data length in function
+hclge_send_mbx_msg(), avoid unexpected overflow.
+
+Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index 36cbafc5f944..53f939923c28 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -94,6 +94,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
+ 	enum hclge_comm_cmd_status status;
+ 	struct hclge_desc desc;
+ 
++	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
++		dev_err(&hdev->pdev->dev,
++			"msg data length(=%u) exceeds maximum(=%u)\n",
++			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
++		return -EMSGSIZE;
++	}
++
+ 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
+ 
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
+-- 
+2.35.1
+
+
+
