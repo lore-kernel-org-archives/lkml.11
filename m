@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9457FC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A49C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359191AbiEDRjl (ORCPT
+        id S1359072AbiEDRj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        Wed, 4 May 2022 13:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356831AbiEDRJp (ORCPT
+        with ESMTP id S1356821AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6828537A86;
-        Wed,  4 May 2022 09:55:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9783222A9;
+        Wed,  4 May 2022 09:55:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBD11617DE;
-        Wed,  4 May 2022 16:55:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30255C385A5;
-        Wed,  4 May 2022 16:55:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98CF7B82795;
+        Wed,  4 May 2022 16:55:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A4BC385A4;
+        Wed,  4 May 2022 16:55:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683354;
-        bh=4mjYDSdWePM+0k97YorWcmEeIKh9d7g1avgZ06w8JjQ=;
+        s=korg; t=1651683348;
+        bh=G71WT7nFX4UN9eB8Tn1SQhYCaU4g34pC/vPb7hR0lQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nW0a0aafJIu3Kg26/LHRj2Nu6J3YQXyE37WJRNrs0nyk6wfHJnIg8nLFFa5F9UOHu
-         sEkjuP7eNwpDxhoW70SYxm7AYS23r0t27agY2HDW0++FwWW9jWFynYfebmMa5BrR6P
-         Qa0HxeaVACZKieXETtu0YsHjjlyFeDMEmJTjy+94=
+        b=UQ6QW0aXF5QZWfbMg8EaqbcJsUyXVmkndiycEuPubu5cHld0/x1lIvg74XPaNvtZ6
+         U6lGoLiTWGrCcZcuEpVPW7gF/1qLpKL1p1SAi+r642vTN6vCCf/ELmYu/5K1eWgPj3
+         o2nZWinhkbO5Zm1NLXWCTtmFGC45IieQUZdqCrNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH 5.17 027/225] usb: dwc3: gadget: Return proper request status
-Date:   Wed,  4 May 2022 18:44:25 +0200
-Message-Id: <20220504153112.731735152@linuxfoundation.org>
+        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [PATCH 5.17 035/225] serial: amba-pl011: do not time out prematurely when draining tx fifo
+Date:   Wed,  4 May 2022 18:44:33 +0200
+Message-Id: <20220504153113.350828662@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,74 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 
-commit c7428dbddcf4ea1919e1c8e15f715b94ca359268 upstream.
+commit 0e4deb56b0c625efdb70c94f150429e2f2a16fa1 upstream.
 
-If the user sets the usb_request's no_interrupt, then there will be no
-completion event for the request. Currently the driver incorrectly uses
-the event status of a different request to report the status for a
-request with no_interrupt. The dwc3 driver needs to check the TRB status
-associated with the request when reporting its status.
+The current timeout for draining the tx fifo in RS485 mode is calculated by
+multiplying the time it takes to transmit one character (with the given
+baud rate) with the maximal number of characters in the tx queue.
 
-Note: this is only applicable to missed_isoc TRB completion status, but
-the other status are also listed for completeness/documentation.
+This timeout is too short for two reasons:
+First when calculating the time to transmit one character integer division
+is used which may round down the result in case of a remainder of the
+division.
 
-Fixes: 6d8a019614f3 ("usb: dwc3: gadget: check for Missed Isoc from event status")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Link: https://lore.kernel.org/r/db2c80108286cfd108adb05bad52138b78d7c3a7.1650673655.git.Thinh.Nguyen@synopsys.com
+Fix this by rounding up the division result.
+
+Second the hardware may need additional time (e.g for first putting the
+characters from the fifo into the shift register) before the characters are
+actually put onto the wire.
+
+To be on the safe side double the current maximum number of iterations
+that are used to wait for the queue draining.
+
+Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Link: https://lore.kernel.org/r/20220408233503.7251-1-LinoSanfilippo@gmx.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |   31 ++++++++++++++++++++++++++++++-
- 1 file changed, 30 insertions(+), 1 deletion(-)
+ drivers/tty/serial/amba-pl011.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -3229,6 +3229,7 @@ static int dwc3_gadget_ep_cleanup_comple
- 		const struct dwc3_event_depevt *event,
- 		struct dwc3_request *req, int status)
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1255,13 +1255,18 @@ static inline bool pl011_dma_rx_running(
+ 
+ static void pl011_rs485_tx_stop(struct uart_amba_port *uap)
  {
-+	int request_status;
- 	int ret;
- 
- 	if (req->request.num_mapped_sgs)
-@@ -3249,7 +3250,35 @@ static int dwc3_gadget_ep_cleanup_comple
- 		req->needs_extra_trb = false;
- 	}
- 
--	dwc3_gadget_giveback(dep, req, status);
 +	/*
-+	 * The event status only reflects the status of the TRB with IOC set.
-+	 * For the requests that don't set interrupt on completion, the driver
-+	 * needs to check and return the status of the completed TRBs associated
-+	 * with the request. Use the status of the last TRB of the request.
++	 * To be on the safe side only time out after twice as many iterations
++	 * as fifo size.
 +	 */
-+	if (req->request.no_interrupt) {
-+		struct dwc3_trb *trb;
-+
-+		trb = dwc3_ep_prev_trb(dep, dep->trb_dequeue);
-+		switch (DWC3_TRB_SIZE_TRBSTS(trb->size)) {
-+		case DWC3_TRBSTS_MISSED_ISOC:
-+			/* Isoc endpoint only */
-+			request_status = -EXDEV;
-+			break;
-+		case DWC3_TRB_STS_XFER_IN_PROG:
-+			/* Applicable when End Transfer with ForceRM=0 */
-+		case DWC3_TRBSTS_SETUP_PENDING:
-+			/* Control endpoint only */
-+		case DWC3_TRBSTS_OK:
-+		default:
-+			request_status = 0;
-+			break;
-+		}
-+	} else {
-+		request_status = status;
-+	}
-+
-+	dwc3_gadget_giveback(dep, req, request_status);
++	const int MAX_TX_DRAIN_ITERS = uap->port.fifosize * 2;
+ 	struct uart_port *port = &uap->port;
+ 	int i = 0;
+ 	u32 cr;
  
- out:
- 	return ret;
+ 	/* Wait until hardware tx queue is empty */
+ 	while (!pl011_tx_empty(port)) {
+-		if (i == port->fifosize) {
++		if (i > MAX_TX_DRAIN_ITERS) {
+ 			dev_warn(port->dev,
+ 				 "timeout while draining hardware tx queue\n");
+ 			break;
+@@ -2052,7 +2057,7 @@ pl011_set_termios(struct uart_port *port
+ 	 * with the given baud rate. We use this as the poll interval when we
+ 	 * wait for the tx queue to empty.
+ 	 */
+-	uap->rs485_tx_drain_interval = (bits * 1000 * 1000) / baud;
++	uap->rs485_tx_drain_interval = DIV_ROUND_UP(bits * 1000 * 1000, baud);
+ 
+ 	pl011_setup_status_masks(port, termios);
+ 
 
 
