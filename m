@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B93C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6500DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355918AbiEDRrr (ORCPT
+        id S1359332AbiEDRrx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        Wed, 4 May 2022 13:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357042AbiEDROp (ORCPT
+        with ESMTP id S1357072AbiEDROq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B07653E32;
+        Wed, 4 May 2022 13:14:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253F153E3B;
         Wed,  4 May 2022 09:58:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 86278CE28AD;
-        Wed,  4 May 2022 16:58:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B889EC385AA;
-        Wed,  4 May 2022 16:57:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5690F6194D;
+        Wed,  4 May 2022 16:58:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF5AC385A5;
+        Wed,  4 May 2022 16:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683478;
-        bh=jzTDHvzUt0+FK1GCavcbHjEPmG6peMf7tUCHzlPx87o=;
+        s=korg; t=1651683481;
+        bh=rCc4o9i7bE4S0MCi29v1l4VnIYdlUNlewa80LumC7kE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7JSNgphiT42PL/67mkslWNgPtNEQ5LhxoSGv7itkLxaSo+uHT9AtKXsXqFtMdquy
-         jtd5qdtRrKd+P8nhN1ue0MX23ZmCG8CFbH/G3y/45oje9BkOPSoshYaacurc4bm4px
-         9Szpt0Ictm5zP8bAza7/MfqkE+KjAP0PCJcxBsQI=
+        b=ALmR3Lb0F1HBk3SQ56kxwtoX7SsZDTdLOZ2gAJfTmu+sdD8Wsre69b3oCpYbz9qfD
+         s0CTM8oetRYYtb6+Csk6EwyQUjiuOLr93m8ztdKa2Ditok93sOtNmCGxBxSupeb35q
+         FuSqP6Yz+N2x4sNe+mTkaIHU+KDWsdXu+c9KKE18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, David Yat Sin <david.yatsin@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 140/225] netfilter: conntrack: fix udp offload timeout sysctl
-Date:   Wed,  4 May 2022 18:46:18 +0200
-Message-Id: <20220504153122.718432261@linuxfoundation.org>
+Subject: [PATCH 5.17 143/225] drm/amdkfd: Fix GWS queue count
+Date:   Wed,  4 May 2022 18:46:21 +0200
+Message-Id: <20220504153122.962872195@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,43 +51,220 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+From: David Yat Sin <david.yatsin@amd.com>
 
-[ Upstream commit 626873c446f7559d5af8b48cefad903ffd85cf4e ]
+[ Upstream commit 7c6b6e18c890f30965b0589b0a57645e1dbccfde ]
 
-`nf_flowtable_udp_timeout` sysctl option is available only
-if CONFIG_NFT_FLOW_OFFLOAD enabled. But infra for this flow
-offload UDP timeout was added under CONFIG_NF_FLOW_TABLE
-config option. So, if you have CONFIG_NFT_FLOW_OFFLOAD
-disabled and CONFIG_NF_FLOW_TABLE enabled, the
-`nf_flowtable_udp_timeout` is not present in sysfs.
-Please note, that TCP flow offload timeout sysctl option
-is present even CONFIG_NFT_FLOW_OFFLOAD is disabled.
+dqm->gws_queue_count and pdd->qpd.mapped_gws_queue need to be updated
+each time the queue gets evicted.
 
-I suppose it was a typo in commit that adds UDP flow offload
-timeout and CONFIG_NF_FLOW_TABLE should be used instead.
-
-Fixes: 975c57504da1 ("netfilter: conntrack: Introduce udp offload timeout configuration")
-Signed-off-by: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: b8020b0304c8 ("drm/amdkfd: Enable over-subscription with >1 GWS queue")
+Signed-off-by: David Yat Sin <david.yatsin@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_standalone.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../drm/amd/amdkfd/kfd_device_queue_manager.c | 83 +++++++++----------
+ 1 file changed, 37 insertions(+), 46 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 3e1afd10a9b6..55aa55b252b2 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -823,7 +823,7 @@ static struct ctl_table nf_ct_sysctl_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_jiffies,
- 	},
--#if IS_ENABLED(CONFIG_NFT_FLOW_OFFLOAD)
-+#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
- 	[NF_SYSCTL_CT_PROTO_TIMEOUT_UDP_OFFLOAD] = {
- 		.procname	= "nf_flowtable_udp_timeout",
- 		.maxlen		= sizeof(unsigned int),
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+index 4b6814949aad..8d40b93747e0 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+@@ -129,19 +129,33 @@ void program_sh_mem_settings(struct device_queue_manager *dqm,
+ }
+ 
+ static void increment_queue_count(struct device_queue_manager *dqm,
+-			enum kfd_queue_type type)
++				  struct qcm_process_device *qpd,
++				  struct queue *q)
+ {
+ 	dqm->active_queue_count++;
+-	if (type == KFD_QUEUE_TYPE_COMPUTE || type == KFD_QUEUE_TYPE_DIQ)
++	if (q->properties.type == KFD_QUEUE_TYPE_COMPUTE ||
++	    q->properties.type == KFD_QUEUE_TYPE_DIQ)
+ 		dqm->active_cp_queue_count++;
++
++	if (q->properties.is_gws) {
++		dqm->gws_queue_count++;
++		qpd->mapped_gws_queue = true;
++	}
+ }
+ 
+ static void decrement_queue_count(struct device_queue_manager *dqm,
+-			enum kfd_queue_type type)
++				  struct qcm_process_device *qpd,
++				  struct queue *q)
+ {
+ 	dqm->active_queue_count--;
+-	if (type == KFD_QUEUE_TYPE_COMPUTE || type == KFD_QUEUE_TYPE_DIQ)
++	if (q->properties.type == KFD_QUEUE_TYPE_COMPUTE ||
++	    q->properties.type == KFD_QUEUE_TYPE_DIQ)
+ 		dqm->active_cp_queue_count--;
++
++	if (q->properties.is_gws) {
++		dqm->gws_queue_count--;
++		qpd->mapped_gws_queue = false;
++	}
+ }
+ 
+ static int allocate_doorbell(struct qcm_process_device *qpd, struct queue *q)
+@@ -380,7 +394,7 @@ static int create_queue_nocpsch(struct device_queue_manager *dqm,
+ 	list_add(&q->list, &qpd->queues_list);
+ 	qpd->queue_count++;
+ 	if (q->properties.is_active)
+-		increment_queue_count(dqm, q->properties.type);
++		increment_queue_count(dqm, qpd, q);
+ 
+ 	/*
+ 	 * Unconditionally increment this counter, regardless of the queue's
+@@ -505,13 +519,8 @@ static int destroy_queue_nocpsch_locked(struct device_queue_manager *dqm,
+ 		deallocate_vmid(dqm, qpd, q);
+ 	}
+ 	qpd->queue_count--;
+-	if (q->properties.is_active) {
+-		decrement_queue_count(dqm, q->properties.type);
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count--;
+-			qpd->mapped_gws_queue = false;
+-		}
+-	}
++	if (q->properties.is_active)
++		decrement_queue_count(dqm, qpd, q);
+ 
+ 	return retval;
+ }
+@@ -604,12 +613,11 @@ static int update_queue(struct device_queue_manager *dqm, struct queue *q,
+ 	 * dqm->active_queue_count to determine whether a new runlist must be
+ 	 * uploaded.
+ 	 */
+-	if (q->properties.is_active && !prev_active)
+-		increment_queue_count(dqm, q->properties.type);
+-	else if (!q->properties.is_active && prev_active)
+-		decrement_queue_count(dqm, q->properties.type);
+-
+-	if (q->gws && !q->properties.is_gws) {
++	if (q->properties.is_active && !prev_active) {
++		increment_queue_count(dqm, &pdd->qpd, q);
++	} else if (!q->properties.is_active && prev_active) {
++		decrement_queue_count(dqm, &pdd->qpd, q);
++	} else if (q->gws && !q->properties.is_gws) {
+ 		if (q->properties.is_active) {
+ 			dqm->gws_queue_count++;
+ 			pdd->qpd.mapped_gws_queue = true;
+@@ -671,11 +679,7 @@ static int evict_process_queues_nocpsch(struct device_queue_manager *dqm,
+ 		mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
+ 				q->properties.type)];
+ 		q->properties.is_active = false;
+-		decrement_queue_count(dqm, q->properties.type);
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count--;
+-			qpd->mapped_gws_queue = false;
+-		}
++		decrement_queue_count(dqm, qpd, q);
+ 
+ 		if (WARN_ONCE(!dqm->sched_running, "Evict when stopped\n"))
+ 			continue;
+@@ -721,7 +725,7 @@ static int evict_process_queues_cpsch(struct device_queue_manager *dqm,
+ 			continue;
+ 
+ 		q->properties.is_active = false;
+-		decrement_queue_count(dqm, q->properties.type);
++		decrement_queue_count(dqm, qpd, q);
+ 	}
+ 	pdd->last_evict_timestamp = get_jiffies_64();
+ 	retval = execute_queues_cpsch(dqm,
+@@ -792,11 +796,7 @@ static int restore_process_queues_nocpsch(struct device_queue_manager *dqm,
+ 		mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
+ 				q->properties.type)];
+ 		q->properties.is_active = true;
+-		increment_queue_count(dqm, q->properties.type);
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count++;
+-			qpd->mapped_gws_queue = true;
+-		}
++		increment_queue_count(dqm, qpd, q);
+ 
+ 		if (WARN_ONCE(!dqm->sched_running, "Restore when stopped\n"))
+ 			continue;
+@@ -854,7 +854,7 @@ static int restore_process_queues_cpsch(struct device_queue_manager *dqm,
+ 			continue;
+ 
+ 		q->properties.is_active = true;
+-		increment_queue_count(dqm, q->properties.type);
++		increment_queue_count(dqm, &pdd->qpd, q);
+ 	}
+ 	retval = execute_queues_cpsch(dqm,
+ 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+@@ -1260,7 +1260,7 @@ static int create_kernel_queue_cpsch(struct device_queue_manager *dqm,
+ 			dqm->total_queue_count);
+ 
+ 	list_add(&kq->list, &qpd->priv_queue_list);
+-	increment_queue_count(dqm, kq->queue->properties.type);
++	increment_queue_count(dqm, qpd, kq->queue);
+ 	qpd->is_debug = true;
+ 	execute_queues_cpsch(dqm, KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+ 	dqm_unlock(dqm);
+@@ -1274,7 +1274,7 @@ static void destroy_kernel_queue_cpsch(struct device_queue_manager *dqm,
+ {
+ 	dqm_lock(dqm);
+ 	list_del(&kq->list);
+-	decrement_queue_count(dqm, kq->queue->properties.type);
++	decrement_queue_count(dqm, qpd, kq->queue);
+ 	qpd->is_debug = false;
+ 	execute_queues_cpsch(dqm, KFD_UNMAP_QUEUES_FILTER_ALL_QUEUES, 0);
+ 	/*
+@@ -1341,7 +1341,7 @@ static int create_queue_cpsch(struct device_queue_manager *dqm, struct queue *q,
+ 	qpd->queue_count++;
+ 
+ 	if (q->properties.is_active) {
+-		increment_queue_count(dqm, q->properties.type);
++		increment_queue_count(dqm, qpd, q);
+ 
+ 		execute_queues_cpsch(dqm,
+ 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+@@ -1558,15 +1558,11 @@ static int destroy_queue_cpsch(struct device_queue_manager *dqm,
+ 	list_del(&q->list);
+ 	qpd->queue_count--;
+ 	if (q->properties.is_active) {
+-		decrement_queue_count(dqm, q->properties.type);
++		decrement_queue_count(dqm, qpd, q);
+ 		retval = execute_queues_cpsch(dqm,
+ 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+ 		if (retval == -ETIME)
+ 			qpd->reset_wavefronts = true;
+-		if (q->properties.is_gws) {
+-			dqm->gws_queue_count--;
+-			qpd->mapped_gws_queue = false;
+-		}
+ 	}
+ 
+ 	/*
+@@ -1757,7 +1753,7 @@ static int process_termination_cpsch(struct device_queue_manager *dqm,
+ 	/* Clean all kernel queues */
+ 	list_for_each_entry_safe(kq, kq_next, &qpd->priv_queue_list, list) {
+ 		list_del(&kq->list);
+-		decrement_queue_count(dqm, kq->queue->properties.type);
++		decrement_queue_count(dqm, qpd, kq->queue);
+ 		qpd->is_debug = false;
+ 		dqm->total_queue_count--;
+ 		filter = KFD_UNMAP_QUEUES_FILTER_ALL_QUEUES;
+@@ -1770,13 +1766,8 @@ static int process_termination_cpsch(struct device_queue_manager *dqm,
+ 		else if (q->properties.type == KFD_QUEUE_TYPE_SDMA_XGMI)
+ 			deallocate_sdma_queue(dqm, q);
+ 
+-		if (q->properties.is_active) {
+-			decrement_queue_count(dqm, q->properties.type);
+-			if (q->properties.is_gws) {
+-				dqm->gws_queue_count--;
+-				qpd->mapped_gws_queue = false;
+-			}
+-		}
++		if (q->properties.is_active)
++			decrement_queue_count(dqm, qpd, q);
+ 
+ 		dqm->total_queue_count--;
+ 	}
 -- 
 2.35.1
 
