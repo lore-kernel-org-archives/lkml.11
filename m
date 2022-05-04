@@ -2,43 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359050AbiEDRnm (ORCPT
+        id S1359082AbiEDRns (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        Wed, 4 May 2022 13:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356121AbiEDRJD (ORCPT
+        with ESMTP id S1356056AbiEDRJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:03 -0400
+        Wed, 4 May 2022 13:09:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D181522EE;
-        Wed,  4 May 2022 09:54:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E54527F5;
+        Wed,  4 May 2022 09:54:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4F97B827A4;
-        Wed,  4 May 2022 16:54:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D362C385AA;
-        Wed,  4 May 2022 16:54:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB9F5B827A7;
+        Wed,  4 May 2022 16:54:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66AC6C385A4;
+        Wed,  4 May 2022 16:54:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683291;
-        bh=u9mrsRgfGoMizZbDVPeNz/JA+WQ2trwoY2joYBPE0rY=;
+        s=korg; t=1651683290;
+        bh=lxOCNLhoXuv1p/yYbOt/qn66HbF114gIdpkYgvRyQOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P3qZt5CpQu1lXvCo9JTOrAyHgt2wdAo+4QbPdLOfnyDojLt1i88tdoRQ7IdRkiB8P
-         PDwRJgUS5PtK0mlLsa8YWlpmKQ3SSCSunp1BJFsv76GXaNLOG4A3yp+x0rYIh0+O0O
-         LkdGJ4+Buev0URPRjIABzqojkJtiqOh4zEa9ZZfw=
+        b=qhugop2ZMxygL+Em7/qjYMYiJOi0gP8Lrzo/NxHRyuLDqn87sb3lNq3o3xQlBRjQg
+         LfqmzgaK4PrIHJ82jVhCz8nvl+N2I9402RotlOQ+CCBn9iUSPEIvfLOKFD9l3V9zb4
+         17/7pJUHll/pO9fSV2a7SxhUQeWGsfPv701glhSk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Willi <martin@strongswan.org>,
-        David Ahern <dsahern@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 145/177] netfilter: Update ip6_route_me_harder to consider L3 domain
-Date:   Wed,  4 May 2022 18:45:38 +0200
-Message-Id: <20220504153106.263366871@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 156/177] perf symbol: Update symbols__fixup_end()
+Date:   Wed,  4 May 2022 18:45:49 +0200
+Message-Id: <20220504153107.383498779@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,58 +63,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Willi <martin@strongswan.org>
+From: Namhyung Kim <namhyung@kernel.org>
 
-commit 8ddffdb9442a9d60b4a6e679ac48d7d21403a674 upstream.
+commit 8799ebce84d672aae1dc3170510f6a3e66f96b11 upstream.
 
-The commit referenced below fixed packet re-routing if Netfilter mangles
-a routing key property of a packet and the packet is routed in a VRF L3
-domain. The fix, however, addressed IPv4 re-routing, only.
+Now arch-specific functions all do the same thing.  When it fixes the
+symbol address it needs to check the boundary between the kernel image
+and modules.  For the last symbol in the previous region, it cannot
+know the exact size as it's discarded already.  Thus it just uses a
+small page size (4096) and rounds it up like the last symbol.
 
-This commit applies the same behavior for IPv6. While at it, untangle
-the nested ternary operator to make the code more readable.
-
-Fixes: 6d8b49c3a3a3 ("netfilter: Update ip_route_me_harder to consider L3 domain")
-Cc: stable@vger.kernel.org
-Signed-off-by: Martin Willi <martin@strongswan.org>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-s390@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Link: https://lore.kernel.org/r/20220416004048.1514900-3-namhyung@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/netfilter.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ tools/perf/util/symbol.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/net/ipv6/netfilter.c
-+++ b/net/ipv6/netfilter.c
-@@ -24,14 +24,13 @@ int ip6_route_me_harder(struct net *net,
- {
- 	const struct ipv6hdr *iph = ipv6_hdr(skb);
- 	struct sock *sk = sk_to_full_sk(sk_partial);
-+	struct net_device *dev = skb_dst(skb)->dev;
- 	struct flow_keys flkeys;
- 	unsigned int hh_len;
- 	struct dst_entry *dst;
- 	int strict = (ipv6_addr_type(&iph->daddr) &
- 		      (IPV6_ADDR_MULTICAST | IPV6_ADDR_LINKLOCAL));
- 	struct flowi6 fl6 = {
--		.flowi6_oif = sk && sk->sk_bound_dev_if ? sk->sk_bound_dev_if :
--			strict ? skb_dst(skb)->dev->ifindex : 0,
- 		.flowi6_mark = skb->mark,
- 		.flowi6_uid = sock_net_uid(net, sk),
- 		.daddr = iph->daddr,
-@@ -39,6 +38,13 @@ int ip6_route_me_harder(struct net *net,
- 	};
- 	int err;
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -217,8 +217,8 @@ again:
+ 	}
+ }
  
-+	if (sk && sk->sk_bound_dev_if)
-+		fl6.flowi6_oif = sk->sk_bound_dev_if;
-+	else if (strict)
-+		fl6.flowi6_oif = dev->ifindex;
-+	else
-+		fl6.flowi6_oif = l3mdev_master_ifindex(dev);
+-void symbols__fixup_end(struct rb_root_cached *symbols,
+-			bool is_kallsyms __maybe_unused)
++/* Update zero-sized symbols using the address of the next symbol */
++void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms)
+ {
+ 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
+ 	struct symbol *curr, *prev;
+@@ -232,8 +232,29 @@ void symbols__fixup_end(struct rb_root_c
+ 		prev = curr;
+ 		curr = rb_entry(nd, struct symbol, rb_node);
+ 
+-		if (prev->end == prev->start || prev->end != curr->start)
+-			arch__symbols__fixup_end(prev, curr);
++		/*
++		 * On some architecture kernel text segment start is located at
++		 * some low memory address, while modules are located at high
++		 * memory addresses (or vice versa).  The gap between end of
++		 * kernel text segment and beginning of first module's text
++		 * segment is very big.  Therefore do not fill this gap and do
++		 * not assign it to the kernel dso map (kallsyms).
++		 *
++		 * In kallsyms, it determines module symbols using '[' character
++		 * like in:
++		 *   ffffffffc1937000 T hdmi_driver_init  [snd_hda_codec_hdmi]
++		 */
++		if (prev->end == prev->start) {
++			/* Last kernel/module symbol mapped to end of page */
++			if (is_kallsyms && (!strchr(prev->name, '[') !=
++					    !strchr(curr->name, '[')))
++				prev->end = roundup(prev->end + 4096, 4096);
++			else
++				prev->end = curr->start;
 +
- 	fib6_rules_early_flow_dissect(net, skb, &fl6, &flkeys);
- 	dst = ip6_route_output(net, sk, &fl6);
- 	err = dst->error;
++			pr_debug4("%s sym:%s end:%#" PRIx64 "\n",
++				  __func__, prev->name, prev->end);
++		}
+ 	}
+ 
+ 	/* Last entry */
 
 
