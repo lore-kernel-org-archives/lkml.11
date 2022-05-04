@@ -2,71 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE8BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B026C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355177AbiEDT73 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 15:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        id S234855AbiEDT7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 15:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238208AbiEDT7Y (ORCPT
+        with ESMTP id S238208AbiEDT7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 15:59:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1CD282
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 12:55:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34088B828AA
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 19:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EDC2C385AF;
-        Wed,  4 May 2022 19:55:43 +0000 (UTC)
-Date:   Wed, 4 May 2022 20:55:39 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
-        alex.popov@linux.com, linux-kernel@vger.kernel.org,
-        luto@kernel.org, will@kernel.org
-Subject: Re: [PATCH v2 01/13] arm64: stackleak: fix current_top_of_stack()
-Message-ID: <YnLaOw49WTbhmflw@arm.com>
-References: <20220427173128.2603085-1-mark.rutland@arm.com>
- <20220427173128.2603085-2-mark.rutland@arm.com>
- <YnKsvNtIlE6cZEOa@arm.com>
- <202205041200.147A737@keescook>
+        Wed, 4 May 2022 15:59:46 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC0062E8;
+        Wed,  4 May 2022 12:56:09 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id p18so2906541edr.7;
+        Wed, 04 May 2022 12:56:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lHzN/II1cqKG6Dxy3ToqBfroY6UHh0zWNL0Co+wZqsU=;
+        b=XHO7iOq/qqQ21uCUaSIAHFkG/WcxpiKguZE7NqeR4ndEtDqWMXhN9HdlAuEKQZhOZ1
+         VPJ+UbojC9TuiU5u8V4uDbfAehIaGrXYoj8rIXSVOqDS0wTScuqw6Xy6xySDXb2nbg14
+         6pu08x8MpTqBx/iryzQcJHl4dAlxvtzQExPy91oeGkGApKYfxiagVJ4SAl+uaZGpzxCX
+         UUuA7Qc6rpfpCDyR1txQWqsZjTah861eUXNpQk3rJ34jBRvpCBujSVWc3zRP6iK/sLQe
+         nqVR2O2zAPwsUpZkPNLRG/2T+3AXgE4Ehg7+8qr4hQZ8Q5xFRadXN+rbY8jLs7KQjCrM
+         rQ6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lHzN/II1cqKG6Dxy3ToqBfroY6UHh0zWNL0Co+wZqsU=;
+        b=R5xxIQYDG7LTXjkXGbIzUR1maaYtkqOvdqUYWuaJm5bpYeNJK5fXsp3Owey7gAVJhN
+         +pE0qUq/GhChbq9XvdhiGvkLY29rYpcbuV/GBZrvA8klCaO0wissu9XEKPJctnhzifKy
+         b56U5DSAlWca/Z7PZ/2lzxjr8VpZmoe4HxAPMPgkkWwZD3gjYRH/aj4XQnYfK2VpkW9X
+         U3bhz5nFAfSYWUmuOyDq31zzpHtgXKQSvw9M9WPZD2anb/shl5+Q5JnMkaf/snB2Wwm9
+         8nSZ5pRGBwDPU7dv7bc+6xzHqk1edq4/UfZcMqjW9Pj37fWCGH2w3/R4f63Ch9QUZzyO
+         hTbg==
+X-Gm-Message-State: AOAM5319vyDZAJfOfp+6LOZUksgzUYZjFU3qcSW8rEkbHRuW7nwWo+6j
+        guqOZM/y85kmij0rMBHQ4Anmtw48tZJD0OmDRRQ=
+X-Google-Smtp-Source: ABdhPJzoLtDpQCHhg4vioDldJRRTCvYHn7hSBl7b9n91FwSGhv1/4alySP2hCps314zWYRH0QbPJY2cSM6YnoyJrlzQ=
+X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
+ m16-20020aa7d350000000b00425e029da56mr25311335edr.296.1651694168197; Wed, 04
+ May 2022 12:56:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205041200.147A737@keescook>
+References: <20220504193439.15938-1-markuss.broks@gmail.com>
+ <CAHp75VeMCiwgTFFy5vGBoWYSw4mGQU6623B1eMr7apJZF_L-kg@mail.gmail.com> <20220504195042.GA25790@duo.ucw.cz>
+In-Reply-To: <20220504195042.GA25790@duo.ucw.cz>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 4 May 2022 21:55:32 +0200
+Message-ID: <CAHp75VeBovr7FvaW3VYhoR=QN0RUSdBEAYoP8jftS30_10vsOA@mail.gmail.com>
+Subject: Re: [PATCH v7 0/2] Make AUX gpio pin optional for ktd2692
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 12:01:11PM -0700, Kees Cook wrote:
-> On Wed, May 04, 2022 at 05:41:32PM +0100, Catalin Marinas wrote:
-> > On Wed, Apr 27, 2022 at 06:31:16PM +0100, Mark Rutland wrote:
-> > > [...]
-> > > Fixes: 0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
-> > > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > > Cc: Alexander Popov <alex.popov@linux.com>
-> > > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > > Cc: Andy Lutomirski <luto@kernel.org>
-> > > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > > Cc: Kees Cook <keescook@chromium.org>
-> > > Cc: Will Deacon <will@kernel.org>
-> > 
-> > I thought this was queued already but I couldn't find it in -next. So:
-> > 
-> > Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-> 
-> Should this patch go via the arm64 tree for -rc6, or should I just carry
-> it as part of the overall stackleak series?
+On Wed, May 4, 2022 at 9:50 PM Pavel Machek <pavel@ucw.cz> wrote:
+> > > v7:
+> > > - drop the MAINTAINERS part
+> >
+> > I'm not sure why it happened.
+> >
+> > 4) update MAINTAINERS.
+>
+> I asked for that one.
+>
+> If there's no other problem, I can take the series.
 
-I'll leave this up to Will (we take turns in managing the kernel
-releases) but it doesn't look urgent at all to me since it fixes a
-commit in 4.19.
+Ah, thanks for clarification.
+As I mentioned before, it would be really nice to have a fix-patch
+prepending this series. That said, this series needs to be rebased on
+it.
 
 -- 
-Catalin
+With Best Regards,
+Andy Shevchenko
