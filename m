@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92CDC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB5CC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356713AbiEDRJj (ORCPT
+        id S1356587AbiEDRJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
+        Wed, 4 May 2022 13:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355583AbiEDRAQ (ORCPT
+        with ESMTP id S1355523AbiEDRAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691264B868;
-        Wed,  4 May 2022 09:51:52 -0700 (PDT)
+        Wed, 4 May 2022 13:00:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78144B847;
+        Wed,  4 May 2022 09:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 749D9B82752;
-        Wed,  4 May 2022 16:51:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B511C385AA;
-        Wed,  4 May 2022 16:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DC02B82792;
+        Wed,  4 May 2022 16:51:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17CC8C385A5;
+        Wed,  4 May 2022 16:51:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683109;
-        bh=3U7sqrrWCLxxeCB6R9XUzsC/Y8YeVs1cxEa7tbzOWxU=;
+        s=korg; t=1651683107;
+        bh=9XMsbr7G05OYiESgCjRkznWz6gPpP4Kr/uPZBwsXf4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m3kPcWrBePbICuoXUdbJgv6kzd5TylN4y329qMBZ1P0Gr37nB0M2eViMkmmwZB4a0
-         +6a54+o1aZKYgZY3ayLihM24EeWPd/0MLq63kHMpyTkql43NCQjhmxj8wtjxmAIxPo
-         hnxxQeJmd44+WXGdb/5QYMbs7WPJ9z5kjlQgpBA0=
+        b=P29NIpS82XtP9EtepqaODMO9AQlK3Eh8W+bw90Yfadchb//M9tq83OMf7pbDg2No7
+         yqlgoY+crT/2jqdnKxnMPpL863cmDc1FM9HRMXu4VrCb5cWBCyzzXbQKclFfNKB0IY
+         ogqjqkGpaDW4UpMF42cSL5GX3NSo8KI5QFKu33NQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 101/129] ext4: fix bug_on in start_this_handle during umount filesystem
-Date:   Wed,  4 May 2022 18:44:53 +0200
-Message-Id: <20220504153028.958476561@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Song <chao.song@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 099/129] ASoC: Intel: soc-acpi: correct device endpoints for max98373
+Date:   Wed,  4 May 2022 18:44:51 +0200
+Message-Id: <20220504153028.791316478@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,112 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Chao Song <chao.song@linux.intel.com>
 
-[ Upstream commit b98535d091795a79336f520b0708457aacf55c67 ]
+[ Upstream commit 97326be14df7bacc6ba5c62c0556298c27ea0432 ]
 
-We got issue as follows:
-------------[ cut here ]------------
-kernel BUG at fs/jbd2/transaction.c:389!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
-Workqueue: events flush_stashed_error_work
-RIP: 0010:start_this_handle+0x41c/0x1160
-RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
-RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
-RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
-RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
-R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
-FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- jbd2__journal_start+0x38a/0x790
- jbd2_journal_start+0x19/0x20
- flush_stashed_error_work+0x110/0x2b3
- process_one_work+0x688/0x1080
- worker_thread+0x8b/0xc50
- kthread+0x26f/0x310
- ret_from_fork+0x22/0x30
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
+The left speaker of max98373 uses spk_r_endpoint, and right
+speaker uses spk_l_endpoint, this is obviously wrong.
 
-Above issue may happen as follows:
-      umount            read procfs            error_work
-ext4_put_super
-  flush_work(&sbi->s_error_work);
+This patch corrects the endpoints for max98373 codec.
 
-                      ext4_mb_seq_groups_show
-	                ext4_mb_load_buddy_gfp
-			  ext4_mb_init_group
-			    ext4_mb_init_cache
-	                      ext4_read_block_bitmap_nowait
-			        ext4_validate_block_bitmap
-				  ext4_error
-			            ext4_handle_error
-			              schedule_work(&EXT4_SB(sb)->s_error_work);
-
-  ext4_unregister_sysfs(sb);
-  jbd2_journal_destroy(sbi->s_journal);
-    journal_kill_thread
-      journal->j_flags |= JBD2_UNMOUNT;
-
-                                          flush_stashed_error_work
-				            jbd2_journal_start
-					      start_this_handle
-					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
-
-To solve this issue, we call 'ext4_unregister_sysfs() before flushing
-s_error_work in ext4_put_super().
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220322012419.725457-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Chao Song <chao.song@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220406192341.271465-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ sound/soc/intel/common/soc-acpi-intel-tgl-match.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 5e6c03458317..3e26edeca8c7 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -1176,18 +1176,23 @@ static void ext4_put_super(struct super_block *sb)
- 	int aborted = 0;
- 	int i, err;
- 
--	ext4_unregister_li_request(sb);
--	ext4_quota_off_umount(sb);
--
--	destroy_workqueue(sbi->rsv_conversion_wq);
--
- 	/*
- 	 * Unregister sysfs before destroying jbd2 journal.
- 	 * Since we could still access attr_journal_task attribute via sysfs
- 	 * path which could have sbi->s_journal->j_task as NULL
-+	 * Unregister sysfs before flush sbi->s_error_work.
-+	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
-+	 * read metadata verify failed then will queue error work.
-+	 * flush_stashed_error_work will call start_this_handle may trigger
-+	 * BUG_ON.
- 	 */
- 	ext4_unregister_sysfs(sb);
- 
-+	ext4_unregister_li_request(sb);
-+	ext4_quota_off_umount(sb);
-+
-+	destroy_workqueue(sbi->rsv_conversion_wq);
-+
- 	if (sbi->s_journal) {
- 		aborted = is_journal_aborted(sbi->s_journal);
- 		err = jbd2_journal_destroy(sbi->s_journal);
+diff --git a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+index 9f243e60b95c..15d862cdcd2f 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+@@ -126,13 +126,13 @@ static const struct snd_soc_acpi_adr_device mx8373_1_adr[] = {
+ 	{
+ 		.adr = 0x000123019F837300,
+ 		.num_endpoints = 1,
+-		.endpoints = &spk_l_endpoint,
++		.endpoints = &spk_r_endpoint,
+ 		.name_prefix = "Right"
+ 	},
+ 	{
+ 		.adr = 0x000127019F837300,
+ 		.num_endpoints = 1,
+-		.endpoints = &spk_r_endpoint,
++		.endpoints = &spk_l_endpoint,
+ 		.name_prefix = "Left"
+ 	}
+ };
 -- 
 2.35.1
 
