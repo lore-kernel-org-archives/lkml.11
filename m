@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E77C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114C1C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357385AbiEDRYJ (ORCPT
+        id S1357315AbiEDRX6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
+        Wed, 4 May 2022 13:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355598AbiEDREb (ORCPT
+        with ESMTP id S1355637AbiEDREc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31A84EF52;
-        Wed,  4 May 2022 09:53:10 -0700 (PDT)
+        Wed, 4 May 2022 13:04:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7252B4EF5F;
+        Wed,  4 May 2022 09:53:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 659AE61899;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 176E0B82792;
+        Wed,  4 May 2022 16:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5FAC385A5;
         Wed,  4 May 2022 16:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B658AC385A4;
-        Wed,  4 May 2022 16:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683188;
-        bh=NEBsSG0/XWJf6FprfNFMo2p3cGJLwBZ8OJmNqMRtIGY=;
+        s=korg; t=1651683189;
+        bh=WebTtxslwKDAsVRcLEZUGWc3FTCSF1suL5dLjrOM8mA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ha7h/MMhWT/k7W9LcRI1xrrIvH6XeIepiF6lTTmnCGeoBGsvT3HKYkTYm8uhzJwoi
-         Iyafm///AApkf3nnLr62/pCEt/OV1ZqnTXg5owavHZ8FH1v1jhLzE5c6LEA5i2ESDm
-         Rjn/SXBXvnGBvCIZci1ANq2XGPQ48JG3toIaD7cE=
+        b=03KP018MOWB1i/vW2RKW7Zb5hlEmCpOJAv9Uyi5P5BmeF5mGTynnfWjvjsUnrquvT
+         Pk6Z7+P+zzaNbRYvqQnVKBtK1LLEf7l2EzKwRay/uK3dGFVrFdh4xqyLCnIx8vV7QY
+         n89jstqooo/75CmZQ0AOrZ4lnoQ7x76rQ2JmyjZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 5.15 041/177] riscv: patch_text: Fixup last cpu should be master
-Date:   Wed,  4 May 2022 18:43:54 +0200
-Message-Id: <20220504153056.592587620@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        Dusty Mabe <dustymabe@redhat.com>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Noah Meyerhans <noahm@debian.org>
+Subject: [PATCH 5.15 042/177] x86/pci/xen: Disable PCI/MSI[-X] masking for XEN_HVM guests
+Date:   Wed,  4 May 2022 18:43:55 +0200
+Message-Id: <20220504153056.686401990@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,39 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-commit 8ec1442953c66a1d8462cccd8c20b7ba561f5915 upstream.
+commit 7e0815b3e09986d2fe651199363e135b9358132a upstream.
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+When a XEN_HVM guest uses the XEN PIRQ/Eventchannel mechanism, then
+PCI/MSI[-X] masking is solely controlled by the hypervisor, but contrary to
+XEN_PV guests this does not disable PCI/MSI[-X] masking in the PCI/MSI
+layer.
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Fixes: 043cb41a85de ("riscv: introduce interfaces to patch kernel code")
+This can lead to a situation where the PCI/MSI layer masks an MSI[-X]
+interrupt and the hypervisor grants the write despite the fact that it
+already requested the interrupt. As a consequence interrupt delivery on the
+affected device is not happening ever.
+
+Set pci_msi_ignore_mask to prevent that like it's done for XEN_PV guests
+already.
+
+Fixes: 809f9267bbab ("xen: map MSIs into pirqs")
+Reported-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Reported-by: Dusty Mabe <dustymabe@redhat.com>
+Reported-by: Salvatore Bonaccorso <carnil@debian.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Noah Meyerhans <noahm@debian.org>
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Link: https://lore.kernel.org/r/87tuaduxj5.ffs@tglx
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/patch.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/pci/xen.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/arch/riscv/kernel/patch.c
-+++ b/arch/riscv/kernel/patch.c
-@@ -104,7 +104,7 @@ static int patch_text_cb(void *data)
- 	struct patch_insn *patch = data;
- 	int ret = 0;
+--- a/arch/x86/pci/xen.c
++++ b/arch/x86/pci/xen.c
+@@ -472,7 +472,6 @@ static __init void xen_setup_pci_msi(voi
+ 			xen_msi_ops.setup_msi_irqs = xen_setup_msi_irqs;
+ 		}
+ 		xen_msi_ops.teardown_msi_irqs = xen_pv_teardown_msi_irqs;
+-		pci_msi_ignore_mask = 1;
+ 	} else if (xen_hvm_domain()) {
+ 		xen_msi_ops.setup_msi_irqs = xen_hvm_setup_msi_irqs;
+ 		xen_msi_ops.teardown_msi_irqs = xen_teardown_msi_irqs;
+@@ -486,6 +485,11 @@ static __init void xen_setup_pci_msi(voi
+ 	 * in allocating the native domain and never use it.
+ 	 */
+ 	x86_init.irqs.create_pci_msi_domain = xen_create_pci_msi_domain;
++	/*
++	 * With XEN PIRQ/Eventchannels in use PCI/MSI[-X] masking is solely
++	 * controlled by the hypervisor.
++	 */
++	pci_msi_ignore_mask = 1;
+ }
  
--	if (atomic_inc_return(&patch->cpu_count) == 1) {
-+	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
- 		ret =
- 		    patch_text_nosync(patch->addr, &patch->insn,
- 					    GET_INSN_LENGTH(patch->insn));
+ #else /* CONFIG_PCI_MSI */
 
 
