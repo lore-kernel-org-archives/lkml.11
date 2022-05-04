@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB06FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAABC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356162AbiEDRLU (ORCPT
+        id S1355718AbiEDRL1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        Wed, 4 May 2022 13:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355404AbiEDRAC (ORCPT
+        with ESMTP id S1355390AbiEDRAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409684B402;
-        Wed,  4 May 2022 09:51:40 -0700 (PDT)
+        Wed, 4 May 2022 13:00:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBE64B1F8;
+        Wed,  4 May 2022 09:51:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAE9861811;
-        Wed,  4 May 2022 16:51:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38215C385A5;
-        Wed,  4 May 2022 16:51:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9061DB827A1;
+        Wed,  4 May 2022 16:51:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D8DC385A4;
+        Wed,  4 May 2022 16:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683090;
-        bh=MAiGjYL2OG/xAAB6sKyAI75CanTT2wYUIKRLSJy6lhs=;
+        s=korg; t=1651683087;
+        bh=RL5yGVkyeNKNqpXaH1HM7y2330PAjpWmWzwxkKb8fFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jj8xPB5ZrEkSVgZLnOg/6TEtLxVzb1Z78fLh8xJI0oH0NKbYsTYByeLruEOCOIfy6
-         oELZCLjaFoEf5/BCzn89lA9orjLlxJslkBtrQvEqHgwFBok1lrY94vSlgNfkF9OKMg
-         PwFKPpCeX1ad7qz0EXoCjjpaWIecGKPpaIco46hI=
+        b=vCmF3KN+Js0gbDcHnaLQtf6dwcOg+qh/ltOx497wSkaGuFgZrfgVO1AH85OKNlkvW
+         dSByEeCm82aD43daXMBlI2FPMFiEnNF4/KNNx7bCRO2LVp7bK7mI/4i2UzeocApiz8
+         JqJeCGnuqJLzy9H6o7kfkO4dD1q6EHt/e+KPRZ4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 094/129] net: fec: add missing of_node_put() in fec_enet_init_stop_mode()
-Date:   Wed,  4 May 2022 18:44:46 +0200
-Message-Id: <20220504153028.392897634@linuxfoundation.org>
+Subject: [PATCH 5.10 091/129] drm/amd/display: Fix memory leak in dcn21_clock_source_create
+Date:   Wed,  4 May 2022 18:44:43 +0200
+Message-Id: <20220504153028.198953417@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,34 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d2b52ec056d5bddb055c8f21d7489a23548d0838 ]
+[ Upstream commit 65e54987508b6f0771f56bdfa3ee1926d52785ae ]
 
-Put device node in error path in fec_enet_init_stop_mode().
+When dcn20_clk_src_construct() fails, we need to release clk_src.
 
-Fixes: 8a448bf832af ("net: ethernet: fec: move GPR register offset and bit into DT")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220426125231.375688-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6f4e6361c3ff ("drm/amd/display: Add Renoir resource (v2)")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 166bc3f3b34c..d8bdaf2e5365 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3529,7 +3529,7 @@ static int fec_enet_init_stop_mode(struct fec_enet_private *fep,
- 					 ARRAY_SIZE(out_val));
- 	if (ret) {
- 		dev_dbg(&fep->pdev->dev, "no stop mode property\n");
--		return ret;
-+		goto out;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+index 7ed4d7c8734f..01c4e8753294 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+@@ -1267,6 +1267,7 @@ static struct clock_source *dcn21_clock_source_create(
+ 		return &clk_src->base;
  	}
  
- 	fep->stop_gpr.gpr = syscon_node_to_regmap(gpr_np);
++	kfree(clk_src);
+ 	BREAK_TO_DEBUGGER();
+ 	return NULL;
+ }
 -- 
 2.35.1
 
