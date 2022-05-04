@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB922C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACFDC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354192AbiEDQzG (ORCPT
+        id S1354200AbiEDQzL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
+        Wed, 4 May 2022 12:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354026AbiEDQxr (ORCPT
+        with ESMTP id S1354068AbiEDQxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE26247AFF;
-        Wed,  4 May 2022 09:48:58 -0700 (PDT)
+        Wed, 4 May 2022 12:53:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB7346B3D;
+        Wed,  4 May 2022 09:49:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BB7661701;
-        Wed,  4 May 2022 16:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD4B4C385A4;
-        Wed,  4 May 2022 16:48:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B211B827A0;
+        Wed,  4 May 2022 16:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A76DFC385AA;
+        Wed,  4 May 2022 16:49:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682937;
-        bh=Bla4DnsSnnIoXDc4ghLJ1hbfQgBlIQ8VsAkR4WxaL+c=;
+        s=korg; t=1651682940;
+        bh=NhFhnzI0gdPcL+Y4/SDdfwLcqHDIn6Qbw2CnLVHsIJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zy9mrC8VIqvoMum/jfNyVPLgMHu9cthYhtFTWhMFxF4vLkMZd+vNnyGDsH64fVr0H
-         k7zCISEgIXHV01d8PZ8ZGx9NOkkXuvaSKGL9OABXbeJYtP98mmSCLd0sEWCfuLl/uC
-         UcTjt7yXNQcyOoxvTIARoWzXHO861nso98Gwu6ic=
+        b=sa0j9RD3jWfq775bDv9iFKm3y+ZzJje9UvFquC9/txsCJ+1x8RtBfQTzdozPDc1eQ
+         dQwQW/cNma46sW2P56JmDQbPe54jrxD1Z0dr0SAsn5ykdFKE6faCNxOB/EUfghYz1s
+         qwcmDCx5rh2bSlCv3qaRFKlPdbZNFes7fmf5xOe4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Julian Anastasov <ja@ssi.bg>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 56/84] net/smc: sync err code when tcp connection was refused
-Date:   Wed,  4 May 2022 18:44:37 +0200
-Message-Id: <20220504152931.767254648@linuxfoundation.org>
+Subject: [PATCH 5.4 45/84] ipvs: correctly print the memory size of ip_vs_conn_tab
+Date:   Wed,  4 May 2022 18:44:26 +0200
+Message-Id: <20220504152931.009523556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -52,39 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit 4e2e65e2e56c6ceb4ea1719360080c0af083229e ]
+[ Upstream commit eba1a872cb73314280d5448d934935b23e30b7ca ]
 
-In the current implementation, when TCP initiates a connection
-to an unavailable [ip,port], ECONNREFUSED will be stored in the
-TCP socket, but SMC will not. However, some apps (like curl) use
-getsockopt(,,SO_ERROR,,) to get the error information, which makes
-them miss the error message and behave strangely.
+The memory size of ip_vs_conn_tab changed after we use hlist
+instead of list.
 
-Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 731109e78415 ("ipvs: use hlist instead of list")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/netfilter/ipvs/ip_vs_conn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 5221092cc66d..a5a8cca46bd5 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -816,6 +816,8 @@ static void smc_connect_work(struct work_struct *work)
- 		smc->sk.sk_state = SMC_CLOSED;
- 		if (rc == -EPIPE || rc == -EAGAIN)
- 			smc->sk.sk_err = EPIPE;
-+		else if (rc == -ECONNREFUSED)
-+			smc->sk.sk_err = ECONNREFUSED;
- 		else if (signal_pending(current))
- 			smc->sk.sk_err = -sock_intr_errno(timeo);
- 		sock_put(&smc->sk); /* passive closing */
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index d1524ca4b90e..a189079a6ea5 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1421,7 +1421,7 @@ int __init ip_vs_conn_init(void)
+ 	pr_info("Connection hash table configured "
+ 		"(size=%d, memory=%ldKbytes)\n",
+ 		ip_vs_conn_tab_size,
+-		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
++		(long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
+ 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
+ 		  sizeof(struct ip_vs_conn));
+ 
 -- 
 2.35.1
 
