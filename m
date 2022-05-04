@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C17DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359088AbiEDRrV (ORCPT
+        id S1359117AbiEDRrY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        Wed, 4 May 2022 13:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356442AbiEDRNn (ORCPT
+        with ESMTP id S1356445AbiEDRNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:13:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A86BA4C415;
-        Wed,  4 May 2022 09:57:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712444C7AC;
+        Wed,  4 May 2022 09:58:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 269FDB827AD;
-        Wed,  4 May 2022 16:57:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA2BCC385A5;
-        Wed,  4 May 2022 16:57:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51DE161794;
+        Wed,  4 May 2022 16:58:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E2EC385A4;
+        Wed,  4 May 2022 16:58:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683467;
-        bh=d7JgQBk6naJ/rT9zZwoorkKX4JJ7nvbUbjkN0+THQEI=;
+        s=korg; t=1651683480;
+        bh=T65hD3lkedDqHQ8Jk1haw7M3WC4ltemQG+9Pml3DHDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=djHmZ5a1lCuXRuDunwbcLpO1q414eN56UtKUuV5q+O5Rv0dPv6+gom/595bb/zKhA
-         2BHinjs7gnGG2TiDz33tau58UlQjbpeUFYcDc2U/ibMlOyBB7HF7u/rt/fgZCtjkT6
-         ID8dr/13Zjze1+k/GKNcq0f0JkoMld/obqi2OCvI=
+        b=zjWOo3IZpltVESaWGEriZ7J7AQGXd/X4CbWiU7EnM4df1rqiHb23Vtxkhw/ThiJUr
+         7WOQFgVWyPoOtDVDkwh4y11ZdEbvqH7F3Q9zBG+f53m6UUYmm/1GqC4W2yQ6WtNIoa
+         YrA1SwmmVj/JgVfiEHjBxgtVHXr7KQ/60fwotzjo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, "Luke D. Jones" <luke@ljones.dev>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 129/225] mctp: defer the kfree of object mdev->addrs
-Date:   Wed,  4 May 2022 18:46:07 +0200
-Message-Id: <20220504153121.879448475@linuxfoundation.org>
+Subject: [PATCH 5.17 142/225] platform/x86: asus-wmi: Fix driver not binding when fan curve control probe fails
+Date:   Wed,  4 May 2022 18:46:20 +0200
+Message-Id: <20220504153122.887393189@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,173 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit b561275d633bcd8e0e8055ab86f1a13df75a0269 ]
+[ Upstream commit 9fe1bb29ea0ab231aa916dad4bcf0c435beb5869 ]
 
-The function mctp_unregister() reclaims the device's relevant resource
-when a netcard detaches. However, a running routine may be unaware of
-this and cause the use-after-free of the mdev->addrs object.
+Before this commit fan_curve_check_present() was trying to not cause
+the probe to fail on devices without fan curve control by testing for
+known error codes returned by asus_wmi_evaluate_method_buf().
 
-The race condition can be demonstrated below
+Checking for ENODATA or ENODEV, with the latter being returned by this
+function when an ACPI integer with a value of ASUS_WMI_UNSUPPORTED_METHOD
+is returned. But for other ACPI integer returns this function just returns
+them as is, including the ASUS_WMI_DSTS_UNKNOWN_BIT value of 2.
 
- cleanup thread               another thread
-                          |
-unregister_netdev()       |  mctp_sendmsg()
-...                       |    ...
-  mctp_unregister()       |    rt = mctp_route_lookup()
-    ...                   |    mctl_local_output()
-    kfree(mdev->addrs)    |      ...
-                          |      saddr = rt->dev->addrs[0];
-                          |
+On the Asus U36SD ASUS_WMI_DSTS_UNKNOWN_BIT gets returned, leading to:
 
-An attacker can adopt the (recent provided) mtcpserial driver with pty
-to fake the device detaching and use the userfaultfd to increase the
-race success chance (in mctp_sendmsg). The KASan report for such a POC
-is shown below:
+  asus-nb-wmi: probe of asus-nb-wmi failed with error 2
 
-[   86.051955] ==================================================================
-[   86.051955] BUG: KASAN: use-after-free in mctp_local_output+0x4e9/0xb7d
-[   86.051955] Read of size 1 at addr ffff888005f298c0 by task poc/295
-[   86.051955]
-[   86.051955] Call Trace:
-[   86.051955]  <TASK>
-[   86.051955]  dump_stack_lvl+0x33/0x42
-[   86.051955]  print_report.cold.13+0xb2/0x6b3
-[   86.051955]  ? preempt_schedule_irq+0x57/0x80
-[   86.051955]  ? mctp_local_output+0x4e9/0xb7d
-[   86.051955]  kasan_report+0xa5/0x120
-[   86.051955]  ? mctp_local_output+0x4e9/0xb7d
-[   86.051955]  mctp_local_output+0x4e9/0xb7d
-[   86.051955]  ? mctp_dev_set_key+0x79/0x79
-[   86.051955]  ? copyin+0x38/0x50
-[   86.051955]  ? _copy_from_iter+0x1b6/0xf20
-[   86.051955]  ? sysvec_apic_timer_interrupt+0x97/0xb0
-[   86.051955]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
-[   86.051955]  ? mctp_local_output+0x1/0xb7d
-[   86.051955]  mctp_sendmsg+0x64d/0xdb0
-[   86.051955]  ? mctp_sk_close+0x20/0x20
-[   86.051955]  ? __fget_light+0x2fd/0x4f0
-[   86.051955]  ? mctp_sk_close+0x20/0x20
-[   86.051955]  sock_sendmsg+0xdd/0x110
-[   86.051955]  __sys_sendto+0x1cc/0x2a0
-[   86.051955]  ? __ia32_sys_getpeername+0xa0/0xa0
-[   86.051955]  ? new_sync_write+0x335/0x550
-[   86.051955]  ? alloc_file+0x22f/0x500
-[   86.051955]  ? __ip_do_redirect+0x820/0x1820
-[   86.051955]  ? vfs_write+0x44d/0x7b0
-[   86.051955]  ? vfs_write+0x44d/0x7b0
-[   86.051955]  ? fput_many+0x15/0x120
-[   86.051955]  ? ksys_write+0x155/0x1b0
-[   86.051955]  ? __ia32_sys_read+0xa0/0xa0
-[   86.051955]  __x64_sys_sendto+0xd8/0x1b0
-[   86.051955]  ? exit_to_user_mode_prepare+0x2f/0x120
-[   86.051955]  ? syscall_exit_to_user_mode+0x12/0x20
-[   86.051955]  do_syscall_64+0x3a/0x80
-[   86.051955]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   86.051955] RIP: 0033:0x7f82118a56b3
-[   86.051955] RSP: 002b:00007ffdb154b110 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-[   86.051955] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f82118a56b3
-[   86.051955] RDX: 0000000000000010 RSI: 00007f8211cd4000 RDI: 0000000000000007
-[   86.051955] RBP: 00007ffdb154c1d0 R08: 00007ffdb154b164 R09: 000000000000000c
-[   86.051955] R10: 0000000000000000 R11: 0000000000000293 R12: 000055d779800db0
-[   86.051955] R13: 00007ffdb154c2b0 R14: 0000000000000000 R15: 0000000000000000
-[   86.051955]  </TASK>
-[   86.051955]
-[   86.051955] Allocated by task 295:
-[   86.051955]  kasan_save_stack+0x1c/0x40
-[   86.051955]  __kasan_kmalloc+0x84/0xa0
-[   86.051955]  mctp_rtm_newaddr+0x242/0x610
-[   86.051955]  rtnetlink_rcv_msg+0x2fd/0x8b0
-[   86.051955]  netlink_rcv_skb+0x11c/0x340
-[   86.051955]  netlink_unicast+0x439/0x630
-[   86.051955]  netlink_sendmsg+0x752/0xc00
-[   86.051955]  sock_sendmsg+0xdd/0x110
-[   86.051955]  __sys_sendto+0x1cc/0x2a0
-[   86.051955]  __x64_sys_sendto+0xd8/0x1b0
-[   86.051955]  do_syscall_64+0x3a/0x80
-[   86.051955]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   86.051955]
-[   86.051955] Freed by task 301:
-[   86.051955]  kasan_save_stack+0x1c/0x40
-[   86.051955]  kasan_set_track+0x21/0x30
-[   86.051955]  kasan_set_free_info+0x20/0x30
-[   86.051955]  __kasan_slab_free+0x104/0x170
-[   86.051955]  kfree+0x8c/0x290
-[   86.051955]  mctp_dev_notify+0x161/0x2c0
-[   86.051955]  raw_notifier_call_chain+0x8b/0xc0
-[   86.051955]  unregister_netdevice_many+0x299/0x1180
-[   86.051955]  unregister_netdevice_queue+0x210/0x2f0
-[   86.051955]  unregister_netdev+0x13/0x20
-[   86.051955]  mctp_serial_close+0x6d/0xa0
-[   86.051955]  tty_ldisc_kill+0x31/0xa0
-[   86.051955]  tty_ldisc_hangup+0x24f/0x560
-[   86.051955]  __tty_hangup.part.28+0x2ce/0x6b0
-[   86.051955]  tty_release+0x327/0xc70
-[   86.051955]  __fput+0x1df/0x8b0
-[   86.051955]  task_work_run+0xca/0x150
-[   86.051955]  exit_to_user_mode_prepare+0x114/0x120
-[   86.051955]  syscall_exit_to_user_mode+0x12/0x20
-[   86.051955]  do_syscall_64+0x46/0x80
-[   86.051955]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   86.051955]
-[   86.051955] The buggy address belongs to the object at ffff888005f298c0
-[   86.051955]  which belongs to the cache kmalloc-8 of size 8
-[   86.051955] The buggy address is located 0 bytes inside of
-[   86.051955]  8-byte region [ffff888005f298c0, ffff888005f298c8)
-[   86.051955]
-[   86.051955] The buggy address belongs to the physical page:
-[   86.051955] flags: 0x100000000000200(slab|node=0|zone=1)
-[   86.051955] raw: 0100000000000200 dead000000000100 dead000000000122 ffff888005c42280
-[   86.051955] raw: 0000000000000000 0000000080660066 00000001ffffffff 0000000000000000
-[   86.051955] page dumped because: kasan: bad access detected
-[   86.051955]
-[   86.051955] Memory state around the buggy address:
-[   86.051955]  ffff888005f29780: 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc 00
-[   86.051955]  ffff888005f29800: fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc 00 fc
-[   86.051955] >ffff888005f29880: fc fc fc fb fc fc fc fc fa fc fc fc fc fa fc fc
-[   86.051955]                                            ^
-[   86.051955]  ffff888005f29900: fc fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc
-[   86.051955]  ffff888005f29980: fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc
-[   86.051955] ==================================================================
+Instead of playing whack a mole with error codes here, simply treat all
+errors as there not being any fan curves, fixing the driver no longer
+loading on the Asus U36SD laptop.
 
-To this end, just like the commit e04480920d1e ("Bluetooth: defer
-cleanup of resources in hci_unregister_dev()")  this patch defers the
-destructive kfree(mdev->addrs) in mctp_unregister to the mctp_dev_put,
-where the refcount of mdev is zero and the entire device is reclaimed.
-This prevents the use-after-free because the sendmsg thread holds the
-reference of mdev in the mctp_route object.
-
-Fixes: 583be982d934 (mctp: Add device handling and netlink interface)
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Acked-by: Jeremy Kerr <jk@codeconstruct.com.au>
-Link: https://lore.kernel.org/r/20220422114340.32346-1-linma@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: e3d13da7f77d ("platform/x86: asus-wmi: Fix regression when probing for fan curve control")
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2079125
+Cc: Luke D. Jones <luke@ljones.dev>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220427114956.332919-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mctp/device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/asus-wmi.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/mctp/device.c b/net/mctp/device.c
-index f86ef6d751bd..9150b9789d25 100644
---- a/net/mctp/device.c
-+++ b/net/mctp/device.c
-@@ -312,6 +312,7 @@ void mctp_dev_hold(struct mctp_dev *mdev)
- void mctp_dev_put(struct mctp_dev *mdev)
- {
- 	if (mdev && refcount_dec_and_test(&mdev->refs)) {
-+		kfree(mdev->addrs);
- 		dev_put(mdev->dev);
- 		kfree_rcu(mdev, rcu);
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 399a4a345224..1e7bc0c595c7 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -2227,9 +2227,10 @@ static int fan_curve_check_present(struct asus_wmi *asus, bool *available,
+ 
+ 	err = fan_curve_get_factory_default(asus, fan_dev);
+ 	if (err) {
+-		if (err == -ENODEV || err == -ENODATA)
+-			return 0;
+-		return err;
++		pr_debug("fan_curve_get_factory_default(0x%08x) failed: %d\n",
++			 fan_dev, err);
++		/* Don't cause probe to fail on devices without fan-curves */
++		return 0;
  	}
-@@ -440,7 +441,6 @@ static void mctp_unregister(struct net_device *dev)
  
- 	mctp_route_remove_dev(mdev);
- 	mctp_neigh_remove_dev(mdev);
--	kfree(mdev->addrs);
- 
- 	mctp_dev_put(mdev);
- }
+ 	*available = true;
 -- 
 2.35.1
 
