@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3377AC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 774AAC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358411AbiEDRP5 (ORCPT
+        id S1358587AbiEDRQG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
+        Wed, 4 May 2022 13:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355636AbiEDREc (ORCPT
+        with ESMTP id S1355701AbiEDREj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1534EF56;
-        Wed,  4 May 2022 09:53:11 -0700 (PDT)
+        Wed, 4 May 2022 13:04:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18864F44B;
+        Wed,  4 May 2022 09:53:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B2AADCE2625;
-        Wed,  4 May 2022 16:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E34C385AA;
-        Wed,  4 May 2022 16:53:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EFF4617BD;
+        Wed,  4 May 2022 16:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD0FCC385A5;
+        Wed,  4 May 2022 16:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683185;
-        bh=5kiyZl3wv3CTm+GFIfjJaXI1i53KPSbQgo/RAbnYu2g=;
+        s=korg; t=1651683193;
+        bh=GZgX069Xig3QT1ywx3SlIJvq+f8nwWelsRS134k74wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D52dfDCfgM3wYuA8iPCosUgc8zTF1W29/JlRiVyPt81MPNtxS4ObFNyQTZW8Uvue0
-         JbaX7w6tQhqo0XGSYZu2/8LHYDAYqpqaWoS/OLnP97LngLVdYq7YEdZQLyC5+iLC1e
-         0wypQ+YmLSLDvpWHPzOlwEObJuS+QfG9kIXKVr2E=
+        b=M0FgI3ZGbGGeMbkRleVSSq2JTEhUKJ5xLirHLK8rRpi4q1D+xE3zDae5ixXoBrGdX
+         NtQtdGEy4sf4RVTfAlVB1+VvbOJcIGDorSvuYMC4mGfb9KKecPwFP1IdzJu5vFci+h
+         rmmf/5+DZI3Jdq6wwGEAqvjlF11lreRPL8Cft66o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/177] iio:imu:bmi160: disable regulator in error path
-Date:   Wed,  4 May 2022 18:44:03 +0200
-Message-Id: <20220504153057.485932494@linuxfoundation.org>
+Subject: [PATCH 5.15 046/177] cpufreq: qcom-cpufreq-hw: Fix throttle frequency value on EPSS platforms
+Date:   Wed,  4 May 2022 18:43:59 +0200
+Message-Id: <20220504153057.045373689@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,88 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-[ Upstream commit d926054d5565d3cfa2c7c3f7a48e79bcc10453ed ]
+[ Upstream commit f84ccad5f5660f86a642a3d7e2bfdc4e7a8a2d49 ]
 
-Regulator should be disabled in error path as mentioned in _regulator_put().
-Also disable accel if gyro cannot be enabled.
+On QCOM platforms with EPSS flavour of cpufreq IP a throttled frequency is
+obtained from another register REG_DOMAIN_STATE, thus the helper function
+qcom_lmh_get_throttle_freq() should be modified accordingly, as for now
+it returns gibberish since .reg_current_vote is unset for EPSS hardware.
 
-[   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
-[   16.240453] Call Trace:
-[   16.240572]  <TASK>
-[   16.240676]  regulator_put+0x26/0x40
-[   16.240853]  regulator_bulk_free+0x26/0x50
-[   16.241050]  release_nodes+0x3f/0x70
-[   16.241225]  devres_release_group+0x147/0x1c0
-[   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
+To exclude a hardcoded magic number 19200 it is replaced by "xo" clock rate
+in KHz.
 
-Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Link: https://lore.kernel.org/r/20220327154005.806049-1-ztong0001@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/cpufreq/qcom-cpufreq-hw.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index 824b5124a5f5..01336105792e 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
+diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
+index dfe72d82858f..e73ecab23c85 100644
+--- a/drivers/cpufreq/qcom-cpufreq-hw.c
++++ b/drivers/cpufreq/qcom-cpufreq-hw.c
+@@ -28,6 +28,7 @@
  
- 	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
- 	if (ret)
--		return ret;
-+		goto disable_regulator;
- 
- 	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
- 
-@@ -741,29 +741,37 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 	if (use_spi) {
- 		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
- 		if (ret)
--			return ret;
-+			goto disable_regulator;
+ struct qcom_cpufreq_soc_data {
+ 	u32 reg_enable;
++	u32 reg_domain_state;
+ 	u32 reg_freq_lut;
+ 	u32 reg_volt_lut;
+ 	u32 reg_current_vote;
+@@ -266,11 +267,16 @@ static void qcom_get_related_cpus(int index, struct cpumask *m)
  	}
- 
- 	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
- 	if (ret) {
- 		dev_err(dev, "Error reading chip id\n");
--		return ret;
-+		goto disable_regulator;
- 	}
- 	if (val != BMI160_CHIP_ID_VAL) {
- 		dev_err(dev, "Wrong chip id, got %x expected %x\n",
- 			val, BMI160_CHIP_ID_VAL);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto disable_regulator;
- 	}
- 
- 	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
- 	if (ret)
--		return ret;
-+		goto disable_regulator;
- 
- 	ret = bmi160_set_mode(data, BMI160_GYRO, true);
- 	if (ret)
--		return ret;
-+		goto disable_accel;
- 
- 	return 0;
-+
-+disable_accel:
-+	bmi160_set_mode(data, BMI160_ACCEL, false);
-+
-+disable_regulator:
-+	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-+	return ret;
  }
  
- static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+-static unsigned int qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
++static unsigned long qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
+ {
+-	unsigned int val = readl_relaxed(data->base + data->soc_data->reg_current_vote);
++	unsigned int lval;
+ 
+-	return (val & 0x3FF) * 19200;
++	if (data->soc_data->reg_current_vote)
++		lval = readl_relaxed(data->base + data->soc_data->reg_current_vote) & 0x3ff;
++	else
++		lval = readl_relaxed(data->base + data->soc_data->reg_domain_state) & 0xff;
++
++	return lval * xo_rate;
+ }
+ 
+ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
+@@ -280,14 +286,12 @@ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
+ 	int cpu = cpumask_first(policy->related_cpus);
+ 	struct device *dev = get_cpu_device(cpu);
+ 	struct dev_pm_opp *opp;
+-	unsigned int freq;
+ 
+ 	/*
+ 	 * Get the h/w throttled frequency, normalize it using the
+ 	 * registered opp table and use it to calculate thermal pressure.
+ 	 */
+-	freq = qcom_lmh_get_throttle_freq(data);
+-	freq_hz = freq * HZ_PER_KHZ;
++	freq_hz = qcom_lmh_get_throttle_freq(data);
+ 
+ 	opp = dev_pm_opp_find_freq_floor(dev, &freq_hz);
+ 	if (IS_ERR(opp) && PTR_ERR(opp) == -ERANGE)
+@@ -359,6 +363,7 @@ static const struct qcom_cpufreq_soc_data qcom_soc_data = {
+ 
+ static const struct qcom_cpufreq_soc_data epss_soc_data = {
+ 	.reg_enable = 0x0,
++	.reg_domain_state = 0x20,
+ 	.reg_freq_lut = 0x100,
+ 	.reg_volt_lut = 0x200,
+ 	.reg_perf_state = 0x320,
 -- 
 2.35.1
 
