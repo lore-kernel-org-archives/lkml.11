@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 854C5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E41C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356387AbiEDRJN (ORCPT
+        id S1356270AbiEDRJI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
+        Wed, 4 May 2022 13:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355115AbiEDQ7m (ORCPT
+        with ESMTP id S1355060AbiEDQ7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:42 -0400
+        Wed, 4 May 2022 12:59:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0443A4A932;
-        Wed,  4 May 2022 09:51:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A674D4A917;
+        Wed,  4 May 2022 09:51:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D81617BE;
-        Wed,  4 May 2022 16:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FF5CC385A5;
-        Wed,  4 May 2022 16:51:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20D5661794;
+        Wed,  4 May 2022 16:51:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F325C385A4;
+        Wed,  4 May 2022 16:51:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683076;
-        bh=IgovF0uzoeWjJ6e1jJzKLa2CGLQ3Xd+oBYfxoYuV/J0=;
+        s=korg; t=1651683074;
+        bh=qDEZ8SH3Rn+JKQzBNY97iqp3aZA6lcc2Yd/aMdMD4NU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zlKoPYnmrvuxlOqu2OiZgxMiywUieDEALauALpwgjf6kU/8FbQ13O9cNKvQL+gqm3
-         ZlNYr2QhC6gELg9vdCVOBEAqbDPtC9J9ayFynWZGxO/CMZr2noUiBBCPCaa/JYArwq
-         SkDdB5xDBaQkEC6sdMY+JWzcpv+MiSAAGDC1E5I8=
+        b=g/eEmT5nSbMBkaMHE1qe1PWv4gT/vi8v0DD0IB/rdkorDVVYiDFnlcIPtTIi8fL0I
+         7+rkqA482DvJ+jdgjxIHWSjPo2Sx5K6iyf+NZZy3ZeOYncgjNnc2/8lkC2kCPOTMY7
+         6uAR0qbPYcwvRvH/ie80oLRBZo5r5ljm3mUcyLDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 080/129] ip_gre: Make o_seqno start from 0 in native mode
-Date:   Wed,  4 May 2022 18:44:32 +0200
-Message-Id: <20220504153027.455127286@linuxfoundation.org>
+Subject: [PATCH 5.10 078/129] net: hns3: add return value for mailbox handling in PF
+Date:   Wed,  4 May 2022 18:44:30 +0200
+Message-Id: <20220504153027.335728646@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,49 +51,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
+[ Upstream commit c59d606296842409a6e5a4828235b0bd46b12bc4 ]
 
-For GRE and GRETAP devices, currently o_seqno starts from 1 in native
-mode.  According to RFC 2890 2.2., "The first datagram is sent with a
-sequence number of 0."  Fix it.
+Currently, there are some querying mailboxes sent from VF to PF,
+and VF will wait the PF's handling result. For mailbox
+HCLGE_MBX_GET_QID_IN_PF and HCLGE_MBX_GET_RSS_KEY, it may fail
+when the input parameter is invalid, but the prototype of their
+handler function is void. In this case, PF always return success
+to VF, which may cause the VF get incorrect result.
 
-It is worth mentioning that o_seqno already starts from 0 in collect_md
-mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
-gre_build_header() before getting incremented.
+Fixes it by adding return value for these function.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
+Fixes: 63b1279d9905 ("net: hns3: check queue id range before using")
+Fixes: 532cfc0df1e4 ("net: hns3: add a check for index in hclge_get_rss_key()")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_gre.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 22 ++++++++++---------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index e4504dd510c6..801c540db33e 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -454,14 +454,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
- 		       __be16 proto)
- {
- 	struct ip_tunnel *tunnel = netdev_priv(dev);
--
--	if (tunnel->parms.o_flags & TUNNEL_SEQ)
--		tunnel->o_seqno++;
-+	__be16 flags = tunnel->parms.o_flags;
- 
- 	/* Push GRE header. */
- 	gre_build_header(skb, tunnel->tun_hlen,
--			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
--			 htonl(tunnel->o_seqno));
-+			 flags, proto, tunnel->parms.o_key,
-+			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
- 
- 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index b948fe3ac56b..51b7b46f2f30 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -584,9 +584,9 @@ static int hclge_set_vf_mtu(struct hclge_vport *vport,
+ 	return hclge_set_vport_mtu(vport, mtu);
  }
+ 
+-static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
+-				     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
+-				     struct hclge_respond_to_vf_msg *resp_msg)
++static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
++				    struct hclge_mbx_vf_to_pf_cmd *mbx_req,
++				    struct hclge_respond_to_vf_msg *resp_msg)
+ {
+ 	struct hnae3_handle *handle = &vport->nic;
+ 	struct hclge_dev *hdev = vport->back;
+@@ -596,17 +596,18 @@ static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
+ 	if (queue_id >= handle->kinfo.num_tqps) {
+ 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
+ 			queue_id, mbx_req->mbx_src_vfid);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
+ 	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
+ 	resp_msg->len = sizeof(qid_in_pf);
++	return 0;
+ }
+ 
+-static void hclge_get_rss_key(struct hclge_vport *vport,
+-			      struct hclge_mbx_vf_to_pf_cmd *mbx_req,
+-			      struct hclge_respond_to_vf_msg *resp_msg)
++static int hclge_get_rss_key(struct hclge_vport *vport,
++			     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
++			     struct hclge_respond_to_vf_msg *resp_msg)
+ {
+ #define HCLGE_RSS_MBX_RESP_LEN	8
+ 	struct hclge_dev *hdev = vport->back;
+@@ -622,13 +623,14 @@ static void hclge_get_rss_key(struct hclge_vport *vport,
+ 		dev_warn(&hdev->pdev->dev,
+ 			 "failed to get the rss hash key, the index(%u) invalid !\n",
+ 			 index);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	memcpy(resp_msg->data,
+ 	       &hdev->vport[0].rss_hash_key[index * HCLGE_RSS_MBX_RESP_LEN],
+ 	       HCLGE_RSS_MBX_RESP_LEN);
+ 	resp_msg->len = HCLGE_RSS_MBX_RESP_LEN;
++	return 0;
+ }
+ 
+ static void hclge_link_fail_parse(struct hclge_dev *hdev, u8 link_fail_code)
+@@ -807,10 +809,10 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
+ 					"VF fail(%d) to set mtu\n", ret);
+ 			break;
+ 		case HCLGE_MBX_GET_QID_IN_PF:
+-			hclge_get_queue_id_in_pf(vport, req, &resp_msg);
++			ret = hclge_get_queue_id_in_pf(vport, req, &resp_msg);
+ 			break;
+ 		case HCLGE_MBX_GET_RSS_KEY:
+-			hclge_get_rss_key(vport, req, &resp_msg);
++			ret = hclge_get_rss_key(vport, req, &resp_msg);
+ 			break;
+ 		case HCLGE_MBX_GET_LINK_MODE:
+ 			hclge_get_link_mode(vport, req);
 -- 
 2.35.1
 
