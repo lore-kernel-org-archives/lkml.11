@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB482C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358883AbiEDRmu (ORCPT
+        id S1358739AbiEDRmy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
+        Wed, 4 May 2022 13:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355804AbiEDRKn (ORCPT
+        with ESMTP id S1355826AbiEDRKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:10:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AA54B1DE;
-        Wed,  4 May 2022 09:57:24 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348314A91F;
+        Wed,  4 May 2022 09:57:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD70617DE;
-        Wed,  4 May 2022 16:57:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CCAC385A5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8014B8279A;
         Wed,  4 May 2022 16:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E9C7C385AF;
+        Wed,  4 May 2022 16:57:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683442;
-        bh=gSE5A4YaWsvMLRbnfY3/2NQrQvAcUJ4VQcT4jNwcRbo=;
+        s=korg; t=1651683441;
+        bh=e+oxjEJlR1PMHd11JKjXVmZGlgC98O91GpA6vAZb0A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sIjXUXBGNsBgyAfBQjB+xHNtnIWzDmmaBi8ZvZ8rbWE7QF1ryjDl7Nbn9g7jFmmTT
-         BX9QXNbzwuPNNRUr8rIJsZdzFODHYKdjpAHxXiCjVj1wwXaxEuZ5dRRbg9JX5lKudv
-         I2HbOgwan+FQ/PftJ9Q5BRXsOivfgSiUfVCwB+10=
+        b=nS7JrE10OrN6b+JGFmFPVN2BqUK+PrZknazplH50d2INDz1NSc9MX3AEblp2DE75I
+         SJvhOHuncXCIT5e7BzIYk/zebDtsEuyVxFALt77O+BklSwVEE6xsOYoljFecfCjhpL
+         uW9rHzd4keEztQ3F0/EnCqn8PyDJoXbxliOJSvvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Ying Xu <yinxu@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 110/225] ARM: dts: imx6ull-colibri: fix vqmmc regulator
-Date:   Wed,  4 May 2022 18:45:48 +0200
-Message-Id: <20220504153120.427793544@linuxfoundation.org>
+Subject: [PATCH 5.17 109/225] sctp: check asoc strreset_chunk in sctp_generate_reconf_event
+Date:   Wed,  4 May 2022 18:45:47 +0200
+Message-Id: <20220504153120.352753278@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -53,37 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 45974e4276a8d6653394f66666fc57d8ffa6de9a ]
+[ Upstream commit 165e3e17fe8fe6a8aab319bc6e631a2e23b9a857 ]
 
-The correct spelling for the property is gpios. Otherwise, the regulator
-will neither reserve nor control any GPIOs. Thus, any SD/MMC card which
-can use UHS-I modes will fail.
+A null pointer reference issue can be triggered when the response of a
+stream reconf request arrives after the timer is triggered, such as:
 
-Fixes: c2e4987e0e02 ("ARM: dts: imx6ull: add Toradex Colibri iMX6ULL support")
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+  send Incoming SSN Reset Request --->
+  CPU0:
+   reconf timer is triggered,
+   go to the handler code before hold sk lock
+                            <--- reply with Outgoing SSN Reset Request
+  CPU1:
+   process Outgoing SSN Reset Request,
+   and set asoc->strreset_chunk to NULL
+  CPU0:
+   continue the handler code, hold sk lock,
+   and try to hold asoc->strreset_chunk, crash!
+
+In Ying Xu's testing, the call trace is:
+
+  [ ] BUG: kernel NULL pointer dereference, address: 0000000000000010
+  [ ] RIP: 0010:sctp_chunk_hold+0xe/0x40 [sctp]
+  [ ] Call Trace:
+  [ ]  <IRQ>
+  [ ]  sctp_sf_send_reconf+0x2c/0x100 [sctp]
+  [ ]  sctp_do_sm+0xa4/0x220 [sctp]
+  [ ]  sctp_generate_reconf_event+0xbd/0xe0 [sctp]
+  [ ]  call_timer_fn+0x26/0x130
+
+This patch is to fix it by returning from the timer handler if asoc
+strreset_chunk is already set to NULL.
+
+Fixes: 7b9438de0cd4 ("sctp: add stream reconf timer")
+Reported-by: Ying Xu <yinxu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ull-colibri.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sctp/sm_sideeffect.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index 7f35a06dff95..951a2a6c5a65 100644
---- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -37,7 +37,7 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index b3815b568e8e..463c4a58d2c3 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -458,6 +458,10 @@ void sctp_generate_reconf_event(struct timer_list *t)
+ 		goto out_unlock;
+ 	}
  
- 	reg_sd1_vmmc: regulator-sd1-vmmc {
- 		compatible = "regulator-gpio";
--		gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
-+		gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_snvs_reg_sd>;
- 		regulator-always-on;
++	/* This happens when the response arrives after the timer is triggered. */
++	if (!asoc->strreset_chunk)
++		goto out_unlock;
++
+ 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
+ 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
+ 			   asoc->state, asoc->ep, asoc,
 -- 
 2.35.1
 
