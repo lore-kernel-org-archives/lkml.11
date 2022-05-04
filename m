@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F077C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358665AbiEDRi5 (ORCPT
+        id S1358825AbiEDRjK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
+        Wed, 4 May 2022 13:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356835AbiEDRJp (ORCPT
+        with ESMTP id S1356819AbiEDRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6845C39B9F;
-        Wed,  4 May 2022 09:55:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F3021809;
+        Wed,  4 May 2022 09:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDC80617D5;
-        Wed,  4 May 2022 16:55:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35FF0C385AA;
-        Wed,  4 May 2022 16:55:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2047617DE;
+        Wed,  4 May 2022 16:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461BBC385A4;
+        Wed,  4 May 2022 16:55:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683353;
-        bh=C4EKP94MvTGCniLFfvtIL0jrQ+e0SnOl2t7SXMLH+m0=;
+        s=korg; t=1651683346;
+        bh=jY/z4a730pmHURkZV1MCag3s0fgPGWCDRkatCxnWXwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1uNbwiMuUNt9e8zA1shUUoEA01FF9rTNNjfLLoXT57v8DFeNs13cg/i4W+29vSIH
-         cyW7J6TQMyXmaixIx3G7nsTMzL72TKBD3h8YQyR4CJeYClkTDokt4YSerRp5JaTF7u
-         tNEy76rfHUOydUgWjpiJPLFotvGABZRVo7Wchdt4=
+        b=KQ7KogwtH18JTee1Mj1E3E4V1Xh3gvGyHDbRUBx0+uTk9UZ1BI8X7l/3xm4s99oUI
+         JMtmWZYew98iJGOcdW4ldfEObg8p3M0h5MOQVj9rwNbwb0qnljqfhmcKeFQi3ztGRz
+         MZI9PdpuMpEcFQ7u5qMyNMhZqRchgmfMNNJsLkA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH 5.17 026/225] usb: dwc3: core: Only handle soft-reset in DCTL
-Date:   Wed,  4 May 2022 18:44:24 +0200
-Message-Id: <20220504153112.653432169@linuxfoundation.org>
+        stable@vger.kernel.org, Todd Kjos <tkjos@google.com>,
+        stable <stable@kernel.org>,
+        Alessandro Astone <ales.astone@gmail.com>
+Subject: [PATCH 5.17 033/225] binder: Address corner cases in deferred copy and fixup
+Date:   Wed,  4 May 2022 18:44:31 +0200
+Message-Id: <20220504153113.195603183@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,35 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+From: Alessandro Astone <ales.astone@gmail.com>
 
-commit f4fd84ae0765a80494b28c43b756a95100351a94 upstream.
+commit 2d1746e3fda0c3612143d7c06f8e1d1830c13e23 upstream.
 
-Make sure not to set run_stop bit or link state change request while
-initiating soft-reset. Register read-modify-write operation may
-unintentionally start the controller before the initialization completes
-with its previous DCTL value, which can cause initialization failure.
+When handling BINDER_TYPE_FDA object we are pushing a parent fixup
+with a certain skip_size but no scatter-gather copy object, since
+the copy is handled standalone.
+If BINDER_TYPE_FDA is the last children the scatter-gather copy
+loop will never stop to skip it, thus we are left with an item in
+the parent fixup list. This will trigger the BUG_ON().
 
-Fixes: f59dcab17629 ("usb: dwc3: core: improve reset sequence")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Link: https://lore.kernel.org/r/6aecbd78328f102003d40ccf18ceeebd411d3703.1650594792.git.Thinh.Nguyen@synopsys.com
+This is reproducible in android when playing a video.
+We receive a transaction that looks like this:
+    obj[0] BINDER_TYPE_PTR, parent
+    obj[1] BINDER_TYPE_PTR, child
+    obj[2] BINDER_TYPE_PTR, child
+    obj[3] BINDER_TYPE_FDA, child
+
+Fixes: 09184ae9b575 ("binder: defer copies of pre-patched txn data")
+Acked-by: Todd Kjos <tkjos@google.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alessandro Astone <ales.astone@gmail.com>
+Link: https://lore.kernel.org/r/20220415120015.52684-2-ales.astone@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/android/binder.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -276,7 +276,8 @@ static int dwc3_core_soft_reset(struct d
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -2295,6 +2295,7 @@ static int binder_do_deferred_txn_copies
+ {
+ 	int ret = 0;
+ 	struct binder_sg_copy *sgc, *tmpsgc;
++	struct binder_ptr_fixup *tmppf;
+ 	struct binder_ptr_fixup *pf =
+ 		list_first_entry_or_null(pf_head, struct binder_ptr_fixup,
+ 					 node);
+@@ -2349,7 +2350,11 @@ static int binder_do_deferred_txn_copies
+ 		list_del(&sgc->node);
+ 		kfree(sgc);
+ 	}
+-	BUG_ON(!list_empty(pf_head));
++	list_for_each_entry_safe(pf, tmppf, pf_head, node) {
++		BUG_ON(pf->skip_size == 0);
++		list_del(&pf->node);
++		kfree(pf);
++	}
+ 	BUG_ON(!list_empty(sgc_head));
  
- 	reg = dwc3_readl(dwc->regs, DWC3_DCTL);
- 	reg |= DWC3_DCTL_CSFTRST;
--	dwc3_writel(dwc->regs, DWC3_DCTL, reg);
-+	reg &= ~DWC3_DCTL_RUN_STOP;
-+	dwc3_gadget_dctl_write_safe(dwc, reg);
- 
- 	/*
- 	 * For DWC_usb31 controller 1.90a and later, the DCTL.CSFRST bit
+ 	return ret > 0 ? -EINVAL : ret;
 
 
