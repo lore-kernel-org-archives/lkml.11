@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B85A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354187AbiEDQ52 (ORCPT
+        id S1354413AbiEDQ5d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
+        Wed, 4 May 2022 12:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354423AbiEDQyW (ORCPT
+        with ESMTP id S1354440AbiEDQyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:54:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976FA49262;
-        Wed,  4 May 2022 09:49:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB51749270;
+        Wed,  4 May 2022 09:49:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EC1C61720;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49E7761776;
+        Wed,  4 May 2022 16:49:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC18C385A4;
         Wed,  4 May 2022 16:49:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BCE0C385AA;
-        Wed,  4 May 2022 16:49:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682970;
-        bh=IcffKqrIjDpWaE+eFv6pgrk0nUGEy/hPN412MBHASuo=;
+        s=korg; t=1651682971;
+        bh=A+5cstA8LLgZPNQw0zRgG2KI0zg32uxsksxSQzyBulw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dwlZ3ynF8cGULANMzvIKmOjyibEgnA+YTmwAknCpN0Nv7b85oMmKOX/JgldxRmaP9
-         BQmW/mnmkIRVAlrnoCbfCKYR3NlW9WPnR/c/ghpyW3tBIQJxG3O5aIxcpI/V7bkPZw
-         XVSTH+MbXGrMPzBfOVnDn6ADsSG+7ZagN1KH3DNw=
+        b=KZ+leYrEzOw+QCz5No6pHtbMhhjMmPmOy+hDiKVDoI+vaescf/0geA9BPhg3yXi5l
+         0q+gVbrNE2FH+l7vaH1+1QW1BJ1jOcUMjEJTSrF3gcJRB+oVqZsC20GO2WuPpPnSnK
+         lohJwRtJbSJvfgg+xhutwK7AaseHNf/yXwt1+gfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Steve Capper <steve.capper@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 84/84] mm, hugetlb: allow for "high" userspace addresses
-Date:   Wed,  4 May 2022 18:45:05 +0200
-Message-Id: <20220504152934.064553310@linuxfoundation.org>
+        stable@vger.kernel.org, "Kyle D. Pelton" <kyle.d.pelton@intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Subject: [PATCH 5.4 74/84] x86/cpu: Load microcode during restore_processor_state()
+Date:   Wed,  4 May 2022 18:44:55 +0200
+Message-Id: <20220504152933.255211083@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -54,145 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Borislav Petkov <bp@suse.de>
 
-commit 5f24d5a579d1eace79d505b148808a850b417d4c upstream.
+commit f9e14dbbd454581061c736bf70bf5cbb15ac927c upstream.
 
-This is a fix for commit f6795053dac8 ("mm: mmap: Allow for "high"
-userspace addresses") for hugetlb.
+When resuming from system sleep state, restore_processor_state()
+restores the boot CPU MSRs. These MSRs could be emulated by microcode.
+If microcode is not loaded yet, writing to emulated MSRs leads to
+unchecked MSR access error:
 
-This patch adds support for "high" userspace addresses that are
-optionally supported on the system and have to be requested via a hint
-mechanism ("high" addr parameter to mmap).
+  ...
+  PM: Calling lapic_suspend+0x0/0x210
+  unchecked MSR access error: WRMSR to 0x10f (tried to write 0x0...0) at rIP: ... (native_write_msr)
+  Call Trace:
+    <TASK>
+    ? restore_processor_state
+    x86_acpi_suspend_lowlevel
+    acpi_suspend_enter
+    suspend_devices_and_enter
+    pm_suspend.cold
+    state_store
+    kobj_attr_store
+    sysfs_kf_write
+    kernfs_fop_write_iter
+    new_sync_write
+    vfs_write
+    ksys_write
+    __x64_sys_write
+    do_syscall_64
+    entry_SYSCALL_64_after_hwframe
+   RIP: 0033:0x7fda13c260a7
 
-Architectures such as powerpc and x86 achieve this by making changes to
-their architectural versions of hugetlb_get_unmapped_area() function.
-However, arm64 uses the generic version of that function.
+To ensure microcode emulated MSRs are available for restoration, load
+the microcode on the boot CPU before restoring these MSRs.
 
-So take into account arch_get_mmap_base() and arch_get_mmap_end() in
-hugetlb_get_unmapped_area().  To allow that, move those two macros out
-of mm/mmap.c into include/linux/sched/mm.h
+  [ Pawan: write commit message and productize it. ]
 
-If these macros are not defined in architectural code then they default
-to (TASK_SIZE) and (base) so should not introduce any behavioural
-changes to architectures that do not define them.
-
-For the time being, only ARM64 is affected by this change.
-
-Catalin (ARM64) said
- "We should have fixed hugetlb_get_unmapped_area() as well when we added
-  support for 52-bit VA. The reason for commit f6795053dac8 was to
-  prevent normal mmap() from returning addresses above 48-bit by default
-  as some user-space had hard assumptions about this.
-
-  It's a slight ABI change if you do this for hugetlb_get_unmapped_area()
-  but I doubt anyone would notice. It's more likely that the current
-  behaviour would cause issues, so I'd rather have them consistent.
-
-  Basically when arm64 gained support for 52-bit addresses we did not
-  want user-space calling mmap() to suddenly get such high addresses,
-  otherwise we could have inadvertently broken some programs (similar
-  behaviour to x86 here). Hence we added commit f6795053dac8. But we
-  missed hugetlbfs which could still get such high mmap() addresses. So
-  in theory that's a potential regression that should have bee addressed
-  at the same time as commit f6795053dac8 (and before arm64 enabled
-  52-bit addresses)"
-
-Link: https://lkml.kernel.org/r/ab847b6edb197bffdfe189e70fb4ac76bfe79e0d.1650033747.git.christophe.leroy@csgroup.eu
-Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Steve Capper <steve.capper@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: <stable@vger.kernel.org>	[5.0.x]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
+Reported-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Tested-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Cc: stable@vger.kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215841
+Link: https://lore.kernel.org/r/4350dfbf785cd482d3fafa72b2b49c83102df3ce.1650386317.git.pawan.kumar.gupta@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/hugetlbfs/inode.c     |    9 +++++----
- include/linux/sched/mm.h |    8 ++++++++
- mm/mmap.c                |    8 --------
- 3 files changed, 13 insertions(+), 12 deletions(-)
+ arch/x86/include/asm/microcode.h     |    2 ++
+ arch/x86/kernel/cpu/microcode/core.c |    6 +++---
+ arch/x86/power/cpu.c                 |    8 ++++++++
+ 3 files changed, 13 insertions(+), 3 deletions(-)
 
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -211,7 +211,7 @@ hugetlb_get_unmapped_area_bottomup(struc
- 	info.flags = 0;
- 	info.length = len;
- 	info.low_limit = current->mm->mmap_base;
--	info.high_limit = TASK_SIZE;
-+	info.high_limit = arch_get_mmap_end(addr);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	return vm_unmapped_area(&info);
-@@ -227,7 +227,7 @@ hugetlb_get_unmapped_area_topdown(struct
- 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
- 	info.length = len;
- 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
--	info.high_limit = current->mm->mmap_base;
-+	info.high_limit = arch_get_mmap_base(addr, current->mm->mmap_base);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	addr = vm_unmapped_area(&info);
-@@ -242,7 +242,7 @@ hugetlb_get_unmapped_area_topdown(struct
- 		VM_BUG_ON(addr != -ENOMEM);
- 		info.flags = 0;
- 		info.low_limit = current->mm->mmap_base;
--		info.high_limit = TASK_SIZE;
-+		info.high_limit = arch_get_mmap_end(addr);
- 		addr = vm_unmapped_area(&info);
- 	}
+--- a/arch/x86/include/asm/microcode.h
++++ b/arch/x86/include/asm/microcode.h
+@@ -133,11 +133,13 @@ extern void load_ucode_ap(void);
+ void reload_early_microcode(void);
+ extern bool get_builtin_firmware(struct cpio_data *cd, const char *name);
+ extern bool initrd_gone;
++void microcode_bsp_resume(void);
+ #else
+ static inline int __init microcode_init(void)			{ return 0; };
+ static inline void __init load_ucode_bsp(void)			{ }
+ static inline void load_ucode_ap(void)				{ }
+ static inline void reload_early_microcode(void)			{ }
++static inline void microcode_bsp_resume(void)			{ }
+ static inline bool
+ get_builtin_firmware(struct cpio_data *cd, const char *name)	{ return false; }
+ #endif
+--- a/arch/x86/kernel/cpu/microcode/core.c
++++ b/arch/x86/kernel/cpu/microcode/core.c
+@@ -772,9 +772,9 @@ static struct subsys_interface mc_cpu_in
+ };
  
-@@ -256,6 +256,7 @@ hugetlb_get_unmapped_area(struct file *f
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma;
- 	struct hstate *h = hstate_file(file);
-+	const unsigned long mmap_end = arch_get_mmap_end(addr);
- 
- 	if (len & ~huge_page_mask(h))
- 		return -EINVAL;
-@@ -271,7 +272,7 @@ hugetlb_get_unmapped_area(struct file *f
- 	if (addr) {
- 		addr = ALIGN(addr, huge_page_size(h));
- 		vma = find_vma(mm, addr);
--		if (TASK_SIZE - len >= addr &&
-+		if (mmap_end - len >= addr &&
- 		    (!vma || addr + len <= vm_start_gap(vma)))
- 			return addr;
- 	}
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -133,6 +133,14 @@ static inline void mm_update_next_owner(
- #endif /* CONFIG_MEMCG */
- 
- #ifdef CONFIG_MMU
-+#ifndef arch_get_mmap_end
-+#define arch_get_mmap_end(addr)	(TASK_SIZE)
-+#endif
-+
-+#ifndef arch_get_mmap_base
-+#define arch_get_mmap_base(addr, base) (base)
-+#endif
-+
- extern void arch_pick_mmap_layout(struct mm_struct *mm,
- 				  struct rlimit *rlim_stack);
- extern unsigned long
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2077,14 +2077,6 @@ found_highest:
+ /**
+- * mc_bp_resume - Update boot CPU microcode during resume.
++ * microcode_bsp_resume - Update boot CPU microcode during resume.
+  */
+-static void mc_bp_resume(void)
++void microcode_bsp_resume(void)
+ {
+ 	int cpu = smp_processor_id();
+ 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
+@@ -786,7 +786,7 @@ static void mc_bp_resume(void)
  }
  
+ static struct syscore_ops mc_syscore_ops = {
+-	.resume			= mc_bp_resume,
++	.resume			= microcode_bsp_resume,
+ };
  
--#ifndef arch_get_mmap_end
--#define arch_get_mmap_end(addr)	(TASK_SIZE)
--#endif
--
--#ifndef arch_get_mmap_base
--#define arch_get_mmap_base(addr, base) (base)
--#endif
--
- /* Get an address range which is currently unmapped.
-  * For shmat() with addr=0.
-  *
+ static int mc_cpu_starting(unsigned int cpu)
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -25,6 +25,7 @@
+ #include <asm/cpu.h>
+ #include <asm/mmu_context.h>
+ #include <asm/cpu_device_id.h>
++#include <asm/microcode.h>
+ 
+ #ifdef CONFIG_X86_32
+ __visible unsigned long saved_context_ebx;
+@@ -263,6 +264,13 @@ static void notrace __restore_processor_
+ 	x86_platform.restore_sched_clock_state();
+ 	mtrr_bp_restore();
+ 	perf_restore_debug_store();
++
++	microcode_bsp_resume();
++
++	/*
++	 * This needs to happen after the microcode has been updated upon resume
++	 * because some of the MSRs are "emulated" in microcode.
++	 */
+ 	msr_restore_context(ctxt);
+ }
+ 
 
 
