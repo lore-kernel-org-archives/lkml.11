@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB93AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B191C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353196AbiEDQT6 (ORCPT
+        id S1353294AbiEDQUB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        Wed, 4 May 2022 12:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353225AbiEDQSt (ORCPT
+        with ESMTP id S1353215AbiEDQSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:18:49 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707E446B24
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:11 -0700 (PDT)
-Date:   Wed, 04 May 2022 16:15:08 -0000
+        Wed, 4 May 2022 12:18:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FAD46B1A
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:09 -0700 (PDT)
+Date:   Wed, 04 May 2022 16:15:06 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651680910;
+        s=2020; t=1651680908;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wn6i4x/SQPrM4uJ1GO05X80Z9y6k/LaQTzxEk91WqaI=;
-        b=3EiTyNBeAp/UBg1LbkNNT4Ma8o/DCvQkoRIW7GqRpGEKzYzYlnNg/v3535ll18CgvyfORi
-        XtGf+Gp66UhsLT6z2NwUtdhl+WRb7ePuSwCg8QMr5WEqwR93yQPP1gQPiqzQuGcK9qeF6T
-        pWrp9yaNG3TAkKgT2SbgnKPrk5kh5o0ktWjmrRVDiXHpJouppQmvsPANf2Z2shgIVr77U2
-        Ni1INovabQ8h/iZLsq0EyjDt6ZJ4g7isXMbh5oU4ve8eMZhCyoQdWqyahJIT4cbPinbGeU
-        ccunDwSvIpvTtHTjj6Ixiln7MT4jNxm5cpj4j25LOc1bpVbeSHb9O7nQbyr61w==
+        bh=979E4Xu7QN4ovM5JgHIMaZepiBPTzE8DUHniwh1uTxs=;
+        b=xoGRDO3fmEmiomWki/+p3r34+DpImkWM4AyGAttbgbVH9f9EXGFQxWlXE4oqsPDpTRBY4j
+        ZEbUg46Iz+OHEmt4bgh2+Y7FbSbgjh2GaLwfKqsL0UQZSBAGEA/A0ZG6MUQP2SJvXsTkyX
+        ld2allyxqCQ8Mc9AagpbAQLTPCUi6+um5Sd6HpQU8CKC0Y0AXeQlZ1R/oKKSa4NPEVLC/j
+        BBVWk+gzj6JBGOXVy66pnJ1f0M+AxVcxc6z7Uy+q3z4TexrGR6PvOe2LlYLegv2AIRhXSY
+        +R5aD48MBLvrCM2DZ0QpPozeyDHnxSddqrFmOSPjq7XbO3ziJX3nox6bnxy4qA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651680910;
+        s=2020e; t=1651680908;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wn6i4x/SQPrM4uJ1GO05X80Z9y6k/LaQTzxEk91WqaI=;
-        b=DWpFXQiJtSW8hagOwG9M1HcpEtk7FUmjCj3zZLwEvcDd0tu1skQw8jqzEydsJA9RbldO9i
-        K02IvdlLzol9oyCg==
-From:   "irqchip-bot for Lucas Stach" <tip-bot2@linutronix.de>
+        bh=979E4Xu7QN4ovM5JgHIMaZepiBPTzE8DUHniwh1uTxs=;
+        b=exjWIUKiV3D83j8iMTs013bcm8+zLtVXIZy7y99ctbsfwCweyecx0UE9hD9IRvTgYewPqV
+        z9/mmydujjUZyEAw==
+From:   "irqchip-bot for Haowen Bai" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/imx-irqsteer: Constify irq_chip struct
-Cc:     Lucas Stach <l.stach@pengutronix.de>,
+Subject: [irqchip: irq/irqchip-next] irqchip/csky: Return true/false (not 1/0)
+ from bool functions
+Cc:     Haowen Bai <baihaowen@meizu.com>, Guo Ren <guoren@kernel.org>,
         Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220406163701.1277930-1-l.stach@pengutronix.de>
-References: <20220406163701.1277930-1-l.stach@pengutronix.de>
+In-Reply-To: <1647487284-30088-1-git-send-email-baihaowen@meizu.com>
+References: <1647487284-30088-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-Message-ID: <165168090890.4207.17877828283652120760.tip-bot2@tip-bot2>
+Message-ID: <165168090696.4207.17138569704564180194.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,34 +62,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     e9a50f12e579a48e124ac5adb93dafc35f0a46b8
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/e9a50f12e579a48e124ac5adb93dafc35f0a46b8
-Author:        Lucas Stach <l.stach@pengutronix.de>
-AuthorDate:    Wed, 06 Apr 2022 18:37:00 +02:00
+Commit-ID:     0c16e931a735500f15db74916db56c698d8ff735
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/0c16e931a735500f15db74916db56c698d8ff735
+Author:        Haowen Bai <baihaowen@meizu.com>
+AuthorDate:    Thu, 17 Mar 2022 11:21:24 +08:00
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 04 May 2022 16:44:45 +01:00
+CommitterDate: Wed, 04 May 2022 16:49:47 +01:00
 
-irqchip/imx-irqsteer: Constify irq_chip struct
+irqchip/csky: Return true/false (not 1/0) from bool functions
 
-The imx_irqsteer_irq_chip struct is constant data.
+Return boolean values ("true" or "false") instead of 1 or 0 from bool
+functions.
 
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Acked-by: Guo Ren <guoren@kernel.org>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220406163701.1277930-1-l.stach@pengutronix.de
+Link: https://lore.kernel.org/r/1647487284-30088-1-git-send-email-baihaowen@meizu.com
 ---
- drivers/irqchip/irq-imx-irqsteer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-csky-apb-intc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-imx-irqsteer.c b/drivers/irqchip/irq-imx-irqsteer.c
-index 8d91a02..e286e7c 100644
---- a/drivers/irqchip/irq-imx-irqsteer.c
-+++ b/drivers/irqchip/irq-imx-irqsteer.c
-@@ -70,7 +70,7 @@ static void imx_irqsteer_irq_mask(struct irq_data *d)
- 	raw_spin_unlock_irqrestore(&data->lock, flags);
+diff --git a/drivers/irqchip/irq-csky-apb-intc.c b/drivers/irqchip/irq-csky-apb-intc.c
+index d36f536..42d8a24 100644
+--- a/drivers/irqchip/irq-csky-apb-intc.c
++++ b/drivers/irqchip/irq-csky-apb-intc.c
+@@ -136,11 +136,11 @@ static inline bool handle_irq_perbit(struct pt_regs *regs, u32 hwirq,
+ 				     u32 irq_base)
+ {
+ 	if (hwirq == 0)
+-		return 0;
++		return false;
+ 
+ 	generic_handle_domain_irq(root_domain, irq_base + __fls(hwirq));
+ 
+-	return 1;
++	return true;
  }
  
--static struct irq_chip imx_irqsteer_irq_chip = {
-+static const struct irq_chip imx_irqsteer_irq_chip = {
- 	.name		= "irqsteer",
- 	.irq_mask	= imx_irqsteer_irq_mask,
- 	.irq_unmask	= imx_irqsteer_irq_unmask,
+ /* gx6605s 64 irqs interrupt controller */
