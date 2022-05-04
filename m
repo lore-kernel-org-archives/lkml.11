@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD84FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B62C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357119AbiEDR2W (ORCPT
+        id S1357601AbiEDR23 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Wed, 4 May 2022 13:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356059AbiEDRJA (ORCPT
+        with ESMTP id S1356181AbiEDRJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884D4527FC;
-        Wed,  4 May 2022 09:54:51 -0700 (PDT)
+        Wed, 4 May 2022 13:09:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835E452E41;
+        Wed,  4 May 2022 09:54:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6D93B827A1;
-        Wed,  4 May 2022 16:54:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830E7C385AA;
-        Wed,  4 May 2022 16:54:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F13961794;
+        Wed,  4 May 2022 16:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FA2C385A4;
+        Wed,  4 May 2022 16:54:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683288;
-        bh=RBMnnnhTdU5vF+pNpaHECS7/w9g/gvmTy+FUbpj082Q=;
+        s=korg; t=1651683295;
+        bh=TSEPwtreDnFz7e52zYOcOmj3K2cUukjzTzINFygPDPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HJ1xY0aiGyjvyz9Sj8X1Gbc0fDvICyCvY/pJV+qJ64hsT5STVFUzTljXOekp8HHEr
-         9oz+Rw+MQ+xI6oQS0mEWNMHX0+enJD3rBXAP0tKl1eHYBmaAlFMeZrXOuAB5UkqTGN
-         0mYGNq73++V1kcqOMRYpL5Ujo6C2X4+vuzJaEwjA=
+        b=bvMiQtm6PNi/eFip9l7drEO9FKoFN9Em+kl0t/nK5QR42Zo3r1Yn9oG20iTdDbRQG
+         1TyOUIMjxMUipLkXJFXHGGdUaAw8a9r9f6MP+Vkju7sy5owGZ+o1U7BRzcfHMp+9Qy
+         8a/HiJj8BRRTPHaJiDRs6dEGA2giNnR8JBIlngdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Kyle D. Pelton" <kyle.d.pelton@intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Subject: [PATCH 5.15 154/177] x86/cpu: Load microcode during restore_processor_state()
-Date:   Wed,  4 May 2022 18:45:47 +0200
-Message-Id: <20220504153107.184337271@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Woody Suwalski <wsuwalski@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 149/177] ACPI: processor: idle: Avoid falling back to C3 type C-states
+Date:   Wed,  4 May 2022 18:45:42 +0200
+Message-Id: <20220504153106.656086753@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,124 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit f9e14dbbd454581061c736bf70bf5cbb15ac927c upstream.
+commit fc45e55ebc58dbf622cb89ddbf797589c7a5510b upstream.
 
-When resuming from system sleep state, restore_processor_state()
-restores the boot CPU MSRs. These MSRs could be emulated by microcode.
-If microcode is not loaded yet, writing to emulated MSRs leads to
-unchecked MSR access error:
+The "safe state" index is used by acpi_idle_enter_bm() to avoid
+entering a C-state that may require bus mastering to be disabled
+on entry in the cases when this is not going to happen.  For this
+reason, it should not be set to point to C3 type of C-states, because
+they may require bus mastering to be disabled on entry in principle.
 
-  ...
-  PM: Calling lapic_suspend+0x0/0x210
-  unchecked MSR access error: WRMSR to 0x10f (tried to write 0x0...0) at rIP: ... (native_write_msr)
-  Call Trace:
-    <TASK>
-    ? restore_processor_state
-    x86_acpi_suspend_lowlevel
-    acpi_suspend_enter
-    suspend_devices_and_enter
-    pm_suspend.cold
-    state_store
-    kobj_attr_store
-    sysfs_kf_write
-    kernfs_fop_write_iter
-    new_sync_write
-    vfs_write
-    ksys_write
-    __x64_sys_write
-    do_syscall_64
-    entry_SYSCALL_64_after_hwframe
-   RIP: 0033:0x7fda13c260a7
+This was broken by commit d6b88ce2eb9d ("ACPI: processor idle: Allow
+playing dead in C3 state") which inadvertently allowed the "safe
+state" index to point to C3 type of C-states.
 
-To ensure microcode emulated MSRs are available for restoration, load
-the microcode on the boot CPU before restoring these MSRs.
+This results in a machine that won't boot past the point when it first
+enters C3. Restore the correct behaviour (either demote to C1/C2, or
+use C3 but also set ARB_DIS=1).
 
-  [ Pawan: write commit message and productize it. ]
+I hit this on a Fujitsu Siemens Lifebook S6010 (P3) machine.
 
-Fixes: e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
-Reported-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Tested-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
-Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215841
-Link: https://lore.kernel.org/r/4350dfbf785cd482d3fafa72b2b49c83102df3ce.1650386317.git.pawan.kumar.gupta@linux.intel.com
+Fixes: d6b88ce2eb9d ("ACPI: processor idle: Allow playing dead in C3 state")
+Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Tested-by: Woody Suwalski <wsuwalski@gmail.com>
+[ rjw: Subject and changelog adjustments ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/microcode.h     |    2 ++
- arch/x86/kernel/cpu/microcode/core.c |    6 +++---
- arch/x86/power/cpu.c                 |   10 +++++++++-
- 3 files changed, 14 insertions(+), 4 deletions(-)
+ drivers/acpi/processor_idle.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/microcode.h
-+++ b/arch/x86/include/asm/microcode.h
-@@ -132,10 +132,12 @@ extern void load_ucode_ap(void);
- void reload_early_microcode(void);
- extern bool get_builtin_firmware(struct cpio_data *cd, const char *name);
- extern bool initrd_gone;
-+void microcode_bsp_resume(void);
- #else
- static inline void __init load_ucode_bsp(void)			{ }
- static inline void load_ucode_ap(void)				{ }
- static inline void reload_early_microcode(void)			{ }
-+static inline void microcode_bsp_resume(void)			{ }
- static inline bool
- get_builtin_firmware(struct cpio_data *cd, const char *name)	{ return false; }
- #endif
---- a/arch/x86/kernel/cpu/microcode/core.c
-+++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -775,9 +775,9 @@ static struct subsys_interface mc_cpu_in
- };
- 
- /**
-- * mc_bp_resume - Update boot CPU microcode during resume.
-+ * microcode_bsp_resume - Update boot CPU microcode during resume.
-  */
--static void mc_bp_resume(void)
-+void microcode_bsp_resume(void)
- {
- 	int cpu = smp_processor_id();
- 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
-@@ -789,7 +789,7 @@ static void mc_bp_resume(void)
- }
- 
- static struct syscore_ops mc_syscore_ops = {
--	.resume			= mc_bp_resume,
-+	.resume			= microcode_bsp_resume,
- };
- 
- static int mc_cpu_starting(unsigned int cpu)
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -25,6 +25,7 @@
- #include <asm/cpu.h>
- #include <asm/mmu_context.h>
- #include <asm/cpu_device_id.h>
-+#include <asm/microcode.h>
- 
- #ifdef CONFIG_X86_32
- __visible unsigned long saved_context_ebx;
-@@ -262,11 +263,18 @@ static void notrace __restore_processor_
- 	x86_platform.restore_sched_clock_state();
- 	mtrr_bp_restore();
- 	perf_restore_debug_store();
--	msr_restore_context(ctxt);
- 
- 	c = &cpu_data(smp_processor_id());
- 	if (cpu_has(c, X86_FEATURE_MSR_IA32_FEAT_CTL))
- 		init_ia32_feat_ctl(c);
-+
-+	microcode_bsp_resume();
-+
-+	/*
-+	 * This needs to happen after the microcode has been updated upon resume
-+	 * because some of the MSRs are "emulated" in microcode.
-+	 */
-+	msr_restore_context(ctxt);
- }
- 
- /* Needed by apm.c */
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -792,7 +792,8 @@ static int acpi_processor_setup_cstates(
+ 		if (cx->type == ACPI_STATE_C1 || cx->type == ACPI_STATE_C2 ||
+ 		    cx->type == ACPI_STATE_C3) {
+ 			state->enter_dead = acpi_idle_play_dead;
+-			drv->safe_state_index = count;
++			if (cx->type != ACPI_STATE_C3)
++				drv->safe_state_index = count;
+ 		}
+ 		/*
+ 		 * Halt-induced C1 is not good for ->enter_s2idle, because it
 
 
