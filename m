@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 05:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B28C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 05:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344752AbiEDGAB (ORCPT
+        id S1344769AbiEDGAH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33140 "EHLO
+        Wed, 4 May 2022 02:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbiEDF75 (ORCPT
+        with ESMTP id S230149AbiEDGAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 01:59:57 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE733201BC
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 22:56:21 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651643779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y4gZIDL4SXYoFWE4y++sOkoisUu5mBEu04VZLJ6Da3k=;
-        b=HDzJK9xF0QUViF6InNkFLn1aDJyGLxf1Liu4VNGxtUJ96Gg5nqPfXftf4oXoZoyfl2f+s3
-        dNTuEK3ALsewLQpLlDLkBXvCnQ7w25gWB8O3YKRNlv8FHEOO24AZp91Y9sj0RseCHQzKQc
-        kS5TX0fGxAaW8MDIdMB4gpSWfJ0fyiwRLd8TaLrsObIyb1UM5bZE4/t3BMWnkp17JoQML5
-        jzNwgKN5yb087IFldVhWBeevKWovU1xtMn8xi6zsmYuLaNOVTMz2dH4e32f5Ajdp79ZsV2
-        cau41KD3H/krQL0ptv7KsIL5ryHz71yZLf5hl3DG9YJSyY3KvqNHtAGAVXExCQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651643779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y4gZIDL4SXYoFWE4y++sOkoisUu5mBEu04VZLJ6Da3k=;
-        b=f+DoFRCkfWwFo6/8okdZxAJ8tv80c/O3h9qzst54Ax3zeh1bD/qs3SswAVPuwCSAF01nzO
-        j2sEd1/ouC01vHBw==
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-amlogic@lists.infradead.org
-Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
- per-console locking
-In-Reply-To: <601d6979-7462-6f20-0d60-2fcfcf1e405b@samsung.com>
-References: <20220421212250.565456-1-john.ogness@linutronix.de>
- <20220421212250.565456-15-john.ogness@linutronix.de>
- <878rrs6ft7.fsf@jogness.linutronix.de> <Ymfgis0EAw0Oxoa5@alley>
- <Ymfwk+X0CHq6ex3s@alley>
- <CGME20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c@eucas1p2.samsung.com>
- <2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com>
- <Ymjy3rHRenba7r7R@alley>
- <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com>
- <87fslyv6y3.fsf@jogness.linutronix.de>
- <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
- <87k0b6blz2.fsf@jogness.linutronix.de>
- <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
- <87y1zkkrjy.fsf@jogness.linutronix.de>
- <601d6979-7462-6f20-0d60-2fcfcf1e405b@samsung.com>
-Date:   Wed, 04 May 2022 08:02:18 +0206
-Message-ID: <87pmkton7h.fsf@jogness.linutronix.de>
+        Wed, 4 May 2022 02:00:04 -0400
+X-Greylist: delayed 572 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 22:56:28 PDT
+Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE69201BC;
+        Tue,  3 May 2022 22:56:28 -0700 (PDT)
+Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 72BA360213;
+        Wed,  4 May 2022 07:46:53 +0200 (CEST)
+Date:   Wed, 4 May 2022 07:46:52 +0200
+From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     "H . Nikolaus Schaller" <hns@goldelico.com>,
+        Huijin Park <huijin.park@samsung.com>,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
+Subject: Re: [PATCH] mmc: core: Restore (almost) the busy polling for
+ MMC_SEND_OP_COND
+Message-ID: <20220504054652.GA7851@math.uni-bielefeld.de>
+References: <20220304105656.149281-1-ulf.hansson@linaro.org>
+ <CAPDyKFr1PzSaiKqB4ZoqTS_8bGsEH=aB3ARhxyGu+cYeRqeBew@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFr1PzSaiKqB4ZoqTS_8bGsEH=aB3ARhxyGu+cYeRqeBew@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-03, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->> I suppose if you login via ssh and check /proc/interrupts, then type
->> some things over serial, then check /proc/interrupts again, you will
->> see there have been no interrupts for the uart. But interrupts for
->> other devices are happening. Is this correct?
->
-> Right. The counter for ttyAML0 is not increased when lockup happens
-> and I type something to the uart console.
+Ulf Hansson wrote on Mon  7/03/22 13:17:
+> On Fri, 4 Mar 2022 at 11:57, Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> >
+> > Commit 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1"),
+> > significantly decreased the polling period from ~10-12ms into just a couple
+> > of us. The purpose was to decrease the total time spent in the busy polling
+> > loop, but unfortunate it has lead to problems, that causes eMMC cards to
+> > never gets out busy and thus fails to be initialized.
+> >
+> > To fix the problem, but also to try to keep some of the new improved
+> > behaviour, let's start by using a polling period of 1-2ms, which then
+> > increases for each loop, according to common polling loop in
+> > __mmc_poll_for_busy().
+> >
+> > Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+> > Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+> > Cc: Huijin Park <huijin.park@samsung.com>
+> > Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+> > Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> > ---
+> > 
+> > Jean Rene and H. Nikolaus, if this doesn't work, please try extending the
+> > the MMC_OP_COND_PERIOD_US a bit, to so see if we can find a value that always
+> > works.
+> > 
+> > Kind regards
+> > Uffe
 
-Hmmm. This would imply that the interrupts are disabled fo the UART.
+> 
+> Applied for fixes and by adding two tested-by tags from you, thanks!
+> 
+> Kind regards
+> Uffe
 
-Just to be sure that we haven't corrupted something in the driver, if
-you make the following change, everything works, right?
+Hi,
 
---------- BEGIN PATCH ------
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index c7973266b176..1eaa323e335c 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3578,7 +3578,7 @@ static int __init printk_activate_kthreads(void)
- 	struct console *con;
- 
- 	console_lock();
--	printk_kthreads_available = true;
-+	//printk_kthreads_available = true;
- 	for_each_console(con)
- 		printk_start_kthread(con);
- 	console_unlock();
---------- END PATCH ------
+with the current value of MMC_OP_COND_PERIOD_US = 1ms I still see
 
-The above change will cause the kthreads to not print and instead always
-fallback to the direct method.
+mmc1: Card stuck being busy! __mmc_poll_for_busy
+mmc1: error -110 doing runtime resume
 
-John
+regularly. The same with 2ms. Setting it to 4ms makes the messages go
+away. Would it be ok to increase MMC_OP_COND_PERIOD_US to 4ms?
+
+
+---
+ drivers/mmc/core/mmc_ops.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+index 180d7e9d3400..1fd57f342842 100644
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -21,7 +21,7 @@
+
+ #define MMC_BKOPS_TIMEOUT_MS           (120 * 1000) /* 120s */
+ #define MMC_SANITIZE_TIMEOUT_MS                (240 * 1000) /* 240s */
+-#define MMC_OP_COND_PERIOD_US          (1 * 1000) /* 1ms */
++#define MMC_OP_COND_PERIOD_US          (4 * 1000) /* 1ms */
+ #define MMC_OP_COND_TIMEOUT_MS         1000 /* 1s */
+
+ static const u8 tuning_blk_pattern_4bit[] = {
+--
+2.35.1
+
+
+Regards,
+Jean Rene
