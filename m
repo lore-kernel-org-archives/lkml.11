@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A03C3527B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C170C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235921AbiEDRam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
+        id S1356765AbiEDRaw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356807AbiEDRJo (ORCPT
+        with ESMTP id S1356851AbiEDRJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E4B1E3F4;
-        Wed,  4 May 2022 09:55:43 -0700 (PDT)
+        Wed, 4 May 2022 13:09:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B0840E53;
+        Wed,  4 May 2022 09:56:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAE94B82795;
-        Wed,  4 May 2022 16:55:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43222C385AF;
-        Wed,  4 May 2022 16:55:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0402617D5;
+        Wed,  4 May 2022 16:55:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264B4C385B0;
+        Wed,  4 May 2022 16:55:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683341;
-        bh=vNutgZLg99oCceQySVS0XrEC6vcgEAMD8t8e62pH2v4=;
+        s=korg; t=1651683359;
+        bh=Q2lpK4+bCp+Mr6HtUngLVgevBZBlk+0P8PQoZDRroX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BnYqe59qdx737bOQSjUPN/1zcv/iTALfvzWOsameRbZNLP/XzU6kUO2sgUv31Q23O
-         VAVlo/bNwZTzo7TPnVvxCO1Uv4VkDnR7roVxHfQzztipHQTAsbPAwRCjSKx4gVCmyZ
-         fsPad2wuShpo5yWJFJo9mTVf2tLE04vp72iQaaeA=
+        b=z/6bVhjRNuLzigdghFOYx3VFVxkw9QbAM/tya9dDgrB6HTDSAZcYB86V/rhwHL71k
+         nMST3AVFProqtuwLWGmx5jh4tsVIuM8eaxFzhRAaPaMviXTa83quYPAXBErU+rTsCA
+         AYy5ZqX9M7OFk3+2Q6v64WAyzG5oeH/WTlKHn3hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.17 016/225] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
-Date:   Wed,  4 May 2022 18:44:14 +0200
-Message-Id: <20220504153111.708620255@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
+Subject: [PATCH 5.17 022/225] usb: gadget: uvc: Fix crash when encoding data for usb request
+Date:   Wed,  4 May 2022 18:44:20 +0200
+Message-Id: <20220504153112.304664490@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,42 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Dan Vacura <w36195@motorola.com>
 
-commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
+commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
 
-When the driver fails to enable the regulator 'vid', we will get the
-following splat:
+During the uvcg_video_pump() process, if an error occurs and
+uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+the current marker (queue->buf_used) of the active buffer (no longer
+active) is not reset. On the next iteration of uvcg_video_pump() the
+stale buf_used count will be used and the logic of min((unsigned
+int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+nbytes size, causing an invalid memory access.
 
-[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   79.967570] Call Trace:
-[   79.967773]  <TASK>
-[   79.967951]  regulator_put+0x1f/0x30
-[   79.968254]  devres_release_group+0x319/0x3d0
-[   79.968608]  i2c_device_probe+0x766/0x940
+[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+...
+uvcg_queue_cancel() is called and the queue is cleared out, but the
+marker queue->buf_used is not reset.
+...
+[80802.262328][ T8682] Unable to handle kernel paging request at virtual
+address ffffffc03af9f000
+...
+...
+[80802.263138][ T8682] Call trace:
+[80802.263146][ T8682]  __memcpy+0x12c/0x180
+[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+[80802.263165][ T8682]  process_one_work+0x2cc/0x568
+[80802.263173][ T8682]  worker_thread+0x28c/0x518
+[80802.263181][ T8682]  kthread+0x160/0x170
+[80802.263188][ T8682]  ret_from_fork+0x10/0x18
+[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
 
-Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
-regulator.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/magnetometer/ak8975.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/gadget/function/uvc_queue.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -416,6 +416,7 @@ static int ak8975_power_on(const struct
- 	if (ret) {
- 		dev_warn(&data->client->dev,
- 			 "Failed to enable specified Vid supply\n");
-+		regulator_disable(data->vdd);
- 		return ret;
+diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
+index d852ac9e47e7..2cda982f3765 100644
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -264,6 +264,8 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
+ 		buf->state = UVC_BUF_STATE_ERROR;
+ 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
  	}
- 
++	queue->buf_used = 0;
++
+ 	/* This must be protected by the irqlock spinlock to avoid race
+ 	 * conditions between uvc_queue_buffer and the disconnection event that
+ 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+-- 
+2.36.0
+
 
 
