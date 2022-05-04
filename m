@@ -2,41 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 409BEC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A2DC46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376332AbiEDRub (ORCPT
+        id S1376353AbiEDRud (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        Wed, 4 May 2022 13:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357996AbiEDRPf (ORCPT
+        with ESMTP id S1358026AbiEDRPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671B4562CA;
-        Wed,  4 May 2022 09:59:14 -0700 (PDT)
+        Wed, 4 May 2022 13:15:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357D4562DB;
+        Wed,  4 May 2022 09:59:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 066A2B827A9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A27961931;
+        Wed,  4 May 2022 16:59:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A27CC385B3;
         Wed,  4 May 2022 16:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B11DBC385A4;
-        Wed,  4 May 2022 16:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683552;
-        bh=w2YTc2iaXndlFLz3pgZAgPT3qjdp5aB+pN1Z3fW5oY8=;
+        s=korg; t=1651683554;
+        bh=KLrmzLdykux6+zcJXpjIZLWwX5oEYBXLyo/PuTSQqhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M8wBkyU9WOKwzHfDiIqO37BL56zJEc26weUGppMCHCQ+aH4oagss+DvQ01905omAa
-         7td71Zeg1iSq48Lfprm2dYNTJeZ89i+yeP5iG71UJ1nyZHdl5KiwuV0JgkwuTakb9Q
-         /+OdW2ZZJBY2mK1Wk8BFynsaoUEeK6Jm5NBvJpGk=
+        b=LeAwfg9ZAFvJhHkjvnwiEFMNb2qheOQ+WsUk6HFiYBy42W/k1ZNkn83oqEWS9wCq7
+         fS2EjIyv7CICeuru0FPvpxzea2bjj8/s7Q9jYCg4A3EcSm3sPemyOVDnYmMuMC/hHL
+         toDUURkkJPZYkk044FvgiO0PhehNJJ0KbYlk1sNc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.17 206/225] tty: n_gsm: fix frame reception handling
-Date:   Wed,  4 May 2022 18:47:24 +0200
-Message-Id: <20220504153128.466668340@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.17 198/225] perf symbol: Pass is_kallsyms to symbols__fixup_end()
+Date:   Wed,  4 May 2022 18:47:16 +0200
+Message-Id: <20220504153127.841006742@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,117 +63,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-commit 7a0e4b1733b635026a87c023f6d703faf0095e39 upstream.
+commit 838425f2defe5262906b698752d28fd2fca1aac2 upstream.
 
-The frame checksum (FCS) is currently handled in gsm_queue() after
-reception of a frame. However, this breaks layering. A workaround with
-'received_fcs' was implemented so far.
-Furthermore, frames are handled as such even if no end flag was received.
-Move FCS calculation from gsm_queue() to gsm0_receive() and gsm1_receive().
-Also delay gsm_queue() call there until a full frame was received to fix
-both points.
+The symbol fixup is necessary for symbols in kallsyms since they don't
+have size info.  So we use the next symbol's address to calculate the
+size.  Now it's also used for user binaries because sometimes they miss
+size for hand-written asm functions.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-6-daniel.starke@siemens.com
+There's a arch-specific function to handle kallsyms differently but
+currently it cannot distinguish kallsyms from others.  Pass this
+information explicitly to handle it properly.  Note that those arch
+functions will be moved to the generic function so I didn't added it to
+the arch-functions.
+
+Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-s390@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Link: https://lore.kernel.org/r/20220416004048.1514900-2-namhyung@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   53 +++++++++++++++++++++++++++++-----------------------
- 1 file changed, 30 insertions(+), 23 deletions(-)
+ tools/perf/util/symbol-elf.c |    2 +-
+ tools/perf/util/symbol.c     |    7 ++++---
+ tools/perf/util/symbol.h     |    2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -219,7 +219,6 @@ struct gsm_mux {
- 	int encoding;
- 	u8 control;
- 	u8 fcs;
--	u8 received_fcs;
- 	u8 *txframe;			/* TX framing buffer */
+--- a/tools/perf/util/symbol-elf.c
++++ b/tools/perf/util/symbol-elf.c
+@@ -1290,7 +1290,7 @@ dso__load_sym_internal(struct dso *dso,
+ 	 * For misannotated, zeroed, ASM function sizes.
+ 	 */
+ 	if (nr > 0) {
+-		symbols__fixup_end(&dso->symbols);
++		symbols__fixup_end(&dso->symbols, false);
+ 		symbols__fixup_duplicate(&dso->symbols);
+ 		if (kmap) {
+ 			/*
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -217,7 +217,8 @@ again:
+ 	}
+ }
  
- 	/* Method for the receiver side */
-@@ -1794,18 +1793,7 @@ static void gsm_queue(struct gsm_mux *gs
- 	u8 cr;
- 	int address;
- 	int i, j, k, address_tmp;
--	/* We have to sneak a look at the packet body to do the FCS.
--	   A somewhat layering violation in the spec */
- 
--	if ((gsm->control & ~PF) == UI)
--		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
--	if (gsm->encoding == 0) {
--		/* WARNING: gsm->received_fcs is used for
--		gsm->encoding = 0 only.
--		In this case it contain the last piece of data
--		required to generate final CRC */
--		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
--	}
- 	if (gsm->fcs != GOOD_FCS) {
- 		gsm->bad_fcs++;
- 		if (debug & 4)
-@@ -1993,19 +1981,25 @@ static void gsm0_receive(struct gsm_mux
- 		break;
- 	case GSM_DATA:		/* Data */
- 		gsm->buf[gsm->count++] = c;
--		if (gsm->count == gsm->len)
-+		if (gsm->count == gsm->len) {
-+			/* Calculate final FCS for UI frames over all data */
-+			if ((gsm->control & ~PF) != UIH) {
-+				gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf,
-+							     gsm->count);
-+			}
- 			gsm->state = GSM_FCS;
-+		}
- 		break;
- 	case GSM_FCS:		/* FCS follows the packet */
--		gsm->received_fcs = c;
--		gsm_queue(gsm);
-+		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
- 		gsm->state = GSM_SSOF;
- 		break;
- 	case GSM_SSOF:
--		if (c == GSM0_SOF) {
--			gsm->state = GSM_SEARCH;
--			break;
--		}
-+		gsm->state = GSM_SEARCH;
-+		if (c == GSM0_SOF)
-+			gsm_queue(gsm);
-+		else
-+			gsm->bad_size++;
- 		break;
- 	default:
- 		pr_debug("%s: unhandled state: %d\n", __func__, gsm->state);
-@@ -2024,11 +2018,24 @@ static void gsm0_receive(struct gsm_mux
- static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
+-void symbols__fixup_end(struct rb_root_cached *symbols)
++void symbols__fixup_end(struct rb_root_cached *symbols,
++			bool is_kallsyms __maybe_unused)
  {
- 	if (c == GSM1_SOF) {
--		/* EOF is only valid in frame if we have got to the data state
--		   and received at least one byte (the FCS) */
--		if (gsm->state == GSM_DATA && gsm->count) {
--			/* Extract the FCS */
-+		/* EOF is only valid in frame if we have got to the data state */
-+		if (gsm->state == GSM_DATA) {
-+			if (gsm->count < 1) {
-+				/* Missing FSC */
-+				gsm->malformed++;
-+				gsm->state = GSM_START;
-+				return;
-+			}
-+			/* Remove the FCS from data */
- 			gsm->count--;
-+			if ((gsm->control & ~PF) != UIH) {
-+				/* Calculate final FCS for UI frames over all
-+				 * data but FCS
-+				 */
-+				gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf,
-+							     gsm->count);
-+			}
-+			/* Add the FCS itself to test against GOOD_FCS */
- 			gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->buf[gsm->count]);
- 			gsm->len = gsm->count;
- 			gsm_queue(gsm);
+ 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
+ 	struct symbol *curr, *prev;
+@@ -1467,7 +1468,7 @@ int __dso__load_kallsyms(struct dso *dso
+ 	if (kallsyms__delta(kmap, filename, &delta))
+ 		return -1;
+ 
+-	symbols__fixup_end(&dso->symbols);
++	symbols__fixup_end(&dso->symbols, true);
+ 	symbols__fixup_duplicate(&dso->symbols);
+ 
+ 	if (dso->kernel == DSO_SPACE__KERNEL_GUEST)
+@@ -1659,7 +1660,7 @@ int dso__load_bfd_symbols(struct dso *ds
+ #undef bfd_asymbol_section
+ #endif
+ 
+-	symbols__fixup_end(&dso->symbols);
++	symbols__fixup_end(&dso->symbols, false);
+ 	symbols__fixup_duplicate(&dso->symbols);
+ 	dso->adjust_symbols = 1;
+ 
+--- a/tools/perf/util/symbol.h
++++ b/tools/perf/util/symbol.h
+@@ -203,7 +203,7 @@ void __symbols__insert(struct rb_root_ca
+ 		       bool kernel);
+ void symbols__insert(struct rb_root_cached *symbols, struct symbol *sym);
+ void symbols__fixup_duplicate(struct rb_root_cached *symbols);
+-void symbols__fixup_end(struct rb_root_cached *symbols);
++void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms);
+ void maps__fixup_end(struct maps *maps);
+ 
+ typedef int (*mapfn_t)(u64 start, u64 len, u64 pgoff, void *data);
 
 
