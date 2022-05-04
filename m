@@ -2,84 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B59C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0238AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344873AbiEDGYN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:24:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49112 "EHLO
+        id S233453AbiEDGYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 02:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233453AbiEDGYL (ORCPT
+        with ESMTP id S1344875AbiEDGYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 02:24:11 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1911C22;
-        Tue,  3 May 2022 23:20:36 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2430a43t003197;
-        Tue, 3 May 2022 00:51:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=io17PxlLCWimwV2Nh2lqxTdERfa0awsdAaQIC6rX2zo=;
- b=Bc96s/qLHag9Wl9Wge9dxA7V7fTYnF77594mCEq0YiGKkNNbr/VgU27KGHtUxWORzJew
- wBYlybVVwKLNMRcPtvzjkO7cy2O6tCFYUXOpvm84r7M9hNs+xx/SYlPYjTMCTRMv9vkb
- 8CUfYaOyZJ6n0V5GO9jK+3tIuD1eeYzNF7IxCWKtsulHUnrLamoPCEN+LXrcrd2YlSqg
- khnRBnyXTrnUjet1mqOFr2bUAJu62QqOocMio1bvz7KN+D9V0fNd7H+9NrmHfPKIR455
- 5CIOFRCiioqnrmh6l+mrs0XHSiXI3wsoqWWMuN0k8tcf8ez6ANO+3yYeTgsUA9RNc//u Og== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0amhj8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:58 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oobs008895;
-        Tue, 3 May 2022 00:51:57 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x8r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:57 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljU010389;
-        Tue, 3 May 2022 00:51:56 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-17;
-        Tue, 03 May 2022 00:51:56 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     njavali@marvell.com, cgel.zte@gmail.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        ran jianping <ran.jianping@zte.com.cn>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        linux-kernel@vger.kernel.org, jejb@linux.ibm.com,
-        Zeal Robot <zealci@zte.com.cn>, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: qla2xxx: remove unneeded flush_workqueue
-Date:   Mon,  2 May 2022 20:51:27 -0400
-Message-Id: <165153836361.24053.8662932109576640463.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220424062413.3220315-1-ran.jianping@zte.com.cn>
-References: <20220424062413.3220315-1-ran.jianping@zte.com.cn>
+        Wed, 4 May 2022 02:24:18 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC2919289
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:20:43 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id i27so940391ejd.9
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 23:20:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=S9kVssv7NOzawB6oy6PZFFqEWoy+1iZ0ddgQbndGXkY=;
+        b=eaPtpKhP1noRcNSLEl8k7DRsmp1+3MImkuiSu7hO9CNuSBf/5vIEAIH6OKgLl3Vgfs
+         DiuNCahXqDrm3TDxKTeBHztIQ2X4A4DvEcpu3jKQ6K0o0/1BYwYOcGfB5y6brD0c2zyH
+         QL6ONvMa6Dbimne4AH7LJkUgiduWjnNosD6HI1qAfmWhAvKsMXz8WR2bO0kLOFR/9pt0
+         f4qoxNXj/v29EwKAwkJa0ftgmaY0KnEDdVY3ov1TJg2vsxKrL4f5N5rlw28PVvwZXKl/
+         ASvjmeeeY8p0kcTWbGoCywM07jJ0+VdDy/jroI3pT9w9iEnC6viLgDEXrSNzA/TGuvbF
+         EH+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=S9kVssv7NOzawB6oy6PZFFqEWoy+1iZ0ddgQbndGXkY=;
+        b=IEyaJymaxCbEkySAr4Vx62QhBMUCDEO7KsEW/wM+oCQg1WXoaEWC0GNBsXhoy6kUuy
+         sbbRplnt4gCQhyfHPqEZLSLmIh01uVwv/4fjHA882+L4KGeojmE/J4vMbL6CH9nr2Suz
+         vzHZayY/GOU2nTs4QnLG80mBBplRGLG0oRPA4DZK+TlsiEeauu3FoaEiyKjWbpa0seIn
+         8xOG7bq492uoth9f+ytvQWmUA+H0ZcebM3TuPEb0zZQQrQAjki6lLVCJhw6DP7+1l+dt
+         TYTNS/DU3ovWcjGV4C24VA84t8sDbiKmPqt8tG0jj9L5/BjfOhWb2PQEagrKepFIcTD7
+         yPOA==
+X-Gm-Message-State: AOAM531KmlaaZeXKygszzi84OkfzSD8xvRcMEa3Ljgx1FRZRoquAjgVN
+        8EeT7bAm1DEj5LjtYJFw1DjzkQ==
+X-Google-Smtp-Source: ABdhPJzK4afMKmzSks36dzSJk3t+IoiFVAyPRNs2XhoB+rYp60IdxaXm9RDJbKDGhEIcmVXDSM/ypQ==
+X-Received: by 2002:a17:907:2cc4:b0:6df:a036:a025 with SMTP id hg4-20020a1709072cc400b006dfa036a025mr19779920ejc.554.1651645241925;
+        Tue, 03 May 2022 23:20:41 -0700 (PDT)
+Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ig1-20020a1709072e0100b006f3ef214e7asm5365230ejc.224.2022.05.03.23.20.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 23:20:41 -0700 (PDT)
+Message-ID: <faaa4ab4-8190-3cff-998e-3b6a6d3ce27c@linaro.org>
+Date:   Wed, 4 May 2022 08:20:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: ixOQLF1ALJOdan8beO89ZFIi_DIT5pH8
-X-Proofpoint-ORIG-GUID: ixOQLF1ALJOdan8beO89ZFIi_DIT5pH8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: sx9324: Add CS idle/sleep mode
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+References: <20220503193937.3794477-1-swboyd@chromium.org>
+ <20220503193937.3794477-2-swboyd@chromium.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220503193937.3794477-2-swboyd@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 06:24:13 +0000, cgel.zte@gmail.com wrote:
-
-> From: ran jianping <ran.jianping@zte.com.cn>
+On 03/05/2022 21:39, Stephen Boyd wrote:
+> We need to configure the sleep and idle mode of the CS pins for this
+> device. Add a DT property to do this so pins are in a proper state
+> during sleep (either hi-z, grounded, or pulled up to vdd).
 > 
-> All work currently pending will be done first by calling destroy_workqueue,
-> so there is no need to flush it explicitly.
+> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  .../bindings/iio/proximity/semtech,sx9324.yaml           | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> index d265eb5258c8..b3aa2ebf9661 100644
+> --- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> @@ -126,6 +126,14 @@ properties:
+>        UINT_MAX (4294967295) represents infinite. Other values
+>        represent 1-1/N.
+>  
+> +  semtech,cs-idle-sleep:
+> +    description:
+> +      State of CS pins during sleep mode and idle time.
+> +    enum:
+> +      - hi-z
+> +      - gnd
+> +      - vdd
 
-Applied to 5.19/scsi-queue, thanks!
+You need a ref to type (string).
 
-[1/1] scsi: qla2xxx: remove unneeded flush_workqueue
-      https://git.kernel.org/mkp/scsi/c/cf97628fe1a1
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Best regards,
+Krzysztof
