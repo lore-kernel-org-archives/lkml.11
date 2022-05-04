@@ -2,93 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349198AbiEDMDY (ORCPT
+        id S1349232AbiEDMDy convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        Wed, 4 May 2022 08:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349203AbiEDMDU (ORCPT
+        with ESMTP id S1349119AbiEDMDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:03:20 -0400
-Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FD31D0D6;
-        Wed,  4 May 2022 04:59:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1651665576;
-        bh=qGHD1viJbziYFStGKq39fNCCso+OQcti79hBaKlzEuc=;
-        h=From:To:Cc:Subject:Date;
-        b=AbahLkADFXJ1IKNHg9WdGxcadGrmd/Kew5XuNrTKQe2+IPDwGzoMbDOxECdBP/4GO
-         J1f+qDMdsTcL1Gtzxro88VbU+wDfetAlxbbPiF66rcykiHHgM2MtLCVQHuaeF9SiIL
-         dOmfjUH/K4WBrd0ytniNQbAC4zoJIGJ/NlIP4SmY=
-Received: from huazheng-ThinkPad-X230 ([123.118.173.243])
-        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
-        id EE221EC3; Wed, 04 May 2022 19:59:34 +0800
-X-QQ-mid: xmsmtpt1651665574tr0gbru5w
-Message-ID: <tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com>
-X-QQ-XMAILINFO: NnA3IMNPwBd+IxCjkbKaQkuHTVOHIcl4UXLtypL6wLupqxkQn/xCCUJTFpojHt
-         +ufGNVQJsNA7nuS6+2mdk141ConobYSWk3Kj9jgsOPkw8C450NnG45Kz4fc40vTFaZL4zH91fMxF
-         eCKJpiL88i8X7uTz0J+qFiuEdxI6L2aDmttqeMARhWd3vkWWO5z6H/oIX7O0kyc2R84bL+LTjCyZ
-         pf9vP1SJjI1qA+1v54r0yjK2pPf9UvhDpa3JZ4lbseor47qT7iUx52hG6TqFhvQVWPXK5AV9XFTu
-         sa7c16xQAs3BrtamykTsw9et6g/Le64bE05hdTNCN4pjWkXI5CvZvSCoi9IpnA/l7oj70R3s5sI8
-         YTdW6/b8beGrpLFnYsjYE9ALrXGP5H1A7IALzt4/VgpXBYacNSOgHiX5EoG5VCsxgeiqkBP9haj9
-         Cn+XNYKQZe4amdBBmjfVxfRpNhI+qSLp+s6H+rJJSQBEDJYt0Yaj20yJtnLy4ZG9g0Pa1OhddWgs
-         KRLbqolshIqWc0+BV0va6pLdDBBQxtFnZ/BKQO4O2P6vMTTgJmyUh7Hsb+0N2gMfUwS9ympfvE1S
-         A7yalFc97kpnGeSq0OkgbZiOQL1eTa1cwl4WdvQ7lVN6jPXtCBse5VvjIlFmC4mU97eQyXkk3rt8
-         oHj6ENeKG+x90rsimXzWeHdqkeJDrmC9nK3PLlvlXto1NcjRGC/3J9GjRmxW2BufZeCDbqiZi75K
-         j8/Jd7uQUk2UHKpExiT2thmXBkfanGawjZe7hwMBkMIGTxnvnNk169jg6jS2Cg1rlDE0gZ8eFN9E
-         8qd/rv9fdazyDmNlkdmAy+LqDvlQGMY6YPR/3Eup1K3MWAhX6h9ZAmnHfLQ/yHRNsVgbsTkLd1SF
-         wYgShtP7fibkTwPKtpajmEMnzE1ATY0tc/ri5aXhhyPpgHblJk8mLkLFEjD6O6yf0diIIeA6fB27
-         84Fr2i6FvRSkgMbh85XNAezEvFfokMfGzIJFuM7XfOb4ppJaVftbzhUiVryEXl
-From:   IotaHydrae <writeforever@foxmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     IotaHydrae <writeforever@foxmail.com>
-Subject: [PATCH] arm: sunxi: fix f1c100s pinctrl function.
-Date:   Wed,  4 May 2022 19:59:04 +0800
-X-OQ-MSGID: <20220504115904.2553938-1-writeforever@foxmail.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 4 May 2022 08:03:51 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD171D1
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:00:13 -0700 (PDT)
+Received: from mail-wm1-f47.google.com ([209.85.128.47]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mspu2-1o64sF3C2q-00tDXf; Wed, 04 May 2022 14:00:11 +0200
+Received: by mail-wm1-f47.google.com with SMTP id p7-20020a05600c358700b00393e80c59daso2530300wmq.0;
+        Wed, 04 May 2022 05:00:11 -0700 (PDT)
+X-Gm-Message-State: AOAM533SDCVqzQiAdKsV83vgiJE9VyJH9Jl2sQzi1xyjCxHP/8W/lFlE
+        M/RrauBA2UJujaaNl1c8a9CIW84ywx7qwk6yP2E=
+X-Google-Smtp-Source: ABdhPJxa91M6kOpYUD0iTKIgWao6CfWQbX+SRQAAcnEVkI7cNck+veUzwJT66OrSTBCPZk65kSjp++m9nNZ6refLZnU=
+X-Received: by 2002:a7b:cc93:0:b0:394:2622:fcd9 with SMTP id
+ p19-20020a7bcc93000000b003942622fcd9mr7695473wma.20.1651665611020; Wed, 04
+ May 2022 05:00:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
+ <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com> <ca39c741-8d15-33c0-7bd6-635778cc436@linux.intel.com>
+In-Reply-To: <ca39c741-8d15-33c0-7bd6-635778cc436@linux.intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 4 May 2022 13:59:55 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a33b4KvsGayDV7fXte0+1FzCJp_J60d8LuZO3P+i1NUEg@mail.gmail.com>
+Message-ID: <CAK8P3a33b4KvsGayDV7fXte0+1FzCJp_J60d8LuZO3P+i1NUEg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] termbits: Convert octal defines to hex
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:7CQbFrqW4cTrqLaKVG3j35bzBmKn+IuU4tx6h+ezN6PVZKgk+sz
+ 8qiTIxQWgKVg592Oz6fM8BuTAJRta1OJthsCcRFJWgMJrQl+8iOo18131rIlBhcQ167uw2s
+ qAsXBkV140cw0H0Uw5CXNeANe/rq7NcMXdg9AUUoijd/XgP/QBj+C4gUWMGdBbcXYryCDEK
+ fMwzJlPIbalz2Qph2RNqA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eBxZwELfI7I=:wkZx4357UXVPRujOyLh5rO
+ /9fkGXIM1OnrNk9FPhfGs+UphtdG31soYGVtJMCd9VWh7woe2Tyg5cWWm3VItekgDSCaszTG/
+ uMXmHNVOfsWQphfEbeQVOEMcFbTLBJewUNcn+dEj4vZIDQkl8HoB/QhbBJrkyv7937dmGqcNZ
+ zgKLf+cx9ZlmcTGGiQLb4VhZjO29h7I3aRQFR0UiN2QC3eUdZxGLS2wrUKHnxqTr2bvh/Zom0
+ QkLcn+Tb0ZSOaweKRS13qGp67FczszbW4CR4jP2CtQB7SvBSY2l3UckHQ97QlYs55Wp6J9y8L
+ RMXgFUSZ7VFpf6LjGy56e2zvJvgr6nzzXHytfBf7QRqNPb4gGd3h+NDSdneHaOraDmxCxPJiT
+ FDLr8eb0Mch5hGGCoEf1VnJf5gfszGOM3kUHZTPXtI5/iUMPfXgWnS8mI+YSx4aG4LmiHIfSu
+ oQv010fjx6JfJaOa2HoyZ7TP9GtEc5ZFMxG5asa6HFfWR1/Ztv8XtmOyS6NCJxh7mrOKbKpJG
+ QnbvF6xywiZOg5fY2QvVUSkMeR+G28qFFGRlI/Nh8/KRCu2xplnaFln1J4yZxJuCkVbjfTxW6
+ qwp/As7G8PHXoo/k4sIiNTZKTzqMQyZpn/OuHazms2ItlatG7CzPG37X+3Q2+oaItq3vvMJBH
+ R//3zex0OYDQLLY7u4c98sZqHg5spQ9hlkpC8boVrdQKw9eX7DMcSg+kaw0EdBmdeolQZYnMl
+ LfWz1eM5qPEsuqGD4+OqWF3xZ/aK0ZbSCtkcAm+MLJjemgknwEQLv46cCzjypTLrZ9vhWZXmA
+ RMtovRJX5Z4ewYvej9Q+c4n3uaPmGYNKXbCajWFa4QjznBk/p4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1. change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
+On Wed, May 4, 2022 at 10:33 AM Ilpo Järvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Wed, 4 May 2022, Arnd Bergmann wrote:
+> > On Wed, May 4, 2022 at 9:20 AM Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> wrote:
+> > >
+> > After applying the patch locally, I still see a bunch of whitespace
+> > differences in the
+> > changed lines if I run
+> >
+> > vimdiff arch/*/include/uapi/asm/termbits.h include/uapi/asm-generic/termbits.h
+> >
+> > I think this mostly because you left the sparc version alone (it already
+> > uses hex constants), but it may be nice to edit this a little more to
+> > make the actual differences stick out more.
+>
+> I took a look on further harmonizing, however, it turned out to be not
+> that simple. This is basically the pipeline I use to further cleanup the
+> differences and remove comments if you want to play yourself, just remove
+> stages from the tail to get the intermediate datas (gawk is required for
+> --non-decimal-data):
 
-When the pin PD13 and PD14 is setting up to uart2 function in dts,
-there's an error occurred:
-1c20800.pinctrl: unsupported function uart2 on pin PD14
+I've played around with it some more to adjust the number of leading
+zeroes and the type of whitespace. This is what I ended up with on top
+of your patch: https://pastebin.com/raw/pkDPaKN1
 
-Because 'uart2' is not any one multiplexing option of PD14,
-and pinctrl don't know how to configure it.
+Feel free to fold it into yours.
 
-So change the pin PD14 lvds1 function to uart2.
-
-Signed-off-by: IotaHydrae <writeforever@foxmail.com>
----
- drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-index 2801ca706273..68a5b627fb9b 100644
---- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
- 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
--		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
-+		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
--- 
-2.32.0
-
+        Arnd
