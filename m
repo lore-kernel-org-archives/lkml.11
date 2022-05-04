@@ -2,60 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 124AEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAD5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349961AbiEDRNY (ORCPT
+        id S1356251AbiEDRNk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
+        Wed, 4 May 2022 13:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354783AbiEDRCa (ORCPT
+        with ESMTP id S1354396AbiEDRCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:02:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4314D258;
-        Wed,  4 May 2022 09:52:27 -0700 (PDT)
+        Wed, 4 May 2022 13:02:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986214BFF9;
+        Wed,  4 May 2022 09:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CEDDB827AB;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93A6261866;
+        Wed,  4 May 2022 16:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD28C385A5;
         Wed,  4 May 2022 16:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA11BC385A5;
-        Wed,  4 May 2022 16:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683142;
-        bh=nLzvOaKvfVG2fx6lB26GDmFQx5Yq8nqY4CRUL62jSm4=;
+        s=korg; t=1651683144;
+        bh=iNXzK1WcdnCq/Yq1HO1iylpDNBr+hFpA09E9qtHvPec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eiNwUWDyiT3qx8IaBLPtIdxtMT5aUDfiSqlnxrM477b8yOCQaYapNSxUqmpynBw77
-         A95Je27BwyVBaRR0dJrKXW2dFS28G/7A8tMlCrjBIQZ6OKh6JIUXzZ9+gdlsFgLMj3
-         78L1z4edDITRYHB+FRUkS+yvpffoGuCW0omohpxM=
+        b=YSQarjeDT7NERWvjLm4CAnG0+CMapaS9fpGun86TYN+4y2sur0Y8MSLzvfLYErKoB
+         doCM+cpa+da/2IBrA2JAb2TDKs9D1tnXU0nPng5hN1YTR2enin4lqKkzWvBFX1CyC3
+         XkGmny0PqXhXzqR2pygK5HMv19z2bMHdiLSV0hnE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Will Deacon <will@kernel.org>, linux-s390@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 129/129] perf symbol: Remove arch__symbols__fixup_end()
-Date:   Wed,  4 May 2022 18:45:21 +0200
-Message-Id: <20220504153031.905812335@linuxfoundation.org>
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>,
+        Tainping Fang <tianping.fang@mediatek.com>
+Subject: [PATCH 5.15 001/177] usb: mtu3: fix USB 3.0 dual-role-switch from device to host
+Date:   Wed,  4 May 2022 18:43:14 +0200
+Message-Id: <20220504153053.958173430@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
-References: <20220504153021.299025455@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -63,126 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namhyung Kim <namhyung@kernel.org>
+From: Macpaul Lin <macpaul.lin@mediatek.com>
 
-commit a5d20d42a2f2dc2b2f9e9361912062732414090d upstream.
+commit 456244aeecd54249096362a173dfe06b82a5cafa upstream.
 
-Now the generic code can handle kallsyms fixup properly so no need to
-keep the arch-functions anymore.
+Issue description:
+  When an OTG port has been switched to device role and then switch back
+  to host role again, the USB 3.0 Host (XHCI) will not be able to detect
+  "plug in event of a connected USB 2.0/1.0 ((Highspeed and Fullspeed)
+  devices until system reboot.
 
-Fixes: 3cf6a32f3f2a4594 ("perf symbols: Fix symbol size calculation condition")
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-s390@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Link: https://lore.kernel.org/r/20220416004048.1514900-4-namhyung@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Root cause and Solution:
+  There is a condition checking flag "ssusb->otg_switch.is_u3_drd" in
+  toggle_opstate(). At the end of role switch procedure, toggle_opstate()
+  will be called to set DC_SESSION and SOFT_CONN bit. If "is_u3_drd" was
+  set and switched the role to USB host 3.0, bit DC_SESSION and SOFT_CONN
+  will be skipped hence caused the port cannot detect connected USB 2.0
+  (Highspeed and Fullspeed) devices. Simply remove the condition check to
+  solve this issue.
+
+Fixes: d0ed062a8b75 ("usb: mtu3: dual-role mode support")
+Cc: stable@vger.kernel.org
+Tested-by: Fabien Parent <fparent@baylibre.com>
+Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+Signed-off-by: Tainping Fang <tianping.fang@mediatek.com>
+Link: https://lore.kernel.org/r/20220419081245.21015-1-macpaul.lin@mediatek.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/arch/arm64/util/Build     |    1 -
- tools/perf/arch/arm64/util/machine.c |   27 ---------------------------
- tools/perf/arch/s390/util/machine.c  |   16 ----------------
- tools/perf/util/symbol.c             |    5 -----
- tools/perf/util/symbol.h             |    1 -
- 5 files changed, 50 deletions(-)
- delete mode 100644 tools/perf/arch/powerpc/util/machine.c
+ drivers/usb/mtu3/mtu3_dr.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/tools/perf/arch/arm64/util/Build
-+++ b/tools/perf/arch/arm64/util/Build
-@@ -1,5 +1,4 @@
- perf-y += header.o
--perf-y += machine.o
- perf-y += perf_regs.o
- perf-y += tsc.o
- perf-$(CONFIG_DWARF)     += dwarf-regs.o
---- a/tools/perf/arch/arm64/util/machine.c
-+++ /dev/null
-@@ -1,27 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--
--#include <stdio.h>
--#include <string.h>
--#include "debug.h"
--#include "symbol.h"
--
--/* On arm64, kernel text segment start at high memory address,
-- * for example 0xffff 0000 8xxx xxxx. Modules start at a low memory
-- * address, like 0xffff 0000 00ax xxxx. When only samll amount of
-- * memory is used by modules, gap between end of module's text segment
-- * and start of kernel text segment may be reach 2G.
-- * Therefore do not fill this gap and do not assign it to the kernel dso map.
-- */
--
--#define SYMBOL_LIMIT (1 << 12) /* 4K */
--
--void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
--{
--	if ((strchr(p->name, '[') && strchr(c->name, '[') == NULL) ||
--			(strchr(p->name, '[') == NULL && strchr(c->name, '[')))
--		/* Limit range of last symbol in module and kernel */
--		p->end += SYMBOL_LIMIT;
--	else
--		p->end = c->start;
--	pr_debug4("%s sym:%s end:%#lx\n", __func__, p->name, p->end);
--}
---- a/tools/perf/arch/s390/util/machine.c
-+++ b/tools/perf/arch/s390/util/machine.c
-@@ -34,19 +34,3 @@ int arch__fix_module_text_start(u64 *sta
+--- a/drivers/usb/mtu3/mtu3_dr.c
++++ b/drivers/usb/mtu3/mtu3_dr.c
+@@ -21,10 +21,8 @@ static inline struct ssusb_mtk *otg_sx_t
  
- 	return 0;
- }
--
--/* On s390 kernel text segment start is located at very low memory addresses,
-- * for example 0x10000. Modules are located at very high memory addresses,
-- * for example 0x3ff xxxx xxxx. The gap between end of kernel text segment
-- * and beginning of first module's text segment is very big.
-- * Therefore do not fill this gap and do not assign it to the kernel dso map.
-- */
--void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
--{
--	if (strchr(p->name, '[') == NULL && strchr(c->name, '['))
--		/* Last kernel symbol mapped to end of page */
--		p->end = roundup(p->end, page_size);
--	else
--		p->end = c->start;
--	pr_debug4("%s sym:%s end:%#lx\n", __func__, p->name, p->end);
--}
---- a/tools/perf/util/symbol.c
-+++ b/tools/perf/util/symbol.c
-@@ -101,11 +101,6 @@ static int prefix_underscores_count(cons
- 	return tail - str;
- }
- 
--void __weak arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
--{
--	p->end = c->start;
--}
--
- const char * __weak arch__normalize_symbol_name(const char *name)
+ static void toggle_opstate(struct ssusb_mtk *ssusb)
  {
- 	return name;
---- a/tools/perf/util/symbol.h
-+++ b/tools/perf/util/symbol.h
-@@ -230,7 +230,6 @@ const char *arch__normalize_symbol_name(
- #define SYMBOL_A 0
- #define SYMBOL_B 1
+-	if (!ssusb->otg_switch.is_u3_drd) {
+-		mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
+-		mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
+-	}
++	mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
++	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
+ }
  
--void arch__symbols__fixup_end(struct symbol *p, struct symbol *c);
- int arch__compare_symbol_names(const char *namea, const char *nameb);
- int arch__compare_symbol_names_n(const char *namea, const char *nameb,
- 				 unsigned int n);
+ /* only port0 supports dual-role mode */
 
 
