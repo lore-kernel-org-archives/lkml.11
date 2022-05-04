@@ -2,118 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F110C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353604AbiEDQt2 (ORCPT
+        id S1353623AbiEDQvv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49612 "EHLO
+        Wed, 4 May 2022 12:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353110AbiEDQtX (ORCPT
+        with ESMTP id S1353097AbiEDQvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:49:23 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FEE6442;
-        Wed,  4 May 2022 09:45:47 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651682746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TMixN8cuqlcIWYEYdCj7kZizdE9V6yCD9qvxJl7kpU4=;
-        b=aZp5uSAMO1Lhaqq9CN2P0GEVbg+kN095nF1t4DC2J9tMeNKXBbHmBjiQTw2XtIGig/AtRL
-        cgG6kUIVKpSltAvs9fiIBRVLDnVaXoc+4KQmWJXZRBuJMmbqe6DsgMvqaRiMI1WHKhi/iN
-        CXkr4XNBzD1UnRYZcSvQBdKBF3hXxxjaskwODvqAn1qnamSHDDlpbqJhuxN5ei9tpsvUbN
-        HGSWpea+kUQWkX6aAn+tnYXGtcWbg4Aj+0VmN8gw8UtdkZ9KnfrO9OyvjA7liyR/N7cvPa
-        T4U1uYB2f9lfG73hPHMH5ryHU7A9t4SWhfQ1C5A81CQ2qh17rIXsgoDNjgafbw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651682746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TMixN8cuqlcIWYEYdCj7kZizdE9V6yCD9qvxJl7kpU4=;
-        b=M805BnjFPz7Ky1Fn4P7lC/lUY7igEkaLMi2ZCxiYCDs0eNWT3KuB2EPvxy/uea2N6KTgKp
-        iBhBieR4eq/9+7AA==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Filipe Manana <fdmanana@suse.com>, linux-crypto@vger.kernel.org
-Subject: Re: [patch 3/3] x86/fpu: Make FPU protection more robust
-In-Reply-To: <YnKh96isoB7jiFrv@zx2c4.com>
-References: <20220501192740.203963477@linutronix.de>
- <20220501193102.704267030@linutronix.de> <Ym/sHqKqmLOJubgE@zn.tnic>
- <87k0b4lydr.ffs@tglx> <YnDwjjdiSQ5Yml6E@hirez.programming.kicks-ass.net>
- <87fslpjomx.ffs@tglx> <YnKh96isoB7jiFrv@zx2c4.com>
-Date:   Wed, 04 May 2022 18:45:45 +0200
-Message-ID: <87czgtjlfq.ffs@tglx>
+        Wed, 4 May 2022 12:51:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD28EFD2B;
+        Wed,  4 May 2022 09:48:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FFE161744;
+        Wed,  4 May 2022 16:48:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E261C385A5;
+        Wed,  4 May 2022 16:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651682890;
+        bh=5HKhrFqmSPIq+BqSgu30j1FGtY9X74eIt1QMhVbVH1Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MOVA92uGzbYzpUeLxSA2E/ONONQ72c8UUb2IxEoWMH1O7dbGD3Pwe4au9egZn9rlO
+         CdZxIP5lOtE5ZJgKaaWxd/uyilRr8RjKw0REBMj6snbqoNbnwhaeyLApdrJQl4AVMD
+         wql8TXnlNtkBZFBBXi/aYGyiXKm6D30d6Df0mwbE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Minh Yuan <yuanmingbuaa@gmail.com>,
+        syzbot+8e8958586909d62b6840@syzkaller.appspotmail.com,
+        cruise k <cruise4k@gmail.com>, Kyungtae Kim <kt0755@gmail.com>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Denis Efremov <efremov@linux.com>, Willy Tarreau <w@1wt.eu>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 01/84] floppy: disable FDRAWCMD by default
+Date:   Wed,  4 May 2022 18:43:42 +0200
+Message-Id: <20220504152927.867768825@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
+References: <20220504152927.744120418@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jason,
+From: Willy Tarreau <w@1wt.eu>
 
-On Wed, May 04 2022 at 17:55, Jason A. Donenfeld wrote:
-> On Wed, May 04, 2022 at 05:36:38PM +0200, Thomas Gleixner wrote:
->> But the only use case which utilizes FPU from hard interrupt context is
->> the random generator via add_randomness_...().
->> 
->> I did a benchmark of these functions, which invoke blake2s_update()
->> three times in a row, on a SKL-X and a ZEN3. The generic code and the
->> FPU accelerated code are pretty much on par vs. execution time of the
->> algorithm itself plus/minus noise.
->>
->> IOW, using the FPU blindly for this kind of computations is not
->> necessarily a good plan. I have no idea how these things are analyzed
->> and evaluated if at all. Maybe the crypto people can shed some light on
->> this.
->
-> drivers/net/wireguard/{noise,cookie}.c makes pretty heavy use of BLAKE2s
-> in hot paths where the FPU is already being used for other algorithms,
-> and so there the save/restore is worth it (assuming restore finally
-> works lazily). In benchmarks, the SIMD code made a real difference.
+commit 233087ca063686964a53c829d547c7571e3f67bf upstream.
 
-I'm sure there are very valid use cases, but just the two things I
-looked at turned out to be questionable at least.
+Minh Yuan reported a concurrency use-after-free issue in the floppy code
+between raw_cmd_ioctl and seek_interrupt.
 
-> But this presumably regards mix_pool_bytes() in the RNG. If it turns out
-> that supporting the FPU in hard IRQ context is a major PITA, and the
-> RNG
+[ It turns out this has been around, and that others have reported the
+  KASAN splats over the years, but Minh Yuan had a reproducer for it and
+  so gets primary credit for reporting it for this fix   - Linus ]
 
-Supporting FPU in hard interrupt context is possible if required and the
-preexisting bug which survived 10+ years has been fixed.
-x
-I just started to look into this because of that bug and due to the
-inconsistency between the FPU protections we have. The inconsistency
-comes from the hardirq requirement.
+The problem is, this driver tends to break very easily and nowadays,
+nobody is expected to use FDRAWCMD anyway since it was used to
+manipulate non-standard formats.  The risk of breaking the driver is
+higher than the risk presented by this race, and accessing the device
+requires privileges anyway.
 
-> is the only thing making use of it, then sure, drop hard IRQ context
-> support for it. However... This may be unearthing a larger bug.
-> Sebastian and I put in a decent amount of work during 5.18 to remove all
-> calls to mix_pool_bytes() (and hence to blake2s_compress()) from
-> add_interrupt_randomness(). Have a look:
+Let's just add a config option to completely disable this ioctl and
+leave it disabled by default.  Distros shouldn't use it, and only those
+running on antique hardware might need to enable it.
 
-I know.
+Link: https://lore.kernel.org/all/000000000000b71cdd05d703f6bf@google.com/
+Link: https://lore.kernel.org/lkml/CAKcFiNC=MfYVW-Jt9A3=FPJpTwCD2PL_ULNCpsCVE5s8ZeBQgQ@mail.gmail.com
+Link: https://lore.kernel.org/all/CAEAjamu1FRhz6StCe_55XY5s389ZP_xmCF69k987En+1z53=eg@mail.gmail.com
+Reported-by: Minh Yuan <yuanmingbuaa@gmail.com>
+Reported-by: syzbot+8e8958586909d62b6840@syzkaller.appspotmail.com
+Reported-by: cruise k <cruise4k@gmail.com>
+Reported-by: Kyungtae Kim <kt0755@gmail.com>
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Tested-by: Denis Efremov <efremov@linux.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/block/Kconfig  |   16 ++++++++++++++++
+ drivers/block/floppy.c |   43 ++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 48 insertions(+), 11 deletions(-)
 
-> It now accumulates in some per-CPU buffer, and then every 64 interrupts
-> a worker runs that does the actual mix_pool_bytes() from kthread
-> context.
+--- a/drivers/block/Kconfig
++++ b/drivers/block/Kconfig
+@@ -39,6 +39,22 @@ config BLK_DEV_FD
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called floppy.
+ 
++config BLK_DEV_FD_RAWCMD
++	bool "Support for raw floppy disk commands (DEPRECATED)"
++	depends on BLK_DEV_FD
++	help
++	  If you want to use actual physical floppies and expect to do
++	  special low-level hardware accesses to them (access and use
++	  non-standard formats, for example), then enable this.
++
++	  Note that the code enabled by this option is rarely used and
++	  might be unstable or insecure, and distros should not enable it.
++
++	  Note: FDRAWCMD is deprecated and will be removed from the kernel
++	  in the near future.
++
++	  If unsure, say N.
++
+ config AMIGA_FLOPPY
+ 	tristate "Amiga floppy support"
+ 	depends on AMIGA
+--- a/drivers/block/floppy.c
++++ b/drivers/block/floppy.c
+@@ -3012,6 +3012,8 @@ static const char *drive_name(int type,
+ 		return "(null)";
+ }
+ 
++#ifdef CONFIG_BLK_DEV_FD_RAWCMD
++
+ /* raw commands */
+ static void raw_cmd_done(int flag)
+ {
+@@ -3223,6 +3225,35 @@ static int raw_cmd_ioctl(int cmd, void _
+ 	return ret;
+ }
+ 
++static int floppy_raw_cmd_ioctl(int type, int drive, int cmd,
++				void __user *param)
++{
++	int ret;
++
++	pr_warn_once("Note: FDRAWCMD is deprecated and will be removed from the kernel in the near future.\n");
++
++	if (type)
++		return -EINVAL;
++	if (lock_fdc(drive))
++		return -EINTR;
++	set_floppy(drive);
++	ret = raw_cmd_ioctl(cmd, param);
++	if (ret == -EINTR)
++		return -EINTR;
++	process_fd_request();
++	return ret;
++}
++
++#else /* CONFIG_BLK_DEV_FD_RAWCMD */
++
++static int floppy_raw_cmd_ioctl(int type, int drive, int cmd,
++				void __user *param)
++{
++	return -EOPNOTSUPP;
++}
++
++#endif
++
+ static int invalidate_drive(struct block_device *bdev)
+ {
+ 	/* invalidate the buffer track to force a reread */
+@@ -3410,7 +3441,6 @@ static int fd_locked_ioctl(struct block_
+ {
+ 	int drive = (long)bdev->bd_disk->private_data;
+ 	int type = ITYPE(UDRS->fd_device);
+-	int i;
+ 	int ret;
+ 	int size;
+ 	union inparam {
+@@ -3561,16 +3591,7 @@ static int fd_locked_ioctl(struct block_
+ 		outparam = UDRWE;
+ 		break;
+ 	case FDRAWCMD:
+-		if (type)
+-			return -EINVAL;
+-		if (lock_fdc(drive))
+-			return -EINTR;
+-		set_floppy(drive);
+-		i = raw_cmd_ioctl(cmd, (void __user *)param);
+-		if (i == -EINTR)
+-			return -EINTR;
+-		process_fd_request();
+-		return i;
++		return floppy_raw_cmd_ioctl(type, drive, cmd, (void __user *)param);
+ 	case FDTWADDLE:
+ 		if (lock_fdc(drive))
+ 			return -EINTR;
 
-That's add_interrupt_randomness() and not affected by this.
 
-> So the question is: what is still hitting mix_pool_bytes() from hard IRQ
-> context? I'll investigate a bit and see.
-
-add_disk_randomness() on !RT kernels. That's what made me look into this
-in the first place as it unearthed the long standing FPU protection
-bug. See the first patch in this thread.
-
-Possibly add_device_randomness() too, but I haven't seen evidence so far.
-
-Thanks,
-
-        tglx
