@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7947C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4E7C35294
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376768AbiEDRzU (ORCPT
+        id S1376793AbiEDRzX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        Wed, 4 May 2022 13:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357531AbiEDRPG (ORCPT
+        with ESMTP id S1357096AbiEDROr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:06 -0400
+        Wed, 4 May 2022 13:14:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9906354FAA;
-        Wed,  4 May 2022 09:58:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4BC5418F;
+        Wed,  4 May 2022 09:58:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19B8C61770;
-        Wed,  4 May 2022 16:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67248C385A5;
-        Wed,  4 May 2022 16:58:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65778618B4;
+        Wed,  4 May 2022 16:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4ABAC385AF;
+        Wed,  4 May 2022 16:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683519;
-        bh=avrp5V52/RWBvb9OIRTAiIAQJ114dZ8pv4NK9C94dDQ=;
+        s=korg; t=1651683477;
+        bh=kf3q6jXDvibRoh2l+V9FYoIeB2JPjD515DNDKpNhycI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5tJr5gS2xUa0HfD7rPDK+AHxZG2QgQ+G3JDNFuJQjTtVL4+Mi0d6I9J29JvjapgR
-         S3YjT5jk0kD8s2XFjntupBZ7hC7UDTTAcvBF/8oD3s5IEJvikkwrFZStWKLphPQw8C
-         nRxJbdUxPupNYBPDLM4tBsDzvJ3IwN6HUcKxX+Jc=
+        b=ngqrprgVvuvuMW9u4/R5gzyk1E5uNUoY4oh21rcUga/mxEa0Q+sfzKNJo1Z6+5u6C
+         an9w7YcrlStt1c815ag06c8vETZML+5MtUgeIRld/nNJkUQU6ie1OX06MHkQnlx4WO
+         lFOV3YeSdt0fnu2e6HXNdbwqYEqoJnHu0W/XgKwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 194/225] btrfs: zoned: use dedicated lock for data relocation
-Date:   Wed,  4 May 2022 18:47:12 +0200
-Message-Id: <20220504153127.535820605@linuxfoundation.org>
+        stable@vger.kernel.org, Jaco Kroon <jaco@uls.co.za>,
+        Florian Westphal <fw@strlen.de>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 139/225] netfilter: nf_conntrack_tcp: re-init for syn packets only
+Date:   Wed,  4 May 2022 18:46:17 +0200
+Message-Id: <20220504153122.642804005@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,98 +52,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 5f0addf7b89085f8e0a2593faa419d6111612b9b upstream.
+[ Upstream commit c7aab4f17021b636a0ee75bcf28e06fb7c94ab48 ]
 
-Currently, we use btrfs_inode_{lock,unlock}() to grant an exclusive
-writeback of the relocation data inode in
-btrfs_zoned_data_reloc_{lock,unlock}(). However, that can cause a deadlock
-in the following path.
+Jaco Kroon reported tcp problems that Eric Dumazet and Neal Cardwell
+pinpointed to nf_conntrack tcp_in_window() bug.
 
-Thread A takes btrfs_inode_lock() and waits for metadata reservation by
-e.g, waiting for writeback:
+tcp trace shows following sequence:
 
-prealloc_file_extent_cluster()
-  - btrfs_inode_lock(&inode->vfs_inode, 0);
-  - btrfs_prealloc_file_range()
-  ...
-    - btrfs_replace_file_extents()
-      - btrfs_start_transaction
-      ...
-        - btrfs_reserve_metadata_bytes()
+I > R Flags [S], seq 3451342529, win 62580, options [.. tfo [|tcp]>
+R > I Flags [S.], seq 2699962254, ack 3451342530, win 65535, options [..]
+R > I Flags [P.], seq 1:89, ack 1, [..]
 
-Thread B (e.g, doing a writeback work) needs to wait for the inode lock to
-continue writeback process:
+Note 3rd ACK is from responder to initiator so following branch is taken:
+    } else if (((state->state == TCP_CONNTRACK_SYN_SENT
+               && dir == IP_CT_DIR_ORIGINAL)
+               || (state->state == TCP_CONNTRACK_SYN_RECV
+               && dir == IP_CT_DIR_REPLY))
+               && after(end, sender->td_end)) {
 
-do_writepages
-  - btrfs_writepages
-    - extent_writpages
-      - btrfs_zoned_data_reloc_lock(BTRFS_I(inode));
-        - btrfs_inode_lock()
+... because state == TCP_CONNTRACK_SYN_RECV and dir is REPLY.
+This causes the scaling factor to be reset to 0: window scale option
+is only present in syn(ack) packets.  This in turn makes nf_conntrack
+mark valid packets as out-of-window.
 
-The deadlock is caused by relying on the vfs_inode's lock. By using it, we
-introduced unnecessary exclusion of writeback and
-btrfs_prealloc_file_range(). Also, the lock at this point is useless as we
-don't have any dirty pages in the inode yet.
+This was always broken, it exists even in original commit where
+window tracking was added to ip_conntrack (nf_conntrack predecessor)
+in 2.6.9-rc1 kernel.
 
-Introduce fs_info->zoned_data_reloc_io_lock and use it for the exclusive
-writeback.
+Restrict to 'tcph->syn', just like the 3rd condtional added in
+commit 82b72cb94666 ("netfilter: conntrack: re-init state for retransmitted syn-ack").
 
-Fixes: 35156d852762 ("btrfs: zoned: only allow one process to add pages to a relocation inode")
-CC: stable@vger.kernel.org # 5.16.x: 869f4cdc73f9: btrfs: zoned: encapsulate inode locking for zoned relocation
-CC: stable@vger.kernel.org # 5.16.x
-CC: stable@vger.kernel.org # 5.17
-Cc: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Upon closer look, those conditionals/branches can be merged:
+
+Because earlier checks prevent syn-ack from showing up in
+original direction, the 'dir' checks in the conditional quoted above are
+redundant, remove them. Return early for pure syn retransmitted in reply
+direction (simultaneous open).
+
+Fixes: 9fb9cbb1082d ("[NETFILTER]: Add nf_conntrack subsystem.")
+Reported-by: Jaco Kroon <jaco@uls.co.za>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ctree.h   |    1 +
- fs/btrfs/disk-io.c |    1 +
- fs/btrfs/zoned.h   |    4 ++--
- 3 files changed, 4 insertions(+), 2 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -1029,6 +1029,7 @@ struct btrfs_fs_info {
- 	 */
- 	spinlock_t relocation_bg_lock;
- 	u64 data_reloc_bg;
-+	struct mutex zoned_data_reloc_io_lock;
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 8ec55cd72572..204a5cdff5b1 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -556,24 +556,14 @@ static bool tcp_in_window(struct nf_conn *ct,
+ 			}
  
- 	spinlock_t zone_active_bgs_lock;
- 	struct list_head zone_active_bgs;
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -3068,6 +3068,7 @@ void btrfs_init_fs_info(struct btrfs_fs_
- 	mutex_init(&fs_info->reloc_mutex);
- 	mutex_init(&fs_info->delalloc_root_mutex);
- 	mutex_init(&fs_info->zoned_meta_io_lock);
-+	mutex_init(&fs_info->zoned_data_reloc_io_lock);
- 	seqlock_init(&fs_info->profiles_lock);
+ 		}
+-	} else if (((state->state == TCP_CONNTRACK_SYN_SENT
+-		     && dir == IP_CT_DIR_ORIGINAL)
+-		   || (state->state == TCP_CONNTRACK_SYN_RECV
+-		     && dir == IP_CT_DIR_REPLY))
+-		   && after(end, sender->td_end)) {
++	} else if (tcph->syn &&
++		   after(end, sender->td_end) &&
++		   (state->state == TCP_CONNTRACK_SYN_SENT ||
++		    state->state == TCP_CONNTRACK_SYN_RECV)) {
+ 		/*
+ 		 * RFC 793: "if a TCP is reinitialized ... then it need
+ 		 * not wait at all; it must only be sure to use sequence
+ 		 * numbers larger than those recently used."
+-		 */
+-		sender->td_end =
+-		sender->td_maxend = end;
+-		sender->td_maxwin = (win == 0 ? 1 : win);
+-
+-		tcp_options(skb, dataoff, tcph, sender);
+-	} else if (tcph->syn && dir == IP_CT_DIR_REPLY &&
+-		   state->state == TCP_CONNTRACK_SYN_SENT) {
+-		/* Retransmitted syn-ack, or syn (simultaneous open).
+ 		 *
+ 		 * Re-init state for this direction, just like for the first
+ 		 * syn(-ack) reply, it might differ in seq, ack or tcp options.
+@@ -581,7 +571,8 @@ static bool tcp_in_window(struct nf_conn *ct,
+ 		tcp_init_sender(sender, receiver,
+ 				skb, dataoff, tcph,
+ 				end, win);
+-		if (!tcph->ack)
++
++		if (dir == IP_CT_DIR_REPLY && !tcph->ack)
+ 			return true;
+ 	}
  
- 	INIT_LIST_HEAD(&fs_info->dirty_cowonly_roots);
---- a/fs/btrfs/zoned.h
-+++ b/fs/btrfs/zoned.h
-@@ -359,7 +359,7 @@ static inline void btrfs_zoned_data_relo
- 	struct btrfs_root *root = inode->root;
- 
- 	if (btrfs_is_data_reloc_root(root) && btrfs_is_zoned(root->fs_info))
--		btrfs_inode_lock(&inode->vfs_inode, 0);
-+		mutex_lock(&root->fs_info->zoned_data_reloc_io_lock);
- }
- 
- static inline void btrfs_zoned_data_reloc_unlock(struct btrfs_inode *inode)
-@@ -367,7 +367,7 @@ static inline void btrfs_zoned_data_relo
- 	struct btrfs_root *root = inode->root;
- 
- 	if (btrfs_is_data_reloc_root(root) && btrfs_is_zoned(root->fs_info))
--		btrfs_inode_unlock(&inode->vfs_inode, 0);
-+		mutex_unlock(&root->fs_info->zoned_data_reloc_io_lock);
- }
- 
- #endif
+-- 
+2.35.1
+
 
 
