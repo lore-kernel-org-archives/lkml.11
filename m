@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A27C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358858AbiEDRQQ (ORCPT
+        id S1358945AbiEDRQT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
+        Wed, 4 May 2022 13:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355865AbiEDREp (ORCPT
+        with ESMTP id S1355884AbiEDREp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:04:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA1C4993C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E92E49C8D;
         Wed,  4 May 2022 09:53:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7E50B82792;
-        Wed,  4 May 2022 16:53:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C323C385AA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D106AB827A5;
         Wed,  4 May 2022 16:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A8D9C385BB;
+        Wed,  4 May 2022 16:53:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683206;
-        bh=TWdPe4Xc82lbZV5izywkdR/TuTC561cxN6pB2TDCNhw=;
+        s=korg; t=1651683205;
+        bh=vZgK6Y9PLhjhFdFkYNeKjuquI8/FQ9aIPBNEBrVREaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loxPkITtQ2jySX/tHKJV+unmlvLitFXFN9ozJkdxWQtAZX1gpvhKuBc9UrdeWkP9y
-         30Ke/kFvh85l8wGOSRfvf1lbPIiKCL9TdxBlIErrdXtrUspDF7A/Bw6J6Qs77DGDM8
-         iCe6mrnLm8mMu+LmlreOIzl4CJehovpn/0b09vdA=
+        b=ha051dtufBKCLdMXprHQhC1KHgjUlqbakIM9OBq/OSigPtDzyeHKwTOF5SZzDZNNz
+         vHjWbzk+HXpo0qWuzdF30lumSajapRtS/PKN7dxExC+Hn8wAC571HKVo5IgwakELNA
+         b8d/mVEW4rPeQwZuxGBqY8aYOeMUcNYWcws1xcC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 058/177] phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
-Date:   Wed,  4 May 2022 18:44:11 +0200
-Message-Id: <20220504153058.213531711@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Giraudon <ggiraudon@prism19.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 057/177] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
+Date:   Wed,  4 May 2022 18:44:10 +0200
+Message-Id: <20220504153058.119528435@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,36 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Guillaume Giraudon <ggiraudon@prism19.com>
 
-[ Upstream commit 388ec8f079f2f20d5cd183c3bc6f33cbc3ffd3ef ]
+[ Upstream commit 962dd65e575dde950ef0844568edc37cfb39f302 ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+The labels for lines 61 through 84 on the periphs-banks were offset by 2.
+2 lines are missing in the BOOT GPIO lines (contains 14, should be 16)
+Added 2 empty entries in BOOT to realigned the rest of GPIO labels
+to match the Banana Pi M5 schematics.
 
-Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220407091857.230386-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+(Thanks to Neil Armstrong for the heads up on the position of the missing pins)
+
+Fixes: 976e920183e4 ("arm64: dts: meson-sm1: add Banana PI BPI-M5 board dts")
+Signed-off-by: Guillaume Giraudon <ggiraudon@prism19.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220411144427.874-1-ggiraudon@prism19.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
+ arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
-index 9ec234243f7c..6c305a3fe187 100644
---- a/drivers/phy/samsung/phy-exynos5250-sata.c
-+++ b/drivers/phy/samsung/phy-exynos5250-sata.c
-@@ -187,6 +187,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 
- 	sata_phy->client = of_find_i2c_device_by_node(node);
-+	of_node_put(node);
- 	if (!sata_phy->client)
- 		return -EPROBE_DEFER;
- 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+index 5751c48620ed..cadba194b149 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+@@ -437,6 +437,7 @@ &gpio {
+ 		"",
+ 		"eMMC_RST#", /* BOOT_12 */
+ 		"eMMC_DS", /* BOOT_13 */
++		"", "",
+ 		/* GPIOC */
+ 		"SD_D0_B", /* GPIOC_0 */
+ 		"SD_D1_B", /* GPIOC_1 */
 -- 
 2.35.1
 
