@@ -2,1281 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B46C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345316AbiEDHYx (ORCPT
+        id S1345332AbiEDHZR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
+        Wed, 4 May 2022 03:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233195AbiEDHYu (ORCPT
+        with ESMTP id S1345341AbiEDHZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:24:50 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1904167EE;
-        Wed,  4 May 2022 00:21:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651648873; x=1683184873;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fby6jJV8PoqgaAqdPBGy+CPeZla9rt7IIF3wFX7961o=;
-  b=fcGtKFjHWDzwBMHSrn2ldznVZEDU4oLLfVzyhhUF9wTmU1K5O4jRjwGn
-   EVtqOBj48Wmja71X37f3JQkddqFE6vbk9JctLITI/Zrfxt+Fkd+0Qt01g
-   IhSW08a1/grxb9tBbeFBdPJcOQy/ucmsQV/nKdvZUN05OnIvWalBvt/NK
-   Qpt3g1gnPvZ/bts/Qk+18PnMkti9ZfDPxEdrYxZx1TVqRUXjjgU80R46j
-   ZpfXjoUQjtBpYinLUVH6i/uPncxwW0M0Enc9CglFqHPMM10Z7n5K7LVgl
-   lXECIV/K/1UZyZT+Zv12Q9YNS9vrCjgOeZNCMKejMjjjSdm96wriUXrfu
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267284394"
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="267284394"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 00:21:13 -0700
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="693450272"
-Received: from unknown (HELO ijarvine-MOBL2) ([10.251.218.195])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 00:21:06 -0700
-Date:   Wed, 4 May 2022 10:20:46 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-cc:     Jiri Slaby <jirislaby@kernel.org>, linux-api@vger.kernel.org,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/1] termbits: Convert octal defines to hex
-Message-ID: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
+        Wed, 4 May 2022 03:25:12 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2055.outbound.protection.outlook.com [40.107.237.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7587023153;
+        Wed,  4 May 2022 00:21:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SzEb43ABQ3ddRTHXyR9mkGSYD3j/thZkYuAjW3DedRosbbvZ/NNF7Bk180txwhxH4NwpJh0LGZViF7OMqMg7KBQLXLvyBlHsxAZGJIw2P+ooQ7alXYQnbkOJTTasOkyQsLARtX6I2kt5S4pBgOm2BMvIWuj/7DjT7+qXM7/rB+gRCsvkWlxPHgfKrVjY6SYjPZmzWQoyOB1nvakheUxxY6w2JyLlM7SELaueiH6/hd8h/+ac0LFNpoZwBYxnEwsfiBhIyLmzHwcGSiy7IV40TrPyMAsbUetF5rob1sAGOGzgi+hlzewuLpPOEQhm/PxfmKaGLinNlq0rwWrLZ8NzVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=60YjqTa2+342NhJqstej3/N9FKl3FxD9uzekDxGCKik=;
+ b=F73Q/fhkjPQ+ZHbbTvQkiCP1+nOa/dbZsYbDT2viTxxfiy56p00KjARpfGQzb7QEuYaGdQJY/N+Uf4mxSxIqQbiro64fdZu3PGz7k+NvCvA0KbFHFq6FKt/x+ZAAM/160Zj6Exb4bR3YRb1BCv1fEIrLww/jMNo1Vuhk41suGmQ8FUK05vFJSg4xUgxcJ+NiUOSe9LQp1a9Y8ASO1u5mMPkFOzKI+EuaLUh09Wvmot/jvH+mf1y5BLP5XJ2OecoDSW5wPnYo9iDCSLHeSW559CT+6ZU/DcDZrd/k38QVbpTWIL52StuxMQNZJHoz3nR1DprsUUd9iI4O4eVSMSvqOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=60YjqTa2+342NhJqstej3/N9FKl3FxD9uzekDxGCKik=;
+ b=Usv2ePNeNloLLwYt5VFrsnVG3eG5ZAG+QUx4nHOR6mni+G9qgXfn1ctYji0Upe9ziWcRk6Gh7iH4/XS6FcXdm2KpLeJhrLo2EPJFUlRXNjzqk+xp1So84bQcfv1XEwN8JBeby4ay7Qolzfz2ndlEdaUrhcCNZi87bqJRRYBW84c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com (2603:10b6:5:35a::9) by
+ BN6PR11MB1521.namprd11.prod.outlook.com (2603:10b6:405:e::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Wed, 4 May 2022 07:21:27 +0000
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::f4a6:5ef8:6a66:3251]) by CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::f4a6:5ef8:6a66:3251%8]) with mapi id 15.20.5206.024; Wed, 4 May 2022
+ 07:21:27 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, Jaehee Park <jhpark1013@gmail.com>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Jaehee Park <jhpark1013@gmail.com>
+Subject: Re: [PATCH v5] wfx: use container_of() to get vif
+Date:   Wed, 04 May 2022 09:21:21 +0200
+Message-ID: <16415431.geO5KgaWL5@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
+References: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: SA1P222CA0027.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:22c::11) To CO6PR11MB5650.namprd11.prod.outlook.com
+ (2603:10b6:5:35a::9)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1991360190-1651648872=:1623"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3974d25f-be9c-4daf-9c45-08da2d9eb3c9
+X-MS-TrafficTypeDiagnostic: BN6PR11MB1521:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR11MB1521FE342151F4C5DD97B1B093C39@BN6PR11MB1521.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rcQQ9LS8NDiZsar5UtySNh2W2ugFWOQjU3qT8Kpb1VY9sdYfOSI1oxG7gdCT6rVCct1X0LiPCAB2qwpahtkwNaMBkGY7HpaaU36GbP+1QBCBL7FLh89hqwVVRf0rmGjQfdb1hiX1nj1RT3g/Sj7hzSfQ594CCj+K/GAvaPjKh11lt/ukWalYq6zDymZMDY3DKJAjVMV1ZHNNo16BSY6bNljjtzRoG/riue610nzbZefZInOt2b1TLDHhAkRp7IPE048MhKeeTgcvNrqD35um2yhpeBd7Ay2h+cLT7s7mkRj2jqDlmFQi37JIWues+U7b8BOqHmko4wl2pRNSxkZ1pGPMMcEuN2I3WoJiWJH2PebUg9jtwSWjzp6FJh6QKJRZUB/+cmauEdAZ8EaygbTD8FtVHfpJX8dkNaMzBGlXqCDg2zM4D3hQoacqqZ5l9zuxpyV0CjvsaN0YHYZuzuL9VUGVWKx9JLxfXXG2uIQp+4yZ5omh3uSNvMSIyNXG7uAdgQBLeAtG2XxpzyQ8QctDS1RdfoTZLZbiCiFX6/6pkz9FwyGqJd9GgtuurhRVCkA0l051PaIAgxM0imyQZpgHW4ny8jE84sWamZjTQqHwwaBfvymWsqL9xJG1lKpEUQBX6PEsAYVg7qGwskQfV391VHiEhuJ6XC4ozhec4wfFCNcsEOGopQ5KCt7cwFlmQXregsKODlJA0MKbFzjNYurFvQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5650.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(52116002)(5660300002)(33716001)(7416002)(36916002)(66476007)(66946007)(66556008)(508600001)(8936002)(8676002)(921005)(6506007)(316002)(6666004)(38100700002)(2906002)(6486002)(110136005)(83380400001)(6512007)(9686003)(186003)(86362001)(66574015)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?QXLNWOu0w3s72ekf2ht//bFtQvb5diDgeWnVJc5FqNnlmEu8eBzcO6r5wl?=
+ =?iso-8859-1?Q?ltIZ1NHGXjIMfsTxO1751Ig+2wHpdjKmjK7bRyqrZfrkEI0nJrpjjK36+S?=
+ =?iso-8859-1?Q?HGBEKGKGERhn5Ev7RFOd6K/HPwp2CwCFgbx0SauVTDefc0n3CTYv9CVhDZ?=
+ =?iso-8859-1?Q?VSazdhBhJ9vzFMhgNlBVVvdVkabjjo4VVpwTa2ACdWBOWenK0fdPcRmcgv?=
+ =?iso-8859-1?Q?EIYVu/e/8R1pk/4cwR0oXGkZlu2j2/0xeB7ByaB5Cijfiur6JbwSFK/2PC?=
+ =?iso-8859-1?Q?/8mIuRjbMH01+PGALI2v8vbujtwbeNDvtFrSXNbNrVmZOGvRUyj4D0OQr4?=
+ =?iso-8859-1?Q?kVR0xCXYVI0SmPWGMQBXqMjqQpa6eJJ6XAtbSo1RJ04RaQmCyu6OfjnWPG?=
+ =?iso-8859-1?Q?DLJCE0L3cMBTcDxAkB2QOk5EOmvO4hlOm0s4tCrqvgPsJeiFQMSFFOOxuo?=
+ =?iso-8859-1?Q?PUYneJYPp91Juv8Kmf+/K69oHCMM4QNGSHnOMy7mvU0xAtiw8F/z7tFEXe?=
+ =?iso-8859-1?Q?Ub6t53MnH+2i7Y+P3NGpi4lLHhsIUpxouKjfdc6snII1MmdbswoAdFk2/P?=
+ =?iso-8859-1?Q?42/79H9UI1zByplhg6ds0fCtO898UkXOnIogAzKsAGSsRgGaQtBFVFMN+T?=
+ =?iso-8859-1?Q?N6jArqXRt/63MxXbpsDa0/OGxgFRdhHkE9p6CXG/fSrHkNivcACApfermK?=
+ =?iso-8859-1?Q?E9ndiKV7nJYWtwo1zIjlSWbDrA/anfRFmba/S6bHpQdlhZ8TFuLDghdgUM?=
+ =?iso-8859-1?Q?yYp+uT+VlPRx/Ngk7mslNZ8OhJMppfrLHwdjS+7edEGzwZiLvwMzcE4XM/?=
+ =?iso-8859-1?Q?UKOEDEBtWTSqZ0ALBqyTrDFWvTXkYEeh1U0y4kgHkx18Ka57pZPzCha2/Q?=
+ =?iso-8859-1?Q?wmJCH+7+xHbdpfoFMdELNyG8qyWPRdR7JQLugfrhBBJrO5p6fEy1Y10lo1?=
+ =?iso-8859-1?Q?mO88lX6M2ykgWjhY5wS7KOzxeU3svGPhMLMuNrKDkpGBdM7PEQmXym+DvH?=
+ =?iso-8859-1?Q?c0LW5BLwYOiw75kyMxo31RLLUsidW4wTi3VDdYAvoItIser13bkgh/A5fo?=
+ =?iso-8859-1?Q?OLKo0NN01rW9901gfWY4/7GwuNtsVigF4PMusTDNGMBGiiWDwjylkCnS4s?=
+ =?iso-8859-1?Q?aD71GR8MIdl95eUQsRGspTrVf/10/NYIzFRWSpSse+XJd4GYzMV6lgWMsE?=
+ =?iso-8859-1?Q?UfdKL35ErWGBf2JQEfOzXIE31cuF+5H0LiQcsJMhen+GAUaS7egEjPTSsc?=
+ =?iso-8859-1?Q?ZSikngGTkWsb9Bkbn9Q7ijT8KNMji4bZSlda15Vun+MpO18vHRDTG7TQw2?=
+ =?iso-8859-1?Q?L2yegZ2X6zTjeWPvihxexStI40jMecqluYtwjZKlfuc88dbB79kKZ8Y7Jb?=
+ =?iso-8859-1?Q?WE5IfSYhg1sGdY3MTYzJJ+1yovmEw1lwJX175R4xuwL+d2ExqiYBcqBDpG?=
+ =?iso-8859-1?Q?8iyrc/fXCKk3I5zhQDzfUM5oj5fiVXqZThIKNwNfS7EwmVDrzR1XR/Vn26?=
+ =?iso-8859-1?Q?1qxG8zTHqP3+3Amp14ITE9RJgAxYVLPLnHDb01WJllayRYlFCS3Rp0Vpcq?=
+ =?iso-8859-1?Q?eEF4wwaq7mf/g2UD1vLspzAlhPGWcttO59Ai1GyFr5v1Y77uJcacngrm0y?=
+ =?iso-8859-1?Q?uYUjlGKZ/lSXWDzcjpe708ZSu/1Yrqz/KGwYCnWagl9hqtRrsQa2KCWnJp?=
+ =?iso-8859-1?Q?Sq3OdTZsxcqLJqwjGnLfkdr4LpEpObyM2J5StZKiug0bLYy39eBhhMONP5?=
+ =?iso-8859-1?Q?wK7mU8dSab1Bl8jw+V779joEND/qiB3ikfQt+znQ0Aced/vf8LVS1c1kAo?=
+ =?iso-8859-1?Q?F3KDE26QlYxnX0aF/FCHndjiwI4zJkqLjZaX++9tnCg3704nxmoCGg/V4O?=
+ =?iso-8859-1?Q?Qy?=
+X-MS-Exchange-AntiSpam-MessageData-1: BqzBol5WKt7J9A==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3974d25f-be9c-4daf-9c45-08da2d9eb3c9
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5650.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:21:27.3419
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Aomd2tuGN2i0z7gdexZj6zBpudofVx3oFGQK7mfRM0MuqFRT6CZSJvV45k1Q7LmSFLFIyzIpy3RXDR3lmDi2iQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1521
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tuesday 3 May 2022 20:21:46 CEST Jaehee Park wrote:
+> Currently, upon virtual interface creation, wfx_add_interface() stores
+> a reference to the corresponding struct ieee80211_vif in private data,
+> for later usage. This is not needed when using the container_of
+> construct. This construct already has all the info it needs to retrieve
+> the reference to the corresponding struct from the offset that is
+> already available, inherent in container_of(), between its type and
+> member inputs (struct ieee80211_vif and drv_priv, respectively).
+> Remove vif (which was previously storing the reference to the struct
+> ieee80211_vif) from the struct wfx_vif, define a function
+> wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
+> the newly defined container_of construct.
+>=20
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> ---
+> v2
+> - Sequenced the wfx.h file (with the new defines) to show up first on
+> the diff, which makes the ordering of the diff more logical.
+>=20
+> v3
+> - Made edits to the commit message.
+> - Shortened the macro name from wvif_to_vif to to_vif.
+> - For functions that had more than one instance of vif, defined one
+> reference vif at the beginning of the function and used that instead.
+> - Broke the if-statements that ran long into two lines.
+>=20
+> v4
+> - Changed macro into function and named it back to wvif_to_vif
+> - Fit all lines in patch to 80 columns
+> - Decared a reference to vif at the beginning of all the functions
+> where it's being used
+>=20
+> v5
+> - Placed longest declarations first
+>=20
+>=20
+>  drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
+>  drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
+>  drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
+>  drivers/net/wireless/silabs/wfx/key.c     |  4 +-
+>  drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
+>  drivers/net/wireless/silabs/wfx/scan.c    | 11 ++--
+>  drivers/net/wireless/silabs/wfx/sta.c     | 71 ++++++++++++++---------
+>  7 files changed, 65 insertions(+), 38 deletions(-)
+>=20
+[...]
+> diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wireless=
+/silabs/wfx/sta.c
+> index 3297d73c327a..040d1f9fb03a 100644
+> --- a/drivers/net/wireless/silabs/wfx/sta.c
+> +++ b/drivers/net/wireless/silabs/wfx/sta.c
+> @@ -101,6 +101,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, un=
+signed int changed_flags,
+>         struct wfx_vif *wvif =3D NULL;
+>         struct wfx_dev *wdev =3D hw->priv;
+>         bool filter_bssid, filter_prbreq, filter_beacon;
+> +       struct ieee80211_vif *vif =3D wvif_to_vif(wvif);
 
---8323329-1991360190-1651648872=:1623
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+wvif is modified later in the function, so this one is not correct.
 
-Many archs have termbits.h as octal numbers. It makes hard for humans
-to parse the magnitude of large numbers correctly and to compare with
-hex ones of the same define.
 
-Convert octal values to hex.
+--=20
+J=E9r=F4me Pouiller
 
-First step is an automated conversion with:
 
-for i in $(git ls-files | grep 'termbits\.h'); do
-	awk --non-decimal-data '/^#define\s+[A-Z][A-Z0-9]*\s+0[0-9]/ {
-		l=int(((length($3) - 1) * 3 + 3) / 4);
-		repl = sprintf("0x%0" l "x", $3);
-		print gensub(/[^[:blank:]]+/, repl, 3);
-		next} {print}' $i > $i~;
-	mv $i~ $i;
-done
-
-On top of that, some manual processing on alignment and number of zeros.
-In addition, small tweaks to formatting of a few comments on the same 
-lines.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
-
-I prefer this to go in though Greg's tty tree.
-
- arch/alpha/include/uapi/asm/termbits.h   | 202 ++++++++++-----------
- arch/mips/include/uapi/asm/termbits.h    | 222 +++++++++++------------
- arch/parisc/include/uapi/asm/termbits.h  | 220 +++++++++++-----------
- arch/powerpc/include/uapi/asm/termbits.h | 202 ++++++++++-----------
- include/uapi/asm-generic/termbits.h      | 220 +++++++++++-----------
- 5 files changed, 533 insertions(+), 533 deletions(-)
-
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index 4575ba34a0ea..30dc7ff777b8 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -72,57 +72,57 @@ struct ktermios {
- #define VTIME 17
- 
- /* c_iflag bits */
--#define IGNBRK	0000001
--#define BRKINT	0000002
--#define IGNPAR	0000004
--#define PARMRK	0000010
--#define INPCK	0000020
--#define ISTRIP	0000040
--#define INLCR	0000100
--#define IGNCR	0000200
--#define ICRNL	0000400
--#define IXON	0001000
--#define IXOFF	0002000
--#define IXANY	0004000
--#define IUCLC	0010000
--#define IMAXBEL	0020000
--#define IUTF8	0040000
-+#define IGNBRK	0x00001
-+#define BRKINT	0x00002
-+#define IGNPAR	0x00004
-+#define PARMRK	0x00008
-+#define INPCK	0x00010
-+#define ISTRIP	0x00020
-+#define INLCR	0x00040
-+#define IGNCR	0x00080
-+#define ICRNL	0x00100
-+#define IXON	0x00200
-+#define IXOFF	0x00400
-+#define IXANY	0x00800
-+#define IUCLC	0x01000
-+#define IMAXBEL	0x02000
-+#define IUTF8	0x04000
- 
- /* c_oflag bits */
--#define OPOST	0000001
--#define ONLCR	0000002
--#define OLCUC	0000004
--
--#define OCRNL	0000010
--#define ONOCR	0000020
--#define ONLRET	0000040
--
--#define OFILL	00000100
--#define OFDEL	00000200
--#define NLDLY	00001400
--#define   NL0	00000000
--#define   NL1	00000400
--#define   NL2	00001000
--#define   NL3	00001400
--#define TABDLY	00006000
--#define   TAB0	00000000
--#define   TAB1	00002000
--#define   TAB2	00004000
--#define   TAB3	00006000
--#define CRDLY	00030000
--#define   CR0	00000000
--#define   CR1	00010000
--#define   CR2	00020000
--#define   CR3	00030000
--#define FFDLY	00040000
--#define   FF0	00000000
--#define   FF1	00040000
--#define BSDLY	00100000
--#define   BS0	00000000
--#define   BS1	00100000
--#define VTDLY	00200000
--#define   VT0	00000000
--#define   VT1	00200000
-+#define OPOST	0x00001
-+#define ONLCR	0x00002
-+#define OLCUC	0x00004
-+
-+#define OCRNL	0x00008
-+#define ONOCR	0x00010
-+#define ONLRET	0x00020
-+
-+#define OFILL	0x000040
-+#define OFDEL	0x000080
-+#define NLDLY	0x000300
-+#define   NL0	0x000000
-+#define   NL1	0x000100
-+#define   NL2	0x000200
-+#define   NL3	0x000300
-+#define TABDLY	0x000c00
-+#define   TAB0	0x000000
-+#define   TAB1	0x000400
-+#define   TAB2	0x000800
-+#define   TAB3	0x000c00
-+#define CRDLY	0x003000
-+#define   CR0	0x000000
-+#define   CR1	0x001000
-+#define   CR2	0x002000
-+#define   CR3	0x003000
-+#define FFDLY	0x004000
-+#define   FF0	0x000000
-+#define   FF1	0x004000
-+#define BSDLY	0x008000
-+#define   BS0	0x000000
-+#define   BS1	0x008000
-+#define VTDLY	0x010000
-+#define   VT0	0x000000
-+#define   VT1	0x010000
- /*
-  * Should be equivalent to TAB3, see description of TAB3 in
-  * POSIX.1-2008, Ch. 11.2.3 "Output Modes"
-@@ -130,60 +130,60 @@ struct ktermios {
- #define XTABS	TAB3
- 
- /* c_cflag bit meaning */
--#define CBAUD	0000037
--#define  B0	0000000		/* hang up */
--#define  B50	0000001
--#define  B75	0000002
--#define  B110	0000003
--#define  B134	0000004
--#define  B150	0000005
--#define  B200	0000006
--#define  B300	0000007
--#define  B600	0000010
--#define  B1200	0000011
--#define  B1800	0000012
--#define  B2400	0000013
--#define  B4800	0000014
--#define  B9600	0000015
--#define  B19200	0000016
--#define  B38400	0000017
-+#define CBAUD		0x0000001f
-+#define  B0		0x00000000	/* hang up */
-+#define  B50		0x00000001
-+#define  B75		0x00000002
-+#define  B110		0x00000003
-+#define  B134		0x00000004
-+#define  B150		0x00000005
-+#define  B200		0x00000006
-+#define  B300		0x00000007
-+#define  B600		0x00000008
-+#define  B1200		0x00000009
-+#define  B1800		0x0000000a
-+#define  B2400		0x0000000b
-+#define  B4800		0x0000000c
-+#define  B9600		0x0000000d
-+#define  B19200		0x0000000e
-+#define  B38400		0x0000000f
- #define EXTA B19200
- #define EXTB B38400
--#define CBAUDEX 0000000
--#define  B57600   00020
--#define  B115200  00021
--#define  B230400  00022
--#define  B460800  00023
--#define  B500000  00024
--#define  B576000  00025
--#define  B921600  00026
--#define B1000000  00027
--#define B1152000  00030
--#define B1500000  00031
--#define B2000000  00032
--#define B2500000  00033
--#define B3000000  00034
--#define B3500000  00035
--#define B4000000  00036
--#define BOTHER    00037
--
--#define CSIZE	00001400
--#define   CS5	00000000
--#define   CS6	00000400
--#define   CS7	00001000
--#define   CS8	00001400
--
--#define CSTOPB	00002000
--#define CREAD	00004000
--#define PARENB	00010000
--#define PARODD	00020000
--#define HUPCL	00040000
--
--#define CLOCAL	00100000
--#define CMSPAR	  010000000000		/* mark or space (stick) parity */
--#define CRTSCTS	  020000000000		/* flow control */
--
--#define CIBAUD	07600000
-+#define CBAUDEX		0x00000000
-+#define  B57600		0x00000010
-+#define  B115200	0x00000011
-+#define  B230400	0x00000012
-+#define  B460800	0x00000013
-+#define  B500000	0x00000014
-+#define  B576000	0x00000015
-+#define  B921600	0x00000016
-+#define B1000000	0x00000017
-+#define B1152000	0x00000018
-+#define B1500000	0x00000019
-+#define B2000000	0x0000001a
-+#define B2500000	0x0000001b
-+#define B3000000	0x0000001c
-+#define B3500000	0x0000001d
-+#define B4000000	0x0000001e
-+#define BOTHER		0x0000001f
-+
-+#define CSIZE		0x00000300
-+#define   CS5		0x00000000
-+#define   CS6		0x00000100
-+#define   CS7		0x00000200
-+#define   CS8		0x00000300
-+
-+#define CSTOPB		0x00000400
-+#define CREAD		0x00000800
-+#define PARENB		0x00001000
-+#define PARODD		0x00002000
-+#define HUPCL		0x00004000
-+
-+#define CLOCAL		0x00008000
-+#define CMSPAR		0x40000000	/* mark or space (stick) parity */
-+#define CRTSCTS		0x80000000	/* flow control */
-+
-+#define CIBAUD		0x1f0000
- #define IBSHIFT	16
- 
- /* c_lflag bits */
-diff --git a/arch/mips/include/uapi/asm/termbits.h b/arch/mips/include/uapi/asm/termbits.h
-index dfeffba729b7..d1315ccdb39a 100644
---- a/arch/mips/include/uapi/asm/termbits.h
-+++ b/arch/mips/include/uapi/asm/termbits.h
-@@ -80,131 +80,131 @@ struct ktermios {
- #define VEOL		17		/* End-of-line character [ICANON].  */
- 
- /* c_iflag bits */
--#define IGNBRK	0000001		/* Ignore break condition.  */
--#define BRKINT	0000002		/* Signal interrupt on break.  */
--#define IGNPAR	0000004		/* Ignore characters with parity errors.  */
--#define PARMRK	0000010		/* Mark parity and framing errors.  */
--#define INPCK	0000020		/* Enable input parity check.  */
--#define ISTRIP	0000040		/* Strip 8th bit off characters.  */
--#define INLCR	0000100		/* Map NL to CR on input.  */
--#define IGNCR	0000200		/* Ignore CR.  */
--#define ICRNL	0000400		/* Map CR to NL on input.  */
--#define IUCLC	0001000		/* Map upper case to lower case on input.  */
--#define IXON	0002000		/* Enable start/stop output control.  */
--#define IXANY	0004000		/* Any character will restart after stop.  */
--#define IXOFF	0010000		/* Enable start/stop input control.  */
--#define IMAXBEL 0020000		/* Ring bell when input queue is full.	*/
--#define IUTF8	0040000		/* Input is UTF-8 */
-+#define IGNBRK	0x00001		/* Ignore break condition.  */
-+#define BRKINT	0x00002		/* Signal interrupt on break.  */
-+#define IGNPAR	0x00004		/* Ignore characters with parity errors.  */
-+#define PARMRK	0x00008		/* Mark parity and framing errors.  */
-+#define INPCK	0x00010		/* Enable input parity check.  */
-+#define ISTRIP	0x00020		/* Strip 8th bit off characters.  */
-+#define INLCR	0x00040		/* Map NL to CR on input.  */
-+#define IGNCR	0x00080		/* Ignore CR.  */
-+#define ICRNL	0x00100		/* Map CR to NL on input.  */
-+#define IUCLC	0x00200		/* Map upper case to lower case on input.  */
-+#define IXON	0x00400		/* Enable start/stop output control.  */
-+#define IXANY	0x00800		/* Any character will restart after stop.  */
-+#define IXOFF	0x01000		/* Enable start/stop input control.  */
-+#define IMAXBEL	0x02000		/* Ring bell when input queue is full.	*/
-+#define IUTF8	0x04000		/* Input is UTF-8 */
- 
- /* c_oflag bits */
--#define OPOST	0000001		/* Perform output processing.  */
--#define OLCUC	0000002		/* Map lower case to upper case on output.  */
--#define ONLCR	0000004		/* Map NL to CR-NL on output.  */
--#define OCRNL	0000010
--#define ONOCR	0000020
--#define ONLRET	0000040
--#define OFILL	0000100
--#define OFDEL	0000200
--#define NLDLY	0000400
--#define	  NL0	0000000
--#define	  NL1	0000400
--#define CRDLY	0003000
--#define	  CR0	0000000
--#define	  CR1	0001000
--#define	  CR2	0002000
--#define	  CR3	0003000
--#define TABDLY	0014000
--#define	  TAB0	0000000
--#define	  TAB1	0004000
--#define	  TAB2	0010000
--#define	  TAB3	0014000
--#define	  XTABS 0014000
--#define BSDLY	0020000
--#define	  BS0	0000000
--#define	  BS1	0020000
--#define VTDLY	0040000
--#define	  VT0	0000000
--#define	  VT1	0040000
--#define FFDLY	0100000
--#define	  FF0	0000000
--#define	  FF1	0100000
-+#define OPOST	0x00001		/* Perform output processing.  */
-+#define OLCUC	0x00002		/* Map lower case to upper case on output.  */
-+#define ONLCR	0x00004		/* Map NL to CR-NL on output.  */
-+#define OCRNL	0x00008
-+#define ONOCR	0x00010
-+#define ONLRET	0x00020
-+#define OFILL	0x00040
-+#define OFDEL	0x00080
-+#define NLDLY	0x00100
-+#define	  NL0	0x00000
-+#define	  NL1	0x00100
-+#define CRDLY	0x00600
-+#define	  CR0	0x00000
-+#define	  CR1	0x00200
-+#define	  CR2	0x00400
-+#define	  CR3	0x00600
-+#define TABDLY	0x01800
-+#define	  TAB0	0x00000
-+#define	  TAB1	0x00800
-+#define	  TAB2	0x01000
-+#define	  TAB3	0x01800
-+#define	  XTABS	0x01800
-+#define BSDLY	0x02000
-+#define	  BS0	0x00000
-+#define	  BS1	0x02000
-+#define VTDLY	0x04000
-+#define	  VT0	0x00000
-+#define	  VT1	0x04000
-+#define FFDLY	0x08000
-+#define	  FF0	0x00000
-+#define	  FF1	0x08000
- /*
- #define PAGEOUT ???
- #define WRAP	???
-  */
- 
- /* c_cflag bit meaning */
--#define CBAUD	0010017
--#define	 B0	0000000		/* hang up */
--#define	 B50	0000001
--#define	 B75	0000002
--#define	 B110	0000003
--#define	 B134	0000004
--#define	 B150	0000005
--#define	 B200	0000006
--#define	 B300	0000007
--#define	 B600	0000010
--#define	 B1200	0000011
--#define	 B1800	0000012
--#define	 B2400	0000013
--#define	 B4800	0000014
--#define	 B9600	0000015
--#define	 B19200 0000016
--#define	 B38400 0000017
-+#define CBAUD		0x0000100f
-+#define	 B0		0x00000000	/* hang up */
-+#define	 B50		0x00000001
-+#define	 B75		0x00000002
-+#define	 B110		0x00000003
-+#define	 B134		0x00000004
-+#define	 B150		0x00000005
-+#define	 B200		0x00000006
-+#define	 B300		0x00000007
-+#define	 B600		0x00000008
-+#define	 B1200		0x00000009
-+#define	 B1800		0x0000000a
-+#define	 B2400		0x0000000b
-+#define	 B4800		0x0000000c
-+#define	 B9600		0x0000000d
-+#define	 B19200		0x0000000e
-+#define	 B38400		0x0000000f
- #define EXTA B19200
- #define EXTB B38400
--#define CSIZE	0000060		/* Number of bits per byte (mask).  */
--#define	  CS5	0000000		/* 5 bits per byte.  */
--#define	  CS6	0000020		/* 6 bits per byte.  */
--#define	  CS7	0000040		/* 7 bits per byte.  */
--#define	  CS8	0000060		/* 8 bits per byte.  */
--#define CSTOPB	0000100		/* Two stop bits instead of one.  */
--#define CREAD	0000200		/* Enable receiver.  */
--#define PARENB	0000400		/* Parity enable.  */
--#define PARODD	0001000		/* Odd parity instead of even.	*/
--#define HUPCL	0002000		/* Hang up on last close.  */
--#define CLOCAL	0004000		/* Ignore modem status lines.  */
--#define CBAUDEX 0010000
--#define	   BOTHER 0010000
--#define	   B57600 0010001
--#define	  B115200 0010002
--#define	  B230400 0010003
--#define	  B460800 0010004
--#define	  B500000 0010005
--#define	  B576000 0010006
--#define	  B921600 0010007
--#define	 B1000000 0010010
--#define	 B1152000 0010011
--#define	 B1500000 0010012
--#define	 B2000000 0010013
--#define	 B2500000 0010014
--#define	 B3000000 0010015
--#define	 B3500000 0010016
--#define	 B4000000 0010017
--#define CIBAUD	  002003600000	/* input baud rate */
--#define CMSPAR	  010000000000	/* mark or space (stick) parity */
--#define CRTSCTS	  020000000000	/* flow control */
-+#define CSIZE		0x00000030	/* Number of bits per byte (mask) */
-+#define	  CS5		0x00000000	/* 5 bits per byte */
-+#define	  CS6		0x00000010	/* 6 bits per byte */
-+#define	  CS7		0x00000020	/* 7 bits per byte */
-+#define	  CS8		0x00000030	/* 8 bits per byte */
-+#define CSTOPB		0x00000040	/* Two stop bits instead of one */
-+#define CREAD		0x00000080	/* Enable receiver */
-+#define PARENB		0x00000100	/* Parity enable */
-+#define PARODD		0x00000200	/* Odd parity instead of even */
-+#define HUPCL		0x00000400	/* Hang up on last close */
-+#define CLOCAL		0x00000800	/* Ignore modem status lines */
-+#define CBAUDEX		0x00001000
-+#define	   BOTHER	0x00001000
-+#define	   B57600	0x00001001
-+#define	  B115200	0x00001002
-+#define	  B230400	0x00001003
-+#define	  B460800	0x00001004
-+#define	  B500000	0x00001005
-+#define	  B576000	0x00001006
-+#define	  B921600	0x00001007
-+#define	 B1000000	0x00001008
-+#define	 B1152000	0x00001009
-+#define	 B1500000	0x0000100a
-+#define	 B2000000	0x0000100b
-+#define	 B2500000	0x0000100c
-+#define	 B3000000	0x0000100d
-+#define	 B3500000	0x0000100e
-+#define	 B4000000	0x0000100f
-+#define CIBAUD		0x100f0000	/* input baud rate */
-+#define CMSPAR		0x40000000	/* mark or space (stick) parity */
-+#define CRTSCTS		0x80000000	/* flow control */
- 
- #define IBSHIFT 16		/* Shift from CBAUD to CIBAUD */
- 
- /* c_lflag bits */
--#define ISIG	0000001		/* Enable signals.  */
--#define ICANON	0000002		/* Do erase and kill processing.  */
--#define XCASE	0000004
--#define ECHO	0000010		/* Enable echo.	 */
--#define ECHOE	0000020		/* Visual erase for ERASE.  */
--#define ECHOK	0000040		/* Echo NL after KILL.	*/
--#define ECHONL	0000100		/* Echo NL even if ECHO is off.	 */
--#define NOFLSH	0000200		/* Disable flush after interrupt.  */
--#define IEXTEN	0000400		/* Enable DISCARD and LNEXT.  */
--#define ECHOCTL 0001000		/* Echo control characters as ^X.  */
--#define ECHOPRT 0002000		/* Hardcopy visual erase.  */
--#define ECHOKE	0004000		/* Visual erase for KILL.  */
--#define FLUSHO	0020000
--#define PENDIN	0040000		/* Retype pending input (state).  */
--#define TOSTOP	0100000		/* Send SIGTTOU for background output.	*/
--#define ITOSTOP TOSTOP
--#define EXTPROC 0200000		/* External processing on pty */
-+#define ISIG	0x00001		/* Enable signals.  */
-+#define ICANON	0x00002		/* Do erase and kill processing.  */
-+#define XCASE	0x00004
-+#define ECHO	0x00008		/* Enable echo.	 */
-+#define ECHOE	0x00010		/* Visual erase for ERASE.  */
-+#define ECHOK	0x00020		/* Echo NL after KILL.	*/
-+#define ECHONL	0x00040		/* Echo NL even if ECHO is off.	 */
-+#define NOFLSH	0x00080		/* Disable flush after interrupt.  */
-+#define IEXTEN	0x00100		/* Enable DISCARD and LNEXT.  */
-+#define ECHOCTL	0x00200		/* Echo control characters as ^X.  */
-+#define ECHOPRT	0x00400		/* Hardcopy visual erase.  */
-+#define ECHOKE	0x00800		/* Visual erase for KILL.  */
-+#define FLUSHO	0x02000
-+#define PENDIN	0x04000		/* Retype pending input (state).  */
-+#define TOSTOP	0x08000		/* Send SIGTTOU for background output.	*/
-+#define ITOSTOP	TOSTOP
-+#define EXTPROC	0x10000		/* External processing on pty */
- 
- /* ioctl (fd, TIOCSERGETLSR, &result) where result may be as below */
- #define TIOCSER_TEMT	0x01	/* Transmitter physically empty */
-diff --git a/arch/parisc/include/uapi/asm/termbits.h b/arch/parisc/include/uapi/asm/termbits.h
-index 40e920f8d683..6017ee08f099 100644
---- a/arch/parisc/include/uapi/asm/termbits.h
-+++ b/arch/parisc/include/uapi/asm/termbits.h
-@@ -61,127 +61,127 @@ struct ktermios {
- 
- 
- /* c_iflag bits */
--#define IGNBRK	0000001
--#define BRKINT	0000002
--#define IGNPAR	0000004
--#define PARMRK	0000010
--#define INPCK	0000020
--#define ISTRIP	0000040
--#define INLCR	0000100
--#define IGNCR	0000200
--#define ICRNL	0000400
--#define IUCLC	0001000
--#define IXON	0002000
--#define IXANY	0004000
--#define IXOFF	0010000
--#define IMAXBEL	0040000
--#define IUTF8	0100000
-+#define IGNBRK	0x00001
-+#define BRKINT	0x00002
-+#define IGNPAR	0x00004
-+#define PARMRK	0x00008
-+#define INPCK	0x00010
-+#define ISTRIP	0x00020
-+#define INLCR	0x00040
-+#define IGNCR	0x00080
-+#define ICRNL	0x00100
-+#define IUCLC	0x00200
-+#define IXON	0x00400
-+#define IXANY	0x00800
-+#define IXOFF	0x01000
-+#define IMAXBEL	0x04000
-+#define IUTF8	0x08000
- 
- /* c_oflag bits */
--#define OPOST	0000001
--#define OLCUC	0000002
--#define ONLCR	0000004
--#define OCRNL	0000010
--#define ONOCR	0000020
--#define ONLRET	0000040
--#define OFILL	0000100
--#define OFDEL	0000200
--#define NLDLY	0000400
--#define   NL0	0000000
--#define   NL1	0000400
--#define CRDLY	0003000
--#define   CR0	0000000
--#define   CR1	0001000
--#define   CR2	0002000
--#define   CR3	0003000
--#define TABDLY	0014000
--#define   TAB0	0000000
--#define   TAB1	0004000
--#define   TAB2	0010000
--#define   TAB3	0014000
--#define   XTABS	0014000
--#define BSDLY	0020000
--#define   BS0	0000000
--#define   BS1	0020000
--#define VTDLY	0040000
--#define   VT0	0000000
--#define   VT1	0040000
--#define FFDLY	0100000
--#define   FF0	0000000
--#define   FF1	0100000
-+#define OPOST	0x00001
-+#define OLCUC	0x00002
-+#define ONLCR	0x00004
-+#define OCRNL	0x00008
-+#define ONOCR	0x00010
-+#define ONLRET	0x00020
-+#define OFILL	0x00040
-+#define OFDEL	0x00080
-+#define NLDLY	0x00100
-+#define   NL0	0x00000
-+#define   NL1	0x00100
-+#define CRDLY	0x00600
-+#define   CR0	0x00000
-+#define   CR1	0x00200
-+#define   CR2	0x00400
-+#define   CR3	0x00600
-+#define TABDLY	0x01800
-+#define   TAB0	0x00000
-+#define   TAB1	0x00800
-+#define   TAB2	0x01000
-+#define   TAB3	0x01800
-+#define   XTABS	0x01800
-+#define BSDLY	0x02000
-+#define   BS0	0x00000
-+#define   BS1	0x02000
-+#define VTDLY	0x04000
-+#define   VT0	0x00000
-+#define   VT1	0x04000
-+#define FFDLY	0x08000
-+#define   FF0	0x00000
-+#define   FF1	0x08000
- 
- /* c_cflag bit meaning */
--#define CBAUD   0010017
--#define  B0     0000000         /* hang up */
--#define  B50    0000001
--#define  B75    0000002
--#define  B110   0000003
--#define  B134   0000004
--#define  B150   0000005
--#define  B200   0000006
--#define  B300   0000007
--#define  B600   0000010
--#define  B1200  0000011
--#define  B1800  0000012
--#define  B2400  0000013
--#define  B4800  0000014
--#define  B9600  0000015
--#define  B19200 0000016
--#define  B38400 0000017
-+#define CBAUD		0x0000100f
-+#define  B0		0x00000000	/* hang up */
-+#define  B50		0x00000001
-+#define  B75		0x00000002
-+#define  B110		0x00000003
-+#define  B134		0x00000004
-+#define  B150		0x00000005
-+#define  B200		0x00000006
-+#define  B300		0x00000007
-+#define  B600		0x00000008
-+#define  B1200		0x00000009
-+#define  B1800		0x0000000a
-+#define  B2400		0x0000000b
-+#define  B4800		0x0000000c
-+#define  B9600		0x0000000d
-+#define  B19200		0x0000000e
-+#define  B38400		0x0000000f
- #define EXTA B19200
- #define EXTB B38400
--#define CSIZE   0000060
--#define   CS5   0000000
--#define   CS6   0000020
--#define   CS7   0000040
--#define   CS8   0000060
--#define CSTOPB  0000100
--#define CREAD   0000200
--#define PARENB  0000400
--#define PARODD  0001000
--#define HUPCL   0002000
--#define CLOCAL  0004000
--#define CBAUDEX 0010000
--#define    BOTHER 0010000
--#define    B57600 0010001
--#define   B115200 0010002
--#define   B230400 0010003
--#define   B460800 0010004
--#define   B500000 0010005
--#define   B576000 0010006
--#define   B921600 0010007
--#define  B1000000 0010010
--#define  B1152000 0010011
--#define  B1500000 0010012
--#define  B2000000 0010013
--#define  B2500000 0010014
--#define  B3000000 0010015
--#define  B3500000 0010016
--#define  B4000000 0010017
--#define CIBAUD    002003600000		/* input baud rate */
--#define CMSPAR    010000000000          /* mark or space (stick) parity */
--#define CRTSCTS   020000000000          /* flow control */
-+#define CSIZE		0x00000030
-+#define   CS5		0x00000000
-+#define   CS6		0x00000010
-+#define   CS7		0x00000020
-+#define   CS8		0x00000030
-+#define CSTOPB		0x00000040
-+#define CREAD		0x00000080
-+#define PARENB		0x00000100
-+#define PARODD		0x00000200
-+#define HUPCL		0x00000400
-+#define CLOCAL		0x00000800
-+#define CBAUDEX		0x00001000
-+#define    BOTHER	0x00001000
-+#define    B57600	0x00001001
-+#define   B115200	0x00001002
-+#define   B230400	0x00001003
-+#define   B460800	0x00001004
-+#define   B500000	0x00001005
-+#define   B576000	0x00001006
-+#define   B921600	0x00001007
-+#define  B1000000	0x00001008
-+#define  B1152000	0x00001009
-+#define  B1500000	0x0000100a
-+#define  B2000000	0x0000100b
-+#define  B2500000	0x0000100c
-+#define  B3000000	0x0000100d
-+#define  B3500000	0x0000100e
-+#define  B4000000	0x0000100f
-+#define CIBAUD		0x100f0000		/* input baud rate */
-+#define CMSPAR		0x40000000		/* mark or space (stick) parity */
-+#define CRTSCTS		0x80000000		/* flow control */
- 
- #define IBSHIFT	16		/* Shift from CBAUD to CIBAUD */
- 
- 
- /* c_lflag bits */
--#define ISIG    0000001
--#define ICANON  0000002
--#define XCASE   0000004
--#define ECHO    0000010
--#define ECHOE   0000020
--#define ECHOK   0000040
--#define ECHONL  0000100
--#define NOFLSH  0000200
--#define TOSTOP  0000400
--#define ECHOCTL 0001000
--#define ECHOPRT 0002000
--#define ECHOKE  0004000
--#define FLUSHO  0010000
--#define PENDIN  0040000
--#define IEXTEN  0100000
--#define EXTPROC	0200000
-+#define ISIG	0x00001
-+#define ICANON	0x00002
-+#define XCASE	0x00004
-+#define ECHO	0x00008
-+#define ECHOE	0x00010
-+#define ECHOK	0x00020
-+#define ECHONL	0x00040
-+#define NOFLSH	0x00080
-+#define TOSTOP	0x00100
-+#define ECHOCTL	0x00200
-+#define ECHOPRT	0x00400
-+#define ECHOKE	0x00800
-+#define FLUSHO	0x01000
-+#define PENDIN	0x04000
-+#define IEXTEN	0x08000
-+#define EXTPROC	0x10000
- 
- /* tcflow() and TCXONC use these */
- #define	TCOOFF		0
-diff --git a/arch/powerpc/include/uapi/asm/termbits.h b/arch/powerpc/include/uapi/asm/termbits.h
-index ed18bc61f63d..e4892f2d5592 100644
---- a/arch/powerpc/include/uapi/asm/termbits.h
-+++ b/arch/powerpc/include/uapi/asm/termbits.h
-@@ -64,115 +64,115 @@ struct ktermios {
- #define VDISCARD	16
- 
- /* c_iflag bits */
--#define IGNBRK	0000001
--#define BRKINT	0000002
--#define IGNPAR	0000004
--#define PARMRK	0000010
--#define INPCK	0000020
--#define ISTRIP	0000040
--#define INLCR	0000100
--#define IGNCR	0000200
--#define ICRNL	0000400
--#define IXON	0001000
--#define IXOFF	0002000
--#define IXANY	0004000
--#define IUCLC	0010000
--#define IMAXBEL	0020000
--#define	IUTF8	0040000
-+#define IGNBRK	0x00001
-+#define BRKINT	0x00002
-+#define IGNPAR	0x00004
-+#define PARMRK	0x00008
-+#define INPCK	0x00010
-+#define ISTRIP	0x00020
-+#define INLCR	0x00040
-+#define IGNCR	0x00080
-+#define ICRNL	0x00100
-+#define IXON	0x00200
-+#define IXOFF	0x00400
-+#define IXANY	0x00800
-+#define IUCLC	0x01000
-+#define IMAXBEL	0x02000
-+#define	IUTF8	0x04000
- 
- /* c_oflag bits */
--#define OPOST	0000001
--#define ONLCR	0000002
--#define OLCUC	0000004
--
--#define OCRNL	0000010
--#define ONOCR	0000020
--#define ONLRET	0000040
--
--#define OFILL	00000100
--#define OFDEL	00000200
--#define NLDLY	00001400
--#define   NL0	00000000
--#define   NL1	00000400
--#define   NL2	00001000
--#define   NL3	00001400
--#define TABDLY	00006000
--#define   TAB0	00000000
--#define   TAB1	00002000
--#define   TAB2	00004000
--#define   TAB3	00006000
--#define   XTABS	00006000	/* required by POSIX to == TAB3 */
--#define CRDLY	00030000
--#define   CR0	00000000
--#define   CR1	00010000
--#define   CR2	00020000
--#define   CR3	00030000
--#define FFDLY	00040000
--#define   FF0	00000000
--#define   FF1	00040000
--#define BSDLY	00100000
--#define   BS0	00000000
--#define   BS1	00100000
--#define VTDLY	00200000
--#define   VT0	00000000
--#define   VT1	00200000
-+#define OPOST	0x00001
-+#define ONLCR	0x00002
-+#define OLCUC	0x00004
-+
-+#define OCRNL	0x00008
-+#define ONOCR	0x00010
-+#define ONLRET	0x00020
-+
-+#define OFILL	0x000040
-+#define OFDEL	0x000080
-+#define NLDLY	0x000300
-+#define   NL0	0x000000
-+#define   NL1	0x000100
-+#define   NL2	0x000200
-+#define   NL3	0x000300
-+#define TABDLY	0x000c00
-+#define   TAB0	0x000000
-+#define   TAB1	0x000400
-+#define   TAB2	0x000800
-+#define   TAB3	0x000c00
-+#define   XTABS	0x000c00	/* required by POSIX to == TAB3 */
-+#define CRDLY	0x003000
-+#define   CR0	0x000000
-+#define   CR1	0x001000
-+#define   CR2	0x002000
-+#define   CR3	0x003000
-+#define FFDLY	0x004000
-+#define   FF0	0x000000
-+#define   FF1	0x004000
-+#define BSDLY	0x008000
-+#define   BS0	0x000000
-+#define   BS1	0x008000
-+#define VTDLY	0x010000
-+#define   VT0	0x000000
-+#define   VT1	0x010000
- 
- /* c_cflag bit meaning */
--#define CBAUD	0000377
--#define  B0	0000000		/* hang up */
--#define  B50	0000001
--#define  B75	0000002
--#define  B110	0000003
--#define  B134	0000004
--#define  B150	0000005
--#define  B200	0000006
--#define  B300	0000007
--#define  B600	0000010
--#define  B1200	0000011
--#define  B1800	0000012
--#define  B2400	0000013
--#define  B4800	0000014
--#define  B9600	0000015
--#define  B19200	0000016
--#define  B38400	0000017
-+#define CBAUD		0x000000ff
-+#define  B0		0x00000000	/* hang up */
-+#define  B50		0x00000001
-+#define  B75		0x00000002
-+#define  B110		0x00000003
-+#define  B134		0x00000004
-+#define  B150		0x00000005
-+#define  B200		0x00000006
-+#define  B300		0x00000007
-+#define  B600		0x00000008
-+#define  B1200		0x00000009
-+#define  B1800		0x0000000a
-+#define  B2400		0x0000000b
-+#define  B4800		0x0000000c
-+#define  B9600		0x0000000d
-+#define  B19200		0x0000000e
-+#define  B38400		0x0000000f
- #define  EXTA   B19200
- #define  EXTB   B38400
--#define  CBAUDEX 0000000
--#define  B57600   00020
--#define  B115200  00021
--#define  B230400  00022
--#define  B460800  00023
--#define  B500000  00024
--#define  B576000  00025
--#define  B921600  00026
--#define B1000000  00027
--#define B1152000  00030
--#define B1500000  00031
--#define B2000000  00032
--#define B2500000  00033
--#define B3000000  00034
--#define B3500000  00035
--#define B4000000  00036
--#define   BOTHER  00037
--
--#define CIBAUD	077600000
-+#define CBAUDEX		0x00000000
-+#define  B57600		0x00000010
-+#define  B115200	0x00000011
-+#define  B230400	0x00000012
-+#define  B460800	0x00000013
-+#define  B500000	0x00000014
-+#define  B576000	0x00000015
-+#define  B921600	0x00000016
-+#define B1000000	0x00000017
-+#define B1152000	0x00000018
-+#define B1500000	0x00000019
-+#define B2000000	0x0000001a
-+#define B2500000	0x0000001b
-+#define B3000000	0x0000001c
-+#define B3500000	0x0000001d
-+#define B4000000	0x0000001e
-+#define   BOTHER	0x0000001f
-+
-+#define CIBAUD		0x00ff0000
- #define IBSHIFT	16		/* Shift from CBAUD to CIBAUD */
- 
--#define CSIZE	00001400
--#define   CS5	00000000
--#define   CS6	00000400
--#define   CS7	00001000
--#define   CS8	00001400
--
--#define CSTOPB	00002000
--#define CREAD	00004000
--#define PARENB	00010000
--#define PARODD	00020000
--#define HUPCL	00040000
--
--#define CLOCAL	00100000
--#define CMSPAR	  010000000000		/* mark or space (stick) parity */
--#define CRTSCTS	  020000000000		/* flow control */
-+#define CSIZE		0x00000300
-+#define   CS5		0x00000000
-+#define   CS6		0x00000100
-+#define   CS7		0x00000200
-+#define   CS8		0x00000300
-+
-+#define CSTOPB		0x00000400
-+#define CREAD		0x00000800
-+#define PARENB		0x00001000
-+#define PARODD		0x00002000
-+#define HUPCL		0x00004000
-+
-+#define CLOCAL		0x00008000
-+#define CMSPAR		0x40000000	/* mark or space (stick) parity */
-+#define CRTSCTS		0x80000000	/* flow control */
- 
- /* c_lflag bits */
- #define ISIG	0x00000080
-diff --git a/include/uapi/asm-generic/termbits.h b/include/uapi/asm-generic/termbits.h
-index 2fbaf9ae89dd..470fd673ff84 100644
---- a/include/uapi/asm-generic/termbits.h
-+++ b/include/uapi/asm-generic/termbits.h
-@@ -60,126 +60,126 @@ struct ktermios {
- #define VEOL2 16
- 
- /* c_iflag bits */
--#define IGNBRK	0000001
--#define BRKINT	0000002
--#define IGNPAR	0000004
--#define PARMRK	0000010
--#define INPCK	0000020
--#define ISTRIP	0000040
--#define INLCR	0000100
--#define IGNCR	0000200
--#define ICRNL	0000400
--#define IUCLC	0001000
--#define IXON	0002000
--#define IXANY	0004000
--#define IXOFF	0010000
--#define IMAXBEL	0020000
--#define IUTF8	0040000
-+#define IGNBRK	0x00001
-+#define BRKINT	0x00002
-+#define IGNPAR	0x00004
-+#define PARMRK	0x00008
-+#define INPCK	0x00010
-+#define ISTRIP	0x00020
-+#define INLCR	0x00040
-+#define IGNCR	0x00080
-+#define ICRNL	0x00100
-+#define IUCLC	0x00200
-+#define IXON	0x00400
-+#define IXANY	0x00800
-+#define IXOFF	0x01000
-+#define IMAXBEL	0x02000
-+#define IUTF8	0x04000
- 
- /* c_oflag bits */
--#define OPOST	0000001
--#define OLCUC	0000002
--#define ONLCR	0000004
--#define OCRNL	0000010
--#define ONOCR	0000020
--#define ONLRET	0000040
--#define OFILL	0000100
--#define OFDEL	0000200
--#define NLDLY	0000400
--#define   NL0	0000000
--#define   NL1	0000400
--#define CRDLY	0003000
--#define   CR0	0000000
--#define   CR1	0001000
--#define   CR2	0002000
--#define   CR3	0003000
--#define TABDLY	0014000
--#define   TAB0	0000000
--#define   TAB1	0004000
--#define   TAB2	0010000
--#define   TAB3	0014000
--#define   XTABS	0014000
--#define BSDLY	0020000
--#define   BS0	0000000
--#define   BS1	0020000
--#define VTDLY	0040000
--#define   VT0	0000000
--#define   VT1	0040000
--#define FFDLY	0100000
--#define   FF0	0000000
--#define   FF1	0100000
-+#define OPOST	0x00001
-+#define OLCUC	0x00002
-+#define ONLCR	0x00004
-+#define OCRNL	0x00008
-+#define ONOCR	0x00010
-+#define ONLRET	0x00020
-+#define OFILL	0x00040
-+#define OFDEL	0x00080
-+#define NLDLY	0x00100
-+#define   NL0	0x00000
-+#define   NL1	0x00100
-+#define CRDLY	0x00600
-+#define   CR0	0x00000
-+#define   CR1	0x00200
-+#define   CR2	0x00400
-+#define   CR3	0x00600
-+#define TABDLY	0x01800
-+#define   TAB0	0x00000
-+#define   TAB1	0x00800
-+#define   TAB2	0x01000
-+#define   TAB3	0x01800
-+#define   XTABS	0x01800
-+#define BSDLY	0x02000
-+#define   BS0	0x00000
-+#define   BS1	0x02000
-+#define VTDLY	0x04000
-+#define   VT0	0x00000
-+#define   VT1	0x04000
-+#define FFDLY	0x08000
-+#define   FF0	0x00000
-+#define   FF1	0x08000
- 
- /* c_cflag bit meaning */
--#define CBAUD	0010017
--#define  B0	0000000		/* hang up */
--#define  B50	0000001
--#define  B75	0000002
--#define  B110	0000003
--#define  B134	0000004
--#define  B150	0000005
--#define  B200	0000006
--#define  B300	0000007
--#define  B600	0000010
--#define  B1200	0000011
--#define  B1800	0000012
--#define  B2400	0000013
--#define  B4800	0000014
--#define  B9600	0000015
--#define  B19200	0000016
--#define  B38400	0000017
-+#define CBAUD		0x0000100f
-+#define  B0		0x00000000	/* hang up */
-+#define  B50		0x00000001
-+#define  B75		0x00000002
-+#define  B110		0x00000003
-+#define  B134		0x00000004
-+#define  B150		0x00000005
-+#define  B200		0x00000006
-+#define  B300		0x00000007
-+#define  B600		0x00000008
-+#define  B1200		0x00000009
-+#define  B1800		0x0000000a
-+#define  B2400		0x0000000b
-+#define  B4800		0x0000000c
-+#define  B9600		0x0000000d
-+#define  B19200		0x0000000e
-+#define  B38400		0x0000000f
- #define EXTA B19200
- #define EXTB B38400
--#define CSIZE	0000060
--#define   CS5	0000000
--#define   CS6	0000020
--#define   CS7	0000040
--#define   CS8	0000060
--#define CSTOPB	0000100
--#define CREAD	0000200
--#define PARENB	0000400
--#define PARODD	0001000
--#define HUPCL	0002000
--#define CLOCAL	0004000
--#define CBAUDEX 0010000
--#define    BOTHER 0010000
--#define    B57600 0010001
--#define   B115200 0010002
--#define   B230400 0010003
--#define   B460800 0010004
--#define   B500000 0010005
--#define   B576000 0010006
--#define   B921600 0010007
--#define  B1000000 0010010
--#define  B1152000 0010011
--#define  B1500000 0010012
--#define  B2000000 0010013
--#define  B2500000 0010014
--#define  B3000000 0010015
--#define  B3500000 0010016
--#define  B4000000 0010017
--#define CIBAUD	  002003600000	/* input baud rate */
--#define CMSPAR	  010000000000	/* mark or space (stick) parity */
--#define CRTSCTS	  020000000000	/* flow control */
-+#define CSIZE		0x00000030
-+#define   CS5		0x00000000
-+#define   CS6		0x00000010
-+#define   CS7		0x00000020
-+#define   CS8		0x00000030
-+#define CSTOPB		0x00000040
-+#define CREAD		0x00000080
-+#define PARENB		0x00000100
-+#define PARODD		0x00000200
-+#define HUPCL		0x00000400
-+#define CLOCAL		0x00000800
-+#define CBAUDEX		0x00001000
-+#define    BOTHER	0x00001000
-+#define    B57600	0x00001001
-+#define   B115200	0x00001002
-+#define   B230400	0x00001003
-+#define   B460800	0x00001004
-+#define   B500000	0x00001005
-+#define   B576000	0x00001006
-+#define   B921600	0x00001007
-+#define  B1000000	0x00001008
-+#define  B1152000	0x00001009
-+#define  B1500000	0x0000100a
-+#define  B2000000	0x0000100b
-+#define  B2500000	0x0000100c
-+#define  B3000000	0x0000100d
-+#define  B3500000	0x0000100e
-+#define  B4000000	0x0000100f
-+#define CIBAUD		0x100f0000	/* input baud rate */
-+#define CMSPAR		0x40000000	/* mark or space (stick) parity */
-+#define CRTSCTS		0x80000000	/* flow control */
- 
- #define IBSHIFT	  16		/* Shift from CBAUD to CIBAUD */
- 
- /* c_lflag bits */
--#define ISIG	0000001
--#define ICANON	0000002
--#define XCASE	0000004
--#define ECHO	0000010
--#define ECHOE	0000020
--#define ECHOK	0000040
--#define ECHONL	0000100
--#define NOFLSH	0000200
--#define TOSTOP	0000400
--#define ECHOCTL	0001000
--#define ECHOPRT	0002000
--#define ECHOKE	0004000
--#define FLUSHO	0010000
--#define PENDIN	0040000
--#define IEXTEN	0100000
--#define EXTPROC	0200000
-+#define ISIG	0x00001
-+#define ICANON	0x00002
-+#define XCASE	0x00004
-+#define ECHO	0x00008
-+#define ECHOE	0x00010
-+#define ECHOK	0x00020
-+#define ECHONL	0x00040
-+#define NOFLSH	0x00080
-+#define TOSTOP	0x00100
-+#define ECHOCTL	0x00200
-+#define ECHOPRT	0x00400
-+#define ECHOKE	0x00800
-+#define FLUSHO	0x01000
-+#define PENDIN	0x04000
-+#define IEXTEN	0x08000
-+#define EXTPROC	0x10000
- 
- /* tcflow() and TCXONC use these */
- #define	TCOOFF		0
--- 
-2.30.2
-
---8323329-1991360190-1651648872=:1623--
