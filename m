@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 685FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347503AbiEDJgK (ORCPT
+        id S1347507AbiEDJgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 05:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        Wed, 4 May 2022 05:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347425AbiEDJfl (ORCPT
+        with ESMTP id S1343865AbiEDJf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 05:35:41 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C6D25EB4;
-        Wed,  4 May 2022 02:31:38 -0700 (PDT)
+        Wed, 4 May 2022 05:35:57 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F7B26540;
+        Wed,  4 May 2022 02:31:44 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D118540016;
-        Wed,  4 May 2022 09:31:35 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id A88F440017;
+        Wed,  4 May 2022 09:31:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651656697;
+        t=1651656703;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/+YiSiCqq8A/AwyTYRdf+C/Y2anTrhpv2ae4DH5f72E=;
-        b=J1Y0umMGdOo3hkohxK47u+pm+M/jXwGVEOr/P6Sjh8NN2WLyVB97inLhhbWpashG5yYW4+
-        t4+DTTps1sguQ74D/VWNwu5wiaMbMdzFG5W1G8lk0m6W+vfRrlwTX2qCeYEw3ypVuJmaQo
-        5s7HOsiprRRZfMoOOQp4029ZkV/PeVPPtqbUN2x2KcmK/eE6HTXKBjls7rkgDSDtH3YeV3
-        nEGHHK3pXg91w2pxfThgi4qovyYKnXEiRp7Qoz+irzHBX7cjJqK8jhmGRoLc5Yr84twXn7
-        gm8tuom8XqPyUen27B/bUXecaXIibWOf0SNeHI7Rq0mxa17uX1h629J4izkmqQ==
+        bh=AaRtmzWYHoi6QBHnVn7ZtKSVyyQJDkE1FETQLjQIHDU=;
+        b=HekVuxlTcKryTvlWN0jKuRQzgU5nwWU4MUWFHD4a5R12GyiAao2d8H06fL/tVp4263qJFM
+        AQI+VmV1QkHCbcaDw3d8SuNiyzKkTcNg/KvV9e36KmUm7qP5x0PNG5Mv20mxve5VO7GmPT
+        U4n7ktMnB+PcLxAx4h5nCnTmadp6AmQuN+bRsN7OqY+P/1CVaRmrphBJc/290NNbYVbpc0
+        lK2bSbiTrcHk43kyJyM9wqbsQEssD68GW2LtJ3iu1JWFMmtkZH4o525bXRHILm8enLui0B
+        u1/bNX4KD/9s5SFdPIy96MhtmbYK2q6euphYN91JoqgKauhwH5VSt3g+9mr7TQ==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 05/12] dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port switch
-Date:   Wed,  4 May 2022 11:29:53 +0200
-Message-Id: <20220504093000.132579-6-clement.leger@bootlin.com>
+Subject: [PATCH net-next v3 08/12] net: dsa: rzn1-a5psw: add FDB support
+Date:   Wed,  4 May 2022 11:29:56 +0200
+Message-Id: <20220504093000.132579-9-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220504093000.132579-1-clement.leger@bootlin.com>
 References: <20220504093000.132579-1-clement.leger@bootlin.com>
@@ -68,156 +68,228 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-This company does not exists anymore and has been bought by Synopsys.
-Since this IP can't be find anymore in the Synospsy portfolio, lets use
-Renesas as the vendor compatible for this IP.
+This commits add forwarding database support to the driver. It
+implements fdb_add(), fdb_del() and fdb_dump().
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 132 ++++++++++++++++++
- 1 file changed, 132 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+ drivers/net/dsa/rzn1_a5psw.c | 167 +++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h |  17 ++++
+ 2 files changed, 184 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-new file mode 100644
-index 000000000000..f0f6748e1f01
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-@@ -0,0 +1,132 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+index 7268bfbea26d..55cf392b6791 100644
+--- a/drivers/net/dsa/rzn1_a5psw.c
++++ b/drivers/net/dsa/rzn1_a5psw.c
+@@ -377,6 +377,170 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
+ 	a5psw_port_fdb_flush(a5psw, port);
+ }
+ 
++static int a5psw_lk_execute_lookup(struct a5psw *a5psw, union lk_data *lk_data,
++				   u16 *entry)
++{
++	u32 ctrl;
++	int ret;
 +
-+title: Renesas RZ/N1 Advanced 5 ports ethernet switch
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_LO, lk_data->lo);
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data->hi);
 +
-+maintainers:
-+  - Clément Léger <clement.leger@bootlin.com>
++	ctrl = A5PSW_LK_ADDR_CTRL_LOOKUP;
++	ret = a5psw_lk_execute_ctrl(a5psw, &ctrl);
++	if (ret)
++		return ret;
 +
-+description: |
-+  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC family and
-+  handles 4 ports + 1 CPU management port.
++	*entry = ctrl & A5PSW_LK_ADDR_CTRL_ADDRESS;
 +
-+allOf:
-+  - $ref: dsa.yaml#
++	return 0;
++}
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - renesas,r9a06g032-a5psw
-+      - const: renesas,rzn1-a5psw
++static int a5psw_port_fdb_add(struct dsa_switch *ds, int port,
++			      const unsigned char *addr, u16 vid,
++			      struct dsa_db db)
++{
++	struct a5psw *a5psw = ds->priv;
++	union lk_data lk_data = {0};
++	bool inc_learncount = false;
++	int ret = 0;
++	u16 entry;
++	u32 reg;
 +
-+  reg:
-+    maxItems: 1
++	ether_addr_copy(lk_data.entry.mac, addr);
++	lk_data.entry.port_mask = BIT(port);
 +
-+  mdio:
-+    $ref: /schemas/net/mdio.yaml#
-+    unevaluatedProperties: false
++	spin_lock(&a5psw->lk_lock);
 +
-+  clocks:
-+    items:
-+      - description: AHB clock used for the switch register interface
-+      - description: Switch system clock
++	/* Set the value to be written in the lookup table */
++	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
++	if (ret)
++		goto lk_unlock;
 +
-+  clock-names:
-+    items:
-+      - const: hclk
-+      - const: clk
++	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++	if (!lk_data.entry.valid) {
++		inc_learncount = true;
++		/* port_mask set to 0x1f when entry is not valid, clear it */
++		lk_data.entry.port_mask = 0;
++		lk_data.entry.prio = 0;
++	}
 +
-+patternProperties:
-+  "^ethernet-ports$":
-+    type: object
-+    properties:
-+      '#address-cells':
-+        const: 1
-+      '#size-cells':
-+        const: 0
++	lk_data.entry.port_mask |= BIT(port);
++	lk_data.entry.is_static = 1;
++	lk_data.entry.valid = 1;
 +
-+    patternProperties:
-+      "^(ethernet-)?port@[0-6]$":
-+        type: object
-+        description: Ethernet switch ports
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data.hi);
 +
-+        properties:
-+          pcs-handle:
-+            description:
-+              phandle pointing to a PCS sub-node compatible with
-+              renesas,rzn1-miic.yaml#
-+            $ref: /schemas/types.yaml#/definitions/phandle
++	reg = A5PSW_LK_ADDR_CTRL_WRITE | entry;
++	ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++	if (ret)
++		goto lk_unlock;
 +
-+unevaluatedProperties: false
++	if (inc_learncount) {
++		reg = A5PSW_LK_LEARNCOUNT_MODE_INC;
++		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
++	}
 +
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
++lk_unlock:
++	spin_unlock(&a5psw->lk_lock);
 +
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
++	return ret;
++}
 +
-+    switch@44050000 {
-+        compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-+        reg = <0x44050000 0x10000>;
-+        clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
-+        clock-names = "hclk", "clk";
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
++static int a5psw_port_fdb_del(struct dsa_switch *ds, int port,
++			      const unsigned char *addr, u16 vid,
++			      struct dsa_db db)
++{
++	struct a5psw *a5psw = ds->priv;
++	union lk_data lk_data = {0};
++	bool clear = false;
++	int ret = 0;
++	u16 entry;
++	u32 reg;
 +
-+        dsa,member = <0 0>;
++	ether_addr_copy(lk_data.entry.mac, addr);
 +
-+        ethernet-ports {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
++	spin_lock(&a5psw->lk_lock);
 +
-+            port@0 {
-+                reg = <0>;
-+                label = "lan0";
-+                phy-handle = <&switch0phy3>;
-+                pcs-handle = <&mii_conv4>;
-+            };
++	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
++	if (ret) {
++		dev_err(a5psw->dev, "Failed to lookup mac address\n");
++		goto lk_unlock;
++	}
 +
-+            port@1 {
-+                reg = <1>;
-+                label = "lan1";
-+                phy-handle = <&switch0phy1>;
-+                pcs-handle = <&mii_conv3>;
-+            };
++	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++	if (!lk_data.entry.valid) {
++		dev_err(a5psw->dev, "Tried to remove non-existing entry\n");
++		ret = -ENOENT;
++		goto lk_unlock;
++	}
 +
-+            port@4 {
-+                reg = <4>;
-+                ethernet = <&gmac1>;
-+                label = "cpu";
-+                fixed-link {
-+                  speed = <1000>;
-+                  full-duplex;
-+                };
-+            };
-+        };
++	lk_data.entry.port_mask &= ~BIT(port);
++	/* If there is no more port in the mask, clear the entry */
++	if (lk_data.entry.port_mask == 0)
++		clear = true;
 +
-+        mdio {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data.hi);
 +
-+            reset-gpios = <&gpio0a 2 GPIO_ACTIVE_HIGH>;
-+            reset-delay-us = <15>;
-+            clock-frequency = <2500000>;
++	reg = entry;
++	if (clear)
++		reg |= A5PSW_LK_ADDR_CTRL_CLEAR;
++	else
++		reg |= A5PSW_LK_ADDR_CTRL_WRITE;
 +
-+            switch0phy1: ethernet-phy@1{
-+                reg = <1>;
-+            };
++	ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++	if (ret)
++		goto lk_unlock;
 +
-+            switch0phy3: ethernet-phy@3{
-+                reg = <3>;
-+            };
-+        };
-+    };
++	/* Decrement LEARNCOUNT */
++	if (clear) {
++		reg = A5PSW_LK_LEARNCOUNT_MODE_DEC;
++		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
++	}
++
++lk_unlock:
++	spin_unlock(&a5psw->lk_lock);
++
++	return ret;
++}
++
++static int a5psw_port_fdb_dump(struct dsa_switch *ds, int port,
++			       dsa_fdb_dump_cb_t *cb, void *data)
++{
++	struct a5psw *a5psw = ds->priv;
++	union lk_data lk_data;
++	int i = 0, ret;
++	u32 reg;
++
++	for (i = 0; i < A5PSW_TABLE_ENTRIES; i++) {
++		reg = A5PSW_LK_ADDR_CTRL_READ | A5PSW_LK_ADDR_CTRL_WAIT | i;
++		spin_lock(&a5psw->lk_lock);
++
++		ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++		if (ret) {
++			spin_unlock(&a5psw->lk_lock);
++			return ret;
++		}
++
++		lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++		/* If entry is not valid or does not contain the port, skip */
++		if (!lk_data.entry.valid ||
++		    !(lk_data.entry.port_mask & BIT(port))) {
++			spin_unlock(&a5psw->lk_lock);
++			continue;
++		}
++
++		lk_data.lo = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_LO);
++		spin_unlock(&a5psw->lk_lock);
++
++		ret = cb(lk_data.entry.mac, 0, lk_data.entry.is_static, data);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
+ static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
+ {
+ 	u32 reg_lo, reg_hi;
+@@ -593,6 +757,9 @@ static const struct dsa_switch_ops a5psw_switch_ops = {
+ 	.port_bridge_leave = a5psw_port_bridge_leave,
+ 	.port_stp_state_set = a5psw_port_stp_state_set,
+ 	.port_fast_age = a5psw_port_fast_age,
++	.port_fdb_add = a5psw_port_fdb_add,
++	.port_fdb_del = a5psw_port_fdb_del,
++	.port_fdb_dump = a5psw_port_fdb_dump,
+ };
+ 
+ static int a5psw_mdio_wait_busy(struct a5psw *a5psw)
+diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
+index 149fa82b19e1..818ed449e323 100644
+--- a/drivers/net/dsa/rzn1_a5psw.h
++++ b/drivers/net/dsa/rzn1_a5psw.h
+@@ -212,6 +212,23 @@
+ #define A5PSW_CTRL_TIMEOUT		1000
+ #define A5PSW_TABLE_ENTRIES		8192
+ 
++struct fdb_entry {
++	u8 mac[ETH_ALEN];
++	u16 valid:1;
++	u16 is_static:1;
++	u16 prio:3;
++	u16 port_mask:5;
++	u16 reserved:6;
++} __packed;
++
++union lk_data {
++	struct {
++		u32 lo;
++		u32 hi;
++	};
++	struct fdb_entry entry;
++};
++
+ /**
+  * struct a5psw - switch struct
+  * @base: Base address of the switch
 -- 
 2.34.1
 
