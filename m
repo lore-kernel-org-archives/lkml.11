@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31184C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354387AbiEDRw6 (ORCPT
+        id S1359230AbiEDRxB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        Wed, 4 May 2022 13:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358105AbiEDRPk (ORCPT
+        with ESMTP id S1358085AbiEDRPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A01556420;
-        Wed,  4 May 2022 09:59:23 -0700 (PDT)
+        Wed, 4 May 2022 13:15:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2CC56419;
+        Wed,  4 May 2022 09:59:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E900CB827AD;
-        Wed,  4 May 2022 16:59:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8279AC385A5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C3D9B8279A;
         Wed,  4 May 2022 16:59:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8847BC385AA;
+        Wed,  4 May 2022 16:59:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683561;
-        bh=y4vr4Xk+f0/BMqSuJLn4liLH6P5R85wOalIZCnJQAZM=;
+        s=korg; t=1651683559;
+        bh=1RwLgbW1uY65NWobAxBjbLTwzhjAH6mhVMDFan1/tXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DdTrA2mkKb7nIOepgeJx8bU/reL7QWWlQt1iJezHKBemuCHiRlhZyh6in+BiUIiFp
-         7OYdNtGL3+LavJRjtUpS20mrPIm8TBRBlVja53XVbAuXUzgo6fEU7pgbJUahqYHrxZ
-         sTgp5tMDttD1E+uVykcYb7SB9S8ogAJ5Xx03mllc=
+        b=DNjYAW8Qlt4jAm8/ufZQbVkmvZ3xaG05YqRIYyAzuCFhjJofYPRAv14R6wcOWQKqN
+         LvSbTVdJmVEiTXXJgDGlfC9Ov9A+HxCRKRG8YSfLN3J16m1+d11nqRNL2HnpUNd46r
+         rEVmtBUxzZMudR1Rqm5rAUidQpAHSPfsIGQp98+g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: [PATCH 5.17 224/225] objtool: Fix type of reloc::addend
-Date:   Wed,  4 May 2022 18:47:42 +0200
-Message-Id: <20220504153129.833664076@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 222/225] tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output()
+Date:   Wed,  4 May 2022 18:47:40 +0200
+Message-Id: <20220504153129.674725357@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,90 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit c087c6e7b551b7f208c0b852304f044954cf2bb3 upstream.
+commit 19317433057dc1f2ca9a975e4e6b547282c2a5ef upstream.
 
-Elf{32,64}_Rela::r_addend is of type: Elf{32,64}_Sword, that means
-that our reloc::addend needs to be long or face tuncation issues when
-we do elf_rebuild_reloc_section():
+'size' may be used uninitialized in gsm_dlci_modem_output() if called with
+an adaption that is neither 1 nor 2. The function is currently only called
+by gsm_modem_upd_via_data() and only for adaption 2.
+Properly handle every invalid case by returning -EINVAL to silence the
+compiler warning and avoid future regressions.
 
-  - 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt+0x80000067
-  + 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt-0x7fffff99
-
-Fixes: 627fce14809b ("objtool: Add ORC unwind table generation")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/20220419203807.596871927@infradead.org
+Fixes: c19ffe00fed6 ("tty: n_gsm: fix invalid use of MSC in advanced option")
+Cc: stable@vger.kernel.org
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220425104726.7986-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c               |    8 ++++----
- tools/objtool/elf.c                 |    2 +-
- tools/objtool/include/objtool/elf.h |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/n_gsm.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -546,12 +546,12 @@ static int add_dead_ends(struct objtool_
- 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find unreachable insn at %s+0x%x",
-+				WARN("can't find unreachable insn at %s+0x%lx",
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find unreachable insn at %s+0x%x",
-+			WARN("can't find unreachable insn at %s+0x%lx",
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
-@@ -581,12 +581,12 @@ reachable:
- 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find reachable insn at %s+0x%x",
-+				WARN("can't find reachable insn at %s+0x%lx",
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find reachable insn at %s+0x%x",
-+			WARN("can't find reachable insn at %s+0x%lx",
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -486,7 +486,7 @@ static struct section *elf_create_reloc_
- 						int reltype);
- 
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, int addend)
-+		  unsigned int type, struct symbol *sym, long addend)
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -932,18 +932,21 @@ static int gsm_dlci_modem_output(struct
  {
- 	struct reloc *reloc;
+ 	u8 *dp = NULL;
+ 	struct gsm_msg *msg;
+-	int size;
++	int size = 0;
  
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -73,7 +73,7 @@ struct reloc {
- 	struct symbol *sym;
- 	unsigned long offset;
- 	unsigned int type;
--	int addend;
-+	long addend;
- 	int idx;
- 	bool jump_table_start;
- };
-@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
- struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ 	/* for modem bits without break data */
+-	if (dlci->adaption == 1) {
+-		size = 0;
+-	} else if (dlci->adaption == 2) {
+-		size = 1;
++	switch (dlci->adaption) {
++	case 1: /* Unstructured */
++		break;
++	case 2: /* Unstructured with modem bits. */
++		size++;
+ 		if (brk > 0)
+ 			size++;
+-	} else {
++		break;
++	default:
+ 		pr_err("%s: unsupported adaption %d\n", __func__,
+ 		       dlci->adaption);
++		return -EINVAL;
+ 	}
  
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, int addend);
-+		  unsigned int type, struct symbol *sym, long addend);
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
- 			  unsigned long offset, unsigned int type,
- 			  struct section *insn_sec, unsigned long insn_off);
+ 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
 
 
