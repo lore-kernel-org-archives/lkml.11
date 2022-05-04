@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E81F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67283C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359216AbiEDRse (ORCPT
+        id S1351399AbiEDRsk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
+        Wed, 4 May 2022 13:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357329AbiEDRO7 (ORCPT
+        with ESMTP id S1357368AbiEDRPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79287541AC;
-        Wed,  4 May 2022 09:58:28 -0700 (PDT)
+        Wed, 4 May 2022 13:15:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5884C780;
+        Wed,  4 May 2022 09:58:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CEEE617D5;
-        Wed,  4 May 2022 16:58:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C2DAC385A4;
-        Wed,  4 May 2022 16:58:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5614B827A1;
+        Wed,  4 May 2022 16:58:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CABEC385A4;
+        Wed,  4 May 2022 16:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683507;
-        bh=LqikQVruDlTPY4W8yio5ZihTYRkdGJY8fqc90o2rNZU=;
+        s=korg; t=1651683499;
+        bh=DjznMDAhNEc5QHd2KrCHEg4wQdCk7DPbt7gwniVkN/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNc8ULnaN9rkQig+4xwoqdJPIm8Aw1v5/Nx5+11OIKgslFKeHbNIuWpAE+HoDbkVr
-         3W1L81CN0X6uNjwu+e/K5j/6hffU3iB1dp22CRBetRR7bTjFiXNHPGBt+EcbChDmgG
-         z93SqBH66D4LFl/FEZ4YKjKe9u8ukUkaiiOYwHfs=
+        b=Ew4fukM9TTu/jnIkZY76FnjggoV/UJjj/mwI2e29wCg2QrJWdUBJ0o5+F7R/F6IKP
+         LJiJAds8QGC94+MoIfnSsbZBD2ylfAxKfwFOfrNeeKTPTWA86VQP2ySYH4vEJYMZhj
+         1FuykORCunr+jvAxOhVuhilYzPVoisbAaxw9Y0rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang1.zhang@intel.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 182/225] kasan: prevent cpu_quarantine corruption when CPU offline and cache shrink occur at same time
-Date:   Wed,  4 May 2022 18:47:00 +0200
-Message-Id: <20220504153126.695302662@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 157/225] ASoC: soc-pcm: use GFP_KERNEL when the code is sleepable
+Date:   Wed,  4 May 2022 18:46:35 +0200
+Message-Id: <20220504153124.054399091@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -54,53 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 31fa985b4196f8a66f027672e9bf2b81fea0417c upstream.
+[ Upstream commit fb6d679fee95d272c0a94912c4e534146823ee89 ]
 
-kasan_quarantine_remove_cache() is called in kmem_cache_shrink()/
-destroy().  The kasan_quarantine_remove_cache() call is protected by
-cpuslock in kmem_cache_destroy() to ensure serialization with
-kasan_cpu_offline().
+At the kzalloc() call in dpcm_be_connect(), there is no spin lock involved.
+It's merely protected by card->pcm_mutex, instead.  The spinlock is applied
+at the later call with snd_soc_pcm_stream_lock_irq() only for the list
+manipulations.  (See it's *_irq(), not *_irqsave(); that means the context
+being sleepable at that point.)  So, we can use GFP_KERNEL safely there.
 
-However the kasan_quarantine_remove_cache() call is not protected by
-cpuslock in kmem_cache_shrink().  When a CPU is going offline and cache
-shrink occurs at same time, the cpu_quarantine may be corrupted by
-interrupt (per_cpu_remove_cache operation).
+This patch revert commit d8a9c6e1f676 ("ASoC: soc-pcm: use GFP_ATOMIC for
+dpcm structure") which is no longer needed since commit b7898396f4bb
+("ASoC: soc-pcm: Fix and cleanup DPCM locking").
 
-So add a cpu_quarantine offline flags check in per_cpu_remove_cache().
-
-[akpm@linux-foundation.org: add comment, per Zqiang]
-
-Link: https://lkml.kernel.org/r/20220414025925.2423818-1-qiang1.zhang@intel.com
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/e740f1930843060e025e3c0f17ec1393cfdafb26.1648757961.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kasan/quarantine.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ sound/soc/soc-pcm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/kasan/quarantine.c
-+++ b/mm/kasan/quarantine.c
-@@ -315,6 +315,13 @@ static void per_cpu_remove_cache(void *a
- 	struct qlist_head *q;
+diff --git a/sound/soc/soc-pcm.c b/sound/soc/soc-pcm.c
+index 9a954680d492..11c9853e9e80 100644
+--- a/sound/soc/soc-pcm.c
++++ b/sound/soc/soc-pcm.c
+@@ -1214,7 +1214,7 @@ static int dpcm_be_connect(struct snd_soc_pcm_runtime *fe,
+ 		be_substream->pcm->nonatomic = 1;
+ 	}
  
- 	q = this_cpu_ptr(&cpu_quarantine);
-+	/*
-+	 * Ensure the ordering between the writing to q->offline and
-+	 * per_cpu_remove_cache.  Prevent cpu_quarantine from being corrupted
-+	 * by interrupt.
-+	 */
-+	if (READ_ONCE(q->offline))
-+		return;
- 	qlist_move_cache(q, &to_free, cache);
- 	qlist_free_all(&to_free, cache);
- }
+-	dpcm = kzalloc(sizeof(struct snd_soc_dpcm), GFP_ATOMIC);
++	dpcm = kzalloc(sizeof(struct snd_soc_dpcm), GFP_KERNEL);
+ 	if (!dpcm)
+ 		return -ENOMEM;
+ 
+-- 
+2.35.1
+
 
 
