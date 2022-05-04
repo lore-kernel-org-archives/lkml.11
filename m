@@ -2,119 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D79CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 01:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 374F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 02:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343949AbiEDCAY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 22:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        id S237150AbiEDCFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 22:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344074AbiEDB7L (ORCPT
+        with ESMTP id S1344015AbiEDCCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 21:59:11 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F8249FA5
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 18:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651629215; x=1683165215;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JDxQddswnaAtAEe6Yd2ih6qHUHQiMwv8N9U0jVI8plg=;
-  b=c37yO31caGrTAYuZ9exPASDTyji7fEXeY07J4g/qwIFeANMQ5PQ/QGVE
-   OuEAq5FpLssIyIOwTMLtMZPekiJq3sE4zP+JkXU9rNrIYCDf9S7SCL7dJ
-   M1/YSTQgJ/AgYRlHSfQDCsEjJRr7o+YH0fDjBLVMVxg2aSL5t507rEa6u
-   P6hC+OqBLsYy/T2ec2GYHAXp9RgcKw5ZTUDAGa+l1PZOjMKQsewPzEGtK
-   W95SV4GwLtBlLu6hucz1zabACu/TspcujxWVm0zhGoIhRCVCszDPzhmh5
-   9wS/NSwPzRLNpmPo/GcJgMgvdfaBKFMQJCHIF5RYA5A3pxY6aISL6mugI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="248180730"
-X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="248180730"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 18:53:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="734182002"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 03 May 2022 18:53:33 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nm4Cr-000AxP-98;
-        Wed, 04 May 2022 01:53:33 +0000
-Date:   Wed, 4 May 2022 09:52:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [vsyrjala:crtc_clock_compute_8 10/26]
- drivers/gpu/drm/i915/display/intel_ddi.c:325:5: warning: no previous
- prototype for function 'intel_crtc_dotclock'
-Message-ID: <202205040931.3Rt8hNR2-lkp@intel.com>
+        Tue, 3 May 2022 22:02:43 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9BC2610B;
+        Tue,  3 May 2022 18:58:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651629532; x=1683165532;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SfFRyNG4hERL+TTomH08jiy/yMmdir6j259/R+4NcYg=;
+  b=KXHFtCFAw1/YNdZS5bSmXPkpPbq1Ttr6ag/99PSHTabw2v+00+Tz0VK8
+   2UTFkcEv1sxw6sOM0UwC5C/OyxXAGdG3EJ2VS62cU6YMqWZi9Y3eEpEUi
+   KsdISC+kGoGPMXd72f35yC0FJWzCa+zBAbvLBNyy/p0I/O77taN08jBK6
+   U=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 03 May 2022 18:58:51 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 18:58:51 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 3 May 2022 18:58:51 -0700
+Received: from [10.50.60.188] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 3 May 2022
+ 18:58:48 -0700
+Message-ID: <c2ede158-3c50-9de5-653f-607377a01992@quicinc.com>
+Date:   Wed, 4 May 2022 07:28:43 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 2/2] soc: qcom: llcc: Add sc8180x and sc8280xp
+ configurations
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20220502215406.612967-1-bjorn.andersson@linaro.org>
+ <20220502215406.612967-3-bjorn.andersson@linaro.org>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <20220502215406.612967-3-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/vsyrjala/linux.git crtc_clock_compute_8
-head:   aee27a93a2e9c552d016d4eadaff5aa87dccce13
-commit: eb839775996f072098b810f91bc34757d1ea008e [10/26] drm/i915: Extract intel_crtc_dotclock()
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220504/202205040931.3Rt8hNR2-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/vsyrjala/linux/commit/eb839775996f072098b810f91bc34757d1ea008e
-        git remote add vsyrjala https://github.com/vsyrjala/linux.git
-        git fetch --no-tags vsyrjala crtc_clock_compute_8
-        git checkout eb839775996f072098b810f91bc34757d1ea008e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/i915/
+On 5/3/2022 3:24 AM, Bjorn Andersson wrote:
+> Add LLCC configuration data for the SC8180X and SC8280XP platforms,
+> based on the downstream tables.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>
+> Changs since v1:
+> - Updated tables according to documentation - thanks Sai!
+>
+>   drivers/soc/qcom/llcc-qcom.c       | 60 ++++++++++++++++++++++++++++++
+>   include/linux/soc/qcom/llcc-qcom.h |  2 +
+>   2 files changed, 62 insertions(+)
+>
+> diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
+> index 85ba8209b182..4b143cf7b4ce 100644
+> --- a/drivers/soc/qcom/llcc-qcom.c
+> +++ b/drivers/soc/qcom/llcc-qcom.c
+> @@ -130,6 +130,50 @@ static const struct llcc_slice_config sc7280_data[] =  {
+>   	{ LLCC_MODPE,    29, 64,  1, 1, 0x3f, 0x0, 0, 0, 0, 1, 0, 0},
+>   };
+>   
+> +static const struct llcc_slice_config sc8180x_data[] = {
+> +	{ LLCC_CPUSS,    1, 6144,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 1 },
+> +	{ LLCC_VIDSC0,   2, 512,   2, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_VIDSC1,   3, 512,   2, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_AUDIO,    6, 1024,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_MDMHPGRW, 7, 3072,  1, 1, 0x3ff, 0xc00, 0, 0, 0, 1, 0 },
+> +	{ LLCC_MDM,      8, 3072,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_MODHW,    9, 1024,  1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_CMPT,     10, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_GPUHTW,   11, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_GPU,      12, 5120, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_MMUHWT,   13, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 0, 1 },
+> +	{ LLCC_CMPTDMA,  15, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_DISP,     16, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_VIDFW,    17, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_MDMHPFX,  20, 1024, 2, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_MDMPNG,   21, 1024, 0, 1, 0xc,   0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_AUDHW,    22, 1024, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_NPU,      23, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_WLHW,     24, 6144, 1, 1, 0xfff, 0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_MODPE,    29, 512,  1, 1, 0xc,   0x0,   0, 0, 0, 1, 0 },
+> +	{ LLCC_APTCM,    30, 512,  3, 1, 0x0,   0x1,   1, 0, 0, 1, 0 },
+> +	{ LLCC_WRCACHE,  31, 128,  1, 1, 0xfff, 0x0,   0, 0, 0, 0, 0 },
+> +};
+> +
+> +static const struct llcc_slice_config sc8280xp_data[] = {
+> +	{ LLCC_CPUSS,    1,  6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 1, 0 },
+> +	{ LLCC_VIDSC0,   2,  512,  3, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_AUDIO,    6,  1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0, 0 },
+> +	{ LLCC_CMPT,     10, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0, 0 },
+> +	{ LLCC_GPUHTW,   11, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_GPU,      12, 4096, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 1 },
+> +	{ LLCC_MMUHWT,   13, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1, 0 },
+> +	{ LLCC_DISP,     16, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_AUDHW,    22, 2048, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_DRE,      26, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_CVP,      28, 512,  3, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_APTCM,    30, 1024, 3, 1, 0x0,   0x1, 1, 0, 0, 1, 0, 0 },
+> +	{ LLCC_WRCACHE,  31, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1, 0 },
+> +	{ LLCC_CVPFW,    32, 512,  1, 0, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_CPUSS1,   33, 2048, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0, 0 },
+> +	{ LLCC_CPUHWT,   36, 512,  1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1, 0 },
+> +};
+> +
+>   static const struct llcc_slice_config sdm845_data[] =  {
+>   	{ LLCC_CPUSS,    1,  2816, 1, 0, 0xffc, 0x2,   0, 0, 1, 1, 1 },
+>   	{ LLCC_VIDSC0,   2,  512,  2, 1, 0x0,   0x0f0, 0, 0, 1, 1, 0 },
+> @@ -276,6 +320,20 @@ static const struct qcom_llcc_config sc7280_cfg = {
+>   	.reg_offset	= llcc_v1_2_reg_offset,
+>   };
+>   
+> +static const struct qcom_llcc_config sc8180x_cfg = {
+> +	.sct_data	= sc8180x_data,
+> +	.size		= ARRAY_SIZE(sc8180x_data),
+> +	.need_llcc_cfg	= true,
+> +	.reg_offset	= llcc_v1_2_reg_offset,
+> +};
+> +
+> +static const struct qcom_llcc_config sc8280xp_cfg = {
+> +	.sct_data	= sc8280xp_data,
+> +	.size		= ARRAY_SIZE(sc8280xp_data),
+> +	.need_llcc_cfg	= true,
+> +	.reg_offset	= llcc_v1_2_reg_offset,
+> +};
+> +
+>   static const struct qcom_llcc_config sdm845_cfg = {
+>   	.sct_data	= sdm845_data,
+>   	.size		= ARRAY_SIZE(sdm845_data),
+> @@ -741,6 +799,8 @@ static int qcom_llcc_probe(struct platform_device *pdev)
+>   static const struct of_device_id qcom_llcc_of_match[] = {
+>   	{ .compatible = "qcom,sc7180-llcc", .data = &sc7180_cfg },
+>   	{ .compatible = "qcom,sc7280-llcc", .data = &sc7280_cfg },
+> +	{ .compatible = "qcom,sc8180x-llcc", .data = &sc8180x_cfg },
+> +	{ .compatible = "qcom,sc8280xp-llcc", .data = &sc8280xp_cfg },
+>   	{ .compatible = "qcom,sdm845-llcc", .data = &sdm845_cfg },
+>   	{ .compatible = "qcom,sm6350-llcc", .data = &sm6350_cfg },
+>   	{ .compatible = "qcom,sm8150-llcc", .data = &sm8150_cfg },
+> diff --git a/include/linux/soc/qcom/llcc-qcom.h b/include/linux/soc/qcom/llcc-qcom.h
+> index 0bc21ee58fac..9ed5384c5ca1 100644
+> --- a/include/linux/soc/qcom/llcc-qcom.h
+> +++ b/include/linux/soc/qcom/llcc-qcom.h
+> @@ -29,6 +29,8 @@
+>   #define LLCC_AUDHW       22
+>   #define LLCC_NPU         23
+>   #define LLCC_WLHW        24
+> +#define LLCC_PIMEM       25
+> +#define LLCC_DRE         26
+>   #define LLCC_CVP         28
+>   #define LLCC_MODPE       29
+>   #define LLCC_APTCM       30
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-All warnings (new ones prefixed by >>):
+(Note: LLCC_PIMEM isn't used now, but I guess doesn't hurt much to be included in header)
 
->> drivers/gpu/drm/i915/display/intel_ddi.c:325:5: warning: no previous prototype for function 'intel_crtc_dotclock' [-Wmissing-prototypes]
-   int intel_crtc_dotclock(const struct intel_crtc_state *pipe_config)
-       ^
-   drivers/gpu/drm/i915/display/intel_ddi.c:325:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int intel_crtc_dotclock(const struct intel_crtc_state *pipe_config)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/intel_crtc_dotclock +325 drivers/gpu/drm/i915/display/intel_ddi.c
-
-   324	
- > 325	int intel_crtc_dotclock(const struct intel_crtc_state *pipe_config)
-   326	{
-   327		int dotclock;
-   328	
-   329		if (intel_crtc_has_dp_encoder(pipe_config))
-   330			dotclock = intel_dotclock_calculate(pipe_config->port_clock,
-   331							    &pipe_config->dp_m_n);
-   332		else if (pipe_config->has_hdmi_sink && pipe_config->pipe_bpp > 24)
-   333			dotclock = pipe_config->port_clock * 24 / pipe_config->pipe_bpp;
-   334		else
-   335			dotclock = pipe_config->port_clock;
-   336	
-   337		if (pipe_config->output_format == INTEL_OUTPUT_FORMAT_YCBCR420 &&
-   338		    !intel_crtc_has_dp_encoder(pipe_config))
-   339			dotclock *= 2;
-   340	
-   341		if (pipe_config->pixel_multiplier)
-   342			dotclock /= pipe_config->pixel_multiplier;
-   343	
-   344		return dotclock;
-   345	}
-   346	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Sai
