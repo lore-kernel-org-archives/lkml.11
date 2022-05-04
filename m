@@ -2,139 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B064C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04748C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358974AbiEDWwf (ORCPT
+        id S1378669AbiEDWxL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
+        Wed, 4 May 2022 18:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346758AbiEDWwe (ORCPT
+        with ESMTP id S234521AbiEDWxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:52:34 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A0453725
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:48:57 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id i62so2275612pgd.6
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:48:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZnQ5ikT44+7odGEG8SdbWqmU1OTX8BzekKD4PQr+Puk=;
-        b=YVQPAOzNbsOpq7m5CxZJNHAgUk61rTKfTMUGx6l6FXMk0lF0h5ZduEHqRDO+xSY0iO
-         hGqOARfpVOCexrIdOevgyb6k4Dw3TMKuqor5xvyUl9RzFuBknVAvewIi/eqelLh89cyn
-         pXKmfJSPQCqyoJFOoe1IEAjS2O7rVabVRSS3Ermw/8YD2u0ggcjbUiF20/XUcjuu80VN
-         xQwgVSc+cMCGAeZtCeybv3vnPpUaI9vZw6mkXQSJ9YJQLqpAVqTq+HXxIqYUYTkWVq/d
-         I0DNZ0IMA67pTuuoRiPdqAU3o9VsMxRF5tLozra/GKehy1rLGp2U1fw1wfy2Zr0dbwJF
-         Rqng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=ZnQ5ikT44+7odGEG8SdbWqmU1OTX8BzekKD4PQr+Puk=;
-        b=yvFn4wS8PSQYY7ewBOAVTs92xVq1nN4XwQHeeW3Mg6OXCUj9aaVoSEgG41we2oNKF+
-         j02Bn0t5X7Oijn3bXpYIsM3R6exzbfDk/RnyMFrFWcLt+IkD/5neZuic5chJlxuGtq0f
-         kwo563sWKetTuvWMThHcoAqFHjQtiiO/w/PK3jMT0TLME+3bT02iiBT6eLU9cjSGqJPP
-         wIQfa+WeFNfDvZBV8UHP3ChQLpkBveEfcUq/vpikdyu/LVwtxh/0lWV9B7hDa7SNPgLp
-         N6/MBuZMRVdZcb6O8TWH8LtK1h7ZwQe374N2552FJWHrLGkmIQTwkgJbLJmG3VLrSPjJ
-         Q45Q==
-X-Gm-Message-State: AOAM530uiRGCR7GwZdoYqI3sYRaXeCUrf/aRs+NnYUlU+T2E6obdCx+K
-        dtoF6CCwqu5fwhHl1rGYRXo=
-X-Google-Smtp-Source: ABdhPJy6VLPLgrv4Si23S39l/X8cU/8ncNW25MkQg9xRHmAUA/DfYINs+YbdkPGp5EvqcRRpuBYsTA==
-X-Received: by 2002:a05:6a00:216c:b0:50d:f917:b502 with SMTP id r12-20020a056a00216c00b0050df917b502mr13966998pff.60.1651704536797;
-        Wed, 04 May 2022 15:48:56 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:8435:b3e7:62fc:4dfa])
-        by smtp.gmail.com with ESMTPSA id v12-20020a65568c000000b003c2f9540127sm2839509pgs.93.2022.05.04.15.48.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 15:48:56 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 4 May 2022 15:48:54 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        John Dias <joaodias@google.com>
-Subject: Re: [PATCH] mm: fix is_pinnable_page against on cma page
-Message-ID: <YnMC1jFoPvNLWqnG@google.com>
-References: <20220502173558.2510641-1-minchan@kernel.org>
- <29d0c1c3-a44e-4573-7e7e-32be07544dbe@redhat.com>
- <YnAhaRNjmIhtGUjk@google.com>
- <08e9855c-395d-f40c-de3d-1ec8b644bfe8@redhat.com>
- <YnFJss0doXGCmq3w@google.com>
- <da07530d-92ad-7aef-2f2b-d115f878ef76@redhat.com>
+        Wed, 4 May 2022 18:53:08 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DB2527F3
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651704570; x=1683240570;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5P/PrMYYu3/0Y8TeBq+/Mcp8ybxA6LS0+AwYjUJWd44=;
+  b=XxSNKsxhDKExbn7qncrezveQQW3LVBsyHiB2DAfiDmm3CtK5SPsGpBDh
+   CKij6apwE3WioG8+S6fMmnZWmYyx3xHktufEk5Gr+BVMXUsTwuMBOCIlb
+   kY4xaNXGUn31VOrGhe8BPFWlOhpQHqBP9UxsfVlE6hRm1bfjn4Pnkde4H
+   YPGjF9IrlCzlCiFcvEhIj4jEDKB1mfb4B0q/CA1vLe/DzbsJpBoJ93qpO
+   8kJRkxT8hBfogISaAxPH4FE1iw1rUVes/pP3Btaf8xxwybwDUFGI9YZtu
+   bwtk08l5e0KFBKj41y7SspVFBlKaqBJJL/ldtdnkIwLvo7WRnmWidGIaw
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="268075016"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="268075016"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:49:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="734620159"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 04 May 2022 15:49:15 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmNo2-000Brq-TI;
+        Wed, 04 May 2022 22:49:14 +0000
+Date:   Thu, 5 May 2022 06:48:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        will@kernel.org, axboe@kernel.dk
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, mb@lightnvm.io,
+        ckeepax@opensource.cirrus.com, manjunatha.venkatesh@nxp.com,
+        mst@redhat.com, javier@javigon.com, mikelley@microsoft.com,
+        jasowang@redhat.com, sunilmut@microsoft.com,
+        bjorn.andersson@linaro.org, rvmanjumce@gmail.com,
+        ashish.deshpande@nxp.com
+Subject: Re: [PATCH v3] [PATCH v3] uwb: nxp: sr1xx: UWB driver support for
+ sr1xx series chip
+Message-ID: <202205050656.HCzWfiw2-lkp@intel.com>
+References: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <da07530d-92ad-7aef-2f2b-d115f878ef76@redhat.com>
+In-Reply-To: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 06:02:33PM +0200, David Hildenbrand wrote:
-> On 03.05.22 17:26, Minchan Kim wrote:
-> > On Tue, May 03, 2022 at 03:15:24AM +0200, David Hildenbrand wrote:
-> >>
-> >>>>>> However, I assume we have the same issue right now already with
-> >>>> ZONE_MOVABLE and MIGRATE_CMA when trying to pin a page residing on these
-> >>>
-> >>> ZONE_MOVALBE is also changed dynamically?
-> >>>
-> >>
-> >> Sorry, with "same issue" I meant failing to pin if having to migrate and
-> >> the page is temporarily unmovable.
-> >>
-> >>>> there are temporarily unmovable and we fail to migrate. But it would now
-> >>>> apply even without ZONE_MOVABLE or MIGRATE_CMA. Hm...
-> >>>
-> >>> Didn't parse your last mention.
-> >>
-> >> On a system that neither uses ZONE_MOVABLE nor MIGRATE_CMA we might have
-> >> to migrate now when pinning.
-> > 
-> > I don't understand your point. My problem is pin_user_pages with
-> > FOLL_LONGTERM. It shouldn't pin a page from ZONE_MOVABLE and cma area
-> > without migrating page out of movable zone or CMA area.
-> > That's why try_grab_folio checks whether target page stays in those
-> > movable areas. However, to check CMA area, is_migrate_cma_page is
-> > racy so the FOLL_LONGTERM flag semantic is broken right now.
-> > 
-> > Do you see any problem of the fix?
-> 
-> My point is that you might decide to migrate a page because you stumble
-> over MIGRATE_ISOLATE, although there is no need to reject long-term
-> pinning and to trigger page migration.
-> 
-> Assume a system without ZONE_MOVABLE and without MIGRATE_CMA. Assume
-> someone reserves gigantic pages (alloc_contig_range()) and you have
-> concurrent long-term pinning on a page that is no MIGRATE_ISOLATE.
-> 
-> GUP would see MIGRATE_ISOLATE and would reject pinning. The page has to
-> be migrated, which can fail if the page is temporarily unmovable.
+Hi Manjunatha,
 
-A dump question since I'm not familiar with hugetlb.
+Thank you for the patch! Yet something to improve:
 
-Is above reasonable scenario?
+[auto build test ERROR on char-misc/char-misc-testing]
+[also build test ERROR on linux/master linus/master v5.18-rc5 next-20220504]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-The gigantic page is about to be created using alloc_contig_range so
-they has MIGRATE_ISOLATE as temporal state. It means no one uses the
-page yet so I guess the page is not mapped at userspace but other is
-trying to access the page using pin_user_pages?
+url:    https://github.com/intel-lab-lkp/linux/commits/Manjunatha-Venkatesh/uwb-nxp-sr1xx-UWB-driver-support-for-sr1xx-series-chip/20220505-020126
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 35a7609639c49f76f13f206402cbf692c4ae3e4e
+config: x86_64-randconfig-a014-20220502 (https://download.01.org/0day-ci/archive/20220505/202205050656.HCzWfiw2-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/037b22462c3f4715f0a04e1be05cd12986880d21
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Manjunatha-Venkatesh/uwb-nxp-sr1xx-UWB-driver-support-for-sr1xx-series-chip/20220505-020126
+        git checkout 037b22462c3f4715f0a04e1be05cd12986880d21
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 prepare
 
-> 
-> See my point? We will try migrating in cases where we don't have to
-> migrate. I think what we would want to do is always reject pinning a CMA
-> page, independent of the isolation status. but we don't have that
-> information available.
-> 
-> I raised in the past that we should look into preserving the migration
-> type and turning MIGRATE_ISOLATE essentially into an additional flag.
-> 
-> 
-> So I guess this patch is the right thing to do for now, but I wanted to
-> spell out the implications.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
+>> error: include/uapi/misc/sr1xx.h: missing "WITH Linux-syscall-note" for SPDX-License-Identifier
+   make[2]: *** [scripts/Makefile.headersinst:63: usr/include/misc/sr1xx.h] Error 1
+   make[2]: Target '__headers' not remade because of errors.
+   make[1]: *** [Makefile:1280: headers] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
