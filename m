@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C717C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358303AbiEDReC (ORCPT
+        id S1358395AbiEDReY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
+        Wed, 4 May 2022 13:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357090AbiEDRJ6 (ORCPT
+        with ESMTP id S1357170AbiEDRKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D34448E76;
-        Wed,  4 May 2022 09:57:05 -0700 (PDT)
+        Wed, 4 May 2022 13:10:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879F149684;
+        Wed,  4 May 2022 09:57:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 221C7B827A3;
-        Wed,  4 May 2022 16:57:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFECC385A4;
-        Wed,  4 May 2022 16:57:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7EBDECE28AD;
+        Wed,  4 May 2022 16:57:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD2CC385BF;
+        Wed,  4 May 2022 16:57:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683421;
-        bh=8jV2h+eNgYTlk2g9f/ePE55tVvCnKBAeJ8Q1/2X9DBs=;
+        s=korg; t=1651683424;
+        bh=iTB9JNJEb9ck5CWcUWb4vwLwVA4YMk20n9F3/mIWVCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yFzO/+Vr3KGYhD/izHbCtSZqcbSq4IrfwBZ8kowAmxqYudpc7FiAON41wKygpztl3
-         PxCK106Mnxr+YxYISMndcxUNyvhs+TShS1aNeSEkTXKjiCPFffBa7Tu00VTGOEAkTJ
-         ClUWYqzpwkc8F7L3LufDythPXIJgPbmp++dFRA8k=
+        b=kuCxX4/lUage7gq4QyvziTXLAD9kGOutPuP+K05O8salhCB7nFmiVmkrz1fetXmLR
+         yh9ijn7Vt/+nJrn5SlAJ0BFNQKTZLSpCgkesEMsu0F8Rqs7Qp2V047DZtjjSI4TdB/
+         ltLfstYYQ1gMvxZe9P6weYY5ZWNXvRrhFVk0Ses0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Francesco Ruggeri <fruggeri@arista.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 105/225] tcp: md5: incorrect tcp_header_len for incoming connections
-Date:   Wed,  4 May 2022 18:45:43 +0200
-Message-Id: <20220504153120.037017876@linuxfoundation.org>
+Subject: [PATCH 5.17 090/225] ARM: dts: am33xx-l4: Add missing touchscreen clock properties
+Date:   Wed,  4 May 2022 18:45:28 +0200
+Message-Id: <20220504153118.928897792@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,38 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Ruggeri <fruggeri@arista.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit 5b0b9e4c2c895227c8852488b3f09839233bba54 ]
+[ Upstream commit c21a7434d6cc216a910dd35632617850f1751f4c ]
 
-In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
-remote address in newsk. But that address is still 0 in newsk at this
-point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
-Use the address from the request socket instead.
+When adding support for TI magadc (Magnetic Stripe Reader and ADC), the
+MFD driver common to the touchscreen and the ADC got updated to ease the
+insertion of a new DT node for the ADC, with its own compatible, clocks,
+etc. Commit 235a96e92c16 ("mfd: ti_am335x_tscadc: Don't search the tree
+for our clock") removed one compatible specific information which was
+the clock name, because the clock was looked up from scratch in the DT
+while this hardware block was only fed by a single clock, already
+defined and properly filled in the DT.
 
-Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Problem is, this change was only validated with an am437x-based board,
+where the clocks are effectively correctly defined and referenced. But
+on am33xx, the ADC clock is also correctly defined but is not referenced
+with a clock phandle as it ought to be.
+
+The touchscreen bindings clearly state that the clocks/clock-names
+properties are mandatory, but they have been forgotten in one DTSI. This
+was probably not noticed in the first place because of the clock
+actually existing and the clk_get() call going through all the tree
+anyway.
+
+Add the missing clock phandles in the am33xx touchscreen description.
+
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Fixes: 235a96e92c16 ("mfd: ti_am335x_tscadc: Don't search the tree for our clock")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Tested-by: H. Nikolaus Schaller <hns@goldelico.com>
+Message-Id: <20220314163445.79807-1-miquel.raynal@bootlin.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_minisocks.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/am33xx-l4.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 7c2d3ac2363a..492737d2b7d3 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -531,7 +531,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
- 	newtp->tsoffset = treq->ts_off;
- #ifdef CONFIG_TCP_MD5SIG
- 	newtp->md5sig_info = NULL;	/*XXX*/
--	if (newtp->af_specific->md5_lookup(sk, newsk))
-+	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
- 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
- #endif
- 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
+diff --git a/arch/arm/boot/dts/am33xx-l4.dtsi b/arch/arm/boot/dts/am33xx-l4.dtsi
+index c9629cb5ccd1..7da42a5b959c 100644
+--- a/arch/arm/boot/dts/am33xx-l4.dtsi
++++ b/arch/arm/boot/dts/am33xx-l4.dtsi
+@@ -263,6 +263,8 @@ tscadc: tscadc@0 {
+ 				compatible = "ti,am3359-tscadc";
+ 				reg = <0x0 0x1000>;
+ 				interrupts = <16>;
++				clocks = <&adc_tsc_fck>;
++				clock-names = "fck";
+ 				status = "disabled";
+ 				dmas = <&edma 53 0>, <&edma 57 0>;
+ 				dma-names = "fifo0", "fifo1";
 -- 
 2.35.1
 
