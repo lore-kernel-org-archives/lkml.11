@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3359CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9926BC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376561AbiEDRpM (ORCPT
+        id S1377327AbiEDRp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
+        Wed, 4 May 2022 13:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355540AbiEDRHu (ORCPT
+        with ESMTP id S1356388AbiEDRNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:07:50 -0400
+        Wed, 4 May 2022 13:13:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B57517DA;
-        Wed,  4 May 2022 09:54:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713E94BFF4;
+        Wed,  4 May 2022 09:57:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14862B8278E;
-        Wed,  4 May 2022 16:54:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B73EDC385A4;
-        Wed,  4 May 2022 16:54:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1585DB827B4;
+        Wed,  4 May 2022 16:57:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B55A1C385A4;
+        Wed,  4 May 2022 16:57:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683265;
-        bh=IIINfVmwi4MVCKx9RAdZyLjQxxX/j2tucRd/eLdKJW4=;
+        s=korg; t=1651683474;
+        bh=WdSUIlFNvb+1GIbWLYslyQTqfXLiP1KfZajIkU8Io1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J38fCjNNJnX8J42CYOzI+y5sg5vlXH517meZmAbQLjHsvn4u+AdZVjiZrOdLjH5Xg
-         4C+B2uqWGzb5DdLqcxuw5DyzF4KR1K3N0NBpqdbXOKfGX4EsphQ3gfACfE+Hfg86c/
-         q9ykF0D7h/zryDipD3yOtoyTY2HHiAlXQLnBEe/g=
+        b=no9+2HVZiywN2cBBHTX4mP3GOVNhrVD+W9tFNRyNkwkC9Ck0+SeY62X2IGKBKGclu
+         a2NNZ5X8Q/IE1O1jdzmyXfHd0iNpGcgzYpXIOKLiWFqIousta6otWpz3uCeelNxW26
+         rQUJQB0m/6A5p6mVQcevoULhqEr+VWuppXtM7HFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 115/177] drm/amd/display: Fix memory leak in dcn21_clock_source_create
-Date:   Wed,  4 May 2022 18:45:08 +0200
-Message-Id: <20220504153103.497293099@linuxfoundation.org>
+Subject: [PATCH 5.17 149/225] gfs2: Make sure not to return short direct writes
+Date:   Wed,  4 May 2022 18:46:27 +0200
+Message-Id: <20220504153123.413413896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,32 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit 65e54987508b6f0771f56bdfa3ee1926d52785ae ]
+[ Upstream commit 3bde4c48586074202044456285a97ccdf9048988 ]
 
-When dcn20_clk_src_construct() fails, we need to release clk_src.
+When direct writes fail with -ENOTBLK because we're writing into a
+hole (gfs2_iomap_begin()) or because of a page invalidation failure
+(iomap_dio_rw()), we're falling back to buffered writes.  In that case,
+when we lose the inode glock in gfs2_file_buffered_write(), we want to
+re-acquire it instead of returning a short write.
 
-Fixes: 6f4e6361c3ff ("drm/amd/display: Add Renoir resource (v2)")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/gfs2/file.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-index fbbdf9976183..5b8274b8c384 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-@@ -1428,6 +1428,7 @@ static struct clock_source *dcn21_clock_source_create(
- 		return &clk_src->base;
- 	}
- 
-+	kfree(clk_src);
- 	BREAK_TO_DEBUGGER();
- 	return NULL;
- }
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index de0122806fb3..fdc7eda0437a 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -1069,7 +1069,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 			from->count = min(from->count, window_size - leftover);
+ 			if (gfs2_holder_queued(gh))
+ 				goto retry_under_glock;
+-			if (read)
++			if (read && !(iocb->ki_flags & IOCB_DIRECT))
+ 				goto out_uninit;
+ 			goto retry;
+ 		}
 -- 
 2.35.1
 
