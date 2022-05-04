@@ -2,370 +2,481 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0614BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379559AbiEDWyb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
+        id S233722AbiEDWyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 18:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379159AbiEDWxW (ORCPT
+        with ESMTP id S1379199AbiEDWxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:53:22 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720005373F
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:44 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id d127-20020a633685000000b003ab20e589a8so1327765pga.22
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:49:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=BalRb3q6SpihL13zmwJdIKwo8UdKEV0Rb+YQQjr96N4=;
-        b=UrQJuk0GymDF/lNvyCIxWtBNHrgtXxbCyquWPpxyuWMgjEKexPLV1yoEVVMGftPJtI
-         AAL7PXDuzv+tuedExZLpkhCEmof9Hnr2UO+GxqH5luFzj7uWNgDk/lM+MqlKRHp+IC94
-         O/c76QZuxrIhJlyFHJmwFbr7Rfc8sZGs2rUHydadXWD6uxwl8tlojvq0O0SiX/PRNFnF
-         LArtDKC+IweczI+y0+67H6XcbA9RqeixIRegzfLRv+t4cuZSU6HoXI5c1XlSp4HPp2sC
-         7TJB7C0MqynJkpIEUTFcdi4icpgCRUxHdEZifsNRtX3OkafR3FWKj/W5xVmq0FjCa6Vl
-         NoAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=BalRb3q6SpihL13zmwJdIKwo8UdKEV0Rb+YQQjr96N4=;
-        b=KdLgsk+pJmGLkEDD783Q6Rev+Qo0Gnf3mWFocvDdht5XgpdFlGYPcBMo//vKG0lbbJ
-         qhhj1nlsefzKWpH0rSAyNHjlg67PCW6BC4eynJqsuSz81rHH+gtlgEQG6OpeU5pOv074
-         ctso6pqrfjSFp8F63O9ZihQc/b+MnlRGuNd1+MF1JRfsLXga1y7Rj5vmuOdOu6xE8t/O
-         du2DcbEUZaF0/HtPZ6kNS8NO251i1ks/lkIK/QOO4V6rO0eaaB5BqZ5Aw6BYskDx7kR9
-         FiLwzCbhCUEsxZEA7KlDNs/+75Tu6pjsNfsR5EfSPD6JR50b5X6hnbGfOy39qEZ//r2G
-         SFHA==
-X-Gm-Message-State: AOAM531uuTdWUhI1kt9ey6CQgIoQL0HaIFEBI24C0OdiOI83GrNXi4tg
-        aVH6cdPjaHGsoGEfgdpx9DErW5G1fno=
-X-Google-Smtp-Source: ABdhPJyRKUk82euyO6yrwvLemirtUtG3Zh+JmJJF1iaeQRixDpoLyoUr/xpjUa4ao1oyEY5Gw7yc3V6HHnk=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1a8d:b0:510:510f:d8e1 with SMTP id
- e13-20020a056a001a8d00b00510510fd8e1mr2510174pfv.83.1651704583807; Wed, 04
- May 2022 15:49:43 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:13 +0000
-In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-8-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220504224914.1654036-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 007/128] KVM: selftests: Drop @mode from common vm_create() helper
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 4 May 2022 18:53:35 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBA753A6B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:49:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651704586; x=1683240586;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1I1uUi95Cz51INKe7NaSWIiJ2vBXGDENvbgzS2w31To=;
+  b=msxs/d981I1BR824HT2ZrFCGhJWRPII3rKVkW4gR9/sTaF31BPdBPYc1
+   Wv1WhsdC8UTeze9MJD5RWlURhRaxFCYCMnGSgl3tbm8BZ8eQ1aGbWvwuA
+   Qv/yBMJi3HLAt8f4dosoXLeHgT17eQA/DpQet3qTRbXm31LS503atlC7N
+   N2gIq5iXVIijkyTXrrHvvHj0XAAhmjDkiRFYSceF5zOTBVy8MAFCGlkvE
+   Em6KM1RdXm/WjtoEyuEHTquGkuCmWdr1jbokmVDC2bHxqZwQrjLcN+/me
+   3uzFbryXznMpk8ZFxpZPG+/kP85yePpDhIj9V+yJqg+IcNBWLxyUSGh/+
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267514915"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="267514915"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:49:45 -0700
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="517233710"
+Received: from rfrenner-mobl1.amr.corp.intel.com (HELO [10.209.45.158]) ([10.209.45.158])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 15:49:45 -0700
+Message-ID: <40ccd0f0-35a1-5aa7-9e51-25ab196d79e5@linux.intel.com>
+Date:   Wed, 4 May 2022 15:49:44 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220501183500.2242828-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <243e918c523320ba3d216cbe22d24fe5ce33f370.camel@intel.com>
+ <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
+ <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop @mode from vm_create() and have it use VM_MODE_DEFAULT.  Add and use
-an inner helper, __vm_create(), to service the handful of tests that want
-something other than VM_MODE_DEFAULT.
+Hi,
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- .../selftests/kvm/aarch64/get-reg-list.c      |  2 +-
- .../selftests/kvm/aarch64/psci_cpu_on_test.c  |  2 +-
- .../selftests/kvm/aarch64/vcpu_width_config.c |  6 +--
- tools/testing/selftests/kvm/dirty_log_test.c  |  2 +-
- .../selftests/kvm/hardware_disable_test.c     |  2 +-
- .../selftests/kvm/include/kvm_util_base.h     |  3 +-
- .../selftests/kvm/kvm_binary_stats_test.c     |  3 +-
- .../selftests/kvm/kvm_create_max_vcpus.c      |  2 +-
- tools/testing/selftests/kvm/lib/kvm_util.c    | 42 ++++++++++---------
- .../selftests/kvm/set_memory_region_test.c    |  4 +-
- .../selftests/kvm/x86_64/set_boot_cpu_id.c    |  2 +-
- .../selftests/kvm/x86_64/set_sregs_test.c     |  2 +-
- .../selftests/kvm/x86_64/sev_migrate_tests.c  |  8 ++--
- 13 files changed, 41 insertions(+), 39 deletions(-)
+On 5/3/22 3:24 PM, Dave Hansen wrote:
+> On 5/2/22 18:27, Kirill A. Shutemov wrote:
+>>> Again, Dave and Andi already commented you should use vmap() to avoid breaking
+>>> up the direct-mapping.  Please use vmap() instead.
+>>>
+>>> https://lore.kernel.org/all/ce0feeec-a949-35f8-3010-b0d69acbbc2e@linux.intel.com/
+>>>
+>>> Will review the rest later.
+>> I would rather convert it to use DMA API for memory allocation. It will
+>> tap into swiotlb buffer that already converted and there's no need to
+>> touch direct mapping. Both allocation and freeing such memory is cheaper
+>> because of that.
+> 
+> Sathya, I don't quite understand why you are so forcefully declining to
+> incorporate review feedback on this point.  I gave very specific
+> feedback about the kind of mapping you need and that you should avoid
+> fragmenting the direct map if at all possible.
+> 
+> Why is this code still fragmenting the direct map?
 
-diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-index b3ecaea67bfc..bb71ed81b37a 100644
---- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-+++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-@@ -411,7 +411,7 @@ static void run_test(struct vcpu_config *c)
- 
- 	check_supported(c);
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	prepare_vcpu_init(c, &init);
- 	aarch64_vcpu_add_default(vm, 0, &init, NULL);
- 	finalize_vcpu(vm, 0, c);
-diff --git a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
-index 15f4b3544ee5..bde7bae20a6e 100644
---- a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
-+++ b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
-@@ -76,7 +76,7 @@ int main(void)
- 	struct kvm_vm *vm;
- 	struct ucall uc;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 	ucall_init(vm, NULL);
- 
-diff --git a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-index 271fa90e53fd..4145c28a245a 100644
---- a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-+++ b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-@@ -24,7 +24,7 @@ static int add_init_2vcpus(struct kvm_vcpu_init *init1,
- 	struct kvm_vm *vm;
- 	int ret;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	vm_vcpu_add(vm, 0);
- 	ret = __vcpu_ioctl(vm, 0, KVM_ARM_VCPU_INIT, init1);
-@@ -49,7 +49,7 @@ static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init1,
- 	struct kvm_vm *vm;
- 	int ret;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	vm_vcpu_add(vm, 0);
- 	vm_vcpu_add(vm, 1);
-@@ -86,7 +86,7 @@ int main(void)
- 	}
- 
- 	/* Get the preferred target type and copy that to init2 for later use */
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init1);
- 	kvm_vm_free(vm);
- 	init2 = init1;
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index 11bf606e3165..01c01d40201f 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -679,7 +679,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
- 
- 	pr_info("Testing guest mode: %s\n", vm_guest_mode_string(mode));
- 
--	vm = vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
-+	vm = __vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
- 	kvm_vm_elf_load(vm, program_invocation_name);
- #ifdef __x86_64__
- 	vm_create_irqchip(vm);
-diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
-index 1c9e2295c75b..81ba8645772a 100644
---- a/tools/testing/selftests/kvm/hardware_disable_test.c
-+++ b/tools/testing/selftests/kvm/hardware_disable_test.c
-@@ -104,7 +104,7 @@ static void run_test(uint32_t run)
- 	for (i = 0; i < VCPU_NUM; i++)
- 		CPU_SET(i, &cpu_set);
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 	vm_create_irqchip(vm);
- 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 00f3103dc85e..f6984b0c3816 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -110,7 +110,8 @@ int vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
- void vm_enable_dirty_ring(struct kvm_vm *vm, uint32_t ring_size);
- const char *vm_guest_mode_string(uint32_t i);
- 
--struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages);
-+struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages);
-+struct kvm_vm *vm_create(uint64_t phy_pages);
- void kvm_vm_free(struct kvm_vm *vmp);
- void kvm_vm_restart(struct kvm_vm *vmp);
- void kvm_vm_release(struct kvm_vm *vmp);
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 6217f4630e6c..4b149b383678 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -229,8 +229,7 @@ int main(int argc, char *argv[])
- 	vms = malloc(sizeof(vms[0]) * max_vm);
- 	TEST_ASSERT(vms, "Allocate memory for storing VM pointers");
- 	for (i = 0; i < max_vm; ++i) {
--		vms[i] = vm_create(VM_MODE_DEFAULT,
--				DEFAULT_GUEST_PHY_PAGES);
-+		vms[i] = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 		for (j = 0; j < max_vcpu; ++j)
- 			vm_vcpu_add(vms[i], j);
- 	}
-diff --git a/tools/testing/selftests/kvm/kvm_create_max_vcpus.c b/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
-index bb69b75eac23..9de5e1376c49 100644
---- a/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
-+++ b/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
-@@ -28,7 +28,7 @@ void test_vcpu_creation(int first_vcpu_id, int num_vcpus)
- 	pr_info("Testing creating %d vCPUs, with IDs %d...%d.\n",
- 		num_vcpus, first_vcpu_id, first_vcpu_id + num_vcpus - 1);
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	for (i = first_vcpu_id; i < first_vcpu_id + num_vcpus; i++)
- 		/* This asserts that the vCPU was created. */
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index fdcaf74b5959..bab4ab297fcc 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -234,25 +234,7 @@ const struct vm_guest_mode_params vm_guest_mode_params[] = {
- _Static_assert(sizeof(vm_guest_mode_params)/sizeof(struct vm_guest_mode_params) == NUM_VM_MODES,
- 	       "Missing new mode params?");
- 
--/*
-- * VM Create
-- *
-- * Input Args:
-- *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
-- *   phy_pages - Physical memory pages
-- *
-- * Output Args: None
-- *
-- * Return:
-- *   Pointer to opaque structure that describes the created VM.
-- *
-- * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K).
-- * When phy_pages is non-zero, a memory region of phy_pages physical pages
-- * is created and mapped starting at guest physical address 0.  The file
-- * descriptor to control the created VM is created with the permissions
-- * given by perm (e.g. O_RDWR).
-- */
--struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
-+struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
- {
- 	struct kvm_vm *vm;
- 
-@@ -361,11 +343,31 @@ struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
- 	return vm;
- }
- 
-+/*
-+ * VM Create
-+ *
-+ * Input Args:
-+ *   phy_pages - Physical memory pages
-+ *
-+ * Output Args: None
-+ *
-+ * Return:
-+ *   Pointer to opaque structure that describes the created VM.
-+ *
-+ * Creates a VM with the default physical/virtual address widths and page size.
-+ * When phy_pages is non-zero, a memory region of phy_pages physical pages
-+ * is created and mapped starting at guest physical address 0.
-+ */
-+struct kvm_vm *vm_create(uint64_t phy_pages)
+Next version will looks like below. It includes vmap support. It also
+supports parallel GetQuote reuests by using list to track active
+GetQuote request list. Did some inital test. It seems to work fine.
+
+Please take a look at it and let me know your comments.
+
+I will continue to test more cases in parallel.
+
+diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
+index 81b59d060392..0ed959dacb7e 100644
+--- a/arch/x86/coco/tdx/attest.c
++++ b/arch/x86/coco/tdx/attest.c
+@@ -13,20 +13,44 @@
+  #include <linux/miscdevice.h>
+  #include <linux/mm.h>
+  #include <linux/io.h>
++#include <linux/set_memory.h>
++#include <linux/spinlock.h>
+  #include <asm/tdx.h>
++#include <asm/coco.h>
+  #include <uapi/asm/tdx.h>
+
+  #define DRIVER_NAME "tdx-attest"
+
+  /* TDREPORT module call leaf ID */
+  #define TDX_GET_REPORT                 4
++/* GetQuote hypercall leaf ID */
++#define TDVMCALL_GET_QUOTE             0x10002
+
+  /* Upper 32 bits has the status code, so mask it */
+  #define TDCALL_STATUS_CODE_MASK                0xffffffff00000000
+  #define TDCALL_STATUS_CODE(a)          ((a) & TDCALL_STATUS_CODE_MASK)
+
++/* Used for buffer allocation in GetQuote request */
++struct quote_buf {
++       struct page **pages;
++       int count;
++       void *vmaddr;
++};
++
++/* List entry of quote_list*/
++struct quote_entry {
++       struct quote_buf *buf;
++       struct completion compl;
++       struct list_head list;
++};
++
+  static struct miscdevice miscdev;
+
++/* List to track active GetQuote requests */
++static LIST_HEAD(quote_list);
++/* Lock to protect quote_list */
++static DEFINE_SPINLOCK(quote_lock);
++
+  static long tdx_get_report(void __user *argp)
+  {
+         void *reportdata = NULL, *tdreport = NULL;
+@@ -76,6 +100,214 @@ static long tdx_get_report(void __user *argp)
+         return ret;
+  }
+
++/* tdx_get_quote_hypercall() - Request to get TD Quote using TDREPORT */
++static long tdx_get_quote_hypercall(struct quote_buf *buf)
 +{
-+	return __vm_create(VM_MODE_DEFAULT, phy_pages);
++       struct tdx_hypercall_args args = {0};
++
++       args.r10 = TDX_HYPERCALL_STANDARD;
++       args.r11 = TDVMCALL_GET_QUOTE;
++       args.r12 = cc_mkdec(page_to_phys(vmalloc_to_page(buf->vmaddr)));
++       args.r13 = buf->count * PAGE_SIZE;
++
++       /*
++        * Pass the physical address of TDREPORT to the VMM and
++        * trigger the Quote generation. It is not a blocking
++        * call, hence completion of this request will be notified to
++        * the TD guest via a callback interrupt. More info about ABI
++        * can be found in TDX Guest-Host-Communication Interface
++        * (GHCI), sec titled "TDG.VP.VMCALL<GetQuote>".
++        */
++       return __tdx_hypercall(&args, 0);
 +}
 +
- struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
- {
- 	struct kvm_vm *vm;
- 
--	vm = vm_create(mode, pages);
-+	vm = __vm_create(mode, pages);
- 
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 
-diff --git a/tools/testing/selftests/kvm/set_memory_region_test.c b/tools/testing/selftests/kvm/set_memory_region_test.c
-index d97cfd6866c3..89b13f23c3ac 100644
---- a/tools/testing/selftests/kvm/set_memory_region_test.c
-+++ b/tools/testing/selftests/kvm/set_memory_region_test.c
-@@ -314,7 +314,7 @@ static void test_zero_memory_regions(void)
- 
- 	pr_info("Testing KVM_RUN with zero added memory regions\n");
- 
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 	vm_vcpu_add(vm, VCPU_ID);
- 
- 	TEST_ASSERT(!ioctl(vm_get_fd(vm), KVM_SET_NR_MMU_PAGES, 64),
-@@ -354,7 +354,7 @@ static void test_add_max_memory_regions(void)
- 		    "KVM_CAP_NR_MEMSLOTS should be greater than 0");
- 	pr_info("Allowed number of memory slots: %i\n", max_mem_slots);
- 
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 
- 	/* Check it can be added memory slots up to the maximum allowed */
- 	pr_info("Adding slots 0..%i, each memory region with %dK size\n",
-diff --git a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-index ee3d058a9fe1..b4da92ddc1c6 100644
---- a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-+++ b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-@@ -88,7 +88,7 @@ static struct kvm_vm *create_vm(void)
- 	uint64_t pages = DEFAULT_GUEST_PHY_PAGES + vcpu_pages + extra_pg_pages;
- 
- 	pages = vm_adjust_num_guest_pages(VM_MODE_DEFAULT, pages);
--	vm = vm_create(VM_MODE_DEFAULT, pages);
-+	vm = vm_create(pages);
- 
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 	vm_create_irqchip(vm);
-diff --git a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
-index 44711ab735c3..4dc7fd925023 100644
---- a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
-@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
- 	 * use it to verify all supported CR4 bits can be set prior to defining
- 	 * the vCPU model, i.e. without doing KVM_SET_CPUID2.
- 	 */
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	vm_vcpu_add(vm, VCPU_ID);
- 
- 	vcpu_sregs_get(vm, VCPU_ID, &sregs);
-diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-index b0c052443c44..7424bec5ae23 100644
---- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-@@ -54,7 +54,7 @@ static struct kvm_vm *sev_vm_create(bool es)
- 	struct kvm_sev_launch_start start = { 0 };
- 	int i;
- 
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 	sev_ioctl(vm->fd, es ? KVM_SEV_ES_INIT : KVM_SEV_INIT, NULL);
- 	for (i = 0; i < NR_MIGRATE_TEST_VCPUS; ++i)
- 		vm_vcpu_add(vm, i);
-@@ -71,7 +71,7 @@ static struct kvm_vm *aux_vm_create(bool with_vcpus)
- 	struct kvm_vm *vm;
- 	int i;
- 
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 	if (!with_vcpus)
- 		return vm;
- 
-@@ -174,7 +174,7 @@ static void test_sev_migrate_parameters(void)
- 		*sev_es_vm_no_vmsa;
- 	int ret;
- 
--	vm_no_vcpu = vm_create(VM_MODE_DEFAULT, 0);
-+	vm_no_vcpu = vm_create(0);
- 	vm_no_sev = aux_vm_create(true);
- 	ret = __sev_migrate_from(vm_no_vcpu->fd, vm_no_sev->fd);
- 	TEST_ASSERT(ret == -1 && errno == EINVAL,
-@@ -186,7 +186,7 @@ static void test_sev_migrate_parameters(void)
- 
- 	sev_vm = sev_vm_create(/* es= */ false);
- 	sev_es_vm = sev_vm_create(/* es= */ true);
--	sev_es_vm_no_vmsa = vm_create(VM_MODE_DEFAULT, 0);
-+	sev_es_vm_no_vmsa = vm_create(0);
- 	sev_ioctl(sev_es_vm_no_vmsa->fd, KVM_SEV_ES_INIT, NULL);
- 	vm_vcpu_add(sev_es_vm_no_vmsa, 1);
- 
--- 
-2.36.0.464.gb9c8b46e94-goog
++static struct quote_buf *alloc_quote_buf(u64 req_size)
++{
++       int size = PAGE_ALIGN(req_size);
++       void *addr = NULL, *vmaddr = NULL;
++       int count = size >> PAGE_SHIFT;
++       struct quote_buf *buf;
++       struct page **pages;
++       int i;
++
++       buf = kmalloc(sizeof(*buf), GFP_KERNEL);
++       if (!buf)
++               return NULL;
++
++       /* Allocate mem for array of page ptrs */
++       pages = kcalloc(count, sizeof(*pages), GFP_KERNEL);
++       if (!pages)
++               goto alloc_failed;
++
++       addr = alloc_pages_exact(size, GFP_KERNEL);
++       if (!addr)
++               goto alloc_failed;
++
++       for (i = 0; i < count; i++)
++               pages[i] = virt_to_page(addr + i * PAGE_SIZE);
++
++       vmaddr = vmap(pages, count, VM_MAP, PAGE_KERNEL);
++       if (!vmaddr)
++               goto alloc_failed;
++
++       /* Mark the memory shared to allow VMM access it */
++       if (set_memory_decrypted((unsigned long)vmaddr, count))
++               goto alloc_failed;
++
++       buf->pages = pages;
++       buf->count = count;
++       buf->vmaddr = vmaddr;
++
++       return buf;
++
++alloc_failed:
++       if (vmaddr)
++               vunmap(vmaddr);
++       if (addr)
++               free_pages_exact(addr, size);
++       kfree(pages);
++       kfree(buf);
++       return NULL;
++}
++
++static void free_quote_buf(struct quote_buf *buf)
++{
++       if (!buf)
++               return;
++
++       /* Mark pages private */
++       if (set_memory_encrypted((unsigned long)buf->vmaddr, buf->count)) {
++               pr_warn("Failed to encrypt %d pages at %p", buf->count,
++                               buf->vmaddr);
++               return;
++       }
++
++       vunmap(buf->vmaddr);
++
++       while (buf->count--)
++               __free_page(buf->pages[buf->count]);
++
++       kfree(buf->pages);
++       kfree(buf);
++}
++
++static struct quote_entry *alloc_quote_entry(struct tdx_quote_req 
+*quote_req)
++{
++       struct quote_entry *entry = NULL;
++
++       entry = kmalloc(sizeof(*entry), GFP_KERNEL);
++       if (!entry)
++               return NULL;
++
++       /* Allocate buffer for quote request */
++       entry->buf = alloc_quote_buf(quote_req->len);
++       if (entry->buf) {
++               kfree(entry);
++               return NULL;
++       }
++
++       init_completion(&entry->compl);
++
++       return entry;
++}
++
++static void free_quote_entry(struct quote_entry *entry)
++{
++       free_quote_buf(entry->buf);
++       kfree(entry);
++}
++
++void add_quote_entry(struct quote_entry *entry)
++{
++       unsigned long flags;
++
++       spin_lock_irqsave(&quote_lock, flags);
++       list_add_tail(&entry->list, &quote_list);
++       spin_unlock_irqrestore(&quote_lock, flags);
++}
++
++void del_quote_entry(struct quote_entry *entry)
++{
++       unsigned long flags;
++
++       spin_lock_irqsave(&quote_lock, flags);
++       list_del(&entry->list);
++       spin_unlock_irqrestore(&quote_lock, flags);
++}
++
++static long tdx_get_quote(void __user *argp)
++{
++       struct tdx_quote_req quote_req;
++       struct quote_entry *entry;
++       struct quote_buf *buf;
++       long ret = 0;
++
++       /* Copy GetQuote request struct from user buffer */
++       if (copy_from_user(&quote_req, argp, sizeof(struct tdx_quote_req)))
++               return -EFAULT;
++
++       /* Make sure the length is valid */
++       if (!quote_req.len)
++               return -EINVAL;
++
++       entry = alloc_quote_entry(&quote_req);
++       if (!entry)
++               return -ENOMEM;
++
++       buf = entry->buf;
++
++       /* Copy TDREPORT from user buffer to kernel Quote buffer */
++       if (copy_from_user(buf->vmaddr, (void __user *)quote_req.buf,
++                               quote_req.len)) {
++               ret = -EFAULT;
++               goto free_entry;
++       }
++
++       /* Submit GetQuote Request */
++       ret = tdx_get_quote_hypercall(buf);
++       if (ret) {
++               pr_err("GetQuote hypercall failed, status:%lx\n", ret);
++               ret = -EIO;
++               goto free_entry;
++       }
++
++       /* Add current quote entry to quote_list */
++       add_quote_entry(entry);
++
++       /* Wait for attestation completion */
++       ret = wait_for_completion_interruptible(&entry->compl);
++       if (ret < 0) {
++               ret = -EIO;
++               goto del_entry;
++       }
++
++       /* Copy output data back to user buffer */
++       if (copy_to_user((void __user *)quote_req.buf, buf->vmaddr, 
+quote_req.len))
++               ret = -EFAULT;
++
++del_entry:
++       del_quote_entry(entry);
++free_entry:
++       free_quote_entry(entry);
++       return ret;
++}
++
++static void attestation_callback_handler(void)
++{
++       struct tdx_quote_hdr *quote_hdr;
++       struct quote_entry *entry;
++
++       /* Find processed quote request and mark it complete */
++       spin_lock(&quote_lock);
++       list_for_each_entry(entry, &quote_list, list) {
++               quote_hdr = (struct tdx_quote_hdr *)entry->buf->vmaddr;
++               /* If status is either success or failure, mark it 
+complete */
++               if (quote_hdr->status != GET_QUOTE_IN_FLIGHT)
++                       complete(&entry->compl);
++       }
++       spin_unlock(&quote_lock);
++}
++
+  static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
+                              unsigned long arg)
+  {
+@@ -86,6 +318,9 @@ static long tdx_attest_ioctl(struct file *file, 
+unsigned int cmd,
+         case TDX_CMD_GET_REPORT:
+                 ret = tdx_get_report(argp);
+                 break;
++       case TDX_CMD_GET_QUOTE:
++               ret = tdx_get_quote(argp);
++               break;
+         default:
+                 pr_debug("cmd %d not supported\n", cmd);
+                 break;
+@@ -108,6 +343,9 @@ static int __init tdx_attestation_init(void)
+         if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+                 return -EIO;
 
++       /* Register attestation event notify handler */
++       tdx_setup_ev_notify_handler(attestation_callback_handler);
++
+         miscdev.name = DRIVER_NAME;
+         miscdev.minor = MISC_DYNAMIC_MINOR;
+         miscdev.fops = &tdx_attest_fops;
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index b49211994864..ab6c94cd880d 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -15,6 +15,7 @@
+  #include <asm/idtentry.h>
+  #include <asm/irq_regs.h>
+  #include <asm/desc.h>
++#include <asm/io.h>
+
+  /* TDX module Call Leaf IDs */
+  #define TDX_GET_INFO                   1
+@@ -680,8 +681,15 @@ static bool try_accept_one(phys_addr_t *start, 
+unsigned long len,
+   */
+  static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, 
+bool enc)
+  {
+-       phys_addr_t start = __pa(vaddr);
+-       phys_addr_t end   = __pa(vaddr + numpages * PAGE_SIZE);
++       phys_addr_t start;
++       phys_addr_t end;
++
++       if (is_vmalloc_addr((void *)vaddr))
++               start =  page_to_phys(vmalloc_to_page((void*)vaddr));
++       else
++               start = __pa(vaddr);
++
++       end = start + numpages * PAGE_SIZE;
+
+         if (!enc) {
+                 /* Set the shared (decrypted) bits: */
+diff --git a/arch/x86/include/uapi/asm/tdx.h 
+b/arch/x86/include/uapi/asm/tdx.h
+index 5b721e0ebbb8..3fb69fe3ffb7 100644
+--- a/arch/x86/include/uapi/asm/tdx.h
++++ b/arch/x86/include/uapi/asm/tdx.h
+@@ -33,4 +33,43 @@ struct tdx_report_req {
+  /* Get TDREPORT using TDCALL[TDG.MR.REPORT) */
+  #define TDX_CMD_GET_REPORT             _IOWR('T', 0x01, struct 
+tdx_report_req)
+
++/* struct tdx_quote_req: Request to generate TD Quote using TDREPORT
++ *
++ * @buf                : Pass user data that includes TDREPORT as 
+input. Upon
++ *               successful completion of IOCTL, output is copied
++ *               back to the same buffer.
++ * @len                : Length of the buffer.
++ */
++struct tdx_quote_req {
++       __u64 buf;
++       __u64 len;
++};
++
++/* Get TD Quote from QE/QGS using GetQuote TDVMCALL */
++#define TDX_CMD_GET_QUOTE              _IOR('T', 0x02, struct 
+tdx_quote_req)
++
++/* TD Quote status codes */
++#define GET_QUOTE_SUCCESS              0
++#define GET_QUOTE_IN_FLIGHT            0xffffffffffffffff
++#define GET_QUOTE_ERROR                        0x8000000000000000
++#define GET_QUOTE_SERVICE_UNAVAILABLE  0x8000000000000001
++
++/*
++ * Format of Quote data header. More details can be found in TDX
++ * Guest-Host Communication Interface (GHCI) for Intel TDX 1.0,
++ * section titled "TDG.VP.VMCALL<GetQuote>"
++ */
++struct tdx_quote_hdr {
++       /* Quote version, filled by TD */
++       __u64 version;
++       /* Status code of Quote request, filled by VMM */
++       __u64 status;
++       /* Length of TDREPORT, filled by TD */
++       __u32 in_len;
++       /* Length of Quote, filled by VMM */
++       __u32 out_len;
++       /* Actual Quote data */
++       __u64 data[0];
++};
++
+  #endif /* _UAPI_ASM_X86_TDX_H */
+
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
