@@ -2,111 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E5DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351544AbiEDO52 (ORCPT
+        id S1351553AbiEDO5o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
+        Wed, 4 May 2022 10:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351533AbiEDO50 (ORCPT
+        with ESMTP id S1351533AbiEDO5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:57:26 -0400
-X-Greylist: delayed 2195 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 07:53:50 PDT
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EE719C35;
-        Wed,  4 May 2022 07:53:50 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:34250)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmGNx-003gFY-Jr; Wed, 04 May 2022 08:53:49 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36918 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmGNw-00DdQV-Gz; Wed, 04 May 2022 08:53:49 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Seth Forshee <sforshee@digitalocean.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Sean Christopherson <seanjc@google.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20220503174934.2641605-1-sforshee@digitalocean.com>
-        <20220504130753.GB8069@pathway.suse.cz>
-        <YnKEnqfxSyVmSGYx@do-x1extreme>
-        <20220504142809.GC8069@pathway.suse.cz>
-Date:   Wed, 04 May 2022 09:53:40 -0500
-In-Reply-To: <20220504142809.GC8069@pathway.suse.cz> (Petr Mladek's message of
-        "Wed, 4 May 2022 16:28:09 +0200")
-Message-ID: <87ee19fix7.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 4 May 2022 10:57:39 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DCE24593
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:54:03 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id dk23so3376469ejb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 07:54:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=b4reLFnLGstNl8yU7ElXfhLVkJOlPPnUu0vbq9yYvVM=;
+        b=YSpRdjiyUkwTdZLN4Z9w1pNgbJtq8Rk/uUbwQkfYPhtUSaiPR5A45z4JD+HKiSyURe
+         U/1mOZp/r21+TSeaOzQd0He+Q/FyUZ48mJUbuQM/7xvn1LGgxeEvPU52Ss1n/GZm7yxl
+         CQ/1DZVf5RXKhXPbfBkLNlng0c6Pj5JsCEkiSy8MyVSZd+Tb4a2kBAneQ6ZX3mdc5NR+
+         Zz2A8g2mswkCL7I8ESlxzv4P+X05pAk//fVWA/e5hZE7g4nk28ezQ/psV8LEAVdg6Aou
+         GAONygP4QDmwIeb+CixxNctM38FKPw4j0tG06byJt6Z73RKN5E7V8RhWzLfCzxs02wmp
+         0wOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=b4reLFnLGstNl8yU7ElXfhLVkJOlPPnUu0vbq9yYvVM=;
+        b=VhwOUF+Kbvkir4JhFazv3BymW4hyi/9MymSP4qwmDMPhBx4Nr4MNsEUKwCmB/glCRV
+         d3u8OPhbNrDylVO8Q+jlOQFydPEw5dKcao4VDfj5BhrFIhGTzB5fc4eeN3lGN0JoLR/z
+         nvm0wsR3wz7H7P5osD58gsMWS6As/Kh1YwwZHwEVlv3Wv5QEwtRKSWpuBmL1MngizjVa
+         mqZlXXhQvEY7a2VVJi3UGAo3wCZggA4BY5f1Uc0cFBkGGP5fonpQ301iH2W7XsN6RqO1
+         aaFCsoGu6mfgncCPWlNDFOMljXXKAMxiPuOVvzDp0eWAiQ4xuLjMSZyPg6TfYerQBhTh
+         aD6Q==
+X-Gm-Message-State: AOAM530mtZ03tCwMKXrFwsysVT+YDrr8AeGYmUcS8r4dPXO26XHuWFiR
+        NSQ9VQudLw1kRbHnXY1Giks63Q==
+X-Google-Smtp-Source: ABdhPJyZg0q1YLmYUSx0xZRrSUBIS7r/5i2ghubZXjjmKv2kBNPRppV/MR81N+8c55cp1KYwzoqmsA==
+X-Received: by 2002:a17:907:d91:b0:6f4:c817:d492 with SMTP id go17-20020a1709070d9100b006f4c817d492mr2613993ejc.407.1651676041936;
+        Wed, 04 May 2022 07:54:01 -0700 (PDT)
+Received: from [192.168.0.215] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id er22-20020a170907739600b006f3ef214e7bsm5849395ejc.225.2022.05.04.07.54.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 07:54:01 -0700 (PDT)
+Message-ID: <45e55d3e-f29a-81ee-6673-a05da377e798@linaro.org>
+Date:   Wed, 4 May 2022 16:54:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nmGNw-00DdQV-Gz;;;mid=<87ee19fix7.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+Pmb3es8sVQGptMBHIKX3tnmcqpjmnk/g=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a
- livepatch is pending
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 2/3] dt-bindings: intel: add binding for Intel n6000
+Content-Language: en-US
+To:     matthew.gerlach@linux.intel.com, dinguyen@kernel.org,
+        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+References: <20220503194546.1287679-1-matthew.gerlach@linux.intel.com>
+ <20220503194546.1287679-3-matthew.gerlach@linux.intel.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220503194546.1287679-3-matthew.gerlach@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> writes:
+On 03/05/2022 21:45, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Add the binding string for the Agilex based Intel n6000 board.
+> 
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-> On Wed 2022-05-04 08:50:22, Seth Forshee wrote:
->> On Wed, May 04, 2022 at 03:07:53PM +0200, Petr Mladek wrote:
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
->> > If "no" then I do not understand why TIF_NOTIFY_SIGNAL interrupts
->> > the syscall on the real hardware and not in kvm.
->> 
->> It does interrupt, but xfer_to_guest_mode_handle_work() concludes it's
->> not necessary to return to userspace and resumes guest execution.
->
-> In this case, we should revert the commit 8df1947c71ee53c7e21
-> ("livepatch: Replace the fake signal sending with TIF_NOTIFY_SIGNAL
-> infrastructure"). The flag TIF_NOTIFY_SIGNAL clearly does not guarantee
-> restarting the syscall or exiting to the user space with -EINTR.
->
-> It should solve this problem. And it looks like a cleaner solution
-> to me.
 
-Why not just?
-
-diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
-index 9d09f489b60e..cbb192aec13a 100644
---- a/kernel/entry/kvm.c
-+++ b/kernel/entry/kvm.c
-@@ -8,13 +8,7 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-        do {
-                int ret;
- 
--               if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
--                       clear_notify_signal();
--                       if (task_work_pending(current))
--                               task_work_run();
--               }
--
--               if (ti_work & _TIF_SIGPENDING) {
-+               if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-                        kvm_handle_signal_exit(vcpu);
-                        return -EINTR;
-                }
-
-As far as I can tell the only reason _TIF_NOTIFY_SIGNAL was handled any
-differently than _TIF_SIGPENDING in xfer_to_guest_mode_work is because
-of historical confusion.
-
-Eric
+Best regards,
+Krzysztof
