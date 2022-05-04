@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B796EC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B3AC35275
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358615AbiEDRes (ORCPT
+        id S1358688AbiEDRfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
+        Wed, 4 May 2022 13:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356724AbiEDRJj (ORCPT
+        with ESMTP id S1356969AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BA017061;
-        Wed,  4 May 2022 09:55:26 -0700 (PDT)
+        Wed, 4 May 2022 13:09:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EBE47558;
+        Wed,  4 May 2022 09:56:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FA19B82792;
-        Wed,  4 May 2022 16:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13695C385AF;
-        Wed,  4 May 2022 16:55:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4149E617DE;
+        Wed,  4 May 2022 16:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83177C385A4;
+        Wed,  4 May 2022 16:56:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683325;
-        bh=bU9zuv/XF1iwHuINloAyTAgfvnKnw2LCdg098a6ufOs=;
+        s=korg; t=1651683406;
+        bh=3hVsmT5G8vgBYDvAK4nk4B5RhbZAjeVci/nVWw3xb8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EWCQu1cfcR8acu1kJQWy4eII+4WBYXGY+ivBF4Cgt60PCfPkTyN9Tw/19Y7CL+ZB/
-         2on0jCarHv8hnlgHqj2vQkJZlOCnuLJwXcor0+4qjMn17Ya/DB+RszziVVJkjig1BW
-         uBG9r4gsckjm+3A52i352GZ9Pyzs73QD31q9HHtc=
+        b=IHO3kIX5sGhAxCv6APfkBytajmfEQOuJCoNeXRH8hpA6X94a3b0C0zCcDDAme1LLM
+         O2QgMgvE4jp+z7+RuhLB9/zL++FXsB3m+8cw08tun9wN/QRcQ/nB/Oq8o41L/h/Wmn
+         f9uJWMB0AtVfclL4oKlj1vdw6fhCJMamejLBzUQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 5.17 004/225] USB: quirks: add STRING quirk for VCOM device
-Date:   Wed,  4 May 2022 18:44:02 +0200
-Message-Id: <20220504153110.605085090@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 077/225] phy: samsung: exynos5250-sata: fix missing device put in probe error paths
+Date:   Wed,  4 May 2022 18:45:15 +0200
+Message-Id: <20220504153118.170914263@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,31 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit ec547af8a9ea6441864bad34172676b5652ceb96 upstream.
+[ Upstream commit 5c8402c4db45dd55c2c93c8d730f5dfa7c78a702 ]
 
-This has been reported to stall if queried
+The actions of of_find_i2c_device_by_node() in probe function should be
+reversed in error paths by putting the reference to obtained device.
 
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220414123152.1700-1-oneukum@suse.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220407091857.230386-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -510,6 +510,9 @@ static const struct usb_device_id usb_qu
- 	/* DJI CineSSD */
- 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 6c305a3fe187..595adba5fb8f 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -196,20 +196,21 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 	sata_phy->phyclk = devm_clk_get(dev, "sata_phyctrl");
+ 	if (IS_ERR(sata_phy->phyclk)) {
+ 		dev_err(dev, "failed to get clk for PHY\n");
+-		return PTR_ERR(sata_phy->phyclk);
++		ret = PTR_ERR(sata_phy->phyclk);
++		goto put_dev;
+ 	}
  
-+	/* VCOM device */
-+	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
+ 	ret = clk_prepare_enable(sata_phy->phyclk);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable source clk\n");
+-		return ret;
++		goto put_dev;
+ 	}
+ 
+ 	sata_phy->phy = devm_phy_create(dev, NULL, &exynos_sata_phy_ops);
+ 	if (IS_ERR(sata_phy->phy)) {
+-		clk_disable_unprepare(sata_phy->phyclk);
+ 		dev_err(dev, "failed to create PHY\n");
+-		return PTR_ERR(sata_phy->phy);
++		ret = PTR_ERR(sata_phy->phy);
++		goto clk_disable;
+ 	}
+ 
+ 	phy_set_drvdata(sata_phy->phy, sata_phy);
+@@ -217,11 +218,18 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 	phy_provider = devm_of_phy_provider_register(dev,
+ 					of_phy_simple_xlate);
+ 	if (IS_ERR(phy_provider)) {
+-		clk_disable_unprepare(sata_phy->phyclk);
+-		return PTR_ERR(phy_provider);
++		ret = PTR_ERR(phy_provider);
++		goto clk_disable;
+ 	}
+ 
+ 	return 0;
 +
- 	/* INTEL VALUE SSD */
- 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
++clk_disable:
++	clk_disable_unprepare(sata_phy->phyclk);
++put_dev:
++	put_device(&sata_phy->client->dev);
++
++	return ret;
+ }
  
+ static const struct of_device_id exynos_sata_phy_of_match[] = {
+-- 
+2.35.1
+
 
 
