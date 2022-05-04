@@ -2,91 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51638C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF67C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376582AbiEDS1x (ORCPT
+        id S1376925AbiEDS2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:27:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
+        Wed, 4 May 2022 14:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354887AbiEDS1j (ORCPT
+        with ESMTP id S1376846AbiEDS2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:27:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91854AFB15;
-        Wed,  4 May 2022 10:53:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0347B827A5;
-        Wed,  4 May 2022 17:53:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1608DC385A5;
-        Wed,  4 May 2022 17:53:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651686834;
-        bh=x5TXQ+sKJh3OswfwKy0D7SzXvH/NMceOTIx8sfvn320=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=iAiBwBhUh80Dg3UBLI0jKfK4RQZblD6MpdL376pwD1D1ybuKumCqc1kA08OJLFyif
-         gZbnFMdx/ndkfIFRgpDTH/AVOEgSMT2BRT/v+bwGRYayTm+heJ2+ofNVyvfzCvOivI
-         AYzgV2vbMTiTF2Cu3/OT0/6R1nzyKtTfCXcov9qt67ec7I0VJknBN62SplXUAH3Y44
-         Ohi7zQZlCz9uGVJUTFwKwDMoZH54juVWofvM9M4q3LQLUkXa/YaaWE23jJ7kXYhfxi
-         HAxf9g8AHmL/XlVNlHSJ0/tNxWkMc2lLkPCHAmhjqgmlU5xFYizq9TnXPUAOb4Dsfg
-         YqxvciUTkxJfw==
-Date:   Wed, 4 May 2022 12:53:52 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Wed, 4 May 2022 14:28:15 -0400
+X-Greylist: delayed 406 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 10:55:25 PDT
+Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457F47665;
+        Wed,  4 May 2022 10:55:23 -0700 (PDT)
+Received: from mxbox3.masterlogin.de (unknown [192.168.10.78])
+        by mxout1.routing.net (Postfix) with ESMTP id 577BB40821;
+        Wed,  4 May 2022 17:48:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1651686516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PkayX3cpIbN2bP4bEPk/mnWfaMveU0+7qkBXCgv/T9o=;
+        b=X8Ma05sMwPyKXtQFp92ps0fLub1eRcX0Y+uUSE8mexg54j4iPrYokP+AtQbbzJWhrWfYTH
+        2yMyGqqEbQGE6hGzq46fPL/EK9AHRUnX5CXVt2elxDimdn4ZP4OjsPiOM0FACB19oO8Wm2
+        UAQGwaYG+sMSV2H7KMrztQ6W7TBSDDc=
+Received: from localhost.localdomain (fttx-pool-80.245.79.168.bambit.de [80.245.79.168])
+        by mxbox3.masterlogin.de (Postfix) with ESMTPSA id 85F0B3606E1;
+        Wed,  4 May 2022 17:48:35 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-pm@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        "open list:ACPI" <linux-acpi@vger.kernel.org>
-Subject: Re: [RFC v2 02/39] ACPI: add dependency on HAS_IOPORT
-Message-ID: <20220504175352.GA456913@bhelgaas>
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [RFC v1] opp: add config option for debug
+Date:   Wed,  4 May 2022 19:48:23 +0200
+Message-Id: <20220504174823.156709-1-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429135108.2781579-3-schnelle@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 65529973-93c8-4f73-bd71-4fb0c003dd48
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 03:50:00PM +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. As ACPI always uses I/O port access we simply depend
-> on HAS_IOPORT.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-CONFIG_ACPI depends on ARCH_SUPPORTS_ACPI, which is only set by arm64,
-ia64, and x86, all of which support I/O port access.  So does this
-actually solve a problem?  I wouldn't think you'd be able to build
-ACPI on s390 even without this patch.
+Currently OPP debug is enabled by DEBUG_DRIVER option. This is generic
+driver debug and opp floods serial console. This is annoying if opp is
+not needed so give it an additional config-key.
 
-"ACPI always uses I/O port access" is a pretty broad brush, and it
-would be useful to know specifically what the dependencies are.
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+---
+ drivers/base/Kconfig | 1 +
+ drivers/opp/Kconfig  | 7 +++++++
+ drivers/opp/Makefile | 2 +-
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
-Many ACPI hardware accesses use acpi_hw_read()/acpi_hw_write(), which
-use either MMIO or I/O port accesses depending on what the firmware
-told us.
+diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+index 6f04b831a5c0..8ae826c95d5f 100644
+--- a/drivers/base/Kconfig
++++ b/drivers/base/Kconfig
+@@ -130,6 +130,7 @@ config DEV_COREDUMP
+ config DEBUG_DRIVER
+ 	bool "Driver Core verbose debug messages"
+ 	depends on DEBUG_KERNEL
++	imply DEBUG_OPP
+ 	help
+ 	  Say Y here if you want the Driver core to produce a bunch of
+ 	  debug messages to the system log. Select this if you are having a
+diff --git a/drivers/opp/Kconfig b/drivers/opp/Kconfig
+index e8ce47b32735..6a2d2c6c1143 100644
+--- a/drivers/opp/Kconfig
++++ b/drivers/opp/Kconfig
+@@ -12,3 +12,10 @@ config PM_OPP
+ 	  representing individual voltage domains and provides SOC
+ 	  implementations a ready to use framework to manage OPPs.
+ 	  For more information, read <file:Documentation/power/opp.rst>
++
++menu "Operating Performance Points (OPP)"
++config DEBUG_OPP
++	bool "Debug Operating Performance Points"
++	help
++	  enable opp debugging
++endmenu
+diff --git a/drivers/opp/Makefile b/drivers/opp/Makefile
+index f65ed5985bb4..2589915eef95 100644
+--- a/drivers/opp/Makefile
++++ b/drivers/opp/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-ccflags-$(CONFIG_DEBUG_DRIVER)	:= -DDEBUG
++ccflags-$(CONFIG_DEBUG_OPP)	:= -DDEBUG
+ obj-y				+= core.o cpu.o
+ obj-$(CONFIG_OF)		+= of.o
+ obj-$(CONFIG_DEBUG_FS)		+= debugfs.o
+-- 
+2.25.1
 
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->  drivers/acpi/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index 1e34f846508f..8ad0d168004c 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -5,6 +5,7 @@
->  
->  config ARCH_SUPPORTS_ACPI
->  	bool
-> +	depends on HAS_IOPORT
->  
->  menuconfig ACPI
->  	bool "ACPI (Advanced Configuration and Power Interface) Support"
-> -- 
-> 2.32.0
-> 
