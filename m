@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FE59C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357785AbiEDRdX (ORCPT
+        id S1356377AbiEDRda (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        Wed, 4 May 2022 13:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356955AbiEDRJv (ORCPT
+        with ESMTP id S1357016AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:51 -0400
+        Wed, 4 May 2022 13:09:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720CF473A9;
-        Wed,  4 May 2022 09:56:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB7048325;
+        Wed,  4 May 2022 09:56:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DFFC617A6;
-        Wed,  4 May 2022 16:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FF3C385A4;
-        Wed,  4 May 2022 16:56:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57C65616B8;
+        Wed,  4 May 2022 16:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E40C385A5;
+        Wed,  4 May 2022 16:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683399;
-        bh=kPLz94WvLTpi4nn5bI9RZUlYwgXMZk6o7VGKl86N18I=;
+        s=korg; t=1651683415;
+        bh=9+4wzC9LHCwQFi6ITf/BO+2efJaeedcPk7eHgJRbozk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jMc1P2EV3cxxf9VNM5fiK9K1SzUJUkgL15oahxxIgslnJbao6LjTtqU/+HW34/3h3
-         J/z5xdUFOsWdEzyqLILwjBrGyrfIGcDXHuwQk8Mys9mdeu7+6IUeypAVbsKsTCw4js
-         qVZfo5Hl8C8uNZ94dFLYSoeMxYTws3qknFUB4HpU=
+        b=F+CukQy0sLI+ozv7nYNqP56NJAdgbpsRYLRRqo2DdW9KIX2zJWB3PjAzcQQTZXNF3
+         TY4Yc1I8iJi3IwC5I2NDr/yalXu3npXWEkqP3zb/EJNKDv4wA0YVKaI0UzyRy1DY74
+         qU2ZRFjL1coB1psmrbD+oJ5uAc5xdc9Z4dPbcohw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ajay Kathat <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 084/225] ARM: dts: at91: fix pinctrl phandles
-Date:   Wed,  4 May 2022 18:45:22 +0200
-Message-Id: <20220504153118.564236955@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 100/225] memory: renesas-rpc-if: Fix HF/OSPI data transfer in Manual Mode
+Date:   Wed,  4 May 2022 18:45:38 +0200
+Message-Id: <20220504153119.663029404@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,76 +53,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 0c640d9544d0109da3889d71ae77301e556db977 ]
+[ Upstream commit 7e842d70fe599bc13594b650b2144c4b6e6d6bf1 ]
 
-Commit bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all
-gpios") introduces pinctrl phandles for pins used by individual
-controllers to avoid failures due to commit 2ab73c6d8323 ("gpio:
-Support GPIO controllers without pin-ranges"). For SPI controllers
-available on SAMA5D4 and SAMA5D3 some of the pins are defined in
-SoC specific dtsi on behalf of pinctrl-0. Adding extra pinctrl phandles
-on board specific dts also on behalf of pinctrl-0 overwrite the pinctrl-0
-phandle specified in SoC specific dtsi. Thus add the board specific
-pinctrl to pinctrl-1.
+HyperFlash devices fail to probe:
 
-Fixes: bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all gpios")
-Depends-on: 5c8b49852910 ("ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name")
-Reported-by: Ajay Kathat <ajay.kathat@microchip.com>
-Co-developed-by: Ajay Kathat <ajay.kathat@microchip.com>
-Signed-off-by: Ajay Kathat <ajay.kathat@microchip.com>
-Tested-by: Ajay Kathat <ajay.kathat@microchip.com>
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220331141323.194355-2-claudiu.beznea@microchip.com
+    rpc-if-hyperflash rpc-if-hyperflash: probing of hyperbus device failed
+
+In HyperFlash or Octal-SPI Flash mode, the Transfer Data Enable bits
+(SPIDE) in the Manual Mode Enable Setting Register (SMENR) are derived
+from half of the transfer size, cfr. the rpcif_bits_set() helper
+function.  However, rpcif_reg_{read,write}() does not take the bus size
+into account, and does not double all Manual Mode Data Register access
+sizes when communicating with a HyperFlash or Octal-SPI Flash device.
+
+Fix this, and avoid the back-and-forth conversion between transfer size
+and Transfer Data Enable bits, by explicitly storing the transfer size
+in struct rpcif, and using that value to determine access size in
+rpcif_reg_{read,write}().
+
+Enforce that the "high" Manual Mode Read/Write Data Registers
+(SM[RW]DR1) are only used for 8-byte data accesses.
+While at it, forbid writing to the Manual Mode Read Data Registers,
+as they are read-only.
+
+Fixes: fff53a551db50f5e ("memory: renesas-rpc-if: Correct QSPI data transfer in Manual mode")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Tested-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Link: https://lore.kernel.org/r/cde9bfacf704c81865f57b15d1b48a4793da4286.1649681476.git.geert+renesas@glider.be
+Link: https://lore.kernel.org/r/20220420070526.9367-1-krzysztof.kozlowski@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91-sama5d3_xplained.dts | 8 ++++----
- arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/memory/renesas-rpc-if.c | 60 +++++++++++++++++++++++++--------
+ include/memory/renesas-rpc-if.h |  1 +
+ 2 files changed, 47 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d3_xplained.dts b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-index d72c042f2850..a49c2966b41e 100644
---- a/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-@@ -57,8 +57,8 @@ slot@0 {
- 			};
+diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
+index 2e545f473cc6..019a0822bde0 100644
+--- a/drivers/memory/renesas-rpc-if.c
++++ b/drivers/memory/renesas-rpc-if.c
+@@ -164,25 +164,39 @@ static const struct regmap_access_table rpcif_volatile_table = {
  
- 			spi0: spi@f0004000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi0_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi0_cs>;
- 				cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
- 				status = "okay";
- 			};
-@@ -171,8 +171,8 @@ slot@0 {
- 			};
  
- 			spi1: spi@f8008000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi1_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioC 25 0>;
- 				status = "okay";
- 			};
-diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-index accb92cfac44..e519d2747936 100644
---- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-@@ -81,8 +81,8 @@ usart4: serial@fc010000 {
- 			};
+ /*
+- * Custom accessor functions to ensure SMRDR0 and SMWDR0 are always accessed
+- * with proper width. Requires SMENR_SPIDE to be correctly set before!
++ * Custom accessor functions to ensure SM[RW]DR[01] are always accessed with
++ * proper width.  Requires rpcif.xfer_size to be correctly set before!
+  */
+ static int rpcif_reg_read(void *context, unsigned int reg, unsigned int *val)
+ {
+ 	struct rpcif *rpc = context;
  
- 			spi1: spi@fc018000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi1_cs>;
-+				pinctrl-names = "default", "cs";
-+				pinctrl-1 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioB 21 0>;
- 				status = "okay";
- 			};
+-	if (reg == RPCIF_SMRDR0 || reg == RPCIF_SMWDR0) {
+-		u32 spide = readl(rpc->base + RPCIF_SMENR) & RPCIF_SMENR_SPIDE(0xF);
+-
+-		if (spide == 0x8) {
++	switch (reg) {
++	case RPCIF_SMRDR0:
++	case RPCIF_SMWDR0:
++		switch (rpc->xfer_size) {
++		case 1:
+ 			*val = readb(rpc->base + reg);
+ 			return 0;
+-		} else if (spide == 0xC) {
++
++		case 2:
+ 			*val = readw(rpc->base + reg);
+ 			return 0;
+-		} else if (spide != 0xF) {
++
++		case 4:
++		case 8:
++			*val = readl(rpc->base + reg);
++			return 0;
++
++		default:
+ 			return -EILSEQ;
+ 		}
++
++	case RPCIF_SMRDR1:
++	case RPCIF_SMWDR1:
++		if (rpc->xfer_size != 8)
++			return -EILSEQ;
++		break;
+ 	}
+ 
+ 	*val = readl(rpc->base + reg);
+@@ -193,18 +207,34 @@ static int rpcif_reg_write(void *context, unsigned int reg, unsigned int val)
+ {
+ 	struct rpcif *rpc = context;
+ 
+-	if (reg == RPCIF_SMRDR0 || reg == RPCIF_SMWDR0) {
+-		u32 spide = readl(rpc->base + RPCIF_SMENR) & RPCIF_SMENR_SPIDE(0xF);
+-
+-		if (spide == 0x8) {
++	switch (reg) {
++	case RPCIF_SMWDR0:
++		switch (rpc->xfer_size) {
++		case 1:
+ 			writeb(val, rpc->base + reg);
+ 			return 0;
+-		} else if (spide == 0xC) {
++
++		case 2:
+ 			writew(val, rpc->base + reg);
+ 			return 0;
+-		} else if (spide != 0xF) {
++
++		case 4:
++		case 8:
++			writel(val, rpc->base + reg);
++			return 0;
++
++		default:
+ 			return -EILSEQ;
+ 		}
++
++	case RPCIF_SMWDR1:
++		if (rpc->xfer_size != 8)
++			return -EILSEQ;
++		break;
++
++	case RPCIF_SMRDR0:
++	case RPCIF_SMRDR1:
++		return -EPERM;
+ 	}
+ 
+ 	writel(val, rpc->base + reg);
+@@ -469,6 +499,7 @@ int rpcif_manual_xfer(struct rpcif *rpc)
+ 
+ 			smenr |= RPCIF_SMENR_SPIDE(rpcif_bits_set(rpc, nbytes));
+ 			regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
++			rpc->xfer_size = nbytes;
+ 
+ 			memcpy(data, rpc->buffer + pos, nbytes);
+ 			if (nbytes == 8) {
+@@ -533,6 +564,7 @@ int rpcif_manual_xfer(struct rpcif *rpc)
+ 			regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
+ 			regmap_write(rpc->regmap, RPCIF_SMCR,
+ 				     rpc->smcr | RPCIF_SMCR_SPIE);
++			rpc->xfer_size = nbytes;
+ 			ret = wait_msg_xfer_end(rpc);
+ 			if (ret)
+ 				goto err_out;
+diff --git a/include/memory/renesas-rpc-if.h b/include/memory/renesas-rpc-if.h
+index 7c93f5177532..9c0ad64b8d29 100644
+--- a/include/memory/renesas-rpc-if.h
++++ b/include/memory/renesas-rpc-if.h
+@@ -72,6 +72,7 @@ struct rpcif {
+ 	enum rpcif_type type;
+ 	enum rpcif_data_dir dir;
+ 	u8 bus_size;
++	u8 xfer_size;
+ 	void *buffer;
+ 	u32 xferlen;
+ 	u32 smcr;
 -- 
 2.35.1
 
