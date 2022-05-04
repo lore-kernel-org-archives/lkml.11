@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 600ECC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C0AC4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358516AbiEDRQC (ORCPT
+        id S1358458AbiEDRP7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
+        Wed, 4 May 2022 13:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355707AbiEDREj (ORCPT
+        with ESMTP id S1355709AbiEDREk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70D54EDDB;
-        Wed,  4 May 2022 09:53:16 -0700 (PDT)
+        Wed, 4 May 2022 13:04:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5284F470;
+        Wed,  4 May 2022 09:53:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 566E361866;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BD5861852;
+        Wed,  4 May 2022 16:53:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94340C385A4;
         Wed,  4 May 2022 16:53:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A35DCC385AA;
-        Wed,  4 May 2022 16:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683195;
-        bh=Za0VdiC3YL/IFH8GD9TAZhUplfNPPkWz+O8jG/yfWG4=;
+        s=korg; t=1651683196;
+        bh=vzK/3MQfktlOQvm7xuFwJAiiuTHOPQGeUfSkCAJbx3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mc/I83SpP/ojGvWEk8t+5jtGrmlXVYOpg+ViWngffrkvQ793WJydgY2+ex2ahiKE/
-         wHz6cQQPAZnCnHKTH/dxbXqwHwrrHoFNvvFaZuFEAniXXlkTcZnKeGcnwdi9RiBYCP
-         j8pcW54kdJFX1lhfpEXVVj+L/e9py6kbcM2p4GZE=
+        b=w6o+ZIYO+flgNnbuSmSyOYr7KA3Jv9vzxvBxgB5Oe4YWw9vBXOm6oHnMOXdekUOPv
+         OmAqD9GI5/jsamCpYhkznyWa6KZYmdHZdBRvv6LLOjDu/3ORVRxQH9sYTsYJR8akpP
+         h+1yuzQqiVsEyYqbU1V9Yn8NlGxCSGFO3qtlWT/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 048/177] arm64: dts: meson: remove CPU opps below 1GHz for G12B boards
-Date:   Wed,  4 May 2022 18:44:01 +0200
-Message-Id: <20220504153057.229727054@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 039/177] hex2bin: make the function hex_to_bin constant-time
+Date:   Wed,  4 May 2022 18:43:52 +0200
+Message-Id: <20220504153056.413198047@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,146 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 6c4d636bc00dc17c63ffb2a73a0da850240e26e3 ]
+commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
 
-Amlogic G12B devices experience CPU stalls and random board wedges when
-the system idles and CPU cores clock down to lower opp points. Recent
-vendor kernels include a change to remove 100-250MHz and other distro
-sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
-are removed or the CPU governor forced to performance stalls are still
-observed, so let's remove them to improve stability and uptime.
+The function hex2bin is used to load cryptographic keys into device
+mapper targets dm-crypt and dm-integrity.  It should take constant time
+independent on the processed data, so that concurrently running
+unprivileged code can't infer any information about the keys via
+microarchitectural convert channels.
 
-Fixes: b96d4e92709b ("arm64: dts: meson-g12b: support a311d and s922x cpu operating points")
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220210100638.19130-2-christianshewitt@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch changes the function hex_to_bin so that it contains no
+branches and no memory accesses.
+
+Note that this shouldn't cause performance degradation because the size
+of the new function is the same as the size of the old function (on
+x86-64) - and the new function causes no branch misprediction penalties.
+
+I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
+i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
+sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
+powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
+no branches in the generated code.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../boot/dts/amlogic/meson-g12b-a311d.dtsi    | 40 -------------------
- .../boot/dts/amlogic/meson-g12b-s922x.dtsi    | 40 -------------------
- 2 files changed, 80 deletions(-)
+ include/linux/kernel.h |    2 +-
+ lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
+ 2 files changed, 26 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-index d61f43052a34..8e9ad1e51d66 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-@@ -11,26 +11,6 @@ cpu_opp_table_0: opp-table-0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -277,7 +277,7 @@ static inline char *hex_byte_pack_upper(
+ 	return buf;
+ }
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <761000>;
-@@ -71,26 +51,6 @@ cpub_opp_table_1: opp-table-1 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+-extern int hex_to_bin(char ch);
++extern int hex_to_bin(unsigned char ch);
+ extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
+ extern char *bin2hex(char *dst, const void *src, size_t count);
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <731000>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-index 1e5d0ee5d541..44c23c984034 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-@@ -11,26 +11,6 @@ cpu_opp_table_0: opp-table-0 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+--- a/lib/hexdump.c
++++ b/lib/hexdump.c
+@@ -22,15 +22,33 @@ EXPORT_SYMBOL(hex_asc_upper);
+  *
+  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
+  * input.
++ *
++ * This function is used to load cryptographic keys, so it is coded in such a
++ * way that there are no conditions or memory accesses that depend on data.
++ *
++ * Explanation of the logic:
++ * (ch - '9' - 1) is negative if ch <= '9'
++ * ('0' - 1 - ch) is negative if ch >= '0'
++ * we "and" these two values, so the result is negative if ch is in the range
++ *	'0' ... '9'
++ * we are only interested in the sign, so we do a shift ">> 8"; note that right
++ *	shift of a negative value is implementation-defined, so we cast the
++ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
++ *	the range '0' ... '9', 0 otherwise
++ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
++ *	in the range '0' ... '9', 0 otherwise
++ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
++ *	... '9', -1 otherwise
++ * the next line is similar to the previous one, but we need to decode both
++ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
++ *	lowercase to uppercase
+  */
+-int hex_to_bin(char ch)
++int hex_to_bin(unsigned char ch)
+ {
+-	if ((ch >= '0') && (ch <= '9'))
+-		return ch - '0';
+-	ch = tolower(ch);
+-	if ((ch >= 'a') && (ch <= 'f'))
+-		return ch - 'a' + 10;
+-	return -1;
++	unsigned char cu = ch & 0xdf;
++	return -1 +
++		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
++		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
+ }
+ EXPORT_SYMBOL(hex_to_bin);
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <731000>;
-@@ -76,26 +56,6 @@ cpub_opp_table_1: opp-table-1 {
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <751000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <771000>;
--- 
-2.35.1
-
 
 
