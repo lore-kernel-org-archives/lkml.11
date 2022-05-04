@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A5BC3527B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376637AbiEDRpO (ORCPT
+        id S1376831AbiEDRpX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
+        Wed, 4 May 2022 13:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354608AbiEDRHU (ORCPT
+        with ESMTP id S1356345AbiEDRMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:07:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6373515AE;
-        Wed,  4 May 2022 09:54:25 -0700 (PDT)
+        Wed, 4 May 2022 13:12:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DCD4BBAD;
+        Wed,  4 May 2022 09:57:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BCC6617DE;
-        Wed,  4 May 2022 16:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA418C385A5;
-        Wed,  4 May 2022 16:54:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 85E97CE28B0;
+        Wed,  4 May 2022 16:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4561C385AF;
+        Wed,  4 May 2022 16:57:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683264;
-        bh=FB6S71sPeFP0H53YPfgswpGWG6zlz1yjWXv/ilUPvWE=;
+        s=korg; t=1651683458;
+        bh=se5v7BD30ixTkjSOWrFGeSsOS9HZQ/4c5BU5f7DwOwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vuL7RtDrmsD/pszgwocosQWmtEhoqK8f7y6i8WSrCQDdKTgF3xCE8uz8tSc4p4w8s
-         umq/YNORJfXr7AzLelS6pDWHA2ZcIzVDxc6xvoQpC31l70hMSymou58YLre8cCNQHO
-         bLDv8aC+tCH9Pb3BqZMLy03+25vBTfxX5/omOftE=
+        b=fVbgw1Rk2scdqF6QXmUZAwWRY/YeV0ftmMudidx3dokbWkkfMTphTNE8Coj03e0Wx
+         TENt2MXGv8fAMvu4fpR6wAEufaSinNbwrUOcJypQ6o4auBXX5+GvDBqFME1MWP0uxl
+         dxMFR7mwAq5KCHMr4yWhIach2ceiZemRX1me6SpI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Yat Sin <david.yatsin@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 114/177] drm/amdkfd: Fix GWS queue count
-Date:   Wed,  4 May 2022 18:45:07 +0200
-Message-Id: <20220504153103.397174871@linuxfoundation.org>
+Subject: [PATCH 5.17 133/225] drm/sun4i: Remove obsolete references to PHYS_OFFSET
+Date:   Wed,  4 May 2022 18:46:11 +0200
+Message-Id: <20220504153122.186885580@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,220 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Yat Sin <david.yatsin@amd.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 7c6b6e18c890f30965b0589b0a57645e1dbccfde ]
+[ Upstream commit dc3ae06c5f2170d879ff58696f629d8c3868aec3 ]
 
-dqm->gws_queue_count and pdd->qpd.mapped_gws_queue need to be updated
-each time the queue gets evicted.
+commit b4bdc4fbf8d0 ("soc: sunxi: Deal with the MBUS DMA offsets in a
+central place") added a platform device notifier that sets the DMA
+offset for all of the display engine frontend and backend devices.
 
-Fixes: b8020b0304c8 ("drm/amdkfd: Enable over-subscription with >1 GWS queue")
-Signed-off-by: David Yat Sin <david.yatsin@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The code applying the offset to DMA buffer physical addresses was then
+removed from the backend driver in commit 756668ba682e ("drm/sun4i:
+backend: Remove the MBUS quirks"), but the code subtracting PHYS_OFFSET
+was left in the frontend driver.
+
+As a result, the offset was applied twice in the frontend driver. This
+likely went unnoticed because it only affects specific configurations
+(scaling or certain pixel formats) where the frontend is used, on boards
+with both one of these older SoCs and more than 1 GB of DRAM.
+
+In addition, the references to PHYS_OFFSET prevent compiling the driver
+on architectures where PHYS_OFFSET is not defined.
+
+Fixes: b4bdc4fbf8d0 ("soc: sunxi: Deal with the MBUS DMA offsets in a central place")
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-4-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../drm/amd/amdkfd/kfd_device_queue_manager.c | 83 +++++++++----------
- 1 file changed, 37 insertions(+), 46 deletions(-)
+ drivers/gpu/drm/sun4i/sun4i_frontend.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
-index 4f2e0cc8a51a..442857f3bde7 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
-@@ -138,19 +138,33 @@ void program_sh_mem_settings(struct device_queue_manager *dqm,
- }
+diff --git a/drivers/gpu/drm/sun4i/sun4i_frontend.c b/drivers/gpu/drm/sun4i/sun4i_frontend.c
+index 56ae38389db0..462fae73eae9 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_frontend.c
++++ b/drivers/gpu/drm/sun4i/sun4i_frontend.c
+@@ -222,13 +222,11 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
  
- static void increment_queue_count(struct device_queue_manager *dqm,
--			enum kfd_queue_type type)
-+				  struct qcm_process_device *qpd,
-+				  struct queue *q)
- {
- 	dqm->active_queue_count++;
--	if (type == KFD_QUEUE_TYPE_COMPUTE || type == KFD_QUEUE_TYPE_DIQ)
-+	if (q->properties.type == KFD_QUEUE_TYPE_COMPUTE ||
-+	    q->properties.type == KFD_QUEUE_TYPE_DIQ)
- 		dqm->active_cp_queue_count++;
-+
-+	if (q->properties.is_gws) {
-+		dqm->gws_queue_count++;
-+		qpd->mapped_gws_queue = true;
-+	}
- }
+ 	/* Set the physical address of the buffer in memory */
+ 	paddr = drm_fb_cma_get_gem_addr(fb, state, 0);
+-	paddr -= PHYS_OFFSET;
+ 	DRM_DEBUG_DRIVER("Setting buffer #0 address to %pad\n", &paddr);
+ 	regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR0_REG, paddr);
  
- static void decrement_queue_count(struct device_queue_manager *dqm,
--			enum kfd_queue_type type)
-+				  struct qcm_process_device *qpd,
-+				  struct queue *q)
- {
- 	dqm->active_queue_count--;
--	if (type == KFD_QUEUE_TYPE_COMPUTE || type == KFD_QUEUE_TYPE_DIQ)
-+	if (q->properties.type == KFD_QUEUE_TYPE_COMPUTE ||
-+	    q->properties.type == KFD_QUEUE_TYPE_DIQ)
- 		dqm->active_cp_queue_count--;
-+
-+	if (q->properties.is_gws) {
-+		dqm->gws_queue_count--;
-+		qpd->mapped_gws_queue = false;
-+	}
- }
+ 	if (fb->format->num_planes > 1) {
+ 		paddr = drm_fb_cma_get_gem_addr(fb, state, swap ? 2 : 1);
+-		paddr -= PHYS_OFFSET;
+ 		DRM_DEBUG_DRIVER("Setting buffer #1 address to %pad\n", &paddr);
+ 		regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR1_REG,
+ 			     paddr);
+@@ -236,7 +234,6 @@ void sun4i_frontend_update_buffer(struct sun4i_frontend *frontend,
  
- static int allocate_doorbell(struct qcm_process_device *qpd, struct queue *q)
-@@ -390,7 +404,7 @@ static int create_queue_nocpsch(struct device_queue_manager *dqm,
- 	list_add(&q->list, &qpd->queues_list);
- 	qpd->queue_count++;
- 	if (q->properties.is_active)
--		increment_queue_count(dqm, q->properties.type);
-+		increment_queue_count(dqm, qpd, q);
- 
- 	/*
- 	 * Unconditionally increment this counter, regardless of the queue's
-@@ -515,13 +529,8 @@ static int destroy_queue_nocpsch_locked(struct device_queue_manager *dqm,
- 		deallocate_vmid(dqm, qpd, q);
- 	}
- 	qpd->queue_count--;
--	if (q->properties.is_active) {
--		decrement_queue_count(dqm, q->properties.type);
--		if (q->properties.is_gws) {
--			dqm->gws_queue_count--;
--			qpd->mapped_gws_queue = false;
--		}
--	}
-+	if (q->properties.is_active)
-+		decrement_queue_count(dqm, qpd, q);
- 
- 	return retval;
- }
-@@ -613,12 +622,11 @@ static int update_queue(struct device_queue_manager *dqm, struct queue *q)
- 	 * dqm->active_queue_count to determine whether a new runlist must be
- 	 * uploaded.
- 	 */
--	if (q->properties.is_active && !prev_active)
--		increment_queue_count(dqm, q->properties.type);
--	else if (!q->properties.is_active && prev_active)
--		decrement_queue_count(dqm, q->properties.type);
--
--	if (q->gws && !q->properties.is_gws) {
-+	if (q->properties.is_active && !prev_active) {
-+		increment_queue_count(dqm, &pdd->qpd, q);
-+	} else if (!q->properties.is_active && prev_active) {
-+		decrement_queue_count(dqm, &pdd->qpd, q);
-+	} else if (q->gws && !q->properties.is_gws) {
- 		if (q->properties.is_active) {
- 			dqm->gws_queue_count++;
- 			pdd->qpd.mapped_gws_queue = true;
-@@ -680,11 +688,7 @@ static int evict_process_queues_nocpsch(struct device_queue_manager *dqm,
- 		mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
- 				q->properties.type)];
- 		q->properties.is_active = false;
--		decrement_queue_count(dqm, q->properties.type);
--		if (q->properties.is_gws) {
--			dqm->gws_queue_count--;
--			qpd->mapped_gws_queue = false;
--		}
-+		decrement_queue_count(dqm, qpd, q);
- 
- 		if (WARN_ONCE(!dqm->sched_running, "Evict when stopped\n"))
- 			continue;
-@@ -730,7 +734,7 @@ static int evict_process_queues_cpsch(struct device_queue_manager *dqm,
- 			continue;
- 
- 		q->properties.is_active = false;
--		decrement_queue_count(dqm, q->properties.type);
-+		decrement_queue_count(dqm, qpd, q);
- 	}
- 	pdd->last_evict_timestamp = get_jiffies_64();
- 	retval = execute_queues_cpsch(dqm,
-@@ -801,11 +805,7 @@ static int restore_process_queues_nocpsch(struct device_queue_manager *dqm,
- 		mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
- 				q->properties.type)];
- 		q->properties.is_active = true;
--		increment_queue_count(dqm, q->properties.type);
--		if (q->properties.is_gws) {
--			dqm->gws_queue_count++;
--			qpd->mapped_gws_queue = true;
--		}
-+		increment_queue_count(dqm, qpd, q);
- 
- 		if (WARN_ONCE(!dqm->sched_running, "Restore when stopped\n"))
- 			continue;
-@@ -863,7 +863,7 @@ static int restore_process_queues_cpsch(struct device_queue_manager *dqm,
- 			continue;
- 
- 		q->properties.is_active = true;
--		increment_queue_count(dqm, q->properties.type);
-+		increment_queue_count(dqm, &pdd->qpd, q);
- 	}
- 	retval = execute_queues_cpsch(dqm,
- 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
-@@ -1265,7 +1265,7 @@ static int create_kernel_queue_cpsch(struct device_queue_manager *dqm,
- 			dqm->total_queue_count);
- 
- 	list_add(&kq->list, &qpd->priv_queue_list);
--	increment_queue_count(dqm, kq->queue->properties.type);
-+	increment_queue_count(dqm, qpd, kq->queue);
- 	qpd->is_debug = true;
- 	execute_queues_cpsch(dqm, KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
- 	dqm_unlock(dqm);
-@@ -1279,7 +1279,7 @@ static void destroy_kernel_queue_cpsch(struct device_queue_manager *dqm,
- {
- 	dqm_lock(dqm);
- 	list_del(&kq->list);
--	decrement_queue_count(dqm, kq->queue->properties.type);
-+	decrement_queue_count(dqm, qpd, kq->queue);
- 	qpd->is_debug = false;
- 	execute_queues_cpsch(dqm, KFD_UNMAP_QUEUES_FILTER_ALL_QUEUES, 0);
- 	/*
-@@ -1346,7 +1346,7 @@ static int create_queue_cpsch(struct device_queue_manager *dqm, struct queue *q,
- 	qpd->queue_count++;
- 
- 	if (q->properties.is_active) {
--		increment_queue_count(dqm, q->properties.type);
-+		increment_queue_count(dqm, qpd, q);
- 
- 		execute_queues_cpsch(dqm,
- 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
-@@ -1548,15 +1548,11 @@ static int destroy_queue_cpsch(struct device_queue_manager *dqm,
- 	list_del(&q->list);
- 	qpd->queue_count--;
- 	if (q->properties.is_active) {
--		decrement_queue_count(dqm, q->properties.type);
-+		decrement_queue_count(dqm, qpd, q);
- 		retval = execute_queues_cpsch(dqm,
- 				KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
- 		if (retval == -ETIME)
- 			qpd->reset_wavefronts = true;
--		if (q->properties.is_gws) {
--			dqm->gws_queue_count--;
--			qpd->mapped_gws_queue = false;
--		}
- 	}
- 
- 	/*
-@@ -1747,7 +1743,7 @@ static int process_termination_cpsch(struct device_queue_manager *dqm,
- 	/* Clean all kernel queues */
- 	list_for_each_entry_safe(kq, kq_next, &qpd->priv_queue_list, list) {
- 		list_del(&kq->list);
--		decrement_queue_count(dqm, kq->queue->properties.type);
-+		decrement_queue_count(dqm, qpd, kq->queue);
- 		qpd->is_debug = false;
- 		dqm->total_queue_count--;
- 		filter = KFD_UNMAP_QUEUES_FILTER_ALL_QUEUES;
-@@ -1760,13 +1756,8 @@ static int process_termination_cpsch(struct device_queue_manager *dqm,
- 		else if (q->properties.type == KFD_QUEUE_TYPE_SDMA_XGMI)
- 			deallocate_sdma_queue(dqm, q);
- 
--		if (q->properties.is_active) {
--			decrement_queue_count(dqm, q->properties.type);
--			if (q->properties.is_gws) {
--				dqm->gws_queue_count--;
--				qpd->mapped_gws_queue = false;
--			}
--		}
-+		if (q->properties.is_active)
-+			decrement_queue_count(dqm, qpd, q);
- 
- 		dqm->total_queue_count--;
- 	}
+ 	if (fb->format->num_planes > 2) {
+ 		paddr = drm_fb_cma_get_gem_addr(fb, state, swap ? 1 : 2);
+-		paddr -= PHYS_OFFSET;
+ 		DRM_DEBUG_DRIVER("Setting buffer #2 address to %pad\n", &paddr);
+ 		regmap_write(frontend->regs, SUN4I_FRONTEND_BUF_ADDR2_REG,
+ 			     paddr);
 -- 
 2.35.1
 
