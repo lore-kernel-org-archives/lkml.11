@@ -2,137 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF42C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346913AbiEDI4r (ORCPT
+        id S1346927AbiEDI4y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
+        Wed, 4 May 2022 04:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346775AbiEDIx3 (ORCPT
+        with ESMTP id S1346834AbiEDIxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:53:29 -0400
-Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 421EF255BF
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:49:22 -0700 (PDT)
-Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
-        by 156.147.23.51 with ESMTP; 4 May 2022 17:19:21 +0900
-X-Original-SENDERIP: 156.147.1.125
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.125 with ESMTP; 4 May 2022 17:19:21 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     torvalds@linux-foundation.org
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
-Subject: [PATCH RFC v6 16/21] dept: Distinguish each work from another
-Date:   Wed,  4 May 2022 17:17:44 +0900
-Message-Id: <1651652269-15342-17-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
-References: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
+        Wed, 4 May 2022 04:53:46 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D1125E87
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651654173; x=1683190173;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=V5tYr+zZNvwfwnQpbzyvburfLeDVmqCwlAN1Bm8YOJs=;
+  b=U3S/3qNCAymUPeYd/fk5Bbows3rXGh2cCg86fRspwg0+ptN45hfWIfR6
+   H72RA/pPXdasBKDZHLbWL9+wtaYO/pQX6tnqTT3GTchoDJ/q6jI5BVyZg
+   t+IegwQu5pJF/N3Fi/32xis3cq2ybdG11t3oEuxl7gw1g1DpOrVo0wx0C
+   y5NQabZQl2KM42VVivjIAXSwmBj4KRhTClcl/qfCXXhVyswiEdTQiwh7V
+   zJX9WV9zIuG/xpO+9KlWeZNFETQ1azbtdIq0UVRrebkTiYSzkawEfMJjw
+   HHyQZtLdVLBDguXo+TMYzXmsdPG3Rp3YAvMT2RMPINZpkE02OMOd03n2I
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="354141964"
+X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
+   d="scan'208";a="354141964"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 01:49:23 -0700
+X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
+   d="scan'208";a="734304485"
+Received: from yanc1-mobl.ccr.corp.intel.com (HELO [10.255.30.223]) ([10.255.30.223])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 01:49:20 -0700
+Message-ID: <aef3b3ed-a7a4-5e6a-c16d-0ee57d01e124@linux.intel.com>
+Date:   Wed, 4 May 2022 16:49:19 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 5/5] iommu/vt-d: Remove hard coding PGSNP bit in PASID
+ entries
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20220501112434.874236-1-baolu.lu@linux.intel.com>
+ <20220501112434.874236-6-baolu.lu@linux.intel.com>
+ <20220502131959.GL8364@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220502131959.GL8364@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Workqueue already provides concurrency control. By that, any wait in a
-work doesn't prevents events in other works with the control enabled.
-Thus, each work would better be considered a different context.
+On 2022/5/2 21:19, Jason Gunthorpe wrote:
+> On Sun, May 01, 2022 at 07:24:34PM +0800, Lu Baolu wrote:
+>> As enforce_cache_coherency has been introduced into the iommu_domain_ops,
+>> the kernel component which owns the iommu domain is able to opt-in its
+>> requirement for force snooping support. The iommu driver has no need to
+>> hard code the page snoop control bit in the PASID table entries anymore.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/pasid.h | 1 -
+>>   drivers/iommu/intel/iommu.c | 3 ---
+>>   drivers/iommu/intel/pasid.c | 6 ------
+>>   3 files changed, 10 deletions(-)
+> 
+> It seems fine, but as in the other email where do we do
+> pasid_set_pgsnp() for a new device attach on an already no-snopp domain?
 
-So let Dept assign a different context id to each work.
+Yes. I will take care of this in the next version.
 
-Signed-off-by: Byungchul Park <byungchul.park@lge.com>
----
- include/linux/dept.h     |  2 ++
- kernel/dependency/dept.c | 10 ++++++++++
- kernel/workqueue.c       |  3 +++
- 3 files changed, 15 insertions(+)
+> Jason
 
-diff --git a/include/linux/dept.h b/include/linux/dept.h
-index c020b17..1a3858c 100644
---- a/include/linux/dept.h
-+++ b/include/linux/dept.h
-@@ -503,6 +503,7 @@ struct dept_task {
- extern void dept_event_split_map(struct dept_map_each *me, struct dept_map_common *mc, unsigned long ip, const char *e_fn);
- extern void dept_ask_event_split_map(struct dept_map_each *me, struct dept_map_common *mc);
- extern void dept_kernel_enter(void);
-+extern void dept_work_enter(void);
- 
- static inline void dept_ecxt_enter_nokeep(struct dept_map *m)
- {
-@@ -556,6 +557,7 @@ static inline void dept_ecxt_enter_nokeep(struct dept_map *m)
- #define dept_event_split_map(me, mc, ip, e_fn)		do { } while (0)
- #define dept_ask_event_split_map(me, mc)		do { } while (0)
- #define dept_kernel_enter()				do { } while (0)
-+#define dept_work_enter()				do { } while (0)
- #define dept_ecxt_enter_nokeep(m)			do { } while (0)
- #define dept_key_init(k)				do { (void)(k); } while (0)
- #define dept_key_destroy(k)				do { (void)(k); } while (0)
-diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
-index 18e5951..6707313 100644
---- a/kernel/dependency/dept.c
-+++ b/kernel/dependency/dept.c
-@@ -1844,6 +1844,16 @@ void dept_enirq_transition(unsigned long ip)
- 	dept_exit(flags);
- }
- 
-+/*
-+ * Assign a different context id to each work.
-+ */
-+void dept_work_enter(void)
-+{
-+	struct dept_task *dt = dept_task();
-+
-+	dt->cxt_id[DEPT_CXT_PROCESS] += (1UL << DEPT_CXTS_NR);
-+}
-+
- void dept_kernel_enter(void)
- {
- 	struct dept_task *dt = dept_task();
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 0d2514b..334654c 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -51,6 +51,7 @@
- #include <linux/sched/isolation.h>
- #include <linux/nmi.h>
- #include <linux/kvm_para.h>
-+#include <linux/dept.h>
- 
- #include "workqueue_internal.h"
- 
-@@ -2199,6 +2200,8 @@ static void process_one_work(struct worker *worker, struct work_struct *work)
- 
- 	lockdep_copy_map(&lockdep_map, &work->lockdep_map);
- #endif
-+	dept_work_enter();
-+
- 	/* ensure we're on the correct CPU */
- 	WARN_ON_ONCE(!(pool->flags & POOL_DISASSOCIATED) &&
- 		     raw_smp_processor_id() != pool->cpu);
--- 
-1.9.1
-
+Best regards,
+baolu
