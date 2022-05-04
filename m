@@ -2,179 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77587C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9428FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376737AbiEDSWx (ORCPT
+        id S1377114AbiEDSYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
+        Wed, 4 May 2022 14:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376723AbiEDSWp (ORCPT
+        with ESMTP id S1377491AbiEDSYV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:22:45 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149E14BB8D
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:46:33 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id i17so2053109pla.10
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 10:46:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LtWHuThIe0dcxXuedbVwJNy12A4ZYyFgKdzHIm7dues=;
-        b=Vfd0Sq+Wzp1oZDscK9nncqtb62H1YcTv5jc/nrwigR2VKbA6OkaPGroKpsj3kv+sQX
-         CljNkT1bNmxMDGjq+o9fjKGuaLTIC4SyMK+odZjHhr3K0OYaEBpx/i/hY8xb5QBJQABp
-         PGTH7AkFPEj6DI0rmw/JchSqtuazrYVhS9GOo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LtWHuThIe0dcxXuedbVwJNy12A4ZYyFgKdzHIm7dues=;
-        b=Kik2wcPPMM+nh74+ePssZ+Tw9LNbC2LUG/bZzeGekDio4LapKZbIOv+bbWMnrOj8qc
-         KehEFxzhmFV/owxrFhZGeTy8kqKwFb8UQimFGrsrmdYV3bTwDOeKFj8RE93zYyy2pZWI
-         GHhuSa55R4tUa/LPRSmGEehHkMb0zP1UktfyaMdUcQkhFlyFOs6Gp4A8xYslwFtfCde9
-         Fcoei2uZEUyLGlkYSq8DDywGgEQdNk+PQocXN6NO2zSxtOJd7iVXG3cddst+suunUCJf
-         8RvbRTQk0JGnA2DNdbLfrGBkPALD1DZeBElXdR1pA2w90+kWnuxdKUQncYnM/JWIcFqD
-         NxTw==
-X-Gm-Message-State: AOAM532EfwhqiU6FSLRh59CpjMd2KxSdq12VJXNaBt2GWep705Mf/XnS
-        9IMWsY4ZoQ7cIY+dIbG0zpHfaw==
-X-Google-Smtp-Source: ABdhPJzGjN/OiaZWZXI+A5qznvKAV8N/38y/N4mbFxjfX9tWUyAGv9EtHXHEYW/GLFF2lvfgq/eYSg==
-X-Received: by 2002:a17:90b:2249:b0:1dc:7905:c4bf with SMTP id hk9-20020a17090b224900b001dc7905c4bfmr730381pjb.62.1651686392625;
-        Wed, 04 May 2022 10:46:32 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:35b6:c77b:be04:3bd5])
-        by smtp.gmail.com with UTF8SMTPSA id q26-20020a63505a000000b003aa8b87feb5sm15538347pgl.0.2022.05.04.10.46.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 10:46:32 -0700 (PDT)
-Date:   Wed, 4 May 2022 10:46:30 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_pkondeti@quicinc.com,
-        quic_ppratap@quicinc.com, quic_kriskura@quicinc.com,
-        quic_vpulyala@quicinc.com
-Subject: Re: [PATCH v14 3/7] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <YnK79i3NiTdMmC98@google.com>
-References: <1650395470-31333-1-git-send-email-quic_c_sanm@quicinc.com>
- <1650395470-31333-4-git-send-email-quic_c_sanm@quicinc.com>
+        Wed, 4 May 2022 14:24:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50695A147A
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:48:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B899FB827A5
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 17:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0657C385A5;
+        Wed,  4 May 2022 17:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651686529;
+        bh=e8wlpzu01p00GXxLrMBw1AHGF6QBSQftauK15PaYFC0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gC2b/3IjDBS6efhvpKAC0TilIdXJzbZRO8OhUUqPEvXsO6EMbXH8BGOm4RjB9zep8
+         to7WYxb1RsLgb3yWZ4AS3bDWRGfWF9OukK5Daur7tSIy5sPpTI8P6j5hcu7RHxZchE
+         /VrrvbSkirO0gEba/eippVNc9QPjDhJgvMyh16eAJReI5K4iYu/ckCvo3YgUDVmGj9
+         ngktJHd1+E0jdIbzDkoDErhs5s2V9MFdg0Et6WgFPwnetSQNxFnFeysOw0LPdsJyyG
+         NDJExB7hIGD1Xv+SdVG9cnSgy59soykRsHDqUqW5SOikgt1MrdcFxfoUSFf1BwgTvQ
+         b3KcdE/bWryZA==
+Date:   Wed, 4 May 2022 10:48:47 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Leonardo Bras <leobras@redhat.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: ld.lld: error: inline assembly requires more registers than
+ available at line 523
+Message-ID: <YnK8f7cqMoHxSi0C@dev-arch.thelio-3990X>
+References: <202205020637.JVJo3blw-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1650395470-31333-4-git-send-email-quic_c_sanm@quicinc.com>
+In-Reply-To: <202205020637.JVJo3blw-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 12:41:06AM +0530, Sandeep Maheswaram wrote:
-> During suspend read the status of all port and set hs phy mode
-> based on current speed. Use this hs phy mode to configure wakeup
-> interrupts in qcom glue driver.
+On Mon, May 02, 2022 at 06:29:38AM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+> commit: ba1f77c546966c12d86220d078e5838dcaeab348 x86/kvm: Fix compilation warning in non-x86_64 builds
+> date:   2 months ago
+> config: i386-randconfig-a012-20220502 (https://download.01.org/0day-ci/archive/20220502/202205020637.JVJo3blw-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 09325d36061e42b495d1f4c7e933e260eac260ed)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ba1f77c546966c12d86220d078e5838dcaeab348
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout ba1f77c546966c12d86220d078e5838dcaeab348
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 > 
-> Check wakeup-source property for dwc3 core node to set the
-> wakeup capability. Drop the device_init_wakeup call from
-> runtime suspend and resume.
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 > 
-> Also check during suspend if any wakeup capable devices are
-> connected to the controller (directly or through hubs), if there
-> are none set a flag to indicate that the PHY is powered
-> down during suspend.
+> All errors (new ones prefixed by >>):
 > 
-> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> ---
-> v14:
-> Used device_children_wakeup_capable instead of usb_wakeup_enabled_descendants.
+> >> ld.lld: error: inline assembly requires more registers than available at line 523
+> >> ld.lld: error: inline assembly requires more registers than available at line 523
 > 
-> v13:
-> Changed dwc3_set_phy_speed_mode to dwc3_check_phy_speed_mode.
-> Removed device_init_wakeup calls from dwc3_runtime_suspend and dwc3_runtime_resume
-> as we have a new dt property wakeup-source.
-> 
-> 
->  drivers/usb/dwc3/core.c | 33 ++++++++++++++++++++-------------
->  drivers/usb/dwc3/core.h |  4 ++++
->  drivers/usb/dwc3/host.c | 24 ++++++++++++++++++++++++
->  3 files changed, 48 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> index 1170b80..898aa66 100644
-> --- a/drivers/usb/dwc3/core.c
-> +++ b/drivers/usb/dwc3/core.c
-> @@ -32,6 +32,7 @@
->  #include <linux/usb/gadget.h>
->  #include <linux/usb/of.h>
->  #include <linux/usb/otg.h>
-> +#include <linux/usb/hcd.h>
->  
->  #include "core.h"
->  #include "gadget.h"
-> @@ -1723,6 +1724,7 @@ static int dwc3_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, dwc);
->  	dwc3_cache_hwparams(dwc);
-> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
->  
->  	spin_lock_init(&dwc->lock);
->  	mutex_init(&dwc->mutex);
-> @@ -1865,6 +1867,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  {
->  	unsigned long	flags;
->  	u32 reg;
-> +	struct usb_hcd  *hcd = platform_get_drvdata(dwc->xhci);
->  
->  	switch (dwc->current_dr_role) {
->  	case DWC3_GCTL_PRTCAP_DEVICE:
-> @@ -1877,10 +1880,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  		dwc3_core_exit(dwc);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> -			dwc3_core_exit(dwc);
-> -			break;
-> -		}
-> +		dwc3_check_phy_speed_mode(dwc);
->  
->  		/* Let controller to suspend HSPHY before PHY driver suspends */
->  		if (dwc->dis_u2_susphy_quirk ||
-> @@ -1896,6 +1896,16 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  
->  		phy_pm_runtime_put_sync(dwc->usb2_generic_phy);
->  		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
-> +
-> +		if (!PMSG_IS_AUTO(msg)) {
-> +			if (device_may_wakeup(dwc->dev) &&
-> +			    device_children_wakeup_capable(&hcd->self.root_hub->dev)) {
-> +				dwc->phy_power_off = false;
-> +			} else {
-> +				dwc->phy_power_off = true;
-> +				dwc3_core_exit(dwc);
 
-I found that shutting the PHYs down during suspend leads to high power
-consumption of a downstream hub (about 80mW vs 15mW when the PHYs are
-not shut down).
+I don't think this bisection result is correct; this error is visible at
+v5.17-rc3, which this commit is based on. This is likely the same root
+cause as https://github.com/ClangBuiltLinux/linux/issues/1589, just with
+LTO. I'll reduce something down and comment there if it turns out to be
+different.
 
-It would be interesting to know if this also impacts other non-hub
-peripherals. Unfortunately I can't test that, the hub on my system is
-soldered to the board.
-
-I understand that shutting the PHYs down might be beneficial in terms
-of power on some systems, however on those I'm looking at we'd strongly
-prefer to save the 65mW of power consumed by the hub, rather than
-whatever smaller amount of power that is saved by powering down the
-PHYs.
-
-Could we introduce a sysfs attribute (or some other sort of knob) to
-allow the admin to configure whether the PHYs should remain on or off
-during suspend? That is assuming that it is actually desirable to power
-them off on some systems.
+Cheers,
+Nathan
