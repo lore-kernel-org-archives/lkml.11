@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50EBAC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBC4C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358436AbiEDRe3 (ORCPT
+        id S1358365AbiEDReS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
+        Wed, 4 May 2022 13:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357158AbiEDRKA (ORCPT
+        with ESMTP id S1357193AbiEDRKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:10:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A9A4925D;
-        Wed,  4 May 2022 09:57:07 -0700 (PDT)
+        Wed, 4 May 2022 13:10:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C283649687;
+        Wed,  4 May 2022 09:57:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B873618D7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29415B82795;
         Wed,  4 May 2022 16:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1218C385AF;
-        Wed,  4 May 2022 16:57:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECCEC385AA;
+        Wed,  4 May 2022 16:57:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683426;
-        bh=TJj4Yiloi+OzkR9APGeJI/DYk4NVRmMyNOzm9Hso+HI=;
+        s=korg; t=1651683425;
+        bh=mG562RSlp1GIUX/9eUaCxfRcLCFqQjtL0AeviNxO6YI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kh5lyCRkijuOgYSoHPWijriHMbVaI+YtjkD1ZV1FQ0rra/fBxDVUlpjc63Z2EqIoo
-         Z75ntbNJ7blbSrVRQSXnexzHJc94GaBDnuE5btwwHIlpSZB+yHvwegoYgYpwSw3Oen
-         ZxY9ftbkUNYTBtALMBhpn4fB7yAIdrSWVaNselVA=
+        b=wUGLi26LHU0kTTOKVfOB7NA4OCV6qhpCKG7vAImDa1a686WZC4mJ+ispZTowARuaY
+         o8SqeX0llHbkqUU8PDb5YaUOG7UuePgk4dHxdUgrA3xrzUdutbbyjDmToqJmoVvznj
+         /6Qxbt1MSytv9g1/lb9MNKcefI5gDfJu5no/2Hl0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
         Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 092/225] ARM: dts: logicpd-som-lv: Fix wrong pinmuxing on OMAP35
-Date:   Wed,  4 May 2022 18:45:30 +0200
-Message-Id: <20220504153119.065008180@linuxfoundation.org>
+Subject: [PATCH 5.17 091/225] ARM: dts: am3517-evm: Fix misc pinmuxing
+Date:   Wed,  4 May 2022 18:45:29 +0200
+Message-Id: <20220504153118.996220529@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -52,100 +52,149 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 46ff3df87215ff42c0cd2c4bdb7d74540384a69c ]
+[ Upstream commit 942da3af32b2288e674736eb159d1fc676261691 ]
 
-The pinout of the OMAP35 and DM37 variants of the SOM-LV are the
-same, but the macros which define the pinmuxing are different
-between OMAP3530 and DM3730.  The pinmuxing was correct for
-for the DM3730, but wrong for the OMAP3530.  Since the boot loader
-was correctly pin-muxing the pins, this was not obvious. As the
-bootloader not guaranteed to pinmux all the pins any more, this
-causes an issue, so the pinmux needs to be moved from a common
-file to their respective board files.
+The bootloader for the AM3517 has previously done much of the pin
+muxing, but as the bootloader is moving more and more to a model
+based on the device tree, it may no longer automatically mux the
+pins, so it is necessary to add the pinmuxing to the Linux device
+trees so the respective peripherals can remain functional.
 
-Fixes: f8a2e3ff7103 ("ARM: dts: Add minimal support for LogicPD OMAP35xx SOM-LV devkit")
+Fixes: 6ed1d7997561 ("ARM: dts: am3517-evm: Add support for UI board and Audio")
 Signed-off-by: Adam Ford <aford173@gmail.com>
-Message-Id: <20220303171818.11060-1-aford173@gmail.com>
+Message-Id: <20220226214820.747847-1-aford173@gmail.com>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts | 15 +++++++++++++++
- arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts | 15 +++++++++++++++
- arch/arm/boot/dts/logicpd-som-lv.dtsi            | 15 ---------------
- 3 files changed, 30 insertions(+), 15 deletions(-)
+ arch/arm/boot/dts/am3517-evm.dts  | 45 +++++++++++++++++++++++++++----
+ arch/arm/boot/dts/am3517-som.dtsi |  9 +++++++
+ 2 files changed, 49 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
-index 2a0a98fe67f0..3240c67e0c39 100644
---- a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
-+++ b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
-@@ -11,3 +11,18 @@ / {
- 	model = "LogicPD Zoom OMAP35xx SOM-LV Development Kit";
- 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3430", "ti,omap3";
- };
-+
-+&omap3_pmx_core2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&hsusb2_2_pins>;
-+	hsusb2_2_pins: pinmux_hsusb2_2_pins {
-+		pinctrl-single,pins = <
-+			OMAP3430_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
-+			OMAP3430_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
-+			OMAP3430_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
-+			OMAP3430_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
-+			OMAP3430_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
-+			OMAP3430_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
-+		>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
-index a604d92221a4..c757f0d7781c 100644
---- a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
-+++ b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
-@@ -11,3 +11,18 @@ / {
- 	model = "LogicPD Zoom DM3730 SOM-LV Development Kit";
- 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3630", "ti,omap3";
- };
-+
-+&omap3_pmx_core2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&hsusb2_2_pins>;
-+	hsusb2_2_pins: pinmux_hsusb2_2_pins {
-+		pinctrl-single,pins = <
-+			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
-+			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
-+			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
-+			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
-+			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
-+			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
-+		>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/logicpd-som-lv.dtsi b/arch/arm/boot/dts/logicpd-som-lv.dtsi
-index b56524cc7fe2..55b619c99e24 100644
---- a/arch/arm/boot/dts/logicpd-som-lv.dtsi
-+++ b/arch/arm/boot/dts/logicpd-som-lv.dtsi
-@@ -265,21 +265,6 @@ OMAP3_WKUP_IOPAD(0x2a0c, PIN_OUTPUT | MUX_MODE4)	/* sys_boot1.gpio_3 */
- 	};
+diff --git a/arch/arm/boot/dts/am3517-evm.dts b/arch/arm/boot/dts/am3517-evm.dts
+index 0d2fac98ce7d..c8b80f156ec9 100644
+--- a/arch/arm/boot/dts/am3517-evm.dts
++++ b/arch/arm/boot/dts/am3517-evm.dts
+@@ -161,6 +161,8 @@ pwm11: dmtimer-pwm@11 {
+ 
+ 	/* HS USB Host PHY on PORT 1 */
+ 	hsusb1_phy: hsusb1_phy {
++		pinctrl-names = "default";
++		pinctrl-0 = <&hsusb1_rst_pins>;
+ 		compatible = "usb-nop-xceiv";
+ 		reset-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>; /* gpio_57 */
+ 		#phy-cells = <0>;
+@@ -168,7 +170,9 @@ hsusb1_phy: hsusb1_phy {
  };
  
--&omap3_pmx_core2 {
+ &davinci_emac {
+-	     status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&ethernet_pins>;
++	status = "okay";
+ };
+ 
+ &davinci_mdio {
+@@ -193,6 +197,8 @@ dpi_out: endpoint {
+ };
+ 
+ &i2c2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins>;
+ 	clock-frequency = <400000>;
+ 	/* User DIP swithes [1:8] / User LEDS [1:2] */
+ 	tca6416: gpio@21 {
+@@ -205,6 +211,8 @@ tca6416: gpio@21 {
+ };
+ 
+ &i2c3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c3_pins>;
+ 	clock-frequency = <400000>;
+ };
+ 
+@@ -223,6 +231,8 @@ &mmc3 {
+ };
+ 
+ &usbhshost {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb1_pins>;
+ 	port1-mode = "ehci-phy";
+ };
+ 
+@@ -231,8 +241,35 @@ &usbhsehci {
+ };
+ 
+ &omap3_pmx_core {
 -	pinctrl-names = "default";
--	pinctrl-0 = <&hsusb2_2_pins>;
--	hsusb2_2_pins: pinmux_hsusb2_2_pins {
--		pinctrl-single,pins = <
--			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
--			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
--			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
--			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
--			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
--			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
--		>;
--	};
--};
--
- &uart2 {
- 	interrupts-extended = <&intc 73 &omap3_pmx_core OMAP3_UART2_RX>;
- 	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb1_rst_pins>;
++
++	ethernet_pins: pinmux_ethernet_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21fe, PIN_INPUT | MUX_MODE0) /* rmii_mdio_data */
++			OMAP3_CORE1_IOPAD(0x2200, MUX_MODE0) /* rmii_mdio_clk */
++			OMAP3_CORE1_IOPAD(0x2202, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd0 */
++			OMAP3_CORE1_IOPAD(0x2204, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_rxd1 */
++			OMAP3_CORE1_IOPAD(0x2206, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_crs_dv */
++			OMAP3_CORE1_IOPAD(0x2208, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_rxer */
++			OMAP3_CORE1_IOPAD(0x220a, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd0 */
++			OMAP3_CORE1_IOPAD(0x220c, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* rmii_txd1 */
++			OMAP3_CORE1_IOPAD(0x220e, PIN_OUTPUT_PULLDOWN |MUX_MODE0) /* rmii_txen */
++			OMAP3_CORE1_IOPAD(0x2210, PIN_INPUT_PULLDOWN | MUX_MODE0) /* rmii_50mhz_clk */
++		>;
++	};
++
++	i2c2_pins: pinmux_i2c2_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21be, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_scl */
++			OMAP3_CORE1_IOPAD(0x21c0, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c2_sda */
++		>;
++	};
++
++	i2c3_pins: pinmux_i2c3_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21c2, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_scl */
++			OMAP3_CORE1_IOPAD(0x21c4, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c3_sda */
++		>;
++	};
+ 
+ 	leds_pins: pinmux_leds_pins {
+ 		pinctrl-single,pins = <
+@@ -300,8 +337,6 @@ OMAP3_CORE1_IOPAD(0x20ba, PIN_OUTPUT | MUX_MODE4)	/* gpmc_ncs6.gpio_57 */
+ };
+ 
+ &omap3_pmx_core2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb1_pins>;
+ 
+ 	hsusb1_pins: pinmux_hsusb1_pins {
+ 		pinctrl-single,pins = <
+diff --git a/arch/arm/boot/dts/am3517-som.dtsi b/arch/arm/boot/dts/am3517-som.dtsi
+index 8b669e2eafec..f7b680f6c48a 100644
+--- a/arch/arm/boot/dts/am3517-som.dtsi
++++ b/arch/arm/boot/dts/am3517-som.dtsi
+@@ -69,6 +69,8 @@ nand@0,0 {
+ };
+ 
+ &i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
+ 	clock-frequency = <400000>;
+ 
+ 	s35390a: s35390a@30 {
+@@ -179,6 +181,13 @@ bluetooth {
+ 
+ &omap3_pmx_core {
+ 
++	i2c1_pins: pinmux_i2c1_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x21ba, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_scl */
++			OMAP3_CORE1_IOPAD(0x21bc, PIN_INPUT_PULLUP | MUX_MODE0)  /* i2c1_sda */
++		>;
++	};
++
+ 	wl12xx_buffer_pins: pinmux_wl12xx_buffer_pins {
+ 		pinctrl-single,pins = <
+ 			OMAP3_CORE1_IOPAD(0x2156, PIN_OUTPUT | MUX_MODE4)  /* mmc1_dat7.gpio_129 */
 -- 
 2.35.1
 
