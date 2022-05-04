@@ -2,129 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FB2C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D761DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236586AbiEDUes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
+        id S1378047AbiEDUe5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 16:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357568AbiEDUeo (ORCPT
+        with ESMTP id S1378037AbiEDUez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:34:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D2B4E387;
-        Wed,  4 May 2022 13:31:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651696266; x=1683232266;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5GhRSMdpdVf05QfepV3o9U0aOcougHdLRETdtU1BceE=;
-  b=Mt+ekS5FZ5erIAKIi3qdTFct5hRJu9qRtcj5JyjS8prYPm5OsJ/fp1Xo
-   YBQ8SOhf25jIeJj8+grqa0c3Tyh6CD032PSDR2UZcdP0TaSbOVlisv1UJ
-   zOAX944ge3UOH1zUMYWsFJwxW70E+tIZ+7ZyKwlWpmjwEEzfSZ5Obq9Zf
-   6rfsYfffll/Rk6lVegitDv8XeEr7/KOpLbVW2bqXgQSdxDcpXV0rmAMRP
-   SzPv+Fi9rEGB4QNPvEXF0alQFl6G5v2nZRe+FiMQ6A/ReI1kyokyq98ea
-   2W4gL/13YshNQPYYPfsIIDn2yo9FHNtXzTpA6kAspa6plcMkPtNRNLIUM
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="265484431"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="265484431"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 13:31:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="568271596"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 04 May 2022 13:31:01 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmLeG-000BlC-Rr;
-        Wed, 04 May 2022 20:31:00 +0000
-Date:   Thu, 5 May 2022 04:30:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Lin Meng-Bo <linmengbo0689@protonmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/3] input/touchscreen: imagis: Add support for Imagis
- IST3038B
-Message-ID: <202205050459.Cn4Mj5ny-lkp@intel.com>
-References: <20220504152406.8730-4-markuss.broks@gmail.com>
+        Wed, 4 May 2022 16:34:55 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCBE4F9EB;
+        Wed,  4 May 2022 13:31:18 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id l9-20020a056830268900b006054381dd35so1655766otu.4;
+        Wed, 04 May 2022 13:31:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eqhMwN4tyN2ECyEbdMTwnZxfCbkUyNiMmIExOF8iPPE=;
+        b=BqsRaXpLPDBV+f7jLdimuAKNgW57BuKTjJw+8KR8iAqMiAXCNy+f1/bOBbQDv93UZc
+         mnP3SxFaxavAmuP0Jg2sxXxOQiaBBD/fzAUHFw8vi9stowEXoT7jTI3jM7n1tshvQJtl
+         +2oTaBITgMAxYQm74x/p51XX5R64tR7Kg6II7RwvKE/52C1t4wDoWjirrKgJG9NrhCGg
+         T+dcf3Ow0ZxQ6Un/9h3j32okmu0eQWYARSVzu36W2zoollCEMqR3Laz8yug4uOnK8Gxa
+         5wsgnUZxUt1Tj4/0JR/076ISJtNtJzjNMdk/i/tulUHg/PlS/jm4BWkJ1pb3uk1M5eRZ
+         9LnA==
+X-Gm-Message-State: AOAM531+XLWdxY/8EeBdYLYuYLTbm4vcKnr22tNiBfM6laZ+RkaKnEpq
+        3pjwl8IysDzWV3cVwZR4xQ==
+X-Google-Smtp-Source: ABdhPJwQywTu4F9RwachS/Z+ymS39mbMLYXQjo/u7vJvvBOE89ll6PcoXARhA7T/H6EuKifCvUSMUQ==
+X-Received: by 2002:a05:6830:14d4:b0:606:cc5:32cd with SMTP id t20-20020a05683014d400b006060cc532cdmr7035362otq.359.1651696277498;
+        Wed, 04 May 2022 13:31:17 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u36-20020a05687004e400b000e932746d33sm8441359oam.28.2022.05.04.13.31.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 13:31:16 -0700 (PDT)
+Received: (nullmailer pid 2175284 invoked by uid 1000);
+        Wed, 04 May 2022 20:31:15 -0000
+Date:   Wed, 4 May 2022 15:31:15 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Balakrishna Godavarthi <quic_bgodavar@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, mka@chromium.org,
+        linux-bluetooth@vger.kernel.org, quic_hemantg@quicinc.com,
+        quic_saluvala@quicinc.com, quic_rjliao@quicinc.com,
+        mcchou@chromium.org
+Subject: Re: [PATCH v1 1/3] dt-bindings: net: bluetooth: Add wlan-gpio entry
+ for wcn6750
+Message-ID: <YnLik/JKsHs6yfwc@robh.at.kernel.org>
+References: <1651228073-1999-1-git-send-email-quic_bgodavar@quicinc.com>
+ <1651228073-1999-2-git-send-email-quic_bgodavar@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504152406.8730-4-markuss.broks@gmail.com>
+In-Reply-To: <1651228073-1999-2-git-send-email-quic_bgodavar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Markuss,
+On Fri, Apr 29, 2022 at 03:57:51PM +0530, Balakrishna Godavarthi wrote:
+> This patch adds a wlan-gpio entry and its reference usage for
 
-I love your patch! Perhaps something to improve:
+wlan-gpios
 
-[auto build test WARNING on dtor-input/next]
-[also build test WARNING on linux/master linus/master v5.18-rc5 next-20220504]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> BT SoC wcn6750.
+> 
+> Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+> Signed-off-by: Balakrishna Godavarthi <quic_bgodavar@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+> index f93c6e7..624f957 100644
+> --- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+> +++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
+> @@ -24,6 +24,10 @@ properties:
+>        - qcom,qca6390-bt
+>        - qcom,wcn6750-bt
+>  
+> +  wlan-gpios:
+> +    maxItems: 1
+> +    description: gpio specifier used to wlan chip
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Markuss-Broks/Add-support-for-Imagis-IST3038B/20220504-232637
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: hexagon-randconfig-r022-20220502 (https://download.01.org/0day-ci/archive/20220505/202205050459.Cn4Mj5ny-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a22f360f66c82a3bc53d9861a62d2d2e5abe897c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Markuss-Broks/Add-support-for-Imagis-IST3038B/20220504-232637
-        git checkout a22f360f66c82a3bc53d9861a62d2d2e5abe897c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/input/touchscreen/
+How does one 'wlan' a chip?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/input/touchscreen/imagis.c:366:39: warning: unused variable 'imagis_3038b_data' [-Wunused-const-variable]
-   static const struct imagis_properties imagis_3038b_data = {
-                                         ^
->> drivers/input/touchscreen/imagis.c:374:39: warning: unused variable 'imagis_3038c_data' [-Wunused-const-variable]
-   static const struct imagis_properties imagis_3038c_data = {
-                                         ^
-   2 warnings generated.
-
-
-vim +/imagis_3038b_data +366 drivers/input/touchscreen/imagis.c
-
-   365	
- > 366	static const struct imagis_properties imagis_3038b_data = {
-   367		.interrupt_msg_cmd = IST3038B_REG_STATUS,
-   368		.touch_coord_cmd = IST3038B_REG_STATUS,
-   369		.whoami_cmd = IST3038B_REG_CHIPID,
-   370		.whoami_val = IST3038B_WHOAMI,
-   371		.protocol_b = true,
-   372	};
-   373	
- > 374	static const struct imagis_properties imagis_3038c_data = {
-   375		.interrupt_msg_cmd = IST3038C_REG_INTR_MESSAGE,
-   376		.touch_coord_cmd = IST3038C_REG_TOUCH_COORD,
-   377		.whoami_cmd = IST3038C_REG_CHIPID,
-   378		.whoami_val = IST3038C_WHOAMI,
-   379	};
-   380	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+>    enable-gpios:
+>      maxItems: 1
+>      description: gpio specifier used to enable chip
+> @@ -123,6 +127,7 @@ allOf:
+>                - qcom,wcn6750-bt
+>      then:
+>        required:
+> +        - wlan-gpios
+>          - enable-gpios
+>          - swctrl-gpios
+>          - vddio-supply
+> @@ -166,6 +171,7 @@ examples:
+>              compatible = "qcom,wcn6750-bt";
+>              pinctrl-names = "default";
+>              pinctrl-0 = <&bt_en_default>;
+> +            wlan-gpios = <&tlmm 84 GPIO_ACTIVE_HIGH>;
+>              enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
+>              swctrl-gpios = <&tlmm 86 GPIO_ACTIVE_HIGH>;
+>              vddio-supply = <&vreg_l19b_1p8>;
+> -- 
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+> 
+> 
