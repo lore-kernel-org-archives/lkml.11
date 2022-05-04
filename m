@@ -2,137 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7E1C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB66C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242197AbiEDVf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
+        id S240385AbiEDVg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 17:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347126AbiEDVf0 (ORCPT
+        with ESMTP id S238121AbiEDVgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:35:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFB84838E;
-        Wed,  4 May 2022 14:31:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAD48B829E8;
-        Wed,  4 May 2022 21:31:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D62C385BF;
-        Wed,  4 May 2022 21:31:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651699906;
-        bh=zFvzT8pCm+1ful8W/hZ4LOb35c/AZPHiTAR5f5uq/tc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=psHr6IyS0tCkPqNjtn0h6gBlwY40lOhbh/uw16bstSHWVYnmtHqEoZ532Dc9rtOal
-         DUtXfgn3DdLZgWPENyY+MDgzz08W+auqjcYPklLCUJDhHdzEXeeuxWe7LpvbPQY9kJ
-         FOxNi34XKyPTNO9nguLWvf12if7tv0axSjj5zB31OByn/knBsjbgNK9SEZoOb9mk2H
-         8Mi5Plsbv3ClcTw6udErx8u6A9v1Ng1bHEjpGoMpucB2QcZFN6TMAvSYQ6IMdui25o
-         P6nUGl1dzSr93wmpQQ9rPDjMiV7wf6pGhiZS8ljqSo0VQ8Lm9E+/x0iZSoSI081EGu
-         qotf+DUD3i/vA==
-Received: by mail-wr1-f51.google.com with SMTP id k2so3657498wrd.5;
-        Wed, 04 May 2022 14:31:46 -0700 (PDT)
-X-Gm-Message-State: AOAM530m3z7+Lq1wthZl3Ou4DDusfe+YzKGwkK3E99iNDWFIQi4smzAh
-        db83aG6SCEY16rFZw+Bo71+iWvSUabbsMWpWX3Y=
-X-Google-Smtp-Source: ABdhPJxAVZcK+UbsrIHV3UqhufeJ7C2MWsg9y8caQR3XP4mze6wyb/qHpchpXkh4iCCt0pJlSodAlnXDA871Nj1pC0U=
-X-Received: by 2002:adf:e106:0:b0:20a:b31b:213d with SMTP id
- t6-20020adfe106000000b0020ab31b213dmr17558428wrz.219.1651699904306; Wed, 04
- May 2022 14:31:44 -0700 (PDT)
+        Wed, 4 May 2022 17:36:25 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A63C4E399
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:32:48 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id x12so2148282pgj.7
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 14:32:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WjEPs1op8LxvfkfWukwIS5BU2GeJEGL3fw9qBagDE0I=;
+        b=N39qyWd0B9QXcrtEOgpz+XlRsSUtsOaISsV//j38XXGM2Hz30Y3BuDkZPsjNuL9JlH
+         VmfX4usEBxTLo/kc3iHbcTUXTBYqZ085pa+hYck48mTkCv2C8SrIGBPWgRNOExixQcYZ
+         6mA+JXh8aMwkih5IYrvVTvRd04xT0A6AqAZ0I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WjEPs1op8LxvfkfWukwIS5BU2GeJEGL3fw9qBagDE0I=;
+        b=hhVfU7QIjyscRSODtFNxTIh8/vVeKZZUsaQy3bNwLaKrt3l9rlae8t7WX96J+ImxYb
+         Xo0fWKYbbaKyXdzCxMq0YIAh8Op+cCY9uM+cYdeDQcQDBqb9dx/9HbYYnX7f1/j22kE7
+         Y5AMrMJt0Ae7DoHHF0+YkCVDei1TLLv+Q+x0T9LtIy4H3WUTfGg/cP2Y/g5YOR0mQlQq
+         pp2uVNZGZWgq0KKZBR6VIexveQ87aWvh1dQRoFDylY6qtqeB/I4MhdKLdpwHpVHdbX7Q
+         YmEFwviqNA7lAQCyUyBgQWEqwknwVTrQ4zrCkJjRJu55adldVVRbaMprJeiyC7rgs1n9
+         Xxgg==
+X-Gm-Message-State: AOAM530BAgCwl7gT+PHnfoBTPS8SdsM7ZurE8dWtRKX8iGGmIDfiI9A8
+        R0hDFvZ0+IEF7S3Ydz/mUg1dkg==
+X-Google-Smtp-Source: ABdhPJxwBSF1pIaHNG1nGISIY7eznOLyP5goqHIsXBFpaErUNk/5iojUC7knD+9FCtCBOkmQbxSiDA==
+X-Received: by 2002:a62:bd14:0:b0:50d:4bec:ff78 with SMTP id a20-20020a62bd14000000b0050d4becff78mr22482662pff.71.1651699967711;
+        Wed, 04 May 2022 14:32:47 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:35b6:c77b:be04:3bd5])
+        by smtp.gmail.com with UTF8SMTPSA id m31-20020a63581f000000b003c2677c9c9esm3905015pgb.67.2022.05.04.14.32.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 14:32:47 -0700 (PDT)
+Date:   Wed, 4 May 2022 14:32:46 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v11 04/12] arm64: dts: qcom: sc7280: Add wcd9385 codec
+ node for CRD 1.0/2.0 and IDP boards
+Message-ID: <YnLw/tw1FzAPtKSo@google.com>
+References: <1651664649-25290-1-git-send-email-quic_srivasam@quicinc.com>
+ <1651664649-25290-5-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-References: <20220429135108.2781579-2-schnelle@linux.ibm.com> <20220504210840.GA469916@bhelgaas>
-In-Reply-To: <20220504210840.GA469916@bhelgaas>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 4 May 2022 23:31:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
-Message-ID: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
-Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select it
- as necessary
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
-        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        "open list:SUPERH" <linux-sh@vger.kernel.org>,
-        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
-        <sparclinux@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1651664649-25290-5-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 11:08 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Fri, Apr 29, 2022 at 03:49:59PM +0200, Niklas Schnelle wrote:
-> > We introduce a new HAS_IOPORT Kconfig option to indicate support for
-> > I/O Port access. In a future patch HAS_IOPORT=n will disable compilation
-> > of the I/O accessor functions inb()/outb() and friends on architectures
-> > which can not meaningfully support legacy I/O spaces such as s390 or
-> > where such support is optional.
->
-> So you plan to drop inb()/outb() on architectures where I/O port space
-> is optional?  So even platforms that have I/O port space may not be
-> able to use it?
->
-> This feels like a lot of work where the main benefit is to keep
-> Kconfig from offering drivers that aren't of interest on s390.
->
-> Granted, there may be issues where inb()/outb() does the wrong thing
-> such as dereferencing null pointers when I/O port space isn't
-> implemented.  I think that's a defect in inb()/outb() and could be
-> fixed there.
+On Wed, May 04, 2022 at 05:14:01PM +0530, Srinivasa Rao Mandadapu wrote:
+> Add wcd9385 codec node for audio use case on sc7280 based platforms
+> of revision 3, 4 (aka CRD 1.0 and 2.0) and IDP boards.
+> Add tlmm gpio property for switching CTIA/OMTP Headset.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 
-The current implementation in asm-generic/io.h implements inb()/outb()
-using readb()/writeb() with a fixed architecture specific offset.
+Carrying over from v10:
 
-There are three possible things that can happen here:
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 
-a) there is a host bridge driver that maps its I/O ports to this window,
-    and everything works
-b) the address range is reserved and accessible but no host bridge
-   driver has mapped its registers there, so an access causes a
-   page fault
-c) the architecture does not define an offset, and accessing low I/O
-    ports ends up as a NULL pointer dereference
+Coming back to my earlier comments about per-patch change logs:
 
-The main goal is to avoid c), which is what happens on s390, but
-can also happen elsewhere. Catching b) would be nice as well,
-but is much harder to do from generic code as you'd need an
-architecture specific inline asm statement to insert a ex_table
-fixup, or a runtime conditional on each access.
+The cover letter change log looks like this:
 
-         Arnd
+Changes Since V10:
+ -- Modify digital macro codecs pin control labels.
+ -- Updated dependency list.
+
+Changes Since V9:
+ -- Move wcd codec and digital codec nodes to sc7280-qcard file.
+ -- Modify the reg property as per link number in sound node.
+ -- Fix the us-euro pin control usage in wcd codec node.
+ -- Move wcd pin control nodes to specific crd board files.
+ -- Sort max98360a codec node in alphabetical order.
+ -- Modify the commit messages.
+
+...
+
+There is no mention in which patches changes were made, in some cases
+you can guess it, in others not, in any case you are placing the
+burden to figure that out on the reviewers even though you already
+have that information. So please send future series (this one is
+hopefully close to landing) with per-patch change logs.
