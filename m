@@ -2,93 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2821BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B73C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357260AbiEDRXt (ORCPT
+        id S1353314AbiEDRZs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
+        Wed, 4 May 2022 13:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356474AbiEDRFR (ORCPT
+        with ESMTP id S1354579AbiEDRFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:05:17 -0400
+        Wed, 4 May 2022 13:05:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613935131F;
-        Wed,  4 May 2022 09:54:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0ED5132B;
+        Wed,  4 May 2022 09:54:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D2A0B827A9;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5CD4B827AC;
+        Wed,  4 May 2022 16:54:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50683C385B1;
         Wed,  4 May 2022 16:54:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA53C385A4;
-        Wed,  4 May 2022 16:54:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683250;
-        bh=nU9hRqmoG+NR1e6QcNT5Gtc/DQw+zQxCB3nckjInEu0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LcXBsBwzk2hLfSszzASHxFBSly8+5H/HMXhCO7BxDm0M1fnEdtAr0U7zIEWQqhWqh
-         vY7RWVBpbuMT4RtLt12tNTjvZys62RaA2D3gBSv7gubmNzU2hAjgre6ntYuAmnYKaB
-         zec4ZgwFOuga9niPQOIBu63W1/l4pGoJG2DDGbYg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 103/177] bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
-Date:   Wed,  4 May 2022 18:44:56 +0200
-Message-Id: <20220504153102.408014748@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651683251;
+        bh=c6+7Ne4K8yZ0+BKb8IfJNxGJ6ZxxOYXvDdFYiQ0PJqM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=uh7kUaXix6SXNpSHxcQafJqyVWArJKQx6BIJfPPwMl8cluoqPN3qGBf87C0JFYMh6
+         aUOJawCMaS6sZ7ndt9v8Sf0sPtPEJqffnJVQsm7THm2CtvsHU2AX9qaBlyBS7vDP9m
+         bBpyKzWp23iRlbBOwpNx9iabOCVxCVRLsMlixJ8MgdAvsYok1P1GsQzwz6toDlNjFg
+         KrvGLi8oVTmLGLVxGdCLImBEWD9YebI+IfxvCA9qRXcAtAjfXqKVEBuGQ4JmeWHHtg
+         LTOlrf0DOG1SdR1yVvMgg4/hfJrfgI4FtzUcCeKB1h1s2iF5k/INugSy7H0797WFSM
+         pkT9fnIfhu9NQ==
+Date:   Wed, 4 May 2022 11:54:09 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: [PATCH v3 4/9] PCI/PM: Rework changing power states of PCI
+ devices
+Message-ID: <20220504165409.GA453565@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnFtjzGYwe28tVAA@dev-arch.thelio-3990X>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+[+cc Anders]
 
-[ Upstream commit fff8c10368e64e7f8960f149375c12ca5f3b30af ]
+On Tue, May 03, 2022 at 10:59:43AM -0700, Nathan Chancellor wrote:
+> On Thu, Apr 14, 2022 at 03:11:21PM +0200, Rafael J. Wysocki wrote:
+> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > 
+> > There are some issues related to changing power states of PCI
+> > devices, mostly related to carrying out unnecessary actions in some
+> > places, and the code is generally hard to follow.
+> > 
+> >  1. pci_power_up() has two callers, pci_set_power_state() and
+> >     pci_pm_default_resume_early().  The latter updates the current
+> >     power state of the device right after calling pci_power_up()
+> >     and it restores the entire config space of the device right
+> >     after that, so pci_power_up() itself need not read the
+> >     PCI_PM_CTRL register or restore the BARs after programming the
+> >     device into D0 in that case.
+> >  
+> >  2. It is generally hard to get a clear view of the pci_power_up()
+> >     code flow, especially in some corner cases, due to all of the
+> >     involved PCI_PM_CTRL register reads and writes occurring in
+> >     pci_platform_power_transition() and in pci_raw_set_power_state(),
+> >     some of which are redundant.
+> > 
+> >  3. The transitions from low-power states to D0 and the other way
+> >     around are unnecessarily tangled in pci_raw_set_power_state()
+> >     which causes it to use a redundant local variable and makes it
+> >     rather hard to follow.
+> > 
+> > To address the above shortcomings, make the following changes:
+> > 
+> >  a. Remove the code handling transitions into D0
+> >     from pci_raw_set_power_state() and rename it as
+> >     pci_set_low_power_state().
+> > 
+> >  b. Add the code handling transitions into D0 directly
+> >     to pci_power_up() and to a new wrapper function
+> >     pci_set_full_power_state() calling it internally that is
+> >     only used in pci_set_power_state().
+> > 
+> >  c. Make pci_power_up() avoid redundant PCI_PM_CTRL register reads
+> >     and make it work in the same way for transitions from any
+> >     low-power states (transitions from D1 and D2 are handled
+> >     slightly differently before the change).
+> > 
+> >  d. Put the restoration of the BARs and the PCI_PM_CTRL
+> >     register read confirming the power state change into
+> >     pci_set_full_power_state() to avoid doing that in
+> >     pci_pm_default_resume_early() unnecessarily.
+> > 
+> > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> 
+> This change as commit 5bffe4c611f5 ("PCI/PM: Rework changing power
+> states of PCI devices") causes my AMD-based system to fail to fully
+> boot.
 
-This code is really spurious.
-It always returns an ERR_PTR, even when err is known to be 0 and calls
-put_device() after a successful device_register() call.
+I dropped 5bffe4c611f5 and subsequent pci/pm patches temporarily while
+this gets worked out.
 
-It is likely that the return statement in the normal path is missing.
-Add 'return rdev;' to fix it.
-
-Fixes: d787dcdb9c8f ("bus: sunxi-rsb: Add driver for Allwinner Reduced Serial Bus")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/ef2b9576350bba4c8e05e669e9535e9e2a415763.1650551719.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/bus/sunxi-rsb.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
-index 4566e730ef2b..60b082fe2ed0 100644
---- a/drivers/bus/sunxi-rsb.c
-+++ b/drivers/bus/sunxi-rsb.c
-@@ -227,6 +227,8 @@ static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
- 
- 	dev_dbg(&rdev->dev, "device %s registered\n", dev_name(&rdev->dev));
- 
-+	return rdev;
-+
- err_device_add:
- 	put_device(&rdev->dev);
- 
--- 
-2.35.1
-
-
-
+Bjorn
