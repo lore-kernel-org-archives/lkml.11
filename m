@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D34BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353200AbiEDQTQ (ORCPT
+        id S1353258AbiEDQTY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        Wed, 4 May 2022 12:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353222AbiEDQSt (ORCPT
+        with ESMTP id S1353241AbiEDQSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:18:49 -0400
+        Wed, 4 May 2022 12:18:50 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CA046678
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:10 -0700 (PDT)
-Date:   Wed, 04 May 2022 16:15:07 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFC960F9
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:14 -0700 (PDT)
+Date:   Wed, 04 May 2022 16:15:11 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651680909;
+        s=2020; t=1651680912;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=B7/awrMq8ptHu515E06FSFVcsH5aRD5n1ud0J2jAhGo=;
-        b=iWPgQHzJIxlk+ssLKRcIkS1dU9HvYTcPk7Oc29RqbUC981nXOZh61Zp91b1BhGwppZc/0k
-        FN2ErxxlBgYOvbHIzE1bvAfYYZORUznsl8/gQ8T5qQFvmmGHuGGWtwrYiE33V0Q4VQFvr0
-        i9kVNg+1Q2WspxvIYpLQOLki56DAqgH2r36fNPqHOlG6yFopRqbGGo7oBWptDXJhUxg338
-        9Ny/jqnlCG6z9RwpvXvME+BoE9ncydGVVX/dFVGVmH5eaBU8olBYTIp61xll8KYh6HQrNG
-        g2e/WaiQs4VvCjJ/GmmXDysYCyI9KCHbPVFyAJOirKhoUPiq69gFMhmJihaCMg==
+        bh=TX7v4hj9OaboXJwRxyI6gRUapltS3uSk8jyNNtPJD38=;
+        b=kpuz8ztUsk1yQ446W8IHJr0Ovz5YBumzWb7vQGx9KDqNhaGeAXj8CtUYxnzLBBfOmAH8/N
+        znSChCs/o82uhgldImKAb11T82aUaSyPKDa/JRnHDnZM/kpZ7ZEys80jkVqo2bdAZFVhvs
+        5cFu3d7TjcJ8ij0cxSJhZjiTa7KgRPknUeP7Jq73o5W0hXNsj9E9dvqqXQSL1EWroYUU8o
+        09hgwEiW8vk59EIUc3IWGZsFJV+1Y0TDZA4MYZjntgpX1csVhyS540j7GzmMsFPWYA+srb
+        daVRawl0AgcprC4D5vctX4mI4wqnr5HKDz7xRzyVCuK4Bd7HgALfQUu47Q3CXg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651680909;
+        s=2020e; t=1651680912;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=B7/awrMq8ptHu515E06FSFVcsH5aRD5n1ud0J2jAhGo=;
-        b=x+XO0WDOIhePhx9Azie1fcRRGWBIVeqTImgoezh3Dfd8vnosJnkDKkzQCTiXhNDU/eXwUV
-        LanxLrtNcthJvCDw==
-From:   "irqchip-bot for Lucas Stach" <tip-bot2@linutronix.de>
+        bh=TX7v4hj9OaboXJwRxyI6gRUapltS3uSk8jyNNtPJD38=;
+        b=RyLVAzd5JuFMnm9kwwOt1Pic3KC1BvC66uh5eKcbTq3uVkq6czBSOTgUTJLU9l1X0igfaU
+        ZB9d8tpdHrxX7EAw==
+From:   "irqchip-bot for Krzysztof Kozlowski" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/imx-irqsteer: Add runtime PM support
-Cc:     Lucas Stach <l.stach@pengutronix.de>,
+Subject: [irqchip: irq/irqchip-next] irqchip/aspeed-i2c-ic: Fix
+ irq_of_parse_and_map() return value
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220406163701.1277930-2-l.stach@pengutronix.de>
-References: <20220406163701.1277930-2-l.stach@pengutronix.de>
+In-Reply-To: <20220423094227.33148-1-krzysztof.kozlowski@linaro.org>
+References: <20220423094227.33148-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Message-ID: <165168090796.4207.16097445461269415468.tip-bot2@tip-bot2>
+Message-ID: <165168091171.4207.2648485341922184325.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,83 +62,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     4730d2233311d86cad9dc510318d1b40e4b53cf2
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/4730d2233311d86cad9dc510318d1b40e4b53cf2
-Author:        Lucas Stach <l.stach@pengutronix.de>
-AuthorDate:    Wed, 06 Apr 2022 18:37:01 +02:00
+Commit-ID:     50f0f26e7c8665763d0d7d3372dbcf191f94d077
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/50f0f26e7c8665763d0d7d3372dbcf191f94d077
+Author:        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+AuthorDate:    Sat, 23 Apr 2022 11:42:26 +02:00
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 04 May 2022 16:44:51 +01:00
+CommitterDate: Wed, 04 May 2022 16:37:48 +01:00
 
-irqchip/imx-irqsteer: Add runtime PM support
+irqchip/aspeed-i2c-ic: Fix irq_of_parse_and_map() return value
 
-There are now SoCs that integrate the irqsteer controller within
-a separate power domain. In order to allow this domain to be
-powered down when not needed, add runtime PM support to the driver.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Fixes: f48e699ddf70 ("irqchip/aspeed-i2c-ic: Add I2C IRQ controller for Aspeed")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220406163701.1277930-2-l.stach@pengutronix.de
+Link: https://lore.kernel.org/r/20220423094227.33148-1-krzysztof.kozlowski@linaro.org
 ---
- drivers/irqchip/irq-imx-irqsteer.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/irqchip/irq-aspeed-i2c-ic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-imx-irqsteer.c b/drivers/irqchip/irq-imx-irqsteer.c
-index e286e7c..96230a0 100644
---- a/drivers/irqchip/irq-imx-irqsteer.c
-+++ b/drivers/irqchip/irq-imx-irqsteer.c
-@@ -12,6 +12,7 @@
- #include <linux/kernel.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
-+#include <linux/pm_runtime.h>
- #include <linux/spinlock.h>
- 
- #define CTRL_STRIDE_OFF(_t, _r)	(_t * 4 * _r)
-@@ -175,7 +176,7 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
- 	data->irq_count = DIV_ROUND_UP(irqs_num, 64);
- 	data->reg_num = irqs_num / 32;
- 
--	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
-+	if (IS_ENABLED(CONFIG_PM)) {
- 		data->saved_reg = devm_kzalloc(&pdev->dev,
- 					sizeof(u32) * data->reg_num,
- 					GFP_KERNEL);
-@@ -199,6 +200,7 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
- 		ret = -ENOMEM;
- 		goto out;
+diff --git a/drivers/irqchip/irq-aspeed-i2c-ic.c b/drivers/irqchip/irq-aspeed-i2c-ic.c
+index a47db16..9c9fc3e 100644
+--- a/drivers/irqchip/irq-aspeed-i2c-ic.c
++++ b/drivers/irqchip/irq-aspeed-i2c-ic.c
+@@ -77,8 +77,8 @@ static int __init aspeed_i2c_ic_of_init(struct device_node *node,
  	}
-+	irq_domain_set_pm_device(data->domain, &pdev->dev);
  
- 	if (!data->irq_count || data->irq_count > CHAN_MAX_OUTPUT_INT) {
- 		ret = -EINVAL;
-@@ -219,6 +221,9 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
+ 	i2c_ic->parent_irq = irq_of_parse_and_map(node, 0);
+-	if (i2c_ic->parent_irq < 0) {
+-		ret = i2c_ic->parent_irq;
++	if (!i2c_ic->parent_irq) {
++		ret = -EINVAL;
+ 		goto err_iounmap;
+ 	}
  
- 	platform_set_drvdata(pdev, data);
- 
-+	pm_runtime_set_active(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
- 	return 0;
- out:
- 	clk_disable_unprepare(data->ipg_clk);
-@@ -241,7 +246,7 @@ static int imx_irqsteer_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
-+#ifdef CONFIG_PM
- static void imx_irqsteer_save_regs(struct irqsteer_data *data)
- {
- 	int i;
-@@ -288,7 +293,10 @@ static int imx_irqsteer_resume(struct device *dev)
- #endif
- 
- static const struct dev_pm_ops imx_irqsteer_pm_ops = {
--	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(imx_irqsteer_suspend, imx_irqsteer_resume)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-+				      pm_runtime_force_resume)
-+	SET_RUNTIME_PM_OPS(imx_irqsteer_suspend,
-+			   imx_irqsteer_resume, NULL)
- };
- 
- static const struct of_device_id imx_irqsteer_dt_ids[] = {
