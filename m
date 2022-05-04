@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39517C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E8B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358334AbiEDRlV (ORCPT
+        id S1358430AbiEDRl0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
+        Wed, 4 May 2022 13:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356657AbiEDRJh (ORCPT
+        with ESMTP id S1356648AbiEDRJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5C247056;
-        Wed,  4 May 2022 09:55:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CBA4A3FA;
+        Wed,  4 May 2022 09:55:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F476B827A1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5837618BB;
         Wed,  4 May 2022 16:55:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08916C385AA;
-        Wed,  4 May 2022 16:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2672C385A5;
+        Wed,  4 May 2022 16:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683317;
-        bh=KrCa3xx+pLiibOz+R1GUnejvUmDg0sP1/REd83K1u+4=;
+        s=korg; t=1651683318;
+        bh=ud2JGgwdj4ZOZNBv3IUlHp02D8NJgJy8Om1Q0nkytEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ea/IEDDLnleWBcQzu9ml3Zk+S1mQ1rwb5PbEqwv5q852/Z8dWkbZMnHsqisJNYOJu
-         1xFQyEJhwQRV9bzGwQdelSvwA+gQcGYLrkRh5y3AoSJKUZusCyP0O+UB1SEMYr9u2p
-         ymQ0F/t8idLtsEFy48UOlDfybzjUj8HFgPLilRxE=
+        b=krKPpDWdSIGn/KsAbtkYuqLaNyUXeTnXCgnaJ41HXiCVMGbJscnYpoK/sMJgKIDLO
+         mkEgDPCi1cXRam/nDX3yjdIBuwgjc302jy/w6GQ0EC96rDXszaW8LTyPcWvhqsHuHc
+         0JoVk42UEFW1cwjkjTv09TBg98cXUarhfp2EBMFg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH 5.15 174/177] eeprom: at25: Use DMA safe buffers
-Date:   Wed,  4 May 2022 18:46:07 +0200
-Message-Id: <20220504153109.261304023@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH 5.15 175/177] objtool: Fix code relocs vs weak symbols
+Date:   Wed,  4 May 2022 18:46:08 +0200
+Message-Id: <20220504153109.364373195@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,155 +50,356 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 5b47b751b760ee1c74a51660fd096aa148a362cd upstream.
+commit 4abff6d48dbcea8200c7ea35ba70c242d128ebf3 upstream.
 
-Reading EEPROM fails with following warning:
+Occasionally objtool driven code patching (think .static_call_sites
+.retpoline_sites etc..) goes sideways and it tries to patch an
+instruction that doesn't match.
 
-[   16.357496] ------------[ cut here ]------------
-[   16.357529] fsl_spi b01004c0.spi: rejecting DMA map of vmalloc memory
-[   16.357698] WARNING: CPU: 0 PID: 371 at include/linux/dma-mapping.h:326 fsl_spi_cpm_bufs+0x2a0/0x2d8
-[   16.357775] CPU: 0 PID: 371 Comm: od Not tainted 5.16.11-s3k-dev-01743-g19beecbfe9d6-dirty #109
-[   16.357806] NIP:  c03fbc9c LR: c03fbc9c CTR: 00000000
-[   16.357825] REGS: e68d9b20 TRAP: 0700   Not tainted  (5.16.11-s3k-dev-01743-g19beecbfe9d6-dirty)
-[   16.357849] MSR:  00029032 <EE,ME,IR,DR,RI>  CR: 24002282  XER: 00000000
-[   16.357931]
-[   16.357931] GPR00: c03fbc9c e68d9be0 c26d06a0 00000039 00000001 c0d36364 c0e96428 00000027
-[   16.357931] GPR08: 00000001 00000000 00000023 3fffc000 24002282 100d3dd6 100a2ffc 00000000
-[   16.357931] GPR16: 100cd280 100b0000 00000000 aff54f7e 100d0000 100d0000 00000001 100cf328
-[   16.357931] GPR24: 100cf328 00000000 00000003 e68d9e30 c156b410 e67ab4c0 e68d9d38 c24ab278
-[   16.358253] NIP [c03fbc9c] fsl_spi_cpm_bufs+0x2a0/0x2d8
-[   16.358292] LR [c03fbc9c] fsl_spi_cpm_bufs+0x2a0/0x2d8
-[   16.358325] Call Trace:
-[   16.358336] [e68d9be0] [c03fbc9c] fsl_spi_cpm_bufs+0x2a0/0x2d8 (unreliable)
-[   16.358388] [e68d9c00] [c03fcb44] fsl_spi_bufs.isra.0+0x94/0x1a0
-[   16.358436] [e68d9c20] [c03fd970] fsl_spi_do_one_msg+0x254/0x3dc
-[   16.358483] [e68d9cb0] [c03f7e50] __spi_pump_messages+0x274/0x8a4
-[   16.358529] [e68d9ce0] [c03f9d30] __spi_sync+0x344/0x378
-[   16.358573] [e68d9d20] [c03fb52c] spi_sync+0x34/0x60
-[   16.358616] [e68d9d30] [c03b4dec] at25_ee_read+0x138/0x1a8
-[   16.358667] [e68d9e50] [c04a8fb8] bin_attr_nvmem_read+0x98/0x110
-[   16.358725] [e68d9e60] [c0204b14] kernfs_fop_read_iter+0xc0/0x1fc
-[   16.358774] [e68d9e80] [c0168660] vfs_read+0x284/0x410
-[   16.358821] [e68d9f00] [c016925c] ksys_read+0x6c/0x11c
-[   16.358863] [e68d9f30] [c00160e0] ret_from_syscall+0x0/0x28
-...
-[   16.359608] ---[ end trace a4ce3e34afef0cb5 ]---
-[   16.359638] fsl_spi b01004c0.spi: unable to map tx dma
+Much head-scatching and cursing later the problem is as outlined below
+and affects every section that objtool generates for us, very much
+including the ORC data. The below uses .static_call_sites because it's
+convenient for demonstration purposes, but as mentioned the ORC
+sections, .retpoline_sites and __mount_loc are all similarly affected.
 
-This is due to the AT25 driver using buffers on stack, which is not
-possible with CONFIG_VMAP_STACK.
+Consider:
 
-As mentionned in kernel Documentation (Documentation/spi/spi-summary.rst):
+foo-weak.c:
 
-  - Follow standard kernel rules, and provide DMA-safe buffers in
-    your messages.  That way controller drivers using DMA aren't forced
-    to make extra copies unless the hardware requires it (e.g. working
-    around hardware errata that force the use of bounce buffering).
+  extern void __SCT__foo(void);
 
-Modify the driver to use a buffer located in the at25 device structure
-which is allocated via kmalloc during probe.
+  __attribute__((weak)) void foo(void)
+  {
+	  return __SCT__foo();
+  }
 
-Protect writes in this new buffer with the driver's mutex.
+foo.c:
 
-Fixes: b587b13a4f67 ("[PATCH] SPI eeprom driver")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Link: https://lore.kernel.org/r/230a9486fc68ea0182df46255e42a51099403642.1648032613.git.christophe.leroy@csgroup.eu
+  extern void __SCT__foo(void);
+  extern void my_foo(void);
+
+  void foo(void)
+  {
+	  my_foo();
+	  return __SCT__foo();
+  }
+
+These generate the obvious code
+(gcc -O2 -fcf-protection=none -fno-asynchronous-unwind-tables -c foo*.c):
+
+foo-weak.o:
+0000000000000000 <foo>:
+   0:   e9 00 00 00 00          jmpq   5 <foo+0x5>      1: R_X86_64_PLT32       __SCT__foo-0x4
+
+foo.o:
+0000000000000000 <foo>:
+   0:   48 83 ec 08             sub    $0x8,%rsp
+   4:   e8 00 00 00 00          callq  9 <foo+0x9>      5: R_X86_64_PLT32       my_foo-0x4
+   9:   48 83 c4 08             add    $0x8,%rsp
+   d:   e9 00 00 00 00          jmpq   12 <foo+0x12>    e: R_X86_64_PLT32       __SCT__foo-0x4
+
+Now, when we link these two files together, you get something like
+(ld -r -o foos.o foo-weak.o foo.o):
+
+foos.o:
+0000000000000000 <foo-0x10>:
+   0:   e9 00 00 00 00          jmpq   5 <foo-0xb>      1: R_X86_64_PLT32       __SCT__foo-0x4
+   5:   66 2e 0f 1f 84 00 00 00 00 00   nopw   %cs:0x0(%rax,%rax,1)
+   f:   90                      nop
+
+0000000000000010 <foo>:
+  10:   48 83 ec 08             sub    $0x8,%rsp
+  14:   e8 00 00 00 00          callq  19 <foo+0x9>     15: R_X86_64_PLT32      my_foo-0x4
+  19:   48 83 c4 08             add    $0x8,%rsp
+  1d:   e9 00 00 00 00          jmpq   22 <foo+0x12>    1e: R_X86_64_PLT32      __SCT__foo-0x4
+
+Noting that ld preserves the weak function text, but strips the symbol
+off of it (hence objdump doing that funny negative offset thing). This
+does lead to 'interesting' unused code issues with objtool when ran on
+linked objects, but that seems to be working (fingers crossed).
+
+So far so good.. Now lets consider the objtool static_call output
+section (readelf output, old binutils):
+
+foo-weak.o:
+
+Relocation section '.rela.static_call_sites' at offset 0x2c8 contains 1 entry:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 .text + 0
+0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+
+foo.o:
+
+Relocation section '.rela.static_call_sites' at offset 0x310 contains 2 entries:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 .text + d
+0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+
+foos.o:
+
+Relocation section '.rela.static_call_sites' at offset 0x430 contains 4 entries:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000000  0000000100000002 R_X86_64_PC32          0000000000000000 .text + 0
+0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+0000000000000008  0000000100000002 R_X86_64_PC32          0000000000000000 .text + 1d
+000000000000000c  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+
+So we have two patch sites, one in the dead code of the weak foo and one
+in the real foo. All is well.
+
+*HOWEVER*, when the toolchain strips unused section symbols it
+generates things like this (using new enough binutils):
+
+foo-weak.o:
+
+Relocation section '.rela.static_call_sites' at offset 0x2c8 contains 1 entry:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 foo + 0
+0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+
+foo.o:
+
+Relocation section '.rela.static_call_sites' at offset 0x310 contains 2 entries:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 foo + d
+0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+
+foos.o:
+
+Relocation section '.rela.static_call_sites' at offset 0x430 contains 4 entries:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000000  0000000100000002 R_X86_64_PC32          0000000000000000 foo + 0
+0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+0000000000000008  0000000100000002 R_X86_64_PC32          0000000000000000 foo + d
+000000000000000c  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
+
+And now we can see how that foos.o .static_call_sites goes side-ways, we
+now have _two_ patch sites in foo. One for the weak symbol at foo+0
+(which is no longer a static_call site!) and one at foo+d which is in
+fact the right location.
+
+This seems to happen when objtool cannot find a section symbol, in which
+case it falls back to any other symbol to key off of, however in this
+case that goes terribly wrong!
+
+As such, teach objtool to create a section symbol when there isn't
+one.
+
+Fixes: 44f6a7c0755d ("objtool: Fix seg fault with Clang non-section symbols")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/20220419203807.655552918@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/eeprom/at25.c |   19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ tools/objtool/elf.c |  187 +++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 165 insertions(+), 22 deletions(-)
 
---- a/drivers/misc/eeprom/at25.c
-+++ b/drivers/misc/eeprom/at25.c
-@@ -30,6 +30,8 @@
-  */
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -514,37 +514,180 @@ int elf_add_reloc(struct elf *elf, struc
+ 	return 0;
+ }
  
- #define	FM25_SN_LEN	8		/* serial number length */
-+#define EE_MAXADDRLEN	3		/* 24 bit addresses, up to 2 MBytes */
+-int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+-			  unsigned long offset, unsigned int type,
+-			  struct section *insn_sec, unsigned long insn_off)
++/*
++ * Ensure that any reloc section containing references to @sym is marked
++ * changed such that it will get re-generated in elf_rebuild_reloc_sections()
++ * with the new symbol index.
++ */
++static void elf_dirty_reloc_sym(struct elf *elf, struct symbol *sym)
++{
++	struct section *sec;
 +
- struct at25_data {
- 	struct spi_device	*spi;
- 	struct mutex		lock;
-@@ -38,6 +40,7 @@ struct at25_data {
- 	struct nvmem_config	nvmem_config;
- 	struct nvmem_device	*nvmem;
- 	u8 sernum[FM25_SN_LEN];
-+	u8 command[EE_MAXADDRLEN + 1];
- };
- 
- #define	AT25_WREN	0x06		/* latch the write enable */
-@@ -60,8 +63,6 @@ struct at25_data {
- 
- #define	FM25_ID_LEN	9		/* ID length */
- 
--#define EE_MAXADDRLEN	3		/* 24 bit addresses, up to 2 MBytes */
--
- /* Specs often allow 5 msec for a page write, sometimes 20 msec;
-  * it's important to recover from write timeouts.
-  */
-@@ -76,7 +77,6 @@ static int at25_ee_read(void *priv, unsi
++	list_for_each_entry(sec, &elf->sections, list) {
++		struct reloc *reloc;
++
++		if (sec->changed)
++			continue;
++
++		list_for_each_entry(reloc, &sec->reloc_list, list) {
++			if (reloc->sym == sym) {
++				sec->changed = true;
++				break;
++			}
++		}
++	}
++}
++
++/*
++ * Move the first global symbol, as per sh_info, into a new, higher symbol
++ * index. This fees up the shndx for a new local symbol.
++ */
++static int elf_move_global_symbol(struct elf *elf, struct section *symtab,
++				  struct section *symtab_shndx)
  {
- 	struct at25_data *at25 = priv;
- 	char *buf = val;
--	u8			command[EE_MAXADDRLEN + 1];
- 	u8			*cp;
- 	ssize_t			status;
- 	struct spi_transfer	t[2];
-@@ -90,12 +90,15 @@ static int at25_ee_read(void *priv, unsi
- 	if (unlikely(!count))
- 		return -EINVAL;
++	Elf_Data *data, *shndx_data = NULL;
++	Elf32_Word first_non_local;
+ 	struct symbol *sym;
+-	int addend;
++	Elf_Scn *s;
  
--	cp = command;
-+	cp = at25->command;
+-	if (insn_sec->sym) {
+-		sym = insn_sec->sym;
+-		addend = insn_off;
++	first_non_local = symtab->sh.sh_info;
  
- 	instr = AT25_READ;
- 	if (at25->chip.flags & EE_INSTR_BIT3_IS_ADDR)
- 		if (offset >= (1U << (at25->addrlen * 8)))
- 			instr |= AT25_INSTR_BIT3;
+-	} else {
+-		/*
+-		 * The Clang assembler strips section symbols, so we have to
+-		 * reference the function symbol instead:
+-		 */
+-		sym = find_symbol_containing(insn_sec, insn_off);
+-		if (!sym) {
+-			/*
+-			 * Hack alert.  This happens when we need to reference
+-			 * the NOP pad insn immediately after the function.
+-			 */
+-			sym = find_symbol_containing(insn_sec, insn_off - 1);
++	sym = find_symbol_by_index(elf, first_non_local);
++	if (!sym) {
++		WARN("no non-local symbols !?");
++		return first_non_local;
++	}
 +
-+	mutex_lock(&at25->lock);
++	s = elf_getscn(elf->elf, symtab->idx);
++	if (!s) {
++		WARN_ELF("elf_getscn");
++		return -1;
++	}
 +
- 	*cp++ = instr;
- 
- 	/* 8/16/24-bit address is written MSB first */
-@@ -114,7 +117,7 @@ static int at25_ee_read(void *priv, unsi
- 	spi_message_init(&m);
- 	memset(t, 0, sizeof(t));
- 
--	t[0].tx_buf = command;
-+	t[0].tx_buf = at25->command;
- 	t[0].len = at25->addrlen + 1;
- 	spi_message_add_tail(&t[0], &m);
- 
-@@ -122,8 +125,6 @@ static int at25_ee_read(void *priv, unsi
- 	t[1].len = count;
- 	spi_message_add_tail(&t[1], &m);
- 
--	mutex_lock(&at25->lock);
--
- 	/* Read it all at once.
- 	 *
- 	 * REVISIT that's potentially a problem with large chips, if
-@@ -151,7 +152,7 @@ static int fm25_aux_read(struct at25_dat
- 	spi_message_init(&m);
- 	memset(t, 0, sizeof(t));
- 
--	t[0].tx_buf = &command;
-+	t[0].tx_buf = at25->command;
- 	t[0].len = 1;
- 	spi_message_add_tail(&t[0], &m);
- 
-@@ -161,6 +162,8 @@ static int fm25_aux_read(struct at25_dat
- 
- 	mutex_lock(&at25->lock);
- 
-+	at25->command[0] = command;
++	data = elf_newdata(s);
++	if (!data) {
++		WARN_ELF("elf_newdata");
++		return -1;
++	}
 +
- 	status = spi_sync(at25->spi, &m);
- 	dev_dbg(&at25->spi->dev, "read %d aux bytes --> %d\n", len, status);
++	data->d_buf = &sym->sym;
++	data->d_size = sizeof(sym->sym);
++	data->d_align = 1;
++	data->d_type = ELF_T_SYM;
++
++	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
++	elf_dirty_reloc_sym(elf, sym);
++
++	symtab->sh.sh_info += 1;
++	symtab->sh.sh_size += data->d_size;
++	symtab->changed = true;
++
++	if (symtab_shndx) {
++		s = elf_getscn(elf->elf, symtab_shndx->idx);
++		if (!s) {
++			WARN_ELF("elf_getscn");
++			return -1;
+ 		}
  
+-		if (!sym) {
+-			WARN("can't find symbol containing %s+0x%lx", insn_sec->name, insn_off);
++		shndx_data = elf_newdata(s);
++		if (!shndx_data) {
++			WARN_ELF("elf_newshndx_data");
+ 			return -1;
+ 		}
+ 
+-		addend = insn_off - sym->offset;
++		shndx_data->d_buf = &sym->sec->idx;
++		shndx_data->d_size = sizeof(Elf32_Word);
++		shndx_data->d_align = 4;
++		shndx_data->d_type = ELF_T_WORD;
++
++		symtab_shndx->sh.sh_size += 4;
++		symtab_shndx->changed = true;
++	}
++
++	return first_non_local;
++}
++
++static struct symbol *
++elf_create_section_symbol(struct elf *elf, struct section *sec)
++{
++	struct section *symtab, *symtab_shndx;
++	Elf_Data *shndx_data = NULL;
++	struct symbol *sym;
++	Elf32_Word shndx;
++
++	symtab = find_section_by_name(elf, ".symtab");
++	if (symtab) {
++		symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
++		if (symtab_shndx)
++			shndx_data = symtab_shndx->data;
++	} else {
++		WARN("no .symtab");
++		return NULL;
++	}
++
++	sym = malloc(sizeof(*sym));
++	if (!sym) {
++		perror("malloc");
++		return NULL;
++	}
++	memset(sym, 0, sizeof(*sym));
++
++	sym->idx = elf_move_global_symbol(elf, symtab, symtab_shndx);
++	if (sym->idx < 0) {
++		WARN("elf_move_global_symbol");
++		return NULL;
++	}
++
++	sym->name = sec->name;
++	sym->sec = sec;
++
++	// st_name 0
++	sym->sym.st_info = GELF_ST_INFO(STB_LOCAL, STT_SECTION);
++	// st_other 0
++	// st_value 0
++	// st_size 0
++	shndx = sec->idx;
++	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
++		sym->sym.st_shndx = shndx;
++		if (!shndx_data)
++			shndx = 0;
++	} else {
++		sym->sym.st_shndx = SHN_XINDEX;
++		if (!shndx_data) {
++			WARN("no .symtab_shndx");
++			return NULL;
++		}
++	}
++
++	if (!gelf_update_symshndx(symtab->data, shndx_data, sym->idx, &sym->sym, shndx)) {
++		WARN_ELF("gelf_update_symshndx");
++		return NULL;
++	}
++
++	elf_add_symbol(elf, sym);
++
++	return sym;
++}
++
++int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
++			  unsigned long offset, unsigned int type,
++			  struct section *insn_sec, unsigned long insn_off)
++{
++	struct symbol *sym = insn_sec->sym;
++	int addend = insn_off;
++
++	if (!sym) {
++		/*
++		 * Due to how weak functions work, we must use section based
++		 * relocations. Symbol based relocations would result in the
++		 * weak and non-weak function annotations being overlaid on the
++		 * non-weak function after linking.
++		 */
++		sym = elf_create_section_symbol(elf, insn_sec);
++		if (!sym)
++			return -1;
++
++		insn_sec->sym = sym;
+ 	}
+ 
+ 	return elf_add_reloc(elf, sec, offset, type, sym, addend);
 
 
