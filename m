@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BA8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D25C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345517AbiEDRKp (ORCPT
+        id S1353909AbiEDRKt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37466 "EHLO
+        Wed, 4 May 2022 13:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355449AbiEDRAD (ORCPT
+        with ESMTP id S1355739AbiEDRAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:03 -0400
+        Wed, 4 May 2022 13:00:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D189D4B41B;
-        Wed,  4 May 2022 09:51:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CFA4BFEB;
+        Wed,  4 May 2022 09:52:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CB7EB827A5;
-        Wed,  4 May 2022 16:51:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45182C385A5;
-        Wed,  4 May 2022 16:51:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67B21B82792;
+        Wed,  4 May 2022 16:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC6CC385A5;
+        Wed,  4 May 2022 16:52:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683086;
-        bh=MqJvWmbwug2SkXstXXEDsrTMt85TRcrWnBTzLiAds1s=;
+        s=korg; t=1651683124;
+        bh=KZH1xWGTiQHhQuXbaqY8LRDPK3sJj3yy35T3wSnDssM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W8fg19CqsAH5Mg624ZWXpNnhT1xEhnwhKedfgMnjSX7cZa0/5Gu1bRdJ9DbwPXYQG
-         lPu3ijEw9YVt+YouGPaCbDymZG4xA02DhXT3rrsGM3uQf1Jhv+9eUnoxS7j28O3mSo
-         iBBm4tBTqFrKdrzOW2MZhKApuvEc2Ib/Ga4f1u1k=
+        b=19cVr0Bc/V57uvzpYYh8vtg8kaDt1uojMMwOKDcVGem8hhSrw/SrAYWdXhtDT5VBw
+         beM6hQkSEd0vOKBwQNmHBdCcRzhrZNPp8bUm6SdPFYhB4bpuGghfIhULhP84SqZAm7
+         d1XdVwRF6tVjpNOCiQ5eRR7LYsomZ4GfE/Z0ZEvA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 082/129] ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
-Date:   Wed,  4 May 2022 18:44:34 +0200
-Message-Id: <20220504153027.594805386@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 115/129] tty: n_gsm: fix restart handling via CLD command
+Date:   Wed,  4 May 2022 18:45:07 +0200
+Message-Id: <20220504153030.492380591@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -52,152 +48,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 31c417c948d7f6909cb63f0ac3298f3c38f8ce20 ]
+commit aa371e96f05dcb36a88298f5cb70aa7234d5e8b8 upstream.
 
-As pointed out by Jakub Kicinski, currently using TUNNEL_SEQ in
-collect_md mode is racy for [IP6]GRE[TAP] devices.  Consider the
-following sequence of events:
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.8.2 states that both sides will revert to
+the non-multiplexed mode via a close-down message (CLD). The usual program
+flow is as following:
+- start multiplex mode by sending AT+CMUX to the mobile
+- establish the control channel (DLCI 0)
+- establish user channels (DLCI >0)
+- terminate user channels
+- send close-down message (CLD)
+- revert to AT protocol (i.e. leave multiplexed mode)
 
-1. An [IP6]GRE[TAP] device is created in collect_md mode using "ip link
-   add ... external".  "ip" ignores "[o]seq" if "external" is specified,
-   so TUNNEL_SEQ is off, and the device is marked as NETIF_F_LLTX (i.e.
-   it uses lockless TX);
-2. Someone sets TUNNEL_SEQ on outgoing skb's, using e.g.
-   bpf_skb_set_tunnel_key() in an eBPF program attached to this device;
-3. gre_fb_xmit() or __gre6_xmit() processes these skb's:
+The AT protocol is out of scope of the n_gsm driver. However,
+gsm_disconnect() sends CLD if gsm_config() detects that the requested
+parameters require the mux protocol to restart. The next immediate action
+is to start the mux protocol by opening DLCI 0 again. Any responder side
+which handles CLD commands correctly forces us to fail at this point
+because AT+CMUX needs to be sent to the mobile to start the mux again.
+Therefore, remove the CLD command in this phase and keep both sides in
+multiplexed mode.
+Remove the gsm_disconnect() function as it become unnecessary and merge the
+remaining parts into gsm_cleanup_mux() to handle the termination order and
+locking correctly.
 
-	gre_build_header(skb, tun_hlen,
-			 flags, protocol,
-			 tunnel_id_to_key32(tun_info->key.tun_id),
-			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
-					      : 0);   ^^^^^^^^^^^^^^^^^
-
-Since we are not using the TX lock (&txq->_xmit_lock), multiple CPUs may
-try to do this tunnel->o_seqno++ in parallel, which is racy.  Fix it by
-making o_seqno atomic_t.
-
-As mentioned by Eric Dumazet in commit b790e01aee74 ("ip_gre: lockless
-xmit"), making o_seqno atomic_t increases "chance for packets being out
-of order at receiver" when NETIF_F_LLTX is on.
-
-Maybe a better fix would be:
-
-1. Do not ignore "oseq" in external mode.  Users MUST specify "oseq" if
-   they want the kernel to allow sequencing of outgoing packets;
-2. Reject all outgoing TUNNEL_SEQ packets if the device was not created
-   with "oseq".
-
-Unfortunately, that would break userspace.
-
-We could now make [IP6]GRE[TAP] devices always NETIF_F_LLTX, but let us
-do it in separate patches to keep this fix minimal.
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Fixes: 77a5196a804e ("gre: add sequence number for collect md mode.")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 71e077915396 ("tty: n_gsm: do not send/receive in ldisc close path")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-2-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ip6_tunnel.h | 2 +-
- include/net/ip_tunnels.h | 2 +-
- net/ipv4/ip_gre.c        | 6 +++---
- net/ipv6/ip6_gre.c       | 7 ++++---
- 4 files changed, 9 insertions(+), 8 deletions(-)
+ drivers/tty/n_gsm.c |   68 +++++++++++++++-------------------------------------
+ 1 file changed, 20 insertions(+), 48 deletions(-)
 
-diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
-index 028eaea1c854..42d50856fcf2 100644
---- a/include/net/ip6_tunnel.h
-+++ b/include/net/ip6_tunnel.h
-@@ -57,7 +57,7 @@ struct ip6_tnl {
- 
- 	/* These fields used only by GRE */
- 	__u32 i_seqno;	/* The last seen seqno	*/
--	__u32 o_seqno;	/* The last output seqno */
-+	atomic_t o_seqno;	/* The last output seqno */
- 	int hlen;       /* tun_hlen + encap_hlen */
- 	int tun_hlen;	/* Precalculated header length */
- 	int encap_hlen; /* Encap header length (FOU,GUE) */
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 61620677b034..c3e55a9ae585 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -113,7 +113,7 @@ struct ip_tunnel {
- 
- 	/* These four fields used only by GRE */
- 	u32		i_seqno;	/* The last seen seqno	*/
--	u32		o_seqno;	/* The last output seqno */
-+	atomic_t	o_seqno;	/* The last output seqno */
- 	int		tun_hlen;	/* Precalculated header length */
- 
- 	/* These four fields used only by ERSPAN */
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 801c540db33e..2a80038575d2 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -459,7 +459,7 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
- 	/* Push GRE header. */
- 	gre_build_header(skb, tunnel->tun_hlen,
- 			 flags, proto, tunnel->parms.o_key,
--			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
-+			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
- 
- 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2040,49 +2040,35 @@ static void gsm_error(struct gsm_mux *gs
+ 	gsm->io_error++;
  }
-@@ -497,7 +497,7 @@ static void gre_fb_xmit(struct sk_buff *skb, struct net_device *dev,
- 		(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
- 	gre_build_header(skb, tunnel_hlen, flags, proto,
- 			 tunnel_id_to_key32(tun_info->key.tun_id),
--			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
-+			 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno)) : 0);
  
- 	ip_md_tunnel_xmit(skb, dev, IPPROTO_GRE, tunnel_hlen);
+-static int gsm_disconnect(struct gsm_mux *gsm)
+-{
+-	struct gsm_dlci *dlci = gsm->dlci[0];
+-	struct gsm_control *gc;
+-
+-	if (!dlci)
+-		return 0;
+-
+-	/* In theory disconnecting DLCI 0 is sufficient but for some
+-	   modems this is apparently not the case. */
+-	gc = gsm_control_send(gsm, CMD_CLD, NULL, 0);
+-	if (gc)
+-		gsm_control_wait(gsm, gc);
+-
+-	del_timer_sync(&gsm->t2_timer);
+-	/* Now we are sure T2 has stopped */
+-
+-	gsm_dlci_begin_close(dlci);
+-	wait_event_interruptible(gsm->event,
+-				dlci->state == DLCI_CLOSED);
+-
+-	if (signal_pending(current))
+-		return -EINTR;
+-
+-	return 0;
+-}
+-
+ /**
+  *	gsm_cleanup_mux		-	generic GSM protocol cleanup
+  *	@gsm: our mux
++ *	@disc: disconnect link?
+  *
+  *	Clean up the bits of the mux which are the same for all framing
+  *	protocols. Remove the mux from the mux table, stop all the timers
+  *	and then shut down each device hanging up the channels as we go.
+  */
  
-@@ -574,7 +574,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
+-static void gsm_cleanup_mux(struct gsm_mux *gsm)
++static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ {
+ 	int i;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+ 	struct gsm_msg *txq, *ntxq;
+ 
+ 	gsm->dead = true;
++	mutex_lock(&gsm->mutex);
++
++	if (dlci) {
++		if (disc && dlci->state != DLCI_CLOSED) {
++			gsm_dlci_begin_close(dlci);
++			wait_event(gsm->event, dlci->state == DLCI_CLOSED);
++		}
++		dlci->dead = true;
++	}
++
++	/* Finish outstanding timers, making sure they are done */
++	del_timer_sync(&gsm->t2_timer);
+ 
+ 	spin_lock(&gsm_mux_lock);
+ 	for (i = 0; i < MAX_MUX; i++) {
+@@ -2096,13 +2082,7 @@ static void gsm_cleanup_mux(struct gsm_m
+ 	if (i == MAX_MUX)
+ 		return;
+ 
+-	del_timer_sync(&gsm->t2_timer);
+-	/* Now we are sure T2 has stopped */
+-	if (dlci)
+-		dlci->dead = true;
+-
+ 	/* Free up any link layer users */
+-	mutex_lock(&gsm->mutex);
+ 	for (i = 0; i < NUM_DLCI; i++)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+@@ -2304,19 +2284,11 @@ static int gsm_config(struct gsm_mux *gs
+ 
+ 	/*
+ 	 * Close down what is needed, restart and initiate the new
+-	 * configuration
++	 * configuration. On the first time there is no DLCI[0]
++	 * and closing or cleaning up is not necessary.
+ 	 */
+-
+-	if (need_close || need_restart) {
+-		int ret;
+-
+-		ret = gsm_disconnect(gsm);
+-
+-		if (ret)
+-			return ret;
+-	}
+-	if (need_restart)
+-		gsm_cleanup_mux(gsm);
++	if (need_close || need_restart)
++		gsm_cleanup_mux(gsm, true);
+ 
+ 	gsm->initiator = c->initiator;
+ 	gsm->mru = c->mru;
+@@ -2425,7 +2397,7 @@ static void gsmld_detach_gsm(struct tty_
+ 	WARN_ON(tty != gsm->tty);
+ 	for (i = 1; i < NUM_DLCI; i++)
+ 		tty_unregister_device(gsm_tty_driver, base + i);
+-	gsm_cleanup_mux(gsm);
++	gsm_cleanup_mux(gsm, false);
+ 	tty_kref_put(gsm->tty);
+ 	gsm->tty = NULL;
+ }
+@@ -2531,7 +2503,7 @@ static int gsmld_open(struct tty_struct
+ 
+ 	ret = gsmld_attach_gsm(tty, gsm);
+ 	if (ret != 0) {
+-		gsm_cleanup_mux(gsm);
++		gsm_cleanup_mux(gsm, false);
+ 		mux_put(gsm);
  	}
- 
- 	gre_build_header(skb, 8, TUNNEL_SEQ,
--			 proto, 0, htonl(tunnel->o_seqno++));
-+			 proto, 0, htonl(atomic_fetch_inc(&tunnel->o_seqno)));
- 
- 	ip_md_tunnel_xmit(skb, dev, IPPROTO_GRE, tunnel_hlen);
- 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 09262adf004e..3f88ba6555ab 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -766,7 +766,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
--				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
-+				 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno))
- 						      : 0);
- 
- 	} else {
-@@ -777,7 +777,8 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 
- 		gre_build_header(skb, tunnel->tun_hlen, flags,
- 				 protocol, tunnel->parms.o_key,
--				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
-+				 (flags & TUNNEL_SEQ) ? htonl(atomic_fetch_inc(&tunnel->o_seqno))
-+						      : 0);
- 	}
- 
- 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
-@@ -1055,7 +1056,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 	/* Push GRE header. */
- 	proto = (t->parms.erspan_ver == 1) ? htons(ETH_P_ERSPAN)
- 					   : htons(ETH_P_ERSPAN2);
--	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(t->o_seqno++));
-+	gre_build_header(skb, 8, TUNNEL_SEQ, proto, 0, htonl(atomic_fetch_inc(&t->o_seqno)));
- 
- 	/* TooBig packet may have updated dst->dev's mtu */
- 	if (!t->parms.collect_md && dst && dst_mtu(dst) > dst->dev->mtu)
--- 
-2.35.1
-
+ 	return ret;
 
 
