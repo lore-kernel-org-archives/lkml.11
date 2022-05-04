@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90713C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3377AC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357891AbiEDRPZ (ORCPT
+        id S1358411AbiEDRP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
+        Wed, 4 May 2022 13:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355444AbiEDRE2 (ORCPT
+        with ESMTP id S1355636AbiEDREc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9B54EA23;
-        Wed,  4 May 2022 09:53:03 -0700 (PDT)
+        Wed, 4 May 2022 13:04:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1534EF56;
+        Wed,  4 May 2022 09:53:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 940B3617DE;
-        Wed,  4 May 2022 16:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A6CC385A4;
-        Wed,  4 May 2022 16:52:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B2AADCE2625;
+        Wed,  4 May 2022 16:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E34C385AA;
+        Wed,  4 May 2022 16:53:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683180;
-        bh=RxD54wOIf+gtesh7VHfBEjiXkcaf7g6pr7I4+AwcUM8=;
+        s=korg; t=1651683185;
+        bh=5kiyZl3wv3CTm+GFIfjJaXI1i53KPSbQgo/RAbnYu2g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I6nlNeODBqhzd3ClvX6epppH5w1bJRUuwozvWubRaaPse6vTYd3y4xaEjWFCqf7Ax
-         Q5u/kHw1z1HVXjg4go7dj6PQVnvR/MB87CAEgB9Ty9bbpDgtazB6sD1S1yw1tPc9/T
-         ly23VCySTQ98NVmKwxqEGTzkkFFZeFWgOiL53+mk=
+        b=D52dfDCfgM3wYuA8iPCosUgc8zTF1W29/JlRiVyPt81MPNtxS4ObFNyQTZW8Uvue0
+         JbaX7w6tQhqo0XGSYZu2/8LHYDAYqpqaWoS/OLnP97LngLVdYq7YEdZQLyC5+iLC1e
+         0wypQ+YmLSLDvpWHPzOlwEObJuS+QfG9kIXKVr2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 5.15 031/177] serial: 8250: Also set sticky MCR bits in console restoration
-Date:   Wed,  4 May 2022 18:43:44 +0200
-Message-Id: <20220504153055.785959388@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tong Zhang <ztong0001@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 050/177] iio:imu:bmi160: disable regulator in error path
+Date:   Wed,  4 May 2022 18:44:03 +0200
+Message-Id: <20220504153057.485932494@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,36 +52,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Tong Zhang <ztong0001@gmail.com>
 
-commit 6e6eebdf5e2455f089ccd000754a0deaeb79af82 upstream.
+[ Upstream commit d926054d5565d3cfa2c7c3f7a48e79bcc10453ed ]
 
-Sticky MCR bits are lost in console restoration if console suspending
-has been disabled.  This currently affects the AFE bit, which works in
-combination with RTS which we set, so we want to make sure the UART
-retains control of its FIFO where previously requested.  Also specific
-drivers may need other bits in the future.
+Regulator should be disabled in error path as mentioned in _regulator_put().
+Also disable accel if gyro cannot be enabled.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
-Cc: stable@vger.kernel.org # v4.0+
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181518490.9383@angie.orcam.me.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
+[   16.240453] Call Trace:
+[   16.240572]  <TASK>
+[   16.240676]  regulator_put+0x26/0x40
+[   16.240853]  regulator_bulk_free+0x26/0x50
+[   16.241050]  release_nodes+0x3f/0x70
+[   16.241225]  devres_release_group+0x147/0x1c0
+[   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
+
+Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Link: https://lore.kernel.org/r/20220327154005.806049-1-ztong0001@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3340,7 +3340,7 @@ static void serial8250_console_restore(s
+diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+index 824b5124a5f5..01336105792e 100644
+--- a/drivers/iio/imu/bmi160/bmi160_core.c
++++ b/drivers/iio/imu/bmi160/bmi160_core.c
+@@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
  
- 	serial8250_set_divisor(port, baud, quot, frac);
- 	serial_port_out(port, UART_LCR, up->lcr);
--	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-+	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
+ 	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
+ 	if (ret)
+-		return ret;
++		goto disable_regulator;
+ 
+ 	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
+ 
+@@ -741,29 +741,37 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
+ 	if (use_spi) {
+ 		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
+ 		if (ret)
+-			return ret;
++			goto disable_regulator;
+ 	}
+ 
+ 	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
+ 	if (ret) {
+ 		dev_err(dev, "Error reading chip id\n");
+-		return ret;
++		goto disable_regulator;
+ 	}
+ 	if (val != BMI160_CHIP_ID_VAL) {
+ 		dev_err(dev, "Wrong chip id, got %x expected %x\n",
+ 			val, BMI160_CHIP_ID_VAL);
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto disable_regulator;
+ 	}
+ 
+ 	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
+ 	if (ret)
+-		return ret;
++		goto disable_regulator;
+ 
+ 	ret = bmi160_set_mode(data, BMI160_GYRO, true);
+ 	if (ret)
+-		return ret;
++		goto disable_accel;
+ 
+ 	return 0;
++
++disable_accel:
++	bmi160_set_mode(data, BMI160_ACCEL, false);
++
++disable_regulator:
++	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
++	return ret;
  }
  
- /*
+ static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+-- 
+2.35.1
+
 
 
