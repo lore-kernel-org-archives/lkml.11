@@ -2,83 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC13FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02AE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 03:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344415AbiEDDmC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 23:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
+        id S236841AbiEDDna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 23:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344366AbiEDDly (ORCPT
+        with ESMTP id S236361AbiEDDnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 23:41:54 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE0B27FE1;
-        Tue,  3 May 2022 20:38:20 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MCRCl030007;
-        Tue, 3 May 2022 00:51:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=co1HKWWIuvqZK5K23IbCWayVwEyZTYw1u2eKWn80D5Y=;
- b=FwFL/J/c9I5g3ahWu7vrXF2J/PeooBeLfKe7CpwYI22QQEOd0RDNh1BiiK+Wxj0TA9kP
- JtcfAa2EmSk6Oeknbvt5bzZK5iQe1er+/u8RGI7yT0rq+PCGb9jHaeTnq1MbTd6fEvhU
- 1SNUdBqVZNlN5uRzQ5ryh3KGkA2dt05PDZCglyMz3snCRjyCW2+PVysTadMDhGsGhGLF
- QKYAjXIGSpx1fp1uEAX8gYO6ZKJ82K+Vcn7IBM/BHh4CbBuGERgVuR09syWTqs5FgQlI
- lII4nCw3ge0V6my7yXWyRtHeq8pmdnFiV8w52c9ooEo9jj6hoijolfmmpY64OGNzYdlx og== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruq0cp5k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:57 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430ooiZ008905;
-        Tue, 3 May 2022 00:51:56 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x8d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:56 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljS010389;
-        Tue, 3 May 2022 00:51:56 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-16;
-        Tue, 03 May 2022 00:51:56 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     cgel.zte@gmail.com, james.smart@broadcom.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, jejb@linux.ibm.com,
-        Zeal Robot <zealci@zte.com.cn>,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        linux-scsi@vger.kernel.org, dick.kennedy@broadcom.com
-Subject: Re: [PATCH] scsi: lpfc: Remove unneeded variable
-Date:   Mon,  2 May 2022 20:51:26 -0400
-Message-Id: <165153836362.24053.10060021441010287017.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220419065750.2573861-1-deng.changcheng@zte.com.cn>
-References: <20220419065750.2573861-1-deng.changcheng@zte.com.cn>
+        Tue, 3 May 2022 23:43:23 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C283F27FE1
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 20:39:48 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id e3so323197ios.6
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 20:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TKFkaOZkalvLFPXwyy85GYdezcn8X//pTVrKI0zHMyM=;
+        b=OKeMQH51cvKoQfQVe6saCkxUR73NoKar+XZu/9qav85QUB81nfSHCeoHN5ex2uOb//
+         kO1M3kU546nhzKG8drhWWWIUs2t14S730C1HbWkI98KwrAgY1/vgN9VpljYTWsTGpYMT
+         n40EgHXpIz0/SkKO51NFcsULQvGXL6ctkwg5DTTIAS2gYvCpejuSQQ4qph7SlokYXt9s
+         VUvf8WdkLPYjIyQeFT1pil2GnBWaBey1n1lhrl6pQgJvg7/UckiVZ1X7UNBDOqmR4njo
+         LBHY2e3LUD3qHU9CyE4PtJWxl3SB3/EAnWvg4FyKsiXUSQX++UDJY9f7JOtRyg/wBBgS
+         UVsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TKFkaOZkalvLFPXwyy85GYdezcn8X//pTVrKI0zHMyM=;
+        b=0MyNiCVw+1UNlO0Pm+KkPBWYH/eBgVq9UaM4VZAs2JGAZw3jI/dhNLS8TlFbTYI+w3
+         it6DP2TKmQLv+PKUhYLm9up/pxHfwYS4mp9qWIkkO3w7UIbooo67djHXJgNPJBIg5Q72
+         9aQvqGFWDElJ/rcZkDFHZ+RpsSIWVocZbiDmJGomu9rnGh+7e4Uh6MnhamChhfyvrkfC
+         xtd14QzedRGvmaZtVDXd613qyPwavjnOmDH6Sgm8UFEq3ENb/E2/jDRGIILmbL+/6Opv
+         OG4o/6PSN3BzKNu5QkFOeE0vTdoxCgdpBhlhsyUajhkB2mklco/8/L1cxLYl2Lvdox0c
+         v4XA==
+X-Gm-Message-State: AOAM533Xfcdy4rGPV6DM3BVWkJdWwfvR0bBFCEktKOdGd0FnhjBK3JaB
+        +5d/RPAl1y1U9yKEuQLuQyWfhQ==
+X-Google-Smtp-Source: ABdhPJwLTXJtAXiJwUCvEWggY3FV+wdRFZMRp+5BJmrk0AvQhZTFxdNQcILItIRCgxyMEkGbhuqhbA==
+X-Received: by 2002:a05:6602:2427:b0:657:b2ff:89c5 with SMTP id g7-20020a056602242700b00657b2ff89c5mr7163783iob.26.1651635587956;
+        Tue, 03 May 2022 20:39:47 -0700 (PDT)
+Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
+        by smtp.gmail.com with ESMTPSA id x22-20020a029716000000b0032b3a781750sm4388413jai.20.2022.05.03.20.39.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 20:39:47 -0700 (PDT)
+Date:   Wed, 4 May 2022 03:39:43 +0000
+From:   Oliver Upton <oupton@google.com>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Raghavendra Rao Ananta <rananta@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v7 0/9] KVM: arm64: Add support for hypercall services
+ selection
+Message-ID: <YnH1f2cXcpdKsA3q@google.com>
+References: <20220502233853.1233742-1-rananta@google.com>
+ <878rri8r78.wl-maz@kernel.org>
+ <CAJHc60xp=UQT_CX0zoiSjAmkS8JSe+NB5Gr+F5mmybjJAWkUtQ@mail.gmail.com>
+ <878rriicez.wl-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: zLpwvjFFXZwgsdli8mx19IOIUys6xj_-
-X-Proofpoint-GUID: zLpwvjFFXZwgsdli8mx19IOIUys6xj_-
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <878rriicez.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 06:57:50 +0000, cgel.zte@gmail.com wrote:
+On Tue, May 03, 2022 at 09:33:40PM +0100, Marc Zyngier wrote:
+> On Tue, 03 May 2022 19:49:13 +0100,
+> Raghavendra Rao Ananta <rananta@google.com> wrote:
+> > 
+> > Hi Marc,
+> > 
+> > On Tue, May 3, 2022 at 10:24 AM Marc Zyngier <maz@kernel.org> wrote:
+> > >
+> > > On Tue, 03 May 2022 00:38:44 +0100,
+> > > Raghavendra Rao Ananta <rananta@google.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > Continuing the discussion from [1], the series tries to add support
+> > > > for the userspace to elect the hypercall services that it wishes
+> > > > to expose to the guest, rather than the guest discovering them
+> > > > unconditionally. The idea employed by the series was taken from
+> > > > [1] as suggested by Marc Z.
+> > >
+> > > As it took some time to get there, and that there was still a bunch of
+> > > things to address, I've taken the liberty to apply my own fixes to the
+> > > series.
+> > >
+> > > Please have a look at [1], and let me know if you're OK with the
+> > > result. If you are, I'll merge the series for 5.19.
+> > >
+> > > Thanks,
+> > >
+> > >         M.
+> > >
+> > Thank you for speeding up the process; appreciate it. However, the
+> > series's selftest patches have a dependency on Oliver's
+> > PSCI_SYSTEM_SUSPEND's selftest patches [1][2]. Can we pull them in
+> > too?
 
-> From: Changcheng Deng <deng.changcheng@zte.com.cn>
+Posted, BTW.
+
+http://lore.kernel.org/kvmarm/20220504032446.4133305-1-oupton@google.com
+
+> > 2. Patch-2/9, arm_hypercall.h, clear all the macros in this patch
+> > itself instead of doing it in increments (unless there's some reason
+> > that I'm missing)?
 > 
-> Remove unneeded variable used to store return value.
+> Ah, rebasing leftovers, now gone.
 > 
-> 
+> I've pushed an updated branch again, please have a look.
 
-Applied to 5.19/scsi-queue, thanks!
+Series looks good with your additions. For the pile:
 
-[1/1] scsi: lpfc: Remove unneeded variable
-      https://git.kernel.org/mkp/scsi/c/a346f28ad231
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Reviewed-by: Oliver Upton <oupton@google.com>
