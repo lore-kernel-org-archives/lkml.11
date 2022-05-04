@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF653C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6579C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 09:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347598AbiEDJgk (ORCPT
+        id S1347432AbiEDJgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 05:36:40 -0400
+        Wed, 4 May 2022 05:36:46 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347432AbiEDJgK (ORCPT
+        with ESMTP id S1347454AbiEDJgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 05:36:10 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A73227147;
-        Wed,  4 May 2022 02:31:51 -0700 (PDT)
+        Wed, 4 May 2022 05:36:04 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547B026552;
+        Wed,  4 May 2022 02:31:45 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A6E9A4001C;
-        Wed,  4 May 2022 09:31:48 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 317E240012;
+        Wed,  4 May 2022 09:31:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651656710;
+        t=1651656704;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0f9OuIqnKWeX+OGZsEpXifhCvbt8Y6SEkR4j7N0Js9U=;
-        b=Sjcw+PjsAzOmxGlvUsaJ7BeujYxDyRTETAWhccRn2Z+gu595uhugCY7X86KNktUWRg03+i
-        1PqAkMKeJ6ZRm6rRBSTAxDWgUuMY1CprQYXcghZ1hkarkVNBLmAAAvI+eneqFLmiEW7x9N
-        vupVwhYmG7eNE6jJDKQigTwM+0uroz8AMLUMt3EkXmsB/5YcoY3hnXC660z08UHX38FAIs
-        BO+IhCBS4IsLjF3WKK+whL9GniDeYz6t6QQkFey/9t3qi7ofXugPsTtMlGt/w4WCgz1JgZ
-        ALT+rQIpCE/1hgTCqMmgIIj5zNuwKJPv6zegYnkIE2CGxMqP/1U/1LnyoJF6oA==
+        bh=s6gIGss4SIbDlM5Wfn6yHq9sUNz8kfouiZ73FU29oxY=;
+        b=JV0hQbEeDvK12iIcB262JvihEFhjf7JwyfAE/rfz2lmwDtYa0d5eLx1rxV/d/pvQENVEAp
+        DvcIkrKhpX83bzVdWMUvIXmcuSzY4vpxfrnFB54ObhGMsaSYn3QmznEGgfzPhtNsqtciO7
+        z0VHUly1yg6UaMBz92IcF7ByqCkEClVaEUJxoMe5tVq1YQffOa9CsQWB6GdejrO4PgoXSE
+        iGwRAk3gJuAoztIiuWlIaLH/aXMkNFMmXDjICXbEGkP4HWD1rmkmD2DklTvdTKAby7Jq+D
+        sqzXi5fsr2w56hG8M53IZ7Xti5C4pF5vkTY0qo9I6NH8fEslXqMdVO5p9k5QaA==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 12/12] MAINTAINERS: add Renesas RZ/N1 switch related driver entry
-Date:   Wed,  4 May 2022 11:30:00 +0200
-Message-Id: <20220504093000.132579-13-clement.leger@bootlin.com>
+Subject: [PATCH net-next v3 09/12] ARM: dts: r9a06g032: describe MII converter
+Date:   Wed,  4 May 2022 11:29:57 +0200
+Message-Id: <20220504093000.132579-10-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220504093000.132579-1-clement.leger@bootlin.com>
 References: <20220504093000.132579-1-clement.leger@bootlin.com>
@@ -68,36 +68,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After contributing the drivers, volunteer for maintenance and add
-myself as the maintainer for Renesas RZ/N1 switch related drivers.
+Add the MII converter node which describes the MII converter that is
+present on the RZ/N1 SoC.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- MAINTAINERS | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/arm/boot/dts/r9a06g032.dtsi | 38 ++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fa6896e8b2d8..9e1d2647f8bc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16872,6 +16872,17 @@ S:	Supported
- F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
- F:	drivers/iio/adc/rzg2l_adc.c
+diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
+index 20286433d3c6..ada5b1db0790 100644
+--- a/arch/arm/boot/dts/r9a06g032.dtsi
++++ b/arch/arm/boot/dts/r9a06g032.dtsi
+@@ -201,6 +201,44 @@ nand_controller: nand-controller@40102000 {
+ 			status = "disabled";
+ 		};
  
-+RENESAS RZ/N1 A5PSW SWITCH DRIVER
-+M:	Clément Léger <clement.leger@bootlin.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-+F:	Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-+F:	drivers/net/dsa/rzn1_a5psw*
-+F:	drivers/net/pcs/pcs-rzn1-miic.c
-+F:	include/dt-bindings/net/pcs-rzn1-miic.h
-+F:	include/linux/pcs-rzn1-miic.h
-+F:	net/dsa/tag_rzn1_a5psw.c
++		eth_miic: eth-miic@44030000 {
++			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x44030000 0x10000>;
++			clocks = <&sysctrl R9A06G032_CLK_MII_REF>,
++				 <&sysctrl R9A06G032_CLK_RGMII_REF>,
++				 <&sysctrl R9A06G032_CLK_RMII_REF>,
++				 <&sysctrl R9A06G032_HCLK_SWITCH_RG>;
++			power-domains = <&sysctrl>;
++			status = "disabled";
 +
- RENESAS R-CAR GEN3 & RZ/N1 NAND CONTROLLER DRIVER
- M:	Miquel Raynal <miquel.raynal@bootlin.com>
- L:	linux-mtd@lists.infradead.org
++			mii_conv1: mii-conv@1 {
++				reg = <1>;
++				status = "disabled";
++			};
++
++			mii_conv2: mii-conv@2 {
++				reg = <2>;
++				status = "disabled";
++			};
++
++			mii_conv3: mii-conv@3 {
++				reg = <3>;
++				status = "disabled";
++			};
++
++			mii_conv4: mii-conv@4 {
++				reg = <4>;
++				status = "disabled";
++			};
++
++			mii_conv5: mii-conv@5 {
++				reg = <5>;
++				status = "disabled";
++			};
++		};
++
+ 		gic: interrupt-controller@44101000 {
+ 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
+ 			interrupt-controller;
 -- 
 2.34.1
 
