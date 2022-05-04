@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D00EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345777AbiEDRqg (ORCPT
+        id S1349576AbiEDRqo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
+        Wed, 4 May 2022 13:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356583AbiEDRN6 (ORCPT
+        with ESMTP id S1356306AbiEDRNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:13:58 -0400
+        Wed, 4 May 2022 13:13:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAC353A5F;
-        Wed,  4 May 2022 09:58:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7564E4C42C;
+        Wed,  4 May 2022 09:58:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76EC2618E5;
-        Wed,  4 May 2022 16:57:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C87D4C385AA;
-        Wed,  4 May 2022 16:57:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4537761943;
+        Wed,  4 May 2022 16:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93BB0C385AA;
+        Wed,  4 May 2022 16:58:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683472;
-        bh=wKkmL0ZYv5k/qF4O0YKTlyXFYnzGwQ3zSnXKXaRUywY=;
+        s=korg; t=1651683482;
+        bh=I/GMCfV4CT27dmFy2A6d/sPUV7aJUciKH+ntyUtNbhA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j0NX5TIwHnjBDnVpeGNjOdiyoFk7tC/EFvPVuQCRDWHGTe7PDBME2/oiMQgG6hIOR
-         SaZKbcOI0rf2VgTRhsptc8uwNS+RxiBktfMDyHWZhrDR+2jWp431FXrOmLDtPoejwm
-         vkKePnI0XRofWPsTnzmPZVxY96P+dUiImVikqMfU=
+        b=WJF0KSglnBO+l9t+W0xbdh5sP/B4LbLChHejQCLoj4tLwyAsf4M1nkkffoRHmKPCg
+         1gC93//IU+RQG8XbvdU+jk4pD2tMZoTMbB4zn1cc7BFCsJl2tinGvhHunR2b/mPDwD
+         5lYji9GQ3O6Jb7mD1PVu2U+d/Xu127vRJ62hvrBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 147/225] net: fec: add missing of_node_put() in fec_enet_init_stop_mode()
-Date:   Wed,  4 May 2022 18:46:25 +0200
-Message-Id: <20220504153123.263204031@linuxfoundation.org>
+Subject: [PATCH 5.17 144/225] drm/amd/display: Fix memory leak in dcn21_clock_source_create
+Date:   Wed,  4 May 2022 18:46:22 +0200
+Message-Id: <20220504153123.036926677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,34 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d2b52ec056d5bddb055c8f21d7489a23548d0838 ]
+[ Upstream commit 65e54987508b6f0771f56bdfa3ee1926d52785ae ]
 
-Put device node in error path in fec_enet_init_stop_mode().
+When dcn20_clk_src_construct() fails, we need to release clk_src.
 
-Fixes: 8a448bf832af ("net: ethernet: fec: move GPR register offset and bit into DT")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220426125231.375688-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6f4e6361c3ff ("drm/amd/display: Add Renoir resource (v2)")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 796133de527e..870919c66518 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3731,7 +3731,7 @@ static int fec_enet_init_stop_mode(struct fec_enet_private *fep,
- 					 ARRAY_SIZE(out_val));
- 	if (ret) {
- 		dev_dbg(&fep->pdev->dev, "no stop mode property\n");
--		return ret;
-+		goto out;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+index ca1bbc942fd4..67f3cae553e0 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+@@ -1427,6 +1427,7 @@ static struct clock_source *dcn21_clock_source_create(
+ 		return &clk_src->base;
  	}
  
- 	fep->stop_gpr.gpr = syscon_node_to_regmap(gpr_np);
++	kfree(clk_src);
+ 	BREAK_TO_DEBUGGER();
+ 	return NULL;
+ }
 -- 
 2.35.1
 
