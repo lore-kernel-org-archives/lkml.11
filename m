@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9101C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FB3C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358591AbiEDRep (ORCPT
+        id S1358633AbiEDRew (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        Wed, 4 May 2022 13:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356703AbiEDRJi (ORCPT
+        with ESMTP id S1356974AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD85C140DC;
-        Wed,  4 May 2022 09:55:24 -0700 (PDT)
+        Wed, 4 May 2022 13:09:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4D24755E;
+        Wed,  4 May 2022 09:56:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE9C461896;
-        Wed,  4 May 2022 16:55:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FC18C385A5;
-        Wed,  4 May 2022 16:55:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EE05616B8;
+        Wed,  4 May 2022 16:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F58FC385AA;
+        Wed,  4 May 2022 16:56:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683324;
-        bh=0ADtk7N5G3X2CP8D5RX9L+TI3ddYO/GrfFJQis71W10=;
+        s=korg; t=1651683408;
+        bh=hmbtWVfyriMLSNG2cgnHPr6zR2rssfLG2hmu6gUSMOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pvAE/oZhW2xKbxMPskJIXKAkcCrQuTwek/P6JmTaGpxwTh3VI49O3MWUT91BguwU6
-         K7x5hG4QYKw/5EAdcrXDLDClIG/6ypv4DHutHHDJSdCd+iV+dcOSwgmhU0X+4GSHHw
-         MfRaR3yEDY6zHGedat6Hhx2N4a3112gci0LHQDOY=
+        b=ukG7m3xvNMHP2iZwFctxTxxUJ2EjCoKNjQbIwb1cZiEaQ388NrMtoPxOgGL5ihPO/
+         GgRsg7NLsz7SUNTFEKciSEz7GUNoQLkJW07FIryQ5oamzA+IZD9PC0EgB1faxa3AaR
+         yHFexVShZ9QH4/GlNDka8QK0MYHdmxznVKnsCgT0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 5.17 003/225] USB: quirks: add a Realtek card reader
-Date:   Wed,  4 May 2022 18:44:01 +0200
-Message-Id: <20220504153110.485302901@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 069/225] USB: Fix xhci event ring dequeue pointer ERDP update issue
+Date:   Wed,  4 May 2022 18:45:07 +0200
+Message-Id: <20220504153117.726462014@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -48,31 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
-commit 2a7ccf6bb6f147f64c025ad68f4255d8e1e0ce6d upstream.
+[ Upstream commit e91ac20889d1a26d077cc511365cd7ff4346a6f3 ]
 
-This device is reported to stall when enummerated.
+In some situations software handles TRB events slower than adding TRBs.
+If the number of TRB events to be processed in a given interrupt is exactly
+the same as the event ring size 256, then the local variable
+"event_ring_deq" that holds the initial dequeue position is equal to
+software_dequeue after handling all 256 interrupts.
 
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220414110209.30924-1-oneukum@suse.com
+It will cause driver to not update ERDP to hardware,
+
+Software dequeue pointer is out of sync with ERDP on interrupt exit.
+On the next interrupt, the event ring may full but driver will not
+update ERDP as software_dequeue is equal to ERDP.
+
+[  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
+[  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 inflight: CMD OUT
+[  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00 00 08 00
+[  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not responding to stop endpoint command.
+[  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
+[  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding, assume dead
+[  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 inflight: CMD
+[  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00 00 08 00
+[  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 inflight: CMD
+
+Hardware ERDP is updated mid event handling if there are more than 128
+events in an interrupt (half of ring size).
+Fix this by updating the software local variable at the same time as
+hardware ERDP.
+
+[commit message rewording -Mathias]
+
+Fixes: dc0ffbea5729 ("usb: host: xhci: update event ring dequeue pointer on purpose")
+Reviewed-by: Peter Chen <peter.chen@kernel.org>
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-2-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/host/xhci-ring.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -404,6 +404,9 @@ static const struct usb_device_id usb_qu
- 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
- 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
+diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+index d0b6806275e0..f9707997969d 100644
+--- a/drivers/usb/host/xhci-ring.c
++++ b/drivers/usb/host/xhci-ring.c
+@@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
+ 		if (event_loop++ < TRBS_PER_SEGMENT / 2)
+ 			continue;
+ 		xhci_update_erst_dequeue(xhci, event_ring_deq);
++		event_ring_deq = xhci->event_ring->dequeue;
  
-+	/* Realtek Semiconductor Corp. Mass Storage Device (Multicard Reader)*/
-+	{ USB_DEVICE(0x0bda, 0x0151), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
-+
- 	/* Realtek hub in Dell WD19 (Type-C) */
- 	{ USB_DEVICE(0x0bda, 0x0487), .driver_info = USB_QUIRK_NO_LPM },
- 
+ 		/* ring is half-full, force isoc trbs to interrupt more often */
+ 		if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
+-- 
+2.35.1
+
 
 
