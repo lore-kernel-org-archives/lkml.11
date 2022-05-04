@@ -2,80 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 159FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C06DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 11:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348588AbiEDLQY (ORCPT
+        id S1348599AbiEDLRB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 07:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
+        Wed, 4 May 2022 07:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348583AbiEDLQW (ORCPT
+        with ESMTP id S1348593AbiEDLQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 07:16:22 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A401570A;
-        Wed,  4 May 2022 04:12:43 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MQhCd013665;
-        Tue, 3 May 2022 00:51:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=sZdJgyADkeH3V7B3rM7EoeKb2SSRy28Z4nID5HsXg7Y=;
- b=AK/DVKeH3HlA7BlTqWeFFCnGrLuG3H/S6xyFVaIpqerQUDG9qsIA04ue2MwWz8igeODK
- 7CDV3b+WLhc2YItuUp/BoNDZbOmzdkNv+oY6T9kdJvmkCvc44NAmn/2CuWwGPryZ7iOT
- 86UOruexEcKulofqsymWP3YO/muuGjHZk4PLVXIZXP76bPQPkYSVfS0/9ZeX+RGrBTna
- ZOIhFRQcJZBD/qY8B+yuqqWwygffComRHkwsAJbow72qtPa2cPRFMMvEGg3pai7Q2YJI
- 438RjuA7D0HwMt+hvKP/4G4LA9mjVH8709TXa113tbfH2OJGvOkBtIL3q8WmQCWR7KYW TA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frvqscnke-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:49 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430ow5J009155;
-        Tue, 3 May 2022 00:51:49 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x5d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:49 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plj2010389;
-        Tue, 3 May 2022 00:51:48 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-3;
-        Tue, 03 May 2022 00:51:48 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     sudarsana.kalluru@qlogic.com, anil.gurumurthy@qlogic.com,
-        Haowen Bai <baihaowen@meizu.com>, jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: bfa: remove redundant NULL check
-Date:   Mon,  2 May 2022 20:51:13 -0400
-Message-Id: <165153836360.24053.2843259477177875270.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1647309434-13936-1-git-send-email-baihaowen@meizu.com>
-References: <1647309434-13936-1-git-send-email-baihaowen@meizu.com>
+        Wed, 4 May 2022 07:16:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92522528E;
+        Wed,  4 May 2022 04:13:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B9CAB821D5;
+        Wed,  4 May 2022 11:13:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A5EAC385AE;
+        Wed,  4 May 2022 11:13:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="dWXyH6SD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1651662792;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HXiaK4ictgTSjtvWOEUk+V6lbW8n+flqFYQG/qZp/tc=;
+        b=dWXyH6SDho1vsZk6jp325598IoQxyDX5RdlrojDYWX33rV3qpguAY0xp8e49erwjIbm//7
+        Noa6LXMvAeCBw28nTvaHBCczKc25blHIZKi/Grpmzf52tj13Z+Tfchj99QHzXPuHQOUbhJ
+        rQX0IwJd4uuNLiogVYtxli/EBNVsyO0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1638d895 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 4 May 2022 11:13:12 +0000 (UTC)
+Received: by mail-yb1-f181.google.com with SMTP id h10so1771010ybc.4;
+        Wed, 04 May 2022 04:13:12 -0700 (PDT)
+X-Gm-Message-State: AOAM531HNxE+twLkskJKdM/OH9H0kO5pQGxDJyB2paSJUqoLDBMco6Mm
+        N0S7qYaNTXDB+1Jzc/Lr7K+76cR242HrEuWmIA4=
+X-Google-Smtp-Source: ABdhPJwCBvpDxWGSWccxUCQ9Dcxzd+za7/HrhxllXzM3nsD8TEctq7GSKBM+TEdo8KJm1AuvrqSU4mLti6+HOafgrIk=
+X-Received: by 2002:a25:420b:0:b0:648:4baf:c639 with SMTP id
+ p11-20020a25420b000000b006484bafc639mr17860583yba.373.1651662791725; Wed, 04
+ May 2022 04:13:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: nBdh9Lcbqy45eL27iI1wMuEe7MLI9Z5d
-X-Proofpoint-ORIG-GUID: nBdh9Lcbqy45eL27iI1wMuEe7MLI9Z5d
+References: <20220503195141.683217-1-Jason@zx2c4.com> <YnGI4lZVJ/FZEkcn@owl.dominikbrodowski.net>
+ <CAHmME9o1zhtq=bMetwEx7YEzoW79z36BQ=vTWEv4M_ocChm5eA@mail.gmail.com> <YnIQ9RJpP/3j5aWF@owl.dominikbrodowski.net>
+In-Reply-To: <YnIQ9RJpP/3j5aWF@owl.dominikbrodowski.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 4 May 2022 13:13:01 +0200
+X-Gmail-Original-Message-ID: <CAHmME9pAHcXk+jyJDX27JfXbXRKtJmQuKH8aVbOo6d6N1RAakA@mail.gmail.com>
+Message-ID: <CAHmME9pAHcXk+jyJDX27JfXbXRKtJmQuKH8aVbOo6d6N1RAakA@mail.gmail.com>
+Subject: Re: [PATCH] random: mix hwgenerator randomness before sleeping
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 09:57:14 +0800, Haowen Bai wrote:
+Hi Dominik,
 
-> Fix below warnings reported by coccicheck:
-> drivers/scsi/bfa/bfad_debugfs.c:375:2-7: WARNING: NULL check before some freeing functions is not needed.
-> 
-> 
+Alright I'll drop this patch for now, and we can revisit it if we ever
+get rid of the premature next stuff.
 
-Applied to 5.19/scsi-queue, thanks!
-
-[1/1] scsi: bfa: remove redundant NULL check
-      https://git.kernel.org/mkp/scsi/c/8e897c84661e
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Jason
