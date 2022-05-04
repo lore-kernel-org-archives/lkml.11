@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357830AbiEDRht (ORCPT
+        id S1347938AbiEDRh4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
+        Wed, 4 May 2022 13:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356869AbiEDRJr (ORCPT
+        with ESMTP id S1356872AbiEDRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D12743AF0;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C265B43AF6;
         Wed,  4 May 2022 09:56:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AFE2617DE;
-        Wed,  4 May 2022 16:56:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7FEC385B0;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 28AB9CE28AD;
         Wed,  4 May 2022 16:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53C89C385AF;
+        Wed,  4 May 2022 16:56:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683369;
-        bh=6KisIebj9lDcZTp40DXBowgWsCa5Vj0P7bVBz0IGuAw=;
+        s=korg; t=1651683367;
+        bh=+q2s/HQ66eGx5eZW7CMgSoE5sCjAqyFL5yBUXuzj48M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=elDDmn+sQLcqtvqofd8iMPnjDvp6qB9EkHxkaR0/9xyQMExayXcQ3iEP+PbmL7OFA
-         VEuAjwvXGCoSoGNOb6tMAkv+y7PJTohNVWqN0KZPxl53zFd4mOr4RDpL6XzU74ZnpS
-         lg/8CrGXAh4w/4lGn+HVEqBuOuHusqRatP9wOkLQ=
+        b=I8QCg4au/CBR3mUI0Y4wpvlu0S3VYpWfEaPYtnlg+Klu+46gtLMyVpT/CtCpLHbeJ
+         IvKwPzKDpOr/rojKtZ3XnItHlUz1rZ+HECA6gJJkd7ftwb3K4/YP+HCaUTOozOuafq
+         9alGbwXAwODvYZvTDRF24CwbRFzT18hgQSW9pO+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "D. Scott Phillips" <scott@os.amperecomputing.com>,
-        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Darren Hart <darren@os.amperecomputing.com>
-Subject: [PATCH 5.17 040/225] topology: make core_mask include at least cluster_siblings
-Date:   Wed,  4 May 2022 18:44:38 +0200
-Message-Id: <20220504153113.747830165@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        Dusty Mabe <dustymabe@redhat.com>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Noah Meyerhans <noahm@debian.org>
+Subject: [PATCH 5.17 052/225] x86/pci/xen: Disable PCI/MSI[-X] masking for XEN_HVM guests
+Date:   Wed,  4 May 2022 18:44:50 +0200
+Message-Id: <20220504153114.793472327@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -58,92 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darren Hart <darren@os.amperecomputing.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-commit db1e59483dfd8d4e956575302520bb8f7e20c79b upstream.
+commit 7e0815b3e09986d2fe651199363e135b9358132a upstream.
 
-Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
-Control Unit, but have no shared CPU-side last level cache.
+When a XEN_HVM guest uses the XEN PIRQ/Eventchannel mechanism, then
+PCI/MSI[-X] masking is solely controlled by the hypervisor, but contrary to
+XEN_PV guests this does not disable PCI/MSI[-X] masking in the PCI/MSI
+layer.
 
-cpu_coregroup_mask() will return a cpumask with weight 1, while
-cpu_clustergroup_mask() will return a cpumask with weight 2.
+This can lead to a situation where the PCI/MSI layer masks an MSI[-X]
+interrupt and the hypervisor grants the write despite the fact that it
+already requested the interrupt. As a consequence interrupt delivery on the
+affected device is not happening ever.
 
-As a result, build_sched_domain() will BUG() once per CPU with:
+Set pci_msi_ignore_mask to prevent that like it's done for XEN_PV guests
+already.
 
-BUG: arch topology borken
-the CLS domain not a subset of the MC domain
-
-The MC level cpumask is then extended to that of the CLS child, and is
-later removed entirely as redundant. This sched domain topology is an
-improvement over previous topologies, or those built without
-SCHED_CLUSTER, particularly for certain latency sensitive workloads.
-With the current scheduler model and heuristics, this is a desirable
-default topology for Ampere Altra and Altra Max system.
-
-Rather than create a custom sched domains topology structure and
-introduce new logic in arch/arm64 to detect these systems, update the
-core_mask so coregroup is never a subset of clustergroup, extending it
-to cluster_siblings if necessary. Only do this if CONFIG_SCHED_CLUSTER
-is enabled to avoid also changing the topology (MC) when
-CONFIG_SCHED_CLUSTER is disabled.
-
-This has the added benefit over a custom topology of working for both
-symmetric and asymmetric topologies. It does not address systems where
-the CLUSTER topology is above a populated MC topology, but these are not
-considered today and can be addressed separately if and when they
-appear.
-
-The final sched domain topology for a 2 socket Ampere Altra system is
-unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
-
-For CPU0:
-
-CONFIG_SCHED_CLUSTER=y
-CLS  [0-1]
-DIE  [0-79]
-NUMA [0-159]
-
-CONFIG_SCHED_CLUSTER is not set
-DIE  [0-79]
-NUMA [0-159]
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: D. Scott Phillips <scott@os.amperecomputing.com>
-Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
-Cc: <stable@vger.kernel.org> # 5.16.x
-Suggested-by: Barry Song <song.bao.hua@hisilicon.com>
-Reviewed-by: Barry Song <song.bao.hua@hisilicon.com>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Acked-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-Link: https://lore.kernel.org/r/c8fe9fce7c86ed56b4c455b8c902982dc2303868.1649696956.git.darren@os.amperecomputing.com
+Fixes: 809f9267bbab ("xen: map MSIs into pirqs")
+Reported-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Reported-by: Dusty Mabe <dustymabe@redhat.com>
+Reported-by: Salvatore Bonaccorso <carnil@debian.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Noah Meyerhans <noahm@debian.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/87tuaduxj5.ffs@tglx
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/arch_topology.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/x86/pci/xen.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -628,6 +628,15 @@ const struct cpumask *cpu_coregroup_mask
- 			core_mask = &cpu_topology[cpu].llc_sibling;
- 	}
- 
+--- a/arch/x86/pci/xen.c
++++ b/arch/x86/pci/xen.c
+@@ -467,7 +467,6 @@ static __init void xen_setup_pci_msi(voi
+ 		else
+ 			xen_msi_ops.setup_msi_irqs = xen_setup_msi_irqs;
+ 		xen_msi_ops.teardown_msi_irqs = xen_pv_teardown_msi_irqs;
+-		pci_msi_ignore_mask = 1;
+ 	} else if (xen_hvm_domain()) {
+ 		xen_msi_ops.setup_msi_irqs = xen_hvm_setup_msi_irqs;
+ 		xen_msi_ops.teardown_msi_irqs = xen_teardown_msi_irqs;
+@@ -481,6 +480,11 @@ static __init void xen_setup_pci_msi(voi
+ 	 * in allocating the native domain and never use it.
+ 	 */
+ 	x86_init.irqs.create_pci_msi_domain = xen_create_pci_msi_domain;
 +	/*
-+	 * For systems with no shared cpu-side LLC but with clusters defined,
-+	 * extend core_mask to cluster_siblings. The sched domain builder will
-+	 * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
++	 * With XEN PIRQ/Eventchannels in use PCI/MSI[-X] masking is solely
++	 * controlled by the hypervisor.
 +	 */
-+	if (IS_ENABLED(CONFIG_SCHED_CLUSTER) &&
-+	    cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
-+		core_mask = &cpu_topology[cpu].cluster_sibling;
-+
- 	return core_mask;
++	pci_msi_ignore_mask = 1;
  }
  
+ #else /* CONFIG_PCI_MSI */
 
 
