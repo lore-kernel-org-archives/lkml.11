@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C87C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353795AbiEDQw3 (ORCPT
+        id S1353752AbiEDQwe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        Wed, 4 May 2022 12:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353613AbiEDQv6 (ORCPT
+        with ESMTP id S1353661AbiEDQv7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:51:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4D744A3E;
-        Wed,  4 May 2022 09:48:21 -0700 (PDT)
+        Wed, 4 May 2022 12:51:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9900346B1B;
+        Wed,  4 May 2022 09:48:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CABFB82554;
-        Wed,  4 May 2022 16:48:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3C7BC385B1;
-        Wed,  4 May 2022 16:48:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F6C7B8279F;
+        Wed,  4 May 2022 16:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0202C385A5;
+        Wed,  4 May 2022 16:48:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682899;
-        bh=wc3rDHdA1PWnE21lxT4hEmsW7Iuq8hxO5HNjLyXzhN8=;
+        s=korg; t=1651682900;
+        bh=nO0HsBH97IIxsOjMZu1jbvvi+Us0BjRufFBiwIiqmSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K4LxhxHTQNXoYP8H79agzHR/8If4pEpDwosn83RH1IrCuF2AqsjcpKxc3spqy+2ro
-         vfeObS82q/BWIHXbqcN9HZ7aUNFopKmh/DNoiWcV5igCS+3y1SrfxrnVBcml6lcl2l
-         SsWjwVZyObN51Ua9F2+clfHavAjDWtpO93ZU1xVQ=
+        b=qvmYPMEjiRYExtEWwAK/DBRAf9p/lYwpfAEOUBtlxrSVt2dyyVP+8lZnUJZBrow/V
+         CXt6q27tne2ABuFdySe5Csb71c/CSLqKW+ffLY6em9ZyGQgUU0hVvKtIsGAhjNGLtQ
+         j49NMD4+wmXK5VZ37wyMuWivR3rVf19HEdjmDNZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Tainping Fang <tianping.fang@mediatek.com>
-Subject: [PATCH 5.4 05/84] usb: mtu3: fix USB 3.0 dual-role-switch from device to host
-Date:   Wed,  4 May 2022 18:43:46 +0200
-Message-Id: <20220504152928.124644155@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 5.4 06/84] USB: quirks: add a Realtek card reader
+Date:   Wed,  4 May 2022 18:43:47 +0200
+Message-Id: <20220504152928.186056786@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,51 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Macpaul Lin <macpaul.lin@mediatek.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit 456244aeecd54249096362a173dfe06b82a5cafa upstream.
+commit 2a7ccf6bb6f147f64c025ad68f4255d8e1e0ce6d upstream.
 
-Issue description:
-  When an OTG port has been switched to device role and then switch back
-  to host role again, the USB 3.0 Host (XHCI) will not be able to detect
-  "plug in event of a connected USB 2.0/1.0 ((Highspeed and Fullspeed)
-  devices until system reboot.
+This device is reported to stall when enummerated.
 
-Root cause and Solution:
-  There is a condition checking flag "ssusb->otg_switch.is_u3_drd" in
-  toggle_opstate(). At the end of role switch procedure, toggle_opstate()
-  will be called to set DC_SESSION and SOFT_CONN bit. If "is_u3_drd" was
-  set and switched the role to USB host 3.0, bit DC_SESSION and SOFT_CONN
-  will be skipped hence caused the port cannot detect connected USB 2.0
-  (Highspeed and Fullspeed) devices. Simply remove the condition check to
-  solve this issue.
-
-Fixes: d0ed062a8b75 ("usb: mtu3: dual-role mode support")
-Cc: stable@vger.kernel.org
-Tested-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Signed-off-by: Tainping Fang <tianping.fang@mediatek.com>
-Link: https://lore.kernel.org/r/20220419081245.21015-1-macpaul.lin@mediatek.com
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220414110209.30924-1-oneukum@suse.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/mtu3/mtu3_dr.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/usb/mtu3/mtu3_dr.c
-+++ b/drivers/usb/mtu3/mtu3_dr.c
-@@ -41,10 +41,8 @@ static char *mailbox_state_string(enum m
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -404,6 +404,9 @@ static const struct usb_device_id usb_qu
+ 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
+ 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
  
- static void toggle_opstate(struct ssusb_mtk *ssusb)
- {
--	if (!ssusb->otg_switch.is_u3_drd) {
--		mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
--		mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
--	}
-+	mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
-+	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
- }
- 
- /* only port0 supports dual-role mode */
++	/* Realtek Semiconductor Corp. Mass Storage Device (Multicard Reader)*/
++	{ USB_DEVICE(0x0bda, 0x0151), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
++
+ 	/* Realtek hub in Dell WD19 (Type-C) */
+ 	{ USB_DEVICE(0x0bda, 0x0487), .driver_info = USB_QUIRK_NO_LPM },
+ 	{ USB_DEVICE(0x0bda, 0x5487), .driver_info = USB_QUIRK_RESET_RESUME },
 
 
