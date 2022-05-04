@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC536C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357624AbiEDRct (ORCPT
+        id S1357642AbiEDRdA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
+        Wed, 4 May 2022 13:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356933AbiEDRJt (ORCPT
+        with ESMTP id S1356918AbiEDRJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E240947391;
-        Wed,  4 May 2022 09:56:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C376547381;
+        Wed,  4 May 2022 09:56:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 928A8B82795;
-        Wed,  4 May 2022 16:56:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31289C385AF;
-        Wed,  4 May 2022 16:56:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7118BB82795;
+        Wed,  4 May 2022 16:56:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D12C385A5;
+        Wed,  4 May 2022 16:56:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683389;
-        bh=bOEnfUtlCzKilcQVNdgNDkraRV1l4mxr/wnzQyI8f7Q=;
+        s=korg; t=1651683382;
+        bh=ubcQyke9vPFH9s6nU+Un2l/Q2Wf/PRFTnF/wUNLwwzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CR0sGPUOSiwBFOOH3kLHJIKTpB8I3WZQFI8SINpeL6/H2s0UvzrJSQfBl/TssbYIR
-         9sGJzrYdhCiR2l94Y6F4OxLgM6yLa0WAGpDsZEx4fdO9ii/z2v/xxrl9FjQdZuwZ68
-         t8v6Y9D3cAArvrZEz5Mjpr/wd11+FucClTJ1De7k=
+        b=Kl0snVSGz7jgGwKPfld7VSbDkcyyet/R3OIaORyILvA9AqOYo1Fq+V+9yhphWnsKE
+         CQ7ErSGW5D8K9MSCq7qbJaSXEW++PuiMcNqNJDhNpSFwMlwYC3700SWV50YmAiZQw0
+         J2t1fwn7mIyEXRam5+90h64ggtgk7fV0Me5bHfkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 061/225] arm64: dts: meson: remove CPU opps below 1GHz for SM1 boards
-Date:   Wed,  4 May 2022 18:44:59 +0200
-Message-Id: <20220504153115.616429094@linuxfoundation.org>
+Subject: [PATCH 5.17 067/225] xsk: Fix l2fwd for copy mode + busy poll combo
+Date:   Wed,  4 May 2022 18:45:05 +0200
+Message-Id: <20220504153117.092670935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,58 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit fd86d85401c2049f652293877c0f7e6e5afc3bbc ]
+[ Upstream commit 8de8b71b787f38983d414d2dba169a3bfefa668a ]
 
-Amlogic SM1 devices experience CPU stalls and random board wedges when
-the system idles and CPU cores clock down to lower opp points. Recent
-vendor kernels include a change to remove 100-250MHz and other distro
-sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
-are removed or the CPU governor forced to performance stalls are still
-observed, so let's remove them to improve stability and uptime.
+While checking AF_XDP copy mode combined with busy poll, strange
+results were observed. rxdrop and txonly scenarios worked fine, but
+l2fwd broke immediately.
 
-Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220210100638.19130-3-christianshewitt@gmail.com
+After a deeper look, it turned out that for l2fwd, Tx side was exiting
+early due to xsk_no_wakeup() returning true and in the end
+xsk_generic_xmit() was never called. Note that AF_XDP Tx in copy mode
+is syscall steered, so the current behavior is broken.
+
+Txonly scenario only worked due to the fact that
+sk_mark_napi_id_once_xdp() was never called - since Rx side is not in
+the picture for this case and mentioned function is called in
+xsk_rcv_check(), sk::sk_napi_id was never set, which in turn meant that
+xsk_no_wakeup() was returning false (see the sk->sk_napi_id >=
+MIN_NAPI_ID check in there).
+
+To fix this, prefer busy poll in xsk_sendmsg() only when zero copy is
+enabled on a given AF_XDP socket. By doing so, busy poll in copy mode
+would not exit early on Tx side and eventually xsk_generic_xmit() will
+be called.
+
+Fixes: a0731952d9cd ("xsk: Add busy-poll support for {recv,send}msg()")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220406155804.434493-1-maciej.fijalkowski@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 20 --------------------
- 1 file changed, 20 deletions(-)
+ net/xdp/xsk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-index 3d8b1f4f2001..78bdbd2ccc9d 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-@@ -95,26 +95,6 @@ cpu_opp_table: opp-table {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index ac343cd8ff3f..39a82bfb5caa 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -640,7 +640,7 @@ static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len
+ 	if (sk_can_busy_loop(sk))
+ 		sk_busy_loop(sk, 1); /* only support non-blocking sockets */
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <666666666>;
--			opp-microvolt = <750000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <770000>;
+-	if (xsk_no_wakeup(sk))
++	if (xs->zc && xsk_no_wakeup(sk))
+ 		return 0;
+ 
+ 	pool = xs->pool;
 -- 
 2.35.1
 
