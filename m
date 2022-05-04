@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49449C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B561FC35275
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359702AbiEDRtr (ORCPT
+        id S1359822AbiEDRuH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56560 "EHLO
+        Wed, 4 May 2022 13:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357782AbiEDRPQ (ORCPT
+        with ESMTP id S1357862AbiEDRPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:15:16 -0400
+        Wed, 4 May 2022 13:15:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760C355489;
-        Wed,  4 May 2022 09:59:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87159554B2;
+        Wed,  4 May 2022 09:59:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E786195B;
-        Wed,  4 May 2022 16:58:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 731D3C385AA;
-        Wed,  4 May 2022 16:58:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E9AD6191D;
+        Wed,  4 May 2022 16:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 983EAC385AF;
+        Wed,  4 May 2022 16:59:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683517;
-        bh=u9mrsRgfGoMizZbDVPeNz/JA+WQ2trwoY2joYBPE0rY=;
+        s=korg; t=1651683544;
+        bh=7cNWoDllzlhlhBT0AEDDuXRENPZ9G9LkpZELR4gvMbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1iD4PtX5v94434qdQ3RhjrX0+x8BzqLpeLApCCkNhi3QWrre2Y8TIhMaf2NoosrkZ
-         Hfx2Rjj8pEPD9TQiinfpZhbhrcve+jLHQcqnSSKYfzWtLu7aaeDLJdtq9b1SrpMFU9
-         l/1mvVD5+lAQ7Xrx4oenBcngP9txpWKVtCqaVf/8=
+        b=lZ0hpDz3wLHlt2MIen9ABqHWNAbGS9mPDcFFjTLE7V59ndso2UsT4F/WUPTcLsLRq
+         t+jYXHjbLJbYFVNt7fzuKlIEnv1r7gIHVgOZfK3Ub2SkQvh6MjhRaEUUpohXCBR7Ac
+         zrEnCw+oByu6DY+zmMguLRjBzuWiMOfY7YahxAkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Willi <martin@strongswan.org>,
-        David Ahern <dsahern@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.17 184/225] netfilter: Update ip6_route_me_harder to consider L3 domain
-Date:   Wed,  4 May 2022 18:47:02 +0200
-Message-Id: <20220504153126.822446878@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.17 215/225] tty: n_gsm: fix missing tty wakeup in convergence layer type 2
+Date:   Wed,  4 May 2022 18:47:33 +0200
+Message-Id: <20220504153129.137505333@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,58 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Willi <martin@strongswan.org>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 8ddffdb9442a9d60b4a6e679ac48d7d21403a674 upstream.
+commit 1adf6fee58ca25fb6720b8d34c919dcf5425cc9c upstream.
 
-The commit referenced below fixed packet re-routing if Netfilter mangles
-a routing key property of a packet and the packet is routed in a VRF L3
-domain. The fix, however, addressed IPv4 re-routing, only.
+gsm_control_modem() informs the virtual tty that more data can be written
+after receiving a control signal octet via modem status command (MSC).
+However, gsm_dlci_data() fails to do the same after receiving a control
+signal octet from the convergence layer type 2 header.
+Add tty_wakeup() in gsm_dlci_data() for convergence layer type 2 to fix
+this.
 
-This commit applies the same behavior for IPv6. While at it, untangle
-the nested ternary operator to make the code more readable.
-
-Fixes: 6d8b49c3a3a3 ("netfilter: Update ip_route_me_harder to consider L3 domain")
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Signed-off-by: Martin Willi <martin@strongswan.org>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-14-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/netfilter.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/ipv6/netfilter.c
-+++ b/net/ipv6/netfilter.c
-@@ -24,14 +24,13 @@ int ip6_route_me_harder(struct net *net,
- {
- 	const struct ipv6hdr *iph = ipv6_hdr(skb);
- 	struct sock *sk = sk_to_full_sk(sk_partial);
-+	struct net_device *dev = skb_dst(skb)->dev;
- 	struct flow_keys flkeys;
- 	unsigned int hh_len;
- 	struct dst_entry *dst;
- 	int strict = (ipv6_addr_type(&iph->daddr) &
- 		      (IPV6_ADDR_MULTICAST | IPV6_ADDR_LINKLOCAL));
- 	struct flowi6 fl6 = {
--		.flowi6_oif = sk && sk->sk_bound_dev_if ? sk->sk_bound_dev_if :
--			strict ? skb_dst(skb)->dev->ifindex : 0,
- 		.flowi6_mark = skb->mark,
- 		.flowi6_uid = sock_net_uid(net, sk),
- 		.daddr = iph->daddr,
-@@ -39,6 +38,13 @@ int ip6_route_me_harder(struct net *net,
- 	};
- 	int err;
- 
-+	if (sk && sk->sk_bound_dev_if)
-+		fl6.flowi6_oif = sk->sk_bound_dev_if;
-+	else if (strict)
-+		fl6.flowi6_oif = dev->ifindex;
-+	else
-+		fl6.flowi6_oif = l3mdev_master_ifindex(dev);
-+
- 	fib6_rules_early_flow_dissect(net, skb, &fl6, &flkeys);
- 	dst = ip6_route_output(net, sk, &fl6);
- 	err = dst->error;
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1615,6 +1615,7 @@ static void gsm_dlci_data(struct gsm_dlc
+ 		tty = tty_port_tty_get(port);
+ 		if (tty) {
+ 			gsm_process_modem(tty, dlci, modem, slen);
++			tty_wakeup(tty);
+ 			tty_kref_put(tty);
+ 		}
+ 		fallthrough;
 
 
