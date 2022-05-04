@@ -2,241 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C49C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 00:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242189AbiEDA3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 3 May 2022 20:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S237997AbiEDAaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 3 May 2022 20:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244649AbiEDA3G (ORCPT
+        with ESMTP id S234630AbiEDAaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 3 May 2022 20:29:06 -0400
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21A619C02
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 17:25:28 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id B64C02C0C28;
-        Wed,  4 May 2022 00:25:24 +0000 (UTC)
-Received: from pdx1-sub0-mail-a241.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 7F9E42C197B;
-        Wed,  4 May 2022 00:25:23 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651623923; a=rsa-sha256;
-        cv=none;
-        b=cEoPu6kERrPorAWzwKhl5iQYp2TOMXPNxO51fO7WY0aDZqpGO42Im9ssl9F0LsU+o2l7ZB
-        rL8HixG9Q9YbddpjVjzIXJonePtmV4bmXyKBz0HGduR2Zk0s7XOpce8yN/BKJvH8LhCDX+
-        7oTtHwWlYQ1MfWTPLffFpgZZV7DlrozWMy1hO99lMxY8w7thSqmvgC06fFYZDZU74ihxpv
-        rJf59KsKOPRWnPQAe99w+aIS63SZWNqSV4/EEA6FEX6hbpV5snKVLMfgqXwKBoLmeXFvp8
-        P/NQU3RZR20wVy1D0kh2eSLBcB87Cy5J1V+1hlxPmdixZusUQADc7EmpgWz/cg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1651623923;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=Hdg6qiQIlirwga0S1D4eAt0+896iFphupiKzUuqyi/Q=;
-        b=TAggbjMiNCTCeXU/LbfQrHxfiZMsJx6ACMrKwvXz/Zm6Xh+phKtkA0lG44TztFXnBBcpjY
-        D6lSwBgiBT6VADeEU2UoZZwPd2z00HmBKaDasKaYhjHXHmpf/KquTrmCRZ5DI+TP0iqFCS
-        gtxc9CRZb0iTnhc0gbPsPFuJhifTIVjE1qHO62NDODWT28mgU/4LwtQ8pKFXzGAekJ6IuQ
-        KvijZ/DJnAUhHcq4AKTvXqYaC5Mn7l9+S0WF45luTwDjlttivVFfIGmyBVmyBST/Ig9jVe
-        TGmCOorcyujog35EgGN6OSaHc/yis98UMxKyFaPD67NLQdmT4tF9q/PNutkqJw==
-ARC-Authentication-Results: i=1;
-        rspamd-fdd564cbf-kgpdw;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Towering-Name: 7796fde944d0d166_1651623924363_2581278341
-X-MC-Loop-Signature: 1651623924362:418608808
-X-MC-Ingress-Time: 1651623924362
-Received: from pdx1-sub0-mail-a241.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.96.96.26 (trex/6.7.1);
-        Wed, 04 May 2022 00:25:24 +0000
-Received: from offworld (unknown [8.34.116.185])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a241.dreamhost.com (Postfix) with ESMTPSA id 4KtHfT5mZnz1g;
-        Tue,  3 May 2022 17:25:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1651623923;
-        bh=Hdg6qiQIlirwga0S1D4eAt0+896iFphupiKzUuqyi/Q=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=rgUIAvoTFpTkfb3mIEefutvc2YskV5Y59hB3NobYW57orXBSp86moSb5KsmPlkCEy
-         4T/OCMcMwH3iZPPxh1h5nPyhB5fAoZvimb0PcS3XNJnjchUw+DQD/rmQpqIdf+f7uP
-         HOImaf1V1Ac64X8bg7vcd8m686bCjLbNV7gKUzITd5iFTYPS8pEJeZNgalR+b6lVKW
-         E9ssdneLShN65tkb6grnT8Z2jjV42h94o4otHpZ4KqnX2SpPKGJmHBu+SmOU9abMGq
-         AahW7vdKwo/9qR48/jfMRq4blgJXsSGsGT/yQLzMmetNKmFwcd9rAwulvFe1OM/VSC
-         vrBjviOfCrqyw==
-Date:   Tue, 3 May 2022 17:13:34 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Chen Wandun <chenwandun@huawei.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Michal =?utf-8?B?S291dG7Dr8K/wr0=?= <mkoutny@suse.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH v5 1/4] memcg: introduce per-memcg reclaim interface
-Message-ID: <20220504001334.4va3c5ul33jbauti@offworld>
-Mail-Followup-To: Yosry Ahmed <yosryahmed@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Jonathan Corbet <corbet@lwn.net>, Shuah Khan <shuah@kernel.org>,
-        Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Chen Wandun <chenwandun@huawei.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Michal =?utf-8?B?S291dG7Dr8K/wr0=?= <mkoutny@suse.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        Michal Hocko <mhocko@suse.com>
-References: <20220425190040.2475377-1-yosryahmed@google.com>
- <20220425190040.2475377-2-yosryahmed@google.com>
+        Tue, 3 May 2022 20:30:07 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79189140A6
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 17:26:33 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 243L4Hg5018680;
+        Wed, 4 May 2022 00:26:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=corp-2021-07-09;
+ bh=uJXZqMwrFEwueO7Sfnlb9F+e/qCnfHV2Z+JbPEvnYxI=;
+ b=YGZsEOPv/+6cidYPD03byV9anPqz7P/5lp73Nv73b6YWcaI2CtK1UKGZiDMwTI3ns5rY
+ X2gAAmWQzDigi/dY3AFaHJflCUJyiPh9aWuTmxMB+pjSS1cL4zm0KyPnxvbB0rDwj+3K
+ 8HTP7jXYAtjfl9Q5BI4Tc7qk/CE4q5c8AUeMdGHEZaTtxE7JIdm0bakSpytBZnrO1hLR
+ Cz9WoVht/PHG+04uUtSthjtyJGx5LxWvRsHoielfVX0uWmcA5i//Vvs7daMZ5Lk3OtWw
+ ntrFZwSBubxaS9bNURoN4TAodww+WY8spqYPSMMgayH+SniiLUg4WLqDn6RruOQC+Put Ng== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frwnt733d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 04 May 2022 00:26:27 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2440EnKV022186;
+        Wed, 4 May 2022 00:26:27 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2173.outbound.protection.outlook.com [104.47.73.173])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fruj2v559-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 04 May 2022 00:26:26 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E8RyQEcTamZdc2q49W8jcQSN3ZXLMetP8YJ/ZSO2dMsKBZKjOtC/ueRRVkA/YyJmsP6d6Oto3jKVAQxbqS4bHx9ZiRFZWgetEGa5aRKfohHiGu36SKErE076q4lbuqQJMKqRiw0Otz6D+Ntj/9quBBgx53cXH4llnLhsKg9oVXsuCCyYVrZnYNhHBHB2Fmwl9yHWdvrxRFETUfJFbJh+Xy6IZl4/WkLMdSU+TC01M+vGEssKfzunC2VfAbnVFNbOPMGIu49cdEDiiJ2MSy19WwerT7sGHjyFTefVX6+Pg+3b1YrRTQTfGSFhHSPno8XgNRFb5seCW0SOQfvqc7TuBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uJXZqMwrFEwueO7Sfnlb9F+e/qCnfHV2Z+JbPEvnYxI=;
+ b=gtOvDCl5BTcXLU/r1EdbQRiVpqBF3XW2I6XiRWz7Rx+d/oZ0cd/i2usKGh60Lu+kUipXugm7pxqA94Ye0oaWEJOi+fYjeGqDubU8ow5UEeP8NuZMcUKgNqRJx5j8thdNjyaDIMK2Lba5O4V24Qaz2UKw5gxRPtx7S3NlNIZz7yGXgLm/DcaW5aYjTL3B2XSeDmFPr+oaIbuav39RrlXph60XfI1ED3nweCp2oXvkGZe24p/oORq16K7Pe39jKbuQFxIEvLEhn4rz7nwjH/YorfUOfHwCyFX/KUUNFL6Qvdss2KBde3wNtrEoE0Y+2hfjequHSsgm6kOyLzLOlOiKBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uJXZqMwrFEwueO7Sfnlb9F+e/qCnfHV2Z+JbPEvnYxI=;
+ b=bT9drGKRLrWBg1U0DY5lQhtFvdoV5DkyZ9j3MEuWXIvYlaJ7vj2TKTFyFAgVlDH1NgBtqnkWG63iQLURlz3gZL9XNn0vg986WxYX7cNWpQ75kPaeVc1GA1W2z/PojoMkd8aqSU1zihYlo2aWboQorOIsmqO6Pc0PVlDKlYTaA6M=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by DM6PR10MB3081.namprd10.prod.outlook.com (2603:10b6:5:62::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.17; Wed, 4 May
+ 2022 00:26:25 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::318c:d02:2280:c2c]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::318c:d02:2280:c2c%7]) with mapi id 15.20.5206.024; Wed, 4 May 2022
+ 00:26:24 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 0/1] Prepare for maple tree
+Thread-Topic: [PATCH 0/1] Prepare for maple tree
+Thread-Index: AQHYX02VlXwjgoyqW0WAbyIZW9nffg==
+Date:   Wed, 4 May 2022 00:26:24 +0000
+Message-ID: <20220504002554.654642-1-Liam.Howlett@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.35.1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9e43a0b3-16fe-4786-efb9-08da2d64b8ef
+x-ms-traffictypediagnostic: DM6PR10MB3081:EE_
+x-microsoft-antispam-prvs: <DM6PR10MB3081A0A115F08D7EA8660CCAFDC39@DM6PR10MB3081.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vXrTrIijK8SU0CkGYJcS8bCju6Y2JhbETFOlM25pA9jafjq/YQMi4hjBh0SXZ0uxI1T9s4sW93dgHzSdJa1GTydvYIYHOp/fBeyH+YEFUYdjMSZERZUr7wkCFOMgHCUxyPScMaF4ItlMA927NOZYsHYXDxLDAWQyO2OwJb9vQ3CqHm/QpwsiTcQ8Ndj9ACxpiVIWX0uOG85qD1itbuVFreTlhHFbufOt+7rivxkRUsP39+Dy/bzdB2Q4aAOkW8R63jikl2kKtgIYOV0ZXzqvalaea7oMpFBcQ4rcQmyLQIeJmKx3kMolo6cw6PCJAJyAvMi4/mWUaScddTETJ/b++xd5lDwf2bCSXqYYP/snnsVqPsJBW3//F4UEzSokjDUoiG+bJ34F2Eq9l01j/Q8KkM9DAqK0PT6qOIHQ9GCpZMqkL7YSvcs5hUMXmN0SJ+R4rVd1EaGuYT+CulpAd1TvKwS+9dBq0Qf4K/ODYbcqscz7W+Rmj7KmEMY6p85hjlqQTWiHjxLKVMw0c6gI2m4Xa+cV6Y0yg/4sblaFumyvOVjB6e8Us4C4kKQ5PfeSkBlu7Va4/0gDwjGneguOwXqqies008m4q0RvjeKJCMu+VOstyW9wkMVaXN3pvmQzfHUyoHdStWFm6iyFLIGFH9UemQ+dsyw4TNCoOnwcPOCrvCI2/N4XQmB5mgdK8AfIgUeGwP2RISWFV/r7E3kieZ6p1Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(36756003)(6486002)(83380400001)(508600001)(66446008)(66946007)(66556008)(66476007)(8676002)(110136005)(71200400001)(76116006)(8936002)(44832011)(316002)(5660300002)(64756008)(2616005)(186003)(1076003)(26005)(6512007)(6506007)(2906002)(86362001)(558084003)(38070700005)(122000001)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?v98rlifSgPewHqcXhF9bsTiGmiyl6oyM5+eqCL8ZSA9ezlf0khT1ldVk67?=
+ =?iso-8859-1?Q?yFw2perosEZtAmtyAJnG6HrEqtOIk20WEsRa7o8ppaOuLzlqQy8wGyhvOw?=
+ =?iso-8859-1?Q?jqrVpHtB+sZMr5+OGWXsnTrtFzs/cFEq+PP73A+Be9e743vuJXCHFVRVEo?=
+ =?iso-8859-1?Q?nV5gInbx4UGLpxTLnhpyzw3f6KIg+CbXspKeumbp7bThAmwc1uu5Rw8QBn?=
+ =?iso-8859-1?Q?n/OvqpWpDPWpMMmpScVBAvjVxLM0kjbbyhvkWfaRrCLBJJFVysSq5gBdsA?=
+ =?iso-8859-1?Q?QfHO6f9Azvbh48LU1Q7ROtSkK9aLHb8hc9BsueD7hJl/8/XvGWZGg0XMb5?=
+ =?iso-8859-1?Q?cuRhETklFivkUgQnl4u9MrwbJuSuV5WSkqi6uB69Ydbhjqh/qUKyrY8CpC?=
+ =?iso-8859-1?Q?ir8NsMlWTaq6T4kZ/vvRuy4LxmgGusaXUWgbkms6EijziqPg5k4JFz+Kfr?=
+ =?iso-8859-1?Q?nNVSQeAbsOOOsJKg6F/slU/leT5l36OEhmt932QNf7T2SXvumbqRfP8E19?=
+ =?iso-8859-1?Q?B5Bsot7d40w/Qnb4VzE+GNDkiqqfKrhjF/jEPQlJwnn/kzkNZTEwdVWMmM?=
+ =?iso-8859-1?Q?5iDuddEuR/gA9ozmimlulmhQ7hUqp58HPuVIXHtZtyIr/+Tv5EVEudyfh0?=
+ =?iso-8859-1?Q?xz4Z7cLsWkj8DcocDlsC9NxCMitzJJ+oQ6DVd+QWnSSZz85PIyMO64UTTt?=
+ =?iso-8859-1?Q?693X1tQsCkcgVDbNbxN7SOOnThgUggMJ/u0WJfbRQyrLxwVtF8qSHzP0Tu?=
+ =?iso-8859-1?Q?uJEJtqYanNMP0F6KNYc0oN65mH3CAuUcL/mh56c7Cggq0+yuZQGZv4q/E4?=
+ =?iso-8859-1?Q?5nnY7KQH3eyemNttftrCnTPKIQ2RxbyKr5XeakOfR9oAgzfKC7AyzeONUT?=
+ =?iso-8859-1?Q?be4eIq/8ISWcNuL9sqAw91sY92H0eOrWlNsV6GRh6wlT/+AYfdxs5sHwRc?=
+ =?iso-8859-1?Q?3qV8Bhs13IpG4je9tc0ZyY72Yx6UDKpfw41qFCL3ot83VfAEkeEX6bl7Mx?=
+ =?iso-8859-1?Q?J3yw9eQ6SAQxUd1buKbSaClPSHs/Ctx8IfV78GlmvDLiMkk6/P0ie8ErHy?=
+ =?iso-8859-1?Q?coq5UXXULcrKvE79KvmEgFRYfma90mH2EzV/sGPGVo0vPxZ9L+hQw2pYIQ?=
+ =?iso-8859-1?Q?YKZKdK1+b2yXBbVwO+40u3oOe93if47RsWqzPgpW7DOiR3V6OIu6l9xKl5?=
+ =?iso-8859-1?Q?D26FBjnaytd0OlEgV+fo1OTnqFaGbjZ17gdGSti/pC8FZlSxjrTB7NyTBD?=
+ =?iso-8859-1?Q?NPmp2yiJu1/KsfIn3YMg8gV5usgM/yZlnxF7zJPeWgCCajKf7MuAYX//lq?=
+ =?iso-8859-1?Q?eXZlCHn5b0NoemHqrJZVNuvDwKFofcjAfK6ivKz//8iBX16mSH6PZlIxgx?=
+ =?iso-8859-1?Q?/HUZdmhyFYiX7C7BFxLndBu/oE+c9fyWqYqpXmxOyWmEkamrXjrG7InFG7?=
+ =?iso-8859-1?Q?PQXx6WcJlE931Sh0cCl61vvtzpmCOmZRJisnu1WIgwY/XMtwDKvYY1o9n/?=
+ =?iso-8859-1?Q?IG/bfqj8t0WCciRWQcfVDpeoSyEDZUWlyU9yStR/cgjcGMisGe4lrDEJF/?=
+ =?iso-8859-1?Q?Q3n8iXbOQYOV00+I5FCH2+jAb0qwh+AkjP80FyV3q8wIgEuRC5K4vvqjM5?=
+ =?iso-8859-1?Q?ou0EWr5u9tcdSSHjN/nS4Ss/5Xzxx+JBug4UPCYO/ESzzthtoTPLMBkfcA?=
+ =?iso-8859-1?Q?7HWTwPAmapFNkW4RAZJCqOYUch6GdDX/bfUKa4sqONt//tnOtpzIQ3Tf0g?=
+ =?iso-8859-1?Q?Jp+M79/CEaFRFWdC21mFeqg/sUksJkV7c0sX5eYkeW4pWFyxb8faELzX5i?=
+ =?iso-8859-1?Q?4ALtnAz9PeBhpZ5N/hHp6eeYT9GKZpo=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220425190040.2475377-2-yosryahmed@google.com>
-User-Agent: NeoMutt/20220408
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e43a0b3-16fe-4786-efb9-08da2d64b8ef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 May 2022 00:26:24.8745
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Grnv5MA+E4e0rRJU8KBjX4DuCnDiJnNfb2LBRFXB9RJmm+ZqCIi44zq2N5aq6TjlzShgCv8oRDSRmMuXBJF5Cw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3081
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-05-03_10:2022-05-02,2022-05-03 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
+ mlxlogscore=694 adultscore=0 phishscore=0 suspectscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205040000
+X-Proofpoint-ORIG-GUID: tkLT6IBb7sdqRIwpCRiNQn_wMldUZC2F
+X-Proofpoint-GUID: tkLT6IBb7sdqRIwpCRiNQn_wMldUZC2F
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022, Yosry Ahmed wrote:
+mips uses mt_init internally.  Move this out of the way for the maple
+tree.
 
->From: Shakeel Butt <shakeelb@google.com>
->
->Introduce a memcg interface to trigger memory reclaim on a memory cgroup.
->
->Use case: Proactive Reclaim
->---------------------------
->
->A userspace proactive reclaimer can continuously probe the memcg to
->reclaim a small amount of memory. This gives more accurate and
->up-to-date workingset estimation as the LRUs are continuously
->sorted and can potentially provide more deterministic memory
->overcommit behavior. The memory overcommit controller can provide
->more proactive response to the changing behavior of the running
->applications instead of being reactive.
->
->A userspace reclaimer's purpose in this case is not a complete replacement
->for kswapd or direct reclaim, it is to proactively identify memory savings
->opportunities and reclaim some amount of cold pages set by the policy
->to free up the memory for more demanding jobs or scheduling new jobs.
->
->A user space proactive reclaimer is used in Google data centers.
->Additionally, Meta's TMO paper recently referenced a very similar
->interface used for user space proactive reclaim:
->https://dl.acm.org/doi/pdf/10.1145/3503222.3507731
->
->Benefits of a user space reclaimer:
->-----------------------------------
->
->1) More flexible on who should be charged for the cpu of the memory
->reclaim. For proactive reclaim, it makes more sense to be centralized.
->
->2) More flexible on dedicating the resources (like cpu). The memory
->overcommit controller can balance the cost between the cpu usage and
->the memory reclaimed.
->
->3) Provides a way to the applications to keep their LRUs sorted, so,
->under memory pressure better reclaim candidates are selected. This also
->gives more accurate and uptodate notion of working set for an
->application.
->
->Why memory.high is not enough?
->------------------------------
->
->- memory.high can be used to trigger reclaim in a memcg and can
->  potentially be used for proactive reclaim.
->  However there is a big downside in using memory.high. It can potentially
->  introduce high reclaim stalls in the target application as the
->  allocations from the processes or the threads of the application can hit
->  the temporary memory.high limit.
->
->- Userspace proactive reclaimers usually use feedback loops to decide
->  how much memory to proactively reclaim from a workload. The metrics
->  used for this are usually either refaults or PSI, and these metrics
->  will become messy if the application gets throttled by hitting the
->  high limit.
->
->- memory.high is a stateful interface, if the userspace proactive
->  reclaimer crashes for any reason while triggering reclaim it can leave
->  the application in a bad state.
->
->- If a workload is rapidly expanding, setting memory.high to proactively
->  reclaim memory can result in actually reclaiming more memory than
->  intended.
->
->The benefits of such interface and shortcomings of existing interface
->were further discussed in this RFC thread:
->https://lore.kernel.org/linux-mm/5df21376-7dd1-bf81-8414-32a73cea45dd@google.com/
->
->Interface:
->----------
->
->Introducing a very simple memcg interface 'echo 10M > memory.reclaim' to
->trigger reclaim in the target memory cgroup.
->
->The interface is introduced as a nested-keyed file to allow for future
->optional arguments to be easily added to configure the behavior of
->reclaim.
->
->Possible Extensions:
->--------------------
->
->- This interface can be extended with an additional parameter or flags
->  to allow specifying one or more types of memory to reclaim from (e.g.
->  file, anon, ..).
->
->- The interface can also be extended with a node mask to reclaim from
->  specific nodes. This has use cases for reclaim-based demotion in memory
->  tiering systens.
->
->- A similar per-node interface can also be added to support proactive
->  reclaim and reclaim-based demotion in systems without memcg.
->
->- Add a timeout parameter to make it easier for user space to call the
->  interface without worrying about being blocked for an undefined amount
->  of time.
->
->For now, let's keep things simple by adding the basic functionality.
->
->[yosryahmed@google.com: worked on versions v2 onwards, refreshed to
->current master, updated commit message based on recent
->discussions and use cases]
->
->Signed-off-by: Shakeel Butt <shakeelb@google.com>
->Co-developed-by: Yosry Ahmed <yosryahmed@google.com>
->Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
->Acked-by: Johannes Weiner <hannes@cmpxchg.org>
->Acked-by: Michal Hocko <mhocko@suse.com>
->Acked-by: Wei Xu <weixugc@google.com>
->Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+Liam R. Howlett (1):
+  mips: rename mt_init to mips_mt_init
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+ arch/mips/kernel/mips-mt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--=20
+2.35.1
