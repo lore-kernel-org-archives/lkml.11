@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA4CC38A2D
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D21F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357921AbiEDRUM (ORCPT
+        id S1358023AbiEDRUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        Wed, 4 May 2022 13:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356137AbiEDREz (ORCPT
+        with ESMTP id S1356063AbiEDREv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B4A50073;
-        Wed,  4 May 2022 09:53:53 -0700 (PDT)
+        Wed, 4 May 2022 13:04:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4931850079;
+        Wed,  4 May 2022 09:53:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E00D8B827A6;
-        Wed,  4 May 2022 16:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ACD9C385A5;
-        Wed,  4 May 2022 16:53:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 002EAB82552;
+        Wed,  4 May 2022 16:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99215C385AF;
+        Wed,  4 May 2022 16:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683231;
-        bh=+zsxUrdCriv/HUEE0NzYrokSTVzd+971nHkaK5R5ooY=;
+        s=korg; t=1651683221;
+        bh=ILpcJ1EnEQUwhSywYQ3IAqyxmDYiAyN1DkLdFFHSEvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LWJb/H4r92G3LxN0v1lFNTqcTTQ3HsQ00PnDnN/x0Z4qg7LXixW/xitJ5dzdNs1YL
-         0OuVoWts9h9T8yTV8ExbGH2i2Smj4F2JiZT5myCHQ08iLDfej1GbEvx1ny5nMAddHx
-         YHECfjfHJzk2o0Ffuv8sYKnEJ5WRJUd1Mjx7ZL90=
+        b=1wtiPB+4QpzVM2uxCuOLKfz+DuxqheGDgUXVli8gdQcXSFwexnpc99P7s8483lV8b
+         Uf9GufWYEHv4h6O6WiMw2lnA2t0k1ldlserpyuAqa9Loln5Pf62lDvQhEWRXi1SZFI
+         iZLifCeQvCj8tnZtpfxcqWrcmV3P189FmjB6vrLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Francesco Ruggeri <fruggeri@arista.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 084/177] tcp: md5: incorrect tcp_header_len for incoming connections
-Date:   Wed,  4 May 2022 18:44:37 +0200
-Message-Id: <20220504153100.626141326@linuxfoundation.org>
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 074/177] phy: amlogic: fix error path in phy_g12a_usb3_pcie_probe()
+Date:   Wed,  4 May 2022 18:44:27 +0200
+Message-Id: <20220504153059.695107723@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,38 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Ruggeri <fruggeri@arista.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 5b0b9e4c2c895227c8852488b3f09839233bba54 ]
+[ Upstream commit 2c8045d48dee703ad8eab2be7d6547765a89c069 ]
 
-In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
-remote address in newsk. But that address is still 0 in newsk at this
-point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
-Use the address from the request socket instead.
+If clk_prepare_enable() fails we call clk_disable_unprepare()
+in the error path what results in a warning that the clock
+is disabled and unprepared already.
+And if we fail later in phy_g12a_usb3_pcie_probe() then we
+bail out w/o calling clk_disable_unprepare().
+This patch fixes both errors.
 
-Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 36077e16c050 ("phy: amlogic: Add Amlogic G12A USB3 + PCIE Combo PHY Driver")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Link: https://lore.kernel.org/r/8e416f95-1084-ee28-860e-7884f7fa2e32@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_minisocks.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../phy/amlogic/phy-meson-g12a-usb3-pcie.c    | 20 +++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 0a4f3f16140a..13783fc58e03 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -538,7 +538,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
- 	newtp->tsoffset = treq->ts_off;
- #ifdef CONFIG_TCP_MD5SIG
- 	newtp->md5sig_info = NULL;	/*XXX*/
--	if (newtp->af_specific->md5_lookup(sk, newsk))
-+	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
- 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
- #endif
- 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
+diff --git a/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c b/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
+index 5b471ab80fe2..54d65a6f0fcc 100644
+--- a/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
++++ b/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
+@@ -414,19 +414,19 @@ static int phy_g12a_usb3_pcie_probe(struct platform_device *pdev)
+ 
+ 	ret = clk_prepare_enable(priv->clk_ref);
+ 	if (ret)
+-		goto err_disable_clk_ref;
++		return ret;
+ 
+ 	priv->reset = devm_reset_control_array_get_exclusive(dev);
+-	if (IS_ERR(priv->reset))
+-		return PTR_ERR(priv->reset);
++	if (IS_ERR(priv->reset)) {
++		ret = PTR_ERR(priv->reset);
++		goto err_disable_clk_ref;
++	}
+ 
+ 	priv->phy = devm_phy_create(dev, np, &phy_g12a_usb3_pcie_ops);
+ 	if (IS_ERR(priv->phy)) {
+ 		ret = PTR_ERR(priv->phy);
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(dev, "failed to create PHY\n");
+-
+-		return ret;
++		dev_err_probe(dev, ret, "failed to create PHY\n");
++		goto err_disable_clk_ref;
+ 	}
+ 
+ 	phy_set_drvdata(priv->phy, priv);
+@@ -434,8 +434,12 @@ static int phy_g12a_usb3_pcie_probe(struct platform_device *pdev)
+ 
+ 	phy_provider = devm_of_phy_provider_register(dev,
+ 						     phy_g12a_usb3_pcie_xlate);
++	if (IS_ERR(phy_provider)) {
++		ret = PTR_ERR(phy_provider);
++		goto err_disable_clk_ref;
++	}
+ 
+-	return PTR_ERR_OR_ZERO(phy_provider);
++	return 0;
+ 
+ err_disable_clk_ref:
+ 	clk_disable_unprepare(priv->clk_ref);
 -- 
 2.35.1
 
