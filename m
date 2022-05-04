@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344401AbiEDRWs (ORCPT
+        id S1355940AbiEDRWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
+        Wed, 4 May 2022 13:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355812AbiEDREn (ORCPT
+        with ESMTP id S1356429AbiEDRFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6959049910;
-        Wed,  4 May 2022 09:53:24 -0700 (PDT)
+        Wed, 4 May 2022 13:05:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B018050E20;
+        Wed,  4 May 2022 09:54:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F77A617A6;
-        Wed,  4 May 2022 16:53:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B06C385A4;
-        Wed,  4 May 2022 16:53:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7F51B827A5;
+        Wed,  4 May 2022 16:54:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD82C385A5;
+        Wed,  4 May 2022 16:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683203;
-        bh=kSA0y8q2B8BT5CNjVXoE461nAstdV7PrmKTozAHkcSs=;
+        s=korg; t=1651683246;
+        bh=0gX0SpLF4d8wYM7UAJuh4x9vkfWWnABx2guuzFrTmcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yOTOIoHgIdYsVBcK7f3cFjB6sU9KZWncF8QdL9/JW6yMBsIAQQ+zQUI8tVOiutfGS
-         j2xV0E+vCGm64iBWBBeEoCLVKwgJA8D9c3jldNSdsTG0u7hBC0qEyCbQ2DSyE5eH6p
-         dMhGz7/C3JzxB/s3IvQNCnnK5xqsUa5KzDOjYpY0=
+        b=fFyRoTxAURIp1IL6z0MuBJDyCxhUzBM7qsWVEK0XG0rp51qeccVIJM+/csWPR6jez
+         /f3eTcv7jE3qclSVp+0vF6efN8wxlFysUSYq47coQs/RuNSvHWmQsuJfSoOEY5No6p
+         DgIeof1xH6IOsSO5iTuUAqCg0RKE+u9osTcy7cqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/177] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
-Date:   Wed,  4 May 2022 18:44:08 +0200
-Message-Id: <20220504153057.942692036@linuxfoundation.org>
+Subject: [PATCH 5.15 099/177] ip6_gre: Make o_seqno start from 0 in native mode
+Date:   Wed,  4 May 2022 18:44:52 +0200
+Message-Id: <20220504153101.986521745@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,69 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
+[ Upstream commit fde98ae91f79cab4e020f40c35ed23cbdc59661c ]
 
-On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
-on the SoM is often not detected and the following error message is
-seen when the sgtl5000 driver tries to read the ID register:
+For IP6GRE and IP6GRETAP devices, currently o_seqno starts from 1 in
+native mode.  According to RFC 2890 2.2., "The first datagram is sent
+with a sequence number of 0."  Fix it.
 
-sgtl5000 1-000a: Error reading chip id -6
+It is worth mentioning that o_seqno already starts from 0 in collect_md
+mode, see the "if (tunnel->parms.collect_md)" clause in __gre6_xmit(),
+where tunnel->o_seqno is passed to gre_build_header() before getting
+incremented.
 
-The reason for the error is that the MCLK clock is not provided
-early enough.
-
-Fix the problem by describing the MCLK pinctrl inside the codec
-node instead of placing it inside the audmux pinctrl group.
-
-With this change applied the sgtl5000 is always detected on every boot.
-
-Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Reviewed-by: Tim Harvey <tharvey@gateworks.com>
-Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: William Tu <u9012063@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/ipv6/ip6_gre.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 30fa349f9d05..a696873dc1ab 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -286,6 +286,8 @@ vgen6_reg: vgen6 {
- 	codec: sgtl5000@a {
- 		compatible = "fsl,sgtl5000";
- 		reg = <0x0a>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_sgtl5000>;
- 		clocks = <&clks IMX6QDL_CLK_CKO>;
- 		VDDA-supply = <&reg_module_3v3_audio>;
- 		VDDIO-supply = <&reg_module_3v3>;
-@@ -516,8 +518,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
- 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
- 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
- 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
--			/* SGTL5000 sys_mclk */
--			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
- 		>;
- 	};
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 869c3337e319..4ccbee5e7526 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -724,6 +724,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ {
+ 	struct ip6_tnl *tunnel = netdev_priv(dev);
+ 	__be16 protocol;
++	__be16 flags;
  
-@@ -810,6 +810,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
- 		>;
- 	};
+ 	if (dev->type == ARPHRD_ETHER)
+ 		IPCB(skb)->flags = 0;
+@@ -739,7 +740,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	if (tunnel->parms.collect_md) {
+ 		struct ip_tunnel_info *tun_info;
+ 		const struct ip_tunnel_key *key;
+-		__be16 flags;
+ 		int tun_hlen;
  
-+	pinctrl_sgtl5000: sgtl5000grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
-+		>;
-+	};
+ 		tun_info = skb_tunnel_info_txcheck(skb);
+@@ -770,15 +770,14 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 						      : 0);
+ 
+ 	} else {
+-		if (tunnel->parms.o_flags & TUNNEL_SEQ)
+-			tunnel->o_seqno++;
+-
+ 		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+ 			return -ENOMEM;
+ 
+-		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
++		flags = tunnel->parms.o_flags;
 +
- 	pinctrl_spdif: spdifgrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
++		gre_build_header(skb, tunnel->tun_hlen, flags,
+ 				 protocol, tunnel->parms.o_key,
+-				 htonl(tunnel->o_seqno));
++				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
+ 	}
+ 
+ 	return ip6_tnl_xmit(skb, dev, dsfield, fl6, encap_limit, pmtu,
 -- 
 2.35.1
 
