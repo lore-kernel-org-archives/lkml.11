@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29545C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:16:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E02C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353319AbiEDQUG (ORCPT
+        id S1353226AbiEDQVS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        Wed, 4 May 2022 12:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353212AbiEDQSs (ORCPT
+        with ESMTP id S1353223AbiEDQVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:18:48 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AEF646B15
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:15:09 -0700 (PDT)
-Date:   Wed, 04 May 2022 16:15:05 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651680907;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yA1sTY9Jle7zj5xm6NV1rAOpJd/IVFrtzkRW+PpczMs=;
-        b=lVlQP3SS3ybpCC/s0pIPyQl2wUHNrXIu9IGhi5ijEypIrxRDT0ai3WCNn7aEKPxNVIcJHv
-        yZTmfIJM6qk4HkE1cCmNqb0SsGPsHbQ2sOUADsBP3PPeAG2ulW3ilSLQQ0nugCf41EdSBI
-        AGbida9vbuP8sUqFwcJ7Jk8VOVoxZBVIAbX+OSMNa9VWWEf/HxxcRmsUKmVi1rkywRMffn
-        DVrY3S5x2QdzAdCFhXvLHoe5AB3LmYPI7oT2QkuxzahREbA/Bhw0fNzFhR8gURoEGDcZBs
-        akffyBufDti1rTO4JC0H0r8+YMnpePHlhlv5JWQPNzJrTOhBxagoMu0YLvP3dw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651680907;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yA1sTY9Jle7zj5xm6NV1rAOpJd/IVFrtzkRW+PpczMs=;
-        b=we9/pTWtNtu8numDxfdc0asJX/9PpD4xDnwyyF4OFUedMMwvGAN4jT8gzmE+LXg5Pgx1Aa
-        7j+2bYaViiwE9lBA==
-From:   "irqchip-bot for Florian Fainelli" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/gic: Improved warning about
- incorrect type
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220308201117.3870678-1-f.fainelli@gmail.com>
-References: <20220308201117.3870678-1-f.fainelli@gmail.com>
+        Wed, 4 May 2022 12:21:13 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CE0329A2;
+        Wed,  4 May 2022 09:17:37 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244EYIqN015912;
+        Wed, 4 May 2022 18:17:26 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=sBpm4BsKn7kHWShYVnazfKsSoeqIvIDBc5BHKKJkurM=;
+ b=fDJXWKIVgQuAOM6DGjLpQja5wIndzgbp9ocAcJj/IFfRk88Az3FBa8V0Li/1QZlgDlIG
+ pYgFhC7SX2rxvOd84hV6O2RTe9yLCiHTCy76GKhxxGTBRqKUvvGxPlYE2x5K0PsPaxKU
+ 27JlBfTIkXBnDGmlR+U/PI40UnFr2B5rGW/GbKX/U86tiknr9mHA3wLd7oG/PBv7Evin
+ Lt263lXOd20W7/pU2V4haeF0n767H/Vq0PFvFG02fGKYHtNWvMoVbTR0qjHrFQCENM30
+ XoP3HIqablvDBXfppWNnw2gK8KWcFwQpx5RGiflkYzihwPsplZeXnqI9WBTdzn1tgNGv vQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frvf0n78x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 May 2022 18:17:26 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C2B15100034;
+        Wed,  4 May 2022 18:17:25 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BC49D22D18A;
+        Wed,  4 May 2022 18:17:25 +0200 (CEST)
+Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 18:17:24
+ +0200
+From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <dmaengine@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>
+Subject: [PATCH] dmaengine: stm32-dmamux: avoid reset of dmamux if used by coprocessor
+Date:   Wed, 4 May 2022 18:17:24 +0200
+Message-ID: <20220504161724.123180-1-amelie.delaunay@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <165168090597.4207.9063975379392037281.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-04_04,2022-05-04_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+One of the two DMA controllers managed by the DMAMUX can be used by the
+coprocessor. It is defined in the device tree with dma-masters.
+When the two DMA controllers are used by the main CPU,
+dma-masters = <&dma1, &dma2>; is specified in the device tree.
+When one of the controllers is used by coprocessor (so not managed by
+Linux), dma-masters = <&dma1>; is specified in the device tree.
+In this case, Linux driver must not reset the DMAMUX, because it could have
+been configured by the coprocessor to use the second DMA controller.
+count is the number of DMA controllers defined in dma-masters property.
+Reset only if resets property is found and valid in device tree, and if
+the two DMA controllers are under Linux control.
 
-Commit-ID:     4c5b2be1d071af26749790429726712e4d9105fb
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/4c5b2be1d071af26749790429726712e4d9105fb
-Author:        Florian Fainelli <f.fainelli@gmail.com>
-AuthorDate:    Tue, 08 Mar 2022 12:11:16 -08:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 04 May 2022 16:52:28 +01:00
-
-irqchip/gic: Improved warning about incorrect type
-
-Issue the warning for interrupt lines that have an incorrect interrupt
-type and also print the hardware interrupt number to facilitate the
-resolution of such problems.
-
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220308201117.3870678-1-f.fainelli@gmail.com
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
 ---
- drivers/irqchip/irq-gic.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/dma/stm32-dmamux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
-index 09c710e..820404c 100644
---- a/drivers/irqchip/irq-gic.c
-+++ b/drivers/irqchip/irq-gic.c
-@@ -1115,7 +1115,8 @@ static int gic_irq_domain_translate(struct irq_domain *d,
- 		*type = fwspec->param[2] & IRQ_TYPE_SENSE_MASK;
- 
- 		/* Make it clear that broken DTs are... broken */
--		WARN_ON(*type == IRQ_TYPE_NONE);
-+		WARN(*type == IRQ_TYPE_NONE,
-+		     "HW irq %ld has invalid type\n", *hwirq);
- 		return 0;
- 	}
- 
-@@ -1132,7 +1133,8 @@ static int gic_irq_domain_translate(struct irq_domain *d,
- 		*hwirq = fwspec->param[0];
- 		*type = fwspec->param[1];
- 
--		WARN_ON(*type == IRQ_TYPE_NONE);
-+		WARN(*type == IRQ_TYPE_NONE,
-+		     "HW irq %ld has invalid type\n", *hwirq);
- 		return 0;
- 	}
- 
+diff --git a/drivers/dma/stm32-dmamux.c b/drivers/dma/stm32-dmamux.c
+index d5d55732adba..eee0c5aa5fb5 100644
+--- a/drivers/dma/stm32-dmamux.c
++++ b/drivers/dma/stm32-dmamux.c
+@@ -267,7 +267,7 @@ static int stm32_dmamux_probe(struct platform_device *pdev)
+ 		ret = PTR_ERR(rst);
+ 		if (ret == -EPROBE_DEFER)
+ 			goto err_clk;
+-	} else {
++	} else if (count > 1) { /* Don't reset if there is only one dma-master */
+ 		reset_control_assert(rst);
+ 		udelay(2);
+ 		reset_control_deassert(rst);
+-- 
+2.25.1
+
