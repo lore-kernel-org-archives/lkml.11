@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354474AbiEDRAb (ORCPT
+        id S1351286AbiEDRAl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        Wed, 4 May 2022 13:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353838AbiEDQyj (ORCPT
+        with ESMTP id S1353948AbiEDQyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624DA49901;
+        Wed, 4 May 2022 12:54:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FD349904;
         Wed,  4 May 2022 09:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D09FDB8279F;
-        Wed,  4 May 2022 16:49:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E8F9C385A5;
-        Wed,  4 May 2022 16:49:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34748617A5;
+        Wed,  4 May 2022 16:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81362C385A5;
+        Wed,  4 May 2022 16:49:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682981;
-        bh=hMmz/AZitYdKC3CJnrPaB6oZmtXcd0Tr3iu7sFPIod4=;
+        s=korg; t=1651682983;
+        bh=k1rHxpQm2S8mpKlnDFvQd5CLu7baZrkGv8q8lii6SQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L5ZnddwARoQAVT3QPNtaKRSmJnttbt/7BZ6ZNUGYbD6F9fro+qGr/SVvHK7wGZbPZ
-         9RpsvIq4iBVMwQFX951rhwRxaQP+MQMTqE5fwijUfeQTkfI+qLPZ5570wk8ESMRa7e
-         PmON9YdxMNVORMFQVRIYyeGoEkpX31WVMsVnkRdM=
+        b=0m1vj5hbi5ViNYOBR4qnc8uX8AykAsu2mn7g8kU1OrlteXFObaEcoWrO2cWoykF7e
+         cpvIE5LBRRFhXaumOedZ3mLefNq08nWSJDL3ByKss2PP/df8Ieas5vW8HbQP8uK2KB
+         7rX84UWg4kZke2tZRQ3B24Z5ZyadrFsmofFG8t4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        =?UTF-8?q?Matias=20Bj=C3=B8rling?= <mb@lightnvm.io>,
-        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 002/129] lightnvm: disable the subsystem
-Date:   Wed,  4 May 2022 18:43:14 +0200
-Message-Id: <20220504153021.546703914@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 012/129] xhci: increase usb U3 -> U0 link resume timeout from 100ms to 500ms
+Date:   Wed,  4 May 2022 18:43:24 +0200
+Message-Id: <20220504153022.295406273@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,30 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 9ea9b9c48387 ("remove the lightnvm subsystem") the lightnvm
-subsystem was removed as there is no hardware in the wild for it, and
-the code is known to have problems.  This should also be disabled for
-older LTS kernels as well to prevent anyone from accidentally using it.
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Matias Bjørling <mb@lightnvm.io>
-Cc: Javier González <javier@javigon.com>
-Cc: Jens Axboe <axboe@kernel.dk>
+commit 33597f0c48be0836854d43c577e35c8f8a765a7d upstream.
+
+The first U3 wake signal by the host may be lost if the USB 3 connection is
+tunneled over USB4, with a runtime suspended USB4 host, and firmware
+implemented connection manager.
+
+Specs state the host must wait 100ms (tU3WakeupRetryDelay) before
+resending a U3 wake signal if device doesn't respond, leading to U3 -> U0
+link transition times around 270ms in the tunneled case.
+
+Fixes: 0200b9f790b0 ("xhci: Wait until link state trainsits to U0 after setting USB_SS_PORT_LS_U0")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-4-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/lightnvm/Kconfig |    2 +-
+ drivers/usb/host/xhci-hub.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/lightnvm/Kconfig
-+++ b/drivers/lightnvm/Kconfig
-@@ -5,7 +5,7 @@
- 
- menuconfig NVM
- 	bool "Open-Channel SSD target support"
--	depends on BLOCK
-+	depends on BLOCK && BROKEN
- 	help
- 	  Say Y here to get to enable Open-channel SSDs.
- 
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -1348,7 +1348,7 @@ int xhci_hub_control(struct usb_hcd *hcd
+ 				}
+ 				spin_unlock_irqrestore(&xhci->lock, flags);
+ 				if (!wait_for_completion_timeout(&bus_state->u3exit_done[wIndex],
+-								 msecs_to_jiffies(100)))
++								 msecs_to_jiffies(500)))
+ 					xhci_dbg(xhci, "missing U0 port change event for port %d-%d\n",
+ 						 hcd->self.busnum, wIndex + 1);
+ 				spin_lock_irqsave(&xhci->lock, flags);
 
 
