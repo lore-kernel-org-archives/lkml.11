@@ -2,93 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347976AbiEDKTR (ORCPT
+        id S1347998AbiEDKUu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
+        Wed, 4 May 2022 06:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348057AbiEDKTN (ORCPT
+        with ESMTP id S229778AbiEDKUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:19:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047511C129;
-        Wed,  4 May 2022 03:15:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 952BA61ACF;
-        Wed,  4 May 2022 10:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97614C385A4;
-        Wed,  4 May 2022 10:15:35 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ZXttSzmZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651659334;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0NDvnCek1kbw8v3M1u2ks8T9tYgYwuJSuSlmeWt9wN4=;
-        b=ZXttSzmZ40auAREQDE82/7bmboma7RQf04mBPFZe+rWGuQOTcK+aebW02DlqRb2c9GGHUr
-        5TNV+OrdpQ/Q8w85dgDXh3mDwdY0j5/ymG/Fb8wxDTLO082CrtIyox2MsGnHiuixjeP2ZJ
-        UmpoHzECaHVOGW3ShZV3kEj91gz9ph4=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5c3caf4c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 4 May 2022 10:15:33 +0000 (UTC)
-Date:   Wed, 4 May 2022 12:15:31 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     Stafford Horne <shorne@gmail.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        device-mapper development <dm-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        Wed, 4 May 2022 06:20:47 -0400
+X-Greylist: delayed 657 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 03:17:09 PDT
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0CA1EACB;
+        Wed,  4 May 2022 03:17:09 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E10F54116B;
+        Wed,  4 May 2022 12:06:02 +0200 (CEST)
+Date:   Wed, 4 May 2022 12:06:00 +0200
+From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Kevin Mitchell <kevmitch@arista.com>
+Cc:     Matthias Schiffer <mschiffer@universe-factory.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, gal@nvidia.com,
+        bridge@lists.linux-foundation.org, Florian Westphal <fw@strlen.de>,
+        linux-kernel@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        coreteam@netfilter.org, netfilter-devel@vger.kernel.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         "David S. Miller" <davem@davemloft.net>,
-        Mike Snitzer <msnitzer@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Milan Broz <gmazyland@gmail.com>
-Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
-Message-ID: <YnJSQ3jJyvhmIstD@zx2c4.com>
-References: <alpine.LRH.2.02.2204241648270.17244@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wh+Z+OKH3jRttWGHbWSQq2wVMtdnA=ntDiadZu=VxAC7w@mail.gmail.com>
- <alpine.LRH.2.02.2204250723120.26714@file01.intranet.prod.int.rdu2.redhat.com>
- <YnI7hE4cIfjsdKSF@antec>
- <YnJI4Ru0AlUgrr9C@zx2c4.com>
- <YnJOCbLtdATzC+jn@zx2c4.com>
- <YnJQXr3igEMTqY3+@smile.fi.intel.com>
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [Bridge] [PATCH v2 0/1] UDP traceroute packets with no checksum
+Message-ID: <YnJQCIKgriI3kjFc@sellars>
+References: <20220405235117.269511-1-kevmitch@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YnJQXr3igEMTqY3+@smile.fi.intel.com>
+In-Reply-To: <20220405235117.269511-1-kevmitch@arista.com>
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 01:07:26PM +0300, Andy Shevchenko wrote:
-> On Wed, May 04, 2022 at 11:57:29AM +0200, Jason A. Donenfeld wrote:
-> > On Wed, May 04, 2022 at 11:42:27AM +0200, Jason A. Donenfeld wrote:
-> > > So more likely is that this patch just helps unmask a real issue
-> > > elsewhere -- linker, compiler, or register restoration after preemption.
-> > > I don't think there's anything to do with regards to the patch of this
-> > > thread, as it's clearly fine. 
-> > 
-> > The problem even goes away if I just add a nop...
+On Tue, Apr 05, 2022 at 04:51:15PM -0700, Kevin Mitchell via Bridge wrote:
+> This is v2 of https://lkml.org/lkml/2022/1/14/1060
 > 
-> Alignment? Compiler bug? HW issue?
+> That patch was discovered to cause problems with UDP tunnels as
+> described here:
+> 
+> https://lore.kernel.org/netdev/7eed8111-42d7-63e1-d289-346a596fc933@nvidia.com/
+> 
+> This version addresses the issue by instead explicitly handling zero UDP
+> checksum in the nf_reject_verify_csum() helper function.
+> 
+> Unlike the previous patch, this one only allows zero UDP checksum in
+> IPv4. I discovered that the non-netfilter IPv6 path would indeed drop
+> zero UDP checksum packets, so it's probably best to remain consistent.
 
-Probably one of those, yea. Removing the instruction addresses, the only
-difference between the two compiles is: https://xn--4db.cc/Rrn8usaX/diff#line-440
+Are you sure that a UDP zero checksum is not working for IPv6
+packets? We are using it here without any issues with VXLAN
+tunnels.
 
-So either there's some alignment going on here, a compiler thing I
-haven't spotted yet, or some very fragile interrupt/preemption behavior
-that's interacting with this, either on the kernel side or the QEMU
-side.
+Yes, the original RFC did not allow UDP zero checksums in IPv6
+packets, but I believe this has changed:
 
-(I've never touched real HW for this; I just got nerd sniped when
-wondering why my wireguard CI was failing...)
- 
-Jason
+https://www.rfc-editor.org/rfc/rfc6936
+(https://www.ietf.org/archive/id/draft-ietf-6man-udpzero-01.html)
+
+Regards, Linus
