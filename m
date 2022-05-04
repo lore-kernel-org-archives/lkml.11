@@ -2,84 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 556FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD50CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378010AbiEDUbz (ORCPT
+        id S1378025AbiEDUeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        Wed, 4 May 2022 16:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343665AbiEDUbw (ORCPT
+        with ESMTP id S1378062AbiEDUeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:31:52 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712CF4F9F0;
-        Wed,  4 May 2022 13:28:15 -0700 (PDT)
-Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id BEE94368;
-        Wed,  4 May 2022 13:28:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1651696094;
-        bh=k1OGqO6yttpA6KvVZQkxzts4/vCE80ZuQxCGo5hhVRE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wo4l3g3tbSfivPvsKVzN8JXIHrCdw7VQ8UTGTKDqt9D5vfiFuZJrgX4Iq/+stwnCq
-         0eDDymQkC/+HVsKy7fMLvzjQN3Zteirdlt+fFf4ns5C9iwmM1mJKdOmO2FFMlZUyjL
-         5NwgO+BtJKIBuMH4kTzRM9i61xpkjAhlErqxi2Ig=
-Date:   Wed, 4 May 2022 13:28:11 -0700
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
-Subject: Re: [PATCH 0/6] regulator: core: Add support for external outputs
-Message-ID: <YnLh23QbnO1MHoVL@hatter.bewilderbeest.net>
-References: <20220504065041.6718-1-zev@bewilderbeest.net>
- <YnJ37QysSaa+gAps@sirena.org.uk>
+        Wed, 4 May 2022 16:34:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EB7E2B;
+        Wed,  4 May 2022 13:30:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=meJPT/FhJ0t/HxCnUl9CRH+QfNVPReDG9ZhriBQxFCY=; b=pLYhjoEj6qFf8XaRBebMuhPHUH
+        suyXEPq2mEYfo56Vk96bJ/+ovqCcO21nwCbGFaSzYhaFiJtoPHRD3mQZK3YgS8YlPAo3bhORPthpB
+        FvRjH6bshBTryeJk8eooSm/zrjhE+0pf5ZF95NHeIrkwN5dTnnBEY/pUXgDbXzcQyYbbRT9JyDj86
+        4uTLavN0VRsiT0XyxYtWOH9f9k+9n+5JC0bZ3ot1twjcM8FWsVKwdaeePEkFtWUnOX62mK+W1VkM1
+        MWEFn6KtA1UkQFUuPVgGreAu+DZzj8+Z02af/ycm0Q/OKc7JeX1GJdEUdQHFSTigVUHpnKrLhRL8E
+        kbkth4lg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nmLdY-00CZDY-Vg; Wed, 04 May 2022 20:30:17 +0000
+Date:   Wed, 4 May 2022 13:30:16 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: Re: [PATCH v2] module: fix [e_shstrndx].sh_size=0 OOB access
+Message-ID: <YnLiWHx24nTmhIM5@bombadil.infradead.org>
+References: <YnFC93NVRqOterbV@localhost.localdomain>
+ <YnGNSNcUbkwLNWNd@bombadil.infradead.org>
+ <YnJNTIJeB2NHK9Jh@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnJ37QysSaa+gAps@sirena.org.uk>
+In-Reply-To: <YnJNTIJeB2NHK9Jh@localhost.localdomain>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:56:13AM PDT, Mark Brown wrote:
->On Tue, May 03, 2022 at 11:50:35PM -0700, Zev Weiss wrote:
->
->> The DT bindings changes (patches 1 and 2) consist of a boolean
->> regulator property to mark it as supplying an external output, and a
->> reg-external-output binding to act as a downstream device representing
->> that output.  The redundancy between the two maybe isn't entirely
->> ideal, but it was the cleanest approach I've been able to come up with
->> so far in terms of working with the regulator subsystem; I'm certainly
->> open to suggestions for better ways of going about this.
->
->Nothing in the series articulates what the purpose of the redundancy is
->- your description of this is a consumer, why would the regulator itself
->care what's connected to it?
+On Wed, May 04, 2022 at 12:54:20PM +0300, Alexey Dobriyan wrote:
+> It is trivial to craft a module to trigger OOB access in this line:
+> 
+> 	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+> 
+> BUG: unable to handle page fault for address: ffffc90000aa0fff
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
+> Oops: 0000 [#1] PREEMPT SMP PTI
+> CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+> RIP: 0010:load_module+0x19b/0x2391
+> 
+> Fixes: ec2a29593c83 ("module: harden ELF info handling")
+> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
 
-Hi Mark, thanks for the review.
+Thanks! I rebased your patch onto modules-next [0] and applied onto
+modules-testing and pushed out there. If that doesn't break I'll then
+push to modules-next as well.
 
-To some extent that was an additional (maybe excessive) protective 
-measure against regulators ending up userspace-controllable when they 
-shouldn't be, since I had previously gotten the impression that there 
-was some concern about that possibility.
-
-More functionally though, it was also basically a hack to allow the 
-'state' sysfs attribute's mode to get set properly in 
-regulator_register(), before the consumer is known.  Though if things 
-are rearranged based on what you said in another message about putting 
-the enable/disable control in a consumer driver instead of the regulator 
-itself, it should be easy to get rid of.
-
-
-Thanks,
-Zev
-
+  Luis
