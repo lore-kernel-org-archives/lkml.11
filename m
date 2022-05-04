@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC810C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353926AbiEDQxQ (ORCPT
+        id S1353684AbiEDQxT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
+        Wed, 4 May 2022 12:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353737AbiEDQwL (ORCPT
+        with ESMTP id S1353732AbiEDQwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:52:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C09E4706C;
-        Wed,  4 May 2022 09:48:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4079947056;
+        Wed,  4 May 2022 09:48:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ECB5B82553;
-        Wed,  4 May 2022 16:48:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00721C385A4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB2061771;
+        Wed,  4 May 2022 16:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A49C385A5;
         Wed,  4 May 2022 16:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682910;
-        bh=BUOk1zYNp2SO4CFbYAyT2aAi+mKxa4j9bzGzbW0e+FA=;
+        s=korg; t=1651682909;
+        bh=gdTM5hy+TRGp+10HhYbWtMpiP8eyq3P5BofsxZqDWhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p+GKl65dui3dXZR0sF4GRkrzThJSCAtC17IkCueEv85Or6ajJf07YF8y+zwMHqeb6
-         YkQHV0aW5uzRFczrUdBinUfdOfmJB5NCzs7lIr+GD+ntULZKKj37BZ8DVc6V4xOVJu
-         LnojNrua3KgpZt3gaZnOPWaqLV0fzHh6kH602Jmo=
+        b=amt5omZQdWiIKtPsPMLx30OD2CeoG/96679BE9UFlG30W5lAyEuwLcPmOpEA/dxh9
+         ZsHxeCjX1Bwb5SBhW4E6EoXST10qz0VCNZn2ifHrUXjhuoit4/HMLUd0xDAG/PU3ls
+         yd/V3GmF/o5bUD2h5gyQSytvtp0F1dQO6EuEV4RY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 16/84] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
-Date:   Wed,  4 May 2022 18:43:57 +0200
-Message-Id: <20220504152928.939190636@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 27/84] hex2bin: make the function hex_to_bin constant-time
+Date:   Wed,  4 May 2022 18:44:08 +0200
+Message-Id: <20220504152929.700822760@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,42 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
+commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
 
-When the driver fails to enable the regulator 'vid', we will get the
-following splat:
+The function hex2bin is used to load cryptographic keys into device
+mapper targets dm-crypt and dm-integrity.  It should take constant time
+independent on the processed data, so that concurrently running
+unprivileged code can't infer any information about the keys via
+microarchitectural convert channels.
 
-[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   79.967570] Call Trace:
-[   79.967773]  <TASK>
-[   79.967951]  regulator_put+0x1f/0x30
-[   79.968254]  devres_release_group+0x319/0x3d0
-[   79.968608]  i2c_device_probe+0x766/0x940
+This patch changes the function hex_to_bin so that it contains no
+branches and no memory accesses.
 
-Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
-regulator.
+Note that this shouldn't cause performance degradation because the size
+of the new function is the same as the size of the old function (on
+x86-64) - and the new function causes no branch misprediction penalties.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
+i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
+sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
+powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
+no branches in the generated code.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/magnetometer/ak8975.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/linux/kernel.h |    2 +-
+ lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
+ 2 files changed, 26 insertions(+), 8 deletions(-)
 
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -391,6 +391,7 @@ static int ak8975_power_on(const struct
- 	if (ret) {
- 		dev_warn(&data->client->dev,
- 			 "Failed to enable specified Vid supply\n");
-+		regulator_disable(data->vdd);
- 		return ret;
- 	}
- 	/*
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -627,7 +627,7 @@ static inline char *hex_byte_pack_upper(
+ 	return buf;
+ }
+ 
+-extern int hex_to_bin(char ch);
++extern int hex_to_bin(unsigned char ch);
+ extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
+ extern char *bin2hex(char *dst, const void *src, size_t count);
+ 
+--- a/lib/hexdump.c
++++ b/lib/hexdump.c
+@@ -21,15 +21,33 @@ EXPORT_SYMBOL(hex_asc_upper);
+  *
+  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
+  * input.
++ *
++ * This function is used to load cryptographic keys, so it is coded in such a
++ * way that there are no conditions or memory accesses that depend on data.
++ *
++ * Explanation of the logic:
++ * (ch - '9' - 1) is negative if ch <= '9'
++ * ('0' - 1 - ch) is negative if ch >= '0'
++ * we "and" these two values, so the result is negative if ch is in the range
++ *	'0' ... '9'
++ * we are only interested in the sign, so we do a shift ">> 8"; note that right
++ *	shift of a negative value is implementation-defined, so we cast the
++ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
++ *	the range '0' ... '9', 0 otherwise
++ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
++ *	in the range '0' ... '9', 0 otherwise
++ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
++ *	... '9', -1 otherwise
++ * the next line is similar to the previous one, but we need to decode both
++ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
++ *	lowercase to uppercase
+  */
+-int hex_to_bin(char ch)
++int hex_to_bin(unsigned char ch)
+ {
+-	if ((ch >= '0') && (ch <= '9'))
+-		return ch - '0';
+-	ch = tolower(ch);
+-	if ((ch >= 'a') && (ch <= 'f'))
+-		return ch - 'a' + 10;
+-	return -1;
++	unsigned char cu = ch & 0xdf;
++	return -1 +
++		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
++		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
+ }
+ EXPORT_SYMBOL(hex_to_bin);
+ 
 
 
