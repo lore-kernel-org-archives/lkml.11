@@ -2,88 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1EB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63044C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 19:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354684AbiEDTEx (ORCPT
+        id S1356044AbiEDTJL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 15:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
+        Wed, 4 May 2022 15:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343627AbiEDTEu (ORCPT
+        with ESMTP id S1356815AbiEDTIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 15:04:50 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAF02DD66
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 12:01:13 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso2017715pjb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 12:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Xl/pKIUZuR+JiscXe+pokb1a3QJoLYKiFmIdj/hqZps=;
-        b=Fdf3jKj5u00OGGeg7avF7vYubAJKBvoqvMqq/zRNDR9WlcdyLkzOp1nDU9WN6gkgjy
-         jIyHnFJ5Kr1NXA89d1Z387Tey1dgGMGaFWw2Fb9X5g1pT7Pry+RHu1JhmTxqyiibm313
-         87sB2sajTTycX2U8j10tK5Cu7zgIg5I5SZWKg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Xl/pKIUZuR+JiscXe+pokb1a3QJoLYKiFmIdj/hqZps=;
-        b=T71ozTNqdnnnQ4ZdOhNljv7OIzngLXYrwCApfSGa/x6IaD1L+e+HowPHNBLJ1qbLOt
-         q/2c1TbonWAYeYvkykrMSnGDzX/qh/62CY7Yz4KEWNHdo58sKKkDi3vZe/0o7HffTAkI
-         Onelz6jut8HBXA5q0r9HBdG5aNUJHRAoi0qM8TcN1q+u9UHnQxoGbPcSCGsvI18srZ7+
-         ZhF+XuhE2QxSUpZuolUEX233T1zRLQa4p98ckIpmZMKR63o2Qqy8WM3UWSPjbgaWsJV8
-         OKnwJ0w07KG66HRzKon5fUV1X+rdBnWSNS2VwPq/ckvlARh7SvErnRiCOSgzn+/XRzDa
-         pDSw==
-X-Gm-Message-State: AOAM533u9CUoT0EEgHGRjd1/2LsMxpjNTidg8rKnbHSOhvY9qTVhnIzm
-        WU+Z1G/R4hgD5ug/u3no0zvu5g==
-X-Google-Smtp-Source: ABdhPJwMMQb1tcWcnJ998q1R95pZavFrOp3PLu2bWGwLmsAgxCFO56S72Ys0qCwwuW+s7pyVZjto5Q==
-X-Received: by 2002:a17:903:31d1:b0:159:804:e852 with SMTP id v17-20020a17090331d100b001590804e852mr22992694ple.19.1651690872777;
-        Wed, 04 May 2022 12:01:12 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id ij21-20020a17090af81500b001cd4989feecsm3625006pjb.56.2022.05.04.12.01.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 12:01:12 -0700 (PDT)
-Date:   Wed, 4 May 2022 12:01:11 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
-        alex.popov@linux.com, linux-kernel@vger.kernel.org,
-        luto@kernel.org, will@kernel.org
-Subject: Re: [PATCH v2 01/13] arm64: stackleak: fix current_top_of_stack()
-Message-ID: <202205041200.147A737@keescook>
-References: <20220427173128.2603085-1-mark.rutland@arm.com>
- <20220427173128.2603085-2-mark.rutland@arm.com>
- <YnKsvNtIlE6cZEOa@arm.com>
+        Wed, 4 May 2022 15:08:47 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA662DAA7
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 12:05:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651691108;
+        bh=4Pe5WsHEIHx7MovZcO6xuY3dg+ajYEFZj5yDXilGQvA=;
+        h=X-UI-Sender-Class:Date:From:To:Subject;
+        b=TfSYIy8xyszJ8O1ZfcYxDpQ1YySE1EAXf3evRd+nkEYr93iiks5zkD+6lc327U/l4
+         HJmEzokDBUMUniH46QLpByNAT2PQ1DMqnC+p8nCN43HrGNNQjP8lXmsgA5kGEOKSkK
+         UAYkB+StoiYnQaPmJFFwgfiqqKpfao8LxP/7+HC8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.34.193]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MmlTC-1oDAKg0WwQ-00jre2 for
+ <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 21:05:08 +0200
+Message-ID: <e7c0f742-522b-7e54-db4f-764c72011a86@gmx.de>
+Date:   Wed, 4 May 2022 21:05:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnKsvNtIlE6cZEOa@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Content-Language: de-DE
+Subject: RE: [PATCH 5.17 000/225] 5.17.6-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:GxjLZu+UBxUK+BDuwlB1yujwrpCqhj4rE+uE0AmDVRO976Yl0kd
+ ou0+Col9I3qUHBkyD8DimHET2ydk66CjAipl1ACcJSeZ5XymcEOtjAwgS0uL2a7+E1YsLRU
+ FL3eXK3aADQKLWfz7Ja+wbIYA+VBhpPAtaxMTfwb2ZPHrmDsckxYJQ0lLpo0hIQY7J+uYw+
+ qFsgBbWl5ASl8Suw4H7Vg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sU6SUE+GEOU=:QI3TYtEqdZktPydAffsjZL
+ 9a/vYle6XkeFg1vXg/0Y1PdN26G0ba6ItQKGoZG64UMT+VWOiY6gVDtj+L+Qmr13L3cXYwg4s
+ 9TwmbjCpplMnz2kvQivDDrBF2AJVuIGADvjO8sy5/0qxxqywJqMvJIH63sU42Qu+YDqWn30R9
+ qIv2ZnR7J9+ZHmw1cayV/0I2nDwGpIIKN61wlxBCc9w4AQVc0a4TtSDhU2SbXVKzWXP3GBOxz
+ nUy7fWA/PDAF9WOjiVJhLGK85z0sU4iiGnC3deMxGcct1yA7+qI5ZDoWXIoUjKpiPx3PNiq98
+ 74Rq5FH/rtolhxW2yEk+Lqe2fdWMwpPABLejvHVBnfi8JgkoR5briWKQULmti+uzGC1UFCT4t
+ fxr38KSoYO2dE6PYZI1xrH07mSxEHMJRsJRmTzjMTXcFI8aDnKhaNKXA6pvG1++GfLTztBdPk
+ apL9eIkSkpMSXS8Zq5mLQrhb1xFXHxBM7S3JzW229cQsjU6pbb0tIFyyJw6nFmDk43MOl6UCd
+ MLN1mpnNiJNLNayR28TW0BqScdkPQfydMAjpi71ATrqZc1d99IKSFqW96z7KnOn2+AxFFo5MJ
+ ocTz81MGzgSep2Y7IY79PJI18oHRceninW4jcr42arKiGzP7Nk6o174/chR0HvB/AZNfYYoqv
+ gZ5Mtg+Vz11Kqg56N43cGuCoC8saAV32E5kA6Z6XkthAOUj12x5SJ6Btbse5oWsBfLPNccXq9
+ uA0pnb4U77N9JUd7zJCoixK+HI7OLMDc1bJKHUt2rR/U313Ua1MX2UwJHobQMVtCMDL9bwaYx
+ J6rbhlL7U5k91dxHMfAoajHBhFW3WxcWEDTfEXgaL/51A4QhBsH4uf0Dus9/Z4eH7U4IRZfe9
+ N32UiryOpcnGWA8eiLX2Dc7hVDXhlvBA6Y5emFXsB3e8EhdKtaGUpvhMWaU/H4AKUKDB+cDbB
+ ezQ3FupiV5ybj2hywjRxO9JQpa8QFTBz42M0EiLxESyhxgyzh7UV1i8ZNOPvqw9K/OghXBFXE
+ AOtdfFxHFG/QJkjGCLHgSEtpj2qnVA87eSQYwcjIG635+SrpwAZq1GBCKsMxH+b6FqUV22ht/
+ zQ4Vn6pZUstFi0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:41:32PM +0100, Catalin Marinas wrote:
-> On Wed, Apr 27, 2022 at 06:31:16PM +0100, Mark Rutland wrote:
-> > [...]
-> > Fixes: 0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
-> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Alexander Popov <alex.popov@linux.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Andy Lutomirski <luto@kernel.org>
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Will Deacon <will@kernel.org>
-> 
-> I thought this was queued already but I couldn't find it in -next. So:
-> 
-> Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+hallo Greg
 
-Should this patch go via the arm64 tree for -rc6, or should I just carry
-it as part of the overall stackleak series?
+5.17.6-rc1
 
--- 
-Kees Cook
+compiles, boots and runs here on x86_64
+(Intel i5-11400, Fedora 36 Beta)
+
+Thanks
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de
+
+Ronald
+
