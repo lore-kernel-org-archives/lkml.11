@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F794C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85091C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354057AbiEDQ4S (ORCPT
+        id S1353754AbiEDQ41 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
+        Wed, 4 May 2022 12:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354095AbiEDQxu (ORCPT
+        with ESMTP id S1354094AbiEDQxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:53:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C684831F;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC14C48325;
         Wed,  4 May 2022 09:49:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F02BDB827A4;
-        Wed,  4 May 2022 16:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99854C385A4;
-        Wed,  4 May 2022 16:49:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 472AF6174B;
+        Wed,  4 May 2022 16:49:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F13BC385A5;
+        Wed,  4 May 2022 16:49:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682942;
-        bh=TO2u6DsjX01I++Gbol2MZZVS021YyWQL8xLibqDKbNo=;
+        s=korg; t=1651682944;
+        bh=hyh0pvQzRcsuW6DBitFul1w7/YU1VHCjg27hnHWevco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ANxex2Q/Gtyqo505i/lfc+i38FK7ErWqKScdNrseYB7rer0SpQkw2zCP10wnT6pih
-         TCcWf7LS//J2iEEPm+IdsdbiAWh++EA2bG6ZEI4t3eUppotAvecGjHCczyqAQV1pD9
-         dxzgNO8UgrqF9P75202utcuenCu7inWfQNm7j2SE=
+        b=BOde6N9SrkHOCqs3mjrBaKsmQ3nX74RBd4ihfh3qDf5x5MuG/3o6vpxf0KMunUK0/
+         OiCSAFSMzLkwZ+squgPkMcebYZCzBr2YxocXJbz01XsJ3DsRPh8NtXK8xIJXLAODSa
+         J7UkhAH/JOYwtKowg/e+J7CL1ekraYYkjvxob46c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 47/84] bpf, lwt: Fix crash when using bpf_skb_set_tunnel_key() from bpf_xmit lwt hook
-Date:   Wed,  4 May 2022 18:44:28 +0200
-Message-Id: <20220504152931.132160677@linuxfoundation.org>
+Subject: [PATCH 5.4 49/84] tcp: ensure to use the most recently sent skb when filling the rate sample
+Date:   Wed,  4 May 2022 18:44:30 +0200
+Message-Id: <20220504152931.247866789@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,85 +53,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eyal Birger <eyal.birger@gmail.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit b02d196c44ead1a5949729be9ff08fe781c3e48a ]
+[ Upstream commit b253a0680ceadc5d7b4acca7aa2d870326cad8ad ]
 
-xmit_check_hhlen() observes the dst for getting the device hard header
-length to make sure a modified packet can fit. When a helper which changes
-the dst - such as bpf_skb_set_tunnel_key() - is called as part of the
-xmit program the accessed dst is no longer valid.
+If an ACK (s)acks multiple skbs, we favor the information
+from the most recently sent skb by choosing the skb with
+the highest prior_delivered count. But in the interval
+between receiving ACKs, we send multiple skbs with the same
+prior_delivered, because the tp->delivered only changes
+when we receive an ACK.
 
-This leads to the following splat:
+We used RACK's solution, copying tcp_rack_sent_after() as
+tcp_skb_sent_after() helper to determine "which packet was
+sent last?". Later, we will use tcp_skb_sent_after() instead
+in RACK.
 
- BUG: kernel NULL pointer dereference, address: 00000000000000de
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 0 PID: 798 Comm: ping Not tainted 5.18.0-rc2+ #103
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
- RIP: 0010:bpf_xmit+0xfb/0x17f
- Code: c6 c0 4d cd 8e 48 c7 c7 7d 33 f0 8e e8 42 09 fb ff 48 8b 45 58 48 8b 95 c8 00 00 00 48 2b 95 c0 00 00 00 48 83 e0 fe 48 8b 00 <0f> b7 80 de 00 00 00 39 c2 73 22 29 d0 b9 20 0a 00 00 31 d2 48 89
- RSP: 0018:ffffb148c0bc7b98 EFLAGS: 00010282
- RAX: 0000000000000000 RBX: 0000000000240008 RCX: 0000000000000000
- RDX: 0000000000000010 RSI: 00000000ffffffea RDI: 00000000ffffffff
- RBP: ffff922a828a4e00 R08: ffffffff8f1350e8 R09: 00000000ffffdfff
- R10: ffffffff8f055100 R11: ffffffff8f105100 R12: 0000000000000000
- R13: ffff922a828a4e00 R14: 0000000000000040 R15: 0000000000000000
- FS:  00007f414e8f0080(0000) GS:ffff922afdc00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00000000000000de CR3: 0000000002d80006 CR4: 0000000000370ef0
- Call Trace:
-  <TASK>
-  lwtunnel_xmit.cold+0x71/0xc8
-  ip_finish_output2+0x279/0x520
-  ? __ip_finish_output.part.0+0x21/0x130
-
-Fix by fetching the device hard header length before running the BPF code.
-
-Fixes: 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure")
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220420165219.1755407-1-eyal.birger@gmail.com
+Fixes: b9f64820fb22 ("tcp: track data delivery rate for a TCP connection")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Tested-by: Neal Cardwell <ncardwell@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/1650422081-22153-1-git-send-email-yangpc@wangsu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/lwt_bpf.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ include/net/tcp.h   |  6 ++++++
+ net/ipv4/tcp_rate.c | 11 ++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
-index a5502c5aa44e..bf270b6a99b4 100644
---- a/net/core/lwt_bpf.c
-+++ b/net/core/lwt_bpf.c
-@@ -158,10 +158,8 @@ static int bpf_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- 	return dst->lwtstate->orig_output(net, sk, skb);
- }
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index b914959cd2c6..b686a21a8593 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1030,6 +1030,7 @@ struct rate_sample {
+ 	int  losses;		/* number of packets marked lost upon ACK */
+ 	u32  acked_sacked;	/* number of packets newly (S)ACKed upon ACK */
+ 	u32  prior_in_flight;	/* in flight before this ACK */
++	u32  last_end_seq;	/* end_seq of most recently ACKed packet */
+ 	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
+ 	bool is_retrans;	/* is sample from retransmission? */
+ 	bool is_ack_delayed;	/* is this (likely) a delayed ACK? */
+@@ -1139,6 +1140,11 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
+ 		  bool is_sack_reneg, struct rate_sample *rs);
+ void tcp_rate_check_app_limited(struct sock *sk);
  
--static int xmit_check_hhlen(struct sk_buff *skb)
-+static int xmit_check_hhlen(struct sk_buff *skb, int hh_len)
++static inline bool tcp_skb_sent_after(u64 t1, u64 t2, u32 seq1, u32 seq2)
++{
++	return t1 > t2 || (t1 == t2 && after(seq1, seq2));
++}
++
+ /* These functions determine how the current flow behaves in respect of SACK
+  * handling. SACK is negotiated with the peer, and therefore it can vary
+  * between different flows.
+diff --git a/net/ipv4/tcp_rate.c b/net/ipv4/tcp_rate.c
+index 0de693565963..6ab197928abb 100644
+--- a/net/ipv4/tcp_rate.c
++++ b/net/ipv4/tcp_rate.c
+@@ -73,26 +73,31 @@ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb)
+  *
+  * If an ACK (s)acks multiple skbs (e.g., stretched-acks), this function is
+  * called multiple times. We favor the information from the most recently
+- * sent skb, i.e., the skb with the highest prior_delivered count.
++ * sent skb, i.e., the skb with the most recently sent time and the highest
++ * sequence.
+  */
+ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+ 			    struct rate_sample *rs)
  {
--	int hh_len = skb_dst(skb)->dev->hard_header_len;
--
- 	if (skb_headroom(skb) < hh_len) {
- 		int nhead = HH_DATA_ALIGN(hh_len - skb_headroom(skb));
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct tcp_skb_cb *scb = TCP_SKB_CB(skb);
++	u64 tx_tstamp;
  
-@@ -273,6 +271,7 @@ static int bpf_xmit(struct sk_buff *skb)
+ 	if (!scb->tx.delivered_mstamp)
+ 		return;
  
- 	bpf = bpf_lwt_lwtunnel(dst->lwtstate);
- 	if (bpf->xmit.prog) {
-+		int hh_len = dst->dev->hard_header_len;
- 		__be16 proto = skb->protocol;
- 		int ret;
++	tx_tstamp = tcp_skb_timestamp_us(skb);
+ 	if (!rs->prior_delivered ||
+-	    after(scb->tx.delivered, rs->prior_delivered)) {
++	    tcp_skb_sent_after(tx_tstamp, tp->first_tx_mstamp,
++			       scb->end_seq, rs->last_end_seq)) {
+ 		rs->prior_delivered  = scb->tx.delivered;
+ 		rs->prior_mstamp     = scb->tx.delivered_mstamp;
+ 		rs->is_app_limited   = scb->tx.is_app_limited;
+ 		rs->is_retrans	     = scb->sacked & TCPCB_RETRANS;
++		rs->last_end_seq     = scb->end_seq;
  
-@@ -290,7 +289,7 @@ static int bpf_xmit(struct sk_buff *skb)
- 			/* If the header was expanded, headroom might be too
- 			 * small for L2 header to come, expand as needed.
- 			 */
--			ret = xmit_check_hhlen(skb);
-+			ret = xmit_check_hhlen(skb, hh_len);
- 			if (unlikely(ret))
- 				return ret;
- 
+ 		/* Record send time of most recently ACKed packet: */
+-		tp->first_tx_mstamp  = tcp_skb_timestamp_us(skb);
++		tp->first_tx_mstamp  = tx_tstamp;
+ 		/* Find the duration of the "send phase" of this window: */
+ 		rs->interval_us = tcp_stamp_us_delta(tp->first_tx_mstamp,
+ 						     scb->tx.first_tx_mstamp);
 -- 
 2.35.1
 
