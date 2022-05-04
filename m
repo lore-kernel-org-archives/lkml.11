@@ -2,130 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E875DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3769C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345581AbiEDHjs (ORCPT
+        id S1345496AbiEDHl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        Wed, 4 May 2022 03:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346037AbiEDHjQ (ORCPT
+        with ESMTP id S235940AbiEDHl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:39:16 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05DB27157;
-        Wed,  4 May 2022 00:34:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=cTSIQdlg91RSK+na/NVKBd/Ax/ZBULg9Q/4Gx74hmBE=; b=DJ4sRfVFdZHqiUR1scXw9foZfl
-        L7yKxBEJhUhm/nN8KNGznPTfuCfQS10cTZGTZncnxpQcvHtmIibXuZIf4BWhkVTwUsXutzODCujTX
-        9ol5m6lfkrhF1XEjyiZyaKvorG5EUGu2bSqA/FcWM5LcriPRGK2tDMPLFNt4Lz0WYO0NKcTysvqe1
-        ju+XiMI9AoOmYgIRswBct3J0G8rSnfT/S/lYzMGoHVAa5UY/87fStP27Br/E5nPYN5Sh2OitDpTAx
-        CPy06b7r2hzVIO98a1HVNwlRWcw0xPwXqpEILLaa17u5ZiJGLI0PMYOMFXL3CPPGYkmCdK5kE6dIL
-        wBOgZgjg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nm9Wd-00B171-EK; Wed, 04 May 2022 07:34:19 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7BD913004B5;
-        Wed,  4 May 2022 09:34:18 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 3EF7E2029A1DC; Wed,  4 May 2022 09:34:18 +0200 (CEST)
-Date:   Wed, 4 May 2022 09:34:18 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Peter Collingbourne <pcc@google.com>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 00/21] KCFI support
-Message-ID: <YnIses89/uPLrazS@hirez.programming.kicks-ass.net>
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <202204291545.47C6A97EA2@keescook>
- <Ymz7DWkRJy3PMaHm@hirez.programming.kicks-ass.net>
- <CABCJKuckt75qA1op-LpkJnQsJC36m9fstbY3uD=7pET2VyyZSg@mail.gmail.com>
- <YnA3Le2uJRaFF4TC@hirez.programming.kicks-ass.net>
- <CAMn1gO614sMzKzP6qTCcXB0QCeEu-G7CHn_h=6ikCLkFo_Z2Dg@mail.gmail.com>
+        Wed, 4 May 2022 03:41:57 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC8AB0E
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 00:38:22 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24472eLJ018292;
+        Wed, 4 May 2022 07:37:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Fh9wPOCKI2jg0Hv4wawOeDWJ68ruuRlGTwxIumn4srw=;
+ b=XrAU+X5soSP0tBmLrNHzMJxQIIN5fE6ILJfsV0ilvzMTD5spztSwt0kaYi14SsvnEkJo
+ xTT0j1m23hSE8CIhh6dkMzME7sfyUlqNnHXhqYfXzv+Sz0z4gZiapoXiTe2vPkt/LDRY
+ 9r6Jb2Z21irc7vBevyJMUhyTWlX4c9dwwlXM2zs9quWJy3nzgB7/EPevRd/rqLOMpTHU
+ 0JpDYhmYmlmlKp4/Pk1sY5VT+71Y5IFP7TUx3zjxmU6cx0E24AT3aSQccdWbVBOO5c9W
+ m8tXUf8Nt1jAH1r9zEqrU+cgqMgQj1jokLYoUS52HH86jK8T6RpNajcWzddlK9G/L5kC MA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fumrk8gut-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 May 2022 07:37:59 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2447RHWP015628;
+        Wed, 4 May 2022 07:37:58 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fumrk8gu8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 May 2022 07:37:58 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2447WZ5b013128;
+        Wed, 4 May 2022 07:37:57 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3frvr8v75f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 May 2022 07:37:56 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2447brM656033782
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 4 May 2022 07:37:53 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B335FA405C;
+        Wed,  4 May 2022 07:37:53 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0C56FA4054;
+        Wed,  4 May 2022 07:37:53 +0000 (GMT)
+Received: from [9.152.224.247] (unknown [9.152.224.247])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  4 May 2022 07:37:52 +0000 (GMT)
+Message-ID: <60a3bc3f-5cd6-79ac-a7a8-4ecc3d7fd3db@linux.ibm.com>
+Date:   Wed, 4 May 2022 09:37:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMn1gO614sMzKzP6qTCcXB0QCeEu-G7CHn_h=6ikCLkFo_Z2Dg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v8 23/70] mm/mmap: change do_brk_flags() to expand
+ existing VMA and add do_brk_munmap()
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Cc:     Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Yu Zhao <yuzhao@google.com>, Juergen Gross <jgross@suse.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andreas Krebbel <krebbel@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Thomas Huth <thuth@redhat.com>,
+        David Hildenbrand <david@redhat.com>
+References: <20220426150616.3937571-24-Liam.Howlett@oracle.com>
+ <20220428201947.GA1912192@roeck-us.net>
+ <20220429003841.cx7uenepca22qbdl@revolver>
+ <20220428181621.636487e753422ad0faf09bd6@linux-foundation.org>
+ <20220502001358.s2azy37zcc27vgdb@revolver>
+ <20220501172412.50268e7b217d0963293e7314@linux-foundation.org>
+ <Ym+v4lfU5IyxkGc4@osiris> <20220502133050.kuy2kjkzv6msokeb@revolver>
+ <YnAn3FI9aVCi/xKd@osiris> <YnGHJ7oroqF+v1u+@osiris>
+ <20220503215520.qpaukvjq55o7qwu3@revolver>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220503215520.qpaukvjq55o7qwu3@revolver>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -gtOdlFTiNt2NV0B5tTMapkPBGN0f4GW
+X-Proofpoint-ORIG-GUID: y-8DeiKb1yKRsf1Pa5otUN3bjacwJ9Ge
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-04_02,2022-05-02_03,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 adultscore=0 mlxscore=0 mlxlogscore=999 spamscore=0
+ suspectscore=0 malwarescore=0 impostorscore=0 bulkscore=0
+ lowpriorityscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2205040050
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 03:35:34PM -0700, Peter Collingbourne wrote:
-> On Mon, May 2, 2022 at 1:02 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Mon, May 02, 2022 at 08:22:57AM -0700, Sami Tolvanen wrote:
-> >
-> > > > Anyway, I think I hate that __builtin, I'd *much* rather see a variable
-> > > > attribute or qualifier for this, such that one can mark a function
-> > > > pointer as not doing CFI.
-> > > >
-> > > > I simply doesn't make sense to have a builtin that operates on an
-> > > > expression. The whole thing is about indirect calls, IOW function
-> > > > pointers.
-> > >
-> > > I also thought an attribute would be more convenient, but the compiler
-> > > folks prefer a built-in:
-> > >
-> > > https://reviews.llvm.org/D122673
-> >
-> > That seems to mostly worry about C++ things (overload sets, template
-> > specialization, name mangling) we kernel folks don't seem to much care
-> > about.
-> >
-> > I'll stick with saying type system makes more sense to me though.
+On 5/3/22 23:55, Liam Howlett wrote:
+> * Heiko Carstens <hca@linux.ibm.com> [220503 15:49]:
+>> On Mon, May 02, 2022 at 08:50:04PM +0200, Heiko Carstens wrote:
+>>> On Mon, May 02, 2022 at 01:31:00PM +0000, Liam Howlett wrote:
+>>>> * Heiko Carstens <hca@linux.ibm.com> [220502 06:18]:
+>>>>> On Sun, May 01, 2022 at 05:24:12PM -0700, Andrew Morton wrote:
+>>>>>> (cc S390 maintainers)
+>>>>>> (cc stable & Greg)
+>> ...
+>>>>>>> booting.  The last thing I see is:
+>>>>>>>
+>>>>>>> "[    4.668916] Spectre V2 mitigation: execute trampolines"
+>>>>>>>
+>>>>>>> I've bisected back to commit e553f62f10d9 (mm, page_alloc: fix
+>>>>>>> build_zonerefs_node())
+>>>>>>>
+>>>>>>> With the this commit, I am unable to boot one out of three times.  When
+>>>>>>> using the previous commit I was not able to get it to hang after trying
+>>>>>>> 10+ times.  This is a qemu s390 install with KASAN on and I see no error
+>>>>>>> messages.  I think it's likely it is this patch, but no guaranteed.
+>> ...
+>>>>> Liam, could you share your kernel config?
+>>>>
+>>>> Sure thing.  See attached.
+>>>
+>>> So, I can reproduce the hanging system now. However this looks like a
+>>> qemu problem on s390, since I can reproduce this only with Qemu+TCG.
+>>> Qemu with kvm works without any problems (same if I use z/VM as
+>>> hypervisor).
+>>>
+>>> Janosch, Claudio, can you have a look at this please?
+>>
+>> So, at least for me this problem also exists with plain v5.17.
+>> Switching off KASAN, or alternatively switching to KASAN_INLINE
+>> "fixes" it for me with Qemu+TCG.
+>>
+>> Liam, could you please also try to disable KASAN in your config? With
+>> that I think we can be almost sure this could be some bug in Qemu.
 > 
-> I'd say it's not only the C++ issues but more the "action at a
-> distance" that's implied by having this be part of the type system.
-> With this being in the function type it's hard to tell whether any
-> particular call will have CFI disabled, without needing to go and look
-> at how the function pointer is defined.
-
-Look at how we use volatile:
-
-	*(volatile int *)(&foo)
-
-we don't use volatile on actual variable definitions (much), but instead
-cast it in at the usage site. Same can be done with this if so desired.
-
-> On the other hand, if we
-> explicitly mark up the calls with CFI disabled, the code becomes
-> easier to audit (think Rust "unsafe" blocks).
-
-I don't know any Rust. To me Rust still looks like line noise.
-
-> Does it seem any better to you to have this be marked up via the
-> function expression, rather than the call? The idea is that this would
-> always compile to a check-free function call, no matter what "func"
-> is:
+> With KASAN, my tree fails 100% of the time (mm-stable + my maple tree
+> patches)
 > 
-> __builtin_kcfi_call_unchecked(func)(args)
+> Without KASAN, it boots 100% of the time.
 > 
-> We already have this, to some degree, with KCFI as implemented: CFI
-> checks are disabled if the function expression refers to a declared
-> function. The builtin would allow overriding the decision to also
-> disable CFI checks for function expressions that use the builtin. It
-> also wouldn't preclude a type based system later on (the builtin would
-> become effectively a cast to the "unchecked" type).
+> I think this verifies with you say above?
+> 
+> Thanks,
+> Liam
 
-That's still a bit naf; you've effectively made that builtin a type-cast.
+I had a short look yesterday and the boot usually hangs in the raid6 
+code. Disabling vector instructions didn't make a difference but a few 
+interruptions via GDB solve the problem for some reason.
+
+CCing David and Thomas for TCG
