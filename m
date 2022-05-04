@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F864C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355718AbiEDRL1 (ORCPT
+        id S1352293AbiEDRLe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
+        Wed, 4 May 2022 13:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355390AbiEDRAB (ORCPT
+        with ESMTP id S1355229AbiEDQ7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:01 -0400
+        Wed, 4 May 2022 12:59:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBE64B1F8;
-        Wed,  4 May 2022 09:51:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBB14927B;
+        Wed,  4 May 2022 09:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9061DB827A1;
-        Wed,  4 May 2022 16:51:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D8DC385A4;
-        Wed,  4 May 2022 16:51:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B180BB82752;
+        Wed,  4 May 2022 16:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FF1BC385A4;
+        Wed,  4 May 2022 16:51:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683087;
-        bh=RL5yGVkyeNKNqpXaH1HM7y2330PAjpWmWzwxkKb8fFU=;
+        s=korg; t=1651683080;
+        bh=8mU0N5y3/ls+9yHWZTXSzfmxl+KB6SVRRsQWl7M9eJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vCmF3KN+Js0gbDcHnaLQtf6dwcOg+qh/ltOx497wSkaGuFgZrfgVO1AH85OKNlkvW
-         dSByEeCm82aD43daXMBlI2FPMFiEnNF4/KNNx7bCRO2LVp7bK7mI/4i2UzeocApiz8
-         JqJeCGnuqJLzy9H6o7kfkO4dD1q6EHt/e+KPRZ4A=
+        b=Z4nt2H8/sAignXH0xSJJeJUhukeoFaCYSUIpgO9u+QTcalS4t6VKvL3qfNd69uy9O
+         oMETTdbPQnvi6QR/y6zHYFcG0Pg+pCMYF4y7NBrdoWVHMXXA67+T2QoKwVCqtS1OQ+
+         MAgFJBgAmA9HzfDLfv5JAdW9cOg7umXvzZy+heBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Ying Xu <yinxu@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 091/129] drm/amd/display: Fix memory leak in dcn21_clock_source_create
-Date:   Wed,  4 May 2022 18:44:43 +0200
-Message-Id: <20220504153028.198953417@linuxfoundation.org>
+Subject: [PATCH 5.10 071/129] sctp: check asoc strreset_chunk in sctp_generate_reconf_event
+Date:   Wed,  4 May 2022 18:44:23 +0200
+Message-Id: <20220504153026.891800744@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,32 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 65e54987508b6f0771f56bdfa3ee1926d52785ae ]
+[ Upstream commit 165e3e17fe8fe6a8aab319bc6e631a2e23b9a857 ]
 
-When dcn20_clk_src_construct() fails, we need to release clk_src.
+A null pointer reference issue can be triggered when the response of a
+stream reconf request arrives after the timer is triggered, such as:
 
-Fixes: 6f4e6361c3ff ("drm/amd/display: Add Renoir resource (v2)")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+  send Incoming SSN Reset Request --->
+  CPU0:
+   reconf timer is triggered,
+   go to the handler code before hold sk lock
+                            <--- reply with Outgoing SSN Reset Request
+  CPU1:
+   process Outgoing SSN Reset Request,
+   and set asoc->strreset_chunk to NULL
+  CPU0:
+   continue the handler code, hold sk lock,
+   and try to hold asoc->strreset_chunk, crash!
+
+In Ying Xu's testing, the call trace is:
+
+  [ ] BUG: kernel NULL pointer dereference, address: 0000000000000010
+  [ ] RIP: 0010:sctp_chunk_hold+0xe/0x40 [sctp]
+  [ ] Call Trace:
+  [ ]  <IRQ>
+  [ ]  sctp_sf_send_reconf+0x2c/0x100 [sctp]
+  [ ]  sctp_do_sm+0xa4/0x220 [sctp]
+  [ ]  sctp_generate_reconf_event+0xbd/0xe0 [sctp]
+  [ ]  call_timer_fn+0x26/0x130
+
+This patch is to fix it by returning from the timer handler if asoc
+strreset_chunk is already set to NULL.
+
+Fixes: 7b9438de0cd4 ("sctp: add stream reconf timer")
+Reported-by: Ying Xu <yinxu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/sctp/sm_sideeffect.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-index 7ed4d7c8734f..01c4e8753294 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-@@ -1267,6 +1267,7 @@ static struct clock_source *dcn21_clock_source_create(
- 		return &clk_src->base;
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index 0948f14ce221..d4e5969771f0 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -458,6 +458,10 @@ void sctp_generate_reconf_event(struct timer_list *t)
+ 		goto out_unlock;
  	}
  
-+	kfree(clk_src);
- 	BREAK_TO_DEBUGGER();
- 	return NULL;
- }
++	/* This happens when the response arrives after the timer is triggered. */
++	if (!asoc->strreset_chunk)
++		goto out_unlock;
++
+ 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
+ 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
+ 			   asoc->state, asoc->ep, asoc,
 -- 
 2.35.1
 
