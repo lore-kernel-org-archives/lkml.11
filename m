@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D98C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38627C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358158AbiEDRhF (ORCPT
+        id S1357965AbiEDRhL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:37:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        Wed, 4 May 2022 13:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356943AbiEDRJu (ORCPT
+        with ESMTP id S1356906AbiEDRJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFE9473A7;
-        Wed,  4 May 2022 09:56:39 -0700 (PDT)
+        Wed, 4 May 2022 13:09:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C75F47066;
+        Wed,  4 May 2022 09:56:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A6E061794;
-        Wed,  4 May 2022 16:56:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE42C385AA;
-        Wed,  4 May 2022 16:56:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95C6AB827A3;
+        Wed,  4 May 2022 16:56:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC29C385AA;
+        Wed,  4 May 2022 16:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683398;
-        bh=ND4TvuaQfIW/5AgPmtvCsaRACYMDAT08gszoo/ScmM8=;
+        s=korg; t=1651683381;
+        bh=3hl5Abyr5dqFZ/zVqmKDc6D8kC4kQ2wP/P9hBWlUJCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FNQeO3FfTIsJlZqbZfJSR1Lwl7NX2GqJLTBGmC8l4Ulut9xeAf13rIoT6D1zYwZi/
-         gxnYEz8MT2U16YNtw9HuvtZbRazYGlWX8sYbxsCxrxHQy/v9lwtMYFKynKBXm7Psas
-         1rl8bTLrUQUPNWJMkcMcVlMrWGBjxBOE5C7BjNEY=
+        b=pscxf8jWR3/Ue76JBwcnW3uYbBYOz9YnxBLMkJyrx/xUJnOfCZYPQDODQDsfBT0Dp
+         IdHFMkLIu6bmuDQ36JPItmcuaPysTcO6dyh/2snI5WoKJa7A8/Vr+YbcpmdACIY/L8
+         DE3Sf7L/nRr53eoCEvX3ZRAoJBlu91fVOCy5qKcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 083/225] ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name
-Date:   Wed,  4 May 2022 18:45:21 +0200
-Message-Id: <20220504153118.509471836@linuxfoundation.org>
+Subject: [PATCH 5.17 066/225] tee: optee: add missing mutext_destroy in optee_ffa_probe
+Date:   Wed,  4 May 2022 18:45:04 +0200
+Message-Id: <20220504153116.059763982@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,42 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 5c8b49852910caffeebb1ce541fdd264ffc691b8 ]
+[ Upstream commit b5e22886839ae466fcf03295150094516c0fd8eb ]
 
-Pinctrl phandle is for spi1 so rename it to reflect this.
+The error handling code of optee_ffa_probe misses the mutex_destroy of
+ffa.mutex when mutext_init succeeds.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220331141323.194355-1-claudiu.beznea@microchip.com
+Fix this by adding mutex_destory of ffa.mutex at the error handling part
+
+Fixes: aceeafefff73 ("optee: use driver internal tee_context for some rpc")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tee/optee/ffa_abi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-index d241c24f0d83..accb92cfac44 100644
---- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-@@ -82,7 +82,7 @@ usart4: serial@fc010000 {
- 
- 			spi1: spi@fc018000 {
- 				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_spi0_cs>;
-+				pinctrl-0 = <&pinctrl_spi1_cs>;
- 				cs-gpios = <&pioB 21 0>;
- 				status = "okay";
- 			};
-@@ -140,7 +140,7 @@ pinctrl_macb0_phy_irq: macb0_phy_irq_0 {
- 						atmel,pins =
- 							<AT91_PIOE 1 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
- 					};
--					pinctrl_spi0_cs: spi0_cs_default {
-+					pinctrl_spi1_cs: spi1_cs_default {
- 						atmel,pins =
- 							<AT91_PIOB 21 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
- 					};
+diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+index f744ab15bf2c..30a6119a2b16 100644
+--- a/drivers/tee/optee/ffa_abi.c
++++ b/drivers/tee/optee/ffa_abi.c
+@@ -894,6 +894,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+ 	rhashtable_free_and_destroy(&optee->ffa.global_ids, rh_free_fn, NULL);
+ 	optee_supp_uninit(&optee->supp);
+ 	mutex_destroy(&optee->call_queue.mutex);
++	mutex_destroy(&optee->ffa.mutex);
+ err_unreg_supp_teedev:
+ 	tee_device_unregister(optee->supp_teedev);
+ err_unreg_teedev:
 -- 
 2.35.1
 
