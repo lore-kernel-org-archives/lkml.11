@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14445C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24397C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355713AbiEDREk (ORCPT
+        id S1355939AbiEDREr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        Wed, 4 May 2022 13:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354677AbiEDQ67 (ORCPT
+        with ESMTP id S1354719AbiEDQ7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:58:59 -0400
+        Wed, 4 May 2022 12:59:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE302E9ED;
-        Wed,  4 May 2022 09:50:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7830D47386;
+        Wed,  4 May 2022 09:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 573116179D;
-        Wed,  4 May 2022 16:50:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A625BC385A4;
-        Wed,  4 May 2022 16:50:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35A4761794;
+        Wed,  4 May 2022 16:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82942C385A4;
+        Wed,  4 May 2022 16:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683050;
-        bh=DAKZ+IMFhB3kynJd+4BTivE21C0uCBxfzjW6JzSQ6Go=;
+        s=korg; t=1651683055;
+        bh=zDziTLnsss2snsLkpWMuxnhSovQWKHnxQj50ZFeHjpI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VgwUbkZQlop8h+DpbsXYnOMk5s5cY4eSXpmP8N43TAEN+EmmtCScUNUoiu81cecKr
-         zG5IHQM4jKNnxjJQ0KCTeKPZFxlri7pB60ncugAhjp6EbOdXtwxi+KUk/VAksMORO2
-         UQtJ0e7n2EifJog00Y9D6Ae4d6zfTOYiRvKNWsuk=
+        b=JAtYijBIaxosQ28IgULgDv+dYlde0IU5xwhe4t5b1YWS+PYYcfCdZ6k60+Y1ttPvE
+         +0t/bb6o7aazJxFomRWM4CAFoPsAYVCH1WOmioKFUJ4ykdao0lHGmnbJBauQXLWFnC
+         DMlrJaqInr+98SSO3CNKK/s5Hr4ehOGNJ7MJNxQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 046/129] phy: samsung: exynos5250-sata: fix missing device put in probe error paths
-Date:   Wed,  4 May 2022 18:43:58 +0200
-Message-Id: <20220504153024.801221958@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 059/129] mtd: rawnand: Fix return value check of wait_for_completion_timeout
+Date:   Wed,  4 May 2022 18:44:11 +0200
+Message-Id: <20220504153025.932617356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,74 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5c8402c4db45dd55c2c93c8d730f5dfa7c78a702 ]
+[ Upstream commit 084c16ab423a8890121b902b405823bfec5b4365 ]
 
-The actions of of_find_i2c_device_by_node() in probe function should be
-reversed in error paths by putting the reference to obtained device.
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220407091857.230386-2-krzysztof.kozlowski@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220412083435.29254-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/samsung/phy-exynos5250-sata.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/mtd/nand/raw/sh_flctl.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
-index 5077987570fd..ea46576404b8 100644
---- a/drivers/phy/samsung/phy-exynos5250-sata.c
-+++ b/drivers/phy/samsung/phy-exynos5250-sata.c
-@@ -199,20 +199,21 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 	sata_phy->phyclk = devm_clk_get(dev, "sata_phyctrl");
- 	if (IS_ERR(sata_phy->phyclk)) {
- 		dev_err(dev, "failed to get clk for PHY\n");
--		return PTR_ERR(sata_phy->phyclk);
-+		ret = PTR_ERR(sata_phy->phyclk);
-+		goto put_dev;
+diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_flctl.c
+index 13df4bdf792a..8f89e2d3d817 100644
+--- a/drivers/mtd/nand/raw/sh_flctl.c
++++ b/drivers/mtd/nand/raw/sh_flctl.c
+@@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 	dma_addr_t dma_addr;
+ 	dma_cookie_t cookie;
+ 	uint32_t reg;
+-	int ret;
++	int ret = 0;
++	unsigned long time_left;
+ 
+ 	if (dir == DMA_FROM_DEVICE) {
+ 		chan = flctl->chan_fifo0_rx;
+@@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 		goto out;
  	}
  
- 	ret = clk_prepare_enable(sata_phy->phyclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable source clk\n");
--		return ret;
-+		goto put_dev;
+-	ret =
++	time_left =
+ 	wait_for_completion_timeout(&flctl->dma_complete,
+ 				msecs_to_jiffies(3000));
+ 
+-	if (ret <= 0) {
++	if (time_left == 0) {
+ 		dmaengine_terminate_all(chan);
+ 		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
++		ret = -ETIMEDOUT;
  	}
  
- 	sata_phy->phy = devm_phy_create(dev, NULL, &exynos_sata_phy_ops);
- 	if (IS_ERR(sata_phy->phy)) {
--		clk_disable_unprepare(sata_phy->phyclk);
- 		dev_err(dev, "failed to create PHY\n");
--		return PTR_ERR(sata_phy->phy);
-+		ret = PTR_ERR(sata_phy->phy);
-+		goto clk_disable;
- 	}
+ out:
+@@ -441,7 +443,7 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
  
- 	phy_set_drvdata(sata_phy->phy, sata_phy);
-@@ -220,11 +221,18 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 	phy_provider = devm_of_phy_provider_register(dev,
- 					of_phy_simple_xlate);
- 	if (IS_ERR(phy_provider)) {
--		clk_disable_unprepare(sata_phy->phyclk);
--		return PTR_ERR(phy_provider);
-+		ret = PTR_ERR(phy_provider);
-+		goto clk_disable;
- 	}
+ 	dma_unmap_single(chan->device->dev, dma_addr, len, dir);
  
- 	return 0;
-+
-+clk_disable:
-+	clk_disable_unprepare(sata_phy->phyclk);
-+put_dev:
-+	put_device(&sata_phy->client->dev);
-+
-+	return ret;
+-	/* ret > 0 is success */
++	/* ret == 0 is success */
+ 	return ret;
  }
  
- static const struct of_device_id exynos_sata_phy_of_match[] = {
+@@ -465,7 +467,7 @@ static void read_fiforeg(struct sh_flctl *flctl, int rlen, int offset)
+ 
+ 	/* initiate DMA transfer */
+ 	if (flctl->chan_fifo0_rx && rlen >= 32 &&
+-		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE) > 0)
++		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE))
+ 			goto convert;	/* DMA success */
+ 
+ 	/* do polling transfer */
+@@ -524,7 +526,7 @@ static void write_ec_fiforeg(struct sh_flctl *flctl, int rlen,
+ 
+ 	/* initiate DMA transfer */
+ 	if (flctl->chan_fifo0_tx && rlen >= 32 &&
+-		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE) > 0)
++		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE))
+ 			return;	/* DMA success */
+ 
+ 	/* do polling transfer */
 -- 
 2.35.1
 
