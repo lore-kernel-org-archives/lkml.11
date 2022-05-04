@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E35C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2BFC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358987AbiEDRQU (ORCPT
+        id S1356510AbiEDRNu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        Wed, 4 May 2022 13:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355916AbiEDREr (ORCPT
+        with ESMTP id S1348684AbiEDRDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:47 -0400
+        Wed, 4 May 2022 13:03:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB0849C85;
-        Wed,  4 May 2022 09:53:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65004D9C0;
+        Wed,  4 May 2022 09:52:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9604B827A6;
-        Wed,  4 May 2022 16:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ECD6C385A4;
-        Wed,  4 May 2022 16:53:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40A65B82552;
+        Wed,  4 May 2022 16:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C5EC385A5;
+        Wed,  4 May 2022 16:52:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683209;
-        bh=ISsx8joeTU0k+ttPrLc72A842m/n4zk5gc5euHbvvoM=;
+        s=korg; t=1651683153;
+        bh=syvbfAMOEbim3F1NblPad85qNNOn39u3qZiZAyUDIdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0rh7SG0Qg5Y0/jXU2fSWpsT9Gn9X9+EAf2D6GIMC0y+EGv8eIvSyKt4hhHDSLh0Gw
-         ocEOQXz3QPTZ7d0yvxSB7Gc4l4MtRfVUxSy42COQKsQ2gGBYdSRehdB9WLq6BhGo3Y
-         tsw0CrTT2oFrjMmV2QATxuRYaTZ1CjrXkVtooK0I=
+        b=xrDHOrKmhNfcs6GQ3jbAyzJP8ptitBYYkgEdfwlcjbuz6VwmLQ1juMnOGQx9FUt7y
+         7gMfyRYivN9z222k/grnACitmuxLhO2w7TsmeELcxHARg75d2kBn0FUQas4ls1jyES
+         fmE/nYXCVoN7ka3vj6M/VTDWkaw0VlFZDKwHJ0QY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/177] bus: ti-sysc: Make omap3 gpt12 quirk handling SoC specific
-Date:   Wed,  4 May 2022 18:44:14 +0200
-Message-Id: <20220504153058.478336880@linuxfoundation.org>
+        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.15 010/177] xhci: stop polling roothubs after shutdown
+Date:   Wed,  4 May 2022 18:43:23 +0200
+Message-Id: <20220504153054.499542356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,65 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Henry Lin <henryl@nvidia.com>
 
-[ Upstream commit a12315d6d27093392b6c634e1d35a59f1d1f7a59 ]
+commit dc92944a014cd6a6f6c94299aaa36164dd2c238a upstream.
 
-On beagleboard revisions A to B4 we need to use gpt12 as the system timer.
-However, the quirk handling added for gpt12 caused a regression for system
-suspend for am335x as the PM coprocessor needs the timers idled for
-suspend.
+While rebooting, XHCI controller and its bus device will be shut down
+in order by .shutdown callback. Stopping roothubs polling in
+xhci_shutdown() can prevent XHCI driver from accessing port status
+after its bus device shutdown.
 
-Let's make the gpt12 quirk specific to omap34xx, other SoCs don't need
-it. Beagleboard revisions C and later no longer need to use the gpt12
-related quirk. Then at some point, if we decide to drop support for the old
-beagleboard revisions A to B4, we can also drop the gpt12 related quirks
-completely.
+Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
+polling, XHCI driver may access PCIe BAR register for port status after
+parent PCIe root port driver is shutdown and cause PCIe bus error.
 
-Fixes: 3ff340e24c9d ("bus: ti-sysc: Fix gpt12 system timer issue with reserved status")
-Reported-by: Kevin Hilman <khilman@baylibre.com>
-Suggested-by: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[check shared hcd exist before stopping its roothub polling -Mathias]
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Henry Lin <henryl@nvidia.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-3-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/ti-sysc.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/usb/host/xhci.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index ebf22929ff32..00d46f3ae22f 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -3162,13 +3162,27 @@ static int sysc_check_disabled_devices(struct sysc *ddata)
-  */
- static int sysc_check_active_timer(struct sysc *ddata)
- {
-+	int error;
-+
- 	if (ddata->cap->type != TI_SYSC_OMAP2_TIMER &&
- 	    ddata->cap->type != TI_SYSC_OMAP4_TIMER)
- 		return 0;
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -778,6 +778,17 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
+ 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
  
-+	/*
-+	 * Quirk for omap3 beagleboard revision A to B4 to use gpt12.
-+	 * Revision C and later are fixed with commit 23885389dbbb ("ARM:
-+	 * dts: Fix timer regression for beagleboard revision c"). This all
-+	 * can be dropped if we stop supporting old beagleboard revisions
-+	 * A to B4 at some point.
-+	 */
-+	if (sysc_soc->soc == SOC_3430)
-+		error = -ENXIO;
-+	else
-+		error = -EBUSY;
++	/* Don't poll the roothubs after shutdown. */
++	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
++			__func__, hcd->self.busnum);
++	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
++	del_timer_sync(&hcd->rh_timer);
 +
- 	if ((ddata->cfg.quirks & SYSC_QUIRK_NO_RESET_ON_INIT) &&
- 	    (ddata->cfg.quirks & SYSC_QUIRK_NO_IDLE))
--		return -ENXIO;
-+		return error;
- 
- 	return 0;
- }
--- 
-2.35.1
-
++	if (xhci->shared_hcd) {
++		clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
++		del_timer_sync(&xhci->shared_hcd->rh_timer);
++	}
++
+ 	spin_lock_irq(&xhci->lock);
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
 
 
