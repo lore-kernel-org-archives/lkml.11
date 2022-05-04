@@ -2,297 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A18C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B46C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350733AbiEDNkn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
+        id S237151AbiEDNm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 09:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350708AbiEDNk1 (ORCPT
+        with ESMTP id S236340AbiEDNmZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:40:27 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2123.outbound.protection.outlook.com [40.107.22.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10EB3614F;
-        Wed,  4 May 2022 06:36:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AvNiPCAXt23f778ImrUffWqEwKxcwwKve70+BhtjJy9dV1H5ZuYI45ZEg/w6Kym/5WeGvGD3cUomHcMSonWbwNI6s/XcFeWjjB+XeYTBWl4gW4Vo2q5kTdxPI/ho8LtZD4AGyqL7QLy2CGVE6Byz8YjUah4o3N+VdmUYv0EiaHKViRsOMcMwn3aEAPO/mq5ljV1H5xTv+/aejRCS+FH3J+0CcCqDFKjAE7lXkwzGNPN1WItAo8h8J69wcYi6nwA/iWUd9i3HR8XcLS9SXr9++6J30Al7QtqBQrjgWHfOwsE940QcK5s2bstgZ6T5IrsNOYogKbvhYN0Z+k4VAyAKbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pv387veeJ6c1xKTg3sZrPRvXDxHr1F0viAZWDAMLkE8=;
- b=GlKOKgkIfoHwGT5bL40oAbqI43mCC92iv6iTWdEQuuXyNGEfZ7xKNNSUBG+PlNapHBNu+e4xKQgPqarrunq1f9VHWd0COwmzY53W6sOQyLAY0x4Ov2C36PDEBjrUOOaoQOtLJDsKdgSN0CINW4rEjH5gj3mfaYe7mF1zfwbiju7j3uvzKbHaFB18PuvPO0e4Q4wKrGsrw/boNmZJZIGpJjwz/Lqxk+fYGV+4rYqGIRdAd+o1eFSpdjeZaveYg3G5c8JrAICW8ECM9oCPie/Cbjx/1guLvLx7Ou1aRE5N3DIwULyBM1usbx9+MMeR0zs/mF6TO448MesXk8wQHoWuTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pv387veeJ6c1xKTg3sZrPRvXDxHr1F0viAZWDAMLkE8=;
- b=Tyf0I3xs+/MpZzKyJpgXqJFZDTmXqSlVD27h5mQLpAV9GhTwR63puvwVzcZMQpM7ZdHIvHIWOUV+tDCcoYciQoo2EMqTA9VrqahqaARIWqXo5Kgtuza7TGc6Pgdy6skO6dgLCfovk3GScQecQfQx4EAMo8DzV3Y5iPmjoHXPOb4=
-Received: from AM6PR01CA0071.eurprd01.prod.exchangelabs.com
- (2603:10a6:20b:e0::48) by VI1PR06MB6829.eurprd06.prod.outlook.com
- (2603:10a6:800:18d::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 4 May
- 2022 13:36:46 +0000
-Received: from VE1EUR02FT101.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:e0:cafe::bb) by AM6PR01CA0071.outlook.office365.com
- (2603:10a6:20b:e0::48) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
- Transport; Wed, 4 May 2022 13:36:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- VE1EUR02FT101.mail.protection.outlook.com (10.152.13.133) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 13:36:45 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qing-wu.Li@leica-geosystems.com.cn
-Cc:     linux-iio@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH V3 5/5] iio: accel: sca3300: Add inclination channels
-Date:   Wed,  4 May 2022 13:36:12 +0000
-Message-Id: <20220504133612.604304-6-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn>
+        Wed, 4 May 2022 09:42:25 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB50521E2A;
+        Wed,  4 May 2022 06:38:49 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3BF19210DB;
+        Wed,  4 May 2022 13:38:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651671528; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eW6F0+Z+Xn1wQB/poLHfm3GeAwUqjVJnz/oOXcqsve4=;
+        b=K7bXA5J/jV9Yx9gVuZYUipN/g8FJnC/jhPHYKwxZplYW3eAoqCTPv2+RyWEyFDvCWKGseT
+        1X8RRRPXXp4DK+g1fQlph8/BwCDs43vFKQ8EUQ4v/5cTtgT0PgUkpQxv7E9wRAgUMja8cE
+        31a/BDWzqCuyhDtDVl2H5b+xXxfyirI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D4433132C4;
+        Wed,  4 May 2022 13:38:47 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id KaRuMueBcmKVfgAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 04 May 2022 13:38:47 +0000
+Message-ID: <c6689e42-e87c-0c0b-c7ff-40134406e080@suse.com>
+Date:   Wed, 4 May 2022 15:38:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4db919c3-3e81-4f32-b202-08da2dd3220f
-X-MS-TrafficTypeDiagnostic: VI1PR06MB6829:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR06MB6829021994CD554358F7F2FAD7C39@VI1PR06MB6829.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M77/197IQVmsNfmvQ3tVR1h8/mY6zyGDeubKE5ucjhkc7KOt5fvgbdlA+9R/HEDNLMM/G8VKU+pzwePtVgD1PPazA0BnvQDdvFpxQmTVlMCB2Nw7AhaB1M/JXygonGYfBaxJg2/ygjZ0zqysWO3Cguf9/bzSmvyeJs8HnlDSqjhNfqMrvCEFgxR5VgXcTDjMSTUBLvrrjptQBXk4o3NbUzHW3QCHYveHWUtNaRy/+xLFQPP1wO8NCgKK3p7DZ2pJGtq9FzRmoxzvCJ2LGhqyRe5U+lZk6rjVpjYHC38zO+d/KeK/4NBMVi/I2NfSAf9XpqvVmVKjvac2vESwLvB8asGZ2jXxnsUXToRyRC37Ege1r+a4LUji6jgUjDbFQKyz9nqY0M6DoROXKMdoGcnfpj360BEq7FBTUkTfR6kDTOuYLi6CkjFigQFpNeXLhnyQYEvKTGJvZDcRPnsi7PmntpcNZxi5UPuqkR++Ad8pz15RmXOIfjyZnYAzMpMVNTgRa1HVk+KxF8duy2aUH5YWKc1f3duAxZS/GDHchpYrHSWxdtSTKPJyWchbN3pp4lCNJq+pIlWXPKlCQ7S4rqp8+nQOn9frBj3elvfjdHuBGbHQ+5tAbRqHCLDPrNje+RBdrhp88clPsVe1BwmY0J31dLLw1Q3lccbuCMAPnsZRrXaoT+hKltUlojssKi2Uisr2
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(82310400005)(81166007)(36860700001)(356005)(316002)(36736006)(70586007)(36756003)(8676002)(4326008)(70206006)(118246002)(83380400001)(40460700003)(6666004)(5660300002)(86362001)(2906002)(26005)(6512007)(2616005)(336012)(47076005)(956004)(6486002)(186003)(8936002)(508600001)(6506007)(1076003);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 13:36:45.6806
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4db919c3-3e81-4f32-b202-08da2dd3220f
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT101.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR06MB6829
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2] arm64: paravirt: Use RCU read locks to guard
+ stolen_time
+Content-Language: en-US
+To:     Will Deacon <will@kernel.org>,
+        Elliot Berman <quic_eberman@quicinc.com>
+Cc:     "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>,
+        virtualization@lists.linux-foundation.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Murali Nalajala <quic_mnalajal@quicinc.com>,
+        stable@vger.kernel.org
+References: <20220428183536.2866667-1-quic_eberman@quicinc.com>
+ <20220504094507.GA20305@willie-the-truck>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <20220504094507.GA20305@willie-the-truck>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------y9m9gJLa5Vt4RDFFBGXh9Myf"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Different from SCA3300, SCL3300 can output inclination angles.
-Angles are formed from acceleration with following equations:
-ANG_X = atan2(accx / √(accy^2 + accz^2)),
-ANG_Y = atan2(accy / √(accx^2 + accz^2)),
-ANG_Z = atan2(accz / √(accx^2 + accy^2)),
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------y9m9gJLa5Vt4RDFFBGXh9Myf
+Content-Type: multipart/mixed; boundary="------------e93tz0yKFx5YboU7p1j0iqO0";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Will Deacon <will@kernel.org>, Elliot Berman <quic_eberman@quicinc.com>
+Cc: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
+ Alexey Makhalov <amakhalov@vmware.com>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>,
+ virtualization@lists.linux-foundation.org, x86@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Murali Nalajala <quic_mnalajal@quicinc.com>, stable@vger.kernel.org
+Message-ID: <c6689e42-e87c-0c0b-c7ff-40134406e080@suse.com>
+Subject: Re: [PATCH v2] arm64: paravirt: Use RCU read locks to guard
+ stolen_time
+References: <20220428183536.2866667-1-quic_eberman@quicinc.com>
+ <20220504094507.GA20305@willie-the-truck>
+In-Reply-To: <20220504094507.GA20305@willie-the-truck>
 
-The commit adds the output of the raw value, scale
-and scale_available of angles.
+--------------e93tz0yKFx5YboU7p1j0iqO0
+Content-Type: multipart/mixed; boundary="------------Z8nd2zQdKOOgh6CZUzdBfhBO"
 
-New interfaces:
-  in_incli_scale
-  in_incli_scale_available
-  in_incli_x_raw
-  in_incli_y_raw
-  in_incli_z_raw
-Data converted by application of scale to degrees.
+--------------Z8nd2zQdKOOgh6CZUzdBfhBO
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
----
- drivers/iio/accel/sca3300.c | 79 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 77 insertions(+), 2 deletions(-)
+T24gMDQuMDUuMjIgMTE6NDUsIFdpbGwgRGVhY29uIHdyb3RlOg0KPiBPbiBUaHUsIEFwciAy
+OCwgMjAyMiBhdCAxMTozNTozNkFNIC0wNzAwLCBFbGxpb3QgQmVybWFuIHdyb3RlOg0KPj4g
+RnJvbTogUHJha3J1dGhpIERlZXBhayBIZXJhZ3UgPHF1aWNfcGhlcmFndUBxdWljaW5jLmNv
+bT4NCj4+DQo+PiBEdXJpbmcgaG90cGx1ZywgdGhlIHN0b2xlbiB0aW1lIGRhdGEgc3RydWN0
+dXJlIGlzIHVubWFwcGVkIGFuZCBtZW1zZXQuDQo+PiBUaGVyZSBpcyBhIHBvc3NpYmlsaXR5
+IG9mIHRoZSB0aW1lciBJUlEgYmVpbmcgdHJpZ2dlcmVkIGJlZm9yZSBtZW1zZXQNCj4+IGFu
+ZCBzdG9sZW4gdGltZSBpcyBnZXR0aW5nIHVwZGF0ZWQgYXMgcGFydCBvZiB0aGlzIHRpbWVy
+IElSUSBoYW5kbGVyLiBUaGlzDQo+PiBjYXVzZXMgdGhlIGJlbG93IGNyYXNoIGluIHRpbWVy
+IGhhbmRsZXIgLQ0KPj4NCj4+ICAgIFsgMzQ1Ny40NzMxMzldWyAgICBDNV0gVW5hYmxlIHRv
+IGhhbmRsZSBrZXJuZWwgcGFnaW5nIHJlcXVlc3QgYXQgdmlydHVhbCBhZGRyZXNzIGZmZmZm
+ZmMwM2RmMDUxNDgNCj4+ICAgIC4uLg0KPj4gICAgWyAzNDU4LjE1NDM5OF1bICAgIEM1XSBD
+YWxsIHRyYWNlOg0KPj4gICAgWyAzNDU4LjE1NzY0OF1bICAgIEM1XSAgcGFyYV9zdGVhbF9j
+bG9jaysweDMwLzB4NTANCj4+ICAgIFsgMzQ1OC4xNjIzMTldWyAgICBDNV0gIGlycXRpbWVf
+YWNjb3VudF9wcm9jZXNzX3RpY2srMHgzMC8weDE5NA0KPj4gICAgWyAzNDU4LjE2ODE0OF1b
+ICAgIEM1XSAgYWNjb3VudF9wcm9jZXNzX3RpY2srMHgzYy8weDI4MA0KPj4gICAgWyAzNDU4
+LjE3MzI3NF1bICAgIEM1XSAgdXBkYXRlX3Byb2Nlc3NfdGltZXMrMHg1Yy8weGY0DQo+PiAg
+ICBbIDM0NTguMTc4MzExXVsgICAgQzVdICB0aWNrX3NjaGVkX3RpbWVyKzB4MTgwLzB4Mzg0
+DQo+PiAgICBbIDM0NTguMTgzMTY0XVsgICAgQzVdICBfX3J1bl9ocnRpbWVyKzB4MTYwLzB4
+NTdjDQo+PiAgICBbIDM0NTguMTg3NzQ0XVsgICAgQzVdICBocnRpbWVyX2ludGVycnVwdCsw
+eDI1OC8weDY4NA0KPj4gICAgWyAzNDU4LjE5MjY5OF1bICAgIEM1XSAgYXJjaF90aW1lcl9o
+YW5kbGVyX3ZpcnQrMHg1Yy8weGEwDQo+PiAgICBbIDM0NTguMTk4MDAyXVsgICAgQzVdICBo
+YW5kbGVfcGVyY3B1X2RldmlkX2lycSsweGRjLzB4NDE0DQo+PiAgICBbIDM0NTguMjAzMzg1
+XVsgICAgQzVdICBoYW5kbGVfZG9tYWluX2lycSsweGE4LzB4MTY4DQo+PiAgICBbIDM0NTgu
+MjA4MjQxXVsgICAgQzVdICBnaWNfaGFuZGxlX2lycS4zNDQ5MysweDU0LzB4MjQ0DQo+PiAg
+ICBbIDM0NTguMjEzMzU5XVsgICAgQzVdICBjYWxsX29uX2lycV9zdGFjaysweDQwLzB4NzAN
+Cj4+ICAgIFsgMzQ1OC4yMTgxMjVdWyAgICBDNV0gIGRvX2ludGVycnVwdF9oYW5kbGVyKzB4
+NjAvMHg5Yw0KPj4gICAgWyAzNDU4LjIyMzE1Nl1bICAgIEM1XSAgZWwxX2ludGVycnVwdCsw
+eDM0LzB4NjQNCj4+ICAgIFsgMzQ1OC4yMjc1NjBdWyAgICBDNV0gIGVsMWhfNjRfaXJxX2hh
+bmRsZXIrMHgxYy8weDJjDQo+PiAgICBbIDM0NTguMjMyNTAzXVsgICAgQzVdICBlbDFoXzY0
+X2lycSsweDdjLzB4ODANCj4+ICAgIFsgMzQ1OC4yMzY3MzZdWyAgICBDNV0gIGZyZWVfdm1h
+cF9hcmVhX25vZmx1c2grMHgxMDgvMHgzOWMNCj4+ICAgIFsgMzQ1OC4yNDIxMjZdWyAgICBD
+NV0gIHJlbW92ZV92bV9hcmVhKzB4YmMvMHgxMTgNCj4+ICAgIFsgMzQ1OC4yNDY3MTRdWyAg
+ICBDNV0gIHZtX3JlbW92ZV9tYXBwaW5ncysweDQ4LzB4MmE0DQo+PiAgICBbIDM0NTguMjUx
+NjU2XVsgICAgQzVdICBfX3Z1bm1hcCsweDE1NC8weDI3OA0KPj4gICAgWyAzNDU4LjI1NTc5
+Nl1bICAgIEM1XSAgc3RvbGVuX3RpbWVfY3B1X2Rvd25fcHJlcGFyZSsweGMwLzB4ZDgNCj4+
+ICAgIFsgMzQ1OC4yNjE1NDJdWyAgICBDNV0gIGNwdWhwX2ludm9rZV9jYWxsYmFjaysweDI0
+OC8weGMzNA0KPj4gICAgWyAzNDU4LjI2Njg0Ml1bICAgIEM1XSAgY3B1aHBfdGhyZWFkX2Z1
+bisweDFjNC8weDI0OA0KPj4gICAgWyAzNDU4LjI3MTY5Nl1bICAgIEM1XSAgc21wYm9vdF90
+aHJlYWRfZm4rMHgxYjAvMHg0MDANCj4+ICAgIFsgMzQ1OC4yNzY2MzhdWyAgICBDNV0gIGt0
+aHJlYWQrMHgxN2MvMHgxZTANCj4+ICAgIFsgMzQ1OC4yODA2OTFdWyAgICBDNV0gIHJldF9m
+cm9tX2ZvcmsrMHgxMC8weDIwDQo+Pg0KPj4gQXMgYSBmaXgsIGludHJvZHVjZSByY3UgbG9j
+ayB0byB1cGRhdGUgc3RvbGVuIHRpbWUgc3RydWN0dXJlLg0KPj4NCj4+IEZpeGVzOiA3NWRm
+NTI5YmVjOTEgKCJhcm02NDogcGFyYXZpcnQ6IEluaXRpYWxpemUgc3RlYWwgdGltZSB3aGVu
+IGNwdSBpcyBvbmxpbmUiKQ0KPj4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCj4+IFNp
+Z25lZC1vZmYtYnk6IFByYWtydXRoaSBEZWVwYWsgSGVyYWd1IDxxdWljX3BoZXJhZ3VAcXVp
+Y2luYy5jb20+DQo+PiBTaWduZWQtb2ZmLWJ5OiBFbGxpb3QgQmVybWFuIDxxdWljX2ViZXJt
+YW5AcXVpY2luYy5jb20+DQo+PiAtLS0NCj4+IENoYW5nZXMgc2luY2UgdjE6IGh0dHBzOi8v
+bG9yZS5rZXJuZWwub3JnL2FsbC8yMDIyMDQyMDIwNDQxNy4xNTUxOTQtMS1xdWljX2ViZXJt
+YW5AcXVpY2luYy5jb20vDQo+PiAgIC0gVXNlIFJDVSBpbnN0ZWFkIG9mIGRpc2FibGluZyBp
+bnRlcnJ1cHRzDQo+Pg0KPj4gICBhcmNoL2FybTY0L2tlcm5lbC9wYXJhdmlydC5jIHwgMjQg
+KysrKysrKysrKysrKysrKysrKy0tLS0tDQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxOSBpbnNl
+cnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9hcmNoL2Fy
+bTY0L2tlcm5lbC9wYXJhdmlydC5jIGIvYXJjaC9hcm02NC9rZXJuZWwvcGFyYXZpcnQuYw0K
+Pj4gaW5kZXggNzVmZWQ0NDYwNDA3Li5lNzI0ZWEzZDg2ZjAgMTAwNjQ0DQo+PiAtLS0gYS9h
+cmNoL2FybTY0L2tlcm5lbC9wYXJhdmlydC5jDQo+PiArKysgYi9hcmNoL2FybTY0L2tlcm5l
+bC9wYXJhdmlydC5jDQo+PiBAQCAtNTIsNyArNTIsOSBAQCBlYXJseV9wYXJhbSgibm8tc3Rl
+YWwtYWNjIiwgcGFyc2Vfbm9fc3RlYWxhY2MpOw0KPj4gICAvKiByZXR1cm4gc3RvbGVuIHRp
+bWUgaW4gbnMgYnkgYXNraW5nIHRoZSBoeXBlcnZpc29yICovDQo+PiAgIHN0YXRpYyB1NjQg
+cGFyYV9zdGVhbF9jbG9jayhpbnQgY3B1KQ0KPj4gICB7DQo+PiArCXN0cnVjdCBwdmNsb2Nr
+X3ZjcHVfc3RvbGVuX3RpbWUgKmthZGRyID0gTlVMTDsNCj4+ICAgCXN0cnVjdCBwdl90aW1l
+X3N0b2xlbl90aW1lX3JlZ2lvbiAqcmVnOw0KPj4gKwl1NjQgcmV0ID0gMDsNCj4+ICAgDQo+
+PiAgIAlyZWcgPSBwZXJfY3B1X3B0cigmc3RvbGVuX3RpbWVfcmVnaW9uLCBjcHUpOw0KPj4g
+ICANCj4+IEBAIC02MSwyOCArNjMsMzggQEAgc3RhdGljIHU2NCBwYXJhX3N0ZWFsX2Nsb2Nr
+KGludCBjcHUpDQo+PiAgIAkgKiBvbmxpbmUgbm90aWZpY2F0aW9uIGNhbGxiYWNrIHJ1bnMu
+IFVudGlsIHRoZSBjYWxsYmFjaw0KPj4gICAJICogaGFzIHJ1biB3ZSBqdXN0IHJldHVybiB6
+ZXJvLg0KPj4gICAJICovDQo+PiAtCWlmICghcmVnLT5rYWRkcikNCj4+ICsJcmN1X3JlYWRf
+bG9jaygpOw0KPj4gKwlrYWRkciA9IHJjdV9kZXJlZmVyZW5jZShyZWctPmthZGRyKTsNCj4+
+ICsJaWYgKCFrYWRkcikgew0KPj4gKwkJcmN1X3JlYWRfdW5sb2NrKCk7DQo+PiAgIAkJcmV0
+dXJuIDA7DQo+PiArCX0NCj4+ICAgDQo+PiAtCXJldHVybiBsZTY0X3RvX2NwdShSRUFEX09O
+Q0UocmVnLT5rYWRkci0+c3RvbGVuX3RpbWUpKTsNCj4+ICsJcmV0ID0gbGU2NF90b19jcHUo
+UkVBRF9PTkNFKGthZGRyLT5zdG9sZW5fdGltZSkpOw0KPiANCj4gSXMgdGhpcyBSRUFEX09O
+Q0UoKSBzdGlsbCByZXF1aXJlZCBub3c/DQoNClllcywgYXMgaXQgbWlnaHQgYmUgY2FsbGVk
+IGZvciBhbm90aGVyIGNwdSB0aGFuIHRoZSBjdXJyZW50IG9uZS4NCnN0b2xlbl90aW1lIG1p
+Z2h0IGp1c3QgYmUgdXBkYXRlZCwgc28geW91IHdhbnQgdG8gYXZvaWQgbG9hZCB0ZWFyaW5n
+Lg0KDQoNCkp1ZXJnZW4NCg==
+--------------Z8nd2zQdKOOgh6CZUzdBfhBO
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index 040f8e1a1327..cf588f014407 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -42,12 +42,18 @@
- #define SCA3300_VALUE_RS_ERROR	0x3
- #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
- 
-+#define SCA3300_REG_ANG_CTRL 0x0C
-+#define SCA3300_ANG_ENABLE   0x1F
-+
- enum sca3300_scan_indexes {
- 	SCA3300_ACC_X = 0,
- 	SCA3300_ACC_Y,
- 	SCA3300_ACC_Z,
- 	SCA3300_TEMP,
- 	SCA3300_TIMESTAMP,
-+	SCA3300_INCLI_X,
-+	SCA3300_INCLI_Y,
-+	SCA3300_INCLI_Z,
- };
- 
- #define SCA3300_ACCEL_CHANNEL(index, reg, axis) {			\
-@@ -71,6 +77,24 @@ enum sca3300_scan_indexes {
- 	},								\
- }
- 
-+#define SCA3300_INCLI_CHANNEL(index, reg, axis) {			\
-+	.type = IIO_INCLI,						\
-+	.address = reg,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##axis,					\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type_available =				\
-+	BIT(IIO_CHAN_INFO_SCALE),					\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 16,						\
-+		.storagebits = 16,					\
-+		.endianness = IIO_CPU,					\
-+	},								\
-+}
-+
- #define SCA3300_TEMP_CHANNEL(index, reg) {				\
- 		.type = IIO_TEMP,					\
- 		.address = reg,						\
-@@ -102,28 +126,54 @@ static const int scl3300_accel_scale_tbl[][2] = {{0, 167}, {0, 333}, {0, 83}};
- static const int sca3300_accel_scale_modes_map[] = {0, 1, 2, 2};
- static const int scl3300_accel_scale_modes_map[] = {0, 1, 2};
- 
-+static const int scl3300_incli_scale_tbl[][2] = {{0, 5495}};
-+static const int scl3300_incli_scale_modes_map[] = {0, 0, 0};
-+
- static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
- static const int scl3300_avail_modes_map[] = {0, 1, 3};
-+
-+static const struct iio_chan_spec scl3300_channels[] = {
-+	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
-+	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
-+	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
-+	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
-+	IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP),
-+	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
-+	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
-+	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
-+};
-+
- static const unsigned long sca3300_scan_masks[] = {
- 	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
- 	BIT(SCA3300_TEMP),
- 	0
- };
- 
-+static const unsigned long scl3300_scan_masks[] = {
-+	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
-+	BIT(SCA3300_TEMP) |
-+	BIT(SCA3300_INCLI_X) | BIT(SCA3300_INCLI_Y) | BIT(SCA3300_INCLI_Z),
-+	0
-+};
-+
- struct sca3300_chip_info {
- 	const struct iio_chan_spec *channels;
- 	const int (*accel_scale_table)[2];
-+	const int (*incli_scale_table)[2];
- 	const int *accel_scale_modes_map;
-+	const int *incli_scale_modes_map;
- 	const unsigned long *scan_masks;
- 	const int *avail_modes_table;
- 	const int *freq_modes_map;
- 	const int *freq_table;
- 	const u8 num_accel_scales;
-+	const u8 num_incli_scales;
- 	const u8 num_avail_modes;
- 	const u8 num_channels;
- 	const u8 num_freqs;
- 	const u8 chip_id;
- 	const char *name;
-+	const bool angle;
- };
- 
- /**
-@@ -156,24 +206,32 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
- 		.freq_table = sca3300_freq_tbl,
- 		.scan_masks = sca3300_scan_masks,
- 		.channels = sca3300_channels,
-+		.incli_scale_modes_map = NULL,
-+		.incli_scale_table = NULL,
-+		.num_incli_scales = 0,
- 		.num_avail_modes = 4,
- 		.name = "sca3300",
- 		.chip_id = 0x51,
- 		.num_freqs = 2,
-+		.angle = false,
- 	},
- 	{	.num_accel_scales = ARRAY_SIZE(scl3300_accel_scale_tbl)*2,
-+		.num_incli_scales = ARRAY_SIZE(scl3300_incli_scale_tbl)*2,
- 		.accel_scale_modes_map = scl3300_accel_scale_modes_map,
-+		.incli_scale_modes_map = scl3300_incli_scale_modes_map,
- 		.accel_scale_table = scl3300_accel_scale_tbl,
--		.num_channels = ARRAY_SIZE(sca3300_channels),
-+		.incli_scale_table = scl3300_incli_scale_tbl,
-+		.num_channels = ARRAY_SIZE(scl3300_channels),
- 		.avail_modes_table = scl3300_avail_modes_map,
- 		.freq_modes_map = scl3300_freq_modes_map,
- 		.scan_masks = sca3300_scan_masks,
- 		.freq_table = scl3300_freq_tbl,
--		.channels = sca3300_channels,
-+		.channels = scl3300_channels,
- 		.num_avail_modes = 3,
- 		.name = "scl3300",
- 		.chip_id = 0xC1,
- 		.num_freqs = 3,
-+		.angle = true,
- 	},
- };
- 
-@@ -382,6 +440,11 @@ static int sca3300_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		switch (chan->type) {
-+		case IIO_INCLI:
-+			index = data->chip->incli_scale_modes_map[reg_val];
-+			*val = data->chip->incli_scale_table[index][0];
-+			*val2 = data->chip->incli_scale_table[index][1];
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_ACCEL:
- 			index = data->chip->accel_scale_modes_map[reg_val];
- 			*val = data->chip->accel_scale_table[index][0];
-@@ -473,6 +536,13 @@ static int sca3300_init(struct sca3300_data *sca_data,
- 	indio_dev->name = sca3300_chip_tbl[i].name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
-+	if (sca_data->chip->angle) {
-+		ret = sca3300_write_reg(sca_data, SCA3300_REG_ANG_CTRL,
-+					SCA3300_ANG_ENABLE);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
-@@ -508,6 +578,11 @@ static int sca3300_read_avail(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
-+		case IIO_INCLI:
-+			*vals = (const int *)data->chip->incli_scale_table;
-+			*length = data->chip->num_incli_scales;
-+			*type = IIO_VAL_INT_PLUS_MICRO;
-+			return IIO_AVAIL_LIST;
- 		case IIO_ACCEL:
- 			*vals = (const int *)data->chip->accel_scale_table;
- 			*length = data->chip->num_accel_scales;
--- 
-2.25.1
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------Z8nd2zQdKOOgh6CZUzdBfhBO--
+
+--------------e93tz0yKFx5YboU7p1j0iqO0--
+
+--------------y9m9gJLa5Vt4RDFFBGXh9Myf
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmJygecFAwAAAAAACgkQsN6d1ii/Ey/R
+Hwf+NxZJQfciFlEObq6a4Lwl+SXgZn4bIazWw3uujhllZIVcLF4pPjm5JCEk3HdHXpQvsCA8XKys
+o7hpVdGW7qt8RQEdRMEcs+wtPQFmDLn+HuZT1ZnPn2r+BNIKhxB6T91YncDMERzYoEI7OOgI5enG
+7ijxHbkQnaR4ybfgJ6od/KSTw1H0dsPk6GOKcms9Etp3zv6TzdeM72V83Z3Ngy1Dvgyw/ScqezUW
+EQiDJKnJth9J6Q9zqj2ayvdWRPZZ/fOi7BDF2QgtmYmfbD8EVkC5GjFF8wcQS1DhvBKfTOBvxGDV
+7XX2YKUbBXaTusU3xeT83oRt1wfMzWRp0Gt7Qk2FUQ==
+=5umt
+-----END PGP SIGNATURE-----
+
+--------------y9m9gJLa5Vt4RDFFBGXh9Myf--
