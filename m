@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30246C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA62C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359527AbiEDRoX (ORCPT
+        id S1359603AbiEDRo1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
+        Wed, 4 May 2022 13:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355954AbiEDRI5 (ORCPT
+        with ESMTP id S1355927AbiEDRI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:08:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62C9522F9;
-        Wed,  4 May 2022 09:54:45 -0700 (PDT)
+        Wed, 4 May 2022 13:08:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AE5522E8;
+        Wed,  4 May 2022 09:54:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3527861851;
-        Wed,  4 May 2022 16:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83532C385A5;
-        Wed,  4 May 2022 16:54:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 466A761505;
+        Wed,  4 May 2022 16:54:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9143FC385A4;
+        Wed,  4 May 2022 16:54:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683284;
-        bh=+Rmjm5j+NVCX092c+nELx71iEIRBfHPkU0zB4Hx6TB8=;
+        s=korg; t=1651683281;
+        bh=aEDMA/3oe/qWVXNiG9wL+UoIZG5uPLMm54IzJ4kwM5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q9h2UnTLvulCbhwni0ynXjWr6xG9Mf138mMPs3wvzoXxm/7yppJwjdHtxHLfQSG3T
-         38olak5GhaYNVxDkTT2HMPVJoR4UMNZ7fps7AJZCmCrv70qIYKQjSbv4RLauPWAs16
-         YlMjNOUdZXJzPL+MnxT3uc7J4C+s3eYx+mgA0duo=
+        b=Q5A9/qREI3rr1L6UwIbajqV94SHLVNF7eXTP4tu9S+WMMgjgvZJuvJh/6jDYpj2op
+         dr0qg41VwhoPblEmEU+MEXutqTlZ7ff77fY+Q/hyKrWpd80TZnRkv1v2hZLk3QAaZF
+         gZ8JuEOhCeaCyi0TK2MOCAHhwZfpea6ahaJnyMyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 137/177] powerpc/perf: Fix 32bit compile
-Date:   Wed,  4 May 2022 18:45:30 +0200
-Message-Id: <20220504153105.484189218@linuxfoundation.org>
+Subject: [PATCH 5.15 134/177] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
+Date:   Wed,  4 May 2022 18:45:27 +0200
+Message-Id: <20220504153105.187160754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,42 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit bb82c574691daf8f7fa9a160264d15c5804cb769 ]
+[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
 
-The "read_bhrb" global symbol is only called under CONFIG_PPC64 of
-arch/powerpc/perf/core-book3s.c but it is compiled for both 32 and 64 bit
-anyway (and LLVM fails to link this on 32bit).
+The first "if" condition in __memcpy_flushcache is supposed to align the
+"dest" variable to 8 bytes and copy data up to this alignment.  However,
+this condition may misbehave if "size" is greater than 4GiB.
 
-This fixes it by moving bhrb.o to obj64 targets.
+The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
+arguments to unsigned int and selects the smaller one.  However, the
+cast truncates high bits in "size" and it results in misbehavior.
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220421025756.571995-1-aik@ozlabs.ru
+For example:
+
+	suppose that size == 0x100000001, dest == 0x200000002
+	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
+	...
+	dest += 0x1;
+
+so we copy just one byte "and" dest remains unaligned.
+
+This patch fixes the bug by replacing unsigned with size_t.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/lib/usercopy_64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/perf/Makefile b/arch/powerpc/perf/Makefile
-index 2f46e31c7612..4f53d0b97539 100644
---- a/arch/powerpc/perf/Makefile
-+++ b/arch/powerpc/perf/Makefile
-@@ -3,11 +3,11 @@
- obj-y				+= callchain.o callchain_$(BITS).o perf_regs.o
- obj-$(CONFIG_COMPAT)		+= callchain_32.o
+diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
+index 508c81e97ab1..f1c0befb62df 100644
+--- a/arch/x86/lib/usercopy_64.c
++++ b/arch/x86/lib/usercopy_64.c
+@@ -121,7 +121,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
  
--obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o bhrb.o
-+obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o
- obj64-$(CONFIG_PPC_PERF_CTRS)	+= ppc970-pmu.o power5-pmu.o \
- 				   power5+-pmu.o power6-pmu.o power7-pmu.o \
- 				   isa207-common.o power8-pmu.o power9-pmu.o \
--				   generic-compat-pmu.o power10-pmu.o
-+				   generic-compat-pmu.o power10-pmu.o bhrb.o
- obj32-$(CONFIG_PPC_PERF_CTRS)	+= mpc7450-pmu.o
+ 	/* cache copy and flush to align dest */
+ 	if (!IS_ALIGNED(dest, 8)) {
+-		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
++		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
  
- obj-$(CONFIG_PPC_POWERNV)	+= imc-pmu.o
+ 		memcpy((void *) dest, (void *) source, len);
+ 		clean_cache_range((void *) dest, len);
 -- 
 2.35.1
 
