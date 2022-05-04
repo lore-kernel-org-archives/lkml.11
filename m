@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 161F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359282AbiEDRv4 (ORCPT
+        id S1359309AbiEDRv6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        Wed, 4 May 2022 13:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357202AbiEDROz (ORCPT
+        with ESMTP id S1357287AbiEDRO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:14:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C2F54695;
-        Wed,  4 May 2022 09:58:25 -0700 (PDT)
+        Wed, 4 May 2022 13:14:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F89546AD;
+        Wed,  4 May 2022 09:58:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03461B827A3;
-        Wed,  4 May 2022 16:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ACCCC385A4;
-        Wed,  4 May 2022 16:58:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD71E618D7;
+        Wed,  4 May 2022 16:58:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98344C385A5;
+        Wed,  4 May 2022 16:58:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683488;
-        bh=fl/SlIFa21XcUiuyoHk/hrTxohmhSV+w9p9Ll/WaPjQ=;
+        s=korg; t=1651683506;
+        bh=io5qK08uf7Ho5pIz2sIZ6RVCb9Wt3d3tyHRZDjUXifg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w+K6ksNO9lWs1rsQYL+PuR3I+s4ppijYuj4EgSzvWcRcMeFh3IE9OSMFFJRbGvIzu
-         x9PekTSY4j/cyCSukWaL8fP8+G9uHr73iiqsnTmBKHuf5gv6QA44DjBWRh5hSGuYpL
-         RbsGRJw2Dw1AEXY8pOEG84i900KXFIhLGaQu0Rkw=
+        b=tzUyLfa1fKHb33Qb58ybbH/TEF2We2vDo0NEqbqBKZZ/Lk9uGNmlkDO1UvbeVbDKr
+         lis2k1zUIATXuXGAs7OV087oiIfKwINDbkG9hTdz78dC1PtQZtE8ugtZjxJsWVgYkP
+         eNM3RhN+/jEbikBA15j4xgrepE+p9FgjLG+WClXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 163/225] Input: cypress-sf - register a callback to disable the regulators
-Date:   Wed,  4 May 2022 18:46:41 +0200
-Message-Id: <20220504153124.529765225@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hans Holmberg <hans.holmberg@wdc.com>
+Subject: [PATCH 5.17 181/225] zonefs: Clear inode information flags on inode creation
+Date:   Wed,  4 May 2022 18:46:59 +0200
+Message-Id: <20220504153126.635564169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,66 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit fd0a4b39870d49ff15f6966470185409e261f20f ]
+commit 694852ead287a3433126e7ebda397b242dc99624 upstream.
 
-When the driver fails to probe, we will get the following splat:
+Ensure that the i_flags field of struct zonefs_inode_info is cleared to
+0 when initializing a zone file inode, avoiding seeing the flag
+ZONEFS_ZONE_OPEN being incorrectly set.
 
-[   19.311970] ------------[ cut here ]------------
-[   19.312566] WARNING: CPU: 3 PID: 375 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   19.317591] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   19.328831] Call Trace:
-[   19.329112]  <TASK>
-[   19.329369]  regulator_bulk_free+0x82/0xe0
-[   19.329860]  devres_release_group+0x319/0x3d0
-[   19.330357]  i2c_device_probe+0x766/0x940
-
-Fix this by adding a callback that will deal with the disabling when the
-driver fails to probe.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220409022629.3493557-1-zheyuma97@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hans Holmberg <hans.holmberg@wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/keyboard/cypress-sf.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ fs/zonefs/super.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/input/keyboard/cypress-sf.c b/drivers/input/keyboard/cypress-sf.c
-index c28996028e80..9a23eed6a4f4 100644
---- a/drivers/input/keyboard/cypress-sf.c
-+++ b/drivers/input/keyboard/cypress-sf.c
-@@ -61,6 +61,14 @@ static irqreturn_t cypress_sf_irq_handler(int irq, void *devid)
- 	return IRQ_HANDLED;
+--- a/fs/zonefs/super.c
++++ b/fs/zonefs/super.c
+@@ -1155,6 +1155,7 @@ static struct inode *zonefs_alloc_inode(
+ 	inode_init_once(&zi->i_vnode);
+ 	mutex_init(&zi->i_truncate_mutex);
+ 	zi->i_wr_refcnt = 0;
++	zi->i_flags = 0;
+ 
+ 	return &zi->i_vnode;
  }
- 
-+static void cypress_sf_disable_regulators(void *arg)
-+{
-+	struct cypress_sf_data *touchkey = arg;
-+
-+	regulator_bulk_disable(ARRAY_SIZE(touchkey->regulators),
-+			       touchkey->regulators);
-+}
-+
- static int cypress_sf_probe(struct i2c_client *client)
- {
- 	struct cypress_sf_data *touchkey;
-@@ -121,6 +129,12 @@ static int cypress_sf_probe(struct i2c_client *client)
- 		return error;
- 	}
- 
-+	error = devm_add_action_or_reset(&client->dev,
-+					 cypress_sf_disable_regulators,
-+					 touchkey);
-+	if (error)
-+		return error;
-+
- 	touchkey->input_dev = devm_input_allocate_device(&client->dev);
- 	if (!touchkey->input_dev) {
- 		dev_err(&client->dev, "Failed to allocate input device\n");
--- 
-2.35.1
-
 
 
