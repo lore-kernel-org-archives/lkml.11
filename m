@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8959DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB035C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357562AbiEDRYm (ORCPT
+        id S1357739AbiEDRZE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
+        Wed, 4 May 2022 13:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355413AbiEDRET (ORCPT
+        with ESMTP id S1355353AbiEDRER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5E64EDC6;
-        Wed,  4 May 2022 09:53:02 -0700 (PDT)
+        Wed, 4 May 2022 13:04:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6854ECD2;
+        Wed,  4 May 2022 09:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2381FB827AC;
-        Wed,  4 May 2022 16:52:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C773AC385B0;
-        Wed,  4 May 2022 16:52:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60BDC61701;
+        Wed,  4 May 2022 16:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD934C385B0;
+        Wed,  4 May 2022 16:52:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683175;
-        bh=GYqdHF/kWbxCt6a86UWjM3QOO2fhmQgGD64+8+8qvrI=;
+        s=korg; t=1651683173;
+        bh=k/8Oplo43mu4djVxDNVjz+6avtQ/vUQIAwVKTqLIjg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2LG3dKeR0HCc96BFRvMCCasWjm6W63ykKDPF8XThabZ+VlVn9Koj+Q7MLCzIESTIT
-         zZ+oHK3Q4SI/aqfkVbMQf5vNFovkAOyzJquRVzL8Rcv6Dz7/1rSEKefh5DjSWHO/EE
-         r2qKEhqN0WMMxsYLKktdOaiRb64HEdkNayutnqp8=
+        b=YU2iKinG6wDAIk5tunmpLCvlIHuW1k4cp8jO4bNM7oqazxZlpCmHxFuOddhXsU1am
+         mr5NrULtZP/nYdytnLMdBUIRpRupu5E89oAoY42/tSz4+7noxKWTOzeNegIANlzTR1
+         4Yc+mZua7vYo1vnen+gk/ZDnmuYg27lo37NPvSVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>
-Subject: [PATCH 5.15 027/177] usb: cdns3: Fix issue for clear halt endpoint
-Date:   Wed,  4 May 2022 18:43:40 +0200
-Message-Id: <20220504153055.521161879@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.15 038/177] pinctrl: samsung: fix missing GPIOLIB on ARM64 Exynos config
+Date:   Wed,  4 May 2022 18:43:51 +0200
+Message-Id: <20220504153056.337925290@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,57 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawel Laszczak <pawell@cadence.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit b3fa25de31fb7e9afebe9599b8ff32eda13d7c94 upstream.
+commit ac875df4d854ab13d9c4af682a1837a1214fecec upstream.
 
-Path fixes bug which occurs during resetting endpoint in
-__cdns3_gadget_ep_clear_halt function. During resetting endpoint
-controller will change HW/DMA owned TRB. It set Abort flag in
-trb->control and will change trb->length field. If driver want
-to use the aborted trb it must update the changed field in
-TRB.
+The Samsung pinctrl drivers depend on OF_GPIO, which is part of GPIOLIB.
+ARMv7 Exynos platform selects GPIOLIB and Samsung pinctrl drivers. ARMv8
+Exynos selects only the latter leading to possible wrong configuration
+on ARMv8 build:
 
-Fixes: 7733f6c32e36 ("usb: cdns3: Add Cadence USB3 DRD Driver")
-cc: <stable@vger.kernel.org>
-Acked-by: Peter Chen <peter.chen@kernel.org>
-Signed-off-by: Pawel Laszczak <pawell@cadence.com>
-Link: https://lore.kernel.org/r/20220329084605.4022-1-pawell@cadence.com
+  WARNING: unmet direct dependencies detected for PINCTRL_EXYNOS
+    Depends on [n]: PINCTRL [=y] && OF_GPIO [=n] && (ARCH_EXYNOS [=y] || ARCH_S5PV210 || COMPILE_TEST [=y])
+    Selected by [y]:
+    - ARCH_EXYNOS [=y]
+
+Always select the GPIOLIB from the Samsung pinctrl drivers to fix the
+issue.  This requires removing of OF_GPIO dependency (to avoid recursive
+dependency), so add dependency on OF for COMPILE_TEST cases.
+
+Reported-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
+Fixes: eed6b3eb20b9 ("arm64: Split out platform options to separate Kconfig")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220420141407.470955-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/cdns3/cdns3-gadget.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/arm/mach-exynos/Kconfig    |    1 -
+ drivers/pinctrl/samsung/Kconfig |   11 ++++-------
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
---- a/drivers/usb/cdns3/cdns3-gadget.c
-+++ b/drivers/usb/cdns3/cdns3-gadget.c
-@@ -2684,6 +2684,7 @@ int __cdns3_gadget_ep_clear_halt(struct
- 	struct usb_request *request;
- 	struct cdns3_request *priv_req;
- 	struct cdns3_trb *trb = NULL;
-+	struct cdns3_trb trb_tmp;
- 	int ret;
- 	int val;
+--- a/arch/arm/mach-exynos/Kconfig
++++ b/arch/arm/mach-exynos/Kconfig
+@@ -18,7 +18,6 @@ menuconfig ARCH_EXYNOS
+ 	select EXYNOS_PMU
+ 	select EXYNOS_SROM
+ 	select EXYNOS_PM_DOMAINS if PM_GENERIC_DOMAINS
+-	select GPIOLIB
+ 	select HAVE_ARM_ARCH_TIMER if ARCH_EXYNOS5
+ 	select HAVE_ARM_SCU if SMP
+ 	select HAVE_S3C2410_I2C if I2C
+--- a/drivers/pinctrl/samsung/Kconfig
++++ b/drivers/pinctrl/samsung/Kconfig
+@@ -4,14 +4,13 @@
+ #
+ config PINCTRL_SAMSUNG
+ 	bool
+-	depends on OF_GPIO
++	select GPIOLIB
+ 	select PINMUX
+ 	select PINCONF
  
-@@ -2693,8 +2694,10 @@ int __cdns3_gadget_ep_clear_halt(struct
- 	if (request) {
- 		priv_req = to_cdns3_request(request);
- 		trb = priv_req->trb;
--		if (trb)
-+		if (trb) {
-+			trb_tmp = *trb;
- 			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
-+		}
- 	}
+ config PINCTRL_EXYNOS
+ 	bool "Pinctrl common driver part for Samsung Exynos SoCs"
+-	depends on OF_GPIO
+-	depends on ARCH_EXYNOS || ARCH_S5PV210 || COMPILE_TEST
++	depends on ARCH_EXYNOS || ARCH_S5PV210 || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
+ 	select PINCTRL_EXYNOS_ARM if ARM && (ARCH_EXYNOS || ARCH_S5PV210)
+ 	select PINCTRL_EXYNOS_ARM64 if ARM64 && ARCH_EXYNOS
+@@ -26,12 +25,10 @@ config PINCTRL_EXYNOS_ARM64
  
- 	writel(EP_CMD_CSTALL | EP_CMD_EPRST, &priv_dev->regs->ep_cmd);
-@@ -2709,7 +2712,7 @@ int __cdns3_gadget_ep_clear_halt(struct
+ config PINCTRL_S3C24XX
+ 	bool "Samsung S3C24XX SoC pinctrl driver"
+-	depends on OF_GPIO
+-	depends on ARCH_S3C24XX || COMPILE_TEST
++	depends on ARCH_S3C24XX || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
  
- 	if (request) {
- 		if (trb)
--			trb->control = trb->control ^ cpu_to_le32(TRB_CYCLE);
-+			*trb = trb_tmp;
- 
- 		cdns3_rearm_transfer(priv_ep, 1);
- 	}
+ config PINCTRL_S3C64XX
+ 	bool "Samsung S3C64XX SoC pinctrl driver"
+-	depends on OF_GPIO
+-	depends on ARCH_S3C64XX || COMPILE_TEST
++	depends on ARCH_S3C64XX || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
 
 
