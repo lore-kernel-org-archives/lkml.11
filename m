@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED756C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14445C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355602AbiEDREb (ORCPT
+        id S1355713AbiEDREk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
+        Wed, 4 May 2022 13:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354681AbiEDQ67 (ORCPT
+        with ESMTP id S1354677AbiEDQ67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:58:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EBB4093D;
-        Wed,  4 May 2022 09:50:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE302E9ED;
+        Wed,  4 May 2022 09:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50FEB617A6;
-        Wed,  4 May 2022 16:50:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A0DCC385A5;
-        Wed,  4 May 2022 16:50:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 573116179D;
+        Wed,  4 May 2022 16:50:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A625BC385A4;
+        Wed,  4 May 2022 16:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683052;
-        bh=TJj4Yiloi+OzkR9APGeJI/DYk4NVRmMyNOzm9Hso+HI=;
+        s=korg; t=1651683050;
+        bh=DAKZ+IMFhB3kynJd+4BTivE21C0uCBxfzjW6JzSQ6Go=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P86s2H8yiVdMjo+9HcAUIDYjYkAB51HygT6STGV4W3NaIT6LbuHhVtINxE6dlnIiF
-         QndU0BKRWw21SEecaE8AZGmxh9+4uG5Dgbi5UxNE5Lq5ocEDLv3YH0foYBwvF7B6FR
-         lP6GnKE5Am3d8H2MVin5gEqatFDtnavIVkwEO3OA=
+        b=VgwUbkZQlop8h+DpbsXYnOMk5s5cY4eSXpmP8N43TAEN+EmmtCScUNUoiu81cecKr
+         zG5IHQM4jKNnxjJQ0KCTeKPZFxlri7pB60ncugAhjp6EbOdXtwxi+KUk/VAksMORO2
+         UQtJ0e7n2EifJog00Y9D6Ae4d6zfTOYiRvKNWsuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 056/129] ARM: dts: logicpd-som-lv: Fix wrong pinmuxing on OMAP35
-Date:   Wed,  4 May 2022 18:44:08 +0200
-Message-Id: <20220504153025.620267806@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 046/129] phy: samsung: exynos5250-sata: fix missing device put in probe error paths
+Date:   Wed,  4 May 2022 18:43:58 +0200
+Message-Id: <20220504153024.801221958@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,102 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 46ff3df87215ff42c0cd2c4bdb7d74540384a69c ]
+[ Upstream commit 5c8402c4db45dd55c2c93c8d730f5dfa7c78a702 ]
 
-The pinout of the OMAP35 and DM37 variants of the SOM-LV are the
-same, but the macros which define the pinmuxing are different
-between OMAP3530 and DM3730.  The pinmuxing was correct for
-for the DM3730, but wrong for the OMAP3530.  Since the boot loader
-was correctly pin-muxing the pins, this was not obvious. As the
-bootloader not guaranteed to pinmux all the pins any more, this
-causes an issue, so the pinmux needs to be moved from a common
-file to their respective board files.
+The actions of of_find_i2c_device_by_node() in probe function should be
+reversed in error paths by putting the reference to obtained device.
 
-Fixes: f8a2e3ff7103 ("ARM: dts: Add minimal support for LogicPD OMAP35xx SOM-LV devkit")
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Message-Id: <20220303171818.11060-1-aford173@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220407091857.230386-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts | 15 +++++++++++++++
- arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts | 15 +++++++++++++++
- arch/arm/boot/dts/logicpd-som-lv.dtsi            | 15 ---------------
- 3 files changed, 30 insertions(+), 15 deletions(-)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
-index 2a0a98fe67f0..3240c67e0c39 100644
---- a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
-+++ b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
-@@ -11,3 +11,18 @@ / {
- 	model = "LogicPD Zoom OMAP35xx SOM-LV Development Kit";
- 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3430", "ti,omap3";
- };
-+
-+&omap3_pmx_core2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&hsusb2_2_pins>;
-+	hsusb2_2_pins: pinmux_hsusb2_2_pins {
-+		pinctrl-single,pins = <
-+			OMAP3430_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
-+			OMAP3430_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
-+			OMAP3430_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
-+			OMAP3430_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
-+			OMAP3430_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
-+			OMAP3430_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
-+		>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
-index a604d92221a4..c757f0d7781c 100644
---- a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
-+++ b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
-@@ -11,3 +11,18 @@ / {
- 	model = "LogicPD Zoom DM3730 SOM-LV Development Kit";
- 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3630", "ti,omap3";
- };
-+
-+&omap3_pmx_core2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&hsusb2_2_pins>;
-+	hsusb2_2_pins: pinmux_hsusb2_2_pins {
-+		pinctrl-single,pins = <
-+			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
-+			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
-+			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
-+			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
-+			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
-+			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
-+		>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/logicpd-som-lv.dtsi b/arch/arm/boot/dts/logicpd-som-lv.dtsi
-index b56524cc7fe2..55b619c99e24 100644
---- a/arch/arm/boot/dts/logicpd-som-lv.dtsi
-+++ b/arch/arm/boot/dts/logicpd-som-lv.dtsi
-@@ -265,21 +265,6 @@ OMAP3_WKUP_IOPAD(0x2a0c, PIN_OUTPUT | MUX_MODE4)	/* sys_boot1.gpio_3 */
- 	};
- };
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 5077987570fd..ea46576404b8 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -199,20 +199,21 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 	sata_phy->phyclk = devm_clk_get(dev, "sata_phyctrl");
+ 	if (IS_ERR(sata_phy->phyclk)) {
+ 		dev_err(dev, "failed to get clk for PHY\n");
+-		return PTR_ERR(sata_phy->phyclk);
++		ret = PTR_ERR(sata_phy->phyclk);
++		goto put_dev;
+ 	}
  
--&omap3_pmx_core2 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&hsusb2_2_pins>;
--	hsusb2_2_pins: pinmux_hsusb2_2_pins {
--		pinctrl-single,pins = <
--			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
--			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
--			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
--			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
--			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
--			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
--		>;
--	};
--};
--
- &uart2 {
- 	interrupts-extended = <&intc 73 &omap3_pmx_core OMAP3_UART2_RX>;
- 	pinctrl-names = "default";
+ 	ret = clk_prepare_enable(sata_phy->phyclk);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable source clk\n");
+-		return ret;
++		goto put_dev;
+ 	}
+ 
+ 	sata_phy->phy = devm_phy_create(dev, NULL, &exynos_sata_phy_ops);
+ 	if (IS_ERR(sata_phy->phy)) {
+-		clk_disable_unprepare(sata_phy->phyclk);
+ 		dev_err(dev, "failed to create PHY\n");
+-		return PTR_ERR(sata_phy->phy);
++		ret = PTR_ERR(sata_phy->phy);
++		goto clk_disable;
+ 	}
+ 
+ 	phy_set_drvdata(sata_phy->phy, sata_phy);
+@@ -220,11 +221,18 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 	phy_provider = devm_of_phy_provider_register(dev,
+ 					of_phy_simple_xlate);
+ 	if (IS_ERR(phy_provider)) {
+-		clk_disable_unprepare(sata_phy->phyclk);
+-		return PTR_ERR(phy_provider);
++		ret = PTR_ERR(phy_provider);
++		goto clk_disable;
+ 	}
+ 
+ 	return 0;
++
++clk_disable:
++	clk_disable_unprepare(sata_phy->phyclk);
++put_dev:
++	put_device(&sata_phy->client->dev);
++
++	return ret;
+ }
+ 
+ static const struct of_device_id exynos_sata_phy_of_match[] = {
 -- 
 2.35.1
 
