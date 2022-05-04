@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B70C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7859EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346740AbiEDI4Y (ORCPT
+        id S1346888AbiEDI4a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        Wed, 4 May 2022 04:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346735AbiEDIxY (ORCPT
+        with ESMTP id S1346731AbiEDIxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 04:53:24 -0400
 Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E34525583
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 094ED252BC
         for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:49:21 -0700 (PDT)
 Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
         by 156.147.23.51 with ESMTP; 4 May 2022 17:19:20 +0900
@@ -48,9 +48,9 @@ Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
-Subject: [PATCH RFC v6 09/21] dept: Add proc knobs to show stats and dependency graph
-Date:   Wed,  4 May 2022 17:17:37 +0900
-Message-Id: <1651652269-15342-10-git-send-email-byungchul.park@lge.com>
+Subject: [PATCH RFC v6 11/21] dept: Apply Dept to wait/event of PG_{locked,writeback}
+Date:   Wed,  4 May 2022 17:17:39 +0900
+Message-Id: <1651652269-15342-12-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
 References: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
@@ -58,248 +58,373 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It'd be useful to show Dept internal stats and dependency graph on
-runtime via proc for better information. Introduced the knobs.
+Makes Dept able to track dependencies by PG_{locked,writeback}. For
+instance, (un)lock_page() generates that type of dependency.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- kernel/dependency/Makefile        |  1 +
- kernel/dependency/dept.c          | 24 ++++------
- kernel/dependency/dept_internal.h | 26 +++++++++++
- kernel/dependency/dept_proc.c     | 92 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 128 insertions(+), 15 deletions(-)
- create mode 100644 kernel/dependency/dept_internal.h
- create mode 100644 kernel/dependency/dept_proc.c
+ include/linux/dept_page.h       | 78 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/page-flags.h      | 45 ++++++++++++++++++++++--
+ include/linux/pagemap.h         |  7 +++-
+ init/main.c                     |  2 ++
+ kernel/dependency/dept_object.h |  2 +-
+ lib/Kconfig.debug               |  1 +
+ mm/filemap.c                    | 68 +++++++++++++++++++++++++++++++++++
+ mm/page_ext.c                   |  5 +++
+ 8 files changed, 204 insertions(+), 4 deletions(-)
+ create mode 100644 include/linux/dept_page.h
 
-diff --git a/kernel/dependency/Makefile b/kernel/dependency/Makefile
-index b5cfb8a..92f1654 100644
---- a/kernel/dependency/Makefile
-+++ b/kernel/dependency/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- obj-$(CONFIG_DEPT) += dept.o
-+obj-$(CONFIG_DEPT) += dept_proc.o
-diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
-index 1e90284..4670eec 100644
---- a/kernel/dependency/dept.c
-+++ b/kernel/dependency/dept.c
-@@ -73,6 +73,7 @@
- #include <linux/hash.h>
- #include <linux/dept.h>
- #include <linux/utsname.h>
-+#include "dept_internal.h"
- 
- static int dept_stop;
- static int dept_per_cpu_ready;
-@@ -235,20 +236,13 @@ static inline struct dept_task *dept_task(void)
-  *       have been freed will be placed.
-  */
- 
--enum object_t {
--#define OBJECT(id, nr) OBJECT_##id,
--	#include "dept_object.h"
--#undef  OBJECT
--	OBJECT_NR,
--};
--
- #define OBJECT(id, nr)							\
- static struct dept_##id spool_##id[nr];					\
- static DEFINE_PER_CPU(struct llist_head, lpool_##id);
- 	#include "dept_object.h"
- #undef  OBJECT
- 
--static struct dept_pool pool[OBJECT_NR] = {
-+struct dept_pool dept_pool[OBJECT_NR] = {
- #define OBJECT(id, nr) {						\
- 	.name = #id,							\
- 	.obj_sz = sizeof(struct dept_##id),				\
-@@ -278,7 +272,7 @@ static void *from_pool(enum object_t t)
- 	if (DEPT_WARN_ON(!irqs_disabled()))
- 		return NULL;
- 
--	p = &pool[t];
-+	p = &dept_pool[t];
- 
- 	/*
- 	 * Try local pool first.
-@@ -308,7 +302,7 @@ static void *from_pool(enum object_t t)
- 
- static void to_pool(void *o, enum object_t t)
- {
--	struct dept_pool *p = &pool[t];
-+	struct dept_pool *p = &dept_pool[t];
- 	struct llist_head *h;
- 
- 	preempt_disable();
-@@ -1960,7 +1954,7 @@ void dept_map_nocheck(struct dept_map *m)
- }
- EXPORT_SYMBOL_GPL(dept_map_nocheck);
- 
--static LIST_HEAD(classes);
-+LIST_HEAD(dept_classes);
- 
- static inline bool within(const void *addr, void *start, unsigned long size)
- {
-@@ -1992,7 +1986,7 @@ void dept_free_range(void *start, unsigned int sz)
- 	while (unlikely(!dept_lock()))
- 		cpu_relax();
- 
--	list_for_each_entry_safe(c, n, &classes, all_node) {
-+	list_for_each_entry_safe(c, n, &dept_classes, all_node) {
- 		if (!within((void *)c->key, start, sz) &&
- 		    !within(c->name, start, sz))
- 			continue;
-@@ -2061,7 +2055,7 @@ static struct dept_class *check_new_class(struct dept_key *local,
- 	c->sub = sub;
- 	c->key = (unsigned long)(k->subkeys + sub);
- 	hash_add_class(c);
--	list_add(&c->all_node, &classes);
-+	list_add(&c->all_node, &dept_classes);
- unlock:
- 	dept_unlock();
- caching:
-@@ -2585,8 +2579,8 @@ static void migrate_per_cpu_pool(void)
- 		struct llist_head *from;
- 		struct llist_head *to;
- 
--		from = &pool[i].boot_pool;
--		to = per_cpu_ptr(pool[i].lpool, boot_cpu);
-+		from = &dept_pool[i].boot_pool;
-+		to = per_cpu_ptr(dept_pool[i].lpool, boot_cpu);
- 		move_llist(to, from);
- 	}
- }
-diff --git a/kernel/dependency/dept_internal.h b/kernel/dependency/dept_internal.h
+diff --git a/include/linux/dept_page.h b/include/linux/dept_page.h
 new file mode 100644
-index 00000000..007c1ee
+index 00000000..d2d093d
 --- /dev/null
-+++ b/kernel/dependency/dept_internal.h
-@@ -0,0 +1,26 @@
++++ b/include/linux/dept_page.h
+@@ -0,0 +1,78 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Dept(DEPendency Tracker) - runtime dependency tracker internal header
-+ *
-+ * Started by Byungchul Park <max.byungchul.park@gmail.com>:
-+ *
-+ *  Copyright (c) 2020 LG Electronics, Inc., Byungchul Park
-+ */
-+
-+#ifndef __DEPT_INTERNAL_H
-+#define __DEPT_INTERNAL_H
++#ifndef __LINUX_DEPT_PAGE_H
++#define __LINUX_DEPT_PAGE_H
 +
 +#ifdef CONFIG_DEPT
-+
-+enum object_t {
-+#define OBJECT(id, nr) OBJECT_##id,
-+	#include "dept_object.h"
-+#undef  OBJECT
-+	OBJECT_NR,
-+};
-+
-+extern struct list_head dept_classes;
-+extern struct dept_pool dept_pool[];
-+
-+#endif
-+#endif /* __DEPT_INTERNAL_H */
-diff --git a/kernel/dependency/dept_proc.c b/kernel/dependency/dept_proc.c
-new file mode 100644
-index 00000000..c069354
---- /dev/null
-+++ b/kernel/dependency/dept_proc.c
-@@ -0,0 +1,92 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Procfs knobs for Dept(DEPendency Tracker)
-+ *
-+ * Started by Byungchul Park <max.byungchul.park@gmail.com>:
-+ *
-+ *  Copyright (C) 2021 LG Electronics, Inc. , Byungchul Park
-+ */
-+#include <linux/proc_fs.h>
-+#include <linux/seq_file.h>
 +#include <linux/dept.h>
-+#include "dept_internal.h"
 +
-+static void *l_next(struct seq_file *m, void *v, loff_t *pos)
++extern struct page_ext_operations dept_pglocked_ops;
++extern struct page_ext_operations dept_pgwriteback_ops;
++extern struct dept_map_common pglocked_mc;
++extern struct dept_map_common pgwriteback_mc;
++
++extern void dept_page_init(void);
++extern struct dept_map_each *get_pglocked_me(struct page *page);
++extern struct dept_map_each *get_pgwriteback_me(struct page *page);
++
++#define dept_pglocked_wait(f)					\
++do {								\
++	struct dept_map_each *me = get_pglocked_me(&(f)->page);	\
++								\
++	if (likely(me))						\
++		dept_wait_split_map(me, &pglocked_mc, _RET_IP_, \
++				    __func__, 0);		\
++} while (0)
++
++#define dept_pglocked_set_bit(f)				\
++do {								\
++	struct dept_map_each *me = get_pglocked_me(&(f)->page);	\
++								\
++	if (likely(me))						\
++		dept_ask_event_split_map(me, &pglocked_mc);	\
++} while (0)
++
++#define dept_pglocked_event(f)					\
++do {								\
++	struct dept_map_each *me = get_pglocked_me(&(f)->page);	\
++								\
++	if (likely(me))						\
++		dept_event_split_map(me, &pglocked_mc, _RET_IP_,\
++				     __func__);			\
++} while (0)
++
++#define dept_pgwriteback_wait(f)				\
++do {								\
++	struct dept_map_each *me = get_pgwriteback_me(&(f)->page);\
++								\
++	if (likely(me))						\
++		dept_wait_split_map(me, &pgwriteback_mc, _RET_IP_,\
++				    __func__, 0);		\
++} while (0)
++
++#define dept_pgwriteback_set_bit(f)				\
++do {								\
++	struct dept_map_each *me = get_pgwriteback_me(&(f)->page);\
++								\
++	if (likely(me))						\
++		dept_ask_event_split_map(me, &pgwriteback_mc);\
++} while (0)
++
++#define dept_pgwriteback_event(f)				\
++do {								\
++	struct dept_map_each *me = get_pgwriteback_me(&(f)->page);\
++								\
++	if (likely(me))						\
++		dept_event_split_map(me, &pgwriteback_mc, _RET_IP_,\
++				     __func__);			\
++} while (0)
++#else
++#define dept_page_init()		do { } while (0)
++#define dept_pglocked_wait(f)		do { } while (0)
++#define dept_pglocked_set_bit(f)	do { } while (0)
++#define dept_pglocked_event(f)		do { } while (0)
++#define dept_pgwriteback_wait(f)	do { } while (0)
++#define dept_pgwriteback_set_bit(f)	do { } while (0)
++#define dept_pgwriteback_event(f)	do { } while (0)
++#endif
++
++#endif /* __LINUX_DEPT_PAGE_H */
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index 9d8eeaa..9fd9e39 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -480,7 +480,6 @@ static unsigned long *folio_flags(struct folio *folio, unsigned n)
+ #define TESTSCFLAG_FALSE(uname, lname)					\
+ 	TESTSETFLAG_FALSE(uname, lname) TESTCLEARFLAG_FALSE(uname, lname)
+ 
+-__PAGEFLAG(Locked, locked, PF_NO_TAIL)
+ PAGEFLAG(Waiters, waiters, PF_ONLY_HEAD)
+ PAGEFLAG(Error, error, PF_NO_TAIL) TESTCLEARFLAG(Error, error, PF_NO_TAIL)
+ PAGEFLAG(Referenced, referenced, PF_HEAD)
+@@ -528,7 +527,6 @@ static unsigned long *folio_flags(struct folio *folio, unsigned n)
+  * risky: they bypass page accounting.
+  */
+ TESTPAGEFLAG(Writeback, writeback, PF_NO_TAIL)
+-	TESTSCFLAG(Writeback, writeback, PF_NO_TAIL)
+ PAGEFLAG(MappedToDisk, mappedtodisk, PF_NO_TAIL)
+ 
+ /* PG_readahead is only used for reads; PG_reclaim is only for writes */
+@@ -611,6 +609,49 @@ static __always_inline bool PageSwapCache(struct page *page)
+ PAGEFLAG_FALSE(SkipKASanPoison, skip_kasan_poison)
+ #endif
+ 
++#ifdef CONFIG_DEPT
++TESTPAGEFLAG(Locked, locked, PF_NO_TAIL)
++__CLEARPAGEFLAG(Locked, locked, PF_NO_TAIL)
++TESTCLEARFLAG(Writeback, writeback, PF_NO_TAIL)
++
++#include <linux/dept_page.h>
++
++static __always_inline
++void __folio_set_locked(struct folio *folio)
 +{
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	return seq_list_next(v, &dept_classes, pos);
++	dept_pglocked_set_bit(folio);
++	__set_bit(PG_locked, folio_flags(folio, FOLIO_PF_NO_TAIL));
 +}
 +
-+static void *l_start(struct seq_file *m, loff_t *pos)
++static __always_inline void __SetPageLocked(struct page *page)
 +{
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	return seq_list_start_head(&dept_classes, *pos);
++	dept_pglocked_set_bit(page_folio(page));
++	__set_bit(PG_locked, &PF_NO_TAIL(page, 1)->flags);
 +}
 +
-+static void l_stop(struct seq_file *m, void *v)
++static __always_inline
++bool folio_test_set_writeback(struct folio *folio)
 +{
++	bool ret = test_and_set_bit(PG_writeback, folio_flags(folio, FOLIO_PF_NO_TAIL));
++
++	if (!ret)
++		dept_pgwriteback_set_bit(folio);
++	return ret;
 +}
 +
-+static int l_show(struct seq_file *m, void *v)
++static __always_inline int TestSetPageWriteback(struct page *page)
 +{
-+	struct dept_class *fc = list_entry(v, struct dept_class, all_node);
-+	struct dept_dep *d;
++	int ret = test_and_set_bit(PG_writeback, &PF_NO_TAIL(page, 1)->flags);
 +
-+	if (v == &dept_classes) {
-+		seq_puts(m, "All classes:\n\n");
-+		return 0;
-+	}
++	if (!ret)
++		dept_pgwriteback_set_bit(page_folio(page));
++	return ret;
++}
++#else
++__PAGEFLAG(Locked, locked, PF_NO_TAIL)
++TESTSCFLAG(Writeback, writeback, PF_NO_TAIL)
++#endif
 +
-+	seq_printf(m, "[%p] %s\n", (void *)fc->key, fc->name);
+ /*
+  * PageReported() is used to track reported free pages within the Buddy
+  * allocator. We can use the non-atomic version of the test and set
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 993994c..49b211c 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -15,6 +15,7 @@
+ #include <linux/bitops.h>
+ #include <linux/hardirq.h> /* for in_interrupt() */
+ #include <linux/hugetlb_inline.h>
++#include <linux/dept_page.h>
+ 
+ struct folio_batch;
+ 
+@@ -890,7 +891,11 @@ bool __folio_lock_or_retry(struct folio *folio, struct mm_struct *mm,
+ 
+ static inline bool folio_trylock(struct folio *folio)
+ {
+-	return likely(!test_and_set_bit_lock(PG_locked, folio_flags(folio, 0)));
++	int ret = test_and_set_bit_lock(PG_locked, folio_flags(folio, 0));
 +
-+	/*
-+	 * XXX: Serialize list traversal if needed. The following might
-+	 * give a wrong information on contention.
-+	 */
-+	list_for_each_entry(d, &fc->dep_head, dep_node) {
-+		struct dept_class *tc = d->wait->class;
++	if (likely(!ret))
++		dept_pglocked_set_bit(folio);
++	return likely(!ret);
+ }
+ 
+ /*
+diff --git a/init/main.c b/init/main.c
+index deabdd5..7d3b905 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -101,6 +101,7 @@
+ #include <linux/init_syscalls.h>
+ #include <linux/stackdepot.h>
+ #include <net/net_namespace.h>
++#include <linux/pagemap.h>
+ 
+ #include <asm/io.h>
+ #include <asm/bugs.h>
+@@ -1073,6 +1074,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 
+ 	lockdep_init();
+ 	dept_init();
++	dept_page_init();
+ 
+ 	/*
+ 	 * Need to run this when irqs are enabled, because it wants
+diff --git a/kernel/dependency/dept_object.h b/kernel/dependency/dept_object.h
+index 0b7eb16..75b4212 100644
+--- a/kernel/dependency/dept_object.h
++++ b/kernel/dependency/dept_object.h
+@@ -6,7 +6,7 @@
+  * nr: # of the object that should be kept in the pool.
+  */
+ 
+-OBJECT(dep, 1024 * 8)
++OBJECT(dep, 1024 * 16)
+ OBJECT(class, 1024 * 8)
+ OBJECT(stack, 1024 * 32)
+ OBJECT(ecxt, 1024 * 16)
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 3c17507..6bb1bf2 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -1270,6 +1270,7 @@ config DEPT
+ 	select DEBUG_RWSEMS
+ 	select DEBUG_WW_MUTEX_SLOWPATH
+ 	select DEBUG_LOCK_ALLOC
++	select PAGE_EXTENSION
+ 	select TRACE_IRQFLAGS
+ 	select STACKTRACE
+ 	select FRAME_POINTER if !MIPS && !PPC && !ARM && !S390 && !MICROBLAZE && !ARC && !X86
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 9a1eef6..eb20de95 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -1157,6 +1157,11 @@ static void folio_wake_bit(struct folio *folio, int bit_nr)
+ 	unsigned long flags;
+ 	wait_queue_entry_t bookmark;
+ 
++	if (bit_nr == PG_locked)
++		dept_pglocked_event(folio);
++	else if (bit_nr == PG_writeback)
++		dept_pgwriteback_event(folio);
 +
-+		seq_printf(m, " -> [%p] %s\n", (void *)tc->key, tc->name);
-+	}
-+	seq_puts(m, "\n");
+ 	key.folio = folio;
+ 	key.bit_nr = bit_nr;
+ 	key.page_match = 0;
+@@ -1229,6 +1234,10 @@ static inline bool folio_trylock_flag(struct folio *folio, int bit_nr,
+ 	if (wait->flags & WQ_FLAG_EXCLUSIVE) {
+ 		if (test_and_set_bit(bit_nr, &folio->flags))
+ 			return false;
++		else if (bit_nr == PG_locked)
++			dept_pglocked_set_bit(folio);
++		else if (bit_nr == PG_writeback)
++			dept_pgwriteback_set_bit(folio);
+ 	} else if (test_bit(bit_nr, &folio->flags))
+ 		return false;
+ 
+@@ -1250,6 +1259,11 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
+ 	bool delayacct = false;
+ 	unsigned long pflags;
+ 
++	if (bit_nr == PG_locked)
++		dept_pglocked_wait(folio);
++	else if (bit_nr == PG_writeback)
++		dept_pgwriteback_wait(folio);
 +
-+	return 0;
+ 	if (bit_nr == PG_locked &&
+ 	    !folio_test_uptodate(folio) && folio_test_workingset(folio)) {
+ 		if (!folio_test_swapbacked(folio)) {
+@@ -1342,6 +1356,11 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
+ 		if (unlikely(test_and_set_bit(bit_nr, folio_flags(folio, 0))))
+ 			goto repeat;
+ 
++		if (bit_nr == PG_locked)
++			dept_pglocked_set_bit(folio);
++		else if (bit_nr == PG_writeback)
++			dept_pgwriteback_set_bit(folio);
++
+ 		wait->flags |= WQ_FLAG_DONE;
+ 		break;
+ 	}
+@@ -3983,3 +4002,52 @@ bool filemap_release_folio(struct folio *folio, gfp_t gfp)
+ 	return try_to_free_buffers(&folio->page);
+ }
+ EXPORT_SYMBOL(filemap_release_folio);
++
++#ifdef CONFIG_DEPT
++static bool need_dept_pglocked(void)
++{
++	return true;
 +}
 +
-+static const struct seq_operations dept_deps_ops = {
-+	.start	= l_start,
-+	.next	= l_next,
-+	.stop	= l_stop,
-+	.show	= l_show,
++struct page_ext_operations dept_pglocked_ops = {
++	.size = sizeof(struct dept_map_each),
++	.need = need_dept_pglocked,
 +};
 +
-+static int dept_stats_show(struct seq_file *m, void *v)
++struct dept_map_each *get_pglocked_me(struct page *p)
 +{
-+	int r;
++	struct page_ext *e = lookup_page_ext(p);
 +
-+	seq_puts(m, "Availability in the static pools:\n\n");
-+#define OBJECT(id, nr)							\
-+	r = atomic_read(&dept_pool[OBJECT_##id].obj_nr);		\
-+	if (r < 0)							\
-+		r = 0;							\
-+	seq_printf(m, "%s\t%d/%d(%d%%)\n", #id, r, nr, (r * 100) / (nr));
-+	#include "dept_object.h"
-+#undef  OBJECT
++	return e ? (void *)e + dept_pglocked_ops.offset : NULL;
++}
++EXPORT_SYMBOL(get_pglocked_me);
 +
-+	return 0;
++static bool need_dept_pgwriteback(void)
++{
++	return true;
 +}
 +
-+static int __init dept_proc_init(void)
-+{
-+	proc_create_seq("dept_deps", S_IRUSR, NULL, &dept_deps_ops);
-+	proc_create_single("dept_stats", S_IRUSR, NULL, dept_stats_show);
-+	return 0;
-+}
++struct page_ext_operations dept_pgwriteback_ops = {
++	.size = sizeof(struct dept_map_each),
++	.need = need_dept_pgwriteback,
++};
 +
-+__initcall(dept_proc_init);
++struct dept_map_each *get_pgwriteback_me(struct page *p)
++{
++	struct page_ext *e = lookup_page_ext(p);
++
++	return e ? (void *)e + dept_pgwriteback_ops.offset : NULL;
++}
++EXPORT_SYMBOL(get_pgwriteback_me);
++
++struct dept_map_common pglocked_mc;
++EXPORT_SYMBOL(pglocked_mc);
++struct dept_map_common pgwriteback_mc;
++EXPORT_SYMBOL(pgwriteback_mc);
++
++void dept_page_init(void)
++{
++	dept_split_map_common_init(&pglocked_mc, NULL, "pglocked");
++	dept_split_map_common_init(&pgwriteback_mc, NULL, "pgwriteback");
++}
++#endif
+diff --git a/mm/page_ext.c b/mm/page_ext.c
+index 2e66d93..b7f5b0d 100644
+--- a/mm/page_ext.c
++++ b/mm/page_ext.c
+@@ -9,6 +9,7 @@
+ #include <linux/page_owner.h>
+ #include <linux/page_idle.h>
+ #include <linux/page_table_check.h>
++#include <linux/dept_page.h>
+ 
+ /*
+  * struct page extension
+@@ -79,6 +80,10 @@ static bool need_page_idle(void)
+ #ifdef CONFIG_PAGE_TABLE_CHECK
+ 	&page_table_check_ops,
+ #endif
++#ifdef CONFIG_DEPT
++	&dept_pglocked_ops,
++	&dept_pgwriteback_ops,
++#endif
+ };
+ 
+ unsigned long page_ext_size = sizeof(struct page_ext);
 -- 
 1.9.1
 
