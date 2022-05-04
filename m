@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65551C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353921AbiEDQxK (ORCPT
+        id S1353926AbiEDQxQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
+        Wed, 4 May 2022 12:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353717AbiEDQwK (ORCPT
+        with ESMTP id S1353737AbiEDQwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:10 -0400
+        Wed, 4 May 2022 12:52:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F1C47051;
-        Wed,  4 May 2022 09:48:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C09E4706C;
+        Wed,  4 May 2022 09:48:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74768B82752;
-        Wed,  4 May 2022 16:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AB6CC385AF;
-        Wed,  4 May 2022 16:48:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ECB5B82553;
+        Wed,  4 May 2022 16:48:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00721C385A4;
+        Wed,  4 May 2022 16:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682907;
-        bh=iypGbHUqKNPjX1KE1w7HRQ7UqHetEHKTylAsXoN+91w=;
+        s=korg; t=1651682910;
+        bh=BUOk1zYNp2SO4CFbYAyT2aAi+mKxa4j9bzGzbW0e+FA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z/hjg8hdjE1pLubKysSmJPt8OfTMzo0neMvvro8Slepd+qvlSoz3HAAfJVPuN7YEf
-         I5yEdYmZHFBTF16/NKXSsTaIAGdcgKePZ0aEDBzUDtUSHlZJYEXEUhJpKXFPhLKYOh
-         +Ch8HewrTq/hBWOrXceBIrJORkgykHynRxrymKcE=
+        b=p+GKl65dui3dXZR0sF4GRkrzThJSCAtC17IkCueEv85Or6ajJf07YF8y+zwMHqeb6
+         YkQHV0aW5uzRFczrUdBinUfdOfmJB5NCzs7lIr+GD+ntULZKKj37BZ8DVc6V4xOVJu
+         LnojNrua3KgpZt3gaZnOPWaqLV0fzHh6kH602Jmo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        stable <stable@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 5.4 25/84] serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
-Date:   Wed,  4 May 2022 18:44:06 +0200
-Message-Id: <20220504152929.563712981@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.4 16/84] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
+Date:   Wed,  4 May 2022 18:43:57 +0200
+Message-Id: <20220504152928.939190636@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,63 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 637674fa40059cddcc3ad2212728965072f62ea3 upstream.
+commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
 
-The EndRun PTP/1588 dual serial port device is based on the Oxford
-Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
-for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
-input derived from the 100MHz PCI Express clock.  The clock rate is
-divided by the oversampling rate of 16 as it is supplied to the baud
-rate generator, yielding the baud base of 3906250.
+When the driver fails to enable the regulator 'vid', we will get the
+following splat:
 
-Replace the incorrect baud base of 4000000 with the right value of
-3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
-the clock for OxSemi PCIe devices").
+[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   79.967570] Call Trace:
+[   79.967773]  <TASK>
+[   79.967951]  regulator_put+0x1f/0x30
+[   79.968254]  devres_release_group+0x319/0x3d0
+[   79.968608]  i2c_device_probe+0x766/0x940
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable <stable@kernel.org>
-Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181515270.9383@angie.orcam.me.uk
+Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
+regulator.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/magnetometer/ak8975.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -2907,7 +2907,7 @@ enum pci_board_num_t {
- 	pbn_panacom2,
- 	pbn_panacom4,
- 	pbn_plx_romulus,
--	pbn_endrun_2_4000000,
-+	pbn_endrun_2_3906250,
- 	pbn_oxsemi,
- 	pbn_oxsemi_1_4000000,
- 	pbn_oxsemi_2_4000000,
-@@ -3434,10 +3434,10 @@ static struct pciserial_board pci_boards
- 	* signal now many ports are available
- 	* 2 port 952 Uart support
- 	*/
--	[pbn_endrun_2_4000000] = {
-+	[pbn_endrun_2_3906250] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 2,
--		.base_baud	= 4000000,
-+		.base_baud	= 3906250,
- 		.uart_offset	= 0x200,
- 		.first_offset	= 0x1000,
- 	},
-@@ -4345,7 +4345,7 @@ static const struct pci_device_id serial
- 	*/
- 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_endrun_2_4000000 },
-+		pbn_endrun_2_3906250 },
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -391,6 +391,7 @@ static int ak8975_power_on(const struct
+ 	if (ret) {
+ 		dev_warn(&data->client->dev,
+ 			 "Failed to enable specified Vid supply\n");
++		regulator_disable(data->vdd);
+ 		return ret;
+ 	}
  	/*
- 	 * Quatech cards. These actually have configurable clocks but for
- 	 * now we just use the default.
 
 
