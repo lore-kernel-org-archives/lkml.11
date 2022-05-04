@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA86FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356635AbiEDRVh (ORCPT
+        id S1354533AbiEDRVo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        Wed, 4 May 2022 13:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355106AbiEDREI (ORCPT
+        with ESMTP id S1355704AbiEDREj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1544D9C1;
-        Wed,  4 May 2022 09:52:44 -0700 (PDT)
+        Wed, 4 May 2022 13:04:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E2B4F45A;
+        Wed,  4 May 2022 09:53:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8457D61852;
-        Wed,  4 May 2022 16:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1120C385AA;
-        Wed,  4 May 2022 16:52:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55CDE616F8;
+        Wed,  4 May 2022 16:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA1FC385AA;
+        Wed,  4 May 2022 16:53:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683154;
-        bh=WHbh4A6ClgjOu6hZJxIoyBalRcJQ3ef8RTnB7wCBapM=;
+        s=korg; t=1651683194;
+        bh=2AHMO1rt09lcgtSq7YM7IIDJOOXaAVwLycWd1FnTCxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ILDNNaCdr6W+qCIjF2lL0rYWgiGb1UaLDzvstx+KV5HvXAljjByIdtDB0ad4iVYFI
-         EBhQVvX6JPfwjzYesZdkbHWei4MtfuXIGSpTvYLgzuR0SfIKKlXVbL8VZloWfaTeRz
-         uBZ1iAiIAg4HmNCbrQhexVs25brw3CGw7P+bb+YE=
+        b=n1i7ZbIGgTpEcOjXxyGJne/zTlTB3TvrK+iNXRhJ0MQcEMvyvlXFpdEU42y45RlSp
+         1HPDfGgTSXtv5P6I4Z75MI2c+IvPXohVQ2wUXhXyopC7ojFwBHbKo6pK7hIelqZmWL
+         TdjNBDGCpz2bVZz0EzLFMdrK0E7DT2G3JKjJAlyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH 5.15 019/177] usb: typec: ucsi: Fix role swapping
-Date:   Wed,  4 May 2022 18:43:32 +0200
-Message-Id: <20220504153055.052584435@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 047/177] video: fbdev: udlfb: properly check endpoint type
+Date:   Wed,  4 May 2022 18:44:00 +0200
+Message-Id: <20220504153057.147274575@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,67 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
+[ Upstream commit aaf7dbe07385e0b8deb7237eca2a79926bbc7091 ]
 
-All attempts to swap the roles timed out because the
-completion was done without releasing the port lock. Fixing
-that by releasing the lock before starting to wait for the
-completion.
+syzbot reported warning in usb_submit_urb, which is caused by wrong
+endpoint type.
 
-Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
-Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
-Cc: stable@vger.kernel.org
-Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This driver uses out bulk endpoint for communication, so
+let's check if this endpoint is present and bail out early if not.
+
+Fail log:
+
+usb 1-1: BOGUS urb xfer, pipe 3 != type 1
+WARNING: CPU: 0 PID: 4822 at drivers/usb/core/urb.c:493 usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
+Modules linked in:
+CPU: 0 PID: 4822 Comm: kworker/0:3 Tainted: G        W         5.13.0-syzkaller #0
+...
+Workqueue: usb_hub_wq hub_event
+RIP: 0010:usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
+...
+Call Trace:
+ dlfb_submit_urb+0x89/0x160 drivers/video/fbdev/udlfb.c:1969
+ dlfb_set_video_mode+0x21f0/0x2950 drivers/video/fbdev/udlfb.c:315
+ dlfb_ops_set_par+0x2a3/0x840 drivers/video/fbdev/udlfb.c:1110
+ dlfb_usb_probe.cold+0x113e/0x1f4a drivers/video/fbdev/udlfb.c:1732
+ usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+
+Fixes: 88e58b1a42f8 ("Staging: add udlfb driver")
+Reported-and-tested-by: syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ drivers/video/fbdev/udlfb.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -964,14 +964,18 @@ static int ucsi_dr_swap(struct typec_por
- 	if (ret < 0)
- 		goto out_unlock;
+diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
+index 90f48b71fd8f..d9eec1b60e66 100644
+--- a/drivers/video/fbdev/udlfb.c
++++ b/drivers/video/fbdev/udlfb.c
+@@ -1649,8 +1649,9 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 	const struct device_attribute *attr;
+ 	struct dlfb_data *dlfb;
+ 	struct fb_info *info;
+-	int retval = -ENOMEM;
++	int retval;
+ 	struct usb_device *usbdev = interface_to_usbdev(intf);
++	struct usb_endpoint_descriptor *out;
  
-+	mutex_unlock(&con->lock);
+ 	/* usb initialization */
+ 	dlfb = kzalloc(sizeof(*dlfb), GFP_KERNEL);
+@@ -1664,6 +1665,12 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 	dlfb->udev = usb_get_dev(usbdev);
+ 	usb_set_intfdata(intf, dlfb);
+ 
++	retval = usb_find_common_endpoints(intf->cur_altsetting, NULL, &out, NULL, NULL);
++	if (retval) {
++		dev_err(&intf->dev, "Device should have at lease 1 bulk endpoint!\n");
++		goto error;
++	}
 +
- 	if (!wait_for_completion_timeout(&con->complete,
--					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
--		ret = -ETIMEDOUT;
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	return 0;
+ 	dev_dbg(&intf->dev, "console enable=%d\n", console);
+ 	dev_dbg(&intf->dev, "fb_defio enable=%d\n", fb_defio);
+ 	dev_dbg(&intf->dev, "shadow enable=%d\n", shadow);
+@@ -1673,6 +1680,7 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ 	if (!dlfb_parse_vendor_descriptor(dlfb, intf)) {
+ 		dev_err(&intf->dev,
+ 			"firmware not recognized, incompatible device?\n");
++		retval = -ENODEV;
+ 		goto error;
+ 	}
  
- out_unlock:
- 	mutex_unlock(&con->lock);
+@@ -1686,8 +1694,10 @@ static int dlfb_usb_probe(struct usb_interface *intf,
  
--	return ret < 0 ? ret : 0;
-+	return ret;
- }
+ 	/* allocates framebuffer driver structure, not framebuffer memory */
+ 	info = framebuffer_alloc(0, &dlfb->udev->dev);
+-	if (!info)
++	if (!info) {
++		retval = -ENOMEM;
+ 		goto error;
++	}
  
- static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
-@@ -1002,11 +1006,13 @@ static int ucsi_pr_swap(struct typec_por
- 	if (ret < 0)
- 		goto out_unlock;
- 
-+	mutex_unlock(&con->lock);
-+
- 	if (!wait_for_completion_timeout(&con->complete,
--				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
--		ret = -ETIMEDOUT;
--		goto out_unlock;
--	}
-+					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
-+		return -ETIMEDOUT;
-+
-+	mutex_lock(&con->lock);
- 
- 	/* Something has gone wrong while swapping the role */
- 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
+ 	dlfb->info = info;
+ 	info->par = dlfb;
+-- 
+2.35.1
+
 
 
