@@ -2,224 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD501C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 06:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345009AbiEDGn1 (ORCPT
+        id S1345027AbiEDGrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 02:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41226 "EHLO
+        Wed, 4 May 2022 02:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345001AbiEDGnW (ORCPT
+        with ESMTP id S239772AbiEDGq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 02:43:22 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B4513FBE
-        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:39:47 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nm8fZ-0007wQ-Ke; Wed, 04 May 2022 08:39:29 +0200
-Message-ID: <ac014f19-0c08-c6cf-d639-f55268ba11c2@pengutronix.de>
-Date:   Wed, 4 May 2022 08:39:23 +0200
+        Wed, 4 May 2022 02:46:56 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755E01A04D
+        for <linux-kernel@vger.kernel.org>; Tue,  3 May 2022 23:43:21 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id i27so1017639ejd.9
+        for <linux-kernel@vger.kernel.org>; Tue, 03 May 2022 23:43:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vmfGvdzEe7Sq3XbMqL7KmA39B54APPzcmwPdJivs+Iw=;
+        b=yUHggd5XkRGX7BVJ4f5wXLAMvX9qY4kDBGmX5mQ+cfxmRE/aFUntAgddgmt0hj+6ZY
+         aDH/UyHEGP4FFDNJ4HjId6UVjym7p8vIejq+c28syw0lcSafOBNduiTzH3cAcn9OXCpY
+         tDJpHzCtfMXinvogMOhlwsjAKW+o5l5tmv4g6GAoPKZt6ee7vJ+wRK+INu7gUjIsPXy4
+         sgXx28LeVmUJS22bHNbAdA/WmtCn55/uro8ypXAJu5n8Gc9MvsNT5XlYunSnrZF4m3dD
+         uW4QdavtPhGGLgwT/G98i+aZsGo2Edv+CRx9E6YzbGuywWlxUxCkHZffHMH+OTm8s/Fu
+         TuCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vmfGvdzEe7Sq3XbMqL7KmA39B54APPzcmwPdJivs+Iw=;
+        b=6w8Lo7qGTS5LNgIDPfM6VkhvYjyp/K5w0SGTfCpk9dKlt6BGvO2DeyppeDRa4aiPuj
+         pWjKTY0CC8MniyNCQg5tiiXGRY4J9ZJIRA2778qrQC+XpffWtgO15Fk6H65WDPANYA4k
+         u2ONJhr9l3T7GERkZmjnplOetWZ6rg5Mx2LdfPAc4apd1Wh35B3/Bz+7OKKlOwkP2YB9
+         oW70sKfyTjuC71r1K1nAXbHbuoPBfRzn6TWqGkzRWd7fjipTFD/0JG+ZsvTmVnkivY/z
+         Gv5zSePPNRiUWGm8JJKzpqBuLSnu/57bjpZZb8Cfy0wwT1CTrWDDF5zYWkCGft2AxVXu
+         zWQg==
+X-Gm-Message-State: AOAM530QPCQzWq9W8TymnhaFlPqDv3zWrSUaf6nxrXCFaGucmQuWP/Hl
+        3zKhFVlLr/Nda4di/RHoDYeW7g==
+X-Google-Smtp-Source: ABdhPJxRFMk5S9I6bl1IFF4cZ1hDJJ33NG9TVpbihrfMxZsC0Wy/1hStbekFcMTYa86v+ErMcU4qMA==
+X-Received: by 2002:a17:906:dc8b:b0:6ef:86e8:777 with SMTP id cs11-20020a170906dc8b00b006ef86e80777mr19342462ejc.326.1651646600068;
+        Tue, 03 May 2022 23:43:20 -0700 (PDT)
+Received: from [192.168.0.208] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id hw7-20020a170907a0c700b006f3ef214e16sm5385364ejc.124.2022.05.03.23.43.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 23:43:19 -0700 (PDT)
+Message-ID: <5eebd441-ded0-3668-f592-05bdeef920b1@linaro.org>
+Date:   Wed, 4 May 2022 08:43:18 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v8 3/6] crypto: caam - add in-kernel interface for blob
- generator
-To:     Michael Walle <michael@walle.cc>
-Cc:     davem@davemloft.net, david@sigma-star.at, dhowells@redhat.com,
-        ebiggers@kernel.org, franck.lenormand@nxp.com,
-        herbert@gondor.apana.org.au, horia.geanta@nxp.com,
-        j.luebbe@pengutronix.de, jarkko@kernel.org, jejb@linux.ibm.com,
-        jmorris@namei.org, kernel@pengutronix.de, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        matthias.schiffer@ew.tq-group.com, pankaj.gupta@nxp.com,
-        richard@nod.at, serge@hallyn.com, sumit.garg@linaro.org,
-        tharvey@gateworks.com, zohar@linux.ibm.com
-References: <20220428140145.870527-4-a.fatoum@pengutronix.de>
- <20220503182454.2749454-1-michael@walle.cc>
+Subject: Re: [PATCH net] NFC: netlink: fix sleep in atomic bug when firmware
+ download timeout
 Content-Language: en-US
-In-Reply-To: <20220503182454.2749454-1-michael@walle.cc>
+To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+References: <20220504055847.38026-1-duoming@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220504055847.38026-1-duoming@zju.edu.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Michael,
-
-On 03.05.22 20:24, Michael Walle wrote:
->> Add functions to realize encrypting and decrypting into memory alongside
->> the CAAM driver.
->>
->> They will be used in a later commit as a source for the trusted key
->> seal/unseal mechanism.
+On 04/05/2022 07:58, Duoming Zhou wrote:
+> There are sleep in atomic bug that could cause kernel panic during
+> firmware download process. The root cause is that nlmsg_new with
+> GFP_KERNEL parameter is called in fw_dnld_timeout which is a timer
+> handler. The call trace is shown below:
 > 
-> Thanks for the work on this and I'm excited to try this. I'm currently
-> playing with this and one thing I've noticed is that an export restricted
-> CAAM isn't handled properly.
-
-I didn't know there are still crypto export restrictions in place ;o
-
-> That is, there are CAAM's which aren't fully featured. Normally, the
-> caam driver will take care of it. For example, see commit f20311cc9c58
-> ("crypto: caam - disable pkc for non-E SoCs"). For the trusted keys case,
-> it would be nice if the kernel will not even probe (or similar).
->
-> Right now, everything seems to work fine, but once I try to add a new key,
-> I'll get the following errros:
+> BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
+> Call Trace:
+> kmem_cache_alloc_node
+> __alloc_skb
+> nfc_genl_fw_download_done
+> call_timer_fn
+> __run_timers.part.0
+> run_timer_softirq
+> __do_softirq
+> ...
 > 
-> # keyctl add trusted mykey "new 32" @u
-> add_key: Invalid argument
-> [   23.138714] caam_jr 8020000.jr: 20000b0f: CCB: desc idx 11: : Invalid CHA selected.
-> [   23.138740] trusted_key: key_seal failed (-22)
-
-Trusted key core will attempt TPM and TEE if enabled before trying CAAM unless
-CAAM was explicitly requested. Silently failing in this case would not be
-helpful to users. I think an info message (not error, as it'd be annoying to
-see it every time booting a restricted SoC) is a good idea.
-Thanks for the feedback.
-
-> Again this is expected, because I run it on a non-E version. IMHO, it
-> should be that the trusted keys shouldn't be enabled at all. Like it is
-> for example if an unknown rng is given:
+> The nlmsg_new with GFP_KERNEL parameter may sleep during memory
+> allocation process, and the timer handler is run as the result of
+> a "software interrupt" that should not call any other function
+> that could sleep.
 > 
->   trusted_key: Unsupported RNG. Supported: kernel, default
+> This patch changes allocation mode of netlink message from GFP_KERNEL
+> to GFP_ATOMIC in order to prevent sleep in atomic bug. The GFP_ATOMIC
+> flag makes memory allocation operation could be used in atomic context.
+> 
+> Fixes: 9674da8759df ("NFC: Add firmware upload netlink command")
+> Fixes: 9ea7187c53f6 ("NFC: netlink: Rename CMD_FW_UPLOAD to CMD_FW_DOWNLOAD")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 
-Other backends return -ENODEV and Trusted key core will ignore and try next
-in list. Please give below patch a try. I tested it on normal unrestricted
-i.MX6. If that's what you had in mind, I can incorporate it into v9.
-If you have any Tested-by's or the like you want me to add, please tell. :)
 
-Cheers,
-Ahmad
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
------------------------------- 8< ------------------------------
 
-diff --git a/drivers/crypto/caam/blob_gen.c b/drivers/crypto/caam/blob_gen.c
-index d0b1a0015308..1d07e056a5dd 100644
---- a/drivers/crypto/caam/blob_gen.c
-+++ b/drivers/crypto/caam/blob_gen.c
-@@ -4,6 +4,8 @@
-  * Copyright (C) 2021 Pengutronix, Ahmad Fatoum <kernel@pengutronix.de>
-  */
- 
-+#define pr_fmt(fmt) "caam blob_gen: " fmt
-+
- #include <linux/device.h>
- #include <soc/fsl/caam-blob.h>
- 
-@@ -147,11 +149,27 @@ EXPORT_SYMBOL(caam_process_blob);
- 
- struct caam_blob_priv *caam_blob_gen_init(void)
- {
-+	struct caam_drv_private *ctrlpriv;
- 	struct device *jrdev;
- 
-+	/*
-+	 * caam_blob_gen_init() may expectedly fail with -ENODEV, e.g. when
-+	 * CAAM driver didn't probe or when SoC lacks BLOB support. An
-+	 * error would be harsh in this case, so we stick to info level.
-+	 */
-+
- 	jrdev = caam_jr_alloc();
--	if (IS_ERR(jrdev))
--		return ERR_CAST(jrdev);
-+	if (IS_ERR(jrdev)) {
-+		pr_info("no job ring available\n");
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	ctrlpriv = dev_get_drvdata(jrdev->parent);
-+	if (!ctrlpriv->blob_present) {
-+		dev_info(jrdev, "no hardware blob generation support\n");
-+		caam_jr_free(jrdev);
-+		return ERR_PTR(-ENODEV);
-+	}
- 
- 	return container_of(jrdev, struct caam_blob_priv, jrdev);
- }
-diff --git a/drivers/crypto/caam/ctrl.c b/drivers/crypto/caam/ctrl.c
-index ca0361b2dbb0..a0a622ca5dd4 100644
---- a/drivers/crypto/caam/ctrl.c
-+++ b/drivers/crypto/caam/ctrl.c
-@@ -660,6 +660,10 @@ static int caam_probe(struct platform_device *pdev)
- 
- 	caam_little_end = !(bool)(rd_reg32(&ctrl->perfmon.status) &
- 				  (CSTA_PLEND | CSTA_ALT_PLEND));
-+
-+	comp_params = rd_reg32(&ctrl->perfmon.comp_parms_ls);
-+	ctrlpriv->blob_present = !!(comp_params & CTPR_LS_BLOB);
-+
- 	comp_params = rd_reg32(&ctrl->perfmon.comp_parms_ms);
- 	if (comp_params & CTPR_MS_PS && rd_reg32(&ctrl->mcr) & MCFGR_LONG_PTR)
- 		caam_ptr_sz = sizeof(u64);
-diff --git a/drivers/crypto/caam/intern.h b/drivers/crypto/caam/intern.h
-index 7d45b21bd55a..e92210e2ab76 100644
---- a/drivers/crypto/caam/intern.h
-+++ b/drivers/crypto/caam/intern.h
-@@ -92,6 +92,7 @@ struct caam_drv_private {
- 	 */
- 	u8 total_jobrs;		/* Total Job Rings in device */
- 	u8 qi_present;		/* Nonzero if QI present in device */
-+	u8 blob_present;	/* Nonzero if BLOB support present in device */
- 	u8 mc_en;		/* Nonzero if MC f/w is active */
- 	int secvio_irq;		/* Security violation interrupt number */
- 	int virt_en;		/* Virtualization enabled in CAAM */
-diff --git a/drivers/crypto/caam/regs.h b/drivers/crypto/caam/regs.h
-index 3738625c0250..b829066f5063 100644
---- a/drivers/crypto/caam/regs.h
-+++ b/drivers/crypto/caam/regs.h
-@@ -414,6 +414,7 @@ struct caam_perfmon {
- #define CTPR_MS_PG_SZ_MASK	0x10
- #define CTPR_MS_PG_SZ_SHIFT	4
- 	u32 comp_parms_ms;	/* CTPR - Compile Parameters Register	*/
-+#define CTPR_LS_BLOB           BIT(1)
- 	u32 comp_parms_ls;	/* CTPR - Compile Parameters Register	*/
- 	u64 rsvd1[2];
- 
-diff --git a/include/soc/fsl/caam-blob.h b/include/soc/fsl/caam-blob.h
-index ec57eec4f2d2..8e821bd56e54 100644
---- a/include/soc/fsl/caam-blob.h
-+++ b/include/soc/fsl/caam-blob.h
-@@ -38,8 +38,9 @@ struct caam_blob_info {
- 
- /**
-  * caam_blob_gen_init - initialize blob generation
-- * Return: pointer to new caam_blob_priv instance on success
-- * and error pointer otherwise
-+ * Return: pointer to new &struct caam_blob_priv instance on success
-+ * and ``ERR_PTR(-ENODEV)`` if CAAM has no hardware blobbing support
-+ * or no job ring could be allocated.
-  */
- struct caam_blob_priv *caam_blob_gen_init(void);
- 
-diff --git a/security/keys/trusted-keys/trusted_caam.c b/security/keys/trusted-keys/trusted_caam.c
-index 46cb2484ec36..e3415c520c0a 100644
---- a/security/keys/trusted-keys/trusted_caam.c
-+++ b/security/keys/trusted-keys/trusted_caam.c
-@@ -55,10 +55,8 @@ static int trusted_caam_init(void)
- 	int ret;
- 
- 	blobifier = caam_blob_gen_init();
--	if (IS_ERR(blobifier)) {
--		pr_err("Job Ring Device allocation for transform failed\n");
-+	if (IS_ERR(blobifier))
- 		return PTR_ERR(blobifier);
--	}
- 
- 	ret = register_key_type(&key_type_trusted);
- 	if (ret)
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Best regards,
+Krzysztof
