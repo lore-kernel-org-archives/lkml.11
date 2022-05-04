@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBB6C35294
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358023AbiEDRUQ (ORCPT
+        id S1358045AbiEDRUU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
+        Wed, 4 May 2022 13:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356063AbiEDREv (ORCPT
+        with ESMTP id S1355959AbiEDREs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4931850079;
-        Wed,  4 May 2022 09:53:44 -0700 (PDT)
+        Wed, 4 May 2022 13:04:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051C64F46F;
+        Wed,  4 May 2022 09:53:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 002EAB82552;
-        Wed,  4 May 2022 16:53:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99215C385AF;
-        Wed,  4 May 2022 16:53:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB645617DE;
+        Wed,  4 May 2022 16:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BF11C385AA;
+        Wed,  4 May 2022 16:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683221;
-        bh=ILpcJ1EnEQUwhSywYQ3IAqyxmDYiAyN1DkLdFFHSEvU=;
+        s=korg; t=1651683215;
+        bh=Ar5oqbUC5hoxxIpXqcghvo8zzA6Nwxw+7dgjprTBSD0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1wtiPB+4QpzVM2uxCuOLKfz+DuxqheGDgUXVli8gdQcXSFwexnpc99P7s8483lV8b
-         Uf9GufWYEHv4h6O6WiMw2lnA2t0k1ldlserpyuAqa9Loln5Pf62lDvQhEWRXi1SZFI
-         iZLifCeQvCj8tnZtpfxcqWrcmV3P189FmjB6vrLI=
+        b=FkxnUdjeM8A8zAV/HaP6nz/gI4YumFtbvowdjodK+iRFBZiBjgSaeIv6kzFc6nLEH
+         Z678/X9DpI50FM9xFNpG+4lj04q2sl9hdOY1SPul7nnOP2ijmu7STERQ60Li/1xW/L
+         bHBsgyRhzQGrMIPrTi7AZFTFlA2ww4bbQGsKO+Kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 074/177] phy: amlogic: fix error path in phy_g12a_usb3_pcie_probe()
-Date:   Wed,  4 May 2022 18:44:27 +0200
-Message-Id: <20220504153059.695107723@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 080/177] net: dsa: Add missing of_node_put() in dsa_port_link_register_of
+Date:   Wed,  4 May 2022 18:44:33 +0200
+Message-Id: <20220504153100.227369061@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,71 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2c8045d48dee703ad8eab2be7d6547765a89c069 ]
+[ Upstream commit fc06b2867f4cea543505acfb194c2be4ebf0c7d3 ]
 
-If clk_prepare_enable() fails we call clk_disable_unprepare()
-in the error path what results in a warning that the clock
-is disabled and unprepared already.
-And if we fail later in phy_g12a_usb3_pcie_probe() then we
-bail out w/o calling clk_disable_unprepare().
-This patch fixes both errors.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
+of_node_put() will check for NULL value.
 
-Fixes: 36077e16c050 ("phy: amlogic: Add Amlogic G12A USB3 + PCIE Combo PHY Driver")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Link: https://lore.kernel.org/r/8e416f95-1084-ee28-860e-7884f7fa2e32@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../phy/amlogic/phy-meson-g12a-usb3-pcie.c    | 20 +++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ net/dsa/port.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c b/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
-index 5b471ab80fe2..54d65a6f0fcc 100644
---- a/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
-+++ b/drivers/phy/amlogic/phy-meson-g12a-usb3-pcie.c
-@@ -414,19 +414,19 @@ static int phy_g12a_usb3_pcie_probe(struct platform_device *pdev)
- 
- 	ret = clk_prepare_enable(priv->clk_ref);
- 	if (ret)
--		goto err_disable_clk_ref;
-+		return ret;
- 
- 	priv->reset = devm_reset_control_array_get_exclusive(dev);
--	if (IS_ERR(priv->reset))
--		return PTR_ERR(priv->reset);
-+	if (IS_ERR(priv->reset)) {
-+		ret = PTR_ERR(priv->reset);
-+		goto err_disable_clk_ref;
-+	}
- 
- 	priv->phy = devm_phy_create(dev, np, &phy_g12a_usb3_pcie_ops);
- 	if (IS_ERR(priv->phy)) {
- 		ret = PTR_ERR(priv->phy);
--		if (ret != -EPROBE_DEFER)
--			dev_err(dev, "failed to create PHY\n");
--
--		return ret;
-+		dev_err_probe(dev, ret, "failed to create PHY\n");
-+		goto err_disable_clk_ref;
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 616330a16d31..63e88de96393 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1201,8 +1201,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
+ 			if (ds->ops->phylink_mac_link_down)
+ 				ds->ops->phylink_mac_link_down(ds, port,
+ 					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
++			of_node_put(phy_np);
+ 			return dsa_port_phylink_register(dp);
+ 		}
++		of_node_put(phy_np);
+ 		return 0;
  	}
  
- 	phy_set_drvdata(priv->phy, priv);
-@@ -434,8 +434,12 @@ static int phy_g12a_usb3_pcie_probe(struct platform_device *pdev)
- 
- 	phy_provider = devm_of_phy_provider_register(dev,
- 						     phy_g12a_usb3_pcie_xlate);
-+	if (IS_ERR(phy_provider)) {
-+		ret = PTR_ERR(phy_provider);
-+		goto err_disable_clk_ref;
-+	}
- 
--	return PTR_ERR_OR_ZERO(phy_provider);
-+	return 0;
- 
- err_disable_clk_ref:
- 	clk_disable_unprepare(priv->clk_ref);
 -- 
 2.35.1
 
