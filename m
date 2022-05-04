@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A596C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355311AbiEDRMr (ORCPT
+        id S1345896AbiEDRM4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35658 "EHLO
+        Wed, 4 May 2022 13:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354439AbiEDRA3 (ORCPT
+        with ESMTP id S1354451AbiEDRA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:00:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9EB4C7A4;
-        Wed,  4 May 2022 09:52:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDD24C79B;
+        Wed,  4 May 2022 09:52:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FDDD61808;
-        Wed,  4 May 2022 16:52:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A94B4C385AA;
-        Wed,  4 May 2022 16:52:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FFAD617BE;
+        Wed,  4 May 2022 16:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A229AC385A5;
+        Wed,  4 May 2022 16:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683136;
-        bh=pH3brHySVuqvaO/GLTVJAdfN9TFvIk3pZnWEFz1DQdU=;
+        s=korg; t=1651683134;
+        bh=BME9CcRKN5HaiyAH0M+P+DN+4uP3raAhX29wVJvqTdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tt8aATmK1TT30mfVrAqZ8dr3NIsGbPtdUCuNDssRzpbRECZFsyUBWD6MmIF1YG3I2
-         PMn/LgmBqR7mZ4Stda51viOmmzdVcXMaGkAvHFSfsyNi9cAflJjj9m4FGyFg2m2rpT
-         ZUqTAmKe4OVvFnGavGbwhb7QPuCfGrkbk9XgJQxw=
+        b=dVPJQYA5j2O7vf1VRj304hYiWfGpLcuJYXUyQ+jrMO/QAAfWSfDk9d4fWgMdjYdBo
+         2fYFhX4RoyOpY91imPz1m9gts3tUHJVQPYJaOy64KCfnKjjVIydHHbAOhmD9dAgbHq
+         zZBS7WyyBVHoyz00vXejPjjgle3L93XGmw3uJYlg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.10 109/129] drm/i915: Fix SEL_FETCH_PLANE_*(PIPE_B+) register addresses
-Date:   Wed,  4 May 2022 18:45:01 +0200
-Message-Id: <20220504153029.727825922@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 117/129] tty: n_gsm: fix mux cleanup after unregister tty device
+Date:   Wed,  4 May 2022 18:45:09 +0200
+Message-Id: <20220504153030.637535756@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,35 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Imre Deak <imre.deak@intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 4ae4dd2e26fdfebf0b8c6af6c325383eadfefdb4 upstream.
+commit 284260f278b706364fb4c88a7b56ba5298d5973c upstream.
 
-Fix typo in the _SEL_FETCH_PLANE_BASE_1_B register base address.
+Internally, we manage the alive state of the mux channels and mux itself
+with the field member 'dead'. This makes it possible to notify the user
+if the accessed underlying link is already gone. On the other hand,
+however, removing the virtual ttys before terminating the channels may
+result in peer messages being received without any internal target. Move
+the mux cleanup procedure from gsmld_detach_gsm() to gsmld_close() to fix
+this by keeping the virtual ttys open until the mux has been cleaned up.
 
-Fixes: a5523e2ff074a5 ("drm/i915: Add PSR2 selective fetch registers")
-Cc: José Roberto de Souza <jose.souza@intel.com>
-Cc: <stable@vger.kernel.org> # v5.9+
-Signed-off-by: Imre Deak <imre.deak@intel.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220421162221.2261895-1-imre.deak@intel.com
-(cherry picked from commit af2cbc6ef967f61711a3c40fca5366ea0bc7fecc)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-4-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/i915_reg.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -7202,7 +7202,7 @@ enum {
- #define _SEL_FETCH_PLANE_BASE_6_A		0x70940
- #define _SEL_FETCH_PLANE_BASE_7_A		0x70960
- #define _SEL_FETCH_PLANE_BASE_CUR_A		0x70880
--#define _SEL_FETCH_PLANE_BASE_1_B		0x70990
-+#define _SEL_FETCH_PLANE_BASE_1_B		0x71890
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2410,7 +2410,6 @@ static void gsmld_detach_gsm(struct tty_
+ 	WARN_ON(tty != gsm->tty);
+ 	for (i = 1; i < NUM_DLCI; i++)
+ 		tty_unregister_device(gsm_tty_driver, base + i);
+-	gsm_cleanup_mux(gsm, false);
+ 	tty_kref_put(gsm->tty);
+ 	gsm->tty = NULL;
+ }
+@@ -2478,6 +2477,12 @@ static void gsmld_close(struct tty_struc
+ {
+ 	struct gsm_mux *gsm = tty->disc_data;
  
- #define _SEL_FETCH_PLANE_BASE_A(plane) _PICK(plane, \
- 					     _SEL_FETCH_PLANE_BASE_1_A, \
++	/* The ldisc locks and closes the port before calling our close. This
++	 * means we have no way to do a proper disconnect. We will not bother
++	 * to do one.
++	 */
++	gsm_cleanup_mux(gsm, false);
++
+ 	gsmld_detach_gsm(tty, gsm);
+ 
+ 	gsmld_flush_buffer(tty);
 
 
