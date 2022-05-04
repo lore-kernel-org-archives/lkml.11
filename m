@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE9AC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239627AbiEDRLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S1356279AbiEDRL4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355035AbiEDQ7h (ORCPT
+        with ESMTP id S1355026AbiEDQ7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:59:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF95348E76;
-        Wed,  4 May 2022 09:51:14 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681184924F;
+        Wed,  4 May 2022 09:51:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15100617C2;
-        Wed,  4 May 2022 16:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F068C385A5;
-        Wed,  4 May 2022 16:51:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2FF2B827A3;
+        Wed,  4 May 2022 16:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58678C385AA;
+        Wed,  4 May 2022 16:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683073;
-        bh=PbnDXMsiqXRFV37wHPynCfNOIQWwNRS0+/3UQ4ufAPE=;
+        s=korg; t=1651683071;
+        bh=OM7cXWUgQsh7S2dSER4HhmICHOFNPlw7hzYj/A2eg9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BZj+rOLrzBuUxyOdNXPnDgdKZYcFlSBt0nx+8Lv84FizWa65nQTQVXDebT2xvdC/C
-         NJBTjDYvms7RtKLuhh+Tw9knsgN7j/DBRF7OumqE5mQBpmzUJzr0trEm5uSXdo7zTg
-         ZIItlB6Fc5egp0R6c86Yq8RjmKVc76qQ8EfRkUek=
+        b=tg/t1P2acfW2pV1SyOGKFv4JPAq85AbBJdP1yBCltK4N2lECxRI4hmPdioIawxpTH
+         bjQDYZBlhj+1d25V1d54MvWnn/mx4MpP7O3e+8McWRSCmBvdB8oUD7ow7q/OoZoV/j
+         rj7ibC+6JKfyWNgBBU1tgez+UuGvnu04nCJTnF28=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Francesco Ruggeri <fruggeri@arista.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 077/129] net: hns3: add validity check for message data length
-Date:   Wed,  4 May 2022 18:44:29 +0200
-Message-Id: <20220504153027.279669420@linuxfoundation.org>
+Subject: [PATCH 5.10 067/129] tcp: md5: incorrect tcp_header_len for incoming connections
+Date:   Wed,  4 May 2022 18:44:19 +0200
+Message-Id: <20220504153026.578788965@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,40 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Francesco Ruggeri <fruggeri@arista.com>
 
-[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
+[ Upstream commit 5b0b9e4c2c895227c8852488b3f09839233bba54 ]
 
-Add validity check for message data length in function
-hclge_send_mbx_msg(), avoid unexpected overflow.
+In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
+remote address in newsk. But that address is still 0 in newsk at this
+point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
+Use the address from the request socket instead.
 
-Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/ipv4/tcp_minisocks.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 2ea347b822db..b948fe3ac56b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -91,6 +91,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
- 	enum hclge_cmd_status status;
- 	struct hclge_desc desc;
- 
-+	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
-+		dev_err(&hdev->pdev->dev,
-+			"msg data length(=%u) exceeds maximum(=%u)\n",
-+			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
-+		return -EMSGSIZE;
-+	}
-+
- 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
- 
- 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index f0f67b25c97a..62f5ef9e6f93 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -538,7 +538,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+ 	newtp->tsoffset = treq->ts_off;
+ #ifdef CONFIG_TCP_MD5SIG
+ 	newtp->md5sig_info = NULL;	/*XXX*/
+-	if (newtp->af_specific->md5_lookup(sk, newsk))
++	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
+ 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
+ #endif
+ 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
 -- 
 2.35.1
 
