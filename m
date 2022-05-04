@@ -2,123 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94907C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB31C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382299AbiEERnZ (ORCPT
+        id S1382755AbiEERn3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
+        Thu, 5 May 2022 13:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359669AbiEERnX (ORCPT
+        with ESMTP id S1382358AbiEERnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:43:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293235AA71;
-        Thu,  5 May 2022 10:39:43 -0700 (PDT)
+        Thu, 5 May 2022 13:43:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22AC5A2C8;
+        Thu,  5 May 2022 10:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D862CB82E0F;
-        Thu,  5 May 2022 17:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 650BAC385A4;
-        Thu,  5 May 2022 17:39:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651772380;
-        bh=MP4FGxU0cT0HKuYaYoJR7vQCDWINocb0Kh7IqE1yM/k=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40FD461DC8;
+        Thu,  5 May 2022 17:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926ECC385A4;
+        Thu,  5 May 2022 17:39:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651772384;
+        bh=51RmuxsLCb5IZMOE7TRcGZprdeB6vu+ht+bajlN+wb0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A0d8mDv8eQS0cy+QeEcpBQjV+h0XnRDsth6FV/0cU4rTUsFS90MtfPDWCvD1zzeWJ
-         0Eh89QRxK4r0SyGanFAYF5NluizqIdtRhYpcmm44vcROBIhDDtnLK3nIm7BwIXvPLA
-         jlJUgE56vDtRnVUsp2FTt7lZu543uMxDThIEi4VgGp5mmb+3IuSl9F4uBmV8nO4yiG
-         fsFzoLELM6BHmncThff+rKHvKxTIi7PW3DpsbC3I1IRVkWN+TTj7AGZvFCwtlXZQCS
-         dVh/K4WlHKPoxQrANlUuiU0oN5YGc/MaRb/7FhcSvwDDkAdbuL2OwXmsxtRIlLDB9r
-         VY2ZvibPScFNA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 35EB1400B1; Thu,  5 May 2022 14:39:38 -0300 (-03)
-Date:   Thu, 5 May 2022 14:39:38 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v5 2/6] perf evlist: Clear all_cpus before propagating
-Message-ID: <YnQL2rHZhvZPDeEZ@kernel.org>
-References: <20220503041757.2365696-1-irogers@google.com>
- <20220503041757.2365696-3-irogers@google.com>
- <9e862a01-b955-70c0-25ae-2efc03f636bf@intel.com>
+        b=ddliANIBdN9v47GuQ4HXO589wVvW3sKVS/E1qO/5XBne5KQ0d3ZHQ+MiL27yhL1Eo
+         ZcMKlpKdJGij3JYs2tcGsp1GHwOUlaYmVBxKlaupK6ovRnvxmB6M2iD8UkIR+MnbyG
+         i13vPZXKAosK+Qjp8TF5fAfUva0eJeblgAa9IXoA=
+Date:   Wed, 4 May 2022 20:24:00 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-pm@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC v1] opp: add config option for debug
+Message-ID: <YnLEwEIOqnLGxFjJ@kroah.com>
+References: <20220504174823.156709-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9e862a01-b955-70c0-25ae-2efc03f636bf@intel.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20220504174823.156709-1-linux@fw-web.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, May 04, 2022 at 05:15:57PM +0300, Adrian Hunter escreveu:
-> On 3/05/22 07:17, Ian Rogers wrote:
-> > all_cpus is merged into during propagation. Initially all_cpus is set
-> > from PMU sysfs. perf_evlist__set_maps will recompute it and change
-> > evsel->cpus to user_requested_cpus if they are given. If all_cpus isn't
-> > cleared then the union of the user_requested_cpus and PMU sysfs values
-> > is set to all_cpus, whereas just user_requested_cpus is necessary. To
-> > avoid this make all_cpus empty prior to propagation.
-> > 
-> > Signed-off-by: Ian Rogers <irogers@google.com>
+On Wed, May 04, 2022 at 07:48:23PM +0200, Frank Wunderlich wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
 > 
-> Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+> Currently OPP debug is enabled by DEBUG_DRIVER option. This is generic
+> driver debug and opp floods serial console. This is annoying if opp is
+> not needed so give it an additional config-key.
+> 
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+>  drivers/base/Kconfig | 1 +
+>  drivers/opp/Kconfig  | 7 +++++++
+>  drivers/opp/Makefile | 2 +-
+>  3 files changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+> index 6f04b831a5c0..8ae826c95d5f 100644
+> --- a/drivers/base/Kconfig
+> +++ b/drivers/base/Kconfig
+> @@ -130,6 +130,7 @@ config DEV_COREDUMP
+>  config DEBUG_DRIVER
+>  	bool "Driver Core verbose debug messages"
+>  	depends on DEBUG_KERNEL
+> +	imply DEBUG_OPP
 
-Thanks, applied.
+This should not be needed, otherwise we would have to do that for all
+random driver subsystem in the kernel.
 
-- Arnaldo
+>  	help
+>  	  Say Y here if you want the Driver core to produce a bunch of
+>  	  debug messages to the system log. Select this if you are having a
+> diff --git a/drivers/opp/Kconfig b/drivers/opp/Kconfig
+> index e8ce47b32735..6a2d2c6c1143 100644
+> --- a/drivers/opp/Kconfig
+> +++ b/drivers/opp/Kconfig
+> @@ -12,3 +12,10 @@ config PM_OPP
+>  	  representing individual voltage domains and provides SOC
+>  	  implementations a ready to use framework to manage OPPs.
+>  	  For more information, read <file:Documentation/power/opp.rst>
+> +
+> +menu "Operating Performance Points (OPP)"
+> +config DEBUG_OPP
+> +	bool "Debug Operating Performance Points"
+> +	help
+> +	  enable opp debugging
+> +endmenu
+> diff --git a/drivers/opp/Makefile b/drivers/opp/Makefile
+> index f65ed5985bb4..2589915eef95 100644
+> --- a/drivers/opp/Makefile
+> +++ b/drivers/opp/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+> -ccflags-$(CONFIG_DEBUG_DRIVER)	:= -DDEBUG
+> +ccflags-$(CONFIG_DEBUG_OPP)	:= -DDEBUG
 
- 
-> > ---
-> >  tools/lib/perf/evlist.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-> > index a09315538a30..974b4585f93e 100644
-> > --- a/tools/lib/perf/evlist.c
-> > +++ b/tools/lib/perf/evlist.c
-> > @@ -59,6 +59,10 @@ static void perf_evlist__propagate_maps(struct perf_evlist *evlist)
-> >  {
-> >  	struct perf_evsel *evsel;
-> >  
-> > +	/* Recomputing all_cpus, so start with a blank slate. */
-> > +	perf_cpu_map__put(evlist->all_cpus);
-> > +	evlist->all_cpus = NULL;
-> > +
-> >  	perf_evlist__for_each_evsel(evlist, evsel)
-> >  		__perf_evlist__propagate_maps(evlist, evsel);
-> >  }
+This feels wrong, you shouldn't need a -DDEBUG for anything if all is
+going correctly.  Why is opp so odd this way?  Just use the normal
+dev_dbg() macros and all will be fine, nothing special should be needed
+at all.
 
--- 
+And don't use a config option for it either, no one will turn it on, it
+needs to "just work" for all systems.
 
-- Arnaldo
+thanks,
+
+greg k-h
