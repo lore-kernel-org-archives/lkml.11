@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E5BC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 184CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357901AbiEDR30 (ORCPT
+        id S1357978AbiEDR3i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        Wed, 4 May 2022 13:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356160AbiEDRJD (ORCPT
+        with ESMTP id S1356416AbiEDRJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE3A527DB;
-        Wed,  4 May 2022 09:54:55 -0700 (PDT)
+        Wed, 4 May 2022 13:09:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4E349F27;
+        Wed,  4 May 2022 09:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB6A8B8278E;
-        Wed,  4 May 2022 16:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D6B9C385A5;
-        Wed,  4 May 2022 16:54:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCF2A61505;
+        Wed,  4 May 2022 16:55:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27DD3C385A5;
+        Wed,  4 May 2022 16:55:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683293;
-        bh=sIcdSQKIIDNNFM/w9Updax0ffwrvLpzihuIATxAFl1g=;
+        s=korg; t=1651683306;
+        bh=y6+AhN97cqfn9F0f03PjRlxkvydZfldsY9kMaxQuHVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QnPx14KT7XLjFf+bhymLHWFN3gjI/glrZD7F8ckrIA0pTu3qrZ3+FmOwIntdloACE
-         H/VfjzZV2A8peEdukMzKWTcMN3IC4OZqj9vMWZfHTSX1j5QXV8o5MTI0w7qie4hKO6
-         oJDi0wg6EhTPdpcbs1G6JULWHdcbwZFO6Ssj2rGY=
+        b=EWFLSxTwcWuPtYOXraSMFPVBxkgZgyr+Cl+JfbEZtaTmAUndMMcuPnkf+sjWS2uSj
+         Xh0c1mbP3jgRTn3VWa8rhx5GtwRcgikTUTOZaRLgXGlYZNKHvPR1o4X0+H1QgM4YMj
+         9NGFuReST67fZUxC1icKwIe6ZReunWm9hJAuAqzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.15 147/177] drm/i915: Fix SEL_FETCH_PLANE_*(PIPE_B+) register addresses
-Date:   Wed,  4 May 2022 18:45:40 +0200
-Message-Id: <20220504153106.457815410@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.15 171/177] tty: n_gsm: fix incorrect UA handling
+Date:   Wed,  4 May 2022 18:46:04 +0200
+Message-Id: <20220504153108.917080162@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,35 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Imre Deak <imre.deak@intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 4ae4dd2e26fdfebf0b8c6af6c325383eadfefdb4 upstream.
+commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
 
-Fix typo in the _SEL_FETCH_PLANE_BASE_1_B register base address.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
+acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
+discarded. Currently, all UA frame are handled in the same way regardless
+of the PF bit. This does not comply with the standard.
+Remove the UA case in gsm_queue() to process only UA frames with PF bit set
+to 1 to abide the standard.
 
-Fixes: a5523e2ff074a5 ("drm/i915: Add PSR2 selective fetch registers")
-Cc: José Roberto de Souza <jose.souza@intel.com>
-Cc: <stable@vger.kernel.org> # v5.9+
-Signed-off-by: Imre Deak <imre.deak@intel.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220421162221.2261895-1-imre.deak@intel.com
-(cherry picked from commit af2cbc6ef967f61711a3c40fca5366ea0bc7fecc)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/i915_reg.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -7458,7 +7458,7 @@ enum {
- #define _SEL_FETCH_PLANE_BASE_6_A		0x70940
- #define _SEL_FETCH_PLANE_BASE_7_A		0x70960
- #define _SEL_FETCH_PLANE_BASE_CUR_A		0x70880
--#define _SEL_FETCH_PLANE_BASE_1_B		0x70990
-+#define _SEL_FETCH_PLANE_BASE_1_B		0x71890
- 
- #define _SEL_FETCH_PLANE_BASE_A(plane) _PICK(plane, \
- 					     _SEL_FETCH_PLANE_BASE_1_A, \
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1816,7 +1816,6 @@ static void gsm_queue(struct gsm_mux *gs
+ 		gsm_response(gsm, address, UA);
+ 		gsm_dlci_close(dlci);
+ 		break;
+-	case UA:
+ 	case UA|PF:
+ 		if (cr == 0 || dlci == NULL)
+ 			break;
 
 
