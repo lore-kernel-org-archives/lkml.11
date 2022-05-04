@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E501C3527B
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F93C41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359575AbiEDRkK (ORCPT
+        id S1359448AbiEDRkF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
+        Wed, 4 May 2022 13:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356798AbiEDRJo (ORCPT
+        with ESMTP id S1356797AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34EE1DA55;
-        Wed,  4 May 2022 09:55:40 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB9A1A807;
+        Wed,  4 May 2022 09:55:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7025DB82795;
-        Wed,  4 May 2022 16:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26B4AC385A5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72F09B8278E;
         Wed,  4 May 2022 16:55:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 226D5C385AA;
+        Wed,  4 May 2022 16:55:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683338;
-        bh=9vZ4s2S3OkqcFoWeX3a+FHD4PzlE9/XUKS4qPEXLkgI=;
+        s=korg; t=1651683337;
+        bh=MdhV4vMP/Ag3QWOmc6UiTASLX41bGZ/YGwSwW6Adsdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cl2QCCzS6jUx6/lQTTv66BwoUXn7Cjgw2O6U/t6s07YOLnMaZa7PKftsf1KJVotOW
-         MiCWpv24V2IWa4RvCuSyqUley+JREU0lNk/Zf+jk+GG04MM1vOclLTcvNNHc2rvPRu
-         m6eXoVmGv7tbhF9mKI9eUwzH2Qm33ngy/2wKq8Ys=
+        b=TXENfEro0bMF1nIpFtjGlDsPPGeniyrtQJN7guV8JCA2Loh9Rr7pbvBFuPkE5UU9P
+         S731tJDALYB0Av8YhUhGhEwvbzgzgnQwio79ZqRIC24NtQgdrsE59o6AttPb8wrczl
+         U6Zv47k5P4Ooq/enitEzfNx3row9SrnFiLxV4wIk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.17 013/225] iio: dac: ad5592r: Fix the missing return value.
-Date:   Wed,  4 May 2022 18:44:11 +0200
-Message-Id: <20220504153111.439649738@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.17 012/225] xhci: increase usb U3 -> U0 link resume timeout from 100ms to 500ms
+Date:   Wed,  4 May 2022 18:44:10 +0200
+Message-Id: <20220504153111.358907655@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,34 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
+commit 33597f0c48be0836854d43c577e35c8f8a765a7d upstream.
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+The first U3 wake signal by the host may be lost if the USB 3 connection is
+tunneled over USB4, with a runtime suspended USB4 host, and firmware
+implemented connection manager.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Specs state the host must wait 100ms (tU3WakeupRetryDelay) before
+resending a U3 wake signal if device doesn't respond, leading to U3 -> U0
+link transition times around 270ms in the tunneled case.
+
+Fixes: 0200b9f790b0 ("xhci: Wait until link state trainsits to U0 after setting USB_SS_PORT_LS_U0")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-4-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5592r-base.c |    2 +-
+ drivers/usb/host/xhci-hub.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -523,7 +523,7 @@ static int ad5592r_alloc_channels(struct
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
- 
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
- 	}
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -1434,7 +1434,7 @@ int xhci_hub_control(struct usb_hcd *hcd
+ 				}
+ 				spin_unlock_irqrestore(&xhci->lock, flags);
+ 				if (!wait_for_completion_timeout(&bus_state->u3exit_done[wIndex],
+-								 msecs_to_jiffies(100)))
++								 msecs_to_jiffies(500)))
+ 					xhci_dbg(xhci, "missing U0 port change event for port %d-%d\n",
+ 						 hcd->self.busnum, wIndex + 1);
+ 				spin_lock_irqsave(&xhci->lock, flags);
 
 
