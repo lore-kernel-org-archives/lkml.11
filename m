@@ -2,87 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A16BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1715FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376489AbiEDSKM (ORCPT
+        id S1376690AbiEDSKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
+        Wed, 4 May 2022 14:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377025AbiEDSJT (ORCPT
+        with ESMTP id S1359530AbiEDSKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:09:19 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9798274860;
-        Wed,  4 May 2022 10:25:12 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id n8so2028855plh.1;
-        Wed, 04 May 2022 10:25:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=94a9pX/GV/eEl+QtDLHnwc8lloWm9uKODw2DiIxPFzg=;
-        b=hMPZh8mGU2zFa2VGOGkN5717mRU5gahpNVPrU0T0mjj9ZFEBhCtxltxSAJW/xOoGxi
-         nntHAqGXVTwhbqVV9VFbrGos70fFk2waKaiBz7hqE4JYtiPiTnS9S4TlYavhfdk6sRJV
-         wCDhpgFuirek7zmZDSBvyBy1W1xbadu4YlxzGLha0Z4Jhr2R45sUJOYDy5iOzMONRlQg
-         xFLu2D0Cvm63VQsJnFafDjrc+0CwL3+M1jAMfJxj7e2nc9rEqzp+McZSBM2EpX/+B+jQ
-         +FG0Pbhc0DWHx/K/WKARoZKZWG6kinRg34w0iPfyRr0YekXngBsyRyLAGAZ0Yiyuuh0S
-         3vUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=94a9pX/GV/eEl+QtDLHnwc8lloWm9uKODw2DiIxPFzg=;
-        b=ITkORjr7VAvt8EUZQ/+TwkETNBxjdmWauCj1eGG2bmXTeAKABI+LKeQAIIzZXzGLIC
-         tEoXMKbz2ZmelZQXIZB1c8V1Y4WUjEIKT3z02JWyyiOBga5pu101KY6txhXhEUClXZ0o
-         YGFJzvS2L2LnXLiqnS4GqVAxCYFOOiKUb0exwif0N8MXw2hh431NUpoTId/xNxXKRave
-         clhJF1+76GTyXMGOQpcy1fJoKm55mO6FsJLt3qTsNyUlDiTBtvnrUe+fQcp8namrNWyn
-         xleKD/1ofS5GNsezS5sK7Jid80cdcS9971ZEZIisBpqQnamhbNXJnNKXcUzQGQnN9Xxf
-         GVkg==
-X-Gm-Message-State: AOAM53371Kj0Qe5TU3kKLYv0Qtu64UFzKGfrEEGFRtzXMbS205VTGKlB
-        JR8WdG/zqw/tq3BceabqONY=
-X-Google-Smtp-Source: ABdhPJz5Wr0yzyr0iUGy8R03R4GV1la4/GHvqE06XPHjNppfYxsf1zwfEtO4ZGPxmT1SDM+Or4PKhw==
-X-Received: by 2002:a17:902:c403:b0:15e:8d3a:b018 with SMTP id k3-20020a170902c40300b0015e8d3ab018mr22776104plk.94.1651685112072;
-        Wed, 04 May 2022 10:25:12 -0700 (PDT)
-Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s21-20020aa78295000000b0050dc76281b7sm8772104pfm.145.2022.05.04.10.25.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 May 2022 10:25:11 -0700 (PDT)
-From:   Justin Chen <justinpopo6@gmail.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, f.fainelli@gmail.com,
-        Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH 2/2] dt-bindings: gpio: pca95xx: add entry for pca6408
-Date:   Wed,  4 May 2022 10:25:00 -0700
-Message-Id: <1651685100-44687-3-git-send-email-justinpopo6@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651685100-44687-1-git-send-email-justinpopo6@gmail.com>
-References: <1651685100-44687-1-git-send-email-justinpopo6@gmail.com>
+        Wed, 4 May 2022 14:10:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9AE5A143
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:26:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4776560A27
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 17:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13756C385A4;
+        Wed,  4 May 2022 17:26:46 +0000 (UTC)
+Date:   Wed, 4 May 2022 18:26:43 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: Re: [PATCH -next v6 5/6] arm64/mm: Enable
+ ARCH_SUPPORTS_PAGE_TABLE_CHECK
+Message-ID: <YnK3U3qDhhgwaULb@arm.com>
+References: <20220426081036.1374452-1-tongtiangen@huawei.com>
+ <20220426081036.1374452-6-tongtiangen@huawei.com>
+ <ae74ea7c-9014-b162-f1e7-a66f402aee49@arm.com>
+ <80f6c347-db5d-8836-bc79-60c7b2a6eed8@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <80f6c347-db5d-8836-bc79-60c7b2a6eed8@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NXP PCA5608 is the 8-bit version of PCA5616.
+On Tue, May 03, 2022 at 09:13:20AM +0800, Tong Tiangen wrote:
+> 在 2022/4/29 14:18, Anshuman Khandual 写道:
+> > On 4/26/22 13:40, Tong Tiangen wrote:
+> > > @@ -884,7 +928,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+> > >   static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+> > >   					    unsigned long address, pmd_t *pmdp)
+> > >   {
+> > > -	return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
+> > > +	pmd_t pmd = pte_pmd(__pte(xchg_relaxed(&pte_val(*(pte_t *)pmdp), 0)));
+> > 
+> > Why there is any change here ? Why not just the following instead, like what you did
+> > in ptep_get_and_clear() above. The page table entry return value here just needs to
+> > be preserved for subsequent page table check helpers.
+> > 
+> > 	pmd_t pmd = pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
+> 
+> The purpose of what I do here is to avoid doing page_table_check_pte_clear()
+> in ptep_get_and_clear(). there is no functional change here.
 
-Signed-off-by: Justin Chen <justinpopo6@gmail.com>
----
- Documentation/devicetree/bindings/gpio/gpio-pca95xx.yaml | 1 +
- 1 file changed, 1 insertion(+)
+I'm fine with using xchg here but I'd go for pmd_val directly, no need
+for conversion to pte_t:
 
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-pca95xx.yaml b/Documentation/devicetree/bindings/gpio/gpio-pca95xx.yaml
-index dc0fc8f..977b14d 100644
---- a/Documentation/devicetree/bindings/gpio/gpio-pca95xx.yaml
-+++ b/Documentation/devicetree/bindings/gpio/gpio-pca95xx.yaml
-@@ -30,6 +30,7 @@ properties:
-       - maxim,max7325
-       - maxim,max7326
-       - maxim,max7327
-+      - nxp,pca6408
-       - nxp,pca6416
-       - nxp,pca9505
-       - nxp,pca9506
+	pmd_t pmd = __pmd(xchg_relaxed(&pmd_val(*pmdp), 0));
+
 -- 
-2.7.4
-
+Catalin
