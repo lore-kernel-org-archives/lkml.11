@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B27DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 854C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356106AbiEDRJC (ORCPT
+        id S1356387AbiEDRJN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
+        Wed, 4 May 2022 13:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354748AbiEDQ7E (ORCPT
+        with ESMTP id S1355115AbiEDQ7m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653A0473A9;
-        Wed,  4 May 2022 09:50:58 -0700 (PDT)
+        Wed, 4 May 2022 12:59:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0443A4A932;
+        Wed,  4 May 2022 09:51:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A0E617C7;
-        Wed,  4 May 2022 16:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70970C385A4;
-        Wed,  4 May 2022 16:50:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D81617BE;
+        Wed,  4 May 2022 16:51:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FF5CC385A5;
+        Wed,  4 May 2022 16:51:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683057;
-        bh=XGzZl/x6DuyN5GV6irKCEio/3JA41NUH4s4IYRbrICc=;
+        s=korg; t=1651683076;
+        bh=IgovF0uzoeWjJ6e1jJzKLa2CGLQ3Xd+oBYfxoYuV/J0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GAI31Kh9HodgOOHnySVYbV36ZlH8oqrwaxdWXzI8ZmvJHVIJosRc7l8KW1wBkaipN
-         F8p/VLOHgT8lBjgPenam1BalavfWvC6QZxzvUfdpjA0yc9taGH/CvKt4VfCVb5k/Az
-         5OebXybDZj3NG5h+WkvNoZ+5iQ7FwuRHkXHtzGIk=
+        b=zlKoPYnmrvuxlOqu2OiZgxMiywUieDEALauALpwgjf6kU/8FbQ13O9cNKvQL+gqm3
+         ZlNYr2QhC6gELg9vdCVOBEAqbDPtC9J9ayFynWZGxO/CMZr2noUiBBCPCaa/JYArwq
+         SkDdB5xDBaQkEC6sdMY+JWzcpv+MiSAAGDC1E5I8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
+        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 061/129] pinctrl: stm32: Do not call stm32_gpio_get() for edge triggered IRQs in EOI
-Date:   Wed,  4 May 2022 18:44:13 +0200
-Message-Id: <20220504153026.112064367@linuxfoundation.org>
+Subject: [PATCH 5.10 080/129] ip_gre: Make o_seqno start from 0 in native mode
+Date:   Wed,  4 May 2022 18:44:32 +0200
+Message-Id: <20220504153027.455127286@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -55,47 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit e74200ebf7c4f6a7a7d1be9f63833ddba251effa ]
+[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
 
-The stm32_gpio_get() should only be called for LEVEL triggered interrupts,
-skip calling it for EDGE triggered interrupts altogether to avoid wasting
-CPU cycles in EOI handler. On this platform, EDGE triggered interrupts are
-the majority and LEVEL triggered interrupts are the exception no less, and
-the CPU cycles are not abundant.
+For GRE and GRETAP devices, currently o_seqno starts from 1 in native
+mode.  According to RFC 2890 2.2., "The first datagram is sent with a
+sequence number of 0."  Fix it.
 
-Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-To: linux-gpio@vger.kernel.org
-Link: https://lore.kernel.org/r/20220415215410.498349-1-marex@denx.de
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+It is worth mentioning that o_seqno already starts from 0 in collect_md
+mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
+gre_build_header() before getting incremented.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Acked-by: William Tu <u9012063@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/stm32/pinctrl-stm32.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/ipv4/ip_gre.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index e13723bb2be4..12d4d92c4a17 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -311,6 +311,10 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
- 	struct stm32_gpio_bank *bank = d->domain->host_data;
- 	int level;
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index e4504dd510c6..801c540db33e 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -454,14 +454,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		       __be16 proto)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+-
+-	if (tunnel->parms.o_flags & TUNNEL_SEQ)
+-		tunnel->o_seqno++;
++	__be16 flags = tunnel->parms.o_flags;
  
-+	/* Do not access the GPIO if this is not LEVEL triggered IRQ. */
-+	if (!(bank->irq_type[d->hwirq] & IRQ_TYPE_LEVEL_MASK))
-+		return;
-+
- 	/* If level interrupt type then retrig */
- 	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
- 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
+ 	/* Push GRE header. */
+ 	gre_build_header(skb, tunnel->tun_hlen,
+-			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
+-			 htonl(tunnel->o_seqno));
++			 flags, proto, tunnel->parms.o_key,
++			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
+ 
+ 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+ }
 -- 
 2.35.1
 
