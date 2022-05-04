@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A85EC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90713C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357831AbiEDRPW (ORCPT
+        id S1357891AbiEDRPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        Wed, 4 May 2022 13:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355368AbiEDRES (ORCPT
+        with ESMTP id S1355444AbiEDRE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D792F4ECDC;
-        Wed,  4 May 2022 09:52:59 -0700 (PDT)
+        Wed, 4 May 2022 13:04:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9B54EA23;
+        Wed,  4 May 2022 09:53:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A8FFB827AE;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 940B3617DE;
+        Wed,  4 May 2022 16:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A6CC385A4;
         Wed,  4 May 2022 16:52:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69EBC385AF;
-        Wed,  4 May 2022 16:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683179;
-        bh=4DNcNCHM3If/Pd7pLcI1oBJQ3+DYgaREuJpCgjY887A=;
+        s=korg; t=1651683180;
+        bh=RxD54wOIf+gtesh7VHfBEjiXkcaf7g6pr7I4+AwcUM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vIGcZ236lvWgI66ABPXOa+VYY1SZOmM5tncc4rmnwEZ5Z6MuaEZ1IPednrj1NCTBT
-         QKpsgrR24By4rrMZhlTYiJt2khXRr/wlV2Vkx5LpwfxKX8Se9IN0mT22j4fS80cQq4
-         g4plIEh+OylMosKgg5sbRUbIjAaWBt1RG43t1JWY=
+        b=I6nlNeODBqhzd3ClvX6epppH5w1bJRUuwozvWubRaaPse6vTYd3y4xaEjWFCqf7Ax
+         Q5u/kHw1z1HVXjg4go7dj6PQVnvR/MB87CAEgB9Ty9bbpDgtazB6sD1S1yw1tPc9/T
+         ly23VCySTQ98NVmKwxqEGTzkkFFZeFWgOiL53+mk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH 5.15 030/177] serial: amba-pl011: do not time out prematurely when draining tx fifo
-Date:   Wed,  4 May 2022 18:43:43 +0200
-Message-Id: <20220504153055.716476987@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH 5.15 031/177] serial: 8250: Also set sticky MCR bits in console restoration
+Date:   Wed,  4 May 2022 18:43:44 +0200
+Message-Id: <20220504153055.785959388@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -48,67 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 0e4deb56b0c625efdb70c94f150429e2f2a16fa1 upstream.
+commit 6e6eebdf5e2455f089ccd000754a0deaeb79af82 upstream.
 
-The current timeout for draining the tx fifo in RS485 mode is calculated by
-multiplying the time it takes to transmit one character (with the given
-baud rate) with the maximal number of characters in the tx queue.
+Sticky MCR bits are lost in console restoration if console suspending
+has been disabled.  This currently affects the AFE bit, which works in
+combination with RTS which we set, so we want to make sure the UART
+retains control of its FIFO where previously requested.  Also specific
+drivers may need other bits in the future.
 
-This timeout is too short for two reasons:
-First when calculating the time to transmit one character integer division
-is used which may round down the result in case of a remainder of the
-division.
-
-Fix this by rounding up the division result.
-
-Second the hardware may need additional time (e.g for first putting the
-characters from the fifo into the shift register) before the characters are
-actually put onto the wire.
-
-To be on the safe side double the current maximum number of iterations
-that are used to wait for the queue draining.
-
-Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Link: https://lore.kernel.org/r/20220408233503.7251-1-LinoSanfilippo@gmx.de
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
+Cc: stable@vger.kernel.org # v4.0+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181518490.9383@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/amba-pl011.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1288,13 +1288,18 @@ static inline bool pl011_dma_rx_running(
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3340,7 +3340,7 @@ static void serial8250_console_restore(s
  
- static void pl011_rs485_tx_stop(struct uart_amba_port *uap)
- {
-+	/*
-+	 * To be on the safe side only time out after twice as many iterations
-+	 * as fifo size.
-+	 */
-+	const int MAX_TX_DRAIN_ITERS = uap->port.fifosize * 2;
- 	struct uart_port *port = &uap->port;
- 	int i = 0;
- 	u32 cr;
+ 	serial8250_set_divisor(port, baud, quot, frac);
+ 	serial_port_out(port, UART_LCR, up->lcr);
+-	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
++	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
+ }
  
- 	/* Wait until hardware tx queue is empty */
- 	while (!pl011_tx_empty(port)) {
--		if (i == port->fifosize) {
-+		if (i > MAX_TX_DRAIN_ITERS) {
- 			dev_warn(port->dev,
- 				 "timeout while draining hardware tx queue\n");
- 			break;
-@@ -2099,7 +2104,7 @@ pl011_set_termios(struct uart_port *port
- 	 * with the given baud rate. We use this as the poll interval when we
- 	 * wait for the tx queue to empty.
- 	 */
--	uap->rs485_tx_drain_interval = (bits * 1000 * 1000) / baud;
-+	uap->rs485_tx_drain_interval = DIV_ROUND_UP(bits * 1000 * 1000, baud);
- 
- 	pl011_setup_status_masks(port, termios);
- 
+ /*
 
 
