@@ -2,99 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27425C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA24BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378770AbiEDVjw (ORCPT
+        id S1378699AbiEDVkQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
+        Wed, 4 May 2022 17:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379237AbiEDVjN (ORCPT
+        with ESMTP id S1378877AbiEDVjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:39:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FF052E62;
-        Wed,  4 May 2022 14:35:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5327161A94;
-        Wed,  4 May 2022 21:35:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD914C385B3;
-        Wed,  4 May 2022 21:35:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651700107;
-        bh=Ag6z4UsMQi45DT6LEixpyNi3v4/oCDHforErc0WKpkg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jT9J069rPUQBqanuRgdVPUVzvqR76Z3AXmb1hQ28qWhElNA1xUTHs3Wg7OhG9knRF
-         nYE2UWXrL/ob801JQe8XQgqI1Kr5RsyzXhwyetM1ZZi0rIbPnGzwearHlnR6Qfquff
-         tmzjarVjC3PqWuwS80M3Fd5InHZ68Hp3bwCF1etSdQ0MSnbYYriGQX+NLsE9AfqkdH
-         7/EKJkbQAEr+iIvA+6iLOrTHR9aqBtmxjAtueAdO8QW1Z6FnqbYc4rxI0pUpNJ5tRE
-         JvlHkOYjKrKaoI1CEiBVPrDKFlt4LVaM2/XCtNdPH7opp1rdAmnJW6mfXH2/uOHTQ2
-         cu2b9KpQuuzpw==
-Received: by mail-wr1-f49.google.com with SMTP id e2so3664216wrh.7;
-        Wed, 04 May 2022 14:35:07 -0700 (PDT)
-X-Gm-Message-State: AOAM530pBHbnZSOSTyUCza1fPiWVN2lBZNR4lkAY/EgAC4I4P/05qMG+
-        frBHMNGA7bvWwmagJhQ0r1SM6Wvq+3RFipji/AE=
-X-Google-Smtp-Source: ABdhPJyJdqNhgHXeC5+qWnrrqqXwN5Jjvbj+o5B4nexQNKTcbVdNE9ExlHhPkDOn3OnkIrCgsPdFpKkMocrgnUpCXpM=
-X-Received: by 2002:adf:e106:0:b0:20a:b31b:213d with SMTP id
- t6-20020adfe106000000b0020ab31b213dmr17567886wrz.219.1651700105974; Wed, 04
- May 2022 14:35:05 -0700 (PDT)
+        Wed, 4 May 2022 17:39:53 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43ED949FA6;
+        Wed,  4 May 2022 14:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=6d2C22GP1N4bE5JwOJ8qY5ddIY+8LBhEhE6OWI1tQX8=; b=XU
+        ps/Jn9hVqM/U8Qlnq71Ae0KSkWr3SpP60ImvIvBCPnvX+RZosfzWGrdU1yL61ZQBcnGuRP6YTkKFd
+        LeluSK8CdL4T/cPxl9e5cidPrsgWQInSB5ZkBHCBtSkIDix0k3LUmL0j/k84jKsL7eO4azc0boVSC
+        O55/drl9PfrX3JM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmMf9-001GT7-DU; Wed, 04 May 2022 23:35:59 +0200
+Date:   Wed, 4 May 2022 23:35:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, atenart@kernel.org,
+        thomas.petazzoni@free-electrons.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: orion-mdio: Convert to JSON schema
+Message-ID: <YnLxv8PbDyBE1ODa@lunn.ch>
+References: <20220504043603.949134-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-References: <20220429135108.2781579-54-schnelle@linux.ibm.com> <20220504204231.GA463295@bhelgaas>
-In-Reply-To: <20220504204231.GA463295@bhelgaas>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 4 May 2022 23:34:48 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0=HgkkSJ2edZxMDbyuTyNZK98oSi4rc6CL_b6RHAQ-OQ@mail.gmail.com>
-Message-ID: <CAK8P3a0=HgkkSJ2edZxMDbyuTyNZK98oSi4rc6CL_b6RHAQ-OQ@mail.gmail.com>
-Subject: Re: [RFC v2 30/39] scsi: add HAS_IOPORT dependencies
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.com>,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "supporter:QLOGIC QLA2XXX FC-SCSI DRIVER" 
-        <GR-QLogic-Storage-Upstream@marvell.com>,
-        "open list:SCSI SUBSYSTEM" <linux-scsi@vger.kernel.org>,
-        "open list:MEGARAID SCSI/SAS DRIVERS" 
-        <megaraidlinux.pdl@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220504043603.949134-1-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 10:42 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Fri, Apr 29, 2022 at 03:50:51PM +0200, Niklas Schnelle wrote:
-> > In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> > not being declared. We thus need to add HAS_IOPORT as dependency for
-> > those drivers using them.
->
-> Some of these drivers support devices using either I/O ports or MMIO.
-> Adding the HAS_IOPORT dependency means MMIO devices that *could* work
-> on systems without I/O ports, won't work.
->
-> Even the MMIO-only devices are probably old and not of much interest.
-> But if you want to disable them even though they *could* work, I think
-> that's worth mentioning in the commit log.
+On Wed, May 04, 2022 at 04:36:02PM +1200, Chris Packham wrote:
+> Convert the marvell,orion-mdio binding to JSON schema.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
+> 
+> Notes:
+>     Thomas, Antione & Florian I hope you don't mind me putting you as
+>     maintainers of the binding. Between you you've written the majority of
+>     the mvmdio.c driver.
 
-I think this would again make more sense with the original CONFIG_LEGACY_PCI
-conditional than the generic HAS_IOPORT one. I don't remember what the
-objection was to that symbol.
+I actually think it will be me doing any maintenance work on that
+driver.
 
-I think the presence of inb()/outb() is a good indication that a driver is for
-obsolete hardware, though of course there are important exceptions to this
-that instead need to have the conditional in the code itself (8250,
-vga, ipmi, ...)
+>     This does throw up the following dtbs_check warnings for turris-mox:
+>     
+>     arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dtb: mdio@32004: switch0@10:reg: [[16], [0]] is too long
+>             From schema: Documentation/devicetree/bindings/net/marvell,orion-mdio.yaml
 
-       Arnd
+I assume this is coming from
+
+		reg = <0x10 0>;
+
+This is odd. Lets see what Marek Behún has to say.
+
+     Andrew
