@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DBCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376523AbiEDSHv convert rfc822-to-8bit (ORCPT
+        id S1376585AbiEDSIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        Wed, 4 May 2022 14:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376484AbiEDSHh (ORCPT
+        with ESMTP id S1376328AbiEDSIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:07:37 -0400
+        Wed, 4 May 2022 14:08:12 -0400
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375AF6EC61
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:23:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA70C7092E;
+        Wed,  4 May 2022 10:23:30 -0700 (PDT)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 0F6411C0BA5; Wed,  4 May 2022 19:22:57 +0200 (CEST)
-Date:   Wed, 4 May 2022 19:22:56 +0200
+        id 65AF91C0BBB; Wed,  4 May 2022 19:23:29 +0200 (CEST)
+Date:   Wed, 4 May 2022 19:23:28 +0200
 From:   Pavel Machek <pavel@ucw.cz>
-To:     Charles Mirabile <cmirabil@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Daniel Bauman <dbauman@redhat.com>,
-        Mwesigwa Guma <mguma@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: Re: [PATCH v9 3/6] drivers/auxdisplay: sensehat: Raspberry Pi Sense
- HAT display driver
-Message-ID: <20220504172256.GA1623@bug>
-References: <20220419205158.28088-1-cmirabil@redhat.com>
- <20220419205158.28088-4-cmirabil@redhat.com>
+To:     Caleb Connolly <caleb.connolly@linaro.org>
+Cc:     Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH 0/6] power: supply: introduce support for the Qualcomm
+ smb2 charger
+Message-ID: <20220504172328.GC1623@bug>
+References: <20220427184031.2569442-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20220419205158.28088-4-cmirabil@redhat.com>
+In-Reply-To: <20220427184031.2569442-1-caleb.connolly@linaro.org>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -49,15 +45,21 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi!
 
-> This patch adds the driver for the 8x8 RGB LED matrix display
-> on the Sense HAT. It appears as a character device named sense-hat
-> in /dev/. That special file is 192 bytes large and contains 64
-> RGB triplets (3 bytes each) one for each pixel in row major order.
+> Add a driver for the Qualcomm PMI8998/PM660 Switch-Mode Battery Charger.
+> This is the second generation SMB charger, and replaces the previous
+> SMBB hardware found in older PMICs.
+> 
+> This driver provides basic support for initialising the hardware,
+> configuring the USB input current limit and reporting information about
+> the state of the charger. Features like type-c dual role support and OTG
+> switching will be added in future patches.
+> 
+> This patch series depends on my previous series adding support for
+> the Round Robin ADC which is used for reading the USB voltage and
+> current, it can be found here:
+> https://lore.kernel.org/linux-arm-msm/20220323162820.110806-1-caleb@connolly.tech/
 
-Is that right interface? Should we treat it as a tiny framebuffer, instead?
+Please cc phone-devel mailing list with this and related stuff.
 
 Best regards,
 									Pavel
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
