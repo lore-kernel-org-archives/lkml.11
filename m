@@ -2,98 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239287AbiEDOID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
+        id S1351307AbiEDOJt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 10:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351051AbiEDOHy (ORCPT
+        with ESMTP id S1351203AbiEDOJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:07:54 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3A13BFBF;
-        Wed,  4 May 2022 07:04:18 -0700 (PDT)
-Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 4AA4ECAB3F;
-        Wed,  4 May 2022 13:56:04 +0000 (UTC)
-Received: (Authenticated sender: foss@0leil.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 13B83E0008;
-        Wed,  4 May 2022 13:55:56 +0000 (UTC)
-From:   Quentin Schulz <foss+kernel@0leil.net>
-Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Quentin Schulz <foss+kernel@0leil.net>
-Subject: [PATCH v2 3/3] media: i2c: ov5675: parse and register V4L2 device tree properties
-Date:   Wed,  4 May 2022 15:55:43 +0200
-Message-Id: <20220504135543.59522-3-foss+kernel@0leil.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220504135543.59522-1-foss+kernel@0leil.net>
-References: <20220504135543.59522-1-foss+kernel@0leil.net>
+        Wed, 4 May 2022 10:09:26 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 954E440E7E
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:05:49 -0700 (PDT)
+Received: (qmail 1122953 invoked by uid 1000); 4 May 2022 10:05:48 -0400
+Date:   Wed, 4 May 2022 10:05:48 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH][next] USB: gadget: Fix return of -EBUSY
+Message-ID: <YnKIPNtZ0wuPy7oS@rowland.harvard.edu>
+References: <20220504135840.232209-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504135840.232209-1-colin.i.king@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+On Wed, May 04, 2022 at 02:58:40PM +0100, Colin Ian King wrote:
+> Currently when driver->match_existing_only is true, the error return is
+> set to -EBUSY however ret is then set to 0 at the end of the if/else
+> statement. I believe the ret = 0 statement should be set in the else
+> part of the if statement and not at the end to ensure -EBUSY is being
+> returned correctly.
+> 
+> Detected by clang scan:
+> drivers/usb/gadget/udc/core.c:1558:4: warning: Value stored to 'ret' is
+> never read [deadcode.DeadStores]
+> 
+> Fixes: fc274c1e9973 ("USB: gadget: Add a new bus for gadgets")
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
 
-Parse V4L2 device tree properties and register controls for them.
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
 
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
----
- drivers/media/i2c/ov5675.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+Don't know how I missed that.  Thanks for fixing it.
 
-diff --git a/drivers/media/i2c/ov5675.c b/drivers/media/i2c/ov5675.c
-index ccbc8dc506ff..324992fca557 100644
---- a/drivers/media/i2c/ov5675.c
-+++ b/drivers/media/i2c/ov5675.c
-@@ -778,12 +778,14 @@ static const struct v4l2_ctrl_ops ov5675_ctrl_ops = {
- 
- static int ov5675_init_controls(struct ov5675 *ov5675)
- {
-+	struct i2c_client *client = v4l2_get_subdevdata(&ov5675->sd);
- 	struct v4l2_ctrl_handler *ctrl_hdlr;
-+	struct v4l2_fwnode_device_properties props;
- 	s64 exposure_max, h_blank;
- 	int ret;
- 
- 	ctrl_hdlr = &ov5675->ctrl_handler;
--	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 8);
-+	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 10);
- 	if (ret)
- 		return ret;
- 
-@@ -837,9 +839,23 @@ static int ov5675_init_controls(struct ov5675 *ov5675)
- 	if (ctrl_hdlr->error)
- 		return ctrl_hdlr->error;
- 
-+	ret = v4l2_fwnode_device_parse(&client->dev, &props);
-+	if (ret)
-+		goto error;
-+
-+	ret = v4l2_ctrl_new_fwnode_properties(ctrl_hdlr, &ov5675_ctrl_ops,
-+					      &props);
-+	if (ret)
-+		goto error;
-+
- 	ov5675->sd.ctrl_handler = ctrl_hdlr;
- 
- 	return 0;
-+
-+error:
-+	v4l2_ctrl_handler_free(ctrl_hdlr);
-+
-+	return ret;
- }
- 
- static void ov5675_update_pad_format(const struct ov5675_mode *mode,
--- 
-2.35.1
+In fact, since it's guaranteed that ret is already 0 before the 
+driver->match_existing_only test, you could eliminate the assignment 
+entirely.  But moving it into the second branch of the "if" statement is 
+probably more clear.
 
+Alan Stern
+
+>  drivers/usb/gadget/udc/core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
+> index 61790592b2c8..3281d8a3dae7 100644
+> --- a/drivers/usb/gadget/udc/core.c
+> +++ b/drivers/usb/gadget/udc/core.c
+> @@ -1559,8 +1559,8 @@ int usb_gadget_register_driver_owner(struct usb_gadget_driver *driver,
+>  		} else {
+>  			pr_info("%s: couldn't find an available UDC\n",
+>  					driver->function);
+> +			ret = 0;
+>  		}
+> -		ret = 0;
+>  	}
+>  	mutex_unlock(&udc_lock);
+>  
+> -- 
+> 2.35.1
+> 
