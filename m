@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8298C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B26C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353984AbiEDQxl (ORCPT
+        id S1353999AbiEDQxp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
+        Wed, 4 May 2022 12:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353754AbiEDQwN (ORCPT
+        with ESMTP id S1353757AbiEDQwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:52:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D0E4738D;
-        Wed,  4 May 2022 09:48:35 -0700 (PDT)
+        Wed, 4 May 2022 12:52:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF0847395;
+        Wed,  4 May 2022 09:48:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 735FCB82552;
-        Wed,  4 May 2022 16:48:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C959C385AA;
-        Wed,  4 May 2022 16:48:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEC6E61775;
+        Wed,  4 May 2022 16:48:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14491C385A4;
+        Wed,  4 May 2022 16:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682913;
-        bh=zL7m3jJKBlSnNR74+VWXMFcYh75Cfk2X59tlw/vprHk=;
+        s=korg; t=1651682915;
+        bh=EgOJk3ui2P1WPj5Kx+Q0XiNrigZfZXXW2qHJ3g9In/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q3IJMgSvL/LLSt8S6IYbmIj5k5JeKMs+h5bGFCZmVpdX0JEefjV+CxGhqT97Ab52/
-         fP86/Cb881/puLfpn6gN7rDSWcI4Ga24Ya2KcSbbMfg6SygQpyEA6qMtscWHGF4FVG
-         WeoZFS4Y+X55DH76oiBQAl3EWQaj/kBPugcxW1W4=
+        b=0yP8xhp7+WZhHeM+y4fDjQ0NdXNlCf2Wvb1Us0dymoTa3gq8H4co+4BeNcQND1x8n
+         Rh0iEijdzy0ICF/gYA4AxfLhmhjyNccYfoLzZJmpqv+ewHKjO5MQlu4r2bQvBCtcCK
+         9AHeXAMPFVy9EHtMhPUCX2jtW8WgwNeoH/2bQ82w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
-Subject: [PATCH 5.4 19/84] usb: gadget: uvc: Fix crash when encoding data for usb request
-Date:   Wed,  4 May 2022 18:44:00 +0200
-Message-Id: <20220504152929.126254575@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.4 21/84] usb: dwc3: core: Fix tx/rx threshold settings
+Date:   Wed,  4 May 2022 18:44:02 +0200
+Message-Id: <20220504152929.257435650@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -48,58 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Vacura <w36195@motorola.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
+commit f28ad9069363dec7deb88032b70612755eed9ee6 upstream.
 
-During the uvcg_video_pump() process, if an error occurs and
-uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
-the current marker (queue->buf_used) of the active buffer (no longer
-active) is not reset. On the next iteration of uvcg_video_pump() the
-stale buf_used count will be used and the logic of min((unsigned
-int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
-nbytes size, causing an invalid memory access.
+The current driver logic checks against 0 to determine whether the
+periodic tx/rx threshold settings are set, but we may get bogus values
+from uninitialized variables if no device property is set. Properly
+default these variables to 0.
 
-[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-...
-uvcg_queue_cancel() is called and the queue is cleared out, but the
-marker queue->buf_used is not reset.
-...
-[80802.262328][ T8682] Unable to handle kernel paging request at virtual
-address ffffffc03af9f000
-...
-...
-[80802.263138][ T8682] Call trace:
-[80802.263146][ T8682]  __memcpy+0x12c/0x180
-[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
-[80802.263165][ T8682]  process_one_work+0x2cc/0x568
-[80802.263173][ T8682]  worker_thread+0x28c/0x518
-[80802.263181][ T8682]  kthread+0x160/0x170
-[80802.263188][ T8682]  ret_from_fork+0x10/0x18
-[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
-
-Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+Fixes: 938a5ad1d305 ("usb: dwc3: Check for ESS TX/RX threshold config")
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/cccfce990b11b730b0dae42f9d217dc6fb988c90.1649727139.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/uvc_queue.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/dwc3/core.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/gadget/function/uvc_queue.c
-+++ b/drivers/usb/gadget/function/uvc_queue.c
-@@ -242,6 +242,8 @@ void uvcg_queue_cancel(struct uvc_video_
- 		buf->state = UVC_BUF_STATE_ERROR;
- 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
- 	}
-+	queue->buf_used = 0;
-+
- 	/* This must be protected by the irqlock spinlock to avoid race
- 	 * conditions between uvc_queue_buffer and the disconnection event that
- 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1229,10 +1229,10 @@ static void dwc3_get_properties(struct d
+ 	u8			lpm_nyet_threshold;
+ 	u8			tx_de_emphasis;
+ 	u8			hird_threshold;
+-	u8			rx_thr_num_pkt_prd;
+-	u8			rx_max_burst_prd;
+-	u8			tx_thr_num_pkt_prd;
+-	u8			tx_max_burst_prd;
++	u8			rx_thr_num_pkt_prd = 0;
++	u8			rx_max_burst_prd = 0;
++	u8			tx_thr_num_pkt_prd = 0;
++	u8			tx_max_burst_prd = 0;
+ 
+ 	/* default to highest possible threshold */
+ 	lpm_nyet_threshold = 0xf;
 
 
