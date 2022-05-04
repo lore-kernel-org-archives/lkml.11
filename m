@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 472AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F24C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378797AbiEDVhZ (ORCPT
+        id S1378656AbiEDVhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48032 "EHLO
+        Wed, 4 May 2022 17:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378638AbiEDVgi (ORCPT
+        with ESMTP id S1378632AbiEDVgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:36:38 -0400
+        Wed, 4 May 2022 17:36:37 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3322151E6C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4BF51E59;
         Wed,  4 May 2022 14:33:00 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: sre)
-        with ESMTPSA id 5A37E1F44C61
+        with ESMTPSA id 7F60D1F44C3A
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
         s=mail; t=1651699978;
-        bh=JyODDbAkozctO2YF4+4+8QrF0xaiP+MYadCgEeOgwr0=;
+        bh=Uxbvppcj0Nco5gIMj9zWGbz7ZRjpQiwtkCHwEzgMp30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SZVxLjPp0nk7QVAUdBbqzeVOyWnyf3C96JzVREw2VaHYZO4j6U11qxqzBh/iLh6dD
-         uBjrG6Izun+ZQitJpN8On6x1gMJMzDEJ0jEd3aEi3z7VW+Kk6EgZZPlkknY5zyiXU/
-         XEUIuM8nxFudAcakCvKv1KZkHnG2j3w7L+oRpniJC8mZL1hw41csv0jyeWGwvR3JYt
-         /FvJ4xN/qoPEeOMAQRwefuynRMadQI7+65Wg5BM4sAaQgwvoqBiV0zPiicXtzzbbPw
-         de3FwmkSQd0+6D8eX62EiAmjjtBW/8VGkUPrcHWKC/DRd4UqB6vJX7lHK8VMGzbPhN
-         dMptSfJAqNzmg==
+        b=ZS41zhKAtWkUSOTqA5ijbB3q8y610lsyumksjJcCYxXRCecXnwXM41m1ikj87R2IN
+         igqEY7asAWOgS9HfQFy5buA5+Qg4HTkMj2sliHqhXQARGzTaKGUewZwqNIoVKIMUZK
+         AIh1Kepbm4UMBovAccEqvOj0g+wxbfH5sthy0iOxtO7YhWNjRbsUXFDGHweyg2BTqV
+         bsJJjUEpDBGzKqgpVpGtsZJKli0VZfWZFaa9cD4CSsNpHLNaNS2PAu65TyCeN2txx4
+         n8Q7cuFnJ72nn26XJ69zC/YFItkI+ThOFsTxin2Dmera9+zg1gJXe/Wf/ihBYTTY1b
+         I5t9aBC9f4xlA==
 Received: by jupiter.universe (Postfix, from userid 1000)
-        id 3AA3F4819CB; Wed,  4 May 2022 23:32:53 +0200 (CEST)
+        id 43B754819CE; Wed,  4 May 2022 23:32:53 +0200 (CEST)
 From:   Sebastian Reichel <sebastian.reichel@collabora.com>
 To:     Heiko Stuebner <heiko@sntech.de>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -46,138 +46,100 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
-        Elaine Zhang <zhangqing@rock-chips.com>, kernel@collabora.com,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>, kernel@collabora.com,
         Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCHv2 06/21] clk: rockchip: clk-cpu: add mux setting for cpu change frequency
-Date:   Wed,  4 May 2022 23:32:36 +0200
-Message-Id: <20220504213251.264819-7-sebastian.reichel@collabora.com>
+Subject: [PATCHv2 09/21] mmc: sdhci-of-dwcmshc: add reset call back for rockchip Socs
+Date:   Wed,  4 May 2022 23:32:39 +0200
+Message-Id: <20220504213251.264819-10-sebastian.reichel@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220504213251.264819-1-sebastian.reichel@collabora.com>
 References: <20220504213251.264819-1-sebastian.reichel@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Elaine Zhang <zhangqing@rock-chips.com>
+From: Yifeng Zhao <yifeng.zhao@rock-chips.com>
 
-In order to improve the main frequency of CPU, the clock path of CPU is
-simplified as follows:
-                         |--\
-                         |   \            |--\
- --apll--|\              |    \           |   \
-         | |--apll_core--|     \          |    \
- --24M---|/              |mux1 |--[gate]--|mux2|---clk_core
-                         |     /          |    /
- --gpll--|\              |    /    |------|   /
-         | |--gpll_core--|   /     |      |--/
- --24M---|/              |--/      |
-                                   |
- -------apll_directly--------------|
+The reset function build in the SDHCI will not reset the logic
+circuit related to the tuning function, which may cause data
+reading errors. Resetting the complete SDHCI controller through
+the reset controller fixes the issue.
 
-When the CPU requests high frequency, we want to use MUX2 select the
-"apll_directly".
-At low frequencies use MUX1 to select “apll_core" and then MUX2 to
-select "apll_core_gate".
-
-However, in this way, the CPU frequency conversion needs to be
-in the following order:
-1. MUX2 select to "apll_core_gate", MUX1 select "gpll_core"
-2. Apll sets slow_mode, sets APLL parameters, locks APLL, and then APLL
-sets normal_mode
-3. MUX1 select "apll_core", MUX2 select "apll_directly"
-
-So add pre_muxs and post_muxs to cover this special requirements.
-
-Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
-[rebase]
+Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+[rebase, use optional variant of reset getter]
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- drivers/clk/rockchip/clk-cpu.c | 41 ++++++++++++++++++++++++++++++++++
- drivers/clk/rockchip/clk.h     |  2 ++
- 2 files changed, 43 insertions(+)
+ drivers/mmc/host/sdhci-of-dwcmshc.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/rockchip/clk-cpu.c b/drivers/clk/rockchip/clk-cpu.c
-index 11aa2259b532..6ea7fba9f9e5 100644
---- a/drivers/clk/rockchip/clk-cpu.c
-+++ b/drivers/clk/rockchip/clk-cpu.c
-@@ -113,6 +113,42 @@ static void rockchip_cpuclk_set_dividers(struct rockchip_cpuclk *cpuclk,
- 	}
- }
+diff --git a/drivers/mmc/host/sdhci-of-dwcmshc.c b/drivers/mmc/host/sdhci-of-dwcmshc.c
+index bac874ab0b33..3a1b5ba36405 100644
+--- a/drivers/mmc/host/sdhci-of-dwcmshc.c
++++ b/drivers/mmc/host/sdhci-of-dwcmshc.c
+@@ -15,6 +15,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/reset.h>
+ #include <linux/sizes.h>
  
-+static void rockchip_cpuclk_set_pre_muxs(struct rockchip_cpuclk *cpuclk,
-+					 const struct rockchip_cpuclk_rate_table *rate)
-+{
-+	int i;
-+
-+	/* alternate parent is active now. set the pre_muxs */
-+	for (i = 0; i < ARRAY_SIZE(rate->pre_muxs); i++) {
-+		const struct rockchip_cpuclk_clksel *clksel = &rate->pre_muxs[i];
-+
-+		if (!clksel->reg)
-+			break;
-+
-+		pr_debug("%s: setting reg 0x%x to 0x%x\n",
-+			 __func__, clksel->reg, clksel->val);
-+		writel(clksel->val, cpuclk->reg_base + clksel->reg);
-+	}
-+}
-+
-+static void rockchip_cpuclk_set_post_muxs(struct rockchip_cpuclk *cpuclk,
-+					  const struct rockchip_cpuclk_rate_table *rate)
-+{
-+	int i;
-+
-+	/* alternate parent is active now. set the muxs */
-+	for (i = 0; i < ARRAY_SIZE(rate->post_muxs); i++) {
-+		const struct rockchip_cpuclk_clksel *clksel = &rate->post_muxs[i];
-+
-+		if (!clksel->reg)
-+			break;
-+
-+		pr_debug("%s: setting reg 0x%x to 0x%x\n",
-+			 __func__, clksel->reg, clksel->val);
-+		writel(clksel->val, cpuclk->reg_base + clksel->reg);
-+	}
-+}
-+
- static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
- 					   struct clk_notifier_data *ndata)
- {
-@@ -165,6 +201,9 @@ static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
- 			       cpuclk->reg_base + reg_data->core_reg[i]);
- 		}
- 	}
-+
-+	rockchip_cpuclk_set_pre_muxs(cpuclk, rate);
-+
- 	/* select alternate parent */
- 	if (reg_data->mux_core_reg)
- 		writel(HIWORD_UPDATE(reg_data->mux_core_alt,
-@@ -219,6 +258,8 @@ static int rockchip_cpuclk_post_rate_change(struct rockchip_cpuclk *cpuclk,
- 				     reg_data->mux_core_shift),
- 		       cpuclk->reg_base + reg_data->core_reg[0]);
- 
-+	rockchip_cpuclk_set_post_muxs(cpuclk, rate);
-+
- 	/* remove dividers */
- 	for (i = 0; i < reg_data->num_cores; i++) {
- 		writel(HIWORD_UPDATE(0, reg_data->div_core_mask[i],
-diff --git a/drivers/clk/rockchip/clk.h b/drivers/clk/rockchip/clk.h
-index bf7c8d082fde..2bd1863a7418 100644
---- a/drivers/clk/rockchip/clk.h
-+++ b/drivers/clk/rockchip/clk.h
-@@ -380,6 +380,8 @@ struct rockchip_cpuclk_clksel {
- struct rockchip_cpuclk_rate_table {
- 	unsigned long prate;
- 	struct rockchip_cpuclk_clksel divs[ROCKCHIP_CPUCLK_NUM_DIVIDERS];
-+	struct rockchip_cpuclk_clksel pre_muxs[ROCKCHIP_CPUCLK_NUM_DIVIDERS];
-+	struct rockchip_cpuclk_clksel post_muxs[ROCKCHIP_CPUCLK_NUM_DIVIDERS];
+ #include "sdhci-pltfm.h"
+@@ -63,6 +64,7 @@
+ struct rk3568_priv {
+ 	/* Rockchip specified optional clocks */
+ 	struct clk_bulk_data rockchip_clks[RK3568_MAX_CLKS];
++	struct reset_control *reset;
+ 	u8 txclk_tapnum;
  };
  
- /**
+@@ -255,6 +257,21 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
+ 	sdhci_writel(host, extra, DWCMSHC_EMMC_DLL_STRBIN);
+ }
+ 
++static void rk35xx_sdhci_reset(struct sdhci_host *host, u8 mask)
++{
++	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
++	struct dwcmshc_priv *dwc_priv = sdhci_pltfm_priv(pltfm_host);
++	struct rk35xx_priv *priv = dwc_priv->priv;
++
++	if (mask & SDHCI_RESET_ALL && priv->reset) {
++		reset_control_assert(priv->reset);
++		udelay(1);
++		reset_control_deassert(priv->reset);
++	}
++
++	sdhci_reset(host, mask);
++}
++
+ static const struct sdhci_ops sdhci_dwcmshc_ops = {
+ 	.set_clock		= sdhci_set_clock,
+ 	.set_bus_width		= sdhci_set_bus_width,
+@@ -269,7 +286,7 @@ static const struct sdhci_ops sdhci_dwcmshc_rk3568_ops = {
+ 	.set_bus_width		= sdhci_set_bus_width,
+ 	.set_uhs_signaling	= dwcmshc_set_uhs_signaling,
+ 	.get_max_clock		= sdhci_pltfm_clk_get_max_clock,
+-	.reset			= sdhci_reset,
++	.reset			= rk35xx_sdhci_reset,
+ 	.adma_write_desc	= dwcmshc_adma_write_desc,
+ };
+ 
+@@ -292,6 +309,13 @@ static int dwcmshc_rk3568_init(struct sdhci_host *host, struct dwcmshc_priv *dwc
+ 	int err;
+ 	struct rk3568_priv *priv = dwc_priv->priv;
+ 
++	priv->reset = devm_reset_control_array_get_optional_exclusive(mmc_dev(host->mmc));
++	if (IS_ERR(priv->reset)) {
++		err = PTR_ERR(priv->reset);
++		dev_err(mmc_dev(host->mmc), "failed to get reset control %d\n", err);
++		return err;
++	}
++
+ 	priv->rockchip_clks[0].id = "axi";
+ 	priv->rockchip_clks[1].id = "block";
+ 	priv->rockchip_clks[2].id = "timer";
 -- 
 2.35.1
 
