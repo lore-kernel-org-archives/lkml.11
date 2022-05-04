@@ -2,84 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F93C41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 600D8C46467
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359448AbiEDRkF (ORCPT
+        id S1359661AbiEDRkN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        Wed, 4 May 2022 13:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356797AbiEDRJo (ORCPT
+        with ESMTP id S1356793AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB9A1A807;
-        Wed,  4 May 2022 09:55:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72F09B8278E;
-        Wed,  4 May 2022 16:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 226D5C385AA;
-        Wed,  4 May 2022 16:55:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683337;
-        bh=MdhV4vMP/Ag3QWOmc6UiTASLX41bGZ/YGwSwW6Adsdc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TXENfEro0bMF1nIpFtjGlDsPPGeniyrtQJN7guV8JCA2Loh9Rr7pbvBFuPkE5UU9P
-         S731tJDALYB0Av8YhUhGhEwvbzgzgnQwio79ZqRIC24NtQgdrsE59o6AttPb8wrczl
-         U6Zv47k5P4Ooq/enitEzfNx3row9SrnFiLxV4wIk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.17 012/225] xhci: increase usb U3 -> U0 link resume timeout from 100ms to 500ms
-Date:   Wed,  4 May 2022 18:44:10 +0200
-Message-Id: <20220504153111.358907655@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205BA1D33C
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 09:55:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Vxwk6Ijca/aYX+YfbJBlvvvvNjiuUacuBmt+5rQYXNM=; b=oDQFuDC/CbyMdA5t8SUc6eRJ5k
+        GEy0MMahpBfiLT+xl7o9H01Qis311BLD46CZS9dMm7n5XRUJFMaXMXzkClGlxtydgQr54gPBNVGt9
+        8nD5LiI1/nxKXZJJV/mUAuquq7yTPIrQ/W+3+CbW8U6WzHb00I8BssP90tik+BOuze4dVKJeJ3+wm
+        t/BswQz/9H3KUGwY5SXMVPasHKpjQ+zM1t+wrjYHk3qlbRQhjX2iG13ZM+u4oPBj95KXNxtVD6tfy
+        Aylv4xN3syksY8sOchC55gU3Snt3/+JrP2ZgG+FcoXg8brg/Pyx4gpwLgwo6ibQIgGlSTiGE9q5Rv
+        oxXvVO9w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nmIHl-00GkfM-On; Wed, 04 May 2022 16:55:33 +0000
+Date:   Wed, 4 May 2022 17:55:33 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        John Dias <joaodias@google.com>,
+        Tim Murray <timmurray@google.com>
+Subject: Re: [PATCH] mm: don't be stuck to rmap lock on reclaim path
+Message-ID: <YnKwBeRAWwIlEVqy@casper.infradead.org>
+References: <20220503170341.1413961-1-minchan@kernel.org>
+ <YnHzvV2Uz2ynENnG@casper.infradead.org>
+ <YnIBbjRYACzvuZpp@google.com>
+ <YnIYofrw/GGEvc0U@casper.infradead.org>
+ <YnKhLX+jzJc+2KwB@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnKhLX+jzJc+2KwB@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+On Wed, May 04, 2022 at 08:52:13AM -0700, Minchan Kim wrote:
+> On Wed, May 04, 2022 at 07:09:37AM +0100, Matthew Wilcox wrote:
+> > On Tue, May 03, 2022 at 09:30:38PM -0700, Minchan Kim wrote:
+> > > On Wed, May 04, 2022 at 04:32:13AM +0100, Matthew Wilcox wrote:
+> > > > On Tue, May 03, 2022 at 10:03:41AM -0700, Minchan Kim wrote:
+> > > > > -void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc);
+> > > > > -void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc);
+> > > > > +void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc);
+> > > > > +void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc);
+> > > > 
+> > > > I see the build bot already beat me to pointing out why this is wrong,
+> > > > but do you not look at git log to figure out why code was changed to be
+> > > > the way it is now, before you change it back?
+> > > 
+> > > This patch added a new field as out param like compact_control so
+> > > the rmap_walk_control is not immutable.
+> > 
+> > ... but we have a user which treats it as if it is.
+> 
+> True. I don't think it will show sizable benefit on runtime overhead
+> since rmap_walk is already one of the most expensive operation in MM.
+> 
+> I could reintroduce the typecast for page_idle_clear_pte_refs to remove
+> the const as we had several years.
+> 
+> If your concern was to make rmap_walk_control mutable back, I could
+> change rmap_walk function having return value or adding a addtional
+> new out param. However, I thought rmap_walk_control is more readable/
+> easier than them.
 
-commit 33597f0c48be0836854d43c577e35c8f8a765a7d upstream.
-
-The first U3 wake signal by the host may be lost if the USB 3 connection is
-tunneled over USB4, with a runtime suspended USB4 host, and firmware
-implemented connection manager.
-
-Specs state the host must wait 100ms (tU3WakeupRetryDelay) before
-resending a U3 wake signal if device doesn't respond, leading to U3 -> U0
-link transition times around 270ms in the tunneled case.
-
-Fixes: 0200b9f790b0 ("xhci: Wait until link state trainsits to U0 after setting USB_SS_PORT_LS_U0")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-4-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/host/xhci-hub.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1434,7 +1434,7 @@ int xhci_hub_control(struct usb_hcd *hcd
- 				}
- 				spin_unlock_irqrestore(&xhci->lock, flags);
- 				if (!wait_for_completion_timeout(&bus_state->u3exit_done[wIndex],
--								 msecs_to_jiffies(100)))
-+								 msecs_to_jiffies(500)))
- 					xhci_dbg(xhci, "missing U0 port change event for port %d-%d\n",
- 						 hcd->self.busnum, wIndex + 1);
- 				spin_lock_irqsave(&xhci->lock, flags);
-
-
+I haven't thought deeply about it, but I suspect the right approach is
+to remove the rather dubious optimisation in page_idle_clear_pte_refs().
