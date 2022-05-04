@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D4EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B8CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379262AbiEDWzQ (ORCPT
+        id S1379452AbiEDWzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
+        Wed, 4 May 2022 18:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379315AbiEDWxu (ORCPT
+        with ESMTP id S1379339AbiEDWxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:53:50 -0400
+        Wed, 4 May 2022 18:53:54 -0400
 Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868E153E3D
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:06 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id s5-20020a17090aa10500b001d9a8e99e3aso1317047pjp.2
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058345419B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:10 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id gn21-20020a17090ac79500b001dc8a800410so1837755pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=DA19lBclEuba6gF302ASehW6hWCbwM8ygvWYl248eOM=;
-        b=hhMxMWJtRg137uvzO7AgO849vyGGq7HcZmO4mxRYYrl5X0DzkkLzErAHEqsw47TVjf
-         jmRli/so4UUv61eKCkhg2f8+FQlOAZ3+cfyCoJSDO7K0BRPyNyduhLq+C5W/ON2OdBlB
-         01CzINZnAGCPb7RA+KSigeh/ohOg7p+WiHfz1e1wCzIz6v6L8/YlL/VH3zxjkouj3fsF
-         7G2Dv/mghd4ZWD0UX+eriW3jVrNvTl1mTovol+wzKa1HCRG1ZIQxFWtInMVfo6NNDv53
-         irvmBJVX+grWzE030TJeEUpn1pISJsvK//JENMtcUWacMScQqjPRqTC5yJF2BFRoD3rB
-         LiIg==
+        bh=9MYqVcaHqXemKrQxjWs3On/yC1RfQIL11OGjYRaSgOM=;
+        b=FsbWapnOxw+aJpu2dQXg5tRUbDM3UKFkFMUYQ94yQ2sULr3pEbwriHNABnvbACsrhW
+         Uq6itWrAWng5bSmX5LoAPkm2tL+6J2vT0KZQ1JPoDLed9ab30kgngTC4munf8zjml2v5
+         BvBN/rPivO9t55c+jyqcao7I7b2vCHzAYcbcf+7IzK0Q5V1HW7uM/owiQhjUJyv4ojMV
+         rTebazwSY1Yk5KCPD2QiaFfWsolNFjnA25MTeheuv9+ZiZuHAHaAW55onfMXyEmsZTG2
+         LYWemW3vgwmkVKGysOrcJC37C3f43yceeen3IntU5aFNeUX/kVmskepv2otKv188Pyxj
+         gsrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=DA19lBclEuba6gF302ASehW6hWCbwM8ygvWYl248eOM=;
-        b=Kf5DJDFQaPaxEARAQqsm1TJAoo1CzzlDYURHxES/kDMOYLeXecwjBkRbeRCrKm0Uc3
-         GBfmjPIkRqzzdcrxE2eF0i8f3JbEUpdwJXFP23QvGUaGb1Ks77T9F2p3ZD+HzALmcB8D
-         VNX4lTc2tcPWUTihoIJEyeWmq3W4SZy5jX3+CBv7hEm2LC6aRyl/j9F/SuO49bpo/6TP
-         9fkryK3hYUp5FQeVDEsJ3GwnJlX2gAwG9HRn4udo5INgSe7kwYWAkQ+GLbsyAUpwfLXn
-         BNdin5ipjiAFdhTn0tjDBfefsXf4iu6SMd6PL6SgIAe+7zoZpP1ICNu3rryxIwZe0CJf
-         UYWA==
-X-Gm-Message-State: AOAM533sPrKx6RI0+CJbrJhN2gjaJkTv5JMHzyPVjOvTtYBzXkF+Q+0d
-        wNAlrAzUF2udBHAV48ZFlPzEMH9ti0s=
-X-Google-Smtp-Source: ABdhPJywxbrUL0retmWO0NYSIFl4RfQBvaiz1RRmefomQKUofKGkRa4maCuneMixfRhJF4tQwyRphGh7bFM=
+        bh=9MYqVcaHqXemKrQxjWs3On/yC1RfQIL11OGjYRaSgOM=;
+        b=A7KBYMVqvusKBuG53sb0rvn00I8OLCbWKHOhcP+zX03PwZ18CakvLABBv3WNUzHO1t
+         t2UsNx9ZynaYWAIETY/xvnt22HMXt8+nbu1x4+U5hmB+VztcDwZTexkMgF2fzpWa16HT
+         zudoCYRhOYiH+74tFzQ9/S+eyycjOyqTXwT0k5OOA8EDg1nf14JvDsgyEJDKbE38lbbi
+         zPUtOydGUccHmRZDF5ksPvZV3S5nTfKP3BHiSd9ZyuKOBOTBmswylSwD6dk7VfrlupDL
+         sdWb0u68rsOL6IuPaM+YX/ErQV6/mFJZzcg7XrbunhX3PZTawMfAZbH5xQVZcUaa3eFt
+         ZaMA==
+X-Gm-Message-State: AOAM532AWLqK9M/xy+w8DIuEhy3OssIwuzECy5Y1MTsUbtOII/xDc+ft
+        Emu4yrfvA++Uikv3K72To7/ulYUmyxA=
+X-Google-Smtp-Source: ABdhPJwD6QMoI+HXifXgxvIHBwuUXwD0JHYrffG0bTubcmw4tYm4XyClCI1Q8P+9XSz8+p+RgAIJNDfh6SA=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:1d09:0:b0:50d:fa91:a4c5 with SMTP id
- d9-20020a621d09000000b0050dfa91a4c5mr13625161pfd.25.1651704605774; Wed, 04
- May 2022 15:50:05 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:21c6:b0:4fa:914c:2c2b with SMTP id
+ t6-20020a056a0021c600b004fa914c2c2bmr22967081pfj.56.1651704609534; Wed, 04
+ May 2022 15:50:09 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:26 +0000
+Date:   Wed,  4 May 2022 22:47:28 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-21-seanjc@google.com>
+Message-Id: <20220504224914.1654036-23-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 020/128] KVM: selftests: Get rid of kvm_util_internal.h
+Subject: [PATCH 022/128] KVM: selftests: Drop @test param from kvm_create_device()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,395 +69,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fold kvm_util_internal.h into kvm_util_base.h, i.e. make all KVM utility
-stuff "public".  Hiding struct implementations from tests has been a
-massive failure, as it has led to pointless and poorly named wrappers,
-unnecessarily opaque code, etc...
+Remove the two calls that pass @test=true to kvm_create_device() and drop
+the @test param entirely.  The two removed calls don't check the return
+value of kvm_create_device(), so other than verifying KVM doesn't explode,
+which is extremely unlikely given that the non-test variant was _just_
+called, they are pointless and provide no validation coverage.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     | 99 +++++++++++++++++--
- .../selftests/kvm/lib/aarch64/processor.c     |  1 -
- .../testing/selftests/kvm/lib/aarch64/ucall.c |  1 -
- .../testing/selftests/kvm/lib/aarch64/vgic.c  |  1 -
- tools/testing/selftests/kvm/lib/elf.c         |  1 -
- tools/testing/selftests/kvm/lib/kvm_util.c    |  1 -
- .../selftests/kvm/lib/kvm_util_internal.h     | 94 ------------------
- .../selftests/kvm/lib/riscv/processor.c       |  1 -
- tools/testing/selftests/kvm/lib/riscv/ucall.c |  1 -
- .../selftests/kvm/lib/s390x/processor.c       |  1 -
- .../selftests/kvm/lib/x86_64/processor.c      |  1 -
- tools/testing/selftests/kvm/lib/x86_64/svm.c  |  1 -
- tools/testing/selftests/kvm/lib/x86_64/vmx.c  |  1 -
- .../selftests/kvm/x86_64/sev_migrate_tests.c  |  1 -
- 14 files changed, 91 insertions(+), 114 deletions(-)
- delete mode 100644 tools/testing/selftests/kvm/lib/kvm_util_internal.h
+ tools/testing/selftests/kvm/aarch64/vgic_init.c    | 14 ++++++--------
+ .../testing/selftests/kvm/include/kvm_util_base.h  |  2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c         | 12 ++++--------
+ 3 files changed, 11 insertions(+), 17 deletions(-)
 
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+index 9a153b2ea3de..9cd58f22f5bd 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+@@ -65,7 +65,7 @@ static struct vm_gic vm_gic_create_with_vcpus(uint32_t gic_dev_type, uint32_t nr
+ 
+ 	v.gic_dev_type = gic_dev_type;
+ 	v.vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
+-	v.gic_fd = kvm_create_device(v.vm, gic_dev_type, false);
++	v.gic_fd = kvm_create_device(v.vm, gic_dev_type);
+ 
+ 	return v;
+ }
+@@ -406,7 +406,7 @@ static void test_v3_typer_accesses(void)
+ 
+ 	v.vm = vm_create_default(0, 0, guest_code);
+ 
+-	v.gic_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_V3, false);
++	v.gic_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_V3);
+ 
+ 	vm_vcpu_add_default(v.vm, 3, guest_code);
+ 
+@@ -486,7 +486,7 @@ static void test_v3_last_bit_redist_regions(void)
+ 
+ 	v.vm = vm_create_default_with_vcpus(6, 0, 0, guest_code, vcpuids);
+ 
+-	v.gic_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_V3, false);
++	v.gic_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_V3);
+ 
+ 	kvm_device_access(v.gic_fd, KVM_DEV_ARM_VGIC_GRP_CTRL,
+ 			  KVM_DEV_ARM_VGIC_CTRL_INIT, NULL, true);
+@@ -535,7 +535,7 @@ static void test_v3_last_bit_single_rdist(void)
+ 
+ 	v.vm = vm_create_default_with_vcpus(6, 0, 0, guest_code, vcpuids);
+ 
+-	v.gic_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_V3, false);
++	v.gic_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_V3);
+ 
+ 	kvm_device_access(v.gic_fd, KVM_DEV_ARM_VGIC_GRP_CTRL,
+ 			  KVM_DEV_ARM_VGIC_CTRL_INIT, NULL, true);
+@@ -602,7 +602,7 @@ static void test_v3_its_region(void)
+ 	int its_fd, ret;
+ 
+ 	v = vm_gic_create_with_vcpus(KVM_DEV_TYPE_ARM_VGIC_V3, NR_VCPUS);
+-	its_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_ITS, false);
++	its_fd = kvm_create_device(v.vm, KVM_DEV_TYPE_ARM_VGIC_ITS);
+ 
+ 	addr = 0x401000;
+ 	ret = _kvm_device_access(its_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
+@@ -655,13 +655,11 @@ int test_kvm_device(uint32_t gic_dev_type)
+ 	ret = _kvm_create_device(v.vm, gic_dev_type, true, &fd);
+ 	if (ret)
+ 		return ret;
+-	v.gic_fd = kvm_create_device(v.vm, gic_dev_type, false);
++	v.gic_fd = kvm_create_device(v.vm, gic_dev_type);
+ 
+ 	ret = _kvm_create_device(v.vm, gic_dev_type, false, &fd);
+ 	TEST_ASSERT(ret && errno == EEXIST, "create GIC device twice");
+ 
+-	kvm_create_device(v.vm, gic_dev_type, true);
+-
+ 	/* try to create the other gic_dev_type */
+ 	other = VGIC_DEV_IS_V2(gic_dev_type) ? KVM_DEV_TYPE_ARM_VGIC_V3
+ 					     : KVM_DEV_TYPE_ARM_VGIC_V2;
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index f5bfdf0b4548..c0199f3b59bb 100644
+index c0199f3b59bb..6e1926abb248 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -9,9 +9,13 @@
- 
- #include "test_util.h"
- 
--#include "asm/kvm.h"
-+#include <linux/compiler.h>
-+#include "linux/hashtable.h"
- #include "linux/list.h"
--#include "linux/kvm.h"
-+#include <linux/kernel.h>
-+#include <linux/kvm.h>
-+#include "linux/rbtree.h"
-+
- #include <sys/ioctl.h>
- 
- #include "sparsebit.h"
-@@ -21,15 +25,94 @@
- 
- #define NSEC_PER_SEC 1000000000L
- 
--/*
-- * Callers of kvm_util only have an incomplete/opaque description of the
-- * structure kvm_util is using to maintain the state of a VM.
-- */
--struct kvm_vm;
--
- typedef uint64_t vm_paddr_t; /* Virtual Machine (Guest) physical address */
- typedef uint64_t vm_vaddr_t; /* Virtual Machine (Guest) virtual address */
- 
-+struct userspace_mem_region {
-+	struct kvm_userspace_memory_region region;
-+	struct sparsebit *unused_phy_pages;
-+	int fd;
-+	off_t offset;
-+	void *host_mem;
-+	void *host_alias;
-+	void *mmap_start;
-+	void *mmap_alias;
-+	size_t mmap_size;
-+	struct rb_node gpa_node;
-+	struct rb_node hva_node;
-+	struct hlist_node slot_node;
-+};
-+
-+struct vcpu {
-+	struct list_head list;
-+	uint32_t id;
-+	int fd;
-+	struct kvm_run *state;
-+	struct kvm_dirty_gfn *dirty_gfns;
-+	uint32_t fetch_index;
-+	uint32_t dirty_gfns_count;
-+};
-+
-+struct userspace_mem_regions {
-+	struct rb_root gpa_tree;
-+	struct rb_root hva_tree;
-+	DECLARE_HASHTABLE(slot_hash, 9);
-+};
-+
-+struct kvm_vm {
-+	int mode;
-+	unsigned long type;
-+	int kvm_fd;
-+	int fd;
-+	unsigned int pgtable_levels;
-+	unsigned int page_size;
-+	unsigned int page_shift;
-+	unsigned int pa_bits;
-+	unsigned int va_bits;
-+	uint64_t max_gfn;
-+	struct list_head vcpus;
-+	struct userspace_mem_regions regions;
-+	struct sparsebit *vpages_valid;
-+	struct sparsebit *vpages_mapped;
-+	bool has_irqchip;
-+	bool pgd_created;
-+	vm_paddr_t pgd;
-+	vm_vaddr_t gdt;
-+	vm_vaddr_t tss;
-+	vm_vaddr_t idt;
-+	vm_vaddr_t handlers;
-+	uint32_t dirty_ring_size;
-+};
-+
-+
-+#define kvm_for_each_vcpu(vm, i, vcpu)			\
-+	for ((i) = 0; (i) <= (vm)->last_vcpu_id; (i)++)	\
-+		if (!((vcpu) = vm->vcpus[i]))		\
-+			continue;			\
-+		else
-+
-+struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
-+
-+/*
-+ * Virtual Translation Tables Dump
-+ *
-+ * Input Args:
-+ *   stream - Output FILE stream
-+ *   vm     - Virtual Machine
-+ *   indent - Left margin indent amount
-+ *
-+ * Output Args: None
-+ *
-+ * Return: None
-+ *
-+ * Dumps to the FILE stream given by @stream, the contents of all the
-+ * virtual translation tables for the VM given by @vm.
-+ */
-+void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
-+
-+struct userspace_mem_region *
-+memslot2region(struct kvm_vm *vm, uint32_t memslot);
-+
- /* Minimum allocated guest virtual and physical addresses */
- #define KVM_UTIL_MIN_VADDR		0x2000
- #define KVM_GUEST_PAGE_TABLE_MIN_PADDR	0x180000
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/processor.c b/tools/testing/selftests/kvm/lib/aarch64/processor.c
-index 06c3dafc82c4..6fa52e141e1b 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/processor.c
-@@ -10,7 +10,6 @@
- 
- #include "guest_modes.h"
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "processor.h"
- 
- #define DEFAULT_ARM64_GUEST_STACK_VADDR_MIN	0xac0000
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-index e0b0164e9af8..e14663ab2056 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-@@ -5,7 +5,6 @@
-  * Copyright (C) 2018, Red Hat, Inc.
-  */
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- 
- static vm_vaddr_t *ucall_exit_mmio_addr;
- 
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/vgic.c b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
-index 25d1ec65621d..c34f0f116f39 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/vgic.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
-@@ -9,7 +9,6 @@
- #include <asm/kvm.h>
- 
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "vgic.h"
- #include "gic.h"
- #include "gic_v3.h"
-diff --git a/tools/testing/selftests/kvm/lib/elf.c b/tools/testing/selftests/kvm/lib/elf.c
-index 13e8e3dcf984..9f54c098d9d0 100644
---- a/tools/testing/selftests/kvm/lib/elf.c
-+++ b/tools/testing/selftests/kvm/lib/elf.c
-@@ -11,7 +11,6 @@
- #include <linux/elf.h>
- 
- #include "kvm_util.h"
--#include "kvm_util_internal.h"
- 
- static void elfhdr_get(const char *filename, Elf64_Ehdr *hdrp)
- {
+@@ -485,7 +485,7 @@ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...);
+ int _kvm_device_check_attr(int dev_fd, uint32_t group, uint64_t attr);
+ int kvm_device_check_attr(int dev_fd, uint32_t group, uint64_t attr);
+ int _kvm_create_device(struct kvm_vm *vm, uint64_t type, bool test, int *fd);
+-int kvm_create_device(struct kvm_vm *vm, uint64_t type, bool test);
++int kvm_create_device(struct kvm_vm *vm, uint64_t type);
+ int _kvm_device_access(int dev_fd, uint32_t group, uint64_t attr,
+ 		       void *val, bool write);
+ int kvm_device_access(int dev_fd, uint32_t group, uint64_t attr,
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index c7df8ba04ec5..a57958a39c1b 100644
+index a57958a39c1b..cb2e42aa1c03 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -8,7 +8,6 @@
- #define _GNU_SOURCE /* for program_invocation_name */
- #include "test_util.h"
- #include "kvm_util.h"
--#include "kvm_util_internal.h"
- #include "processor.h"
+@@ -1642,18 +1642,14 @@ int _kvm_create_device(struct kvm_vm *vm, uint64_t type, bool test, int *fd)
+ 	return ret;
+ }
  
- #include <assert.h>
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util_internal.h b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-deleted file mode 100644
-index 544b90df2f80..000000000000
---- a/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-+++ /dev/null
-@@ -1,94 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * tools/testing/selftests/kvm/lib/kvm_util_internal.h
-- *
-- * Copyright (C) 2018, Google LLC.
-- */
--
--#ifndef SELFTEST_KVM_UTIL_INTERNAL_H
--#define SELFTEST_KVM_UTIL_INTERNAL_H
--
--#include "linux/hashtable.h"
--#include "linux/rbtree.h"
--
--#include "sparsebit.h"
--
--struct userspace_mem_region {
--	struct kvm_userspace_memory_region region;
--	struct sparsebit *unused_phy_pages;
--	int fd;
--	off_t offset;
--	void *host_mem;
--	void *host_alias;
--	void *mmap_start;
--	void *mmap_alias;
--	size_t mmap_size;
--	struct rb_node gpa_node;
--	struct rb_node hva_node;
--	struct hlist_node slot_node;
--};
--
--struct vcpu {
--	struct list_head list;
--	uint32_t id;
--	int fd;
--	struct kvm_run *state;
--	struct kvm_dirty_gfn *dirty_gfns;
--	uint32_t fetch_index;
--	uint32_t dirty_gfns_count;
--};
--
--struct userspace_mem_regions {
--	struct rb_root gpa_tree;
--	struct rb_root hva_tree;
--	DECLARE_HASHTABLE(slot_hash, 9);
--};
--
--struct kvm_vm {
--	int mode;
--	unsigned long type;
--	int kvm_fd;
--	int fd;
--	unsigned int pgtable_levels;
--	unsigned int page_size;
--	unsigned int page_shift;
--	unsigned int pa_bits;
--	unsigned int va_bits;
--	uint64_t max_gfn;
--	struct list_head vcpus;
--	struct userspace_mem_regions regions;
--	struct sparsebit *vpages_valid;
--	struct sparsebit *vpages_mapped;
--	bool has_irqchip;
--	bool pgd_created;
--	vm_paddr_t pgd;
--	vm_vaddr_t gdt;
--	vm_vaddr_t tss;
--	vm_vaddr_t idt;
--	vm_vaddr_t handlers;
--	uint32_t dirty_ring_size;
--};
--
--struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
--
--/*
-- * Virtual Translation Tables Dump
-- *
-- * Input Args:
-- *   stream - Output FILE stream
-- *   vm     - Virtual Machine
-- *   indent - Left margin indent amount
-- *
-- * Output Args: None
-- *
-- * Return: None
-- *
-- * Dumps to the FILE stream given by @stream, the contents of all the
-- * virtual translation tables for the VM given by @vm.
-- */
--void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
--
--struct userspace_mem_region *
--memslot2region(struct kvm_vm *vm, uint32_t memslot);
--
--#endif /* SELFTEST_KVM_UTIL_INTERNAL_H */
-diff --git a/tools/testing/selftests/kvm/lib/riscv/processor.c b/tools/testing/selftests/kvm/lib/riscv/processor.c
-index 10ae8036341d..c61c4856ed03 100644
---- a/tools/testing/selftests/kvm/lib/riscv/processor.c
-+++ b/tools/testing/selftests/kvm/lib/riscv/processor.c
-@@ -9,7 +9,6 @@
- #include <assert.h>
+-int kvm_create_device(struct kvm_vm *vm, uint64_t type, bool test)
++int kvm_create_device(struct kvm_vm *vm, uint64_t type)
+ {
+ 	int fd, ret;
  
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "processor.h"
+-	ret = _kvm_create_device(vm, type, test, &fd);
++	ret = _kvm_create_device(vm, type, false, &fd);
  
- #define DEFAULT_RISCV_GUEST_STACK_VADDR_MIN	0xac0000
-diff --git a/tools/testing/selftests/kvm/lib/riscv/ucall.c b/tools/testing/selftests/kvm/lib/riscv/ucall.c
-index 9e42d8248fa6..c554ed173b38 100644
---- a/tools/testing/selftests/kvm/lib/riscv/ucall.c
-+++ b/tools/testing/selftests/kvm/lib/riscv/ucall.c
-@@ -8,7 +8,6 @@
- #include <linux/kvm.h>
+-	if (!test) {
+-		TEST_ASSERT(!ret,
+-			    "KVM_CREATE_DEVICE IOCTL failed, rc: %i errno: %i", ret, errno);
+-		return fd;
+-	}
+-	return ret;
++	TEST_ASSERT(!ret, "KVM_CREATE_DEVICE IOCTL failed, rc: %i errno: %i", ret, errno);
++	return fd;
+ }
  
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "processor.h"
- 
- void ucall_init(struct kvm_vm *vm, void *arg)
-diff --git a/tools/testing/selftests/kvm/lib/s390x/processor.c b/tools/testing/selftests/kvm/lib/s390x/processor.c
-index 7cc1051c4b71..53c413932f64 100644
---- a/tools/testing/selftests/kvm/lib/s390x/processor.c
-+++ b/tools/testing/selftests/kvm/lib/s390x/processor.c
-@@ -7,7 +7,6 @@
- 
- #include "processor.h"
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- 
- #define PAGES_PER_REGION 4
- 
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 93726d8cac44..1e3d68bdfc7d 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -7,7 +7,6 @@
- 
- #include "test_util.h"
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "processor.h"
- 
- #ifndef NUM_INTERRUPTS
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/svm.c b/tools/testing/selftests/kvm/lib/x86_64/svm.c
-index 736ee4a23df6..01a9d831da13 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/svm.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/svm.c
-@@ -9,7 +9,6 @@
- 
- #include "test_util.h"
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "processor.h"
- #include "svm_util.h"
- 
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-index d089d8b850b5..0d42aa821833 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-@@ -7,7 +7,6 @@
- 
- #include "test_util.h"
- #include "kvm_util.h"
--#include "../kvm_util_internal.h"
- #include "processor.h"
- #include "vmx.h"
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-index 7424bec5ae23..5b565aa11e32 100644
---- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-@@ -12,7 +12,6 @@
- #include "processor.h"
- #include "svm_util.h"
- #include "kselftest.h"
--#include "../lib/kvm_util_internal.h"
- 
- #define SEV_POLICY_ES 0b100
- 
+ int _kvm_device_access(int dev_fd, uint32_t group, uint64_t attr,
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
