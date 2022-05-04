@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A654C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD85C35296
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347345AbiEDIzD (ORCPT
+        id S1347371AbiEDIz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51888 "EHLO
+        Wed, 4 May 2022 04:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346815AbiEDIxp (ORCPT
+        with ESMTP id S1346851AbiEDIxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:53:45 -0400
+        Wed, 4 May 2022 04:53:51 -0400
 Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DA5125C54
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7908225C72
         for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:49:23 -0700 (PDT)
 Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
-        by 156.147.23.53 with ESMTP; 4 May 2022 17:19:21 +0900
+        by 156.147.23.53 with ESMTP; 4 May 2022 17:19:22 +0900
 X-Original-SENDERIP: 156.147.1.125
 X-Original-MAILFROM: byungchul.park@lge.com
 Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.125 with ESMTP; 4 May 2022 17:19:21 +0900
+        by 156.147.1.125 with ESMTP; 4 May 2022 17:19:22 +0900
 X-Original-SENDERIP: 10.177.244.38
 X-Original-MAILFROM: byungchul.park@lge.com
 From:   Byungchul Park <byungchul.park@lge.com>
@@ -48,9 +48,9 @@ Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
         dri-devel@lists.freedesktop.org, airlied@linux.ie,
         rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
         hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
-Subject: [PATCH RFC v6 17/21] dept: Disable Dept within the wait_bit layer by default
-Date:   Wed,  4 May 2022 17:17:45 +0900
-Message-Id: <1651652269-15342-18-git-send-email-byungchul.park@lge.com>
+Subject: [PATCH RFC v6 21/21] dept: Unstage wait when tagging a normal sleep wait
+Date:   Wed,  4 May 2022 17:17:49 +0900
+Message-Id: <1651652269-15342-22-git-send-email-byungchul.park@lge.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
 References: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
@@ -58,43 +58,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The struct wait_queue_head array, bit_wait_table[] in sched/wait_bit.c
-are shared by all its users, which unfortunately vary in terms of class.
-So each should've been assigned its own class to avoid false positives.
+Staging a wait and commit have been introduced to handle conditional
+sleeps that can be determined in __schedule() whether it actually goes
+to sleep or not. With this feature, actual wait tagging is delayed
+until __schedule().
 
-It'd better let Dept work at a higher layer than wait_bit. So disabled
-Dept within the wait_bit layer by default.
+Unfortunately, an ambiguity arises when a normal sleep wait that doesn't
+require staging and commit, is involved in the middle of handling a
+conditional sleep e.g. between prepare_to_wait_*() and __schedule(),
+which is a very rare case tho.
 
-It's worth noting that Dept is still working with the other struct
-wait_queue_head ones that are mostly well-classified.
+So let it give up handling the conditional sleep by unstaging it
+unconditionally when a normal sleep wait gets involved, to avoid the
+ambiguity.
 
 Signed-off-by: Byungchul Park <byungchul.park@lge.com>
 ---
- kernel/sched/wait_bit.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/dependency/dept.c | 55 +++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 40 insertions(+), 15 deletions(-)
 
-diff --git a/kernel/sched/wait_bit.c b/kernel/sched/wait_bit.c
-index d4788f8..df93e33 100644
---- a/kernel/sched/wait_bit.c
-+++ b/kernel/sched/wait_bit.c
-@@ -3,6 +3,7 @@
- /*
-  * The implementation of the wait_bit*() and related waiting APIs:
-  */
-+#include <linux/dept.h>
- 
- #define WAIT_TABLE_BITS 8
- #define WAIT_TABLE_SIZE (1 << WAIT_TABLE_BITS)
-@@ -246,6 +247,8 @@ void __init wait_bit_init(void)
- {
- 	int i;
- 
--	for (i = 0; i < WAIT_TABLE_SIZE; i++)
-+	for (i = 0; i < WAIT_TABLE_SIZE; i++) {
- 		init_waitqueue_head(bit_wait_table + i);
-+		dept_map_nocheck(&(bit_wait_table + i)->dmap);
-+	}
+diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
+index 14dc33b..ce6d5b3 100644
+--- a/kernel/dependency/dept.c
++++ b/kernel/dependency/dept.c
+@@ -2166,6 +2166,21 @@ static void __dept_wait(struct dept_map *m, unsigned long w_f,
+ 	}
  }
+ 
++static inline void stage_map(struct dept_task *dt, struct dept_map *m)
++{
++	dt->stage_m = m;
++}
++
++static inline void unstage_map(struct dept_task *dt)
++{
++	dt->stage_m = NULL;
++}
++
++static inline struct dept_map *staged_map(struct dept_task *dt)
++{
++	return dt->stage_m;
++}
++
+ void dept_wait(struct dept_map *m, unsigned long w_f, unsigned long ip,
+ 	       const char *w_fn, int ne, bool sleep)
+ {
+@@ -2183,27 +2198,24 @@ void dept_wait(struct dept_map *m, unsigned long w_f, unsigned long ip,
+ 
+ 	flags = dept_enter();
+ 
++	/*
++	 * There's no way to distinguish between a staged wait and this
++	 * one, in the middle of handling a wait that requires staging
++	 * and commit in __schedule().
++	 *
++	 * The wait that has been tagged dept_wait() with sleep == true
++	 * should ignore the staged wait in __schedule() if it exists,
++	 * to avoid the ambiguity. It can be done by unstaging it.
++	 */
++	if (sleep)
++		unstage_map(dt);
++
+ 	__dept_wait(m, w_f, ip, w_fn, ne, sleep);
+ 
+ 	dept_exit(flags);
+ }
+ EXPORT_SYMBOL_GPL(dept_wait);
+ 
+-static inline void stage_map(struct dept_task *dt, struct dept_map *m)
+-{
+-	dt->stage_m = m;
+-}
+-
+-static inline void unstage_map(struct dept_task *dt)
+-{
+-	dt->stage_m = NULL;
+-}
+-
+-static inline struct dept_map *staged_map(struct dept_task *dt)
+-{
+-	return dt->stage_m;
+-}
+-
+ void dept_stage_wait(struct dept_map *m, unsigned long w_f,
+ 		     const char *w_fn, int ne)
+ {
+@@ -2565,6 +2577,19 @@ void dept_wait_split_map(struct dept_map_each *me,
+ 
+ 	flags = dept_enter();
+ 
++	/*
++	 * There's no way to distinguish between a staged wait and this
++	 * one, in the middle of handling a wait that requires staging
++	 * and commit in __schedule().
++	 *
++	 * The wait that has been tagged dept_wait_split_map() with
++	 * sleep == true should ignore the staged wait in __schedule()
++	 * if it exists, to avoid the ambiguity. It can be done by
++	 * unstaging it.
++	 */
++	if (sleep)
++		unstage_map(dt);
++
+ 	k = mc->keys ?: &mc->keys_local;
+ 	c = check_new_class(&mc->keys_local, k, 0, 0UL, mc->name);
+ 	if (c)
 -- 
 1.9.1
 
