@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C5CC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8CCC3527B
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358751AbiEDRfO (ORCPT
+        id S1358713AbiEDRfH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        Wed, 4 May 2022 13:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357088AbiEDRJ6 (ORCPT
+        with ESMTP id S1357212AbiEDRKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3832B48E6F;
-        Wed,  4 May 2022 09:57:05 -0700 (PDT)
+        Wed, 4 May 2022 13:10:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28247496A0;
+        Wed,  4 May 2022 09:57:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 696F0618EE;
-        Wed,  4 May 2022 16:57:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1288C385A4;
-        Wed,  4 May 2022 16:57:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 718AF618E5;
+        Wed,  4 May 2022 16:57:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB672C385C5;
+        Wed,  4 May 2022 16:57:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683423;
-        bh=QnEGDlMn9uLf+kFwnUU586VzqNWXp9vWlFw59N18DH0=;
+        s=korg; t=1651683428;
+        bh=1PxZCugPr4DxiBBU19KWct2wANpsU0yR63LGAuaYykk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=havZQ0PgtUMbDU5GGOp3P1lhXIRpIMXIeEYZ69N1Cq7CEeIsO0hrucTIUE/syRGDV
-         B+p3Mol7mR+k7Zm1SqDjMD2Fs9mJ+xaettK1nIjLRobKKWoPYpFINajpQaDzg4t7xS
-         VEqsgIrVd7zE+OgxXJyHfs7HiJh8Uk/CdbsKEhtQ=
+        b=heVUcRPv+0Au/05kyIv6zzUlqUdVmbZA4k6bPi1o/7gHobhEyye3Nj+AbEayfYz9w
+         vJCYjW1cT9YkXgECklBINSt2qKdgYmg3a+vDgMC8YTo0LlYix9e28xkVZ/IA3vxBoJ
+         b3VS2sAXZoLS2L6JfPlyxADI/cxR6UGDmnRWxJo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Julian Anastasov <ja@ssi.bg>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 089/225] ARM: dts: Fix mmc order for omap3-gta04
-Date:   Wed,  4 May 2022 18:45:27 +0200
-Message-Id: <20220504153118.862004216@linuxfoundation.org>
+Subject: [PATCH 5.17 094/225] ipvs: correctly print the memory size of ip_vs_conn_tab
+Date:   Wed,  4 May 2022 18:45:32 +0200
+Message-Id: <20220504153119.205299054@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,36 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: H. Nikolaus Schaller <hns@goldelico.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit 09269dd050094593fc747f2a5853d189fefcb6b5 ]
+[ Upstream commit eba1a872cb73314280d5448d934935b23e30b7ca ]
 
-Commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-introduces general mmc aliases. Let's tailor them to the need
-of the GTA04 board which does not make use of mmc2 and mmc3 interfaces.
+The memory size of ip_vs_conn_tab changed after we use hlist
+instead of list.
 
-Fixes: a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Message-Id: <dc9173ee3d391d9e92b7ab8ed4f84b29f0a21c83.1646744420.git.hns@goldelico.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: 731109e78415 ("ipvs: use hlist instead of list")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-gta04.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ net/netfilter/ipvs/ip_vs_conn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
-index 7e3d8147e2c1..0365f06165e9 100644
---- a/arch/arm/boot/dts/omap3-gta04.dtsi
-+++ b/arch/arm/boot/dts/omap3-gta04.dtsi
-@@ -31,6 +31,8 @@ chosen {
- 	aliases {
- 		display0 = &lcd;
- 		display1 = &tv0;
-+		/delete-property/ mmc2;
-+		/delete-property/ mmc3;
- 	};
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index 2c467c422dc6..fb67f1ca2495 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1495,7 +1495,7 @@ int __init ip_vs_conn_init(void)
+ 	pr_info("Connection hash table configured "
+ 		"(size=%d, memory=%ldKbytes)\n",
+ 		ip_vs_conn_tab_size,
+-		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
++		(long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
+ 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
+ 		  sizeof(struct ip_vs_conn));
  
- 	ldo_3v3: fixedregulator {
 -- 
 2.35.1
 
