@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E91C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354538AbiEDRIL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S231344AbiEDRIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355513AbiEDRAH (ORCPT
+        with ESMTP id S1355591AbiEDRAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AF84B842;
-        Wed,  4 May 2022 09:51:48 -0700 (PDT)
+        Wed, 4 May 2022 13:00:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32164B874;
+        Wed,  4 May 2022 09:51:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAB21617C4;
-        Wed,  4 May 2022 16:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26292C385AF;
-        Wed,  4 May 2022 16:51:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77FAAB827A6;
+        Wed,  4 May 2022 16:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D82C385A5;
+        Wed,  4 May 2022 16:51:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683093;
-        bh=QYfJ4jy1pgwenIxzQh04z03IUEVKov1C1SpEawfBfwY=;
+        s=korg; t=1651683112;
+        bh=xCiJZCZ9ZeZ92LkRF+pni1gvqdOIeeTL+TY9tYDqNAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P1PMh5cjx202KBHVzpbHXQIRJMgXpRIMKxPPuPKdMN5/DZJnRSBDyDeZSZGVfHtex
-         V3zXbyg0hu7AuSX8keGpUgiClJ14El19fKMgUyufy8lzdq7eRntpL0nZ7h/EC4iiHp
-         r45O1eu4o7xQESYuSwwkh7nAXpORdOxOzu53QsEs=
+        b=KURyQIF84kvsTJXdB8Nz0wM35PgyOwHEHM6A3xNXz+FKfEBwt8wF948HaYmLh/x7C
+         4ljtzyDPhHneNb5Sm9E6PNSpdAJNn/tlNNFrejO+uUX8liqThOkMtnEcuH2FBKWnQd
+         nZIHGgW6P1nxKMTRczJNA1n/nA7I9QHbUr2/hWtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 085/129] bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
-Date:   Wed,  4 May 2022 18:44:37 +0200
-Message-Id: <20220504153027.785752326@linuxfoundation.org>
+Subject: [PATCH 5.10 104/129] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Wed,  4 May 2022 18:44:56 +0200
+Message-Id: <20220504153029.226780565@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -52,41 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit fff8c10368e64e7f8960f149375c12ca5f3b30af ]
+[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-This code is really spurious.
-It always returns an ERR_PTR, even when err is known to be 0 and calls
-put_device() after a successful device_register() call.
+There is a deadlock in rr_close(), which is shown below:
 
-It is likely that the return statement in the normal path is missing.
-Add 'return rdev;' to fix it.
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
 
-Fixes: d787dcdb9c8f ("bus: sunxi-rsb: Add driver for Allwinner Reduced Serial Bus")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/ef2b9576350bba4c8e05e669e9535e9e2a415763.1650551719.git.christophe.jaillet@wanadoo.fr
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/sunxi-rsb.c | 2 ++
+ drivers/net/hippi/rrunner.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
-index 1bb00a959c67..9b1a5e62417c 100644
---- a/drivers/bus/sunxi-rsb.c
-+++ b/drivers/bus/sunxi-rsb.c
-@@ -224,6 +224,8 @@ static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 22010384c4a3..b9646b369f8e 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1353,7 +1353,9 @@ static int rr_close(struct net_device *dev)
  
- 	dev_dbg(&rdev->dev, "device %s registered\n", dev_name(&rdev->dev));
+ 	rrpriv->fw_running = 0;
  
-+	return rdev;
-+
- err_device_add:
- 	put_device(&rdev->dev);
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
  
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
 -- 
 2.35.1
 
