@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F16C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C60E8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235658AbiEDR0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
+        id S1357363AbiEDR1g (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354717AbiEDRFU (ORCPT
+        with ESMTP id S1355522AbiEDRHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:05:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF665133C;
-        Wed,  4 May 2022 09:54:16 -0700 (PDT)
+        Wed, 4 May 2022 13:07:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C8A51597;
+        Wed,  4 May 2022 09:54:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F202B618BB;
-        Wed,  4 May 2022 16:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C564C385AA;
-        Wed,  4 May 2022 16:54:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 93ED7CE2625;
+        Wed,  4 May 2022 16:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41BFC385A5;
+        Wed,  4 May 2022 16:54:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683255;
-        bh=AzxGN6B+6s9ilIUtcllUE9KE0UO6vCvY2wsQE9iImXE=;
+        s=korg; t=1651683260;
+        bh=J+jBo16iQs/BiLfou3/SFc7FzOVPopt9RazhfTcTP6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mmOZEhiuWleRN4IsXoOY46U9mBCyFDvZk7E0+NwJMhimnxq8xNl/0qmSTU4t79RMb
-         1sl1LA24FX9VHpUtrGIv1B145dz9wUNFrzNPV7HTPxFBkSiGNTyBVNeM6pvDINcSz0
-         arVhVWWiIdN94hBM2T2o8YfgIz3iy9jXaqhwvEN0=
+        b=YILkD6aLeVaMEsIkqRHcu8K3UsGcEtF02q5HTWlI/CLtC7pIM6YpAOS8Z7WkyTMe5
+         rQZF/w4AAmo350ZdyN22JQyOmyHWouLV3swc0BmDI+W9iAWjO9OYA2ip7H26cUDszX
+         h6/sF6mXFgz0qycR7Ri3MCdJa27/oGwP/SDyTLsA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 120/177] gfs2: Minor retry logic cleanup
-Date:   Wed,  4 May 2022 18:45:13 +0200
-Message-Id: <20220504153103.895550456@linuxfoundation.org>
+Subject: [PATCH 5.15 126/177] tcp: fix F-RTO may not work correctly when receiving DSACK
+Date:   Wed,  4 May 2022 18:45:19 +0200
+Message-Id: <20220504153104.380107754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -48,84 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit 124c458a401a2497f796e4f2d6cafac6edbea8e9 ]
+[ Upstream commit d9157f6806d1499e173770df1f1b234763de5c79 ]
 
-Clean up the retry logic in the read and write functions somewhat.
+Currently DSACK is regarded as a dupack, which may cause
+F-RTO to incorrectly enter "loss was real" when receiving
+DSACK.
 
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Packetdrill to demonstrate:
+
+// Enable F-RTO and TLP
+    0 `sysctl -q net.ipv4.tcp_frto=2`
+    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
+    0 `sysctl -q net.ipv4.tcp_congestion_control=cubic`
+
+// Establish a connection
+   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+   +0 bind(3, ..., ...) = 0
+   +0 listen(3, 1) = 0
+
+// RTT 10ms, RTO 210ms
+  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
+   +0 > S. 0:0(0) ack 1 <...>
+ +.01 < . 1:1(0) ack 1 win 257
+   +0 accept(3, ..., ...) = 4
+
+// Send 2 data segments
+   +0 write(4, ..., 2000) = 2000
+   +0 > P. 1:2001(2000) ack 1
+
+// TLP
++.022 > P. 1001:2001(1000) ack 1
+
+// Continue to send 8 data segments
+   +0 write(4, ..., 10000) = 10000
+   +0 > P. 2001:10001(8000) ack 1
+
+// RTO
++.188 > . 1:1001(1000) ack 1
+
+// The original data is acked and new data is sent(F-RTO step 2.b)
+   +0 < . 1:1(0) ack 2001 win 257
+   +0 > P. 10001:12001(2000) ack 1
+
+// D-SACK caused by TLP is regarded as a dupack, this results in
+// the incorrect judgment of "loss was real"(F-RTO step 3.a)
++.022 < . 1:1(0) ack 2001 win 257 <sack 1001:2001,nop,nop>
+
+// Never-retransmitted data(3001:4001) are acked and
+// expect to switch to open state(F-RTO step 3.b)
+   +0 < . 1:1(0) ack 4001 win 257
++0 %{ assert tcpi_ca_state == 0, tcpi_ca_state }%
+
+Fixes: e33099f96d99 ("tcp: implement RFC5682 F-RTO")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Tested-by: Neal Cardwell <ncardwell@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/1650967419-2150-1-git-send-email-yangpc@wangsu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/file.c | 34 ++++++++++++++++------------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index 97e2793e22d7..964c19e27ce2 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -858,9 +858,9 @@ static ssize_t gfs2_file_direct_read(struct kiocb *iocb, struct iov_iter *to,
- 		leftover = fault_in_iov_iter_writeable(to, window_size);
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
--			if (!gfs2_holder_queued(gh))
--				goto retry;
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(gh))
-+				goto retry_under_glock;
-+			goto retry;
- 		}
- 	}
- 	if (gfs2_holder_queued(gh))
-@@ -927,9 +927,9 @@ static ssize_t gfs2_file_direct_write(struct kiocb *iocb, struct iov_iter *from,
- 		leftover = fault_in_iov_iter_readable(from, window_size);
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
--			if (!gfs2_holder_queued(gh))
--				goto retry;
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(gh))
-+				goto retry_under_glock;
-+			goto retry;
- 		}
- 	}
- out:
-@@ -996,12 +996,11 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 		leftover = fault_in_iov_iter_writeable(to, window_size);
- 		gfs2_holder_disallow_demote(&gh);
- 		if (leftover != window_size) {
--			if (!gfs2_holder_queued(&gh)) {
--				if (written)
--					goto out_uninit;
--				goto retry;
--			}
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(&gh))
-+				goto retry_under_glock;
-+			if (written)
-+				goto out_uninit;
-+			goto retry;
- 		}
- 	}
- 	if (gfs2_holder_queued(&gh))
-@@ -1075,12 +1074,11 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
- 		gfs2_holder_disallow_demote(gh);
- 		if (leftover != window_size) {
- 			from->count = min(from->count, window_size - leftover);
--			if (!gfs2_holder_queued(gh)) {
--				if (read)
--					goto out_uninit;
--				goto retry;
--			}
--			goto retry_under_glock;
-+			if (gfs2_holder_queued(gh))
-+				goto retry_under_glock;
-+			if (read)
-+				goto out_uninit;
-+			goto retry;
- 		}
- 	}
- out_unlock:
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 6bd283b58bb8..dfd32cd3b95e 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3860,7 +3860,8 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		tcp_process_tlp_ack(sk, ack, flag);
+ 
+ 	if (tcp_ack_is_dubious(sk, flag)) {
+-		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
++		if (!(flag & (FLAG_SND_UNA_ADVANCED |
++			      FLAG_NOT_DUP | FLAG_DSACKING_ACK))) {
+ 			num_dupack = 1;
+ 			/* Consider if pure acks were aggregated in tcp_add_backlog() */
+ 			if (!(flag & FLAG_DATA))
 -- 
 2.35.1
 
