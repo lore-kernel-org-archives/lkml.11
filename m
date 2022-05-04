@@ -2,109 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D18CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94507C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 21:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378528AbiEDVSE (ORCPT
+        id S1378536AbiEDVT4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 17:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60478 "EHLO
+        Wed, 4 May 2022 17:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378518AbiEDVSB (ORCPT
+        with ESMTP id S244029AbiEDVTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 17:18:01 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0543450054
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651698864; x=1683234864;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Yo2p0itu5Zvw6ZR8LQJYmq9wVK3GsYpeMi2FneUCQnQ=;
-  b=W/lyRV1RFwtLKSOJ72hTItvaqip3DAIOYRhGWfrf8EJH8igrj9MntusR
-   vxbCVlozUNh6ppGxmPGNloqqN9FV5WvSoQz9sjOqokilD8/Ouj6Jx0xEa
-   73Wu98d/pSHZG2vyI8lk3QCkXwIeezw4csb7iGVifbaGHrXMGSYe8IJFg
-   XauUuC0U/gbyhapryjdRpLZMR9EYMZzVyaCmY6rArBwfjxdNqZHx6w68A
-   2gxAvmrlohgMGfixvwyHsuFeqliT1FYvYNPBqWwJ+1afXra+lbcrFg9ov
-   sfKAMUb+1Ms6yrIeBmGT2Q9d0dvFp6Cuz3921sQV+TnkrOWVwhN6FW+mL
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="293098141"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="293098141"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 14:14:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="537024685"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 04 May 2022 14:14:04 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmMJw-000Bmt-3x;
-        Wed, 04 May 2022 21:14:04 +0000
-Date:   Thu, 5 May 2022 05:13:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Likun Gao <Likun.Gao@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Subject: [agd5f:drm-next 427/460]
- drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c:129:6: warning: no previous
- prototype for 'amdgpu_ucode_print_imu_hdr'
-Message-ID: <202205050542.SL1MkyhN-lkp@intel.com>
+        Wed, 4 May 2022 17:19:53 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B4821253
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 14:16:15 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g20so3107148edw.6
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 14:16:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6MXhFAWbDglpoBwnCNgPXrGcxMNN6VO/SyKkfNQIIaY=;
+        b=od9l1MKX7VGnlty0UQGANhz5usp8Mso5lcbHl1nFickQHtjswW8vkxoYHz9GUsdtAU
+         f8AMtgLlad2SEhYwyYKIWXo3yBOyjtzO9GEDXVoigHp78Vy7LNTXXcMjmf5Uh+0y9m1K
+         cU09NofM9Tb/cXEvvtGa01f7Ej2pwrj93rcxtfNEn+TB0eBVG6N7nHffonOwEG2IBFR5
+         gxRbHIun3AuGBf38wjv/TAmzk+9U+1SlrJLS/pWnEiwf8vyjPM56HObsANDRQztEnBtN
+         p5tIFznUphSsy1ffWktrtVRSvUjRPWXTZrxiMqKQwDZwpWONN3F+s1PqA3ThuATdZT3q
+         pnrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6MXhFAWbDglpoBwnCNgPXrGcxMNN6VO/SyKkfNQIIaY=;
+        b=M4GdeWsw/v9SWcHWNIG2YONaogDkaYEja3C6tXJurWDsI0QMHKZiXFMJo1P6tv3ffk
+         YD5PLFnTuzPOeT9uUNESg295uIOA9ffcWJrFdy3RMHOcpbHsrZJOZhRuXuhnNhJQ1G4u
+         +z1iq6Hzu9l8Fg/nrvnGGUd8qdZmf6hGoXnANd2Ppzn88IY13RjAJ4I7T9bLSFGkkj4b
+         jWe597wBcrYeCsduEwUDLETFEs18aLviU8UTHka8we8gD9qZPpIZBLMSEGShJ6vyDHLV
+         qR8DMqwqZDzteOd4bsyozBvoZGeBE0/A+M/zPz4Hjmn/yxABnY4axef2fpmnilv1f/iE
+         eFpw==
+X-Gm-Message-State: AOAM530+Rz3m7uFC0N1duicnJekmRSrQO0G3Q/+tzcCoImzCE4vw6UgN
+        z/Hw4Tq4ENhWfHxzwgGgNrt5SvWO8Jw13ugBaq3s1A==
+X-Google-Smtp-Source: ABdhPJwQ1M2NAmIFQZzAS9SZVXA1FRiwJe04VVWotoV0KyWmS6QO9tP0T66QfbBoTx2NAlraFyhy336blz2Fqf5csD4=
+X-Received: by 2002:a05:6402:2995:b0:425:d3a1:28aa with SMTP id
+ eq21-20020a056402299500b00425d3a128aamr25411732edb.247.1651698974303; Wed, 04
+ May 2022 14:16:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220318021314.3225240-1-davidgow@google.com> <20220318021314.3225240-2-davidgow@google.com>
+ <CAGS_qxqm1ys1qUz__4uXWOgs=34M5MB3QMnhg40FHtRhatF3+g@mail.gmail.com> <CAFd5g452ecbNbSyODT3Prraj5cOEugHm=asE_h+ik-yriUvf6w@mail.gmail.com>
+In-Reply-To: <CAFd5g452ecbNbSyODT3Prraj5cOEugHm=asE_h+ik-yriUvf6w@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 4 May 2022 16:16:03 -0500
+Message-ID: <CAGS_qxrv_kSR0nnQNTDshUVSz=UT3djzLnHEpNLOV7fMO-fVCg@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] kunit: Expose 'static stub' API to redirect functions
+To:     Brendan Higgins <brendanhiggins@google.com>
+Cc:     David Gow <davidgow@google.com>, Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   d6ffefccf7f04eefddc8e8aa35fb4afe05a42e0c
-commit: 289bcffb9d76f575995113dd48c09de7f2deb1d1 [427/460] drm/amdgpu: support imu for gfx11
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220505/202205050542.SL1MkyhN-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 289bcffb9d76f575995113dd48c09de7f2deb1d1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+On Wed, May 4, 2022 at 3:42 PM 'Brendan Higgins' via KUnit Development
+<kunit-dev@googlegroups.com> wrote:
+>
+> On Wed, May 4, 2022 at 4:35 PM Daniel Latypov <dlatypov@google.com> wrote=
+:
+> >
+> > On Thu, Mar 17, 2022 at 9:13 PM David Gow <davidgow@google.com> wrote:
+> > > +#define kunit_activate_static_stub(test, real_fn_addr, replacement_a=
+ddr) do {  \
+> > > +       typecheck(typeof(real_fn_addr), replacement_addr);           =
+           \
+> >
+> > We can't call this macro in the same scope for functions w/ different
+> > signatures.
+> >
+> > E.g. if we add this func to the example test
+> >   static void other_func(void) {}
+> > then trying to call kunit_activate_static_stub() on it in the same
+> > test case, we get
+> >
+> > ./include/linux/typecheck.h:10:14: error: conflicting types for
+> > =E2=80=98__dummy=E2=80=99; have =E2=80=98void(void)=E2=80=99
+> >    10 | ({      type __dummy; \
+> >       |              ^~~~~~~
+> > ./include/kunit/static_stub.h:99:9: note: in expansion of macro =E2=80=
+=98typecheck=E2=80=99
+> >    99 |         typecheck(typeof(real_fn_addr), replacement_addr);
+> >                  \
+> >       |         ^~~~~~~~~
+> > lib/kunit/example-test.c:64:9: note: in expansion of macro
+> > =E2=80=98kunit_activate_static_stub=E2=80=99
+> >    64 |         kunit_activate_static_stub(test, other_func, other_func=
+);
+> >       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> > ./include/linux/typecheck.h:10:14: note: previous declaration of
+> > =E2=80=98__dummy=E2=80=99 with type =E2=80=98int(int)=E2=80=99
+> >    10 | ({      type __dummy; \
+> >       |              ^~~~~~~
+> > ./include/kunit/static_stub.h:99:9: note: in expansion of macro =E2=80=
+=98typecheck=E2=80=99
+> >    99 |         typecheck(typeof(real_fn_addr), replacement_addr);
+> >                  \
+> >       |         ^~~~~~~~~
+> > lib/kunit/example-test.c:62:9: note: in expansion of macro
+> > =E2=80=98kunit_activate_static_stub=E2=80=99
+> >    62 |         kunit_activate_static_stub(test, add_one, subtract_one)=
+;
+> >       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Afaict, the problem is that GCC thinks we're declaring a *function*
+> > called __dummy, not a variable.
+> > So it bleeds across the scope boundary of do-while unlike normal variab=
+les.
+>
+> Yeah, I ran into that problem too. I posted a fix to gerrit. I have
+> been meaning to share it here.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+For others, gerrit =3D=3D https://kunit-review.googlesource.com/c/linux/+/5=
+129
 
-All warnings (new ones prefixed by >>):
+>
+> > There's the typecheck_fn macro, but it doesn't work either.
+>
+> That's weird. It worked for me.
 
->> drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c:129:6: warning: no previous prototype for 'amdgpu_ucode_print_imu_hdr' [-Wmissing-prototypes]
-     129 | void amdgpu_ucode_print_imu_hdr(const struct common_firmware_header *hdr)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
---
->> drivers/gpu/drm/amd/amdgpu/imu_v11_0.c:231:6: warning: no previous prototype for 'program_imu_rlc_ram' [-Wmissing-prototypes]
-     231 | void program_imu_rlc_ram(struct amdgpu_device *adev,
-         |      ^~~~~~~~~~~~~~~~~~~
+I'm running on top of 5.5.
+I tried reproducing w/ a stripped down version on 5.18 and saw the same iss=
+ues.
 
+Huh, I'm trying with
+ #define kunit_activate_static_stub(test, real_fn_addr,
+replacement_addr) do {  \
+-       typecheck(typeof(real_fn_addr), replacement_addr);
+         \
++       typecheck_fn(typeof(real_fn_addr), replacement_addr); \
+        __kunit_activate_static_stub(test, real_fn_addr,
+replacement_addr);     \
 
-vim +/amdgpu_ucode_print_imu_hdr +129 drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+This gives me
+lib/kunit/example-test.c:62:9: error: function =E2=80=98__tmp=E2=80=99 is i=
+nitialized
+like a variable
+   62 |         kunit_activate_static_stub(test, add_one, subtract_one);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+lib/kunit/example-test.c:64:9: error: function =E2=80=98__tmp=E2=80=99 is i=
+nitialized
+like a variable
+   64 |         kunit_activate_static_stub(test, other_func, other_func);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   128	
- > 129	void amdgpu_ucode_print_imu_hdr(const struct common_firmware_header *hdr)
-   130	{
-   131		uint16_t version_major = le16_to_cpu(hdr->header_version_major);
-   132		uint16_t version_minor = le16_to_cpu(hdr->header_version_minor);
-   133	
-   134		DRM_DEBUG("IMU\n");
-   135		amdgpu_ucode_print_common_hdr(hdr);
-   136	
-   137		if (version_major != 1) {
-   138			DRM_ERROR("Unknown GFX ucode version: %u.%u\n", version_major, version_minor);
-   139		}
-   140	}
-   141	
+Perhaps I'm missing something silly.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Can you post your fix and I can try it out?
