@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 972A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357152AbiEDRbE (ORCPT
+        id S1357220AbiEDRbK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
+        Wed, 4 May 2022 13:31:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356822AbiEDRJp (ORCPT
+        with ESMTP id S1356813AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50587220D0;
-        Wed,  4 May 2022 09:55:50 -0700 (PDT)
+        Wed, 4 May 2022 13:09:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B5E21806;
+        Wed,  4 May 2022 09:55:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E02DA616F8;
-        Wed,  4 May 2022 16:55:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37142C385AA;
-        Wed,  4 May 2022 16:55:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2431616B8;
+        Wed,  4 May 2022 16:55:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD14C385A5;
+        Wed,  4 May 2022 16:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683349;
-        bh=RxD54wOIf+gtesh7VHfBEjiXkcaf7g6pr7I4+AwcUM8=;
+        s=korg; t=1651683345;
+        bh=xh0CIvo5OSsNTrwskNOMVvGcZpqhPK91MF32l7lHP9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PmmLH9MD5cPnUF+CNIlgo3DUUq533LWFz3zv/hea2WdPZKnW+PCWyaM5216N41SRO
-         dOscUOsUM8QxHwTF/EIRg1YpvbWgFl/+NIN0LhnPZP+xxq39va9rlvY3dj/cKiWqbQ
-         MaYjTSOBEce7J7XyL+qaeF6fShRpINsI02/fojbc=
+        b=Bh7xyKWd/U3EpowSL3G69W9YRgcz7vMc2uwuDrLhNeTyCcSNaSDyMIkkp3b730aSs
+         9Grs0aNPVUNyVNIo5DYqEoT0IvCavv3cF9B7YZFNa04U8mM8rEZ+32I1PeBAgm3cIJ
+         JKNTQyee01NtcINznbyN94xson2pYgCjgT8+reEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 5.17 036/225] serial: 8250: Also set sticky MCR bits in console restoration
-Date:   Wed,  4 May 2022 18:44:34 +0200
-Message-Id: <20220504153113.425360432@linuxfoundation.org>
+        stable@vger.kernel.org, Todd Kjos <tkjos@google.com>,
+        stable <stable@kernel.org>,
+        Alessandro Astone <ales.astone@gmail.com>
+Subject: [PATCH 5.17 032/225] binder: Gracefully handle BINDER_TYPE_FDA objects with num_fds=0
+Date:   Wed,  4 May 2022 18:44:30 +0200
+Message-Id: <20220504153113.119453489@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -49,36 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Alessandro Astone <ales.astone@gmail.com>
 
-commit 6e6eebdf5e2455f089ccd000754a0deaeb79af82 upstream.
+commit ef38de9217a04c9077629a24652689d8fdb4c6c6 upstream.
 
-Sticky MCR bits are lost in console restoration if console suspending
-has been disabled.  This currently affects the AFE bit, which works in
-combination with RTS which we set, so we want to make sure the UART
-retains control of its FIFO where previously requested.  Also specific
-drivers may need other bits in the future.
+Some android userspace is sending BINDER_TYPE_FDA objects with
+num_fds=0. Like the previous patch, this is reproducible when
+playing a video.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
-Cc: stable@vger.kernel.org # v4.0+
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181518490.9383@angie.orcam.me.uk
+Before commit 09184ae9b575 BINDER_TYPE_FDA objects with num_fds=0
+were 'correctly handled', as in no fixup was performed.
+
+After commit 09184ae9b575 we aggregate fixup and skip regions in
+binder_ptr_fixup structs and distinguish between the two by using
+the skip_size field: if it's 0, then it's a fixup, otherwise skip.
+When processing BINDER_TYPE_FDA objects with num_fds=0 we add a
+skip region of skip_size=0, and this causes issues because now
+binder_do_deferred_txn_copies will think this was a fixup region.
+
+To address that, return early from binder_translate_fd_array to
+avoid adding an empty skip region.
+
+Fixes: 09184ae9b575 ("binder: defer copies of pre-patched txn data")
+Acked-by: Todd Kjos <tkjos@google.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alessandro Astone <ales.astone@gmail.com>
+Link: https://lore.kernel.org/r/20220415120015.52684-1-ales.astone@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/android/binder.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3340,7 +3340,7 @@ static void serial8250_console_restore(s
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -2486,6 +2486,9 @@ static int binder_translate_fd_array(str
+ 	struct binder_proc *proc = thread->proc;
+ 	int ret;
  
- 	serial8250_set_divisor(port, baud, quot, frac);
- 	serial_port_out(port, UART_LCR, up->lcr);
--	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-+	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
- }
- 
- /*
++	if (fda->num_fds == 0)
++		return 0;
++
+ 	fd_buf_size = sizeof(u32) * fda->num_fds;
+ 	if (fda->num_fds >= SIZE_MAX / sizeof(u32)) {
+ 		binder_user_error("%d:%d got transaction with invalid number of fds (%lld)\n",
 
 
