@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E5AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6386C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 18:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377103AbiEDSlJ (ORCPT
+        id S1345817AbiEDSio (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        Wed, 4 May 2022 14:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349468AbiEDSlG (ORCPT
+        with ESMTP id S1377180AbiEDSi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:41:06 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C29D0;
-        Wed,  4 May 2022 11:37:25 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 610455FD03;
-        Wed,  4 May 2022 21:37:22 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1651689442;
-        bh=0pRI9gjT9I5sHIvuEEphqPu4I5tns7FIRu1caEw5+sM=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=AOMBqLy8z7SR5iHEacaI+JsLY4+G0YwEq1X+CyyjFyblIPvc4QHe2nXcRQj2fz9EA
-         /POeUUTk5TU0i5wGp4uoIA4zxt9wVu7naEMPaqzBRFZn7ItQOzpe/b71iSefIUWB7E
-         8w289ScUiC9XV2qJiMcx3Tj3HYO2jePO4D9WMciF9IU+K0HZB3BRM1QdR6DWAgRVJP
-         3m+kVuMvLGgCgvuLYihY53hoZsEU77Pzi7NWpVYLJSQvGiTbf+tkFeQnirKXyhsrDK
-         j/JHHmTJ5qqwlEmHLsRnF7kRfwsMqDlM1b9DFK+2wQWIVnmRnaWTZK5oRO50Qv1gCy
-         iDl/Fk5jtpTmA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed,  4 May 2022 21:37:21 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Rob Herring <robh@kernel.org>
-CC:     "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema for
- msa311 accel driver
-Thread-Topic: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema
- for msa311 accel driver
-Thread-Index: AQHYVASQQZC393Ji1keuDd+e+35bUq0CfseAgAxy2gA=
-Date:   Wed, 4 May 2022 18:36:33 +0000
-Message-ID: <20220504183716.shhpi5adcxz4ufvj@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
- <20220419154555.24191-4-ddrokosov@sberdevices.ru>
- <YmhWic3rG8ERtCYY@robh.at.kernel.org>
-In-Reply-To: <YmhWic3rG8ERtCYY@robh.at.kernel.org>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3264DF858B156249B0EDE83771F52D03@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/04 16:46:00 #19352550
-X-KSMG-AntiVirus-Status: Clean, skipped
+        Wed, 4 May 2022 14:38:28 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F6E4FC67
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 11:29:19 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id x4-20020a1709028ec400b0015e84d42eaaso1104395plo.7
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 11:29:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=8y34WRUMkXGaI7LiirYCxdfq8R7sMsgfnkBgNzio7vc=;
+        b=izXY7EVw92FzDfdevAMJvFOBnGz+CSM6UkMIvsTglpiKteCgoZp6QifGhzq1D4Dl+i
+         ca0HEhFdNXai4YsJumOdVHvmxKc8ym0x0dz0St7Q6XoPZTF+NO0x7edWwSQNIZpaq8bk
+         kL0iikHDGg++XGlx99/jFSXxot6+qQJ2KhEppwK0hm9hotUM/Sm4GyhPfhts9lB17crq
+         i+vOmM8CMAhyBDy0kvP73FtHqit/Rrrc1kCS1017Jwr9Y/cfzWT4ipdkOFYso7UepntB
+         qK7LSOsDdboMtlc46i27pL7TUpEow9zhMVfNK7WpB8BonYucl67mrDoXR4Wz55RDwe2T
+         CPGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=8y34WRUMkXGaI7LiirYCxdfq8R7sMsgfnkBgNzio7vc=;
+        b=7v3OrtorRQeojx+ygwPqcP3j6zSJgE8VXzyXfy0BIwMKGIdzr4Y/M6nQkAbHlc0CHa
+         EwQERGFk87kW/Uvrb/RF21Rs7jxo4ex8nc9c1uV6/n5hskMZYMln2SP+0yh9YqDtOOSS
+         4HQAEN0lJH7mJiqmmnz5o6UJ11le4vjzdsIMlv7ufXxEFHV1vC+QZEJGxilq749cnEYu
+         FIAjnx+9DWwJEomaczUueoet0YedQxWxO9wQpK+hJ2iuRdzoAKY7jwD2vHjqVG8v7fJw
+         9Hm7Ht7gE3c0vWyQq3f/7OP+kGj0k0FI2UHvM4vfju7aXiBtTCffWcmq5/RIkZZ7zRPH
+         nL6g==
+X-Gm-Message-State: AOAM531HqI0qUCFWhRhuKah01Oasp+NxGIUtGgrLBYPx4i7leQOI3g6f
+        DeUvyt/6dlFV16Y4aPh2GVVtGUE2fj25
+X-Google-Smtp-Source: ABdhPJz3R/tzVrU+GfQpvY/EakNRjlgGc3rdRnTdOp7XNw4RRoGUgJkJqCBw4Q5RqkYLf56sAroZKd5Rmhyk
+X-Received: from yuanchu.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1e51])
+ (user=yuanchu job=sendgmr) by 2002:aa7:8888:0:b0:50f:2e7a:76b7 with SMTP id
+ z8-20020aa78888000000b0050f2e7a76b7mr6455495pfe.48.1651688958824; Wed, 04 May
+ 2022 11:29:18 -0700 (PDT)
+Date:   Wed,  4 May 2022 18:29:08 +0000
+In-Reply-To: <20220504001153.119485-1-sj@kernel.org>
+Message-Id: <20220504182908.1322874-1-yuanchu@google.com>
+Mime-Version: 1.0
+References: <20220504001153.119485-1-sj@kernel.org>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+Subject: [PATCH v3] selftests/damon: suppress compiler warnings for huge_count_read_write
+From:   Yuanchu Xie <yuanchu@google.com>
+To:     Shuah Khan <shuah@kernel.org>, Markus Boehme <markubo@amazon.de>,
+        SeongJae Park <sj@kernel.org>
+Cc:     rientjes@google.com, Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yuanchu Xie <yuanchu@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Rob,
+The test case added in commit db7a347b26fe ("mm/damon/dbgfs:
+use '__GFP_NOWARN' for user-specified size buffer allocation")
+intentionally writes and reads with a large count to cause
+allocation failure and check for kernel warnings. We suppress
+the compiler warnings for these calls as they work as intended.
 
-I've missed one note below, please check if possible.
+Signed-off-by: Yuanchu Xie <yuanchu@google.com>
+---
+ tools/testing/selftests/damon/huge_count_read_write.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Tue, Apr 26, 2022 at 03:31:05PM -0500, Rob Herring wrote:
-> On Tue, Apr 19, 2022 at 03:45:58PM +0000, Rokosov Dmitry Dmitrievich wrot=
-e:
-> > +  "#address-cells":
-> > +    const: 1
-> > +
-> > +  "#size-cells":
-> > +    const: 0
->=20
-> These apply to 'reg' in a child node, but you don't have child nodes so=20
-> drop them.
->=20
+diff --git a/tools/testing/selftests/damon/huge_count_read_write.c b/tools/testing/selftests/damon/huge_count_read_write.c
+index ad7a6b4cf338..91bd80c75cd9 100644
+--- a/tools/testing/selftests/damon/huge_count_read_write.c
++++ b/tools/testing/selftests/damon/huge_count_read_write.c
+@@ -2,6 +2,8 @@
+ /*
+  * Author: SeongJae Park <sj@kernel.org>
+  */
++#pragma GCC diagnostic ignored "-Wstringop-overflow"
++#pragma GCC diagnostic ignored "-Wstringop-overread"
+ 
+ #include <fcntl.h>
+ #include <stdlib.h>
+-- 
+2.36.0.464.gb9c8b46e94-goog
 
-I'm afraid, I made a mistake in the previous reply. Here I applied
-address-cells and size-cells to show which type accelerometer's reg
-property has, like this one:
-
-    i2c {
-        #address-cells =3D <1>;
-        #size-cells =3D <0>;
-   =20
-        accelerometer@62 {
-            compatible =3D "memsensing,msa311";
-            reg =3D <0x62>;
-
-Above accelerometer@62 is child node for i2c bus node, so address and
-size cells mean accelerometer reg format. Am I missing something?
-
---=20
-Thank you,
-Dmitry=
