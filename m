@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81170C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE95C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350430AbiEDNXo (ORCPT
+        id S1350683AbiEDNYC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        Wed, 4 May 2022 09:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350390AbiEDNXJ (ORCPT
+        with ESMTP id S1350468AbiEDNXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:23:09 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B27C3B007
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:19:32 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id dk23so2833561ejb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:19:32 -0700 (PDT)
+        Wed, 4 May 2022 09:23:36 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D441C3EA94
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 06:19:35 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id j6so2806425ejc.13
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 06:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wtiS0vwUpWebphFXLVeTyRDTHsS+dMpyDeFB5sbVoPk=;
-        b=WMcDqMBOQTWHQiHzKnK155CAcLbJFQiywJq2+OHBtLh2wtbdrvfmT+eVf/1qGi+8Gs
-         VUocQGWrCexi0Npuo1PUCo1ievCEkGHVXhL79bjHLJ4Q9hp8ygEBznhKNqJbHdBeSAJ3
-         boomwuB+OytFwgC3kGjWxyI3QKAJtNGcf9hYk2JqJLRvDj6bUMBBNV0VdNmI0r4WL5yf
-         dL6OmTB/xuss+0C9ohEnqyT9FwMIy1vdU0SDxKK7iCawXoOVTmrP78pzdiutyXdmJDay
-         TZ36Wix0WF1YbdqnBg5mmYnCBlifObmjldYNTL1EqN7lBNlMl1JYnM74RKnwmTpLmuFC
-         56+A==
+        bh=ue5nidJ0FgSOkV9A6XE/AQJiuFI1b/NbMI7w4KTkEUw=;
+        b=xlHE0HflYpbwH/CC2Z4rwyij2uBPYX8NZsx4+Xkh2JeOj0Q00D6Aod+YnHwBQnT1Gf
+         Jg2+KilCulGD46SEoAM2IsR/K7aq/XDyNN3tfkfjXALqpd91/Xo94BTMZjSsmUQXZ8YB
+         a+PC9BrY9ZK3b63NfjPPx5tStXjxpG2ntk9k/xeYz/uEewMRlOcDnk17DyRcAnIfaIJ2
+         80wVdb8D38q0Hxe55TIZ3o/0W1x9MDSCNG0LFR92hiUUc1D/b2LxBK1BVF73lQGByRPe
+         MjXK+LEBaP+jjqw0nufQ4IYJx8JHS2up+LaBMM7HtGmk7Au2JwbWKkfTORkeVwgovqne
+         JmEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wtiS0vwUpWebphFXLVeTyRDTHsS+dMpyDeFB5sbVoPk=;
-        b=ZJkdp5C+Sq8+CRiUC4V0mifYmBhGy8SAAWv0ISQx1yar44SNH+/kdLfYuXOmAexD1V
-         234Orw5N433PXLI+6MebWjEyeGdOXn75SNTXU0grnqM0S+MPmatcdgmqeYHC5NpzJlh4
-         M7V1IahAVPewgESXomoPXTmxusQY26TUYdnGcVuZETrppFYZxNeqq+lQGDW6z79WqFCX
-         SDF7TkrMzqUw6NdPD7wAiuaKAjqrtgOhHhzIZHHceHBzmjZpKMoMNUMQiUM/BcUfU3Rm
-         3fYkvbfZ6wqekkZOLz5RSHHkhzOu/GGLatVkmPRyoSmTZz3kU1QwM9EvyW7UeS3NIC72
-         JTgg==
-X-Gm-Message-State: AOAM532E1hqeTIae4YuBJkUHPjZCXfPbD/mEEPg4ZN9snoA/WHdCjv7P
-        PKPsodZT1LuT/hF5+TtXInHyig==
-X-Google-Smtp-Source: ABdhPJxpiNIp7y7Iq7FQeCbjSAWRjH6/GJCoUIDnG3RWGsD6Fl//cWVMX2EAziFaYhRTq1UePB4XLg==
-X-Received: by 2002:a17:906:9749:b0:6ef:bc52:1f94 with SMTP id o9-20020a170906974900b006efbc521f94mr19947138ejy.666.1651670370844;
-        Wed, 04 May 2022 06:19:30 -0700 (PDT)
+        bh=ue5nidJ0FgSOkV9A6XE/AQJiuFI1b/NbMI7w4KTkEUw=;
+        b=m5Xg0lxgtmFBb7hfJO6i7+lBESVJhEadqz1DwpA/gOx2oY6MPPr7rO/7aJcHm9rmHx
+         OU8dAJumPcBaE47rcU19525m4C9fWXsMev0yVCxwM9LNgh+yIow1mAqjVxp0TLTAtPFU
+         Vj+wlc+WwfQ101M3f9V3mBNZ+2rzst9bML1loaUsnL7EuGGi/iYo5lr+gYUc4JH3Dx81
+         1urz9jZ/RG7mEQm0EqWuWzPc3z5sKp5pEd8WYVr/PJ3nlDosDDDMRlvrPGLccAoRrAYV
+         QJf7wbToZcYcFdBtx9G3t0vAXVBsOtWx5JJC2KlZ19Z8OnfZKvnSs5ivHKjNUg9zWdrb
+         eTDA==
+X-Gm-Message-State: AOAM531TcyLcQ3oh15xYN/8ZuuV8C4ka3QgOLUxqXZuL6IG8FjTAKstK
+        ne1dIxr/Tg2C1rh9rk/Lv2b4v55PZYKOGQ==
+X-Google-Smtp-Source: ABdhPJyRzd6XWfJNIx8KQsKnEd2wI67m1Lls1/7tvhUchH1Je2bYYorRP1P/zV0RLHlb5bT01tSECg==
+X-Received: by 2002:a17:907:969f:b0:6f3:dede:f2d2 with SMTP id hd31-20020a170907969f00b006f3dedef2d2mr19927779ejc.511.1651670375416;
+        Wed, 04 May 2022 06:19:35 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gx3-20020a1709068a4300b006f3ef214dc4sm5660924ejc.42.2022.05.04.06.19.29
+        by smtp.gmail.com with ESMTPSA id gx3-20020a1709068a4300b006f3ef214dc4sm5660924ejc.42.2022.05.04.06.19.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 06:19:30 -0700 (PDT)
+        Wed, 04 May 2022 06:19:35 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 03/13] dt-bindings: usb: qcom,dwc3: add IPQ8074, MSM8994, QCS404 and SM6125
-Date:   Wed,  4 May 2022 15:19:13 +0200
-Message-Id: <20220504131923.214367-4-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 07/13] arm64: dts: qcom: ipq8074: add dedicated qcom,ipq8074-dwc3 compatible
+Date:   Wed,  4 May 2022 15:19:17 +0200
+Message-Id: <20220504131923.214367-8-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220504131923.214367-1-krzysztof.kozlowski@linaro.org>
 References: <20220504131923.214367-1-krzysztof.kozlowski@linaro.org>
@@ -71,40 +71,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatibles for dedicated USB DWC3 blocks on Qualcomm IPQ8074,
-MSM8994, QCS404 and SM6125.  They differ against other variants in clock
-and/or interrupts.
+Add dedicated compatible for DWC3 USB node name to allow more accurate
+DT schema matching.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-index ce252db2aab3..03f93f25cba4 100644
---- a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-@@ -16,9 +16,12 @@ properties:
-           - qcom,ipq4019-dwc3
-           - qcom,ipq6018-dwc3
-           - qcom,ipq8064-dwc3
-+          - qcom,ipq8074-dwc3
-           - qcom,msm8953-dwc3
-+          - qcom,msm8994-dwc3
-           - qcom,msm8996-dwc3
-           - qcom,msm8998-dwc3
-+          - qcom,qcs404-dwc3
-           - qcom,sc7180-dwc3
-           - qcom,sc7280-dwc3
-           - qcom,sdm660-dwc3
-@@ -26,6 +29,7 @@ properties:
-           - qcom,sdx55-dwc3
-           - qcom,sm4250-dwc3
-           - qcom,sm6115-dwc3
-+          - qcom,sm6125-dwc3
-           - qcom,sm6350-dwc3
-           - qcom,sm8150-dwc3
-           - qcom,sm8250-dwc3
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+index 519938530c35..253fde08db44 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -553,7 +553,7 @@ qpic_nand: nand@79b0000 {
+ 		};
+ 
+ 		usb_0: usb@8af8800 {
+-			compatible = "qcom,dwc3";
++			compatible = "qcom,ipq8074-dwc3", "qcom,dwc3";
+ 			reg = <0x08af8800 0x400>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+@@ -593,7 +593,7 @@ dwc_0: usb@8a00000 {
+ 		};
+ 
+ 		usb_1: usb@8cf8800 {
+-			compatible = "qcom,dwc3";
++			compatible = "qcom,ipq8074-dwc3", "qcom,dwc3";
+ 			reg = <0x08cf8800 0x400>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
 -- 
 2.32.0
 
