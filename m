@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B14A4C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD82C41535
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355093AbiEDQ7l (ORCPT
+        id S1355304AbiEDQ7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        Wed, 4 May 2022 12:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354067AbiEDQxt (ORCPT
+        with ESMTP id S1354328AbiEDQyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC72346B03;
-        Wed,  4 May 2022 09:49:02 -0700 (PDT)
+        Wed, 4 May 2022 12:54:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F255B48E46;
+        Wed,  4 May 2022 09:49:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4914461701;
-        Wed,  4 May 2022 16:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9651BC385A5;
-        Wed,  4 May 2022 16:49:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 608C66179D;
+        Wed,  4 May 2022 16:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A26A7C385B0;
+        Wed,  4 May 2022 16:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682941;
-        bh=71qXYfEK2tRYABsFSMlfBNcX+uAD8vzGzVJlIt/imJI=;
+        s=korg; t=1651682961;
+        bh=VeDrdbpKgken6M7dmn7e+v42X5SlyuaJuNtzQipf8wU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OSfsxX6JTBv6eWOoHmr6r53iU7HPcyfiXrUsbl5cIIHkWKW6S9xKYS1Lh+XpNOWYW
-         +F9h92AkycgXqBN//nwlaMgMOgvjkp0i2RJOSORvsQFIyMFuaQY3Ioc2jAFAcY4X2j
-         r93jMvAEic4vxUvFR7zw8p7wXl+Z/WDAm3Uao/6w=
+        b=TsHHK6G5PPGxmExGukI0PWbXx1PHJsFo84bJCibQ09i49EKBWPtAxtzao+xeS9VEz
+         20b62/mZabD3iVwTSpfcVbNGNu4byJYbmq1ObpbdTkns8GIczbu6A9XgYlAg7zIKIZ
+         e1zq4U67O5R3L4775HLtHawmzzijVRwjPCgkSH2g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 46/84] mtd: rawnand: Fix return value check of wait_for_completion_timeout
-Date:   Wed,  4 May 2022 18:44:27 +0200
-Message-Id: <20220504152931.065681058@linuxfoundation.org>
+Subject: [PATCH 5.4 63/84] drm/amd/display: Fix memory leak in dcn21_clock_source_create
+Date:   Wed,  4 May 2022 18:44:44 +0200
+Message-Id: <20220504152932.230285389@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -52,80 +52,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 084c16ab423a8890121b902b405823bfec5b4365 ]
+[ Upstream commit 65e54987508b6f0771f56bdfa3ee1926d52785ae ]
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+When dcn20_clk_src_construct() fails, we need to release clk_src.
 
-Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
+Fixes: 6f4e6361c3ff ("drm/amd/display: Add Renoir resource (v2)")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220412083435.29254-1-linmq006@gmail.com
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/sh_flctl.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_flctl.c
-index e509c93737c4..f0e2f2d65282 100644
---- a/drivers/mtd/nand/raw/sh_flctl.c
-+++ b/drivers/mtd/nand/raw/sh_flctl.c
-@@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
- 	dma_addr_t dma_addr;
- 	dma_cookie_t cookie;
- 	uint32_t reg;
--	int ret;
-+	int ret = 0;
-+	unsigned long time_left;
- 
- 	if (dir == DMA_FROM_DEVICE) {
- 		chan = flctl->chan_fifo0_rx;
-@@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
- 		goto out;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+index 11a4c4029a90..acc2c307c871 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
+@@ -1140,6 +1140,7 @@ static struct clock_source *dcn21_clock_source_create(
+ 		return &clk_src->base;
  	}
  
--	ret =
-+	time_left =
- 	wait_for_completion_timeout(&flctl->dma_complete,
- 				msecs_to_jiffies(3000));
- 
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_all(chan);
- 		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
-+		ret = -ETIMEDOUT;
- 	}
- 
- out:
-@@ -441,7 +443,7 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
- 
- 	dma_unmap_single(chan->device->dev, dma_addr, len, dir);
- 
--	/* ret > 0 is success */
-+	/* ret == 0 is success */
- 	return ret;
++	kfree(clk_src);
+ 	BREAK_TO_DEBUGGER();
+ 	return NULL;
  }
- 
-@@ -465,7 +467,7 @@ static void read_fiforeg(struct sh_flctl *flctl, int rlen, int offset)
- 
- 	/* initiate DMA transfer */
- 	if (flctl->chan_fifo0_rx && rlen >= 32 &&
--		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE) > 0)
-+		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE))
- 			goto convert;	/* DMA success */
- 
- 	/* do polling transfer */
-@@ -524,7 +526,7 @@ static void write_ec_fiforeg(struct sh_flctl *flctl, int rlen,
- 
- 	/* initiate DMA transfer */
- 	if (flctl->chan_fifo0_tx && rlen >= 32 &&
--		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE) > 0)
-+		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE))
- 			return;	/* DMA success */
- 
- 	/* do polling transfer */
 -- 
 2.35.1
 
