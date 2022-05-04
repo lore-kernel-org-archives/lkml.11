@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA20CC4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2580FC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356787AbiEDRTD (ORCPT
+        id S1356908AbiEDRTK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52142 "EHLO
+        Wed, 4 May 2022 13:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356301AbiEDRFI (ORCPT
+        with ESMTP id S1356333AbiEDRFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:05:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D42450B38;
+        Wed, 4 May 2022 13:05:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC2C50B32;
         Wed,  4 May 2022 09:54:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC9A6B82792;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EA9A61505;
+        Wed,  4 May 2022 16:54:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AA22C385BA;
         Wed,  4 May 2022 16:54:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B48DC385B1;
-        Wed,  4 May 2022 16:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683240;
-        bh=SNx83Pbjpg0ZcHfND6i5kAbdpaRsicsaY11CcJYsxrw=;
+        s=korg; t=1651683241;
+        bh=+ajv8gDEINzpPt5k/lZ7YsXmqVeb/TEI1e3IDVzr2uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yQOTU3yiqAwjDfSOOJGBpZIe/0dNWRqGS+gqrdXzcKSB7F5DCqvJYEFjbtLZRmz13
-         DoV+NptLRA+rWfInli9Rj9YZOjV10rHJ+2rctrXhhYGxPgMmew2YNUn8Sw5NJPWly+
-         LrLLNNVQl+irVwnonR/PhcdOG3CsJkB2ou31/6c8=
+        b=dMgOkPMFKeLZAF7jGYZ8YjqmwtXq7rOPhct9SO77hvcnqoBC/DQaYwRrU4lDgn52n
+         aIN8lY1S06ECRWEw0CgsmjoQ/1fmmFsxwYdzIz68/75ZLkHjdoNj/oZa+4Iri/Yd21
+         bj8FPwIXafHPNv+InZgMrvntNwwXQX+XKvaFdIrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/177] net/smc: sync err code when tcp connection was refused
-Date:   Wed,  4 May 2022 18:44:50 +0200
-Message-Id: <20220504153101.812740917@linuxfoundation.org>
+Subject: [PATCH 5.15 106/177] net: bcmgenet: hide status block before TX timestamping
+Date:   Wed,  4 May 2022 18:44:59 +0200
+Message-Id: <20220504153102.722994656@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,39 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-[ Upstream commit 4e2e65e2e56c6ceb4ea1719360080c0af083229e ]
+[ Upstream commit acac0541d1d65e81e599ec399d34d184d2424401 ]
 
-In the current implementation, when TCP initiates a connection
-to an unavailable [ip,port], ECONNREFUSED will be stored in the
-TCP socket, but SMC will not. However, some apps (like curl) use
-getsockopt(,,SO_ERROR,,) to get the error information, which makes
-them miss the error message and behave strangely.
+The hardware checksum offloading requires use of a transmit
+status block inserted before the outgoing frame data, this was
+updated in '9a9ba2a4aaaa ("net: bcmgenet: always enable status blocks")'
 
-Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+However, skb_tx_timestamp() assumes that it is passed a raw frame
+and PTP parsing chokes on this status block.
+
+Fix this by calling __skb_pull(), which hides the TSB before calling
+skb_tx_timestamp(), so an outgoing PTP packet is parsed correctly.
+
+As the data in the skb has already been set up for DMA, and the
+dma_unmap_* calls use a separately stored address, there is no
+no effective change in the data transmission.
+
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220424165307.591145-1-jonathan.lemon@gmail.com
+Fixes: d03825fba459 ("net: bcmgenet: add skb_tx_timestamp call")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 499058248bdb..fb801c249d92 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1223,6 +1223,8 @@ static void smc_connect_work(struct work_struct *work)
- 		smc->sk.sk_state = SMC_CLOSED;
- 		if (rc == -EPIPE || rc == -EAGAIN)
- 			smc->sk.sk_err = EPIPE;
-+		else if (rc == -ECONNREFUSED)
-+			smc->sk.sk_err = ECONNREFUSED;
- 		else if (signal_pending(current))
- 			smc->sk.sk_err = -sock_intr_errno(timeo);
- 		sock_put(&smc->sk); /* passive closing */
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index b4f99dd284e5..8bcc39b1575c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1991,6 +1991,11 @@ static struct sk_buff *bcmgenet_add_tsb(struct net_device *dev,
+ 	return skb;
+ }
+ 
++static void bcmgenet_hide_tsb(struct sk_buff *skb)
++{
++	__skb_pull(skb, sizeof(struct status_64));
++}
++
+ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+@@ -2097,6 +2102,8 @@ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	}
+ 
+ 	GENET_CB(skb)->last_cb = tx_cb_ptr;
++
++	bcmgenet_hide_tsb(skb);
+ 	skb_tx_timestamp(skb);
+ 
+ 	/* Decrement total BD count and advance our write pointer */
 -- 
 2.35.1
 
