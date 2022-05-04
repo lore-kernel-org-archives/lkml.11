@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 336C9C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CFEC35275
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357983AbiEDRZW (ORCPT
+        id S1358024AbiEDRZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        Wed, 4 May 2022 13:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355075AbiEDREG (ORCPT
+        with ESMTP id S1355018AbiEDREC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDA44DF48;
-        Wed,  4 May 2022 09:52:41 -0700 (PDT)
+        Wed, 4 May 2022 13:04:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E4A4D9F4;
+        Wed,  4 May 2022 09:52:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3685DB827A9;
-        Wed,  4 May 2022 16:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DECDAC385A5;
-        Wed,  4 May 2022 16:52:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B765617BE;
+        Wed,  4 May 2022 16:52:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3559C385AA;
+        Wed,  4 May 2022 16:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683148;
-        bh=SDuyrBXIG1Ux4g+tRXchQPstQixndqbbbbN6bKOU6zI=;
+        s=korg; t=1651683146;
+        bh=bU9zuv/XF1iwHuINloAyTAgfvnKnw2LCdg098a6ufOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2IrhDF6ikOGiez5K4hX2CdwIb/qcOVny2yPwgl1NRcG122w2xGUPS6+TIOI3NUX4s
-         Yzu9JHcMjiyorgZvYRcY8L45QDwccyr9wdi9uu+QN/0vzJ134dylujXVaR97nI+fpc
-         xO8IGh7sMD2tBw+4LLWUftj1qOONcCouslpU/F2Y=
+        b=QBE9v7JhNB6EiTLxmgYYrcoktJyQntlN2YAiDmqztEhzqPwEXs2t5SSiosM0LZUVx
+         xdZVteYOasI4h5NuGICIGGXXBM/J6BbYr7ha1BCzKMNtF5wYeQ8wmZScybUcocNlwR
+         +/KsrYUJa+WOim9m1qJCiPOVBbVlqNK85716eIK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bruno Thomsen <bruno.thomsen@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 005/177] USB: serial: cp210x: add PIDs for Kamstrup USB Meter Reader
-Date:   Wed,  4 May 2022 18:43:18 +0200
-Message-Id: <20220504153054.188322549@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 5.15 003/177] USB: quirks: add STRING quirk for VCOM device
+Date:   Wed,  4 May 2022 18:43:16 +0200
+Message-Id: <20220504153054.076390992@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -49,38 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bruno Thomsen <bruno.thomsen@gmail.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit 35a923a0b329c343e9e81d79518e2937eba06fcd upstream.
+commit ec547af8a9ea6441864bad34172676b5652ceb96 upstream.
 
-Wireless reading of water and heat meters using 868 MHz wM-Bus mode C1.
+This has been reported to stall if queried
 
-The two different product IDs allow detection of dongle antenna
-solution:
-- Internal antenna
-- External antenna using SMA connector
-
-https://www.kamstrup.com/en-en/water-solutions/water-meter-reading/usb-meter-reader
-
-Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
-Link: https://lore.kernel.org/r/20220414081202.5591-1-bruno.thomsen@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220414123152.1700-1-oneukum@suse.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/cp210x.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -194,6 +194,8 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(0x16DC, 0x0015) }, /* W-IE-NE-R Plein & Baus GmbH CML Control, Monitoring and Data Logger */
- 	{ USB_DEVICE(0x17A8, 0x0001) }, /* Kamstrup Optical Eye/3-wire */
- 	{ USB_DEVICE(0x17A8, 0x0005) }, /* Kamstrup M-Bus Master MultiPort 250D */
-+	{ USB_DEVICE(0x17A8, 0x0101) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Int Ant) */
-+	{ USB_DEVICE(0x17A8, 0x0102) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Ext Ant) */
- 	{ USB_DEVICE(0x17F4, 0xAAAA) }, /* Wavesense Jazz blood glucose meter */
- 	{ USB_DEVICE(0x1843, 0x0200) }, /* Vaisala USB Instrument Cable */
- 	{ USB_DEVICE(0x18EF, 0xE00F) }, /* ELV USB-I2C-Interface */
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -510,6 +510,9 @@ static const struct usb_device_id usb_qu
+ 	/* DJI CineSSD */
+ 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
+ 
++	/* VCOM device */
++	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
++
+ 	/* INTEL VALUE SSD */
+ 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
+ 
 
 
