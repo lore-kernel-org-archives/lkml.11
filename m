@@ -2,135 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C15CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 20:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357322AbiEDUbf (ORCPT
+        id S1378010AbiEDUbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 16:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
+        Wed, 4 May 2022 16:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbiEDUb2 (ORCPT
+        with ESMTP id S1343665AbiEDUbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 16:31:28 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB404F9CB;
-        Wed,  4 May 2022 13:27:50 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3E3B01BF205;
-        Wed,  4 May 2022 20:27:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651696069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+hUwQLI04KRlF0eu0GKC8X4hwLKHloFuBKJTjH0IlCc=;
-        b=fqvBj59ZoYRwrHWryJr471246MpSLAYY4m41aJ6HilGtIRQMWbqhO4hmBKkhHwBBvF2lTV
-        Jt91bcWKFse6faQY3nlsQQ7xmv8CUWvhkFoTd8objUhzv8KlNljP5hTbi+zRk72j+9PpgP
-        nuH9ZziWeuOSsCz1jvLoNyE+PToIiocvRcWuPPaG7lWSU5cF1eOM5fg6UwaB1baMV3GMdC
-        no8PHNvic3bFE6ynZBW0/aY5s7wYX4HLY62AOd0mRURakV8OSg9WopjsPzmj2MTSIYIg87
-        9iOIuqog9D3C3zbA1szY1klVwOD62J7lbtrBCwOCHeEeGeYshsiRJVOMco7BxQ==
-Date:   Wed, 4 May 2022 22:27:47 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Valentin Caron <valentin.caron@foss.st.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
+        Wed, 4 May 2022 16:31:52 -0400
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712CF4F9F0;
+        Wed,  4 May 2022 13:28:15 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id BEE94368;
+        Wed,  4 May 2022 13:28:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1651696094;
+        bh=k1OGqO6yttpA6KvVZQkxzts4/vCE80ZuQxCGo5hhVRE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wo4l3g3tbSfivPvsKVzN8JXIHrCdw7VQ8UTGTKDqt9D5vfiFuZJrgX4Iq/+stwnCq
+         0eDDymQkC/+HVsKy7fMLvzjQN3Zteirdlt+fFf4ns5C9iwmM1mJKdOmO2FFMlZUyjL
+         5NwgO+BtJKIBuMH4kTzRM9i61xpkjAhlErqxi2Ig=
+Date:   Wed, 4 May 2022 13:28:11 -0700
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] dt-bindings: rtc: stm32: add alarm A out property to
- select output
-Message-ID: <YnLhw+Y7m8G2xJpK@mail.local>
-References: <20220504130233.330983-1-valentin.caron@foss.st.com>
- <20220504130617.331290-1-valentin.caron@foss.st.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: Re: [PATCH 0/6] regulator: core: Add support for external outputs
+Message-ID: <YnLh23QbnO1MHoVL@hatter.bewilderbeest.net>
+References: <20220504065041.6718-1-zev@bewilderbeest.net>
+ <YnJ37QysSaa+gAps@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220504130617.331290-1-valentin.caron@foss.st.com>
+In-Reply-To: <YnJ37QysSaa+gAps@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Wed, May 04, 2022 at 05:56:13AM PDT, Mark Brown wrote:
+>On Tue, May 03, 2022 at 11:50:35PM -0700, Zev Weiss wrote:
+>
+>> The DT bindings changes (patches 1 and 2) consist of a boolean
+>> regulator property to mark it as supplying an external output, and a
+>> reg-external-output binding to act as a downstream device representing
+>> that output.  The redundancy between the two maybe isn't entirely
+>> ideal, but it was the cleanest approach I've been able to come up with
+>> so far in terms of working with the regulator subsystem; I'm certainly
+>> open to suggestions for better ways of going about this.
+>
+>Nothing in the series articulates what the purpose of the redundancy is
+>- your description of this is a consumer, why would the regulator itself
+>care what's connected to it?
 
-On 04/05/2022 15:06:13+0200, Valentin Caron wrote:
-> STM32 RTC can pulse some SOC pins when an alarm of RTC expires.
-> 
-> This patch adds property to activate alarm A output. The pulse can
-> output on three pins RTC_OUT1, RTC_OUT2, RTC_OUT2_RMP
-> (PC13, PB2, PI8 on stm32mp15) (PC13, PB2, PI1 on stm32mp13).
-> 
-> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
-> ---
->  .../devicetree/bindings/rtc/st,stm32-rtc.yaml | 19 ++++++++++++++++++-
->  1 file changed, 18 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml b/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
-> index 56d46ea35c5d..71e02604e8de 100644
-> --- a/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
-> +++ b/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
-> @@ -59,6 +59,13 @@ properties:
->        Refer to <include/dt-bindings/rtc/rtc-stm32.h> for the supported values.
->        Pinctrl state named "default" may be defined to reserve pin for RTC output.
->  
-> +  st,alarm:
-> +    $ref: "/schemas/types.yaml#/definitions/uint32"
-> +    description: |
-> +      To select and enable RTC Alarm A output.
-> +      Refer to <include/dt-bindings/rtc/rtc-stm32.h> for the supported values.
-> +      Pinctrl state named "default" may be defined to reserve pin for RTC output.
-> +
->  allOf:
->    - if:
->        properties:
-> @@ -75,6 +82,9 @@ allOf:
->          st,lsco:
->            maxItems: 0
->  
-> +        st,alarm:
-> +          maxItems: 0
-> +
->          clock-names: false
->  
->        required:
-> @@ -95,6 +105,9 @@ allOf:
->          st,lsco:
->            maxItems: 0
->  
-> +        st,alarm:
-> +          maxItems: 0
-> +
->        required:
->          - clock-names
->          - st,syscfg
-> @@ -117,6 +130,9 @@ allOf:
->          st,lsco:
->            maxItems: 1
->  
-> +        st,alarm:
-> +          maxItems: 1
-> +
->        required:
->          - clock-names
->  
-> @@ -153,8 +169,9 @@ examples:
->        clocks = <&rcc RTCAPB>, <&rcc RTC>;
->        clock-names = "pclk", "rtc_ck";
->        interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
-> +      st,alarm = <RTC_OUT1>;
->        st,lsco = <RTC_OUT2_RMP>;
+Hi Mark, thanks for the review.
 
-Shouldn't that be exactly the opposite? You have two pins that can
-output different functions. The property should be the pin and the value
-the function. I'd go even further and I would say this is actually
-pinmuxing.
+To some extent that was an additional (maybe excessive) protective 
+measure against regulators ending up userspace-controllable when they 
+shouldn't be, since I had previously gotten the impression that there 
+was some concern about that possibility.
+
+More functionally though, it was also basically a hack to allow the 
+'state' sysfs attribute's mode to get set properly in 
+regulator_register(), before the consumer is known.  Though if things 
+are rearranged based on what you said in another message about putting 
+the enable/disable control in a consumer driver instead of the regulator 
+itself, it should be easy to get rid of.
 
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Thanks,
+Zev
+
