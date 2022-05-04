@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353712AbiEDQwJ (ORCPT
+        id S1353669AbiEDQwM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
+        Wed, 4 May 2022 12:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353631AbiEDQvx (ORCPT
+        with ESMTP id S1353629AbiEDQvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:51:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86592F3B4;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB072ED5A;
         Wed,  4 May 2022 09:48:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 529F36174C;
-        Wed,  4 May 2022 16:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2C3C385A4;
-        Wed,  4 May 2022 16:48:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3023B82554;
+        Wed,  4 May 2022 16:48:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEFFC385A4;
+        Wed,  4 May 2022 16:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682895;
-        bh=EHjp78b+jP6LO64HOUaw59Cd7UestUx/qGjCreGcY4I=;
+        s=korg; t=1651682893;
+        bh=C/gXfNrYbGLHuBQ+TwO+vWYrZdeXwcdlqQuLpZRmc6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKsBAZnlaLVFmfJPUhFGRYNNiksRz8Rgknn2bau6BFN/AlNMFcdjrXrnkRsGLphlf
-         /eSMcZdTK5FYJTaHm34v84gsihkYebTtJ6zlTvxjqPPoqHPrLoTooBoFLrjT0kh5Gl
-         lHWaVBg6Pxbg0rhh3Bjz0YtCnwgf55OfMTP0m9vA=
+        b=KVlI2CRPwZ2tyCht13Lsv3z1TWSNFDNKudgLc1jHgAqiPsahgLQP8LmbA9V0Wsa6k
+         P2vfGviWMwzH9queFs+imK0ZX5PWuVnvz105D18EwnC+BhmEyvFY571mji6ONOCLHs
+         db27namMGf3vfDSeXAr0UAWYSt6nwAmMEWCSbX6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 02/84] hamradio: defer 6pack kfree after unregister_netdev
-Date:   Wed,  4 May 2022 18:43:43 +0200
-Message-Id: <20220504152927.930466007@linuxfoundation.org>
+        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.4 12/84] xhci: stop polling roothubs after shutdown
+Date:   Wed,  4 May 2022 18:43:53 +0200
+Message-Id: <20220504152928.618662308@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,51 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Henry Lin <henryl@nvidia.com>
 
-commit 0b9111922b1f399aba6ed1e1b8f2079c3da1aed8 upstream.
+commit dc92944a014cd6a6f6c94299aaa36164dd2c238a upstream.
 
-There is a possible race condition (use-after-free) like below
+While rebooting, XHCI controller and its bus device will be shut down
+in order by .shutdown callback. Stopping roothubs polling in
+xhci_shutdown() can prevent XHCI driver from accessing port status
+after its bus device shutdown.
 
- (USE)                       |  (FREE)
-  dev_queue_xmit             |
-   __dev_queue_xmit          |
-    __dev_xmit_skb           |
-     sch_direct_xmit         | ...
-      xmit_one               |
-       netdev_start_xmit     | tty_ldisc_kill
-        __netdev_start_xmit  |  6pack_close
-         sp_xmit             |   kfree
-          sp_encaps          |
-                             |
+Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
+polling, XHCI driver may access PCIe BAR register for port status after
+parent PCIe root port driver is shutdown and cause PCIe bus error.
 
-According to the patch "defer ax25 kfree after unregister_netdev", this
-patch reorder the kfree after the unregister_netdev to avoid the possible
-UAF as the unregister_netdev() is well synchronized and won't return if
-there is a running routine.
+[check shared hcd exist before stopping its roothub polling -Mathias]
 
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Henry Lin <henryl@nvidia.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hamradio/6pack.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/host/xhci.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -679,9 +679,11 @@ static void sixpack_close(struct tty_str
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -779,6 +779,17 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
+ 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
  
--	/* Free all 6pack frame buffers. */
-+	/* Free all 6pack frame buffers after unreg. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
++	/* Don't poll the roothubs after shutdown. */
++	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
++			__func__, hcd->self.busnum);
++	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
++	del_timer_sync(&hcd->rh_timer);
 +
-+	free_netdev(sp->dev);
- }
- 
- /* Perform I/O control on an active 6pack channel. */
++	if (xhci->shared_hcd) {
++		clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
++		del_timer_sync(&xhci->shared_hcd->rh_timer);
++	}
++
+ 	spin_lock_irq(&xhci->lock);
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
 
 
