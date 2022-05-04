@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30470C35275
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7928C4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355472AbiEDRAF (ORCPT
+        id S1355239AbiEDQ7t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
+        Wed, 4 May 2022 12:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354404AbiEDQyU (ORCPT
+        with ESMTP id S1354363AbiEDQyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B799F49249;
-        Wed,  4 May 2022 09:49:28 -0700 (PDT)
+        Wed, 4 May 2022 12:54:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD78D48E54;
+        Wed,  4 May 2022 09:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A6AE6179D;
-        Wed,  4 May 2022 16:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B3CC385A5;
-        Wed,  4 May 2022 16:49:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B639B827A1;
+        Wed,  4 May 2022 16:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB0C7C385A5;
+        Wed,  4 May 2022 16:49:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682967;
-        bh=puxZb8keBI0MxGWFKEJg7XUlq5HvNRAXuB4e6S/Tg5E=;
+        s=korg; t=1651682960;
+        bh=Dwb6QnWQj04rmhFqxpl4mg+tzBFecln+ljQjgMk9tXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uRX0KRgDseBXe11G1to8Ou87bjJV8+HIob7Di+COKXKrxQ/wfh/BphX1TfjCgCdGS
-         49FGNd1hM6wJprGHhlQlVTLR4v7UOBVYLcZpBllf01HnfjygwwVbxjDfMg8mwmm7f7
-         NP6etgEE9155+a/g7sNLcQ4TSW8ERqXSSoubQUfo=
+        b=AWJehQ1E+SeJ3X1H37I/l8AS67U6SiL2/8S2ceXnZFWYTViF4ZuvdejA7wY7rdARe
+         n44TncFqb+ajxYCZQBF5FyH6j8l+OU6zkapHBAO7q/u++UIOrbFHxrRY5yC0d6gLfi
+         eoCq8716aKvzHB5pmM882Sq2z2K3+OuzQGZgtJ5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 73/84] net: ethernet: stmmac: fix write to sgmii_adapter_base
-Date:   Wed,  4 May 2022 18:44:54 +0200
-Message-Id: <20220504152933.142928480@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Hoffmann <jan@3e8.eu>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 62/84] net: dsa: lantiq_gswip: Dont set GSWIP_MII_CFG_RMII_CLK
+Date:   Wed,  4 May 2022 18:44:43 +0200
+Message-Id: <20220504152932.159983651@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -49,56 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-commit 5fd1fe4807f91ea0cca043114d929faa11bd4190 upstream.
+[ Upstream commit 71cffebf6358a7f5031f5b208bbdc1cb4db6e539 ]
 
-I made a mistake with the commit a6aaa0032424 ("net: ethernet: stmmac:
-fix altr_tse_pcs function when using a fixed-link"). I should have
-tested against both scenario of having a SGMII interface and one
-without.
+Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
+GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
+register. It helped bring this register into a well-defined state so the
+driver has to rely less on the bootloader to do things right.
+Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
+possibility to configure it. Upon further testing it turns out that all
+boards which are supported by the GSWIP driver in OpenWrt which use an
+RMII PHY have a dedicated oscillator on the board which provides the
+50MHz RMII reference clock.
 
-Without the SGMII PCS TSE adpater, the sgmii_adapter_base address is
-NULL, thus a write to this address will fail.
+Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
+clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
+a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
+the MAC also generates the RMII reference clock whose signal then
+conflicts with the signal from the oscillator on the board. This results
+in a constant cycle of the PHY detecting link up/down (and as a result
+of that: the two ports using the AR8030 PHYs are not working).
 
-Cc: stable@vger.kernel.org
-Fixes: a6aaa0032424 ("net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link")
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Link: https://lore.kernel.org/r/20220420152345.27415-1-dinguyen@kernel.org
+At the time of writing this patch there's no known board where the MAC
+(GSWIP) has to generate the RMII reference clock. If needed this can be
+implemented in future by providing a device-tree flag so the
+GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
+
+Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
+Tested-by: Jan Hoffmann <jan@3e8.eu>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Link: https://lore.kernel.org/r/20220425152027.2220750-1-martin.blumenstingl@googlemail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/dsa/lantiq_gswip.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -65,8 +65,9 @@ static void socfpga_dwmac_fix_mac_speed(
- 	struct phy_device *phy_dev = ndev->phydev;
- 	u32 val;
- 
--	writew(SGMII_ADAPTER_DISABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	if (sgmii_adapter_base)
-+		writew(SGMII_ADAPTER_DISABLE,
-+		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
- 
- 	if (splitter_base) {
- 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
-@@ -88,10 +89,11 @@ static void socfpga_dwmac_fix_mac_speed(
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	writew(SGMII_ADAPTER_ENABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	if (phy_dev)
-+	if (phy_dev && sgmii_adapter_base) {
-+		writew(SGMII_ADAPTER_ENABLE,
-+		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
- 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
-+	}
- }
- 
- static int socfpga_dwmac_parse_data(struct socfpga_dwmac *dwmac, struct device *dev)
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 60e36f46f8ab..0c191d395f8f 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1607,9 +1607,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+ 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
+-
+-		/* Configure the RMII clock as output: */
+-		miicfg |= GSWIP_MII_CFG_RMII_CLK;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+-- 
+2.35.1
+
 
 
