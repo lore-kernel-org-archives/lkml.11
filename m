@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0129C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4178C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356555AbiEDRSB (ORCPT
+        id S1356605AbiEDRSJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
+        Wed, 4 May 2022 13:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356062AbiEDREv (ORCPT
+        with ESMTP id S1356087AbiEDREw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C8850076;
-        Wed,  4 May 2022 09:53:43 -0700 (PDT)
+        Wed, 4 May 2022 13:04:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9397F50450;
+        Wed,  4 May 2022 09:53:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EC63617D5;
-        Wed,  4 May 2022 16:53:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870F7C385A5;
-        Wed,  4 May 2022 16:53:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3380561896;
+        Wed,  4 May 2022 16:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81186C385A5;
+        Wed,  4 May 2022 16:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683222;
-        bh=NMC99gcqDM2guG2tRry0M7OaVR82LfisPaysCzoEjCY=;
+        s=korg; t=1651683226;
+        bh=vAIc1uurf7tCoXg8ZlsD2kbeWm6s3yVfceQCPAEYxTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QdPszhLigUAqn5bxNmBkHpm1un0YNoLcyHfCqEHjYns/g8OYcd/FDZ2kjOHVPh9lB
-         /YN2zvsofwhpyflVcrWUkyh7qoC4bCZxG3/KNIhV2tBGzqjZ69lKGtud0d1R3Ca71J
-         pERnd6I9sElkmFxSJc52BRygNok2C5E0D054vb3A=
+        b=mTSGT0KYXGCnWlKkYtaBzg/uXc/lSLm8uk+225OdysS+OyJXpk9z9jR3kFX8/qtPp
+         Fuxv8FDXAEj0sv/PGcyKekuF5QkuKUIeC4DqS5dYD7E8VkixL2COvClsfIGn3ajNZ+
+         VvHH4ozcBlb7gjSKbpVV1cVhVtKtdOT/p9Y8hKrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/177] pinctrl: mediatek: moore: Fix build error
-Date:   Wed,  4 May 2022 18:44:28 +0200
-Message-Id: <20220504153059.785244126@linuxfoundation.org>
+Subject: [PATCH 5.15 083/177] pinctrl: rockchip: fix RK3308 pinmux bits
+Date:   Wed,  4 May 2022 18:44:36 +0200
+Message-Id: <20220504153100.481207487@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -50,40 +51,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Luca Ceresoli <luca.ceresoli@bootlin.com>
 
-[ Upstream commit 87950929e2ff2236207bdbe14bff8230558b541b ]
+[ Upstream commit 1f3e25a068832f8892a5ff71467622d012f5bc9f ]
 
-If EINT_MTK is m and PINCTRL_MTK_V2 is y, build fails:
+Some of the pinmuxing bits described in rk3308_mux_recalced_data are wrong,
+pointing to non-existing registers.
 
-drivers/pinctrl/mediatek/pinctrl-moore.o: In function `mtk_gpio_set_config':
-pinctrl-moore.c:(.text+0xa6c): undefined reference to `mtk_eint_set_debounce'
-drivers/pinctrl/mediatek/pinctrl-moore.o: In function `mtk_gpio_to_irq':
-pinctrl-moore.c:(.text+0xacc): undefined reference to `mtk_eint_find_irq'
+Fix the entire table.
 
-Select EINT_MTK for PINCTRL_MTK_V2 to fix this.
+Also add a comment in front of each entry with the same string that appears
+in the datasheet to make the table easier to compare with the docs.
 
-Fixes: 8174a8512e3e ("pinctrl: mediatek: make MediaTek pinctrl v2 driver ready for buidling loadable module")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Link: https://lore.kernel.org/r/20220409105958.37412-1-yuehaibing@huawei.com
+This fix has been tested on real hardware for the gpio3b3_sel entry.
+
+Fixes: 7825aeb7b208 ("pinctrl: rockchip: add rk3308 SoC support")
+Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20220420142432.248565-1-luca.ceresoli@bootlin.com
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/pinctrl-rockchip.c | 45 ++++++++++++++++++++----------
+ 1 file changed, 30 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
-index 7040a7a7bd5d..246b0e951e1c 100644
---- a/drivers/pinctrl/mediatek/Kconfig
-+++ b/drivers/pinctrl/mediatek/Kconfig
-@@ -30,6 +30,7 @@ config PINCTRL_MTK_MOORE
- 	select GENERIC_PINMUX_FUNCTIONS
- 	select GPIOLIB
- 	select OF_GPIO
-+	select EINT_MTK
- 	select PINCTRL_MTK_V2
+diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
+index 923ff21a44c0..543a4991cf70 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -455,95 +455,110 @@ static  struct rockchip_mux_recalced_data rk3128_mux_recalced_data[] = {
  
- config PINCTRL_MTK_PARIS
+ static struct rockchip_mux_recalced_data rk3308_mux_recalced_data[] = {
+ 	{
++		/* gpio1b6_sel */
+ 		.num = 1,
+ 		.pin = 14,
+ 		.reg = 0x28,
+ 		.bit = 12,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1b7_sel */
+ 		.num = 1,
+ 		.pin = 15,
+ 		.reg = 0x2c,
+ 		.bit = 0,
+ 		.mask = 0x3
+ 	}, {
++		/* gpio1c2_sel */
+ 		.num = 1,
+ 		.pin = 18,
+ 		.reg = 0x30,
+ 		.bit = 4,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c3_sel */
+ 		.num = 1,
+ 		.pin = 19,
+ 		.reg = 0x30,
+ 		.bit = 8,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c4_sel */
+ 		.num = 1,
+ 		.pin = 20,
+ 		.reg = 0x30,
+ 		.bit = 12,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c5_sel */
+ 		.num = 1,
+ 		.pin = 21,
+ 		.reg = 0x34,
+ 		.bit = 0,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c6_sel */
+ 		.num = 1,
+ 		.pin = 22,
+ 		.reg = 0x34,
+ 		.bit = 4,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio1c7_sel */
+ 		.num = 1,
+ 		.pin = 23,
+ 		.reg = 0x34,
+ 		.bit = 8,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio3b4_sel */
+ 		.num = 3,
+ 		.pin = 12,
+ 		.reg = 0x68,
+ 		.bit = 8,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio3b5_sel */
+ 		.num = 3,
+ 		.pin = 13,
+ 		.reg = 0x68,
+ 		.bit = 12,
+ 		.mask = 0xf
+ 	}, {
++		/* gpio2a2_sel */
+ 		.num = 2,
+ 		.pin = 2,
+-		.reg = 0x608,
+-		.bit = 0,
+-		.mask = 0x7
++		.reg = 0x40,
++		.bit = 4,
++		.mask = 0x3
+ 	}, {
++		/* gpio2a3_sel */
+ 		.num = 2,
+ 		.pin = 3,
+-		.reg = 0x608,
+-		.bit = 4,
+-		.mask = 0x7
++		.reg = 0x40,
++		.bit = 6,
++		.mask = 0x3
+ 	}, {
++		/* gpio2c0_sel */
+ 		.num = 2,
+ 		.pin = 16,
+-		.reg = 0x610,
+-		.bit = 8,
+-		.mask = 0x7
++		.reg = 0x50,
++		.bit = 0,
++		.mask = 0x3
+ 	}, {
++		/* gpio3b2_sel */
+ 		.num = 3,
+ 		.pin = 10,
+-		.reg = 0x610,
+-		.bit = 0,
+-		.mask = 0x7
++		.reg = 0x68,
++		.bit = 4,
++		.mask = 0x3
+ 	}, {
++		/* gpio3b3_sel */
+ 		.num = 3,
+ 		.pin = 11,
+-		.reg = 0x610,
+-		.bit = 4,
+-		.mask = 0x7
++		.reg = 0x68,
++		.bit = 6,
++		.mask = 0x3
+ 	},
+ };
+ 
 -- 
 2.35.1
 
