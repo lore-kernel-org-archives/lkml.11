@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 114C1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357315AbiEDRX6 (ORCPT
+        id S1357411AbiEDRYS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
+        Wed, 4 May 2022 13:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355637AbiEDREc (ORCPT
+        with ESMTP id S1355576AbiEDREa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:32 -0400
+        Wed, 4 May 2022 13:04:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7252B4EF5F;
-        Wed,  4 May 2022 09:53:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E134EF4D;
+        Wed,  4 May 2022 09:53:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 176E0B82792;
-        Wed,  4 May 2022 16:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5FAC385A5;
-        Wed,  4 May 2022 16:53:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24983B827AF;
+        Wed,  4 May 2022 16:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE023C385B6;
+        Wed,  4 May 2022 16:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683189;
-        bh=WebTtxslwKDAsVRcLEZUGWc3FTCSF1suL5dLjrOM8mA=;
+        s=korg; t=1651683184;
+        bh=bOEnfUtlCzKilcQVNdgNDkraRV1l4mxr/wnzQyI8f7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=03KP018MOWB1i/vW2RKW7Zb5hlEmCpOJAv9Uyi5P5BmeF5mGTynnfWjvjsUnrquvT
-         Pk6Z7+P+zzaNbRYvqQnVKBtK1LLEf7l2EzKwRay/uK3dGFVrFdh4xqyLCnIx8vV7QY
-         n89jstqooo/75CmZQ0AOrZ4lnoQ7x76rQ2JmyjZU=
+        b=q+4JdMqTA7356TvVOUfZ+hBanwLMXK595bt1liOebrmGn3qDsS+ZKl/6j+uYI7LSK
+         H6fSzDb4Dm+LIYV0kD7ZMF25ZK/nDeKjXwOKzGZPmOjcV/6cYFGaVtsOlh2D/jF3DO
+         cq5cQxjxE6KnMGzkWlmG0auR2JZTTzYQrb9j58G0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        Dusty Mabe <dustymabe@redhat.com>,
-        Salvatore Bonaccorso <carnil@debian.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Noah Meyerhans <noahm@debian.org>
-Subject: [PATCH 5.15 042/177] x86/pci/xen: Disable PCI/MSI[-X] masking for XEN_HVM guests
-Date:   Wed,  4 May 2022 18:43:55 +0200
-Message-Id: <20220504153056.686401990@linuxfoundation.org>
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 049/177] arm64: dts: meson: remove CPU opps below 1GHz for SM1 boards
+Date:   Wed,  4 May 2022 18:44:02 +0200
+Message-Id: <20220504153057.375932150@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -53,57 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-commit 7e0815b3e09986d2fe651199363e135b9358132a upstream.
+[ Upstream commit fd86d85401c2049f652293877c0f7e6e5afc3bbc ]
 
-When a XEN_HVM guest uses the XEN PIRQ/Eventchannel mechanism, then
-PCI/MSI[-X] masking is solely controlled by the hypervisor, but contrary to
-XEN_PV guests this does not disable PCI/MSI[-X] masking in the PCI/MSI
-layer.
+Amlogic SM1 devices experience CPU stalls and random board wedges when
+the system idles and CPU cores clock down to lower opp points. Recent
+vendor kernels include a change to remove 100-250MHz and other distro
+sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
+are removed or the CPU governor forced to performance stalls are still
+observed, so let's remove them to improve stability and uptime.
 
-This can lead to a situation where the PCI/MSI layer masks an MSI[-X]
-interrupt and the hypervisor grants the write despite the fact that it
-already requested the interrupt. As a consequence interrupt delivery on the
-affected device is not happening ever.
-
-Set pci_msi_ignore_mask to prevent that like it's done for XEN_PV guests
-already.
-
-Fixes: 809f9267bbab ("xen: map MSIs into pirqs")
-Reported-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-Reported-by: Dusty Mabe <dustymabe@redhat.com>
-Reported-by: Salvatore Bonaccorso <carnil@debian.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Noah Meyerhans <noahm@debian.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/87tuaduxj5.ffs@tglx
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220210100638.19130-3-christianshewitt@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/pci/xen.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 20 --------------------
+ 1 file changed, 20 deletions(-)
 
---- a/arch/x86/pci/xen.c
-+++ b/arch/x86/pci/xen.c
-@@ -472,7 +472,6 @@ static __init void xen_setup_pci_msi(voi
- 			xen_msi_ops.setup_msi_irqs = xen_setup_msi_irqs;
- 		}
- 		xen_msi_ops.teardown_msi_irqs = xen_pv_teardown_msi_irqs;
--		pci_msi_ignore_mask = 1;
- 	} else if (xen_hvm_domain()) {
- 		xen_msi_ops.setup_msi_irqs = xen_hvm_setup_msi_irqs;
- 		xen_msi_ops.teardown_msi_irqs = xen_teardown_msi_irqs;
-@@ -486,6 +485,11 @@ static __init void xen_setup_pci_msi(voi
- 	 * in allocating the native domain and never use it.
- 	 */
- 	x86_init.irqs.create_pci_msi_domain = xen_create_pci_msi_domain;
-+	/*
-+	 * With XEN PIRQ/Eventchannels in use PCI/MSI[-X] masking is solely
-+	 * controlled by the hypervisor.
-+	 */
-+	pci_msi_ignore_mask = 1;
- }
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index 3d8b1f4f2001..78bdbd2ccc9d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -95,26 +95,6 @@ cpu_opp_table: opp-table {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
  
- #else /* CONFIG_PCI_MSI */
+-		opp-100000000 {
+-			opp-hz = /bits/ 64 <100000000>;
+-			opp-microvolt = <730000>;
+-		};
+-
+-		opp-250000000 {
+-			opp-hz = /bits/ 64 <250000000>;
+-			opp-microvolt = <730000>;
+-		};
+-
+-		opp-500000000 {
+-			opp-hz = /bits/ 64 <500000000>;
+-			opp-microvolt = <730000>;
+-		};
+-
+-		opp-667000000 {
+-			opp-hz = /bits/ 64 <666666666>;
+-			opp-microvolt = <750000>;
+-		};
+-
+ 		opp-1000000000 {
+ 			opp-hz = /bits/ 64 <1000000000>;
+ 			opp-microvolt = <770000>;
+-- 
+2.35.1
+
 
 
