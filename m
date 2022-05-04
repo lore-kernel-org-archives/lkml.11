@@ -2,64 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ABAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DABC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 13:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350231AbiEDNKy (ORCPT
+        id S1348392AbiEDNLG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 09:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
+        Wed, 4 May 2022 09:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241311AbiEDNKe (ORCPT
+        with ESMTP id S1350348AbiEDNKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 09:10:34 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D78E403F8;
-        Wed,  4 May 2022 06:06:39 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VCC0O7J_1651669595;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VCC0O7J_1651669595)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 04 May 2022 21:06:36 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     sfrench@samba.org
-Cc:     linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] cifs: Return true/false (not 1/0) from bool functions
-Date:   Wed,  4 May 2022 21:06:34 +0800
-Message-Id: <20220504130634.101239-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Wed, 4 May 2022 09:10:46 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CBD40A37;
+        Wed,  4 May 2022 06:06:51 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244A6O13016063;
+        Wed, 4 May 2022 15:06:38 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=4Jy00+YKj9FKRS8Ur8OX4MxIhckz7ncmunjwkkM24WU=;
+ b=w+8C3uhPbIHWcR0v/Y5md2uXXXyc8bQ1RRqMalvJJ14vnd16xVfeikaFX7MSWvEaU0TN
+ IDuKwFI7shTHM8d58gAxDPeU0zGrBPbUMRLwI5K0H9UiIZCfUur5rKdgkplvF8LQmrJ8
+ JKXzzQtJ4MLn9k7EoKkMun3yBmzZWeYnSkc/pUTp4vp6dF8cMcWFkW4DExgfg2s0jZY3
+ XSFiaNe4wDJXOFlkXQwafALj1XER1C0ARODv9EbAz1kcxkhw42O2wHg5EvVdFkpNHNZX
+ +0XXdLF/+jtlT3jc6qrjkHb6gS4yL5Um+/9q+Yv6CzPiji/n+MUCI/04xCihVBxWCq3J vA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3frvf0m59p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 May 2022 15:06:38 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6F28710002A;
+        Wed,  4 May 2022 15:06:37 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6634C21FEA9;
+        Wed,  4 May 2022 15:06:37 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 4 May 2022 15:06:36
+ +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/6] dt-bindings: rtc: stm32: add alarm A out property to select output
+Date:   Wed, 4 May 2022 15:06:13 +0200
+Message-ID: <20220504130617.331290-1-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220504130233.330983-1-valentin.caron@foss.st.com>
+References: <20220504130233.330983-1-valentin.caron@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-04_04,2022-05-04_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Return boolean values ("true" or "false") instead of 1 or 0 from bool
-functions. This fixes the following warnings from coccicheck:
+STM32 RTC can pulse some SOC pins when an alarm of RTC expires.
 
-./fs/cifs/file.c:4764:9-10: WARNING: return of 0/1 in function
-cifs_release_folio() with return type bool
+This patch adds property to activate alarm A output. The pulse can
+output on three pins RTC_OUT1, RTC_OUT2, RTC_OUT2_RMP
+(PC13, PB2, PI8 on stm32mp15) (PC13, PB2, PI1 on stm32mp13).
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
 ---
- fs/cifs/file.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/rtc/st,stm32-rtc.yaml | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index 580a847aa8b5..a9123cefd84f 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -4761,7 +4761,7 @@ static int cifs_write_begin(struct file *file, struct address_space *mapping,
- static bool cifs_release_folio(struct folio *folio, gfp_t gfp)
- {
- 	if (folio_test_private(folio))
--		return 0;
-+		return false;
- 	if (folio_test_fscache(folio)) {
- 		if (current_is_kswapd() || !(gfp & __GFP_FS))
- 			return false;
+diff --git a/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml b/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
+index 56d46ea35c5d..71e02604e8de 100644
+--- a/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
++++ b/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
+@@ -59,6 +59,13 @@ properties:
+       Refer to <include/dt-bindings/rtc/rtc-stm32.h> for the supported values.
+       Pinctrl state named "default" may be defined to reserve pin for RTC output.
+ 
++  st,alarm:
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    description: |
++      To select and enable RTC Alarm A output.
++      Refer to <include/dt-bindings/rtc/rtc-stm32.h> for the supported values.
++      Pinctrl state named "default" may be defined to reserve pin for RTC output.
++
+ allOf:
+   - if:
+       properties:
+@@ -75,6 +82,9 @@ allOf:
+         st,lsco:
+           maxItems: 0
+ 
++        st,alarm:
++          maxItems: 0
++
+         clock-names: false
+ 
+       required:
+@@ -95,6 +105,9 @@ allOf:
+         st,lsco:
+           maxItems: 0
+ 
++        st,alarm:
++          maxItems: 0
++
+       required:
+         - clock-names
+         - st,syscfg
+@@ -117,6 +130,9 @@ allOf:
+         st,lsco:
+           maxItems: 1
+ 
++        st,alarm:
++          maxItems: 1
++
+       required:
+         - clock-names
+ 
+@@ -153,8 +169,9 @@ examples:
+       clocks = <&rcc RTCAPB>, <&rcc RTC>;
+       clock-names = "pclk", "rtc_ck";
+       interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
++      st,alarm = <RTC_OUT1>;
+       st,lsco = <RTC_OUT2_RMP>;
+-      pinctrl-0 = <&rtc_out2_rmp_pins_a>;
++      pinctrl-0 = <&rtc_out1_pins_a &rtc_out2_rmp_pins_a>;
+       pinctrl-names = "default";
+     };
+ 
 -- 
-2.20.1.7.g153144c
+2.25.1
 
