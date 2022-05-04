@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C647C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B1BC47084
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356729AbiEDRS4 (ORCPT
+        id S1357093AbiEDRTU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
+        Wed, 4 May 2022 13:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356167AbiEDRE4 (ORCPT
+        with ESMTP id S1356327AbiEDRFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6809506E7;
-        Wed,  4 May 2022 09:53:56 -0700 (PDT)
+        Wed, 4 May 2022 13:05:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1644149F18;
+        Wed,  4 May 2022 09:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AB07617DE;
-        Wed,  4 May 2022 16:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C55C385B2;
-        Wed,  4 May 2022 16:53:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2C51B82795;
+        Wed,  4 May 2022 16:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DB1C385A5;
+        Wed,  4 May 2022 16:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683235;
-        bh=e+oxjEJlR1PMHd11JKjXVmZGlgC98O91GpA6vAZb0A4=;
+        s=korg; t=1651683238;
+        bh=+UBJ4i3Fl2GsTUI0Gp8N2JfuB7Nvbo2PZZ9YAnUaWY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1HIluVmqrrgo6YlZfb9epWyIdSSbbDhAtyw0VK5scyhwp4OKRGs2boiPywkwzot79
-         MnXz3rfKAc9BivRqvJDEq9hQ8SRg9GufRJDWfXaVHHdZoFvXuPYtLr4eSkCpp9Isli
-         4CCdYrc1oM29JqEGlwZYklKjLh9stID4SAr4LT/M=
+        b=HcTvBeayIZIxoArx+PrgVV/M1beS5Q0v/blShaA/0f9QeFu3bow1Xvw8akQiMi2ZM
+         BcvLTAeinTFHNyYKkPLyihBSyzzyxSfQ25jWcFoMlDSO4pbhakycdVr9uZeD6HxQuZ
+         J538HJM9+mE0s60W4yOoDiytOJFRJLQZxZqJsyq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ying Xu <yinxu@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/177] sctp: check asoc strreset_chunk in sctp_generate_reconf_event
-Date:   Wed,  4 May 2022 18:44:41 +0200
-Message-Id: <20220504153100.975775798@linuxfoundation.org>
+Subject: [PATCH 5.15 091/177] pinctrl: pistachio: fix use of irq_of_parse_and_map()
+Date:   Wed,  4 May 2022 18:44:44 +0200
+Message-Id: <20220504153101.240475507@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -52,64 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 165e3e17fe8fe6a8aab319bc6e631a2e23b9a857 ]
+[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
 
-A null pointer reference issue can be triggered when the response of a
-stream reconf request arrives after the timer is triggered, such as:
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-  send Incoming SSN Reset Request --->
-  CPU0:
-   reconf timer is triggered,
-   go to the handler code before hold sk lock
-                            <--- reply with Outgoing SSN Reset Request
-  CPU1:
-   process Outgoing SSN Reset Request,
-   and set asoc->strreset_chunk to NULL
-  CPU0:
-   continue the handler code, hold sk lock,
-   and try to hold asoc->strreset_chunk, crash!
-
-In Ying Xu's testing, the call trace is:
-
-  [ ] BUG: kernel NULL pointer dereference, address: 0000000000000010
-  [ ] RIP: 0010:sctp_chunk_hold+0xe/0x40 [sctp]
-  [ ] Call Trace:
-  [ ]  <IRQ>
-  [ ]  sctp_sf_send_reconf+0x2c/0x100 [sctp]
-  [ ]  sctp_do_sm+0xa4/0x220 [sctp]
-  [ ]  sctp_generate_reconf_event+0xbd/0xe0 [sctp]
-  [ ]  call_timer_fn+0x26/0x130
-
-This patch is to fix it by returning from the timer handler if asoc
-strreset_chunk is already set to NULL.
-
-Fixes: 7b9438de0cd4 ("sctp: add stream reconf timer")
-Reported-by: Ying Xu <yinxu@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/sm_sideeffect.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-index b3815b568e8e..463c4a58d2c3 100644
---- a/net/sctp/sm_sideeffect.c
-+++ b/net/sctp/sm_sideeffect.c
-@@ -458,6 +458,10 @@ void sctp_generate_reconf_event(struct timer_list *t)
- 		goto out_unlock;
- 	}
+diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
+index 8d271c6b0ca4..5de691c630b4 100644
+--- a/drivers/pinctrl/pinctrl-pistachio.c
++++ b/drivers/pinctrl/pinctrl-pistachio.c
+@@ -1374,10 +1374,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
+ 		}
  
-+	/* This happens when the response arrives after the timer is triggered. */
-+	if (!asoc->strreset_chunk)
-+		goto out_unlock;
-+
- 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
- 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
- 			   asoc->state, asoc->ep, asoc,
+ 		irq = irq_of_parse_and_map(child, 0);
+-		if (irq < 0) {
+-			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
++		if (!irq) {
++			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
+ 			of_node_put(child);
+-			ret = irq;
++			ret = -EINVAL;
+ 			goto err;
+ 		}
+ 
 -- 
 2.35.1
 
