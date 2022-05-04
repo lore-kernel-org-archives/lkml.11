@@ -2,128 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345740AbiEDHv5 (ORCPT
+        id S1345737AbiEDHxQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        Wed, 4 May 2022 03:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345505AbiEDHvt (ORCPT
+        with ESMTP id S233512AbiEDHxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:51:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74D013F03;
-        Wed,  4 May 2022 00:48:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53726B821D8;
-        Wed,  4 May 2022 07:48:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15143C385A5;
-        Wed,  4 May 2022 07:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651650492;
-        bh=m64RQCqyjvzWxiO7fknKK0SA5V08XscCrerNlOARsp8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=QJlVydFQ9EKJEIznsNdV8CBg4DU9tA4As27tQIGFCjanNC2wgU3vtgxXZKEePDbmr
-         ChPd9gy5ScO9j41YNrdidOUGpLoeOe5pSpARmg/IPtcaPkzf2ytMqawGVrqK21ovW2
-         fbj3q2xVaW8k03juchaWUT3v/SPVf9uPo8Hz+Eb/EF7Q6FFCdNucVNCFGSR65R4KpO
-         puq0ERGTRPtJoQD8pIoaMn4MDzl02AkC/QKQv5hvxSQPgh3OkBLBxEzSE2PU1WcQDq
-         9aieKNA66bMP4v0sa+kDzUl2LE1wvK97Z9kHqzuyOhIVh13OzWiB6bcV+pgxHIMJuw
-         2JuRoJ75jYbBw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     Thibaut <hacks@slashdirt.org>,
-        Christian Lamparter <chunkeey@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: support bus and device specific API 1 BDF selection
-References: <20211009221711.2315352-1-robimarko@gmail.com>
-        <163890036783.24891.8718291787865192280.kvalo@kernel.org>
-        <CAOX2RU5mqUfPRDsQNSpVPdiz6sE_68KN5Ae+2bC_t1cQzdzgTA@mail.gmail.com>
-        <09a27912-9ea4-fe75-df72-41ba0fa5fd4e@gmail.com>
-        <CAOX2RU6qaZ7NkeRe1bukgH6OxXOPvJS=z9PRp=UYAxMfzwD2oQ@mail.gmail.com>
-        <EC2778B3-B957-4F3F-B299-CC18805F8381@slashdirt.org>
-        <CAOX2RU7FOdSuo2Jgo0i=8e-4bJwq7ahvQxLzQv_zNCz2HCTBwA@mail.gmail.com>
-        <CAOX2RU7d9amMseczgp-PRzdOvrgBO4ZFM_+hTRSevCU85qT=kA@mail.gmail.com>
-        <70a8dd7a-851d-686b-3134-50f21af0450c@gmail.com>
-        <7DCB1B9A-D08E-4837-B2FE-6DA476B54B0D@slashdirt.org>
-        <CAOX2RU7kF8Da8p_tHwuE-8YMXr5ZtWU2iL6ZY+UR+1OvGcyn+w@mail.gmail.com>
-Date:   Wed, 04 May 2022 10:48:04 +0300
-In-Reply-To: <CAOX2RU7kF8Da8p_tHwuE-8YMXr5ZtWU2iL6ZY+UR+1OvGcyn+w@mail.gmail.com>
-        (Robert Marko's message of "Tue, 3 May 2022 17:58:03 +0200")
-Message-ID: <87sfppagcr.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Wed, 4 May 2022 03:53:14 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3689113E89
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 00:49:38 -0700 (PDT)
+X-UUID: 9cf55fe384c54654b1a7e26840ee85ab-20220504
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:316b3e78-fd0b-4c87-8b0e-b40997c00c39,OB:10,L
+        OB:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:53
+X-CID-INFO: VERSION:1.1.4,REQID:316b3e78-fd0b-4c87-8b0e-b40997c00c39,OB:10,LOB
+        :0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:53
+X-CID-META: VersionHash:faefae9,CLOUDID:7289a82f-6199-437e-8ab4-9920b4bc5b76,C
+        OID:bbac95824a32,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 9cf55fe384c54654b1a7e26840ee85ab-20220504
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1163909422; Wed, 04 May 2022 15:49:31 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 4 May 2022 15:49:30 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 4 May 2022 15:49:30 +0800
+Message-ID: <41eb4b05c703d0377b7139ad0868cebea8f6fc47.camel@mediatek.com>
+Subject: Re: [PATCH -next] drm: mediatek: mtk_dsi: Remove unnecessary print
+ function dev_err()
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>, <matthias.bgg@gmail.com>
+CC:     <chunkuang.hu@kernel.org>, <airlied@linux.ie>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Wed, 4 May 2022 15:49:30 +0800
+In-Reply-To: <20220224012318.84935-1-yang.lee@linux.alibaba.com>
+References: <20220224012318.84935-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Robert Marko <robimarko@gmail.com> writes:
+Hi, Yang:
 
-> On Wed, 16 Feb 2022 at 22:55, Thibaut <hacks@slashdirt.org> wrote:
->>
->> Hi,
->>
->> > Le 16 f=C3=A9vr. 2022 =C3=A0 22:19, Christian Lamparter <chunkeey@gmai=
-l.com> a =C3=A9crit :
->> >
->> > Hi,
->> >
->> > On 16/02/2022 14:38, Robert Marko wrote:
->> >> Silent ping,
->> >> Does anybody have an opinion on this?
->> >
->> > As a fallback, I've cobbled together from the old scripts that
->> > "concat board.bin into a board-2.bin. Do this on the device
->> > in userspace on the fly" idea. This was successfully tested
->> > on one of the affected devices (MikroTik SXTsq 5 ac (RBSXTsqG-5acD))
->> > and should work for all MikroTik.
->> >
->> > "ipq40xx: dynamically build board-2.bin for Mikrotik"
->> > <https://git.openwrt.org/?p=3Dopenwrt/staging/chunkeey.git;a=3Dcommit;=
-h=3D52f3407d94da62b99ba6c09f3663464cccd29b4f>
->> > (though I don't think this link will stay active for
->> > too long.)
->>
->> IMHO Robert=E2=80=99s patch addresses an actual bug in ath10k whereby the
->> driver sends the same devpath for two different devices when
->> requesting board-1 BDF, which doesn=E2=80=99t seem right.
->>
->> Your proposal is less straightforward than using unmodified board-1
->> data (as could be done if the above bug did not occur) and negates
->> the previous efforts not to store this data on flash (using instead
->> the kernel=E2=80=99s documented firmware sysfs loading facility - again
->> possible without the above issue).
->
-> Kalle, any chance of reviewing this? It just brings the board data in
-> line with caldata as far as naming goes.
+On Thu, 2022-02-24 at 09:23 +0800, Yang Li wrote:
+> The print function dev_err() is redundant because platform_get_irq()
+> already prints an error.
+> 
+> Eliminate the follow coccicheck warning:
+> ./drivers/gpu/drm/mediatek/mtk_dsi.c:1092:2-9: line 1092 is redundant
+> because platform_get_irq() already prints an error
 
-Sorry for the delay in review. So the original idea was that board.bin
-would be only used by developers for testing purposes only and normal
-users will use the board file automatically from board-2.bin. It's a
-shame if Mikrotik broke this, it's not ideal if there are so many
-different ways to use board files. I need to think a bit about this.
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
 
-The patch is now in pending branch for build testing:
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dsi.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> index bced4c7d668e..704252ee1198 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> @@ -1089,7 +1089,6 @@ static int mtk_dsi_probe(struct platform_device
+> *pdev)
+>  
+>  	irq_num = platform_get_irq(pdev, 0);
+>  	if (irq_num < 0) {
+> -		dev_err(&pdev->dev, "failed to get dsi irq_num: %d\n",
+> irq_num);
+>  		ret = irq_num;
+>  		goto err_unregister_host;
+>  	}
 
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=3Dp=
-ending&id=3Deda838c3941863a486f7fced4b739de6fc80e857
-
-I also fixed two checkpatch warnings:
-
-drivers/net/wireless/ath/ath10k/core.c:1252: line length of 93 exceeds 90 c=
-olumns
-drivers/net/wireless/ath/ath10k/core.c:1253: line length of 96 exceeds 90 c=
-olumns
-
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
