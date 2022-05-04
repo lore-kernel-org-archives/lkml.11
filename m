@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB482C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358654AbiEDRmp (ORCPT
+        id S1358883AbiEDRmu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        Wed, 4 May 2022 13:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356394AbiEDRJN (ORCPT
+        with ESMTP id S1355804AbiEDRKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAEE49F33;
-        Wed,  4 May 2022 09:55:07 -0700 (PDT)
+        Wed, 4 May 2022 13:10:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AA54B1DE;
+        Wed,  4 May 2022 09:57:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9EE83B82792;
-        Wed,  4 May 2022 16:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AABFC385A4;
-        Wed,  4 May 2022 16:55:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD70617DE;
+        Wed,  4 May 2022 16:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CCAC385A5;
+        Wed,  4 May 2022 16:57:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683305;
-        bh=tu6l9fKoJQRRQfGhMHhs099JASbvUAe14tz+M+Fikp4=;
+        s=korg; t=1651683442;
+        bh=gSE5A4YaWsvMLRbnfY3/2NQrQvAcUJ4VQcT4jNwcRbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Px2DojIiu0X1elwCKkxpjkYIDCB/5aNYatAek/ubhSSwH7MNLQ5tJeUtlkNnM6HfS
-         apqlxMGDH9d7wnyJ7Iopk0exGgYswWgs77aUQ5NlKh7pVbWReFPloKoAaOm2eN1o2n
-         k+3Ah9aHNmOrc8rHScKE/G8VisvWirUdRm3JHEq8=
+        b=sIjXUXBGNsBgyAfBQjB+xHNtnIWzDmmaBi8ZvZ8rbWE7QF1ryjDl7Nbn9g7jFmmTT
+         BX9QXNbzwuPNNRUr8rIJsZdzFODHYKdjpAHxXiCjVj1wwXaxEuZ5dRRbg9JX5lKudv
+         I2HbOgwan+FQ/PftJ9Q5BRXsOivfgSiUfVCwB+10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.15 170/177] tty: n_gsm: fix reset fifo race condition
-Date:   Wed,  4 May 2022 18:46:03 +0200
-Message-Id: <20220504153108.816450783@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 110/225] ARM: dts: imx6ull-colibri: fix vqmmc regulator
+Date:   Wed,  4 May 2022 18:45:48 +0200
+Message-Id: <20220504153120.427793544@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,61 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-commit 73029a4d7161f8b6c0934553145ef574d2d0c645 upstream.
+[ Upstream commit 45974e4276a8d6653394f66666fc57d8ffa6de9a ]
 
-gsmtty_write() and gsm_dlci_data_output() properly guard the fifo access.
-However, gsm_dlci_close() and gsmtty_flush_buffer() modifies the fifo but
-do not guard this.
-Add a guard here to prevent race conditions on parallel writes to the fifo.
+The correct spelling for the property is gpios. Otherwise, the regulator
+will neither reserve nor control any GPIOs. Thus, any SD/MMC card which
+can use UHS-I modes will fail.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-17-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c2e4987e0e02 ("ARM: dts: imx6ull: add Toradex Colibri iMX6ULL support")
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/boot/dts/imx6ull-colibri.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1417,13 +1417,17 @@ static int gsm_control_wait(struct gsm_m
+diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+index 7f35a06dff95..951a2a6c5a65 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+@@ -37,7 +37,7 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
  
- static void gsm_dlci_close(struct gsm_dlci *dlci)
- {
-+	unsigned long flags;
-+
- 	del_timer(&dlci->t1);
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
- 	dlci->state = DLCI_CLOSED;
- 	if (dlci->addr != 0) {
- 		tty_port_tty_hangup(&dlci->port, false);
-+		spin_lock_irqsave(&dlci->lock, flags);
- 		kfifo_reset(&dlci->fifo);
-+		spin_unlock_irqrestore(&dlci->lock, flags);
- 		/* Ensure that gsmtty_open() can return. */
- 		tty_port_set_initialized(&dlci->port, 0);
- 		wake_up_interruptible(&dlci->port.open_wait);
-@@ -3078,13 +3082,17 @@ static unsigned int gsmtty_chars_in_buff
- static void gsmtty_flush_buffer(struct tty_struct *tty)
- {
- 	struct gsm_dlci *dlci = tty->driver_data;
-+	unsigned long flags;
-+
- 	if (dlci->state == DLCI_CLOSED)
- 		return;
- 	/* Caution needed: If we implement reliable transport classes
- 	   then the data being transmitted can't simply be junked once
- 	   it has first hit the stack. Until then we can just blow it
- 	   away */
-+	spin_lock_irqsave(&dlci->lock, flags);
- 	kfifo_reset(&dlci->fifo);
-+	spin_unlock_irqrestore(&dlci->lock, flags);
- 	/* Need to unhook this DLCI from the transmit queue logic */
- }
- 
+ 	reg_sd1_vmmc: regulator-sd1-vmmc {
+ 		compatible = "regulator-gpio";
+-		gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
++		gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_snvs_reg_sd>;
+ 		regulator-always-on;
+-- 
+2.35.1
+
 
 
