@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DADC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F16C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356600AbiEDR0I (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
+        id S235658AbiEDR0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354719AbiEDRFU (ORCPT
+        with ESMTP id S1354717AbiEDRFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:05:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6BB5133A;
-        Wed,  4 May 2022 09:54:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF665133C;
+        Wed,  4 May 2022 09:54:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 864B0B8278E;
-        Wed,  4 May 2022 16:54:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21897C385A4;
-        Wed,  4 May 2022 16:54:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F202B618BB;
+        Wed,  4 May 2022 16:54:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C564C385AA;
+        Wed,  4 May 2022 16:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683253;
-        bh=cQKzmDC6nWwnIM5+CUyyN+OnLwgvDDKKjIundLrhefs=;
+        s=korg; t=1651683255;
+        bh=AzxGN6B+6s9ilIUtcllUE9KE0UO6vCvY2wsQE9iImXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1z9PNxSHs48N/RQsVC7yDiQ85GSwCTgC1ySt07ZIDxZDB31GLxdFmefdX3IVKy6ha
-         6KUeRl+3iN4XoW1UK1wUh+5J71HA9mA3IKCJXh62zgIPV9rQw6Ze2ybpcGfTA96Y8/
-         868haQD6JCOb12BkUnntuVcogJX2uweUoflQPygg=
+        b=mmOZEhiuWleRN4IsXoOY46U9mBCyFDvZk7E0+NwJMhimnxq8xNl/0qmSTU4t79RMb
+         1sl1LA24FX9VHpUtrGIv1B145dz9wUNFrzNPV7HTPxFBkSiGNTyBVNeM6pvDINcSz0
+         arVhVWWiIdN94hBM2T2o8YfgIz3iy9jXaqhwvEN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/177] net: hns3: add return value for mailbox handling in PF
-Date:   Wed,  4 May 2022 18:44:49 +0200
-Message-Id: <20220504153101.716777921@linuxfoundation.org>
+Subject: [PATCH 5.15 120/177] gfs2: Minor retry logic cleanup
+Date:   Wed,  4 May 2022 18:45:13 +0200
+Message-Id: <20220504153103.895550456@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,98 +48,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit c59d606296842409a6e5a4828235b0bd46b12bc4 ]
+[ Upstream commit 124c458a401a2497f796e4f2d6cafac6edbea8e9 ]
 
-Currently, there are some querying mailboxes sent from VF to PF,
-and VF will wait the PF's handling result. For mailbox
-HCLGE_MBX_GET_QID_IN_PF and HCLGE_MBX_GET_RSS_KEY, it may fail
-when the input parameter is invalid, but the prototype of their
-handler function is void. In this case, PF always return success
-to VF, which may cause the VF get incorrect result.
+Clean up the retry logic in the read and write functions somewhat.
 
-Fixes it by adding return value for these function.
-
-Fixes: 63b1279d9905 ("net: hns3: check queue id range before using")
-Fixes: 532cfc0df1e4 ("net: hns3: add a check for index in hclge_get_rss_key()")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 22 ++++++++++---------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ fs/gfs2/file.c | 34 ++++++++++++++++------------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index c256305a2212..4a5b11b6fed3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -593,9 +593,9 @@ static int hclge_set_vf_mtu(struct hclge_vport *vport,
- 	return hclge_set_vport_mtu(vport, mtu);
- }
- 
--static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
--				     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--				     struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
-+				    struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+				    struct hclge_respond_to_vf_msg *resp_msg)
- {
- 	struct hnae3_handle *handle = &vport->nic;
- 	struct hclge_dev *hdev = vport->back;
-@@ -605,17 +605,18 @@ static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
- 	if (queue_id >= handle->kinfo.num_tqps) {
- 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
- 			queue_id, mbx_req->mbx_src_vfid);
--		return;
-+		return -EINVAL;
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index 97e2793e22d7..964c19e27ce2 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -858,9 +858,9 @@ static ssize_t gfs2_file_direct_read(struct kiocb *iocb, struct iov_iter *to,
+ 		leftover = fault_in_iov_iter_writeable(to, window_size);
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
+-			if (!gfs2_holder_queued(gh))
+-				goto retry;
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(gh))
++				goto retry_under_glock;
++			goto retry;
+ 		}
  	}
- 
- 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
- 	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
- 	resp_msg->len = sizeof(qid_in_pf);
-+	return 0;
- }
- 
--static void hclge_get_rss_key(struct hclge_vport *vport,
--			      struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--			      struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_rss_key(struct hclge_vport *vport,
-+			     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+			     struct hclge_respond_to_vf_msg *resp_msg)
- {
- #define HCLGE_RSS_MBX_RESP_LEN	8
- 	struct hclge_dev *hdev = vport->back;
-@@ -631,13 +632,14 @@ static void hclge_get_rss_key(struct hclge_vport *vport,
- 		dev_warn(&hdev->pdev->dev,
- 			 "failed to get the rss hash key, the index(%u) invalid !\n",
- 			 index);
--		return;
-+		return -EINVAL;
+ 	if (gfs2_holder_queued(gh))
+@@ -927,9 +927,9 @@ static ssize_t gfs2_file_direct_write(struct kiocb *iocb, struct iov_iter *from,
+ 		leftover = fault_in_iov_iter_readable(from, window_size);
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
+-			if (!gfs2_holder_queued(gh))
+-				goto retry;
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(gh))
++				goto retry_under_glock;
++			goto retry;
+ 		}
  	}
- 
- 	memcpy(resp_msg->data,
- 	       &hdev->vport[0].rss_hash_key[index * HCLGE_RSS_MBX_RESP_LEN],
- 	       HCLGE_RSS_MBX_RESP_LEN);
- 	resp_msg->len = HCLGE_RSS_MBX_RESP_LEN;
-+	return 0;
- }
- 
- static void hclge_link_fail_parse(struct hclge_dev *hdev, u8 link_fail_code)
-@@ -812,10 +814,10 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 					"VF fail(%d) to set mtu\n", ret);
- 			break;
- 		case HCLGE_MBX_GET_QID_IN_PF:
--			hclge_get_queue_id_in_pf(vport, req, &resp_msg);
-+			ret = hclge_get_queue_id_in_pf(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_RSS_KEY:
--			hclge_get_rss_key(vport, req, &resp_msg);
-+			ret = hclge_get_rss_key(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_LINK_MODE:
- 			hclge_get_link_mode(vport, req);
+ out:
+@@ -996,12 +996,11 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 		leftover = fault_in_iov_iter_writeable(to, window_size);
+ 		gfs2_holder_disallow_demote(&gh);
+ 		if (leftover != window_size) {
+-			if (!gfs2_holder_queued(&gh)) {
+-				if (written)
+-					goto out_uninit;
+-				goto retry;
+-			}
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(&gh))
++				goto retry_under_glock;
++			if (written)
++				goto out_uninit;
++			goto retry;
+ 		}
+ 	}
+ 	if (gfs2_holder_queued(&gh))
+@@ -1075,12 +1074,11 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
+ 			from->count = min(from->count, window_size - leftover);
+-			if (!gfs2_holder_queued(gh)) {
+-				if (read)
+-					goto out_uninit;
+-				goto retry;
+-			}
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(gh))
++				goto retry_under_glock;
++			if (read)
++				goto out_uninit;
++			goto retry;
+ 		}
+ 	}
+ out_unlock:
 -- 
 2.35.1
 
