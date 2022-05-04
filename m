@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB52FC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355955AbiEDRMY (ORCPT
+        id S1355834AbiEDRMe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
+        Wed, 4 May 2022 13:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354757AbiEDQ7F (ORCPT
+        with ESMTP id S1354572AbiEDQ6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:59:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB52473A7;
-        Wed,  4 May 2022 09:50:57 -0700 (PDT)
+        Wed, 4 May 2022 12:58:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD512BE5;
+        Wed,  4 May 2022 09:50:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F74617A6;
-        Wed,  4 May 2022 16:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A323C385A5;
-        Wed,  4 May 2022 16:50:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C59661720;
+        Wed,  4 May 2022 16:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 611BCC385A4;
+        Wed,  4 May 2022 16:50:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683056;
-        bh=0gbObnZmdg3X7SuNnDkKe2xmN0OZyeNQ6+n97FTWnzE=;
+        s=korg; t=1651683028;
+        bh=HY6g3a2YqxarSW+yXg6O1VC2q4lgiVbKF4W9sWwGzdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r2pFBxZFjm+FPAzmh2SjD0krVccVhM3TpPns/TRYHnTCP0rnKW2wsOt5Aaaal6BNa
-         hyA6wfdi9z6w0bGoUm7oqKtCH6nQa4hILmjVKDsz4E11EXF+dd5iGl5umOQ5oFi1kS
-         FB+QOUE8Fk9vNHfqT9nFxJVnrAWNGTKbihX0OV8w=
+        b=zaTamPKZPPLtzHhKJrI2hXzg9c3SQGUl+417X73sXD5CaRQ3bAdnuwHakW2Dqgu15
+         8sigOraE5hls2S5O/I6DaUay7a7b1eafNXWWEKxcR5+/xaEo24Il4/CTAkOc2o6Uum
+         GiwF7PbQ1ZW8OrQ7PWKvOqoZb/+zVjolIPhrCwNc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksandr Ocheretnyi <oocheret@cisco.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 060/129] mtd: fix part field data corruption in mtd_info
-Date:   Wed,  4 May 2022 18:44:12 +0200
-Message-Id: <20220504153026.005036487@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH 5.10 019/129] usb: typec: ucsi: Fix role swapping
+Date:   Wed,  4 May 2022 18:43:31 +0200
+Message-Id: <20220504153022.838977126@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -50,48 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Ocheretnyi <oocheret@cisco.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-[ Upstream commit 37c5f9e80e015d0df17d0c377c18523002986851 ]
+commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
 
-Commit 46b5889cc2c5 ("mtd: implement proper partition handling")
-started using "mtd_get_master_ofs()" in mtd callbacks to determine
-memory offsets by means of 'part' field from mtd_info, what previously
-was smashed accessing 'master' field in the mtd_set_dev_defaults() method.
-That provides wrong offset what causes hardware access errors.
+All attempts to swap the roles timed out because the
+completion was done without releasing the port lock. Fixing
+that by releasing the lock before starting to wait for the
+completion.
 
-Just make 'part', 'master' as separate fields, rather than using
-union type to avoid 'part' data corruption when mtd_set_dev_defaults()
-is called.
-
-Fixes: 46b5889cc2c5 ("mtd: implement proper partition handling")
-Signed-off-by: Oleksandr Ocheretnyi <oocheret@cisco.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220417184649.449289-1-oocheret@cisco.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
+Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/mtd/mtd.h | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/mtd/mtd.h b/include/linux/mtd/mtd.h
-index 157357ec1441..fc41fecfe44f 100644
---- a/include/linux/mtd/mtd.h
-+++ b/include/linux/mtd/mtd.h
-@@ -388,10 +388,8 @@ struct mtd_info {
- 	/* List of partitions attached to this MTD device */
- 	struct list_head partitions;
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -937,14 +937,18 @@ static int ucsi_dr_swap(struct typec_por
+ 	if (ret < 0)
+ 		goto out_unlock;
  
--	union {
--		struct mtd_part part;
--		struct mtd_master master;
--	};
-+	struct mtd_part part;
-+	struct mtd_master master;
- };
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
+-		ret = -ETIMEDOUT;
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	return 0;
  
- static inline struct mtd_info *mtd_get_master(struct mtd_info *mtd)
--- 
-2.35.1
-
+ out_unlock:
+ 	mutex_unlock(&con->lock);
+ 
+-	return ret < 0 ? ret : 0;
++	return ret;
+ }
+ 
+ static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
+@@ -975,11 +979,13 @@ static int ucsi_pr_swap(struct typec_por
+ 	if (ret < 0)
+ 		goto out_unlock;
+ 
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
+-		ret = -ETIMEDOUT;
+-		goto out_unlock;
+-	}
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	mutex_lock(&con->lock);
+ 
+ 	/* Something has gone wrong while swapping the role */
+ 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
 
 
