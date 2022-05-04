@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 246A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357411AbiEDRYS (ORCPT
+        id S1357436AbiEDRYX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        Wed, 4 May 2022 13:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355576AbiEDREa (ORCPT
+        with ESMTP id S1356489AbiEDRFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:04:30 -0400
+        Wed, 4 May 2022 13:05:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E134EF4D;
-        Wed,  4 May 2022 09:53:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F44351301;
+        Wed,  4 May 2022 09:54:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24983B827AF;
-        Wed,  4 May 2022 16:53:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE023C385B6;
-        Wed,  4 May 2022 16:53:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D062B82792;
+        Wed,  4 May 2022 16:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DDB3C385A4;
+        Wed,  4 May 2022 16:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683184;
-        bh=bOEnfUtlCzKilcQVNdgNDkraRV1l4mxr/wnzQyI8f7Q=;
+        s=korg; t=1651683248;
+        bh=xHjdodkM8imZA+Sq/nW+D5bW2iBF5yM/fZCpCyR5jek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q+4JdMqTA7356TvVOUfZ+hBanwLMXK595bt1liOebrmGn3qDsS+ZKl/6j+uYI7LSK
-         H6fSzDb4Dm+LIYV0kD7ZMF25ZK/nDeKjXwOKzGZPmOjcV/6cYFGaVtsOlh2D/jF3DO
-         cq5cQxjxE6KnMGzkWlmG0auR2JZTTzYQrb9j58G0=
+        b=aKZg6lu3ROVWVlHZSln34skia1lS7UmIw4co0SNNzl/9GwJF8waxOmKd9VkB7G5Am
+         Xfxco/Ga9zVfSMjuSsxxf5e4z39FXc6N9PQVk/8yf2gjurM+ZOZV/ouFbgRt0xDIou
+         +oQhBSmubzKjwSSWFXRNLc+CTP762Dt1s+agQEWs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Doug Porter <dsp@fb.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 049/177] arm64: dts: meson: remove CPU opps below 1GHz for SM1 boards
-Date:   Wed,  4 May 2022 18:44:02 +0200
-Message-Id: <20220504153057.375932150@linuxfoundation.org>
+Subject: [PATCH 5.15 101/177] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
+Date:   Wed,  4 May 2022 18:44:54 +0200
+Message-Id: <20220504153102.232962663@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -51,58 +53,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit fd86d85401c2049f652293877c0f7e6e5afc3bbc ]
+[ Upstream commit 4bfe744ff1644fbc0a991a2677dc874475dd6776 ]
 
-Amlogic SM1 devices experience CPU stalls and random board wedges when
-the system idles and CPU cores clock down to lower opp points. Recent
-vendor kernels include a change to remove 100-250MHz and other distro
-sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
-are removed or the CPU governor forced to performance stalls are still
-observed, so let's remove them to improve stability and uptime.
+I had this bug sitting for too long in my pile, it is time to fix it.
 
-Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220210100638.19130-3-christianshewitt@gmail.com
+Thanks to Doug Porter for reminding me of it!
+
+We had various attempts in the past, including commit
+0cbe6a8f089e ("tcp: remove SOCK_QUEUE_SHRUNK"),
+but the issue is that TCP stack currently only generates
+EPOLLOUT from input path, when tp->snd_una has advanced
+and skb(s) cleaned from rtx queue.
+
+If a flow has a big RTT, and/or receives SACKs, it is possible
+that the notsent part (tp->write_seq - tp->snd_nxt) reaches 0
+and no more data can be sent until tp->snd_una finally advances.
+
+What is needed is to also check if POLLOUT needs to be generated
+whenever tp->snd_nxt is advanced, from output path.
+
+This bug triggers more often after an idle period, as
+we do not receive ACK for at least one RTT. tcp_notsent_lowat
+could be a fraction of what CWND and pacing rate would allow to
+send during this RTT.
+
+In a followup patch, I will remove the bogus call
+to tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED)
+from tcp_check_space(). Fact that we have decided to generate
+an EPOLLOUT does not mean the application has immediately
+refilled the transmit queue. This optimistic call
+might have been the reason the bug seemed not too serious.
+
+Tested:
+
+200 ms rtt, 1% packet loss, 32 MB tcp_rmem[2] and tcp_wmem[2]
+
+$ echo 500000 >/proc/sys/net/ipv4/tcp_notsent_lowat
+$ cat bench_rr.sh
+SUM=0
+for i in {1..10}
+do
+ V=`netperf -H remote_host -l30 -t TCP_RR -- -r 10000000,10000 -o LOCAL_BYTES_SENT | egrep -v "MIGRATED|Bytes"`
+ echo $V
+ SUM=$(($SUM + $V))
+done
+echo SUM=$SUM
+
+Before patch:
+$ bench_rr.sh
+130000000
+80000000
+140000000
+140000000
+140000000
+140000000
+130000000
+40000000
+90000000
+110000000
+SUM=1140000000
+
+After patch:
+$ bench_rr.sh
+430000000
+590000000
+530000000
+450000000
+450000000
+350000000
+450000000
+490000000
+480000000
+460000000
+SUM=4680000000  # This is 410 % of the value before patch.
+
+Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Doug Porter <dsp@fb.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 20 --------------------
- 1 file changed, 20 deletions(-)
+ include/net/tcp.h     |  1 +
+ net/ipv4/tcp_input.c  | 12 +++++++++++-
+ net/ipv4/tcp_output.c |  1 +
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-index 3d8b1f4f2001..78bdbd2ccc9d 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-@@ -95,26 +95,6 @@ cpu_opp_table: opp-table {
- 		compatible = "operating-points-v2";
- 		opp-shared;
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 71a9aeae693d..89d231477ef4 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -608,6 +608,7 @@ void tcp_synack_rtt_meas(struct sock *sk, struct request_sock *req);
+ void tcp_reset(struct sock *sk, struct sk_buff *skb);
+ void tcp_skb_mark_lost_uncond_verify(struct tcp_sock *tp, struct sk_buff *skb);
+ void tcp_fin(struct sock *sk);
++void tcp_check_space(struct sock *sk);
  
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <666666666>;
--			opp-microvolt = <750000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <770000>;
+ /* tcp_timer.c */
+ void tcp_init_xmit_timers(struct sock *);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 509f577869d4..6bd283b58bb8 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5420,7 +5420,17 @@ static void tcp_new_space(struct sock *sk)
+ 	INDIRECT_CALL_1(sk->sk_write_space, sk_stream_write_space, sk);
+ }
+ 
+-static void tcp_check_space(struct sock *sk)
++/* Caller made space either from:
++ * 1) Freeing skbs in rtx queues (after tp->snd_una has advanced)
++ * 2) Sent skbs from output queue (and thus advancing tp->snd_nxt)
++ *
++ * We might be able to generate EPOLLOUT to the application if:
++ * 1) Space consumed in output/rtx queues is below sk->sk_sndbuf/2
++ * 2) notsent amount (tp->write_seq - tp->snd_nxt) became
++ *    small enough that tcp_stream_memory_free() decides it
++ *    is time to generate EPOLLOUT.
++ */
++void tcp_check_space(struct sock *sk)
+ {
+ 	/* pairs with tcp_poll() */
+ 	smp_mb();
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 369752f5f676..df413282fa2e 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -82,6 +82,7 @@ static void tcp_event_new_data_sent(struct sock *sk, struct sk_buff *skb)
+ 
+ 	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPORIGDATASENT,
+ 		      tcp_skb_pcount(skb));
++	tcp_check_space(sk);
+ }
+ 
+ /* SND.NXT, if window was not shrunk or the amount of shrunk was less than one
 -- 
 2.35.1
 
