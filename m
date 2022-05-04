@@ -2,105 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03963C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5949C35295
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376882AbiEDRz2 (ORCPT
+        id S1376815AbiEDRzZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
+        Wed, 4 May 2022 13:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356364AbiEDRVK (ORCPT
+        with ESMTP id S1356741AbiEDROF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:21:10 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFDA4EDE5
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 10:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651683724; x=1683219724;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CTg7Xyv27hMl+wBuAu9Sk2WDDBF7tqVYHYYBMKvmxj0=;
-  b=lFAHEtRDiWcLrAPxJEEIg50D2RCU7/xit3h7h1WdMqxcUG3lLSHglH7X
-   QV9FenAOdWsPDEU0pLuzcOHG93+e6S3RJ0OvDUqpW3SONpHzqRRh/0yWN
-   QnliSs1p2yyUOrHz7tzmD2JzpT+Dner2S/ghLhOsiAd+n3dZffcgsUORB
-   rjk5Y9qOqTz3C8vQuTX/p8j9jWl1d8zaIvTXCe8teYDf+w+NTcevm1PnN
-   jUEgltbt7Ei0zzkFbH+NzFc1WicD3yysYe9vWbJE8eUww18vyd/a6lT8B
-   MOgJIJuV2UrXTmEw5hpvWN52abJhM4ATxJPU++IBXN79dDBbfzwUcx8fg
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267422323"
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="267422323"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 10:02:02 -0700
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="562814255"
-Received: from jrhamric-mobl.amr.corp.intel.com (HELO [10.212.121.177]) ([10.212.121.177])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 10:02:00 -0700
-Message-ID: <52541497-c097-5a51-4718-feed13660255@intel.com>
-Date:   Wed, 4 May 2022 10:02:20 -0700
+        Wed, 4 May 2022 13:14:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A91953B74;
+        Wed,  4 May 2022 09:58:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3A26B82416;
+        Wed,  4 May 2022 16:58:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DED7C385AA;
+        Wed,  4 May 2022 16:58:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651683492;
+        bh=0Y5QnMd8T87CITmK3jIabf6VdsS8nJNvvvMpL+BzWVI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=18UX1DpZBWSdlvlu5tlQYycNZeV255dF0sqrzh9N+R2rOamGnzxupOtkqbo+nutPR
+         K/dhSh7k72Vf0GL9AiQnjJTenr1twsd5IHSomGF+2b0XdadfkShPeWLpGrYRmS3I8/
+         m4pa6W9Ydikqlvz/4nzfTgbvtBSKbsWiT9bO5qZI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 167/225] ksmbd: set fixed sector size to FS_SECTOR_SIZE_INFORMATION
+Date:   Wed,  4 May 2022 18:46:45 +0200
+Message-Id: <20220504153124.856157629@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+References: <20220504153110.096069935@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-Content-Language: en-US
-To:     Wei Xu <weixugc@google.com>
-Cc:     Alistair Popple <apopple@nvidia.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Yang Shi <shy828301@gmail.com>, Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
- <20220501175813.tvytoosygtqlh3nn@offworld> <87o80eh65f.fsf@nvdebian.thelocal>
- <e47bf89c-cee7-3006-5c1b-c76f640c3e23@intel.com>
- <87mtfygoxs.fsf@nvdebian.thelocal>
- <9fb22767-54de-d316-7e6b-5aac375c9c49@intel.com>
- <CAAPL-u9UkG1WMQm5u1eAe+4-d04aqVAXc9H0gLSegYoHctkCnw@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CAAPL-u9UkG1WMQm5u1eAe+4-d04aqVAXc9H0gLSegYoHctkCnw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/3/22 18:31, Wei Xu wrote:
->> Well, x86 CPUs have performance monitoring hardware that can
->> theoretically collect physical access information too.  But, this
->> performance monitoring hardware wasn't designed for this specific use
->> case in mind.  So, in practice, these events (PEBS) weren't very useful
->> for driving memory tiering.
-> The PEBS events without any filtering might not be useful for memory
-> tiering, but the PEBS events with hardware-based data source filtering
-> can be useful in driving promotions in memory tiering. Certainly,
-> because these events are not designed for this specific use case in
-> mind, there are inefficiencies using them for memory tiering, e.g.
-> instead of just getting a heat counter for each hot page, we can get
-> events repeatedly on the hot pages.
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-Also, I believe the addresses that come out of the PEBS events are
-virtual addresses (Data Linear Addresses according to the SDM).  If the
-events are written from a KVM guest, you get guest linear addresses.
+[ Upstream commit 02655a70b7cc0f534531ee65fa72692f4d31a944 ]
 
-That means a lot of page table and EPT walks to map those linear
-addresses back to physical.  That adds to the inefficiency.
+Currently ksmbd is using ->f_bsize from vfs_statfs() as sector size.
+If fat/exfat is a local share, ->f_bsize is a cluster size that is too
+large to be used as a sector size. Sector sizes larger than 4K cause
+problem occurs when mounting an iso file through windows client.
 
-In the end, you get big PEBS buffers with lots of irrelevant data that
-needs significant post-processing to make sense of it.  The folks at
-Intel that tried this really struggled to take this mess and turn it
-into a successful hot-page tracking.
+The error message can be obtained using Mount-DiskImage command,
+ the error is:
+"Mount-DiskImage : The sector size of the physical disk on which the
+virtual disk resides is not supported."
 
-Maybe someone else will find a better way to do it, but we tried and
-gave up.
+This patch reports fixed 4KB sector size if ->s_blocksize is bigger
+than 4KB.
+
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/ksmbd/smb2pdu.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index a19a2b9c1e56..83ffa73c9348 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -11,6 +11,7 @@
+ #include <linux/statfs.h>
+ #include <linux/ethtool.h>
+ #include <linux/falloc.h>
++#include <linux/mount.h>
+ 
+ #include "glob.h"
+ #include "smbfsctl.h"
+@@ -5005,15 +5006,17 @@ static int smb2_get_info_filesystem(struct ksmbd_work *work,
+ 	case FS_SECTOR_SIZE_INFORMATION:
+ 	{
+ 		struct smb3_fs_ss_info *info;
++		unsigned int sector_size =
++			min_t(unsigned int, path.mnt->mnt_sb->s_blocksize, 4096);
+ 
+ 		info = (struct smb3_fs_ss_info *)(rsp->Buffer);
+ 
+-		info->LogicalBytesPerSector = cpu_to_le32(stfs.f_bsize);
++		info->LogicalBytesPerSector = cpu_to_le32(sector_size);
+ 		info->PhysicalBytesPerSectorForAtomicity =
+-				cpu_to_le32(stfs.f_bsize);
+-		info->PhysicalBytesPerSectorForPerf = cpu_to_le32(stfs.f_bsize);
++				cpu_to_le32(sector_size);
++		info->PhysicalBytesPerSectorForPerf = cpu_to_le32(sector_size);
+ 		info->FSEffPhysicalBytesPerSectorForAtomicity =
+-				cpu_to_le32(stfs.f_bsize);
++				cpu_to_le32(sector_size);
+ 		info->Flags = cpu_to_le32(SSINFO_FLAGS_ALIGNED_DEVICE |
+ 				    SSINFO_FLAGS_PARTITION_ALIGNED_ON_DEVICE);
+ 		info->ByteOffsetForSectorAlignment = 0;
+-- 
+2.35.1
+
+
+
