@@ -2,74 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347735AbiEDKJt (ORCPT
+        id S1347881AbiEDKLK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        Wed, 4 May 2022 06:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235489AbiEDKJo (ORCPT
+        with ESMTP id S235489AbiEDKLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:09:44 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75981B7A8;
-        Wed,  4 May 2022 03:06:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
-        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QFtJkn5BuBJmX8Cb0xWWHrPPY+oTpRZoTPus45vNpxs=; b=IQnS1Iat5s9IUVBlsUtsC6SNEQ
-        FrgVXD48EVV8xxC+s9Ngx87L8drjwRWZfnU1Rb5cgnFR/bFhyxH1xVrqJMdyNuc3StlDcjyzC6OYA
-        +qmz/CzzxXw4dbxtfZhyRRWicgYeiQsgDDkSxXSKyDejMDL95WkkiARbnQWigsRbaKJU=;
-Received: from p200300daa70ef200891a2ae4514fd280.dip0.t-ipconnect.de ([2003:da:a70e:f200:891a:2ae4:514f:d280] helo=Maecks.lan)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nmBtO-00029r-EQ; Wed, 04 May 2022 12:05:58 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     Ryder Lee <ryder.lee@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] PCI: mediatek-gen3: change driver name to mtk-pcie-gen3
-Date:   Wed,  4 May 2022 12:05:55 +0200
-Message-Id: <20220504100555.96007-1-nbd@nbd.name>
-X-Mailer: git-send-email 2.35.1
+        Wed, 4 May 2022 06:11:08 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A987F24967;
+        Wed,  4 May 2022 03:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651658853; x=1683194853;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9twPMGUhGLkTOQzFXdvf7xUT5W9ZWvaoGTeC5Py9svk=;
+  b=ScROUhuouH6wXM3AX0Wcuu3T2SJwyk2wUiWKMygVNxWQUOPrpVmc4A+E
+   KCk7ZiEQXHcqyXRP8J+4gn0YhY7puHO9WV4TJMc8tAQDwdhtJyPRCjbR3
+   MxBk7kuV++14ydyc85jHYUq/K8S1b3Z0a/cufFejtxyDeT1oGsIKMZUyo
+   mTBbGmZOrkuBpDtk8v0SzkPabT7K85B7y3SyeUahB/oSHLIdBmNZEPicW
+   XuBHFH7oVAG5Km51d4vTJ99Jhz7vbu454Jp0YlRkLb2BacqsZLtfkjBGf
+   R8NSsIVmYDsFvNYaauaPUGKErNf6A0whqkjPMO4uINTd1pHsNPkSvcYwk
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="255185928"
+X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
+   d="scan'208";a="255185928"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 03:07:33 -0700
+X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
+   d="scan'208";a="568039833"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 03:07:30 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1nmBuo-00Bq4L-Ux;
+        Wed, 04 May 2022 13:07:26 +0300
+Date:   Wed, 4 May 2022 13:07:26 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Shevchenko <andy@kernel.org>,
+        device-mapper development <dm-devel@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mike Snitzer <msnitzer@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Milan Broz <gmazyland@gmail.com>
+Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
+Message-ID: <YnJQXr3igEMTqY3+@smile.fi.intel.com>
+References: <alpine.LRH.2.02.2204241648270.17244@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wh+Z+OKH3jRttWGHbWSQq2wVMtdnA=ntDiadZu=VxAC7w@mail.gmail.com>
+ <alpine.LRH.2.02.2204250723120.26714@file01.intranet.prod.int.rdu2.redhat.com>
+ <YnI7hE4cIfjsdKSF@antec>
+ <YnJI4Ru0AlUgrr9C@zx2c4.com>
+ <YnJOCbLtdATzC+jn@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnJOCbLtdATzC+jn@zx2c4.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This allows it to coexist with the other mtk pcie driver in the same kernel
+On Wed, May 04, 2022 at 11:57:29AM +0200, Jason A. Donenfeld wrote:
+> On Wed, May 04, 2022 at 11:42:27AM +0200, Jason A. Donenfeld wrote:
+> > So more likely is that this patch just helps unmask a real issue
+> > elsewhere -- linker, compiler, or register restoration after preemption.
+> > I don't think there's anything to do with regards to the patch of this
+> > thread, as it's clearly fine. 
+> 
+> The problem even goes away if I just add a nop...
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/pci/controller/pcie-mediatek-gen3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Alignment? Compiler bug? HW issue?
 
-diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index 3e8d70bfabc6..2e665cd7e735 100644
---- a/drivers/pci/controller/pcie-mediatek-gen3.c
-+++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-@@ -1021,7 +1021,7 @@ static struct platform_driver mtk_pcie_driver = {
- 	.probe = mtk_pcie_probe,
- 	.remove = mtk_pcie_remove,
- 	.driver = {
--		.name = "mtk-pcie",
-+		.name = "mtk-pcie-gen3",
- 		.of_match_table = mtk_pcie_of_match,
- 		.pm = &mtk_pcie_pm_ops,
- 	},
+> diff --git a/lib/hexdump.c b/lib/hexdump.c
+> index 06833d404398..ace74f9b3d5a 100644
+> --- a/lib/hexdump.c
+> +++ b/lib/hexdump.c
+> @@ -46,6 +46,7 @@ EXPORT_SYMBOL(hex_asc_upper);
+>  int hex_to_bin(unsigned char ch)
+>  {
+>  	unsigned char cu = ch & 0xdf;
+> +	__asm__("l.nop 0");
+>  	return -1 +
+>  		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
+>  		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
+> 
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
