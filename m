@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19866C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 881B9C47087
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382371AbiEDXGW (ORCPT
+        id S1382934AbiEDXGm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        Wed, 4 May 2022 19:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379905AbiEDW7c (ORCPT
+        with ESMTP id S1380267AbiEDW7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:59:32 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8B5562C9
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:52:34 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id gb16-20020a17090b061000b001d78792caebso1318578pjb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:52:34 -0700 (PDT)
+        Wed, 4 May 2022 18:59:53 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24BA656F97
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:53:07 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id f7-20020a6547c7000000b003c600995546so782699pgs.5
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:53:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=OjfbmCPfsPFbm1g2v6wtPVS0L/Dcelop2dJZ2b57DQw=;
-        b=Ax22X01ToKZWVI/cZ1sWZvxq5vVTyrDAZRUMwiRyEU2G5/Ztfc149wXmJM3Zt22yjo
-         GAZrnjHE3Up4O5tTOlQw8JFhPiYA9XA/RFxs3z+k0K7QlaFooHhmhqUGXygjjCAgyM7L
-         QQt3CmoRAJbw0AuteRpHkOC7Ca3dBCBPAHfpJs1kRzCef9EgzIi9mXK65FjCGnpKQYPy
-         DGjiSaL23biy9Ygr06UWnvT12QIE54zzAE7FSTi/r1UBoJAnHPCc5+c7Xl6tPS1ZZIxc
-         od9i5gWVl+ur8oetN8gqL41bHNF34KWoUHd8rpMZcvVtHD4Dr6YQiANxKmHOVM/IwVD7
-         CoeQ==
+        bh=uOr41+tdJVYLxDkWuJx6M0IYtFi7QOjS3AiAeI8OZ2o=;
+        b=BYM2feCQSonfux390GUnTv2hcP+gXRIGb6zQ/OjqfKZmbdV9xPk3UnkzvDTRRyE9rZ
+         uKnhq1c7y8Vo1Tgr1MGiwb8YO/EOxA3No9KRP5xYd36YdpXi+b9ejGy3SxkONe2zE9rG
+         Y4SBVuDvnvUXvjq01xFEW637Rs0eChQ3udqFL4j7SKBIh61d0KrmdlW6cd8jTL3+mtKA
+         Ks9zpTj4vUFRd544Y/hveN9jecRYExI4eFk3PErVs378LjjcHii/eaRnQWyMFK/+PZ3A
+         V7v3dL6dnzCM9LXBsQynEmCCct3E/Rda+j2WoFAcm8HiHinwmdbtvHGHROOnjvvMeIQj
+         RYEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=OjfbmCPfsPFbm1g2v6wtPVS0L/Dcelop2dJZ2b57DQw=;
-        b=abyzBP26gzlKuflmYHZKfOtiRuC2MGEbi/HjqHH/SDUhfL9NbEKPtlPsWAqf6UTFYq
-         QVXRXUHovdeCkzaPlRH7WlxQTH4UTNl3TLfJodp8tEMsAm16pGSaQeIwSb/Ch9hNuHfO
-         uzBF89KHSjFK49o1y0vFeijcT3WzD4CHX20EXzc6bi9vHmnN0QHMPAW+8NASIGvweK6J
-         s1VuZgPvqcj/2lGTgl+DKGCyN4DztJEUIzY/Ik3mVLTBBT/6CAfMAYxZ5jWS0rwGoWUm
-         McxRZMTKp4D28Dwhwvno46kTHBuIC52lMJX/7KBlchaifYzFy/Yz4FEQlNAj5aGqV2Gn
-         eamw==
-X-Gm-Message-State: AOAM53195ouds4qSwpGn1rNtaeYQyqKlAvwVOqB2GP6aQfbH/+2WghFv
-        mir1VBzhmwNk9yggTy56gIBKTuC6TNE=
-X-Google-Smtp-Source: ABdhPJyEObyDIhU6OmP+vRHG7qigqJkML103tgWt+w08GLLW6bCafdSm2rXNNX0KNNwoxWgeF2UdES5l7JY=
+        bh=uOr41+tdJVYLxDkWuJx6M0IYtFi7QOjS3AiAeI8OZ2o=;
+        b=QDCq7aLCVmc0B5Fp4rxvphxGt6+jFpJLEFli06PE6c/hx71O6Uoxmq5gUGipEavVnb
+         NFAUrkEBLaX3L4vKKJjtGelNLx8RippJwhseOITIXBhIN6ZPZCJqv5RsRtpSoxCQCPdY
+         yEcpCQ2fC2I681msORtQ7pxEem6n8mtEZ6MeP2+JBVafJbnvPFsJlKpjda4CGThghMuD
+         Ry46SgNhCqrKALY8HGfOZ/n3rA95sKZf35BW/TN/L8ptkWgKTpIA0SF6Ab5ghdjOENIH
+         7MI0LH4JzhN/0jqjiMUztzBy3/iFLZvr4RWY3M8AXqzMVF/eEXcXSk09nOAd12NHSFTq
+         6fBg==
+X-Gm-Message-State: AOAM532YBl88Py2x1CECopELN755tkc7DmSuvUDFeAnys5PHAYWzQRCB
+        w1diUTSRY10k/kzkVmJS8BNmwfXUmXM=
+X-Google-Smtp-Source: ABdhPJyoOaiCnsxksGom3aVlnpl26L3vB02cHkhbJZpmvsj/W0iDbjAknTMM4gxcfUhtvEw8jU63ySySaho=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:cccc:b0:15a:30ec:2f56 with SMTP id
- z12-20020a170902cccc00b0015a30ec2f56mr24062309ple.169.1651704753960; Wed, 04
- May 2022 15:52:33 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:198f:b0:50e:7e6:6d5c with SMTP id
+ d15-20020a056a00198f00b0050e07e66d5cmr11509289pfl.20.1651704786747; Wed, 04
+ May 2022 15:53:06 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:52 +0000
+Date:   Wed,  4 May 2022 22:49:11 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-107-seanjc@google.com>
+Message-Id: <20220504224914.1654036-126-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 106/128] KVM: selftests: Convert memop away from VCPU_ID
+Subject: [PATCH 125/128] KVM: selftests: Drop @num_percpu_pages from __vm_create_with_vcpus()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,222 +69,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pass around a 'struct kvm_vcpu' object instead of a vCPU ID in s390's
-memop test.  Pass NULL for the vCPU instead of a magic '-1' ID to
-indicate that an ioctl/test should be done at VM scope.
-
-Rename "struct test_vcpu vcpu" to "struct test_info info" in order to
-avoid naming collisions (this is the bulk of the diff :-( ).
+Drop @num_percpu_pages from __vm_create_with_vcpus(), all callers pass
+'0' and there's unlikely to be a test that allocates just enough memory
+that it needs a per-CPU allocation, but not so much that it won't just do
+its own memory management.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/s390x/memop.c | 82 ++++++++++++-----------
- 1 file changed, 42 insertions(+), 40 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 4 ++--
+ tools/testing/selftests/kvm/kvm_page_table_test.c   | 2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 7 +++----
+ tools/testing/selftests/kvm/lib/perf_test_util.c    | 2 +-
+ 4 files changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
-index 5eb20a358cfe..ba5f645b7565 100644
---- a/tools/testing/selftests/kvm/s390x/memop.c
-+++ b/tools/testing/selftests/kvm/s390x/memop.c
-@@ -96,21 +96,18 @@ static struct kvm_s390_mem_op ksmo_from_desc(struct mop_desc desc)
- 	return ksmo;
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 7867f6c7ae2c..b9c806982dbd 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -543,14 +543,14 @@ static inline struct kvm_vm *vm_create(uint64_t nr_pages)
  }
  
--/* vcpu dummy id signifying that vm instead of vcpu ioctl is to occur */
--const uint32_t VM_VCPU_ID = (uint32_t)-1;
--
--struct test_vcpu {
-+struct test_info {
+ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+-				      uint64_t extra_mem_pages, uint32_t num_percpu_pages,
++				      uint64_t extra_mem_pages,
+ 				      void *guest_code, struct kvm_vcpu *vcpus[]);
+ 
+ static inline struct kvm_vm *vm_create_with_vcpus(uint32_t nr_vcpus,
+ 						  void *guest_code,
+ 						  struct kvm_vcpu *vcpus[])
+ {
+-	return __vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus, 0, 0,
++	return __vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus, 0,
+ 				      guest_code, vcpus);
+ }
+ 
+diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
+index a68c57572ab4..f42c6ac6d71d 100644
+--- a/tools/testing/selftests/kvm/kvm_page_table_test.c
++++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
+@@ -254,7 +254,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 
+ 	/* Create a VM with enough guest pages */
+ 	guest_num_pages = test_mem_size / guest_page_size;
+-	vm = __vm_create_with_vcpus(mode, nr_vcpus, guest_num_pages, 0,
++	vm = __vm_create_with_vcpus(mode, nr_vcpus, guest_num_pages,
+ 				    guest_code, test_args.vcpus);
+ 
+ 	/* Align down GPA of the testing memslot */
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index a63acd40bcf5..a8bbafc67d97 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -285,7 +285,6 @@ struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
+  *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
+  *   nr_vcpus - VCPU count
+  *   extra_mem_pages - Non-slot0 physical memory total size
+- *   num_percpu_pages - Per-cpu physical memory pages
+  *   guest_code - Guest entry point
+  *   vcpuids - VCPU IDs
+  *
+@@ -299,7 +298,7 @@ struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
+  * no real memory allocation for non-slot0 memory in this function.
+  */
+ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+-				      uint64_t extra_mem_pages, uint32_t num_percpu_pages,
++				      uint64_t extra_mem_pages,
+ 				      void *guest_code, struct kvm_vcpu *vcpus[])
+ {
+ 	uint64_t vcpu_pages, extra_pg_pages, pages;
+@@ -314,7 +313,7 @@ struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus
+ 	 * N pages) will be: N/x+N/x^2+N/x^3+... which is definitely smaller
+ 	 * than N/x*2.
+ 	 */
+-	vcpu_pages = (DEFAULT_STACK_PGS + num_percpu_pages) * nr_vcpus;
++	vcpu_pages = nr_vcpus * DEFAULT_STACK_PGS;
+ 	extra_pg_pages = (DEFAULT_GUEST_PHY_PAGES + extra_mem_pages + vcpu_pages) / PTES_PER_MIN_PAGE * 2;
+ 	pages = DEFAULT_GUEST_PHY_PAGES + vcpu_pages + extra_pg_pages;
+ 
+@@ -337,7 +336,7 @@ struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
+ 	struct kvm_vcpu *vcpus[1];
  	struct kvm_vm *vm;
--	uint32_t id;
-+	struct kvm_vcpu *vcpu;
- };
  
- #define PRINT_MEMOP false
--static void print_memop(uint32_t vcpu_id, const struct kvm_s390_mem_op *ksmo)
-+static void print_memop(struct kvm_vcpu *vcpu, const struct kvm_s390_mem_op *ksmo)
- {
- 	if (!PRINT_MEMOP)
- 		return;
+-	vm = __vm_create_with_vcpus(VM_MODE_DEFAULT, 1, extra_mem_pages, 0,
++	vm = __vm_create_with_vcpus(VM_MODE_DEFAULT, 1, extra_mem_pages,
+ 				    guest_code, vcpus);
  
--	if (vcpu_id == VM_VCPU_ID)
-+	if (!vcpu)
- 		printf("vm memop(");
- 	else
- 		printf("vcpu memop(");
-@@ -145,25 +142,29 @@ static void print_memop(uint32_t vcpu_id, const struct kvm_s390_mem_op *ksmo)
- 	puts(")");
- }
+ 	*vcpu = vcpus[0];
+diff --git a/tools/testing/selftests/kvm/lib/perf_test_util.c b/tools/testing/selftests/kvm/lib/perf_test_util.c
+index 656f309584aa..1f25ed69ca98 100644
+--- a/tools/testing/selftests/kvm/lib/perf_test_util.c
++++ b/tools/testing/selftests/kvm/lib/perf_test_util.c
+@@ -144,7 +144,7 @@ struct kvm_vm *perf_test_create_vm(enum vm_guest_mode mode, int nr_vcpus,
+ 	 * The memory is also added to memslot 0, but that's a benign side
+ 	 * effect as KVM allows aliasing HVAs in meslots.
+ 	 */
+-	vm = __vm_create_with_vcpus(mode, nr_vcpus, guest_num_pages, 0,
++	vm = __vm_create_with_vcpus(mode, nr_vcpus, guest_num_pages,
+ 				    guest_code, vcpus);
  
--static void memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
-+static void memop_ioctl(struct test_info info, struct kvm_s390_mem_op *ksmo)
- {
--	if (vcpu.id == VM_VCPU_ID)
--		vm_ioctl(vcpu.vm, KVM_S390_MEM_OP, ksmo);
-+	struct kvm_vcpu *vcpu = info.vcpu;
-+
-+	if (!vcpu)
-+		vm_ioctl(info.vm, KVM_S390_MEM_OP, ksmo);
- 	else
--		vcpu_ioctl(vcpu.vm, vcpu.id, KVM_S390_MEM_OP, ksmo);
-+		vcpu_ioctl(vcpu->vm, vcpu->id, KVM_S390_MEM_OP, ksmo);
- }
- 
--static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
-+static int err_memop_ioctl(struct test_info info, struct kvm_s390_mem_op *ksmo)
- {
--	if (vcpu.id == VM_VCPU_ID)
--		return __vm_ioctl(vcpu.vm, KVM_S390_MEM_OP, ksmo);
-+	struct kvm_vcpu *vcpu = info.vcpu;
-+
-+	if (!vcpu)
-+		return __vm_ioctl(info.vm, KVM_S390_MEM_OP, ksmo);
- 	else
--		return __vcpu_ioctl(vcpu.vm, vcpu.id, KVM_S390_MEM_OP, ksmo);
-+		return __vcpu_ioctl(vcpu->vm, vcpu->id, KVM_S390_MEM_OP, ksmo);
- }
- 
--#define MEMOP(err, vcpu_p, mop_target_p, access_mode_p, buf_p, size_p, ...)	\
-+#define MEMOP(err, info_p, mop_target_p, access_mode_p, buf_p, size_p, ...)	\
- ({										\
--	struct test_vcpu __vcpu = (vcpu_p);					\
-+	struct test_info __info = (info_p);					\
- 	struct mop_desc __desc = {						\
- 		.target = (mop_target_p),					\
- 		.mode = (access_mode_p),					\
-@@ -175,13 +176,13 @@ static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
- 										\
- 	if (__desc._gaddr_v) {							\
- 		if (__desc.target == ABSOLUTE)					\
--			__desc.gaddr = addr_gva2gpa(__vcpu.vm, __desc.gaddr_v);	\
-+			__desc.gaddr = addr_gva2gpa(__info.vm, __desc.gaddr_v);	\
- 		else								\
- 			__desc.gaddr = __desc.gaddr_v;				\
- 	}									\
- 	__ksmo = ksmo_from_desc(__desc);					\
--	print_memop(__vcpu.id, &__ksmo);					\
--	err##memop_ioctl(__vcpu, &__ksmo);					\
-+	print_memop(__info.vcpu, &__ksmo);					\
-+	err##memop_ioctl(__info, &__ksmo);					\
- })
- 
- #define MOP(...) MEMOP(, __VA_ARGS__)
-@@ -197,7 +198,6 @@ static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
- 
- #define CHECK_N_DO(f, ...) ({ f(__VA_ARGS__, CHECK_ONLY); f(__VA_ARGS__); })
- 
--#define VCPU_ID 1
- #define PAGE_SHIFT 12
- #define PAGE_SIZE (1ULL << PAGE_SHIFT)
- #define PAGE_MASK (~(PAGE_SIZE - 1))
-@@ -209,21 +209,22 @@ static uint8_t mem2[65536];
- 
- struct test_default {
- 	struct kvm_vm *kvm_vm;
--	struct test_vcpu vm;
--	struct test_vcpu vcpu;
-+	struct test_info vm;
-+	struct test_info vcpu;
- 	struct kvm_run *run;
- 	int size;
- };
- 
- static struct test_default test_default_init(void *guest_code)
- {
-+	struct kvm_vcpu *vcpu;
- 	struct test_default t;
- 
- 	t.size = min((size_t)kvm_check_cap(KVM_CAP_S390_MEM_OP), sizeof(mem1));
--	t.kvm_vm = vm_create_default(VCPU_ID, 0, guest_code);
--	t.vm = (struct test_vcpu) { t.kvm_vm, VM_VCPU_ID };
--	t.vcpu = (struct test_vcpu) { t.kvm_vm, VCPU_ID };
--	t.run = vcpu_state(t.kvm_vm, VCPU_ID);
-+	t.kvm_vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	t.vm = (struct test_info) { t.kvm_vm, NULL };
-+	t.vcpu = (struct test_info) { t.kvm_vm, vcpu };
-+	t.run = vcpu->run;
- 	return t;
- }
- 
-@@ -238,14 +239,15 @@ enum stage {
- 	STAGE_COPIED,
- };
- 
--#define HOST_SYNC(vcpu_p, stage)					\
-+#define HOST_SYNC(info_p, stage)					\
- ({									\
--	struct test_vcpu __vcpu = (vcpu_p);				\
-+	struct test_info __info = (info_p);				\
-+	struct kvm_vcpu *__vcpu = __info.vcpu;				\
- 	struct ucall uc;						\
- 	int __stage = (stage);						\
- 									\
--	vcpu_run(__vcpu.vm, __vcpu.id);					\
--	get_ucall(__vcpu.vm, __vcpu.id, &uc);				\
-+	vcpu_run(__vcpu->vm, __vcpu->id);				\
-+	get_ucall(__vcpu->vm, __vcpu->id, &uc);				\
- 	ASSERT_EQ(uc.cmd, UCALL_SYNC);					\
- 	ASSERT_EQ(uc.args[1], __stage);					\
- })									\
-@@ -264,7 +266,7 @@ static void prepare_mem12(void)
- 
- #define DEFAULT_WRITE_READ(copy_cpu, mop_cpu, mop_target_p, size, ...)		\
- ({										\
--	struct test_vcpu __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
-+	struct test_info __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
- 	enum mop_target __target = (mop_target_p);				\
- 	uint32_t __size = (size);						\
- 										\
-@@ -279,7 +281,7 @@ static void prepare_mem12(void)
- 
- #define DEFAULT_READ(copy_cpu, mop_cpu, mop_target_p, size, ...)		\
- ({										\
--	struct test_vcpu __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
-+	struct test_info __copy_cpu = (copy_cpu), __mop_cpu = (mop_cpu);	\
- 	enum mop_target __target = (mop_target_p);				\
- 	uint32_t __size = (size);						\
- 										\
-@@ -580,34 +582,34 @@ static void guest_idle(void)
- 		GUEST_SYNC(STAGE_IDLED);
- }
- 
--static void _test_errors_common(struct test_vcpu vcpu, enum mop_target target, int size)
-+static void _test_errors_common(struct test_info info, enum mop_target target, int size)
- {
- 	int rv;
- 
- 	/* Bad size: */
--	rv = ERR_MOP(vcpu, target, WRITE, mem1, -1, GADDR_V(mem1));
-+	rv = ERR_MOP(info, target, WRITE, mem1, -1, GADDR_V(mem1));
- 	TEST_ASSERT(rv == -1 && errno == E2BIG, "ioctl allows insane sizes");
- 
- 	/* Zero size: */
--	rv = ERR_MOP(vcpu, target, WRITE, mem1, 0, GADDR_V(mem1));
-+	rv = ERR_MOP(info, target, WRITE, mem1, 0, GADDR_V(mem1));
- 	TEST_ASSERT(rv == -1 && (errno == EINVAL || errno == ENOMEM),
- 		    "ioctl allows 0 as size");
- 
- 	/* Bad flags: */
--	rv = ERR_MOP(vcpu, target, WRITE, mem1, size, GADDR_V(mem1), SET_FLAGS(-1));
-+	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR_V(mem1), SET_FLAGS(-1));
- 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows all flags");
- 
- 	/* Bad guest address: */
--	rv = ERR_MOP(vcpu, target, WRITE, mem1, size, GADDR((void *)~0xfffUL), CHECK_ONLY);
-+	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR((void *)~0xfffUL), CHECK_ONLY);
- 	TEST_ASSERT(rv > 0, "ioctl does not report bad guest memory access");
- 
- 	/* Bad host address: */
--	rv = ERR_MOP(vcpu, target, WRITE, 0, size, GADDR_V(mem1));
-+	rv = ERR_MOP(info, target, WRITE, 0, size, GADDR_V(mem1));
- 	TEST_ASSERT(rv == -1 && errno == EFAULT,
- 		    "ioctl does not report bad host memory address");
- 
- 	/* Bad key: */
--	rv = ERR_MOP(vcpu, target, WRITE, mem1, size, GADDR_V(mem1), KEY(17));
-+	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR_V(mem1), KEY(17));
- 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows invalid key");
- }
- 
+ 	pta->vm = vm;
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
