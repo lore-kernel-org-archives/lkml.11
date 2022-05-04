@@ -2,164 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77814C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45994C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 07:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345657AbiEDHh6 (ORCPT
+        id S1345688AbiEDHiE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 03:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
+        Wed, 4 May 2022 03:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345658AbiEDHgE (ORCPT
+        with ESMTP id S1345587AbiEDHf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 03:36:04 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2064.outbound.protection.outlook.com [40.107.92.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE0A24589;
-        Wed,  4 May 2022 00:32:12 -0700 (PDT)
+        Wed, 4 May 2022 03:35:57 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5373723BEE;
+        Wed,  4 May 2022 00:32:08 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M4Op0ERfa6BbgwEvD8SRLAK5ekHzA89tn8TkWCNINXaLghJnv4ydTfhXTaMTVQEDoWU/sjFDvHEt0KMWluj63v+PeH5s0HWJR+CmXD3/A3HultSFfNSdSK5QCq1W0eEN2vhjzq83a9sHBQhpS1KHDoZnFCWKqVqYaACXniz/0idaOniJnAM2ZsfqSEkhnT4AyHysF7uZH9G/xJDdZs5O23hej2yT4oFs5XFOeDSo8KIBxg8u8IEX4NtsU2iSy3geEzHnicJXex4CYtJrM/wXv36DXoWMCvv6ua8sdrHyDUzPagkTTaoCg7Hbc7U9RBV8MpR88CrO8PuWJMNdU9cCEQ==
+ b=N+GgcLjEzkFQVBWtXdk3+tvq/So8Nt4LRWnI7eNuBRtdS/vqYGtAfArZRX0ngFiKkDtHT5Jz/M1a36o34/tEHiqBGph7r09XqA85oG5i+si9PFnvA19x/9ckqPqrsQSya+L7VOa9KHEusa7zCFIsjuszo/JB8iizFeJa963ZfrG2U4xz5zksgYT9vPY0Jt0zHD2KF8K3BfuhrZ1CAyJrIShIOYcSvByEN540x6CwPsowtytRtBQTI9zB0CUsBYT4oBPMI8DkcQRdCQUQwDRbi/yfE/1psOSJBYU1+HlqT0eJwewLJF4DWnTo6zr0DstacfBWj034xq9I2pDuiDBn6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2zLEyZnzgUJ/seGaW57olObKvwk+ZcDptsE21MdgluM=;
- b=RpI7A+Cx38whW1zlquFQMJU/14m0qdUVuWDxBZir0U58qTjxSWt4ASUIYwZ/R7fsNTrn4LgGMqvSMv8DX4/cWg6WWy8J/IvXmIoYVwBQHgoQUjAFVay5gKi+EARcMNk4axiPygFq9pSKcVvU5VJ8V6QG1wl9vy4YoMjSzKZwy6dxrO5jwQCv6ni029NPwBjaL9kMZOsY6lfySChXZv6jvnUc18brELIfVaPoUO2z0Q9/4sfNgjU1OBrk9nWRF7M0Xs5Z3h7wJ2TBJdJ6PSCNJ3mH8tnlyXqWoqAXdWaZxKa0buF90Z57P9U566fSJlazXCCswDWcQLBE4lQ6/cl+TA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
- is 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=temperror action=none header.from=amd.com; dkim=none (message not
- signed); arc=none
+ bh=bwtOgpiXJ3IA45DgWr96HIvAUT2y3tBHa0Y6sbVjlSw=;
+ b=MeKP+Zj55ECrFihRJ+PspeKBd7ywTI8NAS0r4+A2y1tKx91BKwIr2AZAwPZiUpP7DzGWw9X+B+edTrBgpHwJxkubyD+KwvKOHMjJCxj019s0iXCDyT0d4NJyT019U//rjou8aqzTaicyQeWI3JizTHO5K5XhNde3ISgo1qwFu8U4r3i5xSXpnPwLsBD6TQKSSoh2XxfPMlpkqgdxm5HvZSrg1OGOI66bcjx7owEf09jTL89r6aAOYmCNrFZoqHXy11VxDX2LSV0sh+NWv8Dce0IEoLs+vDT2l1jFk11kLWATyM+R5jgc4YEbdA7DUhc1zwW/OBnZTcqojCug8x1kwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2zLEyZnzgUJ/seGaW57olObKvwk+ZcDptsE21MdgluM=;
- b=SU5k6SGgzxTsgUxLIMuhADjrXmXtk7DZ+rT/0qSzfPzsR24x2uFo0JMm7lDVCNY7kenMNNHkQ03W24x2JFQu1zxi660UMqyMz+Kub4wLOOhoyd0JsE/goT0VDfbJgWeMoW+AzxNdzXGUBDQv/B+llKBKjFQgqK+Y50D/3cwEAQ0=
-Received: from BN0PR04CA0149.namprd04.prod.outlook.com (2603:10b6:408:ed::34)
- by MWHPR12MB1135.namprd12.prod.outlook.com (2603:10b6:300:e::11) with
+ bh=bwtOgpiXJ3IA45DgWr96HIvAUT2y3tBHa0Y6sbVjlSw=;
+ b=lYN85jIDfvEbVm7/xsX6aGDJRZGYJgT+ISRG8+zFVqDymqDD+fUd+gSMXc4hFhBo/DFQ6Qv7p9QIsmwjWXhh8f22KSHyy1gvdan63ZgXccGMYQZa4DNaV1nQWvAtrO5VDB48ILhRn2i4QjudlwNZlcSO4h1zK7/8EiAlvozw4Tw=
+Received: from BN9P220CA0018.NAMP220.PROD.OUTLOOK.COM (2603:10b6:408:13e::23)
+ by BN6PR1201MB0161.namprd12.prod.outlook.com (2603:10b6:405:55::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.19; Wed, 4 May
- 2022 07:32:08 +0000
-Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ed:cafe::c9) by BN0PR04CA0149.outlook.office365.com
- (2603:10b6:408:ed::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13 via Frontend
- Transport; Wed, 4 May 2022 07:32:08 +0000
-X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is
- 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=temperror action=none header.from=amd.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of amd.com: DNS Timeout)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 4 May
+ 2022 07:32:05 +0000
+Received: from BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13e:cafe::e0) by BN9P220CA0018.outlook.office365.com
+ (2603:10b6:408:13e::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25 via Frontend
+ Transport; Wed, 4 May 2022 07:32:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
+ BN8NAM11FT035.mail.protection.outlook.com (10.13.177.116) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 07:32:06 +0000
+ 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 07:32:05 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 4 May
- 2022 02:31:54 -0500
+ 2022 02:31:59 -0500
 From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
 CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
         <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
         <terry.bowman@amd.com>,
         Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 06/14] KVM: SVM: Do not support updating APIC ID when in x2APIC mode
-Date:   Wed, 4 May 2022 02:31:20 -0500
-Message-ID: <20220504073128.12031-7-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3 10/14] KVM: SVM: Do not throw warning when calling avic_vcpu_load on a running vcpu
+Date:   Wed, 4 May 2022 02:31:24 -0500
+Message-ID: <20220504073128.12031-11-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
 References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.180.168.240]
 X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 50733351-256f-47df-0b24-08da2da03128
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1135:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB11353D22FDBECA0834A1E17FF3C39@MWHPR12MB1135.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: ed641400-c680-4e5b-fe80-08da2da0301f
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0161:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB0161DDE1E59D6DF7BC8C1F37F3C39@BN6PR1201MB0161.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GhuQP7aGOdOW36aX7HHb8Hrb0SQRFPpkwuXabq5ipPXrxntzy1FZ9ZWi1FN17CYwPecw1b6R4magiW5ODFvb7d9djs9/ftAWaVji3n2aYFKCSYZ46RzhpDQ4jyTLxrRlA0mdxcDwJWnq+sjGukwwT/QFczAcSL+G16XyV52Kc9ko9mlAli69r4lh2J0stT2KSo2qM33oQAd7MYO7JrlMw2IOCc7+g5iWSlBta+5PpsUJ+wEq2b1aTbyNRmLdy7oICb0HcnIqapDn2R+FfB/nDDWpfZXnlcd42+Fpj7wlXm7V6h6hseztU/kw4HDowjwz7mK609zZbWxRolGFj5kPJHv0gwZvmXmhLPdaKQETwuPpJRCx4dnSpbqbflnGFKTbOHURqzHU4MF6H1RT9ZyI18HGgwmHf5G/XTJ7BdUAWbbfXSSMaknyYMD6nHada9scbQEGPzdhvlj6d3++iy//ln8LfMO7mSfR4+3JQdVApZNg39NcDXYe9T3wxtX6MB1yuFun0XgXPZ5XcUt2QjPW31WKmFwtnaGxCV65jB143o3MIRbmZnwZ24cAevqH3G6AEnVL4B+IITT2g3X+pVpXocE8yv1EoIL1aBlSEHyhJnpDq7fUN8Ah/dIo7nlwxHVIwTZHlovDZCSZbrtkCpamdYu8mDqfoWKwggdd2Xo6paWKtVtzzuJg7S0uIdyDWrrmKcipP55W+urDp1Fs3a8G5g==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(508600001)(54906003)(110136005)(2616005)(36860700001)(7696005)(26005)(86362001)(63350400001)(83380400001)(63370400001)(1076003)(16526019)(186003)(336012)(8676002)(47076005)(4326008)(82310400005)(70586007)(70206006)(36756003)(2906002)(44832011)(40460700003)(8936002)(5660300002)(356005)(81166007)(316002)(6666004)(426003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: JmO1WaOCU91USRKmlGtfZ7C0jfVx0OR9wgPKv+cUDgJqDXSU/13o+iykFfgDiwNdD2V3CS5Swt7Q0kevLfSB2KuPG4wdNvFCTLlxAcPPWH1MX/B1iuRTcQKsoysMsO1g/REewUtbB0HdApTpBl5dzzfp5OJj8naQqpjB38MKuEzSQvK7IAibUWqL2/CBvZ54r290b3KZ7nIGdV549L0cBCVcriLn/iJNVxOwwZAbgQ2FzTicIDrt8mFZdTnnqFYXU78aVPAQirTzrkHC1XPM5I+LZ6rCX4sIIo/SpeSB620LHEOwC66cb+vRirRMLvWk3wxcCmVgOWFX8g4v6TT0FGIwGtg3dJ5ThO/4hwYWm4UPn/3VLHdfokvoJJzgv3Dkt3Fyc2Fg7uJyy8cZqpgY22/0fqmtEhUsZbF/FP3hHzI7u9x2Klgm22ZGhG6CgkwZT2Q/XDwjnjtYSx1gbfSZJl30I2O+ZPaOVPVHxZCeJmwHKuX8OxAoLr0uNSohJLqSn+tMQjRD70jSFIYxZaRnwy5e4fXQuM9b5NBWKYhiYpl1iJ6AtNUgoEANvchr5KAxnpniuxELq74VpLG5M5oHIdyrUoX3aV4r2IN/91R47d1mIBpWkj7btv+e1gRGgtlRsTCu31LqdyYloLNZzDcci7cFddXECcUUajihUsYso+wlxfOlOr+WW56XKkkz42mRMC+7lXAgHAod97vctp2pzw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(2906002)(6666004)(356005)(110136005)(26005)(81166007)(316002)(1076003)(54906003)(86362001)(186003)(426003)(336012)(47076005)(2616005)(83380400001)(16526019)(40460700003)(36756003)(7696005)(82310400005)(36860700001)(5660300002)(44832011)(8676002)(8936002)(70206006)(70586007)(4326008)(508600001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:32:06.3447
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:32:05.1141
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50733351-256f-47df-0b24-08da2da03128
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed641400-c680-4e5b-fe80-08da2da0301f
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1135
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0161
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In X2APIC mode, the Logical Destination Register is read-only,
-which provides a fixed mapping between the logical and physical
-APIC IDs. Therefore, there is no Logical APIC ID table in X2AVIC
-and the processor uses the X2APIC ID in the backing page to create
-a vCPU’s logical ID.
+Originalliy, this WARN_ON is designed to detect when calling
+avic_vcpu_load() on an already running vcpu in AVIC mode (i.e. the AVIC
+is_running bit is set).
 
-In addition, KVM does not support updating APIC ID in x2APIC mode,
-which means AVIC does not need to handle this case.
+However, for x2AVIC, the vCPU can switch from xAPIC to x2APIC mode while in
+running state, in which the avic_vcpu_load() will be called from
+svm_refresh_apicv_exec_ctrl().
 
-Therefore, check x2APIC mode when handling physical and logical
-APIC ID update, and when invalidating logical APIC ID table.
+Therefore, remove this warning since it is no longer appropriate.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- arch/x86/kvm/svm/avic.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/avic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 9213e9d113dd..3ebeea19b487 100644
+index f255ca221e56..d07c58f06bed 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -499,8 +499,13 @@ static void avic_invalidate_logical_id_entry(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	bool flat = svm->dfr_reg == APIC_DFR_FLAT;
--	u32 *entry = avic_get_logical_id_entry(vcpu, svm->ldr_reg, flat);
-+	u32 *entry;
+@@ -1063,7 +1063,6 @@ void __avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 		return;
  
-+	/* Note: x2AVIC does not use logical APIC ID table */
-+	if (apic_x2apic_mode(vcpu->arch.apic))
-+		return;
-+
-+	entry = avic_get_logical_id_entry(vcpu, svm->ldr_reg, flat);
- 	if (entry)
- 		clear_bit(AVIC_LOGICAL_ID_ENTRY_VALID_BIT, (unsigned long *)entry);
- }
-@@ -512,6 +517,10 @@ static int avic_handle_ldr_update(struct kvm_vcpu *vcpu)
- 	u32 ldr = kvm_lapic_get_reg(vcpu->arch.apic, APIC_LDR);
- 	u32 id = kvm_xapic_id(vcpu->arch.apic);
+ 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
+-	WARN_ON(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
  
-+	/* AVIC does not support LDR update for x2APIC */
-+	if (apic_x2apic_mode(vcpu->arch.apic))
-+		return 0;
-+
- 	if (ldr == svm->ldr_reg)
- 		return 0;
- 
-@@ -532,6 +541,14 @@ static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	u32 id = kvm_xapic_id(vcpu->arch.apic);
- 
-+	/*
-+	 * KVM does not support apic ID update for x2APIC.
-+	 * Also, need to check if the APIC ID exceed 254.
-+	 */
-+	if (apic_x2apic_mode(vcpu->arch.apic) ||
-+	    (vcpu->vcpu_id >= APIC_BROADCAST))
-+		return 0;
-+
- 	if (vcpu->vcpu_id == id)
- 		return 0;
- 
+ 	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
+ 	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
 -- 
 2.25.1
 
