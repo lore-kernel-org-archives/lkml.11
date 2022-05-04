@@ -2,167 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD85C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEBFC47082
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 08:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347371AbiEDIz1 (ORCPT
+        id S1346962AbiEDIzn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 04:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        Wed, 4 May 2022 04:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346851AbiEDIxv (ORCPT
+        with ESMTP id S1346938AbiEDIxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 04:53:51 -0400
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7908225C72
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:49:23 -0700 (PDT)
-Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
-        by 156.147.23.53 with ESMTP; 4 May 2022 17:19:22 +0900
-X-Original-SENDERIP: 156.147.1.125
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.125 with ESMTP; 4 May 2022 17:19:22 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     torvalds@linux-foundation.org
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
-Subject: [PATCH RFC v6 21/21] dept: Unstage wait when tagging a normal sleep wait
-Date:   Wed,  4 May 2022 17:17:49 +0900
-Message-Id: <1651652269-15342-22-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
-References: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
+        Wed, 4 May 2022 04:53:54 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8A62613B
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 01:49:46 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z19so911753edx.9
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 01:49:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XXrjEm2wIrBddPNT8DRElEMfxh0MzkztaH2UgBD/RaY=;
+        b=efE5YHtoUUJxgkMLw6aJY/tO1Sbsm/gyrBiwHtax5k21PegImsGITrNG8wnJx1I8Wx
+         JEzYO6eWqZBNTPlO4jqHXUEvMinO76P3PsI58d1/hufLNbsyGLjvtAY+TUsFKAhb/MMo
+         kpWR+sw+6y61D5IGtM9/mNtird2IBxuTVBTn0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=XXrjEm2wIrBddPNT8DRElEMfxh0MzkztaH2UgBD/RaY=;
+        b=U3pEZF/z91Da3Hoa2RUegvmYpG10dn0jdL/dh6c7chU/7rXpVWPmKek+rV6HcIY38U
+         96V3e+0XSllgXErqmQruMiT4KNFSdlDZuxIaBhZXs9HIBmhgw5Wcv9d0UtWLlIU3eaHf
+         emePY16G+h3Enu6sGkIvzrUL2519flMsXXTITjidJyoRj5vwlyBF1Vqmnq0vfG+z+4jt
+         XTRFVobpLqJpgeaBkyGIAG5YnCTmlSLOvQrc/kwNbGFXThBkRe/YfUfNBohCxpcdEVq6
+         01AwtFQ+syHQ7wWtworUMfGAGBZIFB9FnweYmFlYN/CIvuOwQGIBfyE/rNzYE0+7BYcY
+         t78Q==
+X-Gm-Message-State: AOAM530UNI6eqHX1ikFJdM+iD6/WSUvOeyuEiNoYQM8YZgcIWbE5yuDJ
+        FnEbdv8MlVlujSDA/+35Dd2AoA==
+X-Google-Smtp-Source: ABdhPJzDxtt75yICh75Xfe3J/PRTpYBjGupKxzPWB5UB481q/1zFzLaBZ6sskEhMuC4ZJGYQgKLdcw==
+X-Received: by 2002:a05:6402:1e8d:b0:426:9:6ec with SMTP id f13-20020a0564021e8d00b00426000906ecmr22255316edf.55.1651654184780;
+        Wed, 04 May 2022 01:49:44 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id el10-20020a170907284a00b006f3ef214e32sm5433599ejc.152.2022.05.04.01.49.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 01:49:44 -0700 (PDT)
+Date:   Wed, 4 May 2022 10:49:42 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Luis Chamberlain <mcgrof@kernel.org>, mauro.chehab@intel.com,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [PATCH 1/2] module: add a function to add module references
+Message-ID: <YnI+Ji+EwLLUhq9T@phenom.ffwll.local>
+Mail-Followup-To: Greg KH <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>, mauro.chehab@intel.com,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Dan Williams <dan.j.williams@intel.com>
+References: <cover.1651212016.git.mchehab@kernel.org>
+ <a078eb2e46d00ec59c8a91ea0afa5190730c9e58.1651212016.git.mchehab@kernel.org>
+ <YmuZovuDaCYDDG4c@phenom.ffwll.local>
+ <20220429090757.1acb943a@sal.lan>
+ <YmuiKcHgl+nABvo/@kroah.com>
+ <20220429101503.4048db5b@sal.lan>
+ <Ymu5f8EjdC1Mawzt@kroah.com>
+ <20220429112351.0e044950@sal.lan>
+ <Ymu/keaggU6Uajom@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ymu/keaggU6Uajom@kroah.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Staging a wait and commit have been introduced to handle conditional
-sleeps that can be determined in __schedule() whether it actually goes
-to sleep or not. With this feature, actual wait tagging is delayed
-until __schedule().
+On Fri, Apr 29, 2022 at 12:36:01PM +0200, Greg KH wrote:
+> On Fri, Apr 29, 2022 at 11:23:51AM +0100, Mauro Carvalho Chehab wrote:
+> > Em Fri, 29 Apr 2022 12:10:07 +0200
+> > Greg KH <gregkh@linuxfoundation.org> escreveu:
+> > 
+> > > On Fri, Apr 29, 2022 at 10:15:03AM +0100, Mauro Carvalho Chehab wrote:
+> > > > HI Greg,
+> > > > 
+> > > > Em Fri, 29 Apr 2022 10:30:33 +0200
+> > > > Greg KH <gregkh@linuxfoundation.org> escreveu:
+> > > >   
+> > > > > On Fri, Apr 29, 2022 at 09:07:57AM +0100, Mauro Carvalho Chehab wrote:  
+> > > > > > Hi Daniel,
+> > > > > > 
+> > > > > > Em Fri, 29 Apr 2022 09:54:10 +0200
+> > > > > > Daniel Vetter <daniel@ffwll.ch> escreveu:
+> > > > > >     
+> > > > > > > On Fri, Apr 29, 2022 at 07:31:15AM +0100, Mauro Carvalho Chehab wrote:    
+> > > > > > > > Sometimes, device drivers are bound using indirect references,
+> > > > > > > > which is not visible when looking at /proc/modules or lsmod.
+> > > > > > > > 
+> > > > > > > > Add a function to allow setting up module references for such
+> > > > > > > > cases.
+> > > > > > > > 
+> > > > > > > > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > > > > > > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>      
+> > > > > > > 
+> > > > > > > This sounds like duct tape at the wrong level. We should have a
+> > > > > > > device_link connecting these devices, and maybe device_link internally
+> > > > > > > needs to make sure the respective driver modules stay around for long
+> > > > > > > enough too. But open-coding this all over the place into every driver that
+> > > > > > > has some kind of cross-driver dependency sounds terrible.
+> > > > > > > 
+> > > > > > > Or maybe the bug is that the snd driver keeps accessing the hw/component
+> > > > > > > side when that is just plain gone. Iirc there's still fundamental issues
+> > > > > > > there on the sound side of things, which have been attempted to paper over
+> > > > > > > by timeouts and stuff like that in the past instead of enforcing a hard
+> > > > > > > link between the snd and i915 side.    
+> > > > > > 
+> > > > > > I agree with you that the device link between snd-hda and the DRM driver
+> > > > > > should properly handle unbinding on both directions. This is something
+> > > > > > that require further discussions with ALSA and DRM people, and we should
+> > > > > > keep working on it.
+> > > > > > 
+> > > > > > Yet, the binding between those drivers do exist, but, despite other
+> > > > > > similar inter-driver bindings being properly reported by lsmod, this one
+> > > > > > is invisible for userspace.
+> > > > > > 
+> > > > > > What this series does is to make such binding visible. As simple as that.    
+> > > > > 
+> > > > > It also increases the reference count, and creates a user/kernel api
+> > > > > with the symlinks, right?  Will the reference count increase prevent the
+> > > > > modules from now being unloadable?
+> > > > >
+> > > > > This feels like a very "weak" link between modules that should not be
+> > > > > needed if reference counting is implemented properly (so that things are
+> > > > > cleaned up in the correct order.)  
+> > > > 
+> > > > The refcount increment exists even without this patch, as
+> > > > hda_component_master_bind() at sound/hda/hdac_component.c uses 
+> > > > try_module_get() when it creates the device link.  
+> > > 
+> > > Ok, then why shouldn't try_module_get() be creating this link instead of
+> > > having to manually do it this way again?  You don't want to have to go
+> > > around and add this call to all users of that function, right?
+> > 
+> > Works for me, but this is not a too trivial change, as the new 
+> > try_module_get() function will require two parameters, instead of one:
+> > 
+> > 	- the module to be referenced;
+> > 	- the module which will reference it.
+> > 
+> > On trivial cases, one will be THIS_MODULE, but, in the specific case
+> > of snd_hda, the binding is done via an ancillary routine under 
+> > snd_hda_core, but the actual binding happens at snd_hda_intel.
+> 
+> For calls that want to increment a module reference on behalf of a
+> different code segment than is calling it, create a new function so we
+> can audit-the-heck out of those code paths as odds are, they are unsafe.
+> 
+> For the normal code path, just turn try_module_get() into a macro that
+> includes THIS_MODULE as part of it like we do for the driver register
+> functions (see usb_register_driver() in include/linux/usb.h as an
+> example of how to do that.)
+> 
+> > Ok, we could add a __try_module_get() (or whatever other name that
+> > would properly express what it does) with two parameters, and then
+> > define try_module_get() as:
+> > 
+> > 	#define try_module_get(mod) __try_module_get(mod, THIS_MODULE)
+> 
+> Yes, that's the way forward.
 
-Unfortunately, an ambiguity arises when a normal sleep wait that doesn't
-require staging and commit, is involved in the middle of handling a
-conditional sleep e.g. between prepare_to_wait_*() and __schedule(),
-which is a very rare case tho.
+This might result in some complaints because it can create module refcount
+loops. Well, seemingly module refcount loops, you can break them by first
+unloading the driver, and then unloading the module. Currently a lot of
+folks rely on just unload the module to tear down the drivers (and all in
+right order through device links and component and all that). So maybe we
+want to make this some kind of weak reference, i.e. it shows up in lsmod,
+but the magic teardown still works and the module isn't actually pinnned.
 
-So let it give up handling the conditional sleep by unstaging it
-unconditionally when a normal sleep wait gets involved, to avoid the
-ambiguity.
+Either way I agree that something like this sounds like the right
+approach.
+-Daniel
+> 
+> thanks,
+> 
+> greg k-h
 
-Signed-off-by: Byungchul Park <byungchul.park@lge.com>
----
- kernel/dependency/dept.c | 55 +++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 40 insertions(+), 15 deletions(-)
-
-diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
-index 14dc33b..ce6d5b3 100644
---- a/kernel/dependency/dept.c
-+++ b/kernel/dependency/dept.c
-@@ -2166,6 +2166,21 @@ static void __dept_wait(struct dept_map *m, unsigned long w_f,
- 	}
- }
- 
-+static inline void stage_map(struct dept_task *dt, struct dept_map *m)
-+{
-+	dt->stage_m = m;
-+}
-+
-+static inline void unstage_map(struct dept_task *dt)
-+{
-+	dt->stage_m = NULL;
-+}
-+
-+static inline struct dept_map *staged_map(struct dept_task *dt)
-+{
-+	return dt->stage_m;
-+}
-+
- void dept_wait(struct dept_map *m, unsigned long w_f, unsigned long ip,
- 	       const char *w_fn, int ne, bool sleep)
- {
-@@ -2183,27 +2198,24 @@ void dept_wait(struct dept_map *m, unsigned long w_f, unsigned long ip,
- 
- 	flags = dept_enter();
- 
-+	/*
-+	 * There's no way to distinguish between a staged wait and this
-+	 * one, in the middle of handling a wait that requires staging
-+	 * and commit in __schedule().
-+	 *
-+	 * The wait that has been tagged dept_wait() with sleep == true
-+	 * should ignore the staged wait in __schedule() if it exists,
-+	 * to avoid the ambiguity. It can be done by unstaging it.
-+	 */
-+	if (sleep)
-+		unstage_map(dt);
-+
- 	__dept_wait(m, w_f, ip, w_fn, ne, sleep);
- 
- 	dept_exit(flags);
- }
- EXPORT_SYMBOL_GPL(dept_wait);
- 
--static inline void stage_map(struct dept_task *dt, struct dept_map *m)
--{
--	dt->stage_m = m;
--}
--
--static inline void unstage_map(struct dept_task *dt)
--{
--	dt->stage_m = NULL;
--}
--
--static inline struct dept_map *staged_map(struct dept_task *dt)
--{
--	return dt->stage_m;
--}
--
- void dept_stage_wait(struct dept_map *m, unsigned long w_f,
- 		     const char *w_fn, int ne)
- {
-@@ -2565,6 +2577,19 @@ void dept_wait_split_map(struct dept_map_each *me,
- 
- 	flags = dept_enter();
- 
-+	/*
-+	 * There's no way to distinguish between a staged wait and this
-+	 * one, in the middle of handling a wait that requires staging
-+	 * and commit in __schedule().
-+	 *
-+	 * The wait that has been tagged dept_wait_split_map() with
-+	 * sleep == true should ignore the staged wait in __schedule()
-+	 * if it exists, to avoid the ambiguity. It can be done by
-+	 * unstaging it.
-+	 */
-+	if (sleep)
-+		unstage_map(dt);
-+
- 	k = mc->keys ?: &mc->keys_local;
- 	c = check_new_class(&mc->keys_local, k, 0, 0UL, mc->name);
- 	if (c)
 -- 
-1.9.1
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
