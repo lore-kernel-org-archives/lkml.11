@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD03FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352460AbiEDRby (ORCPT
+        id S1357607AbiEDRcA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
+        Wed, 4 May 2022 13:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356926AbiEDRJt (ORCPT
+        with ESMTP id S1356904AbiEDRJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7F94738D;
-        Wed,  4 May 2022 09:56:28 -0700 (PDT)
+        Wed, 4 May 2022 13:09:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8054706E;
+        Wed,  4 May 2022 09:56:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEA72617A6;
-        Wed,  4 May 2022 16:56:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28DC5C385AA;
-        Wed,  4 May 2022 16:56:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7832BB8279A;
+        Wed,  4 May 2022 16:56:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F163C385A5;
+        Wed,  4 May 2022 16:56:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683387;
-        bh=2AHMO1rt09lcgtSq7YM7IIDJOOXaAVwLycWd1FnTCxA=;
+        s=korg; t=1651683380;
+        bh=Ds5qoX0AhajCnRZJt91gG+L121nA7JmXmRUluaT3mYQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JyUluXrLQfaVwneNAFkOfb/ATq/40wEBpIsLny+ZNk84Htqv6FBJAxayNeXA89z6t
-         Z7gy4280Iu7rtkdZSypTCV8G9JEav3VQEYBorJdU/zbCES/jmkdBMco/7GBVmz91dM
-         Ku2EVgBivokv6gt+VWMJXmj6k1u01M3+M4Nk4scc=
+        b=SxPIYlqhC8uYC2AV27bQbffNBpwMAKN343fFuYHbfsbHHsZoaUoC9n57uo/aDbLq7
+         Ksqi0Uze5+YpP9dXV9JwLJqJXpfuQBxJ9dK+RC1genqhqwjiNd5dq8R1EekX1h0Pqj
+         6hP6R3mhLrhRsilnCz/AheXsbNJk4a+/kv5Nr3vM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
-Subject: [PATCH 5.17 059/225] video: fbdev: udlfb: properly check endpoint type
-Date:   Wed,  4 May 2022 18:44:57 +0200
-Message-Id: <20220504153115.436114773@linuxfoundation.org>
+        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 065/225] mtd: rawnand: fix ecc parameters for mt7622
+Date:   Wed,  4 May 2022 18:45:03 +0200
+Message-Id: <20220504153115.976420693@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,90 +50,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Chuanhong Guo <gch981213@gmail.com>
 
-[ Upstream commit aaf7dbe07385e0b8deb7237eca2a79926bbc7091 ]
+[ Upstream commit 9fe4e0d3cbfe90152137963cc024ecb63db6e8e6 ]
 
-syzbot reported warning in usb_submit_urb, which is caused by wrong
-endpoint type.
+According to the datasheet, mt7622 only has 5 ECC capabilities instead
+of 7, and the decoding error register is arranged  as follows:
++------+---------+---------+---------+---------+
+| Bits |  19:15  |  14:10  |   9:5   |   4:0   |
++------+---------+---------+---------+---------+
+| Name | ERRNUM3 | ERRNUM2 | ERRNUM1 | ERRNUM0 |
++------+---------+---------+---------+---------+
+This means err_mask should be 0x1f instead of 0x3f and the number of
+bits shifted in mtk_ecc_get_stats should be 5 instead of 8.
 
-This driver uses out bulk endpoint for communication, so
-let's check if this endpoint is present and bail out early if not.
+This commit introduces err_shift for the difference in this register
+and fix other existing parameters.
 
-Fail log:
+Public MT7622 reference manual can be found on [0] and the info this
+commit is based on is from page 656 and page 660.
 
-usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-WARNING: CPU: 0 PID: 4822 at drivers/usb/core/urb.c:493 usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
-Modules linked in:
-CPU: 0 PID: 4822 Comm: kworker/0:3 Tainted: G        W         5.13.0-syzkaller #0
-...
-Workqueue: usb_hub_wq hub_event
-RIP: 0010:usb_submit_urb+0xd27/0x1540 drivers/usb/core/urb.c:493
-...
-Call Trace:
- dlfb_submit_urb+0x89/0x160 drivers/video/fbdev/udlfb.c:1969
- dlfb_set_video_mode+0x21f0/0x2950 drivers/video/fbdev/udlfb.c:315
- dlfb_ops_set_par+0x2a3/0x840 drivers/video/fbdev/udlfb.c:1110
- dlfb_usb_probe.cold+0x113e/0x1f4a drivers/video/fbdev/udlfb.c:1732
- usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+[0]: https://wiki.banana-pi.org/Banana_Pi_BPI-R64#Documents
 
-Fixes: 88e58b1a42f8 ("Staging: add udlfb driver")
-Reported-and-tested-by: syzbot+53ce4a4246d0fe0fee34@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 98dea8d71931 ("mtd: nand: mtk: Support MT7622 NAND flash controller.")
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220402160315.919094-1-gch981213@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/udlfb.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/mtd/nand/raw/mtk_ecc.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index 90f48b71fd8f..d9eec1b60e66 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1649,8 +1649,9 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 	const struct device_attribute *attr;
- 	struct dlfb_data *dlfb;
- 	struct fb_info *info;
--	int retval = -ENOMEM;
-+	int retval;
- 	struct usb_device *usbdev = interface_to_usbdev(intf);
-+	struct usb_endpoint_descriptor *out;
+diff --git a/drivers/mtd/nand/raw/mtk_ecc.c b/drivers/mtd/nand/raw/mtk_ecc.c
+index 1b47964cb6da..4f6adb657c89 100644
+--- a/drivers/mtd/nand/raw/mtk_ecc.c
++++ b/drivers/mtd/nand/raw/mtk_ecc.c
+@@ -43,6 +43,7 @@
  
- 	/* usb initialization */
- 	dlfb = kzalloc(sizeof(*dlfb), GFP_KERNEL);
-@@ -1664,6 +1665,12 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 	dlfb->udev = usb_get_dev(usbdev);
- 	usb_set_intfdata(intf, dlfb);
+ struct mtk_ecc_caps {
+ 	u32 err_mask;
++	u32 err_shift;
+ 	const u8 *ecc_strength;
+ 	const u32 *ecc_regs;
+ 	u8 num_ecc_strength;
+@@ -76,7 +77,7 @@ static const u8 ecc_strength_mt2712[] = {
+ };
  
-+	retval = usb_find_common_endpoints(intf->cur_altsetting, NULL, &out, NULL, NULL);
-+	if (retval) {
-+		dev_err(&intf->dev, "Device should have at lease 1 bulk endpoint!\n");
-+		goto error;
-+	}
-+
- 	dev_dbg(&intf->dev, "console enable=%d\n", console);
- 	dev_dbg(&intf->dev, "fb_defio enable=%d\n", fb_defio);
- 	dev_dbg(&intf->dev, "shadow enable=%d\n", shadow);
-@@ -1673,6 +1680,7 @@ static int dlfb_usb_probe(struct usb_interface *intf,
- 	if (!dlfb_parse_vendor_descriptor(dlfb, intf)) {
- 		dev_err(&intf->dev,
- 			"firmware not recognized, incompatible device?\n");
-+		retval = -ENODEV;
- 		goto error;
- 	}
+ static const u8 ecc_strength_mt7622[] = {
+-	4, 6, 8, 10, 12, 14, 16
++	4, 6, 8, 10, 12
+ };
  
-@@ -1686,8 +1694,10 @@ static int dlfb_usb_probe(struct usb_interface *intf,
+ enum mtk_ecc_regs {
+@@ -221,7 +222,7 @@ void mtk_ecc_get_stats(struct mtk_ecc *ecc, struct mtk_ecc_stats *stats,
+ 	for (i = 0; i < sectors; i++) {
+ 		offset = (i >> 2) << 2;
+ 		err = readl(ecc->regs + ECC_DECENUM0 + offset);
+-		err = err >> ((i % 4) * 8);
++		err = err >> ((i % 4) * ecc->caps->err_shift);
+ 		err &= ecc->caps->err_mask;
+ 		if (err == ecc->caps->err_mask) {
+ 			/* uncorrectable errors */
+@@ -449,6 +450,7 @@ EXPORT_SYMBOL(mtk_ecc_get_parity_bits);
  
- 	/* allocates framebuffer driver structure, not framebuffer memory */
- 	info = framebuffer_alloc(0, &dlfb->udev->dev);
--	if (!info)
-+	if (!info) {
-+		retval = -ENOMEM;
- 		goto error;
-+	}
+ static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
+ 	.err_mask = 0x3f,
++	.err_shift = 8,
+ 	.ecc_strength = ecc_strength_mt2701,
+ 	.ecc_regs = mt2701_ecc_regs,
+ 	.num_ecc_strength = 20,
+@@ -459,6 +461,7 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
  
- 	dlfb->info = info;
- 	info->par = dlfb;
+ static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
+ 	.err_mask = 0x7f,
++	.err_shift = 8,
+ 	.ecc_strength = ecc_strength_mt2712,
+ 	.ecc_regs = mt2712_ecc_regs,
+ 	.num_ecc_strength = 23,
+@@ -468,10 +471,11 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
+ };
+ 
+ static const struct mtk_ecc_caps mtk_ecc_caps_mt7622 = {
+-	.err_mask = 0x3f,
++	.err_mask = 0x1f,
++	.err_shift = 5,
+ 	.ecc_strength = ecc_strength_mt7622,
+ 	.ecc_regs = mt7622_ecc_regs,
+-	.num_ecc_strength = 7,
++	.num_ecc_strength = 5,
+ 	.ecc_mode_shift = 4,
+ 	.parity_bits = 13,
+ 	.pg_irq_sel = 0,
 -- 
 2.35.1
 
