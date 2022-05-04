@@ -2,107 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D95C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3437FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348201AbiEDKlg (ORCPT
+        id S1348224AbiEDKli (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
+        Wed, 4 May 2022 06:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348198AbiEDKl2 (ORCPT
+        with ESMTP id S1348200AbiEDKl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:41:28 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D2127B06
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 03:37:52 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id x33so1608507lfu.1
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 03:37:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R+UK7a5jf0KZOl/DUtb1w9sbFadlObhTOJmpHWQdrpc=;
-        b=hm2ua1HVcCJqnnAGwF5xo/rNEYAQhftBcLO3n4wSKHPKVExz4/ps2iF279WPGoLBOi
-         U2RMBXyKqSHTq/iMqYJuaihXJyHGxfXMUoI6gK1wxi8kI9vXEbnR8PGYbZzf2WhO09kp
-         k1h6Mz1WWZ6WZMtwi1Pf49wB1iKajJLIfzVcFWl5oc7BQN0JtmTELvuFDiiGwWtTnfeO
-         lMp1bNf08nelacSsBTyAup8ZqotOBF7uKfj/MXiOACYrrxKJdGm3Hq2qfYRWBVX1uCmJ
-         hiq3henLKfsJ9oxmGhuJ1Ld7u/gIFo3aBnCDxUuS7EQ66IUB+PXHY3Bylibvxsm03sZF
-         tCAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R+UK7a5jf0KZOl/DUtb1w9sbFadlObhTOJmpHWQdrpc=;
-        b=QdLWGlRd8Si2fOBJgPzqbsrx12hf4450CH11dtuCey77rN+xmCtxKXt9dF02uV4Dyb
-         yZAwFelOLlAJjUljyP55euP3EF8j7tFiWPHyoJZDM93HGKfwpDLRJkvSqi0sDxdw5iVc
-         CYAZIX5h/tMhagzsEx5hJRL6vmKKpNR1d/hZBXWR/BHSAVs7ZXpId39HaLb6QJN9mNhW
-         XGO4XBH/8e1LC6wIzFP7PBE/gz4PD5rxMqpex4JLsnlrGnjIdaJMYOIq+oonCGB0a+qg
-         98R152Vhk0eLpzH9dWoJTKdUa5TCzYxpZKZOhNAI170iljSPU4aAk4jVbz7SlUJaicug
-         b1dg==
-X-Gm-Message-State: AOAM533H8jmZ1llqmrLkjX54ky9Yn5msm6hp9DzQp1AgcgDzbb3hkVwa
-        kOIiqOYdCWy23oNYi6LkQgs7LGzWFmNi9uUrLDTJ1w==
-X-Google-Smtp-Source: ABdhPJwkwNV4rISj+UH7j2rCs0ZZC2RzQF+RxkG2Q4oc4buD17InzEKJpaRYTpbP38qZFRwCTAMNg/Ni/18erN3K+dw=
-X-Received: by 2002:a05:6512:301:b0:471:ecd0:ea24 with SMTP id
- t1-20020a056512030100b00471ecd0ea24mr13515183lfp.71.1651660670573; Wed, 04
- May 2022 03:37:50 -0700 (PDT)
+        Wed, 4 May 2022 06:41:29 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA62D28E0F;
+        Wed,  4 May 2022 03:37:53 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651660672;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lzcPu6GZE6ZiaZyABqJBDH3V4kDcq2cOcg6QCnZEcyw=;
+        b=ovf/Csmq3jTKaCHL/duZUMzM92UA3ybQPuPS/yR4hQyfMAMiBVXU2uBCn6ChoPSyXAfSo9
+        bJjhZS94xj7/+QmApH28oJm11Br3PWNSOxp1bUXPqx0rKKdknFjls32DU4SjFa6h2mC9FG
+        q+7A5c8xCM1uB60EOvOpVDYCGB+3oW7z4fhOZPG0gkHa//xQgwJAnB9xjOQo5rt++R0SpH
+        m3vrDOqhmxFOjkWIraav8Qi6m439Z9DQ1Hn/IY5cMJrQm2FnbzXAZlSiy/4krl1VYmxGXF
+        thd/N4iuIhQtjYbGFsrQuRI05DW6z/ZpBhjKJJkcCwB2D2NBsXJyx114mB8ULQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651660672;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lzcPu6GZE6ZiaZyABqJBDH3V4kDcq2cOcg6QCnZEcyw=;
+        b=BC/5VsG6lYSZc3t+ojfusr5IIyCrAsxHoz70LVlfMswd0nu2Kajh4YcdNrqzUc0s9vB/WZ
+        ovNrwvd3WjLTtJCw==
+To:     Tony Luck <tony.luck@intel.com>, hdegoede@redhat.com,
+        markgross@kernel.org
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
+        jithu.joseph@intel.com, ashok.raj@intel.com, tony.luck@intel.com,
+        rostedt@goodmis.org, dan.j.williams@intel.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        ravi.v.shankar@intel.com
+Subject: Re: [PATCH v5 04/10] platform/x86/intel/ifs: Read IFS firmware image
+In-Reply-To: <20220428153849.295779-5-tony.luck@intel.com>
+References: <20220422200219.2843823-1-tony.luck@intel.com>
+ <20220428153849.295779-1-tony.luck@intel.com>
+ <20220428153849.295779-5-tony.luck@intel.com>
+Date:   Wed, 04 May 2022 12:37:52 +0200
+Message-ID: <87wnf1k2gv.ffs@tglx>
 MIME-Version: 1.0
-References: <20220424231751.32053-1-samuel@sholland.org>
-In-Reply-To: <20220424231751.32053-1-samuel@sholland.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 4 May 2022 12:37:14 +0200
-Message-ID: <CAPDyKFp8JRkMJxPP8g_83o4hqxu8FUARaT8fU0zPR7Yn26cYsQ@mail.gmail.com>
-Subject: Re: [PATCH] mmc: sunxi-mmc: Fix DMA descriptors allocated above 32 bits
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     linux-mmc@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Yangtao Li <frank@allwinnertech.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 at 01:17, Samuel Holland <samuel@sholland.org> wrote:
->
-> Newer variants of the MMC controller support a 34-bit physical address
-> space by using word addresses instead of byte addresses. However, the
-> code truncates the DMA descriptor address to 32 bits before applying the
-> shift. This breaks DMA for descriptors allocated above the 32-bit limit.
->
-> Fixes: 3536b82e5853 ("mmc: sunxi: add support for A100 mmc controller")
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+On Thu, Apr 28 2022 at 08:38, Tony Luck wrote:
+> +/*
+> + * Load ifs image. Before loading ifs module, the ifs image must be located
+> + * in /lib/firmware/intel/ifs and named as {family/model/stepping}.{testname}.
+> + */
+> +void ifs_load_firmware(struct device *dev)
+> +{
+> +	const struct firmware *fw;
+> +	char scan_path[32];
+> +	int ret;
+> +
+> +	snprintf(scan_path, sizeof(scan_path), "intel/ifs/%02x-%02x-%02x.scan",
+> +		 boot_cpu_data.x86, boot_cpu_data.x86_model, boot_cpu_data.x86_stepping);
+> +
+> +	ret = request_firmware_direct(&fw, scan_path, dev);
+> +	if (ret) {
+> +		dev_err(dev, "ifs file %s load failed\n", scan_path);
+> +		return;
 
-Applied for fixes and by adding a stable tag, thanks!
+Why is this not returning an error to the caller?
 
-Kind regards
-Uffe
+Thanks,
 
-
-> ---
->
->  drivers/mmc/host/sunxi-mmc.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
-> index c62afd212692..46f9e2923d86 100644
-> --- a/drivers/mmc/host/sunxi-mmc.c
-> +++ b/drivers/mmc/host/sunxi-mmc.c
-> @@ -377,8 +377,9 @@ static void sunxi_mmc_init_idma_des(struct sunxi_mmc_host *host,
->                 pdes[i].buf_addr_ptr1 =
->                         cpu_to_le32(sg_dma_address(&data->sg[i]) >>
->                                     host->cfg->idma_des_shift);
-> -               pdes[i].buf_addr_ptr2 = cpu_to_le32((u32)next_desc >>
-> -                                                   host->cfg->idma_des_shift);
-> +               pdes[i].buf_addr_ptr2 =
-> +                       cpu_to_le32(next_desc >>
-> +                                   host->cfg->idma_des_shift);
->         }
->
->         pdes[0].config |= cpu_to_le32(SDXC_IDMAC_DES0_FD);
-> --
-> 2.35.1
->
+        tglx
