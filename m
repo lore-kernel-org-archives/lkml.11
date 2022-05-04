@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00098C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353682AbiEDQwE (ORCPT
+        id S1353712AbiEDQwJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
+        Wed, 4 May 2022 12:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353462AbiEDQvv (ORCPT
+        with ESMTP id S1353631AbiEDQvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:51:51 -0400
+        Wed, 4 May 2022 12:51:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4AB2E9D6;
-        Wed,  4 May 2022 09:48:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86592F3B4;
+        Wed,  4 May 2022 09:48:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 594076174B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 529F36174C;
+        Wed,  4 May 2022 16:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2C3C385A4;
         Wed,  4 May 2022 16:48:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 974ECC385AA;
-        Wed,  4 May 2022 16:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682894;
-        bh=9Jff2lxUeZilP+MjFMOWPR5n/EWcyo3sWxDxd33gFDg=;
+        s=korg; t=1651682895;
+        bh=EHjp78b+jP6LO64HOUaw59Cd7UestUx/qGjCreGcY4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZoPGxIMXD6+bWqX08Yibr3klubdfYqIbL7Ztuac9WD7I83/U6G9SUnylDnufVdUkD
-         LSWVOgJMrtklCyhOm0AmzZJdCYJ2IqwN32Kf1flEyrHIfxBYo38e9PveuZ09jVxXCb
-         /P/aRsnOR3IgRnXBuxxoYTc//+m3g3HH639XooPw=
+        b=bKsBAZnlaLVFmfJPUhFGRYNNiksRz8Rgknn2bau6BFN/AlNMFcdjrXrnkRsGLphlf
+         /eSMcZdTK5FYJTaHm34v84gsihkYebTtJ6zlTvxjqPPoqHPrLoTooBoFLrjT0kh5Gl
+         lHWaVBg6Pxbg0rhh3Bjz0YtCnwgf55OfMTP0m9vA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.4 13/84] xhci: increase usb U3 -> U0 link resume timeout from 100ms to 500ms
-Date:   Wed,  4 May 2022 18:43:54 +0200
-Message-Id: <20220504152928.757491781@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 02/84] hamradio: defer 6pack kfree after unregister_netdev
+Date:   Wed,  4 May 2022 18:43:43 +0200
+Message-Id: <20220504152927.930466007@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -49,37 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-commit 33597f0c48be0836854d43c577e35c8f8a765a7d upstream.
+commit 0b9111922b1f399aba6ed1e1b8f2079c3da1aed8 upstream.
 
-The first U3 wake signal by the host may be lost if the USB 3 connection is
-tunneled over USB4, with a runtime suspended USB4 host, and firmware
-implemented connection manager.
+There is a possible race condition (use-after-free) like below
 
-Specs state the host must wait 100ms (tU3WakeupRetryDelay) before
-resending a U3 wake signal if device doesn't respond, leading to U3 -> U0
-link transition times around 270ms in the tunneled case.
+ (USE)                       |  (FREE)
+  dev_queue_xmit             |
+   __dev_queue_xmit          |
+    __dev_xmit_skb           |
+     sch_direct_xmit         | ...
+      xmit_one               |
+       netdev_start_xmit     | tty_ldisc_kill
+        __netdev_start_xmit  |  6pack_close
+         sp_xmit             |   kfree
+          sp_encaps          |
+                             |
 
-Fixes: 0200b9f790b0 ("xhci: Wait until link state trainsits to U0 after setting USB_SS_PORT_LS_U0")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-4-mathias.nyman@linux.intel.com
+According to the patch "defer ax25 kfree after unregister_netdev", this
+patch reorder the kfree after the unregister_netdev to avoid the possible
+UAF as the unregister_netdev() is well synchronized and won't return if
+there is a running routine.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/hamradio/6pack.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1343,7 +1343,7 @@ int xhci_hub_control(struct usb_hcd *hcd
- 				}
- 				spin_unlock_irqrestore(&xhci->lock, flags);
- 				if (!wait_for_completion_timeout(&bus_state->u3exit_done[wIndex],
--								 msecs_to_jiffies(100)))
-+								 msecs_to_jiffies(500)))
- 					xhci_dbg(xhci, "missing U0 port change event for port %d\n",
- 						 wIndex);
- 				spin_lock_irqsave(&xhci->lock, flags);
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -679,9 +679,11 @@ static void sixpack_close(struct tty_str
+ 	del_timer_sync(&sp->tx_t);
+ 	del_timer_sync(&sp->resync_t);
+ 
+-	/* Free all 6pack frame buffers. */
++	/* Free all 6pack frame buffers after unreg. */
+ 	kfree(sp->rbuff);
+ 	kfree(sp->xbuff);
++
++	free_netdev(sp->dev);
+ }
+ 
+ /* Perform I/O control on an active 6pack channel. */
 
 
