@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5897DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6B4C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354516AbiEDQyc (ORCPT
+        id S1353757AbiEDQy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
+        Wed, 4 May 2022 12:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353854AbiEDQwf (ORCPT
+        with ESMTP id S1353853AbiEDQwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:52:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964EA4755D;
-        Wed,  4 May 2022 09:48:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FB047550;
+        Wed,  4 May 2022 09:48:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEEA16177E;
-        Wed,  4 May 2022 16:48:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A405C385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A51ED61777;
         Wed,  4 May 2022 16:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF766C385A5;
+        Wed,  4 May 2022 16:48:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682923;
-        bh=NR3zf8+wobyKh5rsMqyyrs5WlQl2JkF1VRptszhN0xc=;
+        s=korg; t=1651682922;
+        bh=BVm3wbMWu41GHADlE1qYcgzajVQUgdW6Zs3t/71kNkw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P5P3MYSFvh2X33BDPWBLLD+W0WXiHz0B1WVTJCaUSycINYgZ5TvUjrnGRxFMbxmK0
-         TMQXCD1ZvweYM7po0SqK8PP8UGIcNDknOUOCTq5ycARuk8Cie3fFeUl8aIAwmFbPN3
-         3MnA52V+/ZYnjmu+O54i1Cx7Pb+J7SnSXMlzTdQk=
+        b=JsAKJtsoedjE39uwDsE6ZNu8R0z7AnLPwh77cbJgJmuZ1hlNvS+AdQ+ys6aFbWQJg
+         bY7m5ghqMq4Q048yrGzgneAP8vzQ/jc7E4us6anDUEjX+mwVlwrECzHXxfe4Etdqln
+         pO6G450MeFF8h07TbAR4jUSDKtCfukPODlCYCsoo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 41/84] phy: ti: Add missing pm_runtime_disable() in serdes_am654_probe
-Date:   Wed,  4 May 2022 18:44:22 +0200
-Message-Id: <20220504152930.721903004@linuxfoundation.org>
+Subject: [PATCH 5.4 40/84] phy: mapphone-mdm6600: Fix PM error handling in phy_mdm6600_probe
+Date:   Wed,  4 May 2022 18:44:21 +0200
+Message-Id: <20220504152930.658970309@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -51,33 +51,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ce88613e5bd579478653a028291098143f2a5bdf ]
+[ Upstream commit d644e0d79829b1b9a14beedbdb0dc1256fc3677d ]
 
-The pm_runtime_enable() will increase power disable depth.
+The pm_runtime_enable will increase power disable depth.
 If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for serdes_am654_probe().
+pm_runtime_enable(). And use pm_runtime_dont_use_autosuspend() to
+undo pm_runtime_use_autosuspend()
+In the PM Runtime docs:
+    Drivers in ->remove() callback should undo the runtime PM changes done
+    in ->probe(). Usually this means calling pm_runtime_disable(),
+    pm_runtime_dont_use_autosuspend() etc.
 
-Fixes: 71e2f5c5c224 ("phy: ti: Add a new SERDES driver for TI's AM654x SoC")
+We should do this in error handling.
+
+Fixes: f7f50b2a7b05 ("phy: mapphone-mdm6600: Add runtime PM support for n_gsm on USB suspend")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220301025853.1911-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220301024615.31899-1-linmq006@gmail.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/ti/phy-am654-serdes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/phy/motorola/phy-mapphone-mdm6600.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/ti/phy-am654-serdes.c b/drivers/phy/ti/phy-am654-serdes.c
-index 6ef12017ff4e..96e3426f9293 100644
---- a/drivers/phy/ti/phy-am654-serdes.c
-+++ b/drivers/phy/ti/phy-am654-serdes.c
-@@ -641,7 +641,7 @@ static int serdes_am654_probe(struct platform_device *pdev)
- 
- clk_err:
- 	of_clk_del_provider(node);
+diff --git a/drivers/phy/motorola/phy-mapphone-mdm6600.c b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+index 94a34cf75eb3..39d13f7e4cf3 100644
+--- a/drivers/phy/motorola/phy-mapphone-mdm6600.c
++++ b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+@@ -628,7 +628,8 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
+ cleanup:
+ 	if (error < 0)
+ 		phy_mdm6600_device_power_off(ddata);
 -
-+	pm_runtime_disable(dev);
- 	return ret;
++	pm_runtime_disable(ddata->dev);
++	pm_runtime_dont_use_autosuspend(ddata->dev);
+ 	return error;
  }
  
 -- 
