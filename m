@@ -2,84 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4323DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AABCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359749AbiEDSCR (ORCPT
+        id S1359764AbiEDSCZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 14:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
+        Wed, 4 May 2022 14:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377569AbiEDSBN (ORCPT
+        with ESMTP id S1377452AbiEDSA4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 14:01:13 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34434E3A8;
-        Wed,  4 May 2022 10:16:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hy+OhVR/LV0xEzAsGTGdgKCKGoSd8NJQpERGht9sL1o=; b=Ex1fLswhxbmvMM6ln5WhknBLM/
-        PmSusBqYOAcPwmB8INTvkq+eguCyPDijsDz8PAtNIfwqfyCvYK2KU8Jlv28tNo5jveGmStK04hweD
-        C5mjIZ/bvhvb0WqBv6UmR1pHy1qBwnblP8khg8eEY94TpR3ROiwJeqqqiZC1ZAsUlcS0=;
-Received: from p200300daa70ef200891a2ae4514fd280.dip0.t-ipconnect.de ([2003:da:a70e:f200:891a:2ae4:514f:d280] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nmIcD-00043Z-CU; Wed, 04 May 2022 19:16:41 +0200
-Message-ID: <c54c5692-56bd-c17c-24f5-741ec2a1a839@nbd.name>
-Date:   Wed, 4 May 2022 19:16:40 +0200
+        Wed, 4 May 2022 14:00:56 -0400
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D451C12B;
+        Wed,  4 May 2022 10:15:51 -0700 (PDT)
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-e5e433d66dso1825981fac.5;
+        Wed, 04 May 2022 10:15:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/sZFoGSuVJsC2wZ9dNCc4JLrQrkFZcqEG47d9JqV1Gg=;
+        b=Wr9U25nWL8PG6OO8do93gYbUy0N/ihRqkK/bG7hG7rdAZvds4bbbFujaJWEU5A1wdH
+         mqR5n3zR+FV6pcTyCAMwXPkipvbJXkQyMKX4BRGQXdrkvQnbS5rD72dILnM2Lcc+C4/g
+         UP4u/ZMql1p9cg7qM1vsYvlhxieblw8PXaVIK7UBmegsd/SJpYkfHRohDVqtTWgvG++M
+         aEhmU8Ty17KjYU/nBbylIOBrEYFCjoE02eXMz3nz3+1Il9hKZcY5G5pt4TvulFiuOlQe
+         jN79sSn3V3ZFmk6DC7n+fxK1sIPVekN6c3TOAJrkIr7bLpe7iFyGRY5Qq0fbue7tE7BG
+         U9+A==
+X-Gm-Message-State: AOAM531NQFsr89tMQ6FUmSMRh7QTq34GytN4hDYBDwebMZ1yCHmuxfPM
+        j055A1eAbtZnsdIcJnFvHg==
+X-Google-Smtp-Source: ABdhPJz/D0e0enLqOyhRaOxOcEe96JkZ+yUVLWBCkpaNez82JEr/wX3grMMHjSAk9p5UL5gCadvo6Q==
+X-Received: by 2002:a05:6870:9a05:b0:e6:589e:1ec5 with SMTP id fo5-20020a0568709a0500b000e6589e1ec5mr240831oab.203.1651684550678;
+        Wed, 04 May 2022 10:15:50 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id f6-20020a4ad806000000b0035eb4e5a6c4sm6234126oov.26.2022.05.04.10.15.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 10:15:49 -0700 (PDT)
+Received: (nullmailer pid 1896703 invoked by uid 1000);
+        Wed, 04 May 2022 17:15:48 -0000
+Date:   Wed, 4 May 2022 12:15:48 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 11/11] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Message-ID: <YnK0xHOkfXI+rgzs@robh.at.kernel.org>
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-12-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH] PCI: mediatek-gen3: change driver name to mtk-pcie-gen3
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Ryder Lee <ryder.lee@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220504170658.GA453994@bhelgaas>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <20220504170658.GA453994@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503151633.18760-12-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 04.05.22 19:06, Bjorn Helgaas wrote:
-> On Wed, May 04, 2022 at 12:05:55PM +0200, Felix Fietkau wrote:
->> This allows it to coexist with the other mtk pcie driver in the same kernel
+On Tue, May 03, 2022 at 05:16:33PM +0200, Ansuel Smith wrote:
+> Add LEDs definition example for qca8k using the offload trigger as the
+> default trigger and add all the supported offload triggers by the
+> switch.
 > 
-> I assume this is a v3 of [1].  Please:
-Thanks, I wasn't aware of that patch.
-
->    - Follow the subject line capitalization convention, i.e.,
->      "PCI: mediatek-gen3: Change ..."
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/net/dsa/qca8k.yaml    | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
 > 
->    - Expand the commit log to say why this is important.  From a C
->      language level, using the same "mtk-pcie" string in both drivers
->      is no problem.  So please mention where it *is* a problem, e.g.,
->      if it's a problem with modprobe or similar, say that.  Or if it's
->      to make log messages in dmesg have different driver names, say
->      that.The reason is the fact that driver_register will refuse to register a 
-driver if one with the same name has already been registered.
+> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> index f3c88371d76c..9b46ef645a2d 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> @@ -65,6 +65,8 @@ properties:
+>                   internal mdio access is used.
+>                   With the legacy mapping the reg corresponding to the internal
+>                   mdio is the switch reg with an offset of -1.
+> +                 Each phy have at least 3 LEDs connected and can be declared
 
->    - s/pcie/PCIe/ in commit log and other English text.
-> 
->    - Add a period at the end of the commit log sentence.
-> 
-> [1] https://lore.kernel.org/r/20220422070908.14043-1-jianjun.wang@mediatek.com
-Will take care of this and send an updated version as v3.
+s/at least/up to/ ?
 
-- Felix
+Or your example is wrong with only 2.
+
+> +                 using the standard LEDs structure.
+>  
+>  patternProperties:
+>    "^(ethernet-)?ports$":
+> @@ -287,6 +289,24 @@ examples:
+>  
+>                  internal_phy_port1: ethernet-phy@0 {
+>                      reg = <0>;
+> +
+> +                    leds {
+> +                        led@0 {
+> +                            reg = <0>;
+> +                            color = <LED_COLOR_ID_WHITE>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+> +                            linux,default-trigger = "netdev";
+> +                        };
+> +
+> +                        led@1 {
+> +                            reg = <1>;
+> +                            color = <LED_COLOR_ID_AMBER>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+> +                            linux,default-trigger = "netdev";
+> +                        };
+> +                    };
+>                  };
+>  
+>                  internal_phy_port2: ethernet-phy@1 {
+> -- 
+> 2.34.1
+> 
+> 
