@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 102C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357308AbiEDR1a (ORCPT
+        id S1355338AbiEDRZw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        Wed, 4 May 2022 13:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355415AbiEDRHf (ORCPT
+        with ESMTP id S1354435AbiEDRCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:07:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EE9517E3;
-        Wed,  4 May 2022 09:54:29 -0700 (PDT)
+        Wed, 4 May 2022 13:02:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B724C79D;
+        Wed,  4 May 2022 09:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 538D8616F8;
-        Wed,  4 May 2022 16:54:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F97C385AA;
-        Wed,  4 May 2022 16:54:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 920B36187C;
+        Wed,  4 May 2022 16:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2B24C385BF;
+        Wed,  4 May 2022 16:52:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683268;
-        bh=0IiNxe8NdBPwEW6lbGtCQxmIXK0QG7FV5Fx/37V/jR4=;
+        s=korg; t=1651683141;
+        bh=PhRXsatzWHvqXGivsWYtvZ8yGMRSGmpPSv6ugCS06DM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vIRvtHUzlS8WbXYj7CXBnsP7COCxm0N7ESmba+HMT2yfksEaDZ8WsNhMbNa3hr739
-         +Rh3oyVbC3arU1yB3Z97dbwxAtZ6a2KMBhiOf/GcCTA4knRqkntojBuwI1mg/Ntodg
-         UuIRgFAlGghfcSLo9cecw9XfnVnMIv/JQTCRJ6+Q=
+        b=fingn4BT3pioKZTsqKGZcuFaqEJVR8BtJsOgd8QvzBeeuMvrucN9Ce8k/vHhl1UC/
+         7wK6P1mwJ9rHS9oH+j83w2jqtt2ZUGdEs4p5KCp+b+EFZh6dgZcF/kob289eVUSVnl
+         Rht+b7gniJKLGiGr7hymaoLePM6mHVRqmFTN6AIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 118/177] net: fec: add missing of_node_put() in fec_enet_init_stop_mode()
-Date:   Wed,  4 May 2022 18:45:11 +0200
-Message-Id: <20220504153103.737095476@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 128/129] tty: n_gsm: fix software flow control handling
+Date:   Wed,  4 May 2022 18:45:20 +0200
+Message-Id: <20220504153031.816518089@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
-References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
+References: <20220504153021.299025455@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit d2b52ec056d5bddb055c8f21d7489a23548d0838 ]
+commit f4f7d63287217ba25e5c80f5faae5e4f7118790e upstream.
 
-Put device node in error path in fec_enet_init_stop_mode().
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.8.1 states that XON/XOFF characters
+shall be used instead of Fcon/Fcoff command in advanced option mode to
+handle flow control. Chapter 5.4.8.2 describes how XON/XOFF characters
+shall be handled. Basic option mode only used Fcon/Fcoff commands and no
+XON/XOFF characters. These are treated as data bytes here.
+The current implementation uses the gsm_mux field 'constipated' to handle
+flow control from the remote peer and the gsm_dlci field 'constipated' to
+handle flow control from each DLCI. The later is unrelated to this patch.
+The gsm_mux field is correctly set for Fcon/Fcoff commands in
+gsm_control_message(). However, the same is not true for XON/XOFF
+characters in gsm1_receive().
+Disable software flow control handling in the tty to allow explicit
+handling by n_gsm.
+Add the missing handling in advanced option mode for gsm_mux in
+gsm1_receive() to comply with the standard.
 
-Fixes: 8a448bf832af ("net: ethernet: fec: move GPR register offset and bit into DT")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220426125231.375688-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch depends on the following commit:
+Commit 8838b2af23ca ("tty: n_gsm: fix SW flow control encoding/handling")
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220422071025.5490-3-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index a3e87e10ee6b..67eb9b671244 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3726,7 +3726,7 @@ static int fec_enet_init_stop_mode(struct fec_enet_private *fep,
- 					 ARRAY_SIZE(out_val));
- 	if (ret) {
- 		dev_dbg(&fep->pdev->dev, "no stop mode property\n");
--		return ret;
-+		goto out;
- 	}
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -232,6 +232,7 @@ struct gsm_mux {
+ 	int initiator;			/* Did we initiate connection */
+ 	bool dead;			/* Has the mux been shut down */
+ 	struct gsm_dlci *dlci[NUM_DLCI];
++	int old_c_iflag;		/* termios c_iflag value before attach */
+ 	bool constipated;		/* Asked by remote to shut up */
  
- 	fep->stop_gpr.gpr = syscon_node_to_regmap(gpr_np);
--- 
-2.35.1
-
+ 	spinlock_t tx_lock;
+@@ -1960,6 +1961,16 @@ static void gsm0_receive(struct gsm_mux
+ 
+ static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
+ {
++	/* handle XON/XOFF */
++	if ((c & ISO_IEC_646_MASK) == XON) {
++		gsm->constipated = true;
++		return;
++	} else if ((c & ISO_IEC_646_MASK) == XOFF) {
++		gsm->constipated = false;
++		/* Kick the link in case it is idling */
++		gsm_data_kick(gsm, NULL);
++		return;
++	}
+ 	if (c == GSM1_SOF) {
+ 		/* EOF is only valid in frame if we have got to the data state
+ 		   and received at least one byte (the FCS) */
+@@ -2378,6 +2389,9 @@ static int gsmld_attach_gsm(struct tty_s
+ 	int ret, i;
+ 
+ 	gsm->tty = tty_kref_get(tty);
++	/* Turn off tty XON/XOFF handling to handle it explicitly. */
++	gsm->old_c_iflag = tty->termios.c_iflag;
++	tty->termios.c_iflag &= (IXON | IXOFF);
+ 	ret =  gsm_activate_mux(gsm);
+ 	if (ret != 0)
+ 		tty_kref_put(gsm->tty);
+@@ -2418,6 +2432,8 @@ static void gsmld_detach_gsm(struct tty_
+ 	WARN_ON(tty != gsm->tty);
+ 	for (i = 1; i < NUM_DLCI; i++)
+ 		tty_unregister_device(gsm_tty_driver, base + i);
++	/* Restore tty XON/XOFF handling. */
++	gsm->tty->termios.c_iflag = gsm->old_c_iflag;
+ 	tty_kref_put(gsm->tty);
+ 	gsm->tty = NULL;
+ }
 
 
