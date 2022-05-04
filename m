@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D2EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D810C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379646AbiEDW46 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        id S235039AbiEDW5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 18:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379511AbiEDWyT (ORCPT
+        with ESMTP id S1379527AbiEDWyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:54:19 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F73A49F21
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:41 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id m8-20020a17090aab0800b001cb1320ef6eso3572032pjq.3
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:41 -0700 (PDT)
+        Wed, 4 May 2022 18:54:22 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B9C4AE08
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:50:45 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id o16-20020a17090ab89000b001d84104fc2cso2393118pjr.1
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:50:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=ztjnvpybo6qyJr4BCUQZplU60TknzqXz63x+EIsC6l4=;
-        b=HEVRh7Qi/0VDYfBHYfpsJkhYsINB2+4swUPsCXzbh+ISGOSwGRPMape+yG7EB4u1HP
-         smlhkd9XnBFtCVA+Y6W9RQiQILtcwy6J6In9Lc/U06e/LxkSGbtb2gv0gTwP1eKZhjwz
-         Fa3OUF0LPi4fIvh+feElOnNdE/ydNIaVEIMU9CiFmJaORRE4HRLaR4r/EKJDs4ffKSOc
-         dQ68r5nk/kiAFOdq12W+V59N3qLhlFypcWVp6lil4pVwBXuAwJpxEwLvjQ07EPjrqW8n
-         hVCXbrfOfEpxTxPqZqAr1/6W6znhpAcOyU7Lp9V6OZzMOgehlQH89sa5k+VlAcjG6nsw
-         +H8w==
+        bh=m+EPHltdynOdUR9+b1b8QS40GbbHNtfF/glWqdKc4L0=;
+        b=CsTcsjOwkQ6IpTmdxWmzGO323RrXP7DtfRQIsGMpyUlMx3qZl3/869mwnr1zLw0XXK
+         DrKJ6i7D1SRsGF4BYP0NtHtu08xYO74Ms+r+flzlS07PpJ6PAX4rusb5VlQt4dSzo0cV
+         /swopcQtp6ewQ2XHtJ8jgUi7h9JLEVSGNlbTYBFkT1voho4Cmh7C0DAWh//uqq/AoE7R
+         2hyy+AGblY1qCoKEJ9VHuMbpmV/LU9jWiA4Wf2DRSx0QRrnCsU6/zGO5rgTZ9eBAgeyC
+         5ea3wXWJK5qwudLVmyr45gAb08UZPmRgavO0oowpqCNCqvrLU69loaEV8kH7N0oRdSFl
+         2vnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=ztjnvpybo6qyJr4BCUQZplU60TknzqXz63x+EIsC6l4=;
-        b=mdV1n1Z0xu+iN8e+Fq/9xPq82re7/u5JJewsvzA36USZGlzARp9Nr+0Fo+nNzEYyx6
-         uz9z0b8kFRrNU2KR0nF/T6HpLydjHBl6qFOMe6+ydhQBx5lR3N87ktl7myfX8OPpApn1
-         dLm9uKm7WNMsEPnhJj1xM2HKJsI9OZIWgaIbBxZIHz/gchytTYClXD8iOg4QeDQ3GPij
-         LXFUhKEao5f0SKatnNOcgOSXqa3R+5vcRwdAf1cm81iflURuigmnjZznCOzOudj5LegQ
-         5dm7X4Ey+7UNWH2dEf6aOZjycQAazEGHyeO0ydpPD8f+0IQY8Uup49jqieYU99zVXVqv
-         qcOg==
-X-Gm-Message-State: AOAM530OAEfZEiBkSRAL+tXnLiNip1Q6RKhifC56NqVA7e2Hf1FpPSOD
-        3dQ3B7gDQXPRM5tCmWTKNZmgNhL1HVY=
-X-Google-Smtp-Source: ABdhPJwnm6QCl8AXKbY5Y6wBKFPEVscShpEWXNkccFP3F3CbQjoBjoM6LK+D+BXDp5vX6jLW/1iGIZdXO+o=
+        bh=m+EPHltdynOdUR9+b1b8QS40GbbHNtfF/glWqdKc4L0=;
+        b=AKzgfKbSZF+vtNXGUzrgzZMWjmpSsgTQ+3yqzYF3PTt2t2y5sKBalomcxMYATW9EMs
+         a5oIcqy+se/Rwduz4uVOqDa8bsA4hsliEXl0a0l4lZdTYrVqZkY503FpBFYSm2oC2AQk
+         wFQvk9K7rX7TpQgHU74KcrHCXkhVF28Sx/o14DHJ7uDsMwFAGGlL4igwt6E8QSM2CvKY
+         VdAVdEJmWFrNXcpWeuMAobUFjR1qGoFX2ExU0m/xy/hZPfjPxBlJeOrMZ0ai9qqFpnDE
+         /S4Y6P7UZrDsSzE7rdBiReiv46w4ExEaumxZu9I4aPi3NaaBgBQEknqRnpcag3HO4jIE
+         bSDw==
+X-Gm-Message-State: AOAM532rBtZyFU8fINQRlLxdfkAek4q/ZvecjvM2AD3LkQw0igj0E2W2
+        7JJkmkYcwH5khdX65h9rgge2isT2APA=
+X-Google-Smtp-Source: ABdhPJz1adNbqMKVvf/fjqHzTk7Np3duENXUFtNKlfBxcgnPoWYBOCoH4jSBL6KA6eykdV5LrU8tsr+3iSw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:ec83:b0:15e:b5d2:a81b with SMTP id
- x3-20020a170902ec8300b0015eb5d2a81bmr10949310plg.64.1651704640674; Wed, 04
- May 2022 15:50:40 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:690b:b0:159:65c:9044 with SMTP id
+ j11-20020a170902690b00b00159065c9044mr24177158plk.47.1651704644594; Wed, 04
+ May 2022 15:50:44 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:47:46 +0000
+Date:   Wed,  4 May 2022 22:47:48 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-41-seanjc@google.com>
+Message-Id: <20220504224914.1654036-43-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 040/128] KVM: selftests: Rename 'struct vcpu' to 'struct kvm_vcpu'
+Subject: [PATCH 042/128] KVM: selftests: Convert memslot_perf_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -69,248 +68,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename 'struct vcpu' to 'struct kvm_vcpu' to align with 'struct kvm_vm'
-in the selftest, and to give readers a hint that the struct is specific
-to KVM.
+Convert memslot_perf_test to use __vm_create_with_one_vcpu() and pass
+around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
+This is the first of many, many steps towards eliminating VCPU_ID from
+all KVM selftests, and towards eventually purging the VM+vcpu_id mess.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     | 11 +++---
- tools/testing/selftests/kvm/lib/kvm_util.c    | 36 +++++++++----------
- .../selftests/kvm/lib/s390x/processor.c       |  2 +-
- .../selftests/kvm/lib/x86_64/processor.c      |  6 ++--
- 4 files changed, 27 insertions(+), 28 deletions(-)
+ .../testing/selftests/kvm/memslot_perf_test.c | 28 +++++++++----------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 96e08c9be013..ca65771388e7 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -16,6 +16,7 @@
- #include <linux/kvm.h>
- #include "linux/rbtree.h"
+diff --git a/tools/testing/selftests/kvm/memslot_perf_test.c b/tools/testing/selftests/kvm/memslot_perf_test.c
+index 1727f75e0c2c..009eb19b28af 100644
+--- a/tools/testing/selftests/kvm/memslot_perf_test.c
++++ b/tools/testing/selftests/kvm/memslot_perf_test.c
+@@ -25,8 +25,6 @@
+ #include <kvm_util.h>
+ #include <processor.h>
  
-+
- #include <sys/ioctl.h>
- 
- #include "sparsebit.h"
-@@ -43,7 +44,7 @@ struct userspace_mem_region {
- 	struct hlist_node slot_node;
- };
- 
--struct vcpu {
-+struct kvm_vcpu {
- 	struct list_head list;
- 	uint32_t id;
- 	int fd;
-@@ -92,7 +93,7 @@ struct kvm_vm {
- 			continue;			\
- 		else
- 
--struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
-+struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
- 
- /*
-  * Virtual Translation Tables Dump
-@@ -643,17 +644,17 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
-  * Create a VM with a single vCPU with reasonable defaults and @extra_mem_pages
-  * additional pages of guest memory.  Returns the VM and vCPU (via out param).
-  */
--struct kvm_vm *__vm_create_with_one_vcpu(struct vcpu **vcpu,
-+struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
- 					 uint64_t extra_mem_pages,
- 					 void *guest_code);
- 
--static inline struct kvm_vm *vm_create_with_one_vcpu(struct vcpu **vcpu,
-+static inline struct kvm_vm *vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
- 						     void *guest_code)
- {
- 	return __vm_create_with_one_vcpu(vcpu, 0, guest_code);
- }
- 
--struct vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm);
-+struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm);
- 
- /*
-  * Adds a vCPU with reasonable defaults (e.g. a stack)
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index d31ac35a86f3..911869b350ea 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -353,7 +353,7 @@ struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
- 					    (uint32_t []){ vcpuid });
- }
- 
--struct kvm_vm *__vm_create_with_one_vcpu(struct vcpu **vcpu,
-+struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
- 					 uint64_t extra_mem_pages,
- 					 void *guest_code)
- {
-@@ -397,7 +397,7 @@ void kvm_vm_restart(struct kvm_vm *vmp)
- 	}
- }
- 
--struct vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm)
-+struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm)
- {
- 	kvm_vm_restart(vm);
- 
-@@ -476,23 +476,23 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
- 	return &region->region;
- }
- 
--static struct vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpuid)
-+static struct kvm_vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpu_id)
- {
--	struct vcpu *vcpu;
-+	struct kvm_vcpu *vcpu;
- 
- 	list_for_each_entry(vcpu, &vm->vcpus, list) {
--		if (vcpu->id == vcpuid)
-+		if (vcpu->id == vcpu_id)
- 			return vcpu;
- 	}
- 
- 	return NULL;
- }
- 
--struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid)
-+struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpu_id)
- {
--	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_find(vm, vcpu_id);
- 
--	TEST_ASSERT(vcpu, "vCPU %d does not exist", vcpuid);
-+	TEST_ASSERT(vcpu, "vCPU %d does not exist", vcpu_id);
- 	return vcpu;
- }
- 
-@@ -508,7 +508,7 @@ struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid)
-  *
-  * Removes a vCPU from a VM and frees its resources.
-  */
--static void vm_vcpu_rm(struct kvm_vm *vm, struct vcpu *vcpu)
-+static void vm_vcpu_rm(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
- {
- 	int ret;
- 
-@@ -530,7 +530,7 @@ static void vm_vcpu_rm(struct kvm_vm *vm, struct vcpu *vcpu)
- 
- void kvm_vm_release(struct kvm_vm *vmp)
- {
--	struct vcpu *vcpu, *tmp;
-+	struct kvm_vcpu *vcpu, *tmp;
- 	int ret;
- 
- 	list_for_each_entry_safe(vcpu, tmp, &vmp->vcpus, list)
-@@ -1082,7 +1082,7 @@ static int vcpu_mmap_sz(void)
-  */
- void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu;
-+	struct kvm_vcpu *vcpu;
- 
- 	/* Confirm a vcpu with the specified id doesn't already exist. */
- 	TEST_ASSERT(!vcpu_find(vm, vcpuid), "vCPU%d already exists\n", vcpuid);
-@@ -1456,7 +1456,7 @@ void vm_create_irqchip(struct kvm_vm *vm)
-  */
- struct kvm_run *vcpu_state(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 
- 	return vcpu->run;
- }
-@@ -1497,7 +1497,7 @@ int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
- 
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 	int ret;
- 
- 	vcpu->run->immediate_exit = 1;
-@@ -1541,7 +1541,7 @@ struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid)
- int __vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid,
- 		 unsigned long cmd, void *arg)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 
- 	return ioctl(vcpu->fd, cmd, arg);
- }
-@@ -1556,7 +1556,7 @@ void _vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid, unsigned long cmd,
- 
- void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 	uint32_t size = vm->dirty_ring_size;
- 
- 	TEST_ASSERT(size > 0, "Should enable dirty ring first");
-@@ -1677,9 +1677,7 @@ void vcpu_device_attr_set(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
- int __vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
- 			  uint64_t attr)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
+-#define VCPU_ID 0
 -
--	return __kvm_has_device_attr(vcpu->fd, group, attr);
-+	return __kvm_has_device_attr(vcpu_get(vm, vcpuid)->fd, group, attr);
- }
+ #define MEM_SIZE		((512U << 20) + 4096)
+ #define MEM_SIZE_PAGES		(MEM_SIZE / 4096)
+ #define MEM_GPA		0x10000000UL
+@@ -90,6 +88,7 @@ static_assert(MEM_TEST_MOVE_SIZE <= MEM_TEST_SIZE,
  
- /*
-@@ -1772,7 +1770,7 @@ void vm_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
- {
- 	int ctr;
- 	struct userspace_mem_region *region;
--	struct vcpu *vcpu;
+ struct vm_data {
+ 	struct kvm_vm *vm;
 +	struct kvm_vcpu *vcpu;
+ 	pthread_t vcpu_thread;
+ 	uint32_t nslots;
+ 	uint64_t npages;
+@@ -127,29 +126,29 @@ static bool verbose;
+ 			pr_info(__VA_ARGS__);	\
+ 	} while (0)
  
- 	fprintf(stream, "%*smode: 0x%x\n", indent, "", vm->mode);
- 	fprintf(stream, "%*sfd: %i\n", indent, "", vm->fd);
-diff --git a/tools/testing/selftests/kvm/lib/s390x/processor.c b/tools/testing/selftests/kvm/lib/s390x/processor.c
-index df9d9650d916..aec15ca9d887 100644
---- a/tools/testing/selftests/kvm/lib/s390x/processor.c
-+++ b/tools/testing/selftests/kvm/lib/s390x/processor.c
-@@ -207,7 +207,7 @@ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...)
- 
- void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid, uint8_t indent)
+-static void check_mmio_access(struct vm_data *vm, struct kvm_run *run)
++static void check_mmio_access(struct vm_data *data, struct kvm_run *run)
  {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 
- 	fprintf(stream, "%*spstate: psw: 0x%.16llx:0x%.16llx\n",
- 		indent, "", vcpu->run->psw_mask, vcpu->run->psw_addr);
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 1e3d68bdfc7d..91b326cd43a2 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -938,7 +938,7 @@ struct kvm_msr_list *kvm_get_msr_index_list(void)
- 	return list;
+-	TEST_ASSERT(vm->mmio_ok, "Unexpected mmio exit");
++	TEST_ASSERT(data->mmio_ok, "Unexpected mmio exit");
+ 	TEST_ASSERT(run->mmio.is_write, "Unexpected mmio read");
+ 	TEST_ASSERT(run->mmio.len == 8,
+ 		    "Unexpected exit mmio size = %u", run->mmio.len);
+-	TEST_ASSERT(run->mmio.phys_addr >= vm->mmio_gpa_min &&
+-		    run->mmio.phys_addr <= vm->mmio_gpa_max,
++	TEST_ASSERT(run->mmio.phys_addr >= data->mmio_gpa_min &&
++		    run->mmio.phys_addr <= data->mmio_gpa_max,
+ 		    "Unexpected exit mmio address = 0x%llx",
+ 		    run->mmio.phys_addr);
  }
  
--static int vcpu_save_xsave_state(struct kvm_vm *vm, struct vcpu *vcpu,
-+static int vcpu_save_xsave_state(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
- 				 struct kvm_x86_state *state)
+-static void *vcpu_worker(void *data)
++static void *vcpu_worker(void *__data)
  {
- 	int size;
-@@ -956,7 +956,7 @@ static int vcpu_save_xsave_state(struct kvm_vm *vm, struct vcpu *vcpu,
+-	struct vm_data *vm = data;
+-	struct kvm_run *run;
++	struct vm_data *data = __data;
++	struct kvm_vcpu *vcpu = data->vcpu;
++	struct kvm_run *run = vcpu->run;
+ 	struct ucall uc;
  
- struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 	struct kvm_msr_list *list;
- 	struct kvm_x86_state *state;
- 	int nmsrs, r, i;
-@@ -1037,7 +1037,7 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
+-	run = vcpu_state(vm->vm, VCPU_ID);
+ 	while (1) {
+-		vcpu_run(vm->vm, VCPU_ID);
++		vcpu_run(data->vm, vcpu->id);
  
- void vcpu_load_state(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_x86_state *state)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 	int r;
+-		switch (get_ucall(vm->vm, VCPU_ID, &uc)) {
++		switch (get_ucall(data->vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			TEST_ASSERT(uc.args[1] == 0,
+ 				"Unexpected sync ucall, got %lx",
+@@ -158,7 +157,7 @@ static void *vcpu_worker(void *data)
+ 			continue;
+ 		case UCALL_NONE:
+ 			if (run->exit_reason == KVM_EXIT_MMIO)
+-				check_mmio_access(vm, run);
++				check_mmio_access(data, run);
+ 			else
+ 				goto done;
+ 			break;
+@@ -238,6 +237,7 @@ static struct vm_data *alloc_vm(void)
+ 	TEST_ASSERT(data, "malloc(vmdata) failed");
  
- 	r = ioctl(vcpu->fd, KVM_SET_SREGS, &state->sregs);
+ 	data->vm = NULL;
++	data->vcpu = NULL;
+ 	data->hva_slots = NULL;
+ 
+ 	return data;
+@@ -278,7 +278,7 @@ static bool prepare_vm(struct vm_data *data, int nslots, uint64_t *maxslots,
+ 	data->hva_slots = malloc(sizeof(*data->hva_slots) * data->nslots);
+ 	TEST_ASSERT(data->hva_slots, "malloc() fail");
+ 
+-	data->vm = vm_create_default(VCPU_ID, mempages, guest_code);
++	data->vm = __vm_create_with_one_vcpu(&data->vcpu, mempages, guest_code);
+ 	ucall_init(data->vm, NULL);
+ 
+ 	pr_info_v("Adding slots 1..%i, each slot with %"PRIu64" pages + %"PRIu64" extra pages last\n",
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
