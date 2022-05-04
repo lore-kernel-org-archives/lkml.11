@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DDDC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68640C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358964AbiEDRjO (ORCPT
+        id S1359365AbiEDRkA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        Wed, 4 May 2022 13:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357350AbiEDRKJ (ORCPT
+        with ESMTP id S1356795AbiEDRJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:10:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23B94AE0C;
-        Wed,  4 May 2022 09:57:18 -0700 (PDT)
+        Wed, 4 May 2022 13:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2FC1D31B;
+        Wed,  4 May 2022 09:55:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 666E7618E5;
-        Wed,  4 May 2022 16:57:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF895C385A5;
-        Wed,  4 May 2022 16:57:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 879A2B8279A;
+        Wed,  4 May 2022 16:55:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3761BC385AA;
+        Wed,  4 May 2022 16:55:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683437;
-        bh=QaSWXVTa1jFCnz66oF5QYBpqSJ/mOHkh5HeNfDbiWT4=;
+        s=korg; t=1651683334;
+        bh=kZKq3ZishqK+X0zTlISgnwHroEnNga+xVwSdyqmmg1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GXFBAVhcuIxXdUwntsO8ACEFV65W4a9mHsIJsPjMcGI+qkIJrga/FCtOwAbRZZGjd
-         mbUyktb2YGN8D+3NmSqGBhwl37QvaQsbf5LiCkMb6xTf1NPDK4rWdhh6n2UFg5AOpq
-         MX2r+/VJX5Bhj9tY/prsxymgQCLpiU0PVYW1Grcs=
+        b=AlSNrCuzZ4TiF0c9GdBOBMvGgL0HWvdyb8xJ+5iMUBqT/eZW+Xqljs3McHSawOY1N
+         W02PHyO8Xjc/OCO3HHDDKtg2B1Tj+H5hogDcv6sEH+FR7LbTXw+RizURXVyrK5n7HU
+         X3dXcvP0uLCZlGD+9TftpfG3gsmZ3c5ixXf1I47o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 117/225] net: hns3: add validity check for message data length
-Date:   Wed,  4 May 2022 18:45:55 +0200
-Message-Id: <20220504153120.969847666@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH 5.17 021/225] usb: typec: ucsi: Fix role swapping
+Date:   Wed,  4 May 2022 18:44:19 +0200
+Message-Id: <20220504153112.215490080@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,42 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-[ Upstream commit 7d413735cb18ff73aaba3457b16b08332e8d3cc4 ]
+commit eb5d7ff3cf0d55093c619b5ad107cd5c05ce8134 upstream.
 
-Add validity check for message data length in function
-hclge_send_mbx_msg(), avoid unexpected overflow.
+All attempts to swap the roles timed out because the
+completion was done without releasing the port lock. Fixing
+that by releasing the lock before starting to wait for the
+completion.
 
-Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/linux-usb/037de7ac-e210-bdf5-ec7a-8c0c88a0be20@gmail.com/
+Fixes: ad74b8649bea ("usb: typec: ucsi: Preliminary support for alternate modes")
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220405134824.68067-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/usb/typec/ucsi/ucsi.c |   20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 36cbafc5f944..53f939923c28 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -94,6 +94,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
- 	enum hclge_comm_cmd_status status;
- 	struct hclge_desc desc;
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -958,14 +958,18 @@ static int ucsi_dr_swap(struct typec_por
+ 	if (ret < 0)
+ 		goto out_unlock;
  
-+	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
-+		dev_err(&hdev->pdev->dev,
-+			"msg data length(=%u) exceeds maximum(=%u)\n",
-+			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
-+		return -EMSGSIZE;
-+	}
++	mutex_unlock(&con->lock);
 +
- 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
+ 	if (!wait_for_completion_timeout(&con->complete,
+-					msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
+-		ret = -ETIMEDOUT;
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	return 0;
  
- 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
--- 
-2.35.1
-
+ out_unlock:
+ 	mutex_unlock(&con->lock);
+ 
+-	return ret < 0 ? ret : 0;
++	return ret;
+ }
+ 
+ static int ucsi_pr_swap(struct typec_port *port, enum typec_role role)
+@@ -996,11 +1000,13 @@ static int ucsi_pr_swap(struct typec_por
+ 	if (ret < 0)
+ 		goto out_unlock;
+ 
++	mutex_unlock(&con->lock);
++
+ 	if (!wait_for_completion_timeout(&con->complete,
+-				msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS))) {
+-		ret = -ETIMEDOUT;
+-		goto out_unlock;
+-	}
++					 msecs_to_jiffies(UCSI_SWAP_TIMEOUT_MS)))
++		return -ETIMEDOUT;
++
++	mutex_lock(&con->lock);
+ 
+ 	/* Something has gone wrong while swapping the role */
+ 	if (UCSI_CONSTAT_PWR_OPMODE(con->status.flags) !=
 
 
