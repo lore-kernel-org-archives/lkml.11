@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B80C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A42C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357716AbiEDR3O (ORCPT
+        id S1357674AbiEDR3I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
+        Wed, 4 May 2022 13:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356263AbiEDRJI (ORCPT
+        with ESMTP id S1356268AbiEDRJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 13:09:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB989532C7;
-        Wed,  4 May 2022 09:55:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9894D532D1;
+        Wed,  4 May 2022 09:55:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62499B82552;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C85DF617BD;
         Wed,  4 May 2022 16:55:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A30C385AA;
-        Wed,  4 May 2022 16:55:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A18DC385A5;
+        Wed,  4 May 2022 16:55:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683300;
-        bh=LqikQVruDlTPY4W8yio5ZihTYRkdGJY8fqc90o2rNZU=;
+        s=korg; t=1651683301;
+        bh=6bZU3NGMInlfBN8tBdB3M1+GwC8lMtxZ9yWkud+oP+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=coNhCWYqnrfqNT70riuu9EaJMYjXCRe8MoUHkS4QnwZsN2SnQX+PeZ22BtIL+yjRR
-         hYuE0lieZwFOJXdjWtThiQP2bKcZ9ptU2KuN2tjs6f5wk3Wukm4Dkix3wi8dumLoui
-         v/sJjhOYMMZ2c/fRoZvgW8ZE9bVKpU8eT582Kpmo=
+        b=hkTGBT+R+uolJZMKsdGMfP4ZQZaV0FivSr3H5l91rCWoiHjW4PYUNzOn6xszwjoE+
+         lngMc4Ci8mDt578YlxLIUlNXps2bAQT3R4PiWiQyjCV/mNi17qYX3ByB81svRMKjnX
+         uH8xfTYt3TRJkJ9cBnNiLhFQONJphpxTo6J7o5lY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang1.zhang@intel.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 143/177] kasan: prevent cpu_quarantine corruption when CPU offline and cache shrink occur at same time
-Date:   Wed,  4 May 2022 18:45:36 +0200
-Message-Id: <20220504153106.070173619@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.15 158/177] tty: n_gsm: fix decoupled mux resource
+Date:   Wed,  4 May 2022 18:45:51 +0200
+Message-Id: <20220504153107.599944026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
 References: <20220504153053.873100034@linuxfoundation.org>
@@ -54,53 +48,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 31fa985b4196f8a66f027672e9bf2b81fea0417c upstream.
+commit 1ec92e9742774bf42614fceea3bf6b50c9409225 upstream.
 
-kasan_quarantine_remove_cache() is called in kmem_cache_shrink()/
-destroy().  The kasan_quarantine_remove_cache() call is protected by
-cpuslock in kmem_cache_destroy() to ensure serialization with
-kasan_cpu_offline().
+The active mux instances are managed in the gsm_mux array and via mux_get()
+and mux_put() functions separately. This gives a very loose coupling
+between the actual instance and the gsm_mux array which manages it. It also
+results in unnecessary lockings which makes it prone to failures. And it
+creates a race condition if more than the maximum number of mux instances
+are requested while the user changes the parameters of an active instance.
+The user may loose ownership of the current mux instance in this case.
+Fix this by moving the gsm_mux array handling to the mux allocation and
+deallocation functions.
 
-However the kasan_quarantine_remove_cache() call is not protected by
-cpuslock in kmem_cache_shrink().  When a CPU is going offline and cache
-shrink occurs at same time, the cpu_quarantine may be corrupted by
-interrupt (per_cpu_remove_cache operation).
-
-So add a cpu_quarantine offline flags check in per_cpu_remove_cache().
-
-[akpm@linux-foundation.org: add comment, per Zqiang]
-
-Link: https://lkml.kernel.org/r/20220414025925.2423818-1-qiang1.zhang@intel.com
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-3-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/kasan/quarantine.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/tty/n_gsm.c |   63 +++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 38 insertions(+), 25 deletions(-)
 
---- a/mm/kasan/quarantine.c
-+++ b/mm/kasan/quarantine.c
-@@ -315,6 +315,13 @@ static void per_cpu_remove_cache(void *a
- 	struct qlist_head *q;
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2078,18 +2078,6 @@ static void gsm_cleanup_mux(struct gsm_m
+ 	/* Finish outstanding timers, making sure they are done */
+ 	del_timer_sync(&gsm->t2_timer);
  
- 	q = this_cpu_ptr(&cpu_quarantine);
-+	/*
-+	 * Ensure the ordering between the writing to q->offline and
-+	 * per_cpu_remove_cache.  Prevent cpu_quarantine from being corrupted
-+	 * by interrupt.
-+	 */
-+	if (READ_ONCE(q->offline))
-+		return;
- 	qlist_move_cache(q, &to_free, cache);
- 	qlist_free_all(&to_free, cache);
+-	spin_lock(&gsm_mux_lock);
+-	for (i = 0; i < MAX_MUX; i++) {
+-		if (gsm_mux[i] == gsm) {
+-			gsm_mux[i] = NULL;
+-			break;
+-		}
+-	}
+-	spin_unlock(&gsm_mux_lock);
+-	/* open failed before registering => nothing to do */
+-	if (i == MAX_MUX)
+-		return;
+-
+ 	/* Free up any link layer users */
+ 	for (i = 0; i < NUM_DLCI; i++)
+ 		if (gsm->dlci[i])
+@@ -2113,7 +2101,6 @@ static void gsm_cleanup_mux(struct gsm_m
+ static int gsm_activate_mux(struct gsm_mux *gsm)
+ {
+ 	struct gsm_dlci *dlci;
+-	int i = 0;
+ 
+ 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
+ 	init_waitqueue_head(&gsm->event);
+@@ -2125,18 +2112,6 @@ static int gsm_activate_mux(struct gsm_m
+ 	else
+ 		gsm->receive = gsm1_receive;
+ 
+-	spin_lock(&gsm_mux_lock);
+-	for (i = 0; i < MAX_MUX; i++) {
+-		if (gsm_mux[i] == NULL) {
+-			gsm->num = i;
+-			gsm_mux[i] = gsm;
+-			break;
+-		}
+-	}
+-	spin_unlock(&gsm_mux_lock);
+-	if (i == MAX_MUX)
+-		return -EBUSY;
+-
+ 	dlci = gsm_dlci_alloc(gsm, 0);
+ 	if (dlci == NULL)
+ 		return -ENOMEM;
+@@ -2152,6 +2127,15 @@ static int gsm_activate_mux(struct gsm_m
+  */
+ static void gsm_free_mux(struct gsm_mux *gsm)
+ {
++	int i;
++
++	for (i = 0; i < MAX_MUX; i++) {
++		if (gsm == gsm_mux[i]) {
++			gsm_mux[i] = NULL;
++			break;
++		}
++	}
++	mutex_destroy(&gsm->mutex);
+ 	kfree(gsm->txframe);
+ 	kfree(gsm->buf);
+ 	kfree(gsm);
+@@ -2171,12 +2155,20 @@ static void gsm_free_muxr(struct kref *r
+ 
+ static inline void mux_get(struct gsm_mux *gsm)
+ {
++	unsigned long flags;
++
++	spin_lock_irqsave(&gsm_mux_lock, flags);
+ 	kref_get(&gsm->ref);
++	spin_unlock_irqrestore(&gsm_mux_lock, flags);
  }
+ 
+ static inline void mux_put(struct gsm_mux *gsm)
+ {
++	unsigned long flags;
++
++	spin_lock_irqsave(&gsm_mux_lock, flags);
+ 	kref_put(&gsm->ref, gsm_free_muxr);
++	spin_unlock_irqrestore(&gsm_mux_lock, flags);
+ }
+ 
+ static inline unsigned int mux_num_to_base(struct gsm_mux *gsm)
+@@ -2197,6 +2189,7 @@ static inline unsigned int mux_line_to_n
+ 
+ static struct gsm_mux *gsm_alloc_mux(void)
+ {
++	int i;
+ 	struct gsm_mux *gsm = kzalloc(sizeof(struct gsm_mux), GFP_KERNEL);
+ 	if (gsm == NULL)
+ 		return NULL;
+@@ -2226,6 +2219,26 @@ static struct gsm_mux *gsm_alloc_mux(voi
+ 	gsm->mtu = 64;
+ 	gsm->dead = true;	/* Avoid early tty opens */
+ 
++	/* Store the instance to the mux array or abort if no space is
++	 * available.
++	 */
++	spin_lock(&gsm_mux_lock);
++	for (i = 0; i < MAX_MUX; i++) {
++		if (!gsm_mux[i]) {
++			gsm_mux[i] = gsm;
++			gsm->num = i;
++			break;
++		}
++	}
++	spin_unlock(&gsm_mux_lock);
++	if (i == MAX_MUX) {
++		mutex_destroy(&gsm->mutex);
++		kfree(gsm->txframe);
++		kfree(gsm->buf);
++		kfree(gsm);
++		return NULL;
++	}
++
+ 	return gsm;
+ }
+ 
 
 
