@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB99C352A7
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA70AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377181AbiEDRpr (ORCPT
+        id S1357353AbiEDRqE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Wed, 4 May 2022 13:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356331AbiEDRL6 (ORCPT
+        with ESMTP id S1356363AbiEDRNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:11:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8124BB8F;
-        Wed,  4 May 2022 09:57:47 -0700 (PDT)
+        Wed, 4 May 2022 13:13:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F57C4BFE9;
+        Wed,  4 May 2022 09:57:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E42A61794;
-        Wed,  4 May 2022 16:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A719C385AA;
-        Wed,  4 May 2022 16:57:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 217CCB827AC;
+        Wed,  4 May 2022 16:57:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA602C385A5;
+        Wed,  4 May 2022 16:57:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683459;
-        bh=IchFKXoZxi31RZsb3AoQmBrHUFpAC4EeXnEm2gI5ets=;
+        s=korg; t=1651683473;
+        bh=S6XRCJvSUct6wqJVjrr2tkLGkanNTlzpoeSxcEGtOSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EkqDNkCIhbTO4B7PnuuqRa3La03zUN4ATDLSzMogOTbGcv9+N0SMQOZ+FJcbc8Epq
-         YL/epeCu1eL+/kQcAXa2/Ojp/qsHBUQ8Hxq+VqY/0PEcFqmRKrurBvVacCgMIademQ
-         mBFo/n8S2XhecuZ6zoW5U6MnT8lEDMQ64QU7TGmg=
+        b=BwjIiC0BwvuDGv7eV1LNGHt4Hn505NIKgofOeGeCPHQUsn/EjQOXP0oT+9mTyHtkn
+         zW+h3wcjzbbTgi6IJhuP1EyAMKHfbyTBN6c/bpqY0qaXzQ54hdIu2TA+vrCkek0riU
+         mfV7eWEmxCt6u2CGs3MFFYgQJgYUjFO7sLEDDuQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Oros <poros@redhat.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.17 134/225] ice: wait 5 s for EMP reset after firmware flash
-Date:   Wed,  4 May 2022 18:46:12 +0200
-Message-Id: <20220504153122.262348884@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 148/225] gfs2: Minor retry logic cleanup
+Date:   Wed,  4 May 2022 18:46:26 +0200
+Message-Id: <20220504153123.338685522@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -51,110 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Oros <poros@redhat.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit b537752e6cbf0e4475c165178ca02241b53ff6ef ]
+[ Upstream commit 124c458a401a2497f796e4f2d6cafac6edbea8e9 ]
 
-We need to wait 5 s for EMP reset after firmware flash. Code was extracted
-from OOT driver (ice v1.8.3 downloaded from sourceforge). Without this
-wait, fw_activate let card in inconsistent state and recoverable only
-by second flash/activate. Flash was tested on these fw's:
->From -> To
- 3.00 -> 3.10/3.20
- 3.10 -> 3.00/3.20
- 3.20 -> 3.00/3.10
+Clean up the retry logic in the read and write functions somewhat.
 
-Reproducer:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
-
-dmesg after flash:
-[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
-[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
-[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
-[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
-[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
-[   55.647348] ice 0000:ca:00.0: PTP init successful
-[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
-[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
-[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
-[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
-Reboot doesn’t help, only second flash/activate with OOT or patched
-driver put card back in consistent state.
-
-After patch:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
-
-Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
-Signed-off-by: Petr Oros <poros@redhat.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/gfs2/file.c | 34 ++++++++++++++++------------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 2de2bbbca1e9..e347030ee2e3 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6662,12 +6662,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 
- 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
- 
-+#define ICE_EMP_RESET_SLEEP_MS 5000
- 	if (reset_type == ICE_RESET_EMPR) {
- 		/* If an EMP reset has occurred, any previously pending flash
- 		 * update will have completed. We no longer know whether or
- 		 * not the NVM update EMP reset is restricted.
- 		 */
- 		pf->fw_emp_reset_disabled = false;
-+
-+		msleep(ICE_EMP_RESET_SLEEP_MS);
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index b53ad18e5ccb..de0122806fb3 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -851,9 +851,9 @@ static ssize_t gfs2_file_direct_read(struct kiocb *iocb, struct iov_iter *to,
+ 		leftover = fault_in_iov_iter_writeable(to, window_size);
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
+-			if (!gfs2_holder_queued(gh))
+-				goto retry;
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(gh))
++				goto retry_under_glock;
++			goto retry;
+ 		}
  	}
- 
- 	err = ice_init_all_ctrlq(hw);
+ 	if (gfs2_holder_queued(gh))
+@@ -920,9 +920,9 @@ static ssize_t gfs2_file_direct_write(struct kiocb *iocb, struct iov_iter *from,
+ 		leftover = fault_in_iov_iter_readable(from, window_size);
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
+-			if (!gfs2_holder_queued(gh))
+-				goto retry;
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(gh))
++				goto retry_under_glock;
++			goto retry;
+ 		}
+ 	}
+ out:
+@@ -989,12 +989,11 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 		leftover = fault_in_iov_iter_writeable(to, window_size);
+ 		gfs2_holder_disallow_demote(&gh);
+ 		if (leftover != window_size) {
+-			if (!gfs2_holder_queued(&gh)) {
+-				if (written)
+-					goto out_uninit;
+-				goto retry;
+-			}
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(&gh))
++				goto retry_under_glock;
++			if (written)
++				goto out_uninit;
++			goto retry;
+ 		}
+ 	}
+ 	if (gfs2_holder_queued(&gh))
+@@ -1068,12 +1067,11 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
+ 		gfs2_holder_disallow_demote(gh);
+ 		if (leftover != window_size) {
+ 			from->count = min(from->count, window_size - leftover);
+-			if (!gfs2_holder_queued(gh)) {
+-				if (read)
+-					goto out_uninit;
+-				goto retry;
+-			}
+-			goto retry_under_glock;
++			if (gfs2_holder_queued(gh))
++				goto retry_under_glock;
++			if (read)
++				goto out_uninit;
++			goto retry;
+ 		}
+ 	}
+ out_unlock:
 -- 
 2.35.1
 
