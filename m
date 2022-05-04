@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C28C1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01262C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355726AbiEDRIt (ORCPT
+        id S1356037AbiEDRI7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
+        Wed, 4 May 2022 13:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355684AbiEDRAU (ORCPT
+        with ESMTP id S1354582AbiEDQ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B868B4BFC6;
-        Wed,  4 May 2022 09:52:02 -0700 (PDT)
+        Wed, 4 May 2022 12:58:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A313019003;
+        Wed,  4 May 2022 09:50:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A551961851;
-        Wed,  4 May 2022 16:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF398C385AA;
-        Wed,  4 May 2022 16:51:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E9DC61794;
+        Wed,  4 May 2022 16:50:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852EBC385AA;
+        Wed,  4 May 2022 16:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683113;
-        bh=BKQz0nAn/eAiLvSRMPbGpJQjoQ6VusTJ+giCR77huYw=;
+        s=korg; t=1651683036;
+        bh=znIJma1PJ8F2SQkkSJRLuJHmh0Wjcu0w9zWweQBvDEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K1wFDYoAT2mbT/hYtOi27GZyaOG8rLv8+wea7xST2++FdMnnSjIhPeWMxzOFMbQx8
-         G1t0RrV0YGFHMlYoiFFChCZzfbdZFEWQn0OJeJIYiRvho4D5FG5cjfKees5hNIvn9J
-         cyR1JNsvB1dXlV22mvioCc1DGUHy7h2QyT1Z+LZs=
+        b=wxmyNoLiDvF1DkWjINu2yyZLTCFWvt9Y5Af67XtlQ6PuW8rQmDIE4k6RqMBcjlVv/
+         Zm5KB4Q+IdKS3R76tW6KDspXmOBtUaWey3mo417oMQV2ni6tazZ+0x8SEjHXYnt7Rr
+         lcpDkIO5L8NCW6R4Bljf5O/ZQDrg7AShhM4BCEyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 095/129] ixgbe: ensure IPsec VF<->PF compatibility
-Date:   Wed,  4 May 2022 18:44:47 +0200
-Message-Id: <20220504153028.459291037@linuxfoundation.org>
+Subject: [PATCH 5.10 040/129] arm64: dts: meson: remove CPU opps below 1GHz for SM1 boards
+Date:   Wed,  4 May 2022 18:43:52 +0200
+Message-Id: <20220504153024.364832328@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -54,43 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit f049efc7f7cd2f3c419f55040928eaefb13b3636 ]
+[ Upstream commit fd86d85401c2049f652293877c0f7e6e5afc3bbc ]
 
-The VF driver can forward any IPsec flags and such makes the function
-is not extendable and prone to backward/forward incompatibility.
+Amlogic SM1 devices experience CPU stalls and random board wedges when
+the system idles and CPU cores clock down to lower opp points. Recent
+vendor kernels include a change to remove 100-250MHz and other distro
+sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
+are removed or the CPU governor forced to performance stalls are still
+observed, so let's remove them to improve stability and uptime.
 
-If new software runs on VF, it won't know that PF configured something
-completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
-
-Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Shannon Nelson <snelson@pensando.io>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220427173152.443102-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220210100638.19130-3-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 20 --------------------
+ 1 file changed, 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-index 54d47265a7ac..319620856cba 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-@@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
- 	/* Tx IPsec offload doesn't seem to work on this
- 	 * device, so block these requests for now.
- 	 */
--	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
-+	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
-+	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
- 		err = -EOPNOTSUPP;
- 		goto err_out;
- 	}
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index c309517abae3..defe0b8d4d27 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -95,26 +95,6 @@ cpu_opp_table: opp-table {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 
+-		opp-100000000 {
+-			opp-hz = /bits/ 64 <100000000>;
+-			opp-microvolt = <730000>;
+-		};
+-
+-		opp-250000000 {
+-			opp-hz = /bits/ 64 <250000000>;
+-			opp-microvolt = <730000>;
+-		};
+-
+-		opp-500000000 {
+-			opp-hz = /bits/ 64 <500000000>;
+-			opp-microvolt = <730000>;
+-		};
+-
+-		opp-667000000 {
+-			opp-hz = /bits/ 64 <666666666>;
+-			opp-microvolt = <750000>;
+-		};
+-
+ 		opp-1000000000 {
+ 			opp-hz = /bits/ 64 <1000000000>;
+ 			opp-microvolt = <770000>;
 -- 
 2.35.1
 
