@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 128F5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA877C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354913AbiEDRDQ (ORCPT
+        id S1353649AbiEDRDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        Wed, 4 May 2022 13:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354575AbiEDQ6x (ORCPT
+        with ESMTP id S1354577AbiEDQ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:58:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193381834B;
-        Wed,  4 May 2022 09:50:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D2C18B34;
+        Wed,  4 May 2022 09:50:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDFC5B82552;
-        Wed,  4 May 2022 16:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB2AC385A5;
-        Wed,  4 May 2022 16:50:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC34CB82752;
+        Wed,  4 May 2022 16:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632FBC385A4;
+        Wed,  4 May 2022 16:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683029;
-        bh=zL7m3jJKBlSnNR74+VWXMFcYh75Cfk2X59tlw/vprHk=;
+        s=korg; t=1651683031;
+        bh=tYbbtFWE1gBnzqfxTsWUCnZsm02ZdWEOGyvLnKVQE5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xCdSN5SjozaRlRiiPhCEabgQclfagNqctKpi8OBu3XCYwCJmSdRXfJDgsDEkwm1hG
-         ydcpsnvj+FkGbe4k5ybt+RVRjsmFRC6Spc7QEJvQfmwN1NaBrxZpMZ3osKHsg5CHZg
-         Tz6jbeBMML8KRf0dFyzzmtzgJ/nRiZVTxXZ4rJBk=
+        b=H54ctx2y5Uek03VWs27OuCHN+rjuQ+nb0F7kIllExRNJGUfyw0L9E7xpuIsw8sOnL
+         E06Gp7wzwjKPLAj9s0ZzXjFQwipmlCOswlxUwISuGFo63QsXWumNaJiLLcHIoxxUON
+         Lf41N10g9fIAq6mOaU0hDAPTQBW23rnPv2G0SUBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
-Subject: [PATCH 5.10 020/129] usb: gadget: uvc: Fix crash when encoding data for usb request
-Date:   Wed,  4 May 2022 18:43:32 +0200
-Message-Id: <20220504153022.895360243@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Sven Peter <sven@svenpeter.dev>
+Subject: [PATCH 5.10 022/129] usb: dwc3: Try usb-role-switch first in dwc3_drd_init
+Date:   Wed,  4 May 2022 18:43:34 +0200
+Message-Id: <20220504153023.018906145@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -48,58 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Vacura <w36195@motorola.com>
+From: Sven Peter <sven@svenpeter.dev>
 
-commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
+commit ab7aa2866d295438dc60522f85c5421c6b4f1507 upstream.
 
-During the uvcg_video_pump() process, if an error occurs and
-uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
-the current marker (queue->buf_used) of the active buffer (no longer
-active) is not reset. On the next iteration of uvcg_video_pump() the
-stale buf_used count will be used and the logic of min((unsigned
-int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
-nbytes size, causing an invalid memory access.
+If the PHY controller node has a "port" dwc3 tries to find an
+extcon device even when "usb-role-switch" is present. This happens
+because dwc3_get_extcon() sees that "port" node and then calls
+extcon_find_edev_by_node() which will always return EPROBE_DEFER
+in that case.
 
-[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-...
-uvcg_queue_cancel() is called and the queue is cleared out, but the
-marker queue->buf_used is not reset.
-...
-[80802.262328][ T8682] Unable to handle kernel paging request at virtual
-address ffffffc03af9f000
-...
-...
-[80802.263138][ T8682] Call trace:
-[80802.263146][ T8682]  __memcpy+0x12c/0x180
-[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
-[80802.263165][ T8682]  process_one_work+0x2cc/0x568
-[80802.263173][ T8682]  worker_thread+0x28c/0x518
-[80802.263181][ T8682]  kthread+0x160/0x170
-[80802.263188][ T8682]  ret_from_fork+0x10/0x18
-[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+On the other hand, even if an extcon was present and dwc3_get_extcon()
+was successful it would still be ignored in favor of "usb-role-switch".
 
-Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
+Let's just first check if "usb-role-switch" is configured in the device
+tree and directly use it instead and only try to look for an extcon
+device otherwise.
+
+Fixes: 8a0a13799744 ("usb: dwc3: Registering a role switch in the DRD code.")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+Link: https://lore.kernel.org/r/20220411155300.9766-1-sven@svenpeter.dev
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/uvc_queue.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/dwc3/drd.c |   11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/gadget/function/uvc_queue.c
-+++ b/drivers/usb/gadget/function/uvc_queue.c
-@@ -242,6 +242,8 @@ void uvcg_queue_cancel(struct uvc_video_
- 		buf->state = UVC_BUF_STATE_ERROR;
- 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
- 	}
-+	queue->buf_used = 0;
+--- a/drivers/usb/dwc3/drd.c
++++ b/drivers/usb/dwc3/drd.c
+@@ -568,16 +568,15 @@ int dwc3_drd_init(struct dwc3 *dwc)
+ {
+ 	int ret, irq;
+ 
++	if (ROLE_SWITCH &&
++	    device_property_read_bool(dwc->dev, "usb-role-switch"))
++		return dwc3_setup_role_switch(dwc);
 +
- 	/* This must be protected by the irqlock spinlock to avoid race
- 	 * conditions between uvc_queue_buffer and the disconnection event that
- 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+ 	dwc->edev = dwc3_get_extcon(dwc);
+ 	if (IS_ERR(dwc->edev))
+ 		return PTR_ERR(dwc->edev);
+ 
+-	if (ROLE_SWITCH &&
+-	    device_property_read_bool(dwc->dev, "usb-role-switch")) {
+-		ret = dwc3_setup_role_switch(dwc);
+-		if (ret < 0)
+-			return ret;
+-	} else if (dwc->edev) {
++	if (dwc->edev) {
+ 		dwc->edev_nb.notifier_call = dwc3_drd_notifier;
+ 		ret = extcon_register_notifier(dwc->edev, EXTCON_USB_HOST,
+ 					       &dwc->edev_nb);
 
 
