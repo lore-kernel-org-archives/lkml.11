@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFADC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4048CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354620AbiEDRBF (ORCPT
+        id S1354639AbiEDRBR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52430 "EHLO
+        Wed, 4 May 2022 13:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354054AbiEDQy6 (ORCPT
+        with ESMTP id S1354086AbiEDQy7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:54:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A4A49912;
-        Wed,  4 May 2022 09:49:46 -0700 (PDT)
+        Wed, 4 May 2022 12:54:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4570749919;
+        Wed,  4 May 2022 09:49:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 339606179D;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24C656176E;
+        Wed,  4 May 2022 16:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE81C385A5;
         Wed,  4 May 2022 16:49:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BE16C385A4;
-        Wed,  4 May 2022 16:49:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682985;
-        bh=/ORMeW9VdrfrZbrInu4dInEhj+vzKcGEl2Q1Sgw3Yvc=;
+        s=korg; t=1651682986;
+        bh=wc3rDHdA1PWnE21lxT4hEmsW7Iuq8hxO5HNjLyXzhN8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jj35su75pQQmLfz3iyGlxUrn7yo+Ha+gFcGyytQbZJ6cp0rcU545auARWT0hv2Fca
-         g8hwqwhdIVsV19MouC2a2Ju7Yl/r0jHDw6MkOYbDxs+qZJ7ViLGnAx+Bdke1sX5q3P
-         FZ1mjZAyAUi9+gURlMehXhpnvTUkDOFZj9/tbdT4=
+        b=2C7xyjeFgxuKxujsRbJSWh874F6PP7S64vC5YXbOhw0i10CZg0J7EdvAGXh0HRKuG
+         6W9TKxdGRjnkv+GjAn4WJV9g2wXRwBXlVWAPrxhSRPHFVsR64MU3szqaLdNSWt9hl1
+         PusG9PlWsvTQyhKYy7z7cl5KTGR11EeH+S9sK7pc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 014/129] iio: dac: ad5446: Fix read_raw not returning set value
-Date:   Wed,  4 May 2022 18:43:26 +0200
-Message-Id: <20220504153022.437640260@linuxfoundation.org>
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>,
+        Tainping Fang <tianping.fang@mediatek.com>
+Subject: [PATCH 5.10 003/129] usb: mtu3: fix USB 3.0 dual-role-switch from device to host
+Date:   Wed,  4 May 2022 18:43:15 +0200
+Message-Id: <20220504153021.616099058@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -52,33 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+From: Macpaul Lin <macpaul.lin@mediatek.com>
 
-commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
+commit 456244aeecd54249096362a173dfe06b82a5cafa upstream.
 
-read_raw should return the un-scaled value.
+Issue description:
+  When an OTG port has been switched to device role and then switch back
+  to host role again, the USB 3.0 Host (XHCI) will not be able to detect
+  "plug in event of a connected USB 2.0/1.0 ((Highspeed and Fullspeed)
+  devices until system reboot.
 
-Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Root cause and Solution:
+  There is a condition checking flag "ssusb->otg_switch.is_u3_drd" in
+  toggle_opstate(). At the end of role switch procedure, toggle_opstate()
+  will be called to set DC_SESSION and SOFT_CONN bit. If "is_u3_drd" was
+  set and switched the role to USB host 3.0, bit DC_SESSION and SOFT_CONN
+  will be skipped hence caused the port cannot detect connected USB 2.0
+  (Highspeed and Fullspeed) devices. Simply remove the condition check to
+  solve this issue.
+
+Fixes: d0ed062a8b75 ("usb: mtu3: dual-role mode support")
+Cc: stable@vger.kernel.org
+Tested-by: Fabien Parent <fparent@baylibre.com>
+Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+Signed-off-by: Tainping Fang <tianping.fang@mediatek.com>
+Link: https://lore.kernel.org/r/20220419081245.21015-1-macpaul.lin@mediatek.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5446.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/mtu3/mtu3_dr.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/iio/dac/ad5446.c
-+++ b/drivers/iio/dac/ad5446.c
-@@ -178,7 +178,7 @@ static int ad5446_read_raw(struct iio_de
+--- a/drivers/usb/mtu3/mtu3_dr.c
++++ b/drivers/usb/mtu3/mtu3_dr.c
+@@ -41,10 +41,8 @@ static char *mailbox_state_string(enum m
  
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		*val = st->cached_val;
-+		*val = st->cached_val >> chan->scan_type.shift;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = st->vref_mv;
+ static void toggle_opstate(struct ssusb_mtk *ssusb)
+ {
+-	if (!ssusb->otg_switch.is_u3_drd) {
+-		mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
+-		mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
+-	}
++	mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
++	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
+ }
+ 
+ /* only port0 supports dual-role mode */
 
 
