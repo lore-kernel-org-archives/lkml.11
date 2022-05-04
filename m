@@ -2,107 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA83CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351103AbiEDOJz (ORCPT
+        id S1351039AbiEDOLK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
+        Wed, 4 May 2022 10:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351109AbiEDOIs (ORCPT
+        with ESMTP id S1344973AbiEDOLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:08:48 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBF73FDBD
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:05:10 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso3305673wma.0
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 07:05:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7s8Dkq+WYTUvt1eMI+UndBL7YVh+xKQ8rqnLmZXLwkY=;
-        b=OyGdp78bqxqrVMr3zdt1uaD/Ac3z6RgQidnw+5ULB1bz2kwC5QjwLR4rSRoFkSTM47
-         50juL7UMKQsOV4WPjGDT5GGOLdyvS2YnnaPx0yPDhjoadetCqTUGgcPxI5D6ZMYGOND4
-         0XNkHMMApj3HLIC+7ebffNsggdfjA7Sg/nbTNuWO2U7IqLyjyTzOeYFwmYI81uRe7pes
-         ybW/4+E5QLmlj8OZtVek7tuz2VOVX9dGqBmHibaKp/vlmzT/ngytIkDTPO1HzjlEOfjr
-         Us3SRmbZxBjfofrJnBdGg0tIMBs9TOUD4pH7i+0qcuTyfcP1u613zaJAjN4gEjI56Ti4
-         /kfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7s8Dkq+WYTUvt1eMI+UndBL7YVh+xKQ8rqnLmZXLwkY=;
-        b=IDgtI8FMaxB44OhKvZOj68C+t0tBMXmDTot028P6FqMCZ8T7uV8wiKACM+BpSvaxGs
-         RovY8j28KovNRPL+OMWj5XLUwCwUNE3W+3HgLlcx7w70a7mXq+nwroHVUdvnLgymqXL9
-         U269ZiKNv6DfxK4aU0ULpCJe/DbOZhDg/nhWwjJ6R6Jxbo9WTWpY4IcjT477sWq27XCp
-         yABMankgOEmqu4CypkndWRQCL8U/qqHOP/MEnNyEz6i0zLerh2vklTfiXjW/kfSDBwEC
-         qSXNThLp8gQ/wLpAIjc+yX8QYZ99Rmfr60nBeXx31lh1ktJWN2Jt2d8QSemk8gS46tnR
-         KVPg==
-X-Gm-Message-State: AOAM530GY68lrzNFdDlIKCHT1PgZI4HaAVOIJcmCvB+XRymWIbQRtsDg
-        bGlOoUJF66fS8OZBgN7ddn2Iv3n/+qHen6X03bjb7g==
-X-Google-Smtp-Source: ABdhPJwesySbY7sxWm7bS8V76ogaDlP3y1cXaV9nKVEpoS86jfm3nssObDn4imqrfpLorf5VEV2g7f46iPEMnjnXzBY=
-X-Received: by 2002:a05:600c:264e:b0:394:2c56:eeb5 with SMTP id
- 14-20020a05600c264e00b003942c56eeb5mr8098997wmy.6.1651673108864; Wed, 04 May
- 2022 07:05:08 -0700 (PDT)
+        Wed, 4 May 2022 10:11:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBB541338;
+        Wed,  4 May 2022 07:07:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6890461A35;
+        Wed,  4 May 2022 14:07:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D14A1C385A4;
+        Wed,  4 May 2022 14:07:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651673247;
+        bh=AOzP1mjGIKqKOsNlo9BHb/hKxiRMov98HMlUP91rW/0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QFkrSmgCkKXjqTPEq4kQlT0ktmBYcUZhWXaNTU/xLrJiMFoy3ekEvJ76ZybZitrbT
+         NgRYx3J2l+pWcvJHZN58Q3tlp7gXbafjbBeGHoY88sZ8VKL1H1qA4bVMMgdf+AtkAF
+         ZIGp2V58aIKQyKmpuIXfbUPMTDLkNzL+QfKxkr08XcEVMAT4VwdM73l8HAjN97MPcc
+         4oEzXkI7lCXLc4Vu4LNIBC9qQ+wxT7crzjS0TbrwArlun6Px6QbG0EoqNFoNWm59XO
+         mB+Q7vkxkSyDoRSX40CorQVysexK45CIzoRJNlKvH1zObWQr0j4dX9eSoaNZVlspNq
+         HOfc7g1HcUzyQ==
+Received: by mail-wr1-f43.google.com with SMTP id d5so2181986wrb.6;
+        Wed, 04 May 2022 07:07:27 -0700 (PDT)
+X-Gm-Message-State: AOAM533lI/2iybd3pb0fmsY0ib2ml2cLZqRCy1nFu8hoFrgtSI6ZSn1B
+        Vw63GiMgW8xJ4VOV7S5gz/mPbwsD88MKQGGI968=
+X-Google-Smtp-Source: ABdhPJyBvuzUVHauiOOhlgsX/356BcYJrvgYX24D9gTDq9FHSvu8LBFLLUOrs+/KZcEXVCs6uf2aemiYa3pCuILeHqY=
+X-Received: by 2002:a5d:49cb:0:b0:20a:cee3:54fc with SMTP id
+ t11-20020a5d49cb000000b0020acee354fcmr16094949wrs.12.1651673246077; Wed, 04
+ May 2022 07:07:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220502093625.GA23225@kernel.org> <CAGS_qxoc=AnkzUtaFpJvF08Z_Z15h9sZxYNQT5-S9C7aM4poEg@mail.gmail.com>
- <CANiq72m70q+zviHVNSV_AEwOByVBiMuSQL5vyo2UMMpD-vd+_Q@mail.gmail.com>
-In-Reply-To: <CANiq72m70q+zviHVNSV_AEwOByVBiMuSQL5vyo2UMMpD-vd+_Q@mail.gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Wed, 4 May 2022 22:04:57 +0800
-Message-ID: <CABVgOSmkZ9EXijBRx_pvS=Opizb1z2632B5rVsd1WRNOL5o8GA@mail.gmail.com>
-Subject: Re: [PATCH] kunit: take `kunit_assert` as `const`
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220429135108.2781579-44-schnelle@linux.ibm.com>
+ <20220503233802.GA420374@bhelgaas> <CAK8P3a02vidd7u5Kp6UJj=9tj_hFGL24SmzuNpDGu1GOa1w9+w@mail.gmail.com>
+ <alpine.DEB.2.21.2205041311280.9548@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2205041311280.9548@angie.orcam.me.uk>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 4 May 2022 16:07:09 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2jwv00En13=5mHVA4OGRzDpAsPKy4nqM79L6xP5=aQFQ@mail.gmail.com>
+Message-ID: <CAK8P3a2jwv00En13=5mHVA4OGRzDpAsPKy4nqM79L6xP5=aQFQ@mail.gmail.com>
+Subject: Re: [RFC v2 25/39] pcmcia: add HAS_IOPORT dependencies
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 4:09 PM Miguel Ojeda
-<miguel.ojeda.sandonis@gmail.com> wrote:
+On Wed, May 4, 2022 at 2:38 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
 >
-> Hi Daniel,
+> On Wed, 4 May 2022, Arnd Bergmann wrote:
 >
-> On Mon, May 2, 2022 at 9:44 PM Daniel Latypov <dlatypov@google.com> wrote:
+> > Almost all architectures that support CONFIG_PCI also provide
+> > HAS_IOPORT today (at least at compile time, if not at runtime),
+> > with s390 as a notable exception. Any machines that have legacy
+> > PCI device support will also have I/O ports because a lot of
+> > legacy PCI cards used it, and any machine with a pc-card slot
+> > should also support legacy PCI devices.
 > >
-> > Reviewed-by: Daniel Latypov <dlatypov@google.com>
-> >
-> > Thanks for this, the code definitely should have been this way from the start.
-> >
-> > I had wanted to make this change but mistakenly thought the format
-> > func took it via non-const for some reason.
-> > I must have misread it once and got it into my head that we were
-> > leaving the door open for mutable child structs (which sounds like a
-> > bad idea).
+> > If we get new architectures without I/O space in the future, they
+> > would certainly not care about supporting old cardbus devices.
 >
-> Thanks for reviewing it so quickly! Yeah, I was unsure too if there
-> was an external reason such as some future plan to use the mutability
-> as you mention or maybe some out-of-tree user was relying on it
-> already.
->
-> But I thought it would be best to make it stricter until it is
-> actually needed (if ever); or if there is an actual user for
-> mutability, it should be documented/noted in-tree.
+>  POWER9 is another architecture with no port I/O space[1]:
 
-I definitely agree here -- I can't recall any particular plan that
-would require this to be non-const, and we can always change it back
-if we really need to.
+POWER9 is just an implementation of the power architecture
+that has a particular PCI host bridge. I would assume that
+arch/powerpc/ would continue to set HAS_IOPORT because
+it knows how to access I/O ports at compile-time.
 
-> It also simplifies a tiny bit a Rust-side call to
-> `kunit_do_failed_assertion` that I am using within generated Rust
-> documentation tests.
+If a particular host bridge does not declare an I/O port range
+in its DT, then of course it won't be accessible, but that is
+different from architectures that have no concept of I/O ports.
 
-Very exciting! I assume that's the PR here:
-https://github.com/Rust-for-Linux/linux/pull/757
-
-Cheers,
--- David
+         Arnd
