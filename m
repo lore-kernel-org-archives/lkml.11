@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 197AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90772C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355547AbiEDRH5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        id S244786AbiEDRIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 13:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355500AbiEDRAF (ORCPT
+        with ESMTP id S1355515AbiEDRAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:00:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEB54B841;
+        Wed, 4 May 2022 13:00:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B054B848;
         Wed,  4 May 2022 09:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C00DB617A6;
-        Wed,  4 May 2022 16:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11482C385B1;
-        Wed,  4 May 2022 16:51:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DDD7B827A7;
+        Wed,  4 May 2022 16:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A95C385A5;
+        Wed,  4 May 2022 16:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683095;
-        bh=VCtRyXg3Pr3WcgZ2FulUzVHz7WGeADVI97kfVAKFyaE=;
+        s=korg; t=1651683101;
+        bh=ebOr44XK2DxN/BZFmPjSWlHCRGwu+FBZ8dwVpzqybFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KCvZRBIYJjwA3meAkOH+szscu1TlwW2YOn5FSESa2SpeFJNj6Fycxv3tMOHw/1rVX
-         JJtEEFh/PzgR5PghQ1ld3RRAWOHqIIIAOrdUMoNek2GCGsqiadgDNw6uxAhbQ0dD3v
-         f5DZszMp7JIzGL0+ChZSuwznWwhdJ6iyeAMmpsIY=
+        b=JPOjGob0Sm6XccGlWjkA8j3ZyM8MLn9luBtVVJyguJMaGJ1SWXBxcvUqQFSHkrF7f
+         AT+HA7haI4Gn0W9VL4OJk1FhQFewLnsfcH3cv6/WzQDdzj3nh12AObFCzOA8r9N6OO
+         2C4PDmuEUOob2+SzC1ziBWa4K1OlkEPQmfL3T7RI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 087/129] net: bcmgenet: hide status block before TX timestamping
-Date:   Wed,  4 May 2022 18:44:39 +0200
-Message-Id: <20220504153027.919756294@linuxfoundation.org>
+Subject: [PATCH 5.10 105/129] powerpc/perf: Fix 32bit compile
+Date:   Wed,  4 May 2022 18:44:57 +0200
+Message-Id: <20220504153029.323810206@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153021.299025455@linuxfoundation.org>
 References: <20220504153021.299025455@linuxfoundation.org>
@@ -51,61 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Lemon <jonathan.lemon@gmail.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit acac0541d1d65e81e599ec399d34d184d2424401 ]
+[ Upstream commit bb82c574691daf8f7fa9a160264d15c5804cb769 ]
 
-The hardware checksum offloading requires use of a transmit
-status block inserted before the outgoing frame data, this was
-updated in '9a9ba2a4aaaa ("net: bcmgenet: always enable status blocks")'
+The "read_bhrb" global symbol is only called under CONFIG_PPC64 of
+arch/powerpc/perf/core-book3s.c but it is compiled for both 32 and 64 bit
+anyway (and LLVM fails to link this on 32bit).
 
-However, skb_tx_timestamp() assumes that it is passed a raw frame
-and PTP parsing chokes on this status block.
+This fixes it by moving bhrb.o to obj64 targets.
 
-Fix this by calling __skb_pull(), which hides the TSB before calling
-skb_tx_timestamp(), so an outgoing PTP packet is parsed correctly.
-
-As the data in the skb has already been set up for DMA, and the
-dma_unmap_* calls use a separately stored address, there is no
-no effective change in the data transmission.
-
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220424165307.591145-1-jonathan.lemon@gmail.com
-Fixes: d03825fba459 ("net: bcmgenet: add skb_tx_timestamp call")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220421025756.571995-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/powerpc/perf/Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index a2062144d7ca..9ffdaa84ba12 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -1987,6 +1987,11 @@ static struct sk_buff *bcmgenet_add_tsb(struct net_device *dev,
- 	return skb;
- }
+--- a/arch/powerpc/perf/Makefile
++++ b/arch/powerpc/perf/Makefile
+@@ -5,11 +5,11 @@ ifdef CONFIG_COMPAT
+ obj-$(CONFIG_PERF_EVENTS)	+= callchain_32.o
+ endif
  
-+static void bcmgenet_hide_tsb(struct sk_buff *skb)
-+{
-+	__skb_pull(skb, sizeof(struct status_64));
-+}
-+
- static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
-@@ -2093,6 +2098,8 @@ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
+-obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o bhrb.o
++obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o
+ obj64-$(CONFIG_PPC_PERF_CTRS)	+= ppc970-pmu.o power5-pmu.o \
+ 				   power5+-pmu.o power6-pmu.o power7-pmu.o \
+ 				   isa207-common.o power8-pmu.o power9-pmu.o \
+-				   generic-compat-pmu.o power10-pmu.o
++				   generic-compat-pmu.o power10-pmu.o bhrb.o
+ obj32-$(CONFIG_PPC_PERF_CTRS)	+= mpc7450-pmu.o
  
- 	GENET_CB(skb)->last_cb = tx_cb_ptr;
-+
-+	bcmgenet_hide_tsb(skb);
- 	skb_tx_timestamp(skb);
- 
- 	/* Decrement total BD count and advance our write pointer */
--- 
-2.35.1
-
+ obj-$(CONFIG_PPC_POWERNV)	+= imc-pmu.o
 
 
