@@ -2,109 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64007C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B527C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 12:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349454AbiEDM3j (ORCPT
+        id S1349445AbiEDMbM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 08:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
+        Wed, 4 May 2022 08:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345750AbiEDM3h (ORCPT
+        with ESMTP id S1345750AbiEDMbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 08:29:37 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FFF13E38;
-        Wed,  4 May 2022 05:26:01 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 90E2E1F38D;
-        Wed,  4 May 2022 12:26:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651667160; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=doyRZ/aPo6CAu2aRJZdJIbiD5u5Ey0uZjhyvfP1Ctxg=;
-        b=N2vaxZGJ2unb+3IDJGpPKSzFqAbVU0whcBJYvGepz19nZuYUtUZV1YeQwH/896HEErAkZE
-        Y6ajefODov6DJ/roi62apFVoZZ+Qv0Mkw7J15GK+8M7slaceWBctJQU5sdF7elqYx4+hbf
-        sd773fem46TOty3AXl7mg/7SEvNr6/U=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3F161131BD;
-        Wed,  4 May 2022 12:26:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 1Ld7DthwcmIuWwAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Wed, 04 May 2022 12:26:00 +0000
-Date:   Wed, 4 May 2022 14:25:58 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     "T.J. Mercier" <tjmercier@google.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, daniel@ffwll.ch,
-        hridya@google.com, christian.koenig@amd.com, jstultz@google.com,
-        tkjos@android.com, cmllamas@google.com, surenb@google.com,
-        kaleshsingh@google.com, Kenny.Ho@amd.com,
-        skhan@linuxfoundation.org, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-Subject: Re: [PATCH v6 2/6] cgroup: gpu: Add a cgroup controller for
- allocator attribution of GPU memory
-Message-ID: <20220504122558.GB24172@blackbody.suse.cz>
-References: <20220502231944.3891435-1-tjmercier@google.com>
- <20220502231944.3891435-3-tjmercier@google.com>
+        Wed, 4 May 2022 08:31:09 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07425240AC
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 05:27:33 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id a21so1523294edb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 05:27:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J9R3Lsqjcoyq8xBzCQ7oMbOHcOpzWiLwQluOtaowe4M=;
+        b=ZDFzQBE+/w7Mm1JfSHlBFMWC12aJmVXpdoIL8k4jma12fhI26nXzZT7pjCBjuxoUPK
+         4Vs+e2Mr8SiIXAUzv2OgAiKRr63tB1N0xNeapCZlo4Nvw7lSh/95Iv9rIJacgVso96vv
+         oVGXEKmFeAHDNzbcMCeIxZ99IV4wFn1asusC5/w2SwdNn2S1UKxdqlmzUTZ3/gC8E+vN
+         0IHmzrLkeBe0I1dPrblQNVMwuoF0lNhITxYZu6rIDO1XNFVHLtZ5JkrK6sLblo5zwD+G
+         5nuIIcantrDlw3C+80pBFYBkDkWxpLbTLvJeIyPgs3CoM4MCfCWvNLW/U4TC3l+uei93
+         CMiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J9R3Lsqjcoyq8xBzCQ7oMbOHcOpzWiLwQluOtaowe4M=;
+        b=MxD9P+9luSBLaTXs6SDWTiP/H9G93lscl/veMR3XMcvA9fvOAOAK9M35Yi/4PuKkCN
+         iTKpiUJZGdjwoeJ8yK/cyGcUSjaR0EWkhR4PxFeKNIKyXfCYT6KOvYrDqUPb+FpHsoWI
+         fuB3lRuiXMT2xNV4ij6iqhEBGRjqwcf0Ch6e9SZQZiM8yx7b65Ihcw/n4FTpzR6fXCyE
+         OqN3OAGsPBWrXHXQ5yd41nXZyKHdhX7OKhzaNpiesvX875qbXmvkupldKEPbehnV1EVa
+         5k8vISNB4YzP9ogd/TjGWBACnLCau4cuZ/n+0iM+lRi7HdbrrbgZdf2xsHSrVRVZ3/KA
+         rpFw==
+X-Gm-Message-State: AOAM533mNb5zi2oD1OyH79Et+PERHLGFoJJEbM/PuUTG9BB/9t5P+JEH
+        QmhzbP9zwM+z3deZYuL4WZgqvMR9MbNRqw==
+X-Google-Smtp-Source: ABdhPJwrxZtnX0wxqljSsLFU8r1SztMvEgtOve76g4EWg1J/NHn3VNdPNVFo8rs9bpMDLkhLZDuFfw==
+X-Received: by 2002:aa7:d9d6:0:b0:425:dafc:2fc6 with SMTP id v22-20020aa7d9d6000000b00425dafc2fc6mr22490855eds.340.1651667251521;
+        Wed, 04 May 2022 05:27:31 -0700 (PDT)
+Received: from prec5560.. (freifunk-gw.bsa1-cpe1.syseleven.net. [176.74.57.43])
+        by smtp.gmail.com with ESMTPSA id mm30-20020a170906cc5e00b006f3ef214e06sm5675557ejb.108.2022.05.04.05.27.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 05:27:30 -0700 (PDT)
+From:   Robert Foss <robert.foss@linaro.org>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, jonathan@marek.ca, tdas@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Robert Foss <robert.foss@linaro.org>
+Subject: [PATCH v3 0/6] SM8350 Display/GPU clock enablement
+Date:   Wed,  4 May 2022 14:27:19 +0200
+Message-Id: <20220504122725.179262-1-robert.foss@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220502231944.3891435-3-tjmercier@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+This series depends on a patch[1] for parked RCGs, which is being reviewed seperately from this series.
 
-On Mon, May 02, 2022 at 11:19:36PM +0000, "T.J. Mercier" <tjmercier@google.com> wrote:
-> This patch adds APIs to:
-> -allow a device to register for memory accounting using the GPU cgroup
-> controller.
-> -charge and uncharge allocated memory to a cgroup.
+Additionally this series is pending a decision about .fw_name .index  for new drivers, so please don't merge this yet.
 
-Is this API for separately built consumers?
-The respective functions should be exported (EXPORT_SYMBOL_GPL) if I
-haven't missed anything.
+[1] https://lore.kernel.org/linux-arm-msm/20220426212136.1543984-1-bjorn.andersson@linaro.org/
 
-> +#ifdef CONFIG_CGROUP_GPU
-> + /* The GPU cgroup controller data structure */
-> +struct gpucg {
-> +	struct cgroup_subsys_state css;
-> +
-> +	/* list of all resource pools that belong to this cgroup */
-> +	struct list_head rpools;
-> +};
-> +
-> +/* A named entity representing bucket of tracked memory. */
-> +struct gpucg_bucket {
-> +	/* list of various resource pools in various cgroups that the bucket is part of */
-> +	struct list_head rpools;
-> +
-> +	/* list of all buckets registered for GPU cgroup accounting */
-> +	struct list_head bucket_node;
-> +
-> +	/* string to be used as identifier for accounting and limit setting */
-> +	const char *name;
-> +};
 
-Do these struct have to be defined "publicly"?
-I.e. the driver code could just work with gpucg and gpucg_bucket
-pointers.
+Changes since v2
+ - Dropped "clk: Introduce CLK_ASSUME_ENABLED_WHEN_UNUSED"
+ - Dropped "clk: qcom: sm8250-dispcc: Flag shared RCGs as assumed enable"
+ - Dropped "clk: qcom: rcg2: Cache rate changes for parked RCGs"
 
-> +int gpucg_register_bucket(struct gpucg_bucket *bucket, const char *name)
 
-...and the registration function would return a pointer to newly
-(internally) allocated gpucg_bucket.
+Jonathan Marek (3):
+  clk: qcom: add support for SM8350 GPUCC
+  clk: qcom: add support for SM8350 DISPCC
+  dt-bindings: clock: Add Qcom SM8350 DISPCC bindings
 
-Regards,
-Michal
+Robert Foss (3):
+  arm64: dts: qcom: sm8350: Replace integers with rpmpd defines
+  dt-bindings: clock: Add Qcom SM8350 GPUCC bindings
+  arm64: dts: qcom: sm8350: Add DISPCC node
+
+ .../bindings/clock/qcom,dispcc-sm8x50.yaml    |   6 +-
+ .../devicetree/bindings/clock/qcom,gpucc.yaml |   2 +
+ arch/arm64/boot/dts/qcom/sm8350.dtsi          |  42 +-
+ drivers/clk/qcom/Kconfig                      |  12 +-
+ drivers/clk/qcom/Makefile                     |   1 +
+ drivers/clk/qcom/dispcc-sm8250.c              |  60 +-
+ drivers/clk/qcom/gpucc-sm8350.c               | 637 ++++++++++++++++++
+ .../dt-bindings/clock/qcom,dispcc-sm8350.h    |   1 +
+ include/dt-bindings/clock/qcom,gpucc-sm8350.h |  52 ++
+ 9 files changed, 800 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/clk/qcom/gpucc-sm8350.c
+ create mode 120000 include/dt-bindings/clock/qcom,dispcc-sm8350.h
+ create mode 100644 include/dt-bindings/clock/qcom,gpucc-sm8350.h
+
+-- 
+2.34.1
+
