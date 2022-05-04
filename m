@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C85DC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 864AEC35294
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358906AbiEDRfZ (ORCPT
+        id S1359023AbiEDRfi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
+        Wed, 4 May 2022 13:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357034AbiEDRJx (ORCPT
+        with ESMTP id S1357007AbiEDRJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:09:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DFA483B7;
-        Wed,  4 May 2022 09:56:59 -0700 (PDT)
+        Wed, 4 May 2022 13:09:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC0B4831E;
+        Wed,  4 May 2022 09:56:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60ECC618E6;
-        Wed,  4 May 2022 16:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC60AC385AA;
-        Wed,  4 May 2022 16:56:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12F46B827A1;
+        Wed,  4 May 2022 16:56:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96C9EC385BB;
+        Wed,  4 May 2022 16:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683418;
-        bh=U7CHLa07UFAQueiR4u3l4fMlzXwhdCCICSZBYwXOThI=;
+        s=korg; t=1651683414;
+        bh=NYarbiEKNJhdMwy43JHI6hW/kY4vKlXNSqwptppxmHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OI2vJSEjHlH5i0tcUjGn1FDOT/jIdzfyUhH68DJrK/Wzx6lwqQNStCWfO6pG0MidN
-         AQu6ddrGShX6azolQNqqLZ53H0NuQWVMGDXkY38S62FYpxRkaaKyaJ61NE/wbjd9zL
-         eG9XV8domPckK3Hlsgjb5R7Pm9Mo6VIDgjYazvMQ=
+        b=o6sS2/b1YAh//7S9evPqcpb1lDWPhU6OOJxPOj2ktBUTntSm8DRJhWNXwp5Qz0AgE
+         uG3fp5rppmkgEm4x+dRT0oHSNbyEqcEm8Z3XO5ZKA8/seWc7UgzcEzF8aQDpN1gTJX
+         zQ/W3z+cgbYkwErNkFPAVblCwYOhM3ON+ssXTuZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 103/225] bpf, lwt: Fix crash when using bpf_skb_set_tunnel_key() from bpf_xmit lwt hook
-Date:   Wed,  4 May 2022 18:45:41 +0200
-Message-Id: <20220504153119.885566519@linuxfoundation.org>
+Subject: [PATCH 5.17 099/225] pinctrl: stm32: Do not call stm32_gpio_get() for edge triggered IRQs in EOI
+Date:   Wed,  4 May 2022 18:45:37 +0200
+Message-Id: <20220504153119.592660213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
 References: <20220504153110.096069935@linuxfoundation.org>
@@ -50,85 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eyal Birger <eyal.birger@gmail.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit b02d196c44ead1a5949729be9ff08fe781c3e48a ]
+[ Upstream commit e74200ebf7c4f6a7a7d1be9f63833ddba251effa ]
 
-xmit_check_hhlen() observes the dst for getting the device hard header
-length to make sure a modified packet can fit. When a helper which changes
-the dst - such as bpf_skb_set_tunnel_key() - is called as part of the
-xmit program the accessed dst is no longer valid.
+The stm32_gpio_get() should only be called for LEVEL triggered interrupts,
+skip calling it for EDGE triggered interrupts altogether to avoid wasting
+CPU cycles in EOI handler. On this platform, EDGE triggered interrupts are
+the majority and LEVEL triggered interrupts are the exception no less, and
+the CPU cycles are not abundant.
 
-This leads to the following splat:
-
- BUG: kernel NULL pointer dereference, address: 00000000000000de
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 0 PID: 798 Comm: ping Not tainted 5.18.0-rc2+ #103
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
- RIP: 0010:bpf_xmit+0xfb/0x17f
- Code: c6 c0 4d cd 8e 48 c7 c7 7d 33 f0 8e e8 42 09 fb ff 48 8b 45 58 48 8b 95 c8 00 00 00 48 2b 95 c0 00 00 00 48 83 e0 fe 48 8b 00 <0f> b7 80 de 00 00 00 39 c2 73 22 29 d0 b9 20 0a 00 00 31 d2 48 89
- RSP: 0018:ffffb148c0bc7b98 EFLAGS: 00010282
- RAX: 0000000000000000 RBX: 0000000000240008 RCX: 0000000000000000
- RDX: 0000000000000010 RSI: 00000000ffffffea RDI: 00000000ffffffff
- RBP: ffff922a828a4e00 R08: ffffffff8f1350e8 R09: 00000000ffffdfff
- R10: ffffffff8f055100 R11: ffffffff8f105100 R12: 0000000000000000
- R13: ffff922a828a4e00 R14: 0000000000000040 R15: 0000000000000000
- FS:  00007f414e8f0080(0000) GS:ffff922afdc00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00000000000000de CR3: 0000000002d80006 CR4: 0000000000370ef0
- Call Trace:
-  <TASK>
-  lwtunnel_xmit.cold+0x71/0xc8
-  ip_finish_output2+0x279/0x520
-  ? __ip_finish_output.part.0+0x21/0x130
-
-Fix by fetching the device hard header length before running the BPF code.
-
-Fixes: 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure")
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220420165219.1755407-1-eyal.birger@gmail.com
+Fixes: 47beed513a85b ("pinctrl: stm32: Add level interrupt support to gpio irq chip")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Fabien Dessenne <fabien.dessenne@foss.st.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+To: linux-gpio@vger.kernel.org
+Link: https://lore.kernel.org/r/20220415215410.498349-1-marex@denx.de
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/lwt_bpf.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/pinctrl/stm32/pinctrl-stm32.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
-index 349480ef68a5..8b6b5e72b217 100644
---- a/net/core/lwt_bpf.c
-+++ b/net/core/lwt_bpf.c
-@@ -159,10 +159,8 @@ static int bpf_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- 	return dst->lwtstate->orig_output(net, sk, skb);
- }
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+index 9ed764731570..df1d6b466fb7 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -311,6 +311,10 @@ static void stm32_gpio_irq_trigger(struct irq_data *d)
+ 	struct stm32_gpio_bank *bank = d->domain->host_data;
+ 	int level;
  
--static int xmit_check_hhlen(struct sk_buff *skb)
-+static int xmit_check_hhlen(struct sk_buff *skb, int hh_len)
- {
--	int hh_len = skb_dst(skb)->dev->hard_header_len;
--
- 	if (skb_headroom(skb) < hh_len) {
- 		int nhead = HH_DATA_ALIGN(hh_len - skb_headroom(skb));
- 
-@@ -274,6 +272,7 @@ static int bpf_xmit(struct sk_buff *skb)
- 
- 	bpf = bpf_lwt_lwtunnel(dst->lwtstate);
- 	if (bpf->xmit.prog) {
-+		int hh_len = dst->dev->hard_header_len;
- 		__be16 proto = skb->protocol;
- 		int ret;
- 
-@@ -291,7 +290,7 @@ static int bpf_xmit(struct sk_buff *skb)
- 			/* If the header was expanded, headroom might be too
- 			 * small for L2 header to come, expand as needed.
- 			 */
--			ret = xmit_check_hhlen(skb);
-+			ret = xmit_check_hhlen(skb, hh_len);
- 			if (unlikely(ret))
- 				return ret;
- 
++	/* Do not access the GPIO if this is not LEVEL triggered IRQ. */
++	if (!(bank->irq_type[d->hwirq] & IRQ_TYPE_LEVEL_MASK))
++		return;
++
+ 	/* If level interrupt type then retrig */
+ 	level = stm32_gpio_get(&bank->gpio_chip, d->hwirq);
+ 	if ((level == 0 && bank->irq_type[d->hwirq] == IRQ_TYPE_LEVEL_LOW) ||
 -- 
 2.35.1
 
