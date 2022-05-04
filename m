@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31412C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4548C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358921AbiEDRna (ORCPT
+        id S1359024AbiEDRnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
+        Wed, 4 May 2022 13:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355038AbiEDRLf (ORCPT
+        with ESMTP id S1356126AbiEDRJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:11:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A13E4B845;
-        Wed,  4 May 2022 09:57:36 -0700 (PDT)
+        Wed, 4 May 2022 13:09:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F042152B26;
+        Wed,  4 May 2022 09:54:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2655B827A3;
-        Wed,  4 May 2022 16:57:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CCCDC385A4;
-        Wed,  4 May 2022 16:57:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15D96616B8;
+        Wed,  4 May 2022 16:54:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59758C385AF;
+        Wed,  4 May 2022 16:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651683454;
-        bh=uNDN8A8qsXZol7TTIOtlrkvOZ9SMvxddG+IitYyh9TY=;
+        s=korg; t=1651683292;
+        bh=Sy62exZXu8SRxZ/3J0m2mUEFPA7eyvrWDncm6gmgQGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hHD4GxcyXiTgSz/4w15AFC6QR5mSyYgFDLrHZegkvw72N6ZWMqGNGlVSDqFWkYoav
-         +Wz4WPwdqlobyDBUbCda7SjxbAO2yUwP7PGirlhuMOcHzVP1cTIsmvgJlERNDDEIS6
-         mCw/2e/Ny/kBzHhkvQDn5ls05tDc6bYUAGAWoo6w=
+        b=E1Xgnr15qnmFlwl5UxrV6gXfA6RfyKUZoHmcOYMu4tazJxn27WPnSg+baqL1aDj8e
+         Drc+zPxp498cbbxT6LgxopnVKCRIBAWQkaN+R5QspxcA9XU5ZJPzvIwTfZh6r19Fjr
+         DN11cuFPe9wwgG4xqy+P9j4ClLteQjVh8AelPcv8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 121/225] ip_gre: Make o_seqno start from 0 in native mode
-Date:   Wed,  4 May 2022 18:45:59 +0200
-Message-Id: <20220504153121.269949239@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        Mika Kahola <mika.kahola@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Filippo Falezza <filippo.falezza@outlook.it>,
+        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: [PATCH 5.15 146/177] drm/i915: Check EDID for HDR static metadata when choosing blc
+Date:   Wed,  4 May 2022 18:45:39 +0200
+Message-Id: <20220504153106.360987392@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
-References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+References: <20220504153053.873100034@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +55,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Jouni Högander <jouni.hogander@intel.com>
 
-[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
+commit c05d8332f5d23fa3b521911cbe55a2b67fb21248 upstream.
 
-For GRE and GRETAP devices, currently o_seqno starts from 1 in native
-mode.  According to RFC 2890 2.2., "The first datagram is sent with a
-sequence number of 0."  Fix it.
+We have now seen panel (XMG Core 15 e21 laptop) advertizing support
+for Intel proprietary eDP backlight control via DPCD registers, but
+actually working only with legacy pwm control.
 
-It is worth mentioning that o_seqno already starts from 0 in collect_md
-mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
-gre_build_header() before getting incremented.
+This patch adds panel EDID check for possible HDR static metadata and
+Intel proprietary eDP backlight control is used only if that exists.
+Missing HDR static metadata is ignored if user specifically asks for
+Intel proprietary eDP backlight control via enable_dpcd_backlight
+parameter.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+v2 :
+- Ignore missing HDR static metadata if Intel proprietary eDP
+  backlight control is forced via i915.enable_dpcd_backlight
+- Printout info message if panel is missing HDR static metadata and
+  support for Intel proprietary eDP backlight control is detected
+
+Fixes: 4a8d79901d5b ("drm/i915/dp: Enable Intel's HDR backlight interface (only SDR for now)")
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5284
+Cc: Lyude Paul <lyude@redhat.com>
+Cc: Mika Kahola <mika.kahola@intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Filippo Falezza <filippo.falezza@outlook.it>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jouni Högander <jouni.hogander@intel.com>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220413082826.120634-1-jouni.hogander@intel.com
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+(cherry picked from commit b4b157577cb1de13bee8bebc3576f1de6799a921)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_gre.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c |   34 +++++++++++++-----
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 99db2e41ed10..ca70b92e80d9 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -459,14 +459,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
- 		       __be16 proto)
- {
- 	struct ip_tunnel *tunnel = netdev_priv(dev);
+--- a/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c
++++ b/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.c
+@@ -96,6 +96,14 @@
+ 
+ #define INTEL_EDP_BRIGHTNESS_OPTIMIZATION_1                            0x359
+ 
++enum intel_dp_aux_backlight_modparam {
++	INTEL_DP_AUX_BACKLIGHT_AUTO = -1,
++	INTEL_DP_AUX_BACKLIGHT_OFF = 0,
++	INTEL_DP_AUX_BACKLIGHT_ON = 1,
++	INTEL_DP_AUX_BACKLIGHT_FORCE_VESA = 2,
++	INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL = 3,
++};
++
+ /* Intel EDP backlight callbacks */
+ static bool
+ intel_dp_aux_supports_hdr_backlight(struct intel_connector *connector)
+@@ -125,6 +133,24 @@ intel_dp_aux_supports_hdr_backlight(stru
+ 		return false;
+ 	}
+ 
++	/*
++	 * If we don't have HDR static metadata there is no way to
++	 * runtime detect used range for nits based control. For now
++	 * do not use Intel proprietary eDP backlight control if we
++	 * don't have this data in panel EDID. In case we find panel
++	 * which supports only nits based control, but doesn't provide
++	 * HDR static metadata we need to start maintaining table of
++	 * ranges for such panels.
++	 */
++	if (i915->params.enable_dpcd_backlight != INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL &&
++	    !(connector->base.hdr_sink_metadata.hdmi_type1.metadata_type &
++	      BIT(HDMI_STATIC_METADATA_TYPE1))) {
++		drm_info(&i915->drm,
++			 "Panel is missing HDR static metadata. Possible support for Intel HDR backlight interface is not used. If your backlight controls don't work try booting with i915.enable_dpcd_backlight=%d. needs this, please file a _new_ bug report on drm/i915, see " FDO_BUG_URL " for details.\n",
++			 INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL);
++		return false;
++	}
++
+ 	panel->backlight.edp.intel.sdr_uses_aux =
+ 		tcon_cap[2] & INTEL_EDP_SDR_TCON_BRIGHTNESS_AUX_CAP;
+ 
+@@ -373,14 +399,6 @@ static const struct intel_panel_bl_funcs
+ 	.get = intel_dp_aux_vesa_get_backlight,
+ };
+ 
+-enum intel_dp_aux_backlight_modparam {
+-	INTEL_DP_AUX_BACKLIGHT_AUTO = -1,
+-	INTEL_DP_AUX_BACKLIGHT_OFF = 0,
+-	INTEL_DP_AUX_BACKLIGHT_ON = 1,
+-	INTEL_DP_AUX_BACKLIGHT_FORCE_VESA = 2,
+-	INTEL_DP_AUX_BACKLIGHT_FORCE_INTEL = 3,
+-};
 -
--	if (tunnel->parms.o_flags & TUNNEL_SEQ)
--		tunnel->o_seqno++;
-+	__be16 flags = tunnel->parms.o_flags;
- 
- 	/* Push GRE header. */
- 	gre_build_header(skb, tunnel->tun_hlen,
--			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
--			 htonl(tunnel->o_seqno));
-+			 flags, proto, tunnel->parms.o_key,
-+			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
- 
- 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
- }
--- 
-2.35.1
-
+ int intel_dp_aux_init_backlight_funcs(struct intel_connector *connector)
+ {
+ 	struct drm_device *dev = connector->base.dev;
 
 
