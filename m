@@ -2,104 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E53C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 00:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 00:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237805AbiEEAFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 20:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
+        id S235879AbiEEAGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 20:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382746AbiEDXuy (ORCPT
+        with ESMTP id S1383396AbiEDX4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:50:54 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC2C220EE
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:47:16 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id u3so3977268wrg.3
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a3PQkN+gf21RggCfRlbnzAg3Y0IDK9AvrHUeXDspmDA=;
-        b=s8D0hdEErUtB/tOqqi5koPP1ObIltDHxJsF3vu7tUYKf+QVqE2BCZwe8TwmjVrWD/p
-         tZYhf6h5cY5lziFt0dxJxyYtlSU3McdElqedVlwADKJdcMW3hEghSebK86BKQW5Gk1rb
-         h5RLyhUpDnIbB+E5g3WraStYDvzpqQwqSxKw/FT08LqpZ21OKQdNbLlDufQWqebOYO6o
-         RL8UdgO3Vne1Od0ianbjpjNNU5emYhQSEnSwmyU8z94ORg7Xfr45C6XXUIPg44vwPA+9
-         HfwPApdY1k0FIIsOo8YZalDDuZ7z2+ZizWaJ+xN+YlhWvw0IZBOcBjYhbgdEwstQh2OK
-         m1Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a3PQkN+gf21RggCfRlbnzAg3Y0IDK9AvrHUeXDspmDA=;
-        b=u+2aNCZSM30ZLc6XvI5y7o53IXP5XPcfo7maR+C6D0ycutKZcQGO7YHukqdsMFuTxL
-         bcL+yyLB47mCTMGvjAs7wo2fJQS7lhtfxTclNY3jEKX7+WxDsTs1Hfqlxx1XIaz8UvOv
-         2b+9SPJzZTI0Yi5U3IJNeBdWcI63GE48+n/zDgCVhEhkes9Sv0QCSpTpDGmbpiab6zy0
-         4BZa8ulZlWgcXnrP1KEYs3qvxVnuf8NgzLnnAflzGJbfCtoQ4PvjYpDHOD9TJuWkqysZ
-         3Cx3e6Ciq0CeT7oxBTUZ7+TzqfJgPziBc6MK5eupCU4hHz6uNeM2EirI8S1eNAybKzPR
-         bASA==
-X-Gm-Message-State: AOAM533NhRvx4gahCxGjEnvj/bKwO4Uo+8cqBeOKCVd0C75HisskcV0R
-        BqQGQt0BHNB0rx3RLobJdDFaTrJxq3GuSlDoMIdvlw==
-X-Google-Smtp-Source: ABdhPJzN9nXRY0rWdpKSs9VMyqTX6gCV58pFw17JVL2dLkl7aPqx0Pb6NzKnucrrh1/uy2r/4hTaEa/rbvBUIDIILUQ=
-X-Received: by 2002:a5d:6b0e:0:b0:20a:dd17:e452 with SMTP id
- v14-20020a5d6b0e000000b0020add17e452mr18161313wrw.501.1651708034493; Wed, 04
- May 2022 16:47:14 -0700 (PDT)
+        Wed, 4 May 2022 19:56:51 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDED7527FD
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:53:02 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 41EC72C05A0;
+        Wed,  4 May 2022 23:52:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1651708379;
+        bh=UCJo4TtFo4sGN/s3kINtgEKrTOixbhQ4uxHpCtWB1cA=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=mAJ0ZtscIQ8YDw843MkTX7jYg3Y3fC9x595hFrYNN3MWuENDPPJKkXhUFiZwptRn+
+         kWrmCSpa1NNnhLVMRUAMj4wAtEnfhzDZg1lzfSDC2KCVSlR27kXaUQKk+WU36Haoyi
+         Q5ZkFlRJfpTPCbgZhav4YwJMObsDnHLGTpA+EWPYruoAAg4L/QlsM6bg/tZibfY+B0
+         +qq8eAoNM0ymEpjzK9LpXKLsDZYftlESBYQk8iHmBPJBSYH6epGNZvhFBpsrPTksnO
+         l30nf3TNIoEyPvVr35iVMyq9Im0BW0YnuK7wrZvVZJQxFgtioDa6DddqtCnaAOm6iA
+         vet8QKA52QqaA==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B627311db0001>; Thu, 05 May 2022 11:52:59 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.32; Thu, 5 May 2022 11:52:58 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.033; Thu, 5 May 2022 11:52:58 +1200
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+CC:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Anatolij Gustschin" <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Pantelis Antoniou" <pantelis.antoniou@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
+ mpc5xxx_get_bus_frequency() to use fwnode
+Thread-Topic: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
+ mpc5xxx_get_bus_frequency() to use fwnode
+Thread-Index: AQHYX76hvhP3kWHGgUas4wrlaQB7da0Om4EA
+Date:   Wed, 4 May 2022 23:52:58 +0000
+Message-ID: <70dd1d0d-31c7-854d-f9cb-d7ee23bca814@alliedtelesis.co.nz>
+References: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
+ <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4A344B6F1E498048B98D3E7533628C3D@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220502093625.GA23225@kernel.org> <CAGS_qxoc=AnkzUtaFpJvF08Z_Z15h9sZxYNQT5-S9C7aM4poEg@mail.gmail.com>
- <CANiq72m70q+zviHVNSV_AEwOByVBiMuSQL5vyo2UMMpD-vd+_Q@mail.gmail.com>
- <CABVgOSmkZ9EXijBRx_pvS=Opizb1z2632B5rVsd1WRNOL5o8GA@mail.gmail.com> <CANiq72kVLzOu_3UjoUiSp5y+H0tA+SQYNQ=fsuhtg=i6MQe=Fg@mail.gmail.com>
-In-Reply-To: <CANiq72kVLzOu_3UjoUiSp5y+H0tA+SQYNQ=fsuhtg=i6MQe=Fg@mail.gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Thu, 5 May 2022 07:47:03 +0800
-Message-ID: <CABVgOS=77WFFV1Xu5vQD6DPJODRr0f+qxJTRgJWS0qobv6vDaA@mail.gmail.com>
-Subject: Re: [PATCH] kunit: take `kunit_assert` as `const`
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=C7GXNjH+ c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10 a=QyXUC8HyAAAA:8 a=Nxf2nqiBf6T3PosxK2cA:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 5, 2022 at 3:26 AM Miguel Ojeda
-<miguel.ojeda.sandonis@gmail.com> wrote:
->
-> Hi David,
->
-> On Wed, May 4, 2022 at 4:05 PM David Gow <davidgow@google.com> wrote:
-> >
-> > I definitely agree here -- I can't recall any particular plan that
-> > would require this to be non-const, and we can always change it back
-> > if we really need to.
->
-> That is good to know, thanks! Out-of-tree users can always be a surprise... :)
->
-> > Very exciting! I assume that's the PR here:
-> > https://github.com/Rust-for-Linux/linux/pull/757
->
-> Indeed! I hope you like it -- we are taking the documentation tests in
-> Rust (which are a very lightweight way of writing examples which
-> double as tests) and generating KUnit test cases on the fly. For the
-> moment it is just for the `kernel` crate, but the idea is to
-> generalize it for modules etc.
->
-> By the way, since you saw the PR... do you know if KUnit relies (or
-> will rely) on "stack-dumping" functions like `longjmp`?
-
-I don't think so -- though there's no fundamental individual tests
-couldn't use them if it made sense for them.
-
-KUnit spins off a new kthread per test, and uses
-kthread_complete_and_exit() to unwind when an assertion fails. See
-lib/kunit/try-catch.c for the actual implementation. The only really
-dodgy bit is the test timeout support, which attempts to stop a thread
-with kthread_stop(), and IIRC has some problems.
-
-Hope that helps!
--- David
+DQpPbiA1LzA1LzIyIDAxOjQ0LCBBbmR5IFNoZXZjaGVua28gd3JvdGU6DQo+IFN3aXRjaCBtcGM1
+eHh4X2dldF9idXNfZnJlcXVlbmN5KCkgdG8gdXNlIGZ3bm9kZSBpbiBvcmRlciB0byBoZWxwDQo+
+IGNsZWFuaW5nIHVwIG90aGVyIHBhcnRzIG9mIHRoZSBrZXJuZWwgZnJvbSBPRiBzcGVjaWZpYyBj
+b2RlLg0KPg0KPiBObyBmdW5jdGlvbmFsIGNoYW5nZSBpbnRlbmRlZC4NCj4NCj4gU2lnbmVkLW9m
+Zi1ieTogQW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+
+DQo+IC0tLQ0KPiAgIGFyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tcGM1eHh4LmggICAgICAgICAg
+ICB8ICA5ICsrKy0NCj4gICBhcmNoL3Bvd2VycGMvcGxhdGZvcm1zLzUyeHgvbXBjNTJ4eF9ncHQu
+YyAgICAgfCAgMiArLQ0KPiAgIGFyY2gvcG93ZXJwYy9zeXNkZXYvbXBjNXh4eF9jbG9ja3MuYyAg
+ICAgICAgICB8IDQxICsrKysrKysrKystLS0tLS0tLS0NCj4gICBkcml2ZXJzL2F0YS9wYXRhX21w
+YzUyeHguYyAgICAgICAgICAgICAgICAgICAgfCAgMiArLQ0KPiAgIGRyaXZlcnMvaTJjL2J1c3Nl
+cy9pMmMtbXBjLmMgICAgICAgICAgICAgICAgICB8ICA3ICsrLS0NCj4gICBkcml2ZXJzL25ldC9j
+YW4vbXNjYW4vbXBjNXh4eF9jYW4uYyAgICAgICAgICAgfCAgMiArLQ0KPiAgIGRyaXZlcnMvbmV0
+L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbXBjNTJ4eC5jICB8ICAyICstDQo+ICAgLi4uL25ldC9l
+dGhlcm5ldC9mcmVlc2NhbGUvZmVjX21wYzUyeHhfcGh5LmMgIHwgIDMgKy0NCj4gICAuLi4vbmV0
+L2V0aGVybmV0L2ZyZWVzY2FsZS9mc19lbmV0L21paS1mZWMuYyAgfCAgNCArLQ0KPiAgIGRyaXZl
+cnMvc3BpL3NwaS1tcGM1Mnh4LmMgICAgICAgICAgICAgICAgICAgICB8ICAyICstDQo+ICAgZHJp
+dmVycy90dHkvc2VyaWFsL21wYzUyeHhfdWFydC5jICAgICAgICAgICAgIHwgIDQgKy0NCj4gICAx
+MSBmaWxlcyBjaGFuZ2VkLCA0NCBpbnNlcnRpb25zKCspLCAzNCBkZWxldGlvbnMoLSkNCjxzbmlw
+Pg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pMmMvYnVzc2VzL2kyYy1tcGMuYyBiL2RyaXZlcnMv
+aTJjL2J1c3Nlcy9pMmMtbXBjLmMNCj4gaW5kZXggNmM2OThjMTBkM2NkLi4yMDMwNjY4ZWNkZTUg
+MTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMtbXBjLmMNCj4gKysrIGIvZHJp
+dmVycy9pMmMvYnVzc2VzL2kyYy1tcGMuYw0KPiBAQCAtMjM5LDYgKzIzOSw3IEBAIHN0YXRpYyBj
+b25zdCBzdHJ1Y3QgbXBjX2kyY19kaXZpZGVyIG1wY19pMmNfZGl2aWRlcnNfNTJ4eFtdID0gew0K
+PiAgIHN0YXRpYyBpbnQgbXBjX2kyY19nZXRfZmRyXzUyeHgoc3RydWN0IGRldmljZV9ub2RlICpu
+b2RlLCB1MzIgY2xvY2ssDQo+ICAgCQkJCQkgIHUzMiAqcmVhbF9jbGspDQo+ICAgew0KPiArCXN0
+cnVjdCBmd25vZGVfaGFuZGxlID0gb2ZfZndub2RlX2hhbmRsZShub2RlKTsNCg0KSSB0aGluayB5
+b3UgbWVhbg0KDQorwqDCoMKgwqDCoMKgIHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25vZGUgPSBv
+Zl9md25vZGVfaGFuZGxlKG5vZGUpOw0KDQo+ICAgCWNvbnN0IHN0cnVjdCBtcGNfaTJjX2Rpdmlk
+ZXIgKmRpdiA9IE5VTEw7DQo+ICAgCXVuc2lnbmVkIGludCBwdnIgPSBtZnNwcihTUFJOX1BWUik7
+DQo+ICAgCXUzMiBkaXZpZGVyOw0KPiBAQCAtMjQ2LDEyICsyNDcsMTIgQEAgc3RhdGljIGludCBt
+cGNfaTJjX2dldF9mZHJfNTJ4eChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5vZGUsIHUzMiBjbG9jaywN
+Cj4gICANCj4gICAJaWYgKGNsb2NrID09IE1QQ19JMkNfQ0xPQ0tfTEVHQUNZKSB7DQo+ICAgCQkv
+KiBzZWUgYmVsb3cgLSBkZWZhdWx0IGZkciA9IDB4M2YgLT4gZGl2ID0gMjA0OCAqLw0KPiAtCQkq
+cmVhbF9jbGsgPSBtcGM1eHh4X2dldF9idXNfZnJlcXVlbmN5KG5vZGUpIC8gMjA0ODsNCj4gKwkJ
+KnJlYWxfY2xrID0gbXBjNXh4eF9md25vZGVfZ2V0X2J1c19mcmVxdWVuY3koZndub2RlKSAvIDIw
+NDg7DQo+ICAgCQlyZXR1cm4gLUVJTlZBTDsNCj4gICAJfQ0KPiAgIA0KPiAgIAkvKiBEZXRlcm1p
+bmUgZGl2aWRlciB2YWx1ZSAqLw0KPiAtCWRpdmlkZXIgPSBtcGM1eHh4X2dldF9idXNfZnJlcXVl
+bmN5KG5vZGUpIC8gY2xvY2s7DQo+ICsJZGl2aWRlciA9IG1wYzV4eHhfZndub2RlX2dldF9idXNf
+ZnJlcXVlbmN5KGZ3bm9kZSkgLyBjbG9jazsNCj4gICANCj4gICAJLyoNCj4gICAJICogV2Ugd2Fu
+dCB0byBjaG9vc2UgYW4gRkRSL0RGU1IgdGhhdCBnZW5lcmF0ZXMgYW4gSTJDIGJ1cyBzcGVlZCB0
+aGF0DQo+IEBAIC0yNjYsNyArMjY3LDcgQEAgc3RhdGljIGludCBtcGNfaTJjX2dldF9mZHJfNTJ4
+eChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5vZGUsIHUzMiBjbG9jaywNCj4gICAJCQlicmVhazsNCj4g
+ICAJfQ0KPiAgIA0KPiAtCSpyZWFsX2NsayA9IG1wYzV4eHhfZ2V0X2J1c19mcmVxdWVuY3kobm9k
+ZSkgLyBkaXYtPmRpdmlkZXI7DQo+ICsJKnJlYWxfY2xrID0gbXBjNXh4eF9md25vZGVfZ2V0X2J1
+c19mcmVxdWVuY3koZndub2RlKSAvIGRpdi0+ZGl2aWRlcjsNCj4gICAJcmV0dXJuIChpbnQpZGl2
+LT5mZHI7DQo+ICAgfQ0KPiAgIA==
