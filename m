@@ -2,148 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37080C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 479C6C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 23:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382082AbiEDXr1 (ORCPT
+        id S1382115AbiEDXr3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 19:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
+        Wed, 4 May 2022 19:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381194AbiEDXQV (ORCPT
+        with ESMTP id S1359860AbiEDXZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 19:16:21 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E395419E;
-        Wed,  4 May 2022 16:09:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651705772; x=1683241772;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=viWWezEGudsdbLy/fRq7EwiMWwIaZsmyJG8Q+HHJWzE=;
-  b=hMH9DmkEI3OmceNvFXU5LlSEeHnpbp43jUjfXniTp0BbO5FVjmxbxdJK
-   FU2EPHFhq6raFbSPfVdwVF4CCBRP933vVOqD/Fkia5WEP+sJc8XjaFzxq
-   UMluuI5sEcCoUiP7BxKP11gkFyBhNgrhgRPxeae9RjImbdlYCmzFPzQ6A
-   KbOkpwY9L/PrXoCQedorAkHk9lt88B3RT+KJw4Dd3w6B0xR3IAq/acYUX
-   8V2rvR0wny2GxaYX2CjrzXuqyKICzDBQPV7UsYwlJdnAM09oN+LyjhIf6
-   fHZ++5f5b0+Pea+mm8To1FgmEqDFnWW8gnqFgDCLZZg7JC5ITBsthdStQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="293121901"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="293121901"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 16:09:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="599749810"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 04 May 2022 16:09:16 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmO7Q-000Bsd-1h;
-        Wed, 04 May 2022 23:09:16 +0000
-Date:   Thu, 5 May 2022 07:09:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Justin Chen <justinpopo6@gmail.com>, linus.walleij@linaro.org,
-        brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     kbuild-all@lists.01.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        f.fainelli@gmail.com, Justin Chen <justinpopo6@gmail.com>
-Subject: Re: [PATCH 1/2] gpio: pca953xx: Add support for pca6408
-Message-ID: <202205050612.1bwSZpER-lkp@intel.com>
-References: <1651685100-44687-2-git-send-email-justinpopo6@gmail.com>
+        Wed, 4 May 2022 19:25:10 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6CA4DF56
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 16:21:32 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id a191so2330186pge.2
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 16:21:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Yhdb5Bb/HPOT7rt6ZFl1SIPi2sOZMgAuPW9HJM+UwR0=;
+        b=Lk4xT28VP//2/ipug2hDVNsFxT9ZIxqyDHb0zfUWgwzqxrDXikdUEYcZVll3q4j94i
+         ztdggJgt0+wJWipyAMzuue+sqAj5cr1iqrjXU6TY0KlGJi2k7/sLjz4SzJeD6C1FqUri
+         Vuh+XJBEfDQcKfui50SG/RlDJ8yjXNcYwrQew=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Yhdb5Bb/HPOT7rt6ZFl1SIPi2sOZMgAuPW9HJM+UwR0=;
+        b=huJNtmXetTBlqaZ+3095+NWZNAV0DG6BwQAUCMpTMteEm/3D3pFHybLgSbCSCxV4Xh
+         nU2Zp70Oin0DuqiDU2EsSr0mAtluQMsvQSn3nTYP2/2sbXZ6QajUYDV2D+NDiJak5ssv
+         1DGdSfVkmARYTdFQs8+8hsUZ5/q9QOl3VT4CRmiY3YuXq144fcOnfX4Y/s40X5VZaVpq
+         Yn6XNNwXjF244cziUfBAxS5oBqVkw/cwWVsK+4bbLYtRsPZjN472pA1lrPLy26N5EcKv
+         91CW768dKDNogrB6+m9dcHJOQ+2I3Nk8EwaS714fmaQQHLJLvOOE3WHerfNf8x/byssR
+         4xiQ==
+X-Gm-Message-State: AOAM532adHKqkl5zWmPpSesLVtdgsp+lQeAN4x8qrvoPC3jGSDAsSsnM
+        L9pYxUTKD3Ird19xCkRZSX4e1dra/oWoDPbu
+X-Google-Smtp-Source: ABdhPJw5P1NIDRBbT4jMlDGJLeiA/MnnIE6iVTPAa0LCmNhzVLp/2G2suU9nzhm2DtywpArEruqEYA==
+X-Received: by 2002:a62:ce82:0:b0:50d:512f:7b76 with SMTP id y124-20020a62ce82000000b0050d512f7b76mr23214566pfg.79.1651706491900;
+        Wed, 04 May 2022 16:21:31 -0700 (PDT)
+Received: from evgreen-glaptop.lan ([98.47.98.87])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902f78c00b0015e8d4eb2d6sm1901pln.288.2022.05.04.16.21.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 16:21:31 -0700 (PDT)
+From:   Evan Green <evgreen@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Matthew Garrett <mgarrett@aurora.tech>, dlunev@google.com,
+        zohar@linux.ibm.com, jejb@linux.ibm.com,
+        linux-integrity@vger.kernel.org, corbet@lwn.net, rjw@rjwysocki.net,
+        gwendal@chromium.org, jarkko@kernel.org, linux-pm@vger.kernel.org,
+        Matthew Garrett <matthewgarrett@google.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Evan Green <evgreen@chromium.org>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH 03/10] security: keys: trusted: Parse out individual components of the key blob
+Date:   Wed,  4 May 2022 16:20:55 -0700
+Message-Id: <20220504161439.3.Id409e0cf397bd98b76df6eb60ff16454679dd23d@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220504232102.469959-1-evgreen@chromium.org>
+References: <20220504232102.469959-1-evgreen@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1651685100-44687-2-git-send-email-justinpopo6@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Justin,
+From: Matthew Garrett <matthewgarrett@google.com>
 
-Thank you for the patch! Yet something to improve:
+Performing any sort of state validation of a sealed TPM blob requires
+being able to access the individual members in the response. Parse the
+blob sufficiently to be able to stash pointers to each member, along
+with the length.
 
-[auto build test ERROR on v5.18-rc5]
-[also build test ERROR on next-20220504]
-[cannot apply to linusw-gpio/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+From: Matthew Garrett <mjg59@google.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Justin-Chen/Add-support-for-NXP-PCA6408/20220505-020844
-base:    672c0c5173427e6b3e2a9bbb7be51ceeec78093a
-config: microblaze-randconfig-r031-20220501 (https://download.01.org/0day-ci/archive/20220505/202205050612.1bwSZpER-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d45d7c84e1613b51cb1eb90ef6d92f4112a45925
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Justin-Chen/Add-support-for-NXP-PCA6408/20220505-020844
-        git checkout d45d7c84e1613b51cb1eb90ef6d92f4112a45925
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/gpio/
+Signed-off-by: Evan Green <evgreen@chromium.org>
+---
+Matthew's original version of this patch is at:
+https://patchwork.kernel.org/patch/12096489/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+ include/keys/trusted-type.h               |  8 +++
+ security/keys/trusted-keys/trusted_tpm2.c | 67 ++++++++++++++++++++++-
+ 2 files changed, 73 insertions(+), 2 deletions(-)
 
-All errors (new ones prefixed by >>):
-
->> drivers/gpio/gpio-pca953x.c:74:27: error: 'PCA953x_TYPE' undeclared here (not in a function); did you mean 'PCA953X_TYPE'?
-      74 |         { "pca6408", 8  | PCA953x_TYPE | PCA_INT, },
-         |                           ^~~~~~~~~~~~
-         |                           PCA953X_TYPE
-
-
-vim +74 drivers/gpio/gpio-pca953x.c
-
-    72	
-    73	static const struct i2c_device_id pca953x_id[] = {
-  > 74		{ "pca6408", 8  | PCA953x_TYPE | PCA_INT, },
-    75		{ "pca6416", 16 | PCA953X_TYPE | PCA_INT, },
-    76		{ "pca9505", 40 | PCA953X_TYPE | PCA_INT, },
-    77		{ "pca9506", 40 | PCA953X_TYPE | PCA_INT, },
-    78		{ "pca9534", 8  | PCA953X_TYPE | PCA_INT, },
-    79		{ "pca9535", 16 | PCA953X_TYPE | PCA_INT, },
-    80		{ "pca9536", 4  | PCA953X_TYPE, },
-    81		{ "pca9537", 4  | PCA953X_TYPE | PCA_INT, },
-    82		{ "pca9538", 8  | PCA953X_TYPE | PCA_INT, },
-    83		{ "pca9539", 16 | PCA953X_TYPE | PCA_INT, },
-    84		{ "pca9554", 8  | PCA953X_TYPE | PCA_INT, },
-    85		{ "pca9555", 16 | PCA953X_TYPE | PCA_INT, },
-    86		{ "pca9556", 8  | PCA953X_TYPE, },
-    87		{ "pca9557", 8  | PCA953X_TYPE, },
-    88		{ "pca9574", 8  | PCA957X_TYPE | PCA_INT, },
-    89		{ "pca9575", 16 | PCA957X_TYPE | PCA_INT, },
-    90		{ "pca9698", 40 | PCA953X_TYPE, },
-    91	
-    92		{ "pcal6416", 16 | PCA953X_TYPE | PCA_LATCH_INT, },
-    93		{ "pcal6524", 24 | PCA953X_TYPE | PCA_LATCH_INT, },
-    94		{ "pcal9535", 16 | PCA953X_TYPE | PCA_LATCH_INT, },
-    95		{ "pcal9554b", 8  | PCA953X_TYPE | PCA_LATCH_INT, },
-    96		{ "pcal9555a", 16 | PCA953X_TYPE | PCA_LATCH_INT, },
-    97	
-    98		{ "max7310", 8  | PCA953X_TYPE, },
-    99		{ "max7312", 16 | PCA953X_TYPE | PCA_INT, },
-   100		{ "max7313", 16 | PCA953X_TYPE | PCA_INT, },
-   101		{ "max7315", 8  | PCA953X_TYPE | PCA_INT, },
-   102		{ "max7318", 16 | PCA953X_TYPE | PCA_INT, },
-   103		{ "pca6107", 8  | PCA953X_TYPE | PCA_INT, },
-   104		{ "tca6408", 8  | PCA953X_TYPE | PCA_INT, },
-   105		{ "tca6416", 16 | PCA953X_TYPE | PCA_INT, },
-   106		{ "tca6424", 24 | PCA953X_TYPE | PCA_INT, },
-   107		{ "tca9539", 16 | PCA953X_TYPE | PCA_INT, },
-   108		{ "tca9554", 8  | PCA953X_TYPE | PCA_INT, },
-   109		{ "xra1202", 8  | PCA953X_TYPE },
-   110		{ }
-   111	};
-   112	MODULE_DEVICE_TABLE(i2c, pca953x_id);
-   113	
-
+diff --git a/include/keys/trusted-type.h b/include/keys/trusted-type.h
+index d89fa2579ac056..8a793ae1ad9f70 100644
+--- a/include/keys/trusted-type.h
++++ b/include/keys/trusted-type.h
+@@ -22,15 +22,23 @@
+ #define MAX_BLOB_SIZE			512
+ #define MAX_PCRINFO_SIZE		64
+ #define MAX_DIGEST_SIZE			64
++#define MAX_CREATION_DATA		412
++#define MAX_TK				76
+ 
+ struct trusted_key_payload {
+ 	struct rcu_head rcu;
+ 	unsigned int key_len;
+ 	unsigned int blob_len;
++	unsigned int creation_len;
++	unsigned int creation_hash_len;
++	unsigned int tk_len;
+ 	unsigned char migratable;
+ 	unsigned char old_format;
+ 	unsigned char key[MAX_KEY_SIZE + 1];
+ 	unsigned char blob[MAX_BLOB_SIZE];
++	unsigned char *creation;
++	unsigned char *creation_hash;
++	unsigned char *tk;
+ };
+ 
+ struct trusted_key_options {
+diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
+index 0165da386289c3..296a00f872ba40 100644
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -215,6 +215,63 @@ static void tpm2_buf_append_auth(struct tpm_buf *buf, u32 session_handle,
+ 		tpm_buf_append(buf, hmac, hmac_len);
+ }
+ 
++static int tpm2_unpack_blob(struct trusted_key_payload *payload)
++{
++	int tmp, offset;
++
++	/* Find the length of the private data */
++	tmp = be16_to_cpup((__be16 *) &payload->blob[0]);
++	offset = tmp + 2;
++	if (offset > payload->blob_len)
++		return -EFAULT;
++
++	/* Find the length of the public data */
++	tmp = be16_to_cpup((__be16 *) &payload->blob[offset]);
++	offset += tmp + 2;
++	if (offset > payload->blob_len)
++		return -EFAULT;
++
++	/* Find the length of the creation data and store it */
++	tmp = be16_to_cpup((__be16 *) &payload->blob[offset]);
++	if (tmp > MAX_CREATION_DATA)
++		return -E2BIG;
++
++	if ((offset + tmp + 2) > payload->blob_len)
++		return -EFAULT;
++
++	payload->creation = &payload->blob[offset + 2];
++	payload->creation_len = tmp;
++	offset += tmp + 2;
++
++	/* Find the length of the creation hash and store it */
++	tmp = be16_to_cpup((__be16 *) &payload->blob[offset]);
++	if (tmp > MAX_DIGEST_SIZE)
++		return -E2BIG;
++
++	if ((offset + tmp + 2) > payload->blob_len)
++		return -EFAULT;
++
++	payload->creation_hash = &payload->blob[offset + 2];
++	payload->creation_hash_len = tmp;
++	offset += tmp + 2;
++
++	/*
++	 * Store the creation ticket. TPMT_TK_CREATION is two bytes of tag,
++	 * four bytes of handle, and then the digest length and digest data
++	 */
++	tmp = be16_to_cpup((__be16 *) &payload->blob[offset + 6]);
++	if (tmp > MAX_TK)
++		return -E2BIG;
++
++	if ((offset + tmp + 8) > payload->blob_len)
++		return -EFAULT;
++
++	payload->tk = &payload->blob[offset];
++	payload->tk_len = tmp + 8;
++
++	return 0;
++}
++
+ /**
+  * tpm2_seal_trusted() - seal the payload of a trusted key
+  *
+@@ -229,6 +286,7 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
+ 		      struct trusted_key_options *options)
+ {
+ 	int blob_len = 0;
++	unsigned int offset;
+ 	struct tpm_buf buf;
+ 	u32 hash;
+ 	u32 flags;
+@@ -317,15 +375,17 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
+ 		rc = -E2BIG;
+ 		goto out;
+ 	}
+-	if (tpm_buf_length(&buf) < TPM_HEADER_SIZE + 4 + blob_len) {
++	offset = TPM_HEADER_SIZE + 4;
++	if (tpm_buf_length(&buf) < offset + blob_len) {
+ 		rc = -EFAULT;
+ 		goto out;
+ 	}
+ 
+ 	blob_len = tpm2_key_encode(payload, options,
+-				   &buf.data[TPM_HEADER_SIZE + 4],
++				   &buf.data[offset],
+ 				   blob_len);
+ 
++	rc = tpm2_unpack_blob(payload);
+ out:
+ 	tpm_buf_destroy(&buf);
+ 
+@@ -431,7 +491,10 @@ static int tpm2_load_cmd(struct tpm_chip *chip,
+ 	if (!rc)
+ 		*blob_handle = be32_to_cpup(
+ 			(__be32 *) &buf.data[TPM_HEADER_SIZE]);
++	else
++		goto out;
+ 
++	rc = tpm2_unpack_blob(payload);
+ out:
+ 	if (blob != payload->blob)
+ 		kfree(blob);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.0
+
