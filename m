@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01BDC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A63C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354794AbiEDQ7H (ORCPT
+        id S1354997AbiEDQ7g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:59:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
+        Wed, 4 May 2022 12:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353809AbiEDQxR (ORCPT
+        with ESMTP id S1354154AbiEDQxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 12:53:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F6A47ACD;
-        Wed,  4 May 2022 09:48:51 -0700 (PDT)
+        Wed, 4 May 2022 12:53:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB1D483A2;
+        Wed,  4 May 2022 09:49:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B9A161789;
-        Wed,  4 May 2022 16:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A99D1C385AA;
-        Wed,  4 May 2022 16:48:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EDFF61771;
+        Wed,  4 May 2022 16:49:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AFCAC385AF;
+        Wed,  4 May 2022 16:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682930;
-        bh=1Vi5lNYXaB4VTTLQ+lFez2oNueieHQTfkFWql+43bVk=;
+        s=korg; t=1651682948;
+        bh=QYfJ4jy1pgwenIxzQh04z03IUEVKov1C1SpEawfBfwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PJ5Ui6TUmAC0s5BJRo3kgonS+QHt5wUarKrDBtFMGO+cV2BWlUPYUmS3aiVaG5062
-         lCpcwR2pNBkFwbegX6/VN6A1EXaed4Xvm+4noiKTwXPBE5XTQLtRd2IWBwidLxOojQ
-         +dXc0zLDVqYgFN6VTI5RGj/3H3fC8kBJX/R+giMc=
+        b=rUVYtX+ze2P4xidoB9AT84jQr3RQgyj5NLODRop8XUjlZovIpJfc+rbItByzWJbSg
+         ovyuSLnMvO8D7U7IHxeppEbD0Q4twWnH0r6e7lazAxke8RKLgsytHissV6puesj7QP
+         jYpmo1Vl8V01cCDfYbcGFh5Po8ODf5JNsLXOpIpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 37/84] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
-Date:   Wed,  4 May 2022 18:44:18 +0200
-Message-Id: <20220504152930.449088261@linuxfoundation.org>
+Subject: [PATCH 5.4 59/84] bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
+Date:   Wed,  4 May 2022 18:44:40 +0200
+Message-Id: <20220504152931.950244281@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,40 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
+[ Upstream commit fff8c10368e64e7f8960f149375c12ca5f3b30af ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+This code is really spurious.
+It always returns an ERR_PTR, even when err is known to be 0 and calls
+put_device() after a successful device_register() call.
 
-Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+It is likely that the return statement in the normal path is missing.
+Add 'return rdev;' to fix it.
+
+Fixes: d787dcdb9c8f ("bus: sunxi-rsb: Add driver for Allwinner Reduced Serial Bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/ef2b9576350bba4c8e05e669e9535e9e2a415763.1650551719.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/omap4-common.c | 2 ++
+ drivers/bus/sunxi-rsb.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
-index 5c3845730dbf..0b80f8bcd304 100644
---- a/arch/arm/mach-omap2/omap4-common.c
-+++ b/arch/arm/mach-omap2/omap4-common.c
-@@ -314,10 +314,12 @@ void __init omap_gic_of_init(void)
+diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
+index 1bb00a959c67..9b1a5e62417c 100644
+--- a/drivers/bus/sunxi-rsb.c
++++ b/drivers/bus/sunxi-rsb.c
+@@ -224,6 +224,8 @@ static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
- 	gic_dist_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!gic_dist_base_addr);
+ 	dev_dbg(&rdev->dev, "device %s registered\n", dev_name(&rdev->dev));
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
- 	twd_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!twd_base);
++	return rdev;
++
+ err_device_add:
+ 	put_device(&rdev->dev);
  
- skip_errata_init:
 -- 
 2.35.1
 
