@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 996A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 16:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354413AbiEDQ5d (ORCPT
+        id S1354276AbiEDQ5m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 12:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
+        Wed, 4 May 2022 12:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354440AbiEDQyW (ORCPT
+        with ESMTP id S1354430AbiEDQyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 4 May 2022 12:54:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB51749270;
-        Wed,  4 May 2022 09:49:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8564925C;
+        Wed,  4 May 2022 09:49:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49E7761776;
-        Wed,  4 May 2022 16:49:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC18C385A4;
-        Wed,  4 May 2022 16:49:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D865DB82554;
+        Wed,  4 May 2022 16:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1B3C385AA;
+        Wed,  4 May 2022 16:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651682971;
-        bh=A+5cstA8LLgZPNQw0zRgG2KI0zg32uxsksxSQzyBulw=;
+        s=korg; t=1651682968;
+        bh=e559Bqf6LPnE3jwmAkFfShmHGWGViQtRHK3xguGfn7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZ+leYrEzOw+QCz5No6pHtbMhhjMmPmOy+hDiKVDoI+vaescf/0geA9BPhg3yXi5l
-         0q+gVbrNE2FH+l7vaH1+1QW1BJ1jOcUMjEJTSrF3gcJRB+oVqZsC20GO2WuPpPnSnK
-         lohJwRtJbSJvfgg+xhutwK7AaseHNf/yXwt1+gfY=
+        b=JXv9+z4gxvZFprPD9UO9Z0UV/V2mjIRXxUzSS2kdIzkSwu/IKtsxKFY73wakDtrdb
+         xexym6xIUjWBwyGUjAjETJ3UW+zSpY7bNS5ftELKkk07FEAoJYshPFXAQ9BcpBMfUa
+         MAdhajCc3ym8fNffyvwQ9TS/DeSHUNEhDfy+U75M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Kyle D. Pelton" <kyle.d.pelton@intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Subject: [PATCH 5.4 74/84] x86/cpu: Load microcode during restore_processor_state()
-Date:   Wed,  4 May 2022 18:44:55 +0200
-Message-Id: <20220504152933.255211083@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.4 82/84] tty: n_gsm: fix incorrect UA handling
+Date:   Wed,  4 May 2022 18:45:03 +0200
+Message-Id: <20220504152933.940828231@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504152927.744120418@linuxfoundation.org>
 References: <20220504152927.744120418@linuxfoundation.org>
@@ -50,119 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit f9e14dbbd454581061c736bf70bf5cbb15ac927c upstream.
+commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
 
-When resuming from system sleep state, restore_processor_state()
-restores the boot CPU MSRs. These MSRs could be emulated by microcode.
-If microcode is not loaded yet, writing to emulated MSRs leads to
-unchecked MSR access error:
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
+acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
+discarded. Currently, all UA frame are handled in the same way regardless
+of the PF bit. This does not comply with the standard.
+Remove the UA case in gsm_queue() to process only UA frames with PF bit set
+to 1 to abide the standard.
 
-  ...
-  PM: Calling lapic_suspend+0x0/0x210
-  unchecked MSR access error: WRMSR to 0x10f (tried to write 0x0...0) at rIP: ... (native_write_msr)
-  Call Trace:
-    <TASK>
-    ? restore_processor_state
-    x86_acpi_suspend_lowlevel
-    acpi_suspend_enter
-    suspend_devices_and_enter
-    pm_suspend.cold
-    state_store
-    kobj_attr_store
-    sysfs_kf_write
-    kernfs_fop_write_iter
-    new_sync_write
-    vfs_write
-    ksys_write
-    __x64_sys_write
-    do_syscall_64
-    entry_SYSCALL_64_after_hwframe
-   RIP: 0033:0x7fda13c260a7
-
-To ensure microcode emulated MSRs are available for restoration, load
-the microcode on the boot CPU before restoring these MSRs.
-
-  [ Pawan: write commit message and productize it. ]
-
-Fixes: e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
-Reported-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Tested-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215841
-Link: https://lore.kernel.org/r/4350dfbf785cd482d3fafa72b2b49c83102df3ce.1650386317.git.pawan.kumar.gupta@linux.intel.com
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/microcode.h     |    2 ++
- arch/x86/kernel/cpu/microcode/core.c |    6 +++---
- arch/x86/power/cpu.c                 |    8 ++++++++
- 3 files changed, 13 insertions(+), 3 deletions(-)
+ drivers/tty/n_gsm.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/x86/include/asm/microcode.h
-+++ b/arch/x86/include/asm/microcode.h
-@@ -133,11 +133,13 @@ extern void load_ucode_ap(void);
- void reload_early_microcode(void);
- extern bool get_builtin_firmware(struct cpio_data *cd, const char *name);
- extern bool initrd_gone;
-+void microcode_bsp_resume(void);
- #else
- static inline int __init microcode_init(void)			{ return 0; };
- static inline void __init load_ucode_bsp(void)			{ }
- static inline void load_ucode_ap(void)				{ }
- static inline void reload_early_microcode(void)			{ }
-+static inline void microcode_bsp_resume(void)			{ }
- static inline bool
- get_builtin_firmware(struct cpio_data *cd, const char *name)	{ return false; }
- #endif
---- a/arch/x86/kernel/cpu/microcode/core.c
-+++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -772,9 +772,9 @@ static struct subsys_interface mc_cpu_in
- };
- 
- /**
-- * mc_bp_resume - Update boot CPU microcode during resume.
-+ * microcode_bsp_resume - Update boot CPU microcode during resume.
-  */
--static void mc_bp_resume(void)
-+void microcode_bsp_resume(void)
- {
- 	int cpu = smp_processor_id();
- 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
-@@ -786,7 +786,7 @@ static void mc_bp_resume(void)
- }
- 
- static struct syscore_ops mc_syscore_ops = {
--	.resume			= mc_bp_resume,
-+	.resume			= microcode_bsp_resume,
- };
- 
- static int mc_cpu_starting(unsigned int cpu)
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -25,6 +25,7 @@
- #include <asm/cpu.h>
- #include <asm/mmu_context.h>
- #include <asm/cpu_device_id.h>
-+#include <asm/microcode.h>
- 
- #ifdef CONFIG_X86_32
- __visible unsigned long saved_context_ebx;
-@@ -263,6 +264,13 @@ static void notrace __restore_processor_
- 	x86_platform.restore_sched_clock_state();
- 	mtrr_bp_restore();
- 	perf_restore_debug_store();
-+
-+	microcode_bsp_resume();
-+
-+	/*
-+	 * This needs to happen after the microcode has been updated upon resume
-+	 * because some of the MSRs are "emulated" in microcode.
-+	 */
- 	msr_restore_context(ctxt);
- }
- 
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1813,7 +1813,6 @@ static void gsm_queue(struct gsm_mux *gs
+ 		gsm_response(gsm, address, UA);
+ 		gsm_dlci_close(dlci);
+ 		break;
+-	case UA:
+ 	case UA|PF:
+ 		if (cr == 0 || dlci == NULL)
+ 			break;
 
 
