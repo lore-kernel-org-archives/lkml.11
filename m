@@ -2,300 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E79C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A89C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 14:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351236AbiEDOUy (ORCPT
+        id S1351248AbiEDOY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 10:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
+        Wed, 4 May 2022 10:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351250AbiEDOUw (ORCPT
+        with ESMTP id S1345701AbiEDOYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 10:20:52 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7DC1F613
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 07:17:15 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:52804)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmFoX-003bD1-UG; Wed, 04 May 2022 08:17:13 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36906 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmFoW-00DS5o-Ew; Wed, 04 May 2022 08:17:13 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Seth Forshee <sforshee@digitalocean.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Sean Christopherson <seanjc@google.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20220503174934.2641605-1-sforshee@digitalocean.com>
-        <20220504130753.GB8069@pathway.suse.cz>
-Date:   Wed, 04 May 2022 09:16:46 -0500
-In-Reply-To: <20220504130753.GB8069@pathway.suse.cz> (Petr Mladek's message of
-        "Wed, 4 May 2022 15:07:53 +0200")
-Message-ID: <87r159fkmp.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 4 May 2022 10:24:25 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07D11C928;
+        Wed,  4 May 2022 07:20:49 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id k27so1880070edk.4;
+        Wed, 04 May 2022 07:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PDUpqEwsU0g54F2duDLV9Pqr2Yjkf7JgCmsGkPEOp0w=;
+        b=LsrQObZXf1A/KJ3l8fAg9QNyokldjCq9cX5C7y+XIxBlonabohntkTLKb0rJ3mO6ES
+         DlWroY41MZMuGn0G6eM/TINrCGpIqU0VYsy/5y8QrNBn/E0vvJSiXGIOOonTe7PX7wwJ
+         Kr/dUZlao0crAh6cyzm7vJ9wvZQXkXUGl5gJnY6WKF6pf6dww8E3AHlESi0P/yHZ2q5F
+         Bki4i/mXRFF/XI2J7ovTbRnLw4ZJqtR4NOewVfd6Y94CzqGiP1rULXKWxYnGan3Qclxs
+         uPDx/gryb9V0LY+irlYkN/WoifbWSwOPw8d2bWmzgbROezZ2j1qhBrfFqwvyezQ0hqZd
+         Ztww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PDUpqEwsU0g54F2duDLV9Pqr2Yjkf7JgCmsGkPEOp0w=;
+        b=yCA0xbQpp3xj6eKFuxId0IaP1z61UvE6HS2vfoiq4uKLPZBeY7E1iZDDvyVdQ3Xzof
+         ISPhrC40ToQZ6GPYH1IU6Qi+o1Ql0O2Uqlm2Ua6wmedDrO4WFRFwLeYUzBZVpq/TWWwT
+         ateNDi9VVbi4FokhjI3HwQ3+6FXBHUkYWiyc0XUSMeNLJ06v576Tjeg1ZRu/c1ihqqPf
+         d28LthPl4+yCacBlYKREyZnH64idZ0CDlQ3xPJYLNskJjs0t0jMrem8POuR635pBowPJ
+         NjhSOoKpCP6dROBtTMDTCBJNbVJA3KdkrzbuvICyFX7bm+SsTMFyBYrbdw2MqKaH96tt
+         vA2g==
+X-Gm-Message-State: AOAM530E+5iBuB4DCWaSoXjF9xGWLAL2wPVJWpPg5Kq/g220uKz0by6b
+        mTCYATCRMp5Mm8ciLiXJUpJRaPxr4IU/e/11ydQ=
+X-Google-Smtp-Source: ABdhPJxtzj9zFuQw6N6sVztraiGsQxy5kNW6AXTNcgQlk00LHVmbnO+1P+bByTm7T3zXzTkNai4eTBVZFHT+TvmdkoU=
+X-Received: by 2002:a05:6402:d51:b0:425:d5e1:e9f0 with SMTP id
+ ec17-20020a0564020d5100b00425d5e1e9f0mr23287754edb.125.1651674048120; Wed, 04
+ May 2022 07:20:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nmFoW-00DS5o-Ew;;;mid=<87r159fkmp.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/PsYWhFWPq0Ll6mfLUge9ag9Wd5++oPJw=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v2] entry/kvm: Make vCPU tasks exit to userspace when a
- livepatch is pending
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn> <20220504133612.604304-4-Qing-wu.Li@leica-geosystems.com.cn>
+In-Reply-To: <20220504133612.604304-4-Qing-wu.Li@leica-geosystems.com.cn>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 4 May 2022 16:20:11 +0200
+Message-ID: <CAHp75VeseZ2ChtbafmbgVavS4KvCvrQ4+XSRkeiJSyqr8__dSw@mail.gmail.com>
+Subject: Re: [PATCH V3 3/5] iio: accel: sca3300: modified to support multi chips
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> writes:
-
-> On Tue 2022-05-03 12:49:34, Seth Forshee wrote:
->> A task can be livepatched only when it is sleeping or it exits to
->> userspace. This may happen infrequently for a heavily loaded vCPU task,
->> leading to livepatch transition failures.
+On Wed, May 4, 2022 at 3:36 PM LI Qingwu
+<Qing-wu.Li@leica-geosystems.com.cn> wrote:
 >
-> This is misleading.
->
-> First, the problem is not a loaded CPU. The problem is that the
-> task might spend very long time in the kernel when handling
-> some syscall.
->
-> Second, there is no timeout for the transition in the kernel code.
-> It might take very long time but it will not fail.
->
->> Fake signals will be sent to tasks which fail patching via stack
->> checking. This will cause running vCPU tasks to exit guest mode, but
->> since no signal is pending they return to guest execution without
->> exiting to userspace. Fix this by treating a pending livepatch migration
->> like a pending signal, exiting to userspace with EINTR. This allows the
->> task to be patched, and userspace should re-excecute KVM_RUN to resume
->> guest execution.
->
-> It seems that the patch works as expected but it is far from clear.
-> And the above description helps only partially. Let me try to
-> explain it for dummies like me ;-)
->
-> <explanation>
-> The problem was solved by sending a fake signal, see the commit
-> 0b3d52790e1cfd6b80b826 ("livepatch: Remove signal sysfs attribute").
-> It was achieved by calling signal_wake_up(). It set TIF_SIGPENDING
-> and woke the task. It interrupted the syscall and the task was
-> transitioned when leaving to the userspace.
->
-> signal_wake_up() was later replaced by set_notify_signal(),
-> see the commit 8df1947c71ee53c7e21 ("livepatch: Replace
-> the fake signal sending with TIF_NOTIFY_SIGNAL infrastructure").
-> The difference is that set_notify_signal() uses TIF_NOTIFY_SIGNAL
-> instead of TIF_SIGPENDING.
->
-> The effect is the same when running on a real hardware. The syscall
-> gets interrupted and exit_to_user_mode_loop() is called where
-> the livepatch state is updated (task migrated).
->
-> But it works a different way in kvm where the task works are
-> called in the guest mode and the task does not return into
-> the user space in the host mode.
-> </explanation>
->
-> The solution provided by this patch is a bit weird, see below.
->
->
->> In my testing, systems where livepatching would timeout after 60 seconds
->> were able to load livepatches within a couple of seconds with this
->> change.
->> 
->> Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
->> ---
->> Changes in v2:
->>  - Added _TIF_SIGPENDING to XFER_TO_GUEST_MODE_WORK
->>  - Reworded commit message and comments to avoid confusion around the
->>    term "migrate"
->> 
->>  include/linux/entry-kvm.h | 4 ++--
->>  kernel/entry/kvm.c        | 7 ++++++-
->>  2 files changed, 8 insertions(+), 3 deletions(-)
->> 
->> diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
->> index 6813171afccb..bf79e4cbb5a2 100644
->> --- a/include/linux/entry-kvm.h
->> +++ b/include/linux/entry-kvm.h
->> @@ -17,8 +17,8 @@
->>  #endif
->>  
->>  #define XFER_TO_GUEST_MODE_WORK						\
->> -	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |	\
->> -	 _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
->> +	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |	\
->> +	 _TIF_NOTIFY_SIGNAL | _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
->>  
->>  struct kvm_vcpu;
->>  
->> diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
->> index 9d09f489b60e..98439dfaa1a0 100644
->> --- a/kernel/entry/kvm.c
->> +++ b/kernel/entry/kvm.c
->> @@ -14,7 +14,12 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
->>  				task_work_run();
->>  		}
->>  
->> -		if (ti_work & _TIF_SIGPENDING) {
->> +		/*
->> +		 * When a livepatch is pending, force an exit to userspace
->> +		 * as though a signal is pending to allow the task to be
->> +		 * patched.
->> +		 */
->> +		if (ti_work & (_TIF_SIGPENDING | _TIF_PATCH_PENDING)) {
->>  			kvm_handle_signal_exit(vcpu);
->>  			return -EINTR;
->>  		}
->
-> This looks strange:
->
->   + klp_send_signals() calls set_notify_signal(task) that sets
->     TIF_NOTIFY_SIGNAL
->
->   + xfer_to_guest_mode_work() handles TIF_NOTIFY_SIGNAL by calling
->     task_work_run().
->
->   + This patch calls kvm_handle_signal_exit(vcpu) when
->     _TIF_PATCH_PENDING is set. It probably causes the guest
->     to call exit_to_user_mode_loop() because TIF_PATCH_PENDING
->     bit is set. But neither TIF_NOTIFY_SIGNAL not TIF_NOTIFY_SIGNAL
->     is set so that it works different way than on the real hardware.
->
->
-> Question:
->
-> Does xfer_to_guest_mode_work() interrupts the syscall running
-> on the guest?
+> The drive support sca3300 only.
 
-It looks like xfer_to_guest_mode_work runs like exit_to_user_mode_loop,
-just before guest mode is invoked.
+driver supports
 
-> If "yes" then we do not need to call kvm_handle_signal_exit(vcpu).
-> It will be enough to call:
->
-> 		if (ti_work & _TIF_PATCH_PENDING)
-> 			klp_update_patch_state(current);
->
-> If "no" then I do not understand why TIF_NOTIFY_SIGNAL interrupts
-> the syscall on the real hardware and not in kvm.
->
-> Anyway, we either should make sure that TIF_NOTIFY_SIGNAL has the same
-> effect on the real hardware and in kvm. Or we need another interface
-> for the fake signal used by livepatching.
+> There are some other similar chips, for instance, SCL3300.
+> Prepare the way for multiple chips and additional channels.
+> Modify the driver to read the device id.
+> Add the tables for the corresponding id to support multiple chips.
+> Add prepares for the addition of extra channels.
+> Add prepares for handling the operation modes for multiple chips.
 
-The point of TIF_NOTIFY_SIGNAL is to break out of interruptible kernel
-loops.  Once out of the interruptible kernel loop the expectation is the
-returns to user space and on it's way runs the exit_to_user_mode_loop or
-is architecture specific equivalent.
+It seems you need to work more on the commit messages in all patches.
 
+...
 
-> Adding Jens Axboe and Eric into Cc.
+> +struct sca3300_chip_info {
+> +       const struct iio_chan_spec *channels;
+> +       const int (*accel_scale_table)[2];
+> +       const int *accel_scale_modes_map;
+> +       const unsigned long *scan_masks;
+> +       const int *avail_modes_table;
+> +       const int *freq_modes_map;
+> +       const int *freq_table;
+> +       const u8 num_accel_scales;
+> +       const u8 num_avail_modes;
+> +       const u8 num_channels;
+> +       const u8 num_freqs;
+> +       const u8 chip_id;
 
+Why do you have const qualifier on all members?  The last one is
+understandable, but the rest, esp. pointers should be justified.
 
-Yes.  This is interesting.
+> +       const char *name;
+> +};
 
-Reading through the history of kernel/entry/kvm.c I believe
-I made ``conservative'' changes that has not helped this situation.
+...
 
-Long story short at one point it was thought that _TIF_SIGPENDING
-and _TIF_NOTIFY_SIGNAL could be separated and they could not.
-Unfortunately the work to separate their handling has not been
-completely undone.
+> +static int sca3300_set_op_mode(struct sca3300_data *sca_data, int index)
+> +{
+> +       int mode;
+> +
+> +       if ((index < 0) || (index >= sca_data->chip->num_avail_modes))
 
-In this case it appears that the only reason xfer_to_guest_mode_work
-touches task_work_run is because of the separation work done by Jens
-Axboe.  I don't see any kvm specific reason for _TIF_NOTIFY_SIGNAL
-and _TIF_SIGPENDING to be treated differently.  Meanwhile my cleanups
-elsewhere have made the unnecessary _TIF_NOTIFY_SIGNAL special case
-bigger in xfer_to_guest_mode_work.
+Too many parentheses.
 
-I suspect the first step in fixing things really should be just handling
-_TIF_SIGPENDING and _TIF_NOTIFY_SIGNAL the same.
+> +               return -EINVAL;
+> +
+> +       mode = sca_data->chip->avail_modes_table[index];
+> +
+> +       return sca3300_write_reg(sca_data, SCA3300_REG_MODE, mode);
+> +}
 
-static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-{
-	do {
-		int ret;
-
-		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-			kvm_handle_signal_exit(vcpu);
-			return -EINTR;
-		}
-
-		if (ti_work & _TIF_NEED_RESCHED)
-			schedule();
-
-		if (ti_work & _TIF_NOTIFY_RESUME)
-			resume_user_mode_work(NULL);
-
-		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
-		if (ret)
-			return ret;
-
-		ti_work = read_thread_flags();
-	} while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());
-	return 0;
-}
-
-That said I do expect adding support for the live patching into
-xfer_to_guest_mode_work, like there is in exit_to_user_mode_loop, is
-probably a good idea.  That should prevent the live patching code from
-needing to set TIF_NOTIFY_SIGNAL.
-
-Something like:
-
-Thomas Gleixner's patch to make _TIF_PATCH_PENDING always available.
-
-#define XFER_TO_GUEST_MODE_WORK						\
-	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_PATCH_PENDING |	\
-	 _TIF_NOTIFY_SIGNAL | _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-
-
-static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-{
-	do {
-		int ret;
-
-		if (ti_work & _TIF_PATCH_PENDING)
-			klp_update_patch_state(current);
-
-		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-			kvm_handle_signal_exit(vcpu);
-			return -EINTR;
-		}
-
-		if (ti_work & _TIF_NEED_RESCHED)
-			schedule();
-
-		if (ti_work & _TIF_NOTIFY_RESUME)
-			resume_user_mode_work(NULL);
-
-		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
-		if (ret)
-			return ret;
-
-		ti_work = read_thread_flags();
-	} while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());
-	return 0;
-}
-
-If the kvm and the live patching folks could check my thinking that
-would be great.
-
-Eric
+-- 
+With Best Regards,
+Andy Shevchenko
