@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B906EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9646C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 22:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237266AbiEDW5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 18:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45400 "EHLO
+        id S1379464AbiEDW57 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 18:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379410AbiEDWyy (ORCPT
+        with ESMTP id S1379473AbiEDWyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 18:54:54 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A4D53B55
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:04 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id bj12-20020a056a02018c00b003a9eebaad34so1340284pgb.10
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:04 -0700 (PDT)
+        Wed, 4 May 2022 18:54:55 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB02853E28
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 15:51:09 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id k2-20020a170902ba8200b0015613b12004so1366949pls.22
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 15:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=XIDdXFOkDVy5SJapPAjtIumoXgEMA8drU4nFneUqcss=;
-        b=sLIL62vkhfenMrg59N3qnvWrZAryk/gK47WQkWsS0G+8hkowjDz6YrsMpAxRFXVRB3
-         I7CJ9fcWsJ89ePfYse6I1jiGC5wwaZ6QAoOMlix1CuG1gZyFRdhGKrScdqIKM7AJyEk8
-         NGm4IiBoIRtMxU6n+r/QFGF4dgtzcHTaV1Zj1kylWAzBK/+EYedQ5Nr1jx9Gi+oPmCb6
-         fFzgpaWkZ3n5xLmpROsVeL46jU1ZjuNtrs1E9Xd65DoCeHpZGSpV4Rvur/8YVy0wD+D1
-         wkAWsHPflAOeKfWZgV/LfQf6/2zHiGk4PxV2zdDonvV8FR544Fi0C06iJkLJFd7GwBRo
-         KX9g==
+        bh=bMvlXr4HK274DGrq7E1ZqyuDr7AgFq7Bi5INTr4PZKw=;
+        b=YK+tS9LfZmGLA7Bho21OiBw8rKzeNiEj4sY+1i0gx0vFeikcRT8pP7zPEWgDb2YpNB
+         8p4wE9suyOi9romXiKEPfSalzjTia7IWT2d8bLR1gmIJof3ldvg08j6HGJSi46HjG28+
+         NiBdYv3hO4Gc8l8HMmt3XPK05j3JUqUd6oRzB9cqJfoOAq3P2eM3HdeRm/K3e1ECMDbk
+         wDDk7Y9r/VWn+oRBivt27nvLky444c5npoefpgCRL7HcuBjYrLRKLOVMwpfn95KZNROZ
+         0E3q/8WEcn9QhnyTxg+SjQ40A6BIoWe/FfzgYiAxc69Jabm/qyfAFZHj82usnvh3py7z
+         ANMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=XIDdXFOkDVy5SJapPAjtIumoXgEMA8drU4nFneUqcss=;
-        b=idyXXAKKBHUrezx79LEUkCjPi8shKCAglzljCi4DeiWxI/XqYHWDkxVcUik1GJi4B/
-         mitw0okNbZyQXR9Z9bHj3PySLivIf9zn0+fwNiHdSHJlzcFXomNsQ/mrjYkOzCyCuWCs
-         qA25qneo+Imlzc+BRKlX5jCSJ/+9U6AXtV2D1hlN66SKtJqOjCVJcIurBJzUFomnT0Af
-         JYEPDg6rKX8XOpLyIMGk3y47B+0jF3bgMWOANib2s+rcr7EYLgycbVgfK/cod/mQaZyO
-         Akzy9G3q31WT9uZvvMZG6lyQD7aSo3WC/OBYoYhwHTzNk5Hz3S7zAqqxCa1VjLfX64PV
-         wfYw==
-X-Gm-Message-State: AOAM532mEiW6FVQ5kgLKkuTlJw5ugsRrl7622jCAq7ESnzDZRZ0zaYmb
-        hzJm0HDlK/zQGT1pglrLmetKaLkofuA=
-X-Google-Smtp-Source: ABdhPJwKYyiszUouLC8ehMlepVP+AHjsIot3+Ba+EfTpNiIXyVQb03gwDR0HOizSv/42P4iwcXt42WyW9JQ=
+        bh=bMvlXr4HK274DGrq7E1ZqyuDr7AgFq7Bi5INTr4PZKw=;
+        b=TptZma/NJw0PmTlWAVDDxtuJFX28jjhAQuaKYwg/CK+xHRW7tEMLi8FDLXf2joII0N
+         WfCFuhHj6zP7CIxuCmz+/0S4U2o2rZFszNP+mUV0Ixnn8t+5egIuc2ISF1xCS6bgnjRQ
+         GRohOL4Awzv4f9vSBFKxj1f4SiwMJqf/vMZdXk7h64Tl49yr99Gy6XAR0uBI+D6TBesU
+         GGYCiio07JDYktqMBq+v4AKWlrg2PG3QSVYgYi1UK6SwC05QA/FiyNevwTJZUqY8xEi4
+         vtRLDZyXmtIjYYc3PxpcwoCf0Gnermtdv5UhX7BsO3vPLRZ46TcQNFPyoSE9ad8lwlti
+         Weug==
+X-Gm-Message-State: AOAM530De3rUT2fDhedn+qvD7AxLOvFmPx1Sm/wiI5JU4qZJXqM+g+QE
+        IV+HFH/VA9NPnBtsX3TfvcUwG0TNWqg=
+X-Google-Smtp-Source: ABdhPJy68rQWjft05zs1OiHxG8HTloycRQW5Q0CXSL/URVnTP56SDUr26ibFxiI58mHhF1NMcPx5QxlWvlM=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:dec4:0:b0:50f:70d1:41dd with SMTP id
- h187-20020a62dec4000000b0050f70d141ddmr7163473pfg.68.1651704664030; Wed, 04
- May 2022 15:51:04 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:3848:0:b0:50d:376e:57ed with SMTP id
+ f69-20020a623848000000b0050d376e57edmr22824042pfa.71.1651704669140; Wed, 04
+ May 2022 15:51:09 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  4 May 2022 22:48:00 +0000
+Date:   Wed,  4 May 2022 22:48:03 +0000
 In-Reply-To: <20220504224914.1654036-1-seanjc@google.com>
-Message-Id: <20220504224914.1654036-55-seanjc@google.com>
+Message-Id: <20220504224914.1654036-58-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220504224914.1654036-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-Subject: [PATCH 054/128] KVM: selftests: Convert svm_vmcall_test away from VCPU_ID
+Subject: [PATCH 057/128] KVM: selftests: Convert kvm_pv_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -68,68 +69,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert svm_vmcall_test to use vm_create_with_one_vcpu() and pass around
-a 'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note, this
-is a "functional" change in the sense that the test now creates a vCPU
-with vcpu_id==0 instead of vcpu_id==5.  The non-zero VCPU_ID was 100%
-arbitrary and added little to no validation coverage.  If testing
-non-zero vCPU IDs is desirable for generic tests, that can be done in the
-future by tweaking the VM creation helpers.
+Convert kvm_pv_test to use vm_create_with_one_vcpu() and pass arounda
+'struct kvm_vcpu' object instead of using a global VCPU_ID.
+
+Opportunistically use vcpu_run() instead of _vcpu_run() with an open
+coded assert that KVM_RUN succeeded.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/svm_vmcall_test.c       | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ .../selftests/kvm/x86_64/kvm_pv_test.c        | 25 ++++++++-----------
+ 1 file changed, 10 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c b/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c
-index be2ca157485b..15e389a7cd31 100644
---- a/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c
-@@ -12,10 +12,6 @@
- #include "processor.h"
- #include "svm_util.h"
+diff --git a/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c b/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
+index 04ed975662c9..cce9016e31a7 100644
+--- a/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
++++ b/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
+@@ -171,24 +171,18 @@ static void handle_abort(struct ucall *uc)
+ 		  __FILE__, uc->args[1]);
+ }
  
--#define VCPU_ID		5
+-#define VCPU_ID 0
 -
--static struct kvm_vm *vm;
+-static void enter_guest(struct kvm_vm *vm)
++static void enter_guest(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_run *run;
++	struct kvm_run *run = vcpu->run;
+ 	struct ucall uc;
+-	int r;
 -
- static void l2_guest_code(struct svm_test_data *svm)
- {
- 	__asm__ __volatile__("vmcall");
-@@ -39,26 +35,28 @@ static void l1_guest_code(struct svm_test_data *svm)
+-	run = vcpu_state(vm, VCPU_ID);
  
- int main(int argc, char *argv[])
- {
-+	struct kvm_vcpu *vcpu;
- 	vm_vaddr_t svm_gva;
-+	struct kvm_vm *vm;
- 
- 	nested_svm_check_supported();
- 
--	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
- 
- 	vcpu_alloc_svm(vm, &svm_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, svm_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, svm_gva);
- 
- 	for (;;) {
--		volatile struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+		volatile struct kvm_run *run = vcpu->run;
- 		struct ucall uc;
- 
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
+ 	while (true) {
+-		r = _vcpu_run(vm, VCPU_ID);
+-		TEST_ASSERT(!r, "vcpu_run failed: %d\n", r);
++		vcpu_run(vcpu->vm, vcpu->id);
  		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
- 			    run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
+ 			    "unexpected exit reason: %u (%s)",
+ 			    run->exit_reason, exit_reason_str(run->exit_reason));
  
 -		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s", (const char *)uc.args[0]);
- 			/* NOT REACHED */
++		switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
+ 		case UCALL_PR_MSR:
+ 			pr_msr(&uc);
+ 			break;
+@@ -208,6 +202,7 @@ int main(void)
+ {
+ 	struct kvm_enable_cap cap = {0};
+ 	struct kvm_cpuid2 *best;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 
+ 	if (!kvm_check_cap(KVM_CAP_ENFORCE_PV_FEATURE_CPUID)) {
+@@ -215,20 +210,20 @@ int main(void)
+ 		exit(KSFT_SKIP);
+ 	}
+ 
+-	vm = vm_create_default(VCPU_ID, 0, guest_main);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
+ 
+ 	cap.cap = KVM_CAP_ENFORCE_PV_FEATURE_CPUID;
+ 	cap.args[0] = 1;
+-	vcpu_enable_cap(vm, VCPU_ID, &cap);
++	vcpu_enable_cap(vm, vcpu->id, &cap);
+ 
+ 	best = kvm_get_supported_cpuid();
+ 	clear_kvm_cpuid_features(best);
+-	vcpu_set_cpuid(vm, VCPU_ID, best);
++	vcpu_set_cpuid(vm, vcpu->id, best);
+ 
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
+ 	vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
+ 
+-	enter_guest(vm);
++	enter_guest(vcpu);
+ 	kvm_vm_free(vm);
+ }
 -- 
 2.36.0.464.gb9c8b46e94-goog
 
