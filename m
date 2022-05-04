@@ -2,125 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ACD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5037EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 10:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348153AbiEDKh0 (ORCPT
+        id S1348173AbiEDKjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 06:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45354 "EHLO
+        Wed, 4 May 2022 06:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348156AbiEDKhU (ORCPT
+        with ESMTP id S1348117AbiEDKjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 06:37:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E2728E03;
-        Wed,  4 May 2022 03:33:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60A41B82553;
-        Wed,  4 May 2022 10:33:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EBB0C385AF;
-        Wed,  4 May 2022 10:33:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651660421;
-        bh=E8CEzIAsWz9Rmvw13XFPv/adMpOwsz2QRxp2bzHQxCE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PQWOF9oSgEdn5spCau1vYDvRsS1HHfUeOA4Od05fC00yS0tyyOD+fOLl9QnmqHGQI
-         wHYQy7kje5Gg/nEp5ErHjoGmD/b4jW53yav9c/mfgu8szu/WN5+shhYk03/ZrkMCge
-         hqJscs8JhQ+E4P1lB+ZZjurxCFvVODHApQETnqTiVDaNHN/rPdujgfo2jZ6GUPlzQc
-         Nbar0v79O8QIIN5ZVjJCRaLxKzs20Aw4M4Pidg5HoDxB7CJzo0m3JPhkeMd+3WSEfq
-         m7+4Y5Z/fagiwY7a74bR52JdQzPQyGGYz6GaRyoSKxC7w0BowID1Z6upBKXRXBfuZP
-         9jSA629Vn2Qyw==
-Received: by mail-wm1-f51.google.com with SMTP id q20so604302wmq.1;
-        Wed, 04 May 2022 03:33:40 -0700 (PDT)
-X-Gm-Message-State: AOAM531WyMQtVWtA2d2Op2gBYAPD2Rt0kOvFMA9+1+iuKW9L5tTCrNhO
-        Dq7rYurHeFnXDCjiZ3s3cn6lvtdP4eEcK2bOdKg=
-X-Google-Smtp-Source: ABdhPJwOmoNuUoi/jWtPqmt55hkpFmZRUX1rQCTG/MBa1moNMRI9KXGnBtVTPDUY1plM3AGJvlzbvLih0M2ebaRjwPY=
-X-Received: by 2002:a7b:cc93:0:b0:394:2622:fcd9 with SMTP id
- p19-20020a7bcc93000000b003942622fcd9mr7398696wma.20.1651660419246; Wed, 04
- May 2022 03:33:39 -0700 (PDT)
+        Wed, 4 May 2022 06:39:09 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6061EED0;
+        Wed,  4 May 2022 03:35:32 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651660530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6YtpjsfhkygI7S5pL9OBtkEy2yJ8BSnIkwhIIs6sW/g=;
+        b=z6KCFH4fDN5OigfyhbZBoy0TtffgA0ydbAqvM0VqAIqyhJF1YXSJd9hh4PGtadytYPN0Fd
+        Z3MnGpf5qmRZEkXlwNs7AvgEu1F8G93Viw+hhgTOi7xveDnOrR2Bm7gNWXkIY7rPDLU0pA
+        t6MAfFRfGmvA81k5BTacqbWyOJi45bcTC2FgYKMk98JMotxhN25mqc5kT2fw73O+Y3c2Ir
+        s+XXhNVK68mBtoGVVwc2sWHaGe74CVkbU1WIUQwqlT2lGysKg8snIdsIofGoeS5E4KTT/d
+        ndFjo6yzjBEZ63P6Pz/uV76Y3NNm0L4L1M0FqprB+BxCLWMRPaUCzst6vqED3w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651660530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6YtpjsfhkygI7S5pL9OBtkEy2yJ8BSnIkwhIIs6sW/g=;
+        b=55S8Fd6NqUoznCWNQtSmKnWSpcWfMCCLpFs5dSrKQZkbbn41FNfk7PzSstbSIpjiCFk7T1
+        j7Kd2D7UuZnEQVCA==
+To:     Tony Luck <tony.luck@intel.com>, hdegoede@redhat.com,
+        markgross@kernel.org
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
+        jithu.joseph@intel.com, ashok.raj@intel.com, tony.luck@intel.com,
+        rostedt@goodmis.org, dan.j.williams@intel.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        ravi.v.shankar@intel.com
+Subject: Re: [PATCH v5 03/10] platform/x86/intel/ifs: Add stub driver for
+ In-Field Scan
+In-Reply-To: <20220428153849.295779-4-tony.luck@intel.com>
+References: <20220422200219.2843823-1-tony.luck@intel.com>
+ <20220428153849.295779-1-tony.luck@intel.com>
+ <20220428153849.295779-4-tony.luck@intel.com>
+Date:   Wed, 04 May 2022 12:35:30 +0200
+Message-ID: <87zgjxk2kt.ffs@tglx>
 MIME-Version: 1.0
-References: <20220429135108.2781579-44-schnelle@linux.ibm.com> <20220503233802.GA420374@bhelgaas>
-In-Reply-To: <20220503233802.GA420374@bhelgaas>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 4 May 2022 12:33:23 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a02vidd7u5Kp6UJj=9tj_hFGL24SmzuNpDGu1GOa1w9+w@mail.gmail.com>
-Message-ID: <CAK8P3a02vidd7u5Kp6UJj=9tj_hFGL24SmzuNpDGu1GOa1w9+w@mail.gmail.com>
-Subject: Re: [RFC v2 25/39] pcmcia: add HAS_IOPORT dependencies
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 1:38 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> On Fri, Apr 29, 2022 at 03:50:41PM +0200, Niklas Schnelle wrote:
-> > In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> > not being declared. PCMCIA devices are either LEGACY_PCI devices
-> > which implies HAS_IOPORT or require HAS_IOPORT.
-> >
-> > Acked-by: Dominik Brodowski <linux@dominikbrodowski.net>
-> > Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > ---
-> >  drivers/pcmcia/Kconfig | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
-> > index 2ce261cfff8e..32b5cd324c58 100644
-> > --- a/drivers/pcmcia/Kconfig
-> > +++ b/drivers/pcmcia/Kconfig
-> > @@ -5,7 +5,7 @@
-> >
-> >  menuconfig PCCARD
-> >       tristate "PCCard (PCMCIA/CardBus) support"
-> > -     depends on !UML
-> > +     depends on HAS_IOPORT
->
-> I don't know much about PC Card.  Is there a requirement that these
-> devices must use I/O port space?  If so, can you include a spec
-> reference in the commit log?
+On Thu, Apr 28 2022 at 08:38, Tony Luck wrote:
+> +#define X86_MATCH(model)				\
+> +	X86_MATCH_VENDOR_FAM_MODEL_FEATURE(INTEL, 6,	\
+> +		INTEL_FAM6_##model, X86_FEATURE_CORE_CAPABILITIES, NULL)
+> +
+> +static const struct x86_cpu_id ifs_cpu_ids[] __initconst = {
+> +	X86_MATCH(SAPPHIRERAPIDS_X),
 
-I think for PCMCIA devices, the dependency makes sense because
-all device drivers for PCMCIA devices need I/O ports.
+Why do we need a model match here? The core capabilities MSR is only
+available when X86_FEATURE_CORE_CAPABILITIES is set:
 
-For cardbus, we can go either way, I don't see any reference to
-I/O ports in yenta_socket.c or the pccard core, so it would build
-fine with or without I/O ports.
+    "If CPUID.(EAX=07H, ECX=0):EDX[30] = 1.
+     This MSR provides an architectural enumeration
+     function for model-specific behavior."
 
-> I do see the PC Card spec, r8.1, sec 5.5.4.2.2 says:
->
->   All CardBus PC Card adapters must support either memory-mapped I/O
->   or both memory-mapped I/O and I/O space. The selection will depend
->   largely on the system architecture the adapter is intended to be
->   used in. The requirement to also support memory-mapped I/O, if I/O
->   space is supported, is driven by the potential emergence of
->   memory-mapped I/O only cards. Supporting both modes may also
->   position the adapter to be sold into multiple system architectures.
->
-> which sounds like I/O space is optional.
+So checking for Intel Fam6 ANYMODEL and X86_FEATURE_CORE_CAPABILITIES is
+sufficient, no?
 
-An earlier version of the patch series had a separate
-CONFIG_LEGACY_PCI that required CONFIG_HAS_IOPORT
-here, which I think made this clearer:
+We really don't need more match id tables with gazillions of CPU models.
 
-Almost all architectures that support CONFIG_PCI also provide
-HAS_IOPORT today (at least at compile time, if not at runtime),
-with s390 as a notable exception. Any machines that have legacy
-PCI device support will also have I/O ports because a lot of
-legacy PCI cards used it, and any machine with a pc-card slot
-should also support legacy PCI devices.
+Thanks,
 
-If we get new architectures without I/O space in the future, they
-would certainly not care about supporting old cardbus devices.
-
-        Arnd
+        tglx
