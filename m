@@ -2,113 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85330C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353288AbiEEJZR (ORCPT
+        id S1352675AbiEEJ0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
+        Thu, 5 May 2022 05:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352846AbiEEJX6 (ORCPT
+        with ESMTP id S1352667AbiEEJ0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:23:58 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F053ADB0;
-        Thu,  5 May 2022 02:20:16 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kv7Rx6MB9zfbMF;
-        Thu,  5 May 2022 17:19:09 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 17:20:14 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 17:20:13 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        <kexec@lists.infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <devicetree@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        <linux-doc@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        "John Donnelly" <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH v23 6/6] docs: kdump: Update the crashkernel description for arm64
-Date:   Thu, 5 May 2022 17:18:45 +0800
-Message-ID: <20220505091845.167-7-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220505091845.167-1-thunder.leizhen@huawei.com>
-References: <20220505091845.167-1-thunder.leizhen@huawei.com>
+        Thu, 5 May 2022 05:26:02 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499734E390
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:22:23 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id i5so5241571wrc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:22:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=YZkhX8VdSbRZKmQIOzgkSfpmToAIJcyGhKGvONZeKPM=;
+        b=wgm3Tdzap7kkOBihTP6T0IhnT9G6Oc8Ge/5nUNlrSnTPInQoGJ98CKanFTwb6sMccZ
+         9d4KCxdg9LCYphRKvE9rvwU1++xkoof4loKmHyCYfxAY0gBFhMA3oPXw7NTjEqqxyHfC
+         cNwAxA8oRijMoUjff4ROoa9YilWt5ieCB4F7ZaDx7bZ5NBlRq1XEjDizZ9ItDHbBrDJw
+         rdCoDCQ1En6Y5bGPfqpHlZRcg2m4vS6Y/g4KRAX51Favpx55TneHi7u6O0EF4FPDa2B0
+         NZ6FEyOLhsL2fcnruWZj5H0x5LOeT1KGIGqo+XJU4paF90d6jjbgSv1wgUCBUHYfU45r
+         HmpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YZkhX8VdSbRZKmQIOzgkSfpmToAIJcyGhKGvONZeKPM=;
+        b=WqOlfamrJULRFJpbdhZ9Uh45xTL/+k45ibr0AUXWPdG6n8sftwDr8gabKmZvcVzgjS
+         C4NKozVTRrElm8IUUZy0IwiChzqzqcNvsAgUMe7YgEIorszOV6dsNjcN3sabfwJNs5sf
+         x3cDMomQwhP6r2Y810EHGLMruOpf6ImV/64iQ2N8bcqKUeyPFcGB6Ochy6i4JBFUTTwG
+         DoztMuEefGogrAtBI1fO5FM2e6uOgoEMBXQf3C+8BFwQXcRxuP//v/Phj8WguMUwb8G6
+         AMxmR2X5MRg8LIYwSe9elLAFSbxj3BNdyojuESheR1SPcYDqXG9PTzbOFWDRjohla/rr
+         Bzpg==
+X-Gm-Message-State: AOAM533eVOOg+nNCxrqdeaAurs8wVt8ELdF5FZEUv9MfWsnGFe3n4uJD
+        WT9jZ1EpDpA27MeHRM+1ZS9J3g==
+X-Google-Smtp-Source: ABdhPJwfam1b9VUuK2KiSROtjJ68KFyfCyHnaJU4kSRx96x9vSh8DG8UHpeSy1pcGwoX3pIR2XLwyg==
+X-Received: by 2002:a05:6000:1110:b0:20a:e113:8221 with SMTP id z16-20020a056000111000b0020ae1138221mr19276809wrw.271.1651742541836;
+        Thu, 05 May 2022 02:22:21 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o9-20020a5d4089000000b0020c5253d8d2sm779379wrp.30.2022.05.05.02.22.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 02:22:21 -0700 (PDT)
+Message-ID: <e9e03c19-cf65-28b8-a81a-10995b1f262f@linaro.org>
+Date:   Thu, 5 May 2022 11:22:20 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC v2 4/4] arm64: dts: rockchip: Add mt7531 dsa node to
+ BPI-R2-Pro board
+Content-Language: en-US
+To:     frank-w@public-files.de, Vladimir Oltean <olteanv@gmail.com>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220430130347.15190-1-linux@fw-web.de>
+ <20220430130347.15190-5-linux@fw-web.de>
+ <20220504152450.cs2afa4hwkqp5b5m@skbuf>
+ <trinity-9f557027-8e00-4a4a-bc19-bc576e163f7b-1651678399970@3c-app-gmx-bs42>
+ <20220504154720.62cwrz7frjkjbb7u@skbuf>
+ <313a5b2e-c571-a13f-3447-b1cd7200f4c9@linaro.org>
+ <D201CE50-280C-4089-BB9F-053FEA28FE9A@public-files.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <D201CE50-280C-4089-BB9F-053FEA28FE9A@public-files.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now arm64 has added support for "crashkernel=X,high" and
-"crashkernel=Y,low". Unlike x86, crash low memory is not allocated if
-"crashkernel=Y,low" is not specified.
+On 05/05/2022 11:06, Frank Wunderlich wrote:
+>> You can make it "(ethernet-)?ports" as well. My comment was purely to
+>> make it simpler, for bindings (goes into properties, not
+>> patternProperties) and for us. If you prefer to keep it like DSA core,
+>> also fine.
+> 
+> Ok, i'm also thinking, the dsa-definition will be the right way (pattern-properties with optional "ethernet-") in binding.
+> 
+> Should i use "ethernet-ports" instead of "ports" here? Current dts with mt7530/mt7531 switches using "ports" so i would use it here too. If dsa prefer ethernet-ports now it should be changed in other files too.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+I think bindings allow both, so choose something consistent with
+existing DTS sources.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 3f1cc5e317ed4a5..aa44c61114aa4b8 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -808,7 +808,7 @@
- 			Documentation/admin-guide/kdump/kdump.rst for an example.
- 
- 	crashkernel=size[KMG],high
--			[KNL, X86-64] range could be above 4G. Allow kernel
-+			[KNL, X86-64, ARM64] range could be above 4G. Allow kernel
- 			to allocate physical memory region from top, so could
- 			be above 4G if system have more than 4G ram installed.
- 			Otherwise memory region will be allocated below 4G, if
-@@ -821,7 +821,7 @@
- 			that require some amount of low memory, e.g. swiotlb
- 			requires at least 64M+32K low memory, also enough extra
- 			low memory is needed to make sure DMA buffers for 32-bit
--			devices won't run out. Kernel would try to allocate at
-+			devices won't run out. Kernel would try to allocate
- 			at least 256M below 4G automatically.
- 			This one let user to specify own low range under 4G
- 			for second kernel instead.
-@@ -829,6 +829,11 @@
- 			It will be ignored when crashkernel=X,high is not used
- 			or memory reserved is below 4G.
- 
-+			[KNL, ARM64] range in low memory.
-+			This one let user to specify a low range in DMA zone for
-+			crash dump kernel.
-+			It will be ignored when crashkernel=X,high is not used.
-+
- 	cryptomgr.notests
- 			[KNL] Disable crypto self-tests
- 
--- 
-2.25.1
-
+Best regards,
+Krzysztof
