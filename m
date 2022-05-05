@@ -2,320 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF88DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359188AbiEEL50 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 07:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
+        id S235404AbiEEL6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 07:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358932AbiEEL4k (ORCPT
+        with ESMTP id S1359540AbiEEL5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 07:56:40 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB2B54BC2;
-        Thu,  5 May 2022 04:52:57 -0700 (PDT)
-X-UUID: 35bd6907d964431fbdd3d671ed358e75-20220505
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:988eb562-cf0a-4669-a5de-ce645dbd87cb,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:11ea5116-2e53-443e-b81a-655c13977218,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 35bd6907d964431fbdd3d671ed358e75-20220505
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1849246779; Thu, 05 May 2022 19:52:35 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 5 May 2022 19:52:35 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 5 May 2022 19:52:34 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 5 May 2022 19:52:34 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
-        <hsinyi@google.com>, <khilman@baylibre.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v6 04/10] cpufreq: mediatek: Refine mtk_cpufreq_voltage_tracking()
-Date:   Thu, 5 May 2022 19:52:20 +0800
-Message-ID: <20220505115226.20130-5-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
-References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+        Thu, 5 May 2022 07:57:37 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8B48554A9
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:53:34 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-243-yWIO4Up6Mq2IuKgImtOi4w-1; Thu, 05 May 2022 12:53:32 +0100
+X-MC-Unique: yWIO4Up6Mq2IuKgImtOi4w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Thu, 5 May 2022 12:53:31 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Thu, 5 May 2022 12:53:31 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Filipe Manana" <fdmanana@suse.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>
+Subject: RE: [patch 3/3] x86/fpu: Make FPU protection more robust
+Thread-Topic: [patch 3/3] x86/fpu: Make FPU protection more robust
+Thread-Index: AQHYYG+YWY1FRr4hzkKhJKBT7m/w1q0QJdtA///xC4CAABO40A==
+Date:   Thu, 5 May 2022 11:53:31 +0000
+Message-ID: <a97e89a40b6e49d497f8e165ef11ec16@AcuMS.aculab.com>
+References: <YnDwjjdiSQ5Yml6E@hirez.programming.kicks-ass.net>
+ <87fslpjomx.ffs@tglx> <YnKh96isoB7jiFrv@zx2c4.com> <87czgtjlfq.ffs@tglx>
+ <YnLOXZp6WgH7ULVU@zx2c4.com> <87wnf1huwj.ffs@tglx>
+ <YnMRwPFfvB0RlBow@zx2c4.com> <87mtfwiyqp.ffs@tglx>
+ <YnMkRLcxczMxdE5z@zx2c4.com> <87h764ixjs.ffs@tglx>
+ <YnOuqh4YZT8ww96W@zx2c4.com>
+ <1f4918f734d14e3896071d3c7de1441d@AcuMS.aculab.com>
+ <CAHmME9q+1dAg=H2RLDHd=CSCwO4PpL+YYMeDXO6uQ_wD+GNPhg@mail.gmail.com>
+In-Reply-To: <CAHmME9q+1dAg=H2RLDHd=CSCwO4PpL+YYMeDXO6uQ_wD+GNPhg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-
-Because the difference of sram and proc should in a range of min_volt_shift
-and max_volt_shift. We need to adjust the sram and proc step by step.
-
-We replace VOLT_TOL (voltage tolerance) with the platform data and update the
-logic to determine the voltage boundary and invoking regulator_set_voltage.
-
-- Use 'sram_min_volt' and 'sram_max_volt' to determine the voltage boundary
-  of sram regulator.
-- Use (sram_min_volt - min_volt_shift) and 'proc_max_volt' to determine the
-  voltage boundary of vproc regulator.
-
-Moreover, to prevent infinite loop when tracking voltage, we calculate the
-maximum value for each platform data.
-We assume min voltage is 0 and tracking target voltage using
-min_volt_shift for each iteration.
-The retry_max is 3 times of expeted iteration count.
-
-Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/cpufreq/mediatek-cpufreq.c | 147 ++++++++++-------------------
- 1 file changed, 51 insertions(+), 96 deletions(-)
-
-diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-index 0b6c3479c8cc..fe205eca657d 100644
---- a/drivers/cpufreq/mediatek-cpufreq.c
-+++ b/drivers/cpufreq/mediatek-cpufreq.c
-@@ -8,6 +8,7 @@
- #include <linux/cpu.h>
- #include <linux/cpufreq.h>
- #include <linux/cpumask.h>
-+#include <linux/minmax.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
-@@ -15,8 +16,6 @@
- #include <linux/pm_opp.h>
- #include <linux/regulator/consumer.h>
- 
--#define VOLT_TOL		(10000)
--
- struct mtk_cpufreq_platform_data {
- 	int min_volt_shift;
- 	int max_volt_shift;
-@@ -48,6 +47,7 @@ struct mtk_cpu_dvfs_info {
- 	bool need_voltage_tracking;
- 	int pre_vproc;
- 	const struct mtk_cpufreq_platform_data *soc_data;
-+	int vtrack_max;
- };
- 
- static struct platform_device *cpufreq_pdev;
-@@ -73,6 +73,7 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
- 	struct regulator *proc_reg = info->proc_reg;
- 	struct regulator *sram_reg = info->sram_reg;
- 	int pre_vproc, pre_vsram, new_vsram, vsram, vproc, ret;
-+	int retry = info->vtrack_max;
- 
- 	pre_vproc = regulator_get_voltage(proc_reg);
- 	if (pre_vproc < 0) {
-@@ -80,91 +81,44 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
- 			"invalid Vproc value: %d\n", pre_vproc);
- 		return pre_vproc;
- 	}
--	/* Vsram should not exceed the maximum allowed voltage of SoC. */
--	new_vsram = min(new_vproc + soc_data->min_volt_shift,
--			soc_data->sram_max_volt);
--
--	if (pre_vproc < new_vproc) {
--		/*
--		 * When scaling up voltages, Vsram and Vproc scale up step
--		 * by step. At each step, set Vsram to (Vproc + 200mV) first,
--		 * then set Vproc to (Vsram - 100mV).
--		 * Keep doing it until Vsram and Vproc hit target voltages.
--		 */
--		do {
--			pre_vsram = regulator_get_voltage(sram_reg);
--			if (pre_vsram < 0) {
--				dev_err(info->cpu_dev,
--					"invalid Vsram value: %d\n", pre_vsram);
--				return pre_vsram;
--			}
--			pre_vproc = regulator_get_voltage(proc_reg);
--			if (pre_vproc < 0) {
--				dev_err(info->cpu_dev,
--					"invalid Vproc value: %d\n", pre_vproc);
--				return pre_vproc;
--			}
--
--			vsram = min(new_vsram,
--				    pre_vproc + soc_data->min_volt_shift);
- 
--			if (vsram + VOLT_TOL >= soc_data->sram_max_volt) {
--				vsram = soc_data->sram_max_volt;
-+	pre_vsram = regulator_get_voltage(sram_reg);
-+	if (pre_vsram < 0) {
-+		dev_err(info->cpu_dev, "invalid Vsram value: %d\n", pre_vsram);
-+		return pre_vsram;
-+	}
- 
--				/*
--				 * If the target Vsram hits the maximum voltage,
--				 * try to set the exact voltage value first.
--				 */
--				ret = regulator_set_voltage(sram_reg, vsram,
--							    vsram);
--				if (ret)
--					ret = regulator_set_voltage(sram_reg,
--							vsram - VOLT_TOL,
--							vsram);
-+	new_vsram = clamp(new_vproc + soc_data->min_volt_shift,
-+			  soc_data->sram_min_volt, soc_data->sram_max_volt);
- 
--				vproc = new_vproc;
--			} else {
--				ret = regulator_set_voltage(sram_reg, vsram,
--							    vsram + VOLT_TOL);
-+	do {
-+		if (pre_vproc <= new_vproc) {
-+			vsram = clamp(pre_vproc + soc_data->max_volt_shift,
-+				      soc_data->sram_min_volt, new_vsram);
-+			ret = regulator_set_voltage(sram_reg, vsram,
-+						    soc_data->sram_max_volt);
- 
--				vproc = vsram - soc_data->min_volt_shift;
--			}
- 			if (ret)
- 				return ret;
- 
-+			if (vsram == soc_data->sram_max_volt ||
-+			    new_vsram == soc_data->sram_min_volt)
-+				vproc = new_vproc;
-+			else
-+				vproc = vsram - soc_data->min_volt_shift;
-+
- 			ret = regulator_set_voltage(proc_reg, vproc,
--						    vproc + VOLT_TOL);
-+						    soc_data->proc_max_volt);
- 			if (ret) {
- 				regulator_set_voltage(sram_reg, pre_vsram,
--						      pre_vsram);
-+						      soc_data->sram_max_volt);
- 				return ret;
- 			}
--		} while (vproc < new_vproc || vsram < new_vsram);
--	} else if (pre_vproc > new_vproc) {
--		/*
--		 * When scaling down voltages, Vsram and Vproc scale down step
--		 * by step. At each step, set Vproc to (Vsram - 200mV) first,
--		 * then set Vproc to (Vproc + 100mV).
--		 * Keep doing it until Vsram and Vproc hit target voltages.
--		 */
--		do {
--			pre_vproc = regulator_get_voltage(proc_reg);
--			if (pre_vproc < 0) {
--				dev_err(info->cpu_dev,
--					"invalid Vproc value: %d\n", pre_vproc);
--				return pre_vproc;
--			}
--			pre_vsram = regulator_get_voltage(sram_reg);
--			if (pre_vsram < 0) {
--				dev_err(info->cpu_dev,
--					"invalid Vsram value: %d\n", pre_vsram);
--				return pre_vsram;
--			}
--
-+		} else if (pre_vproc > new_vproc) {
- 			vproc = max(new_vproc,
- 				    pre_vsram - soc_data->max_volt_shift);
- 			ret = regulator_set_voltage(proc_reg, vproc,
--						    vproc + VOLT_TOL);
-+						    soc_data->proc_max_volt);
- 			if (ret)
- 				return ret;
- 
-@@ -174,32 +128,24 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
- 				vsram = max(new_vsram,
- 					    vproc + soc_data->min_volt_shift);
- 
--			if (vsram + VOLT_TOL >= soc_data->sram_max_volt) {
--				vsram = soc_data->sram_max_volt;
--
--				/*
--				 * If the target Vsram hits the maximum voltage,
--				 * try to set the exact voltage value first.
--				 */
--				ret = regulator_set_voltage(sram_reg, vsram,
--							    vsram);
--				if (ret)
--					ret = regulator_set_voltage(sram_reg,
--							vsram - VOLT_TOL,
--							vsram);
--			} else {
--				ret = regulator_set_voltage(sram_reg, vsram,
--							    vsram + VOLT_TOL);
--			}
--
-+			ret = regulator_set_voltage(sram_reg, vsram,
-+						    soc_data->sram_max_volt);
- 			if (ret) {
- 				regulator_set_voltage(proc_reg, pre_vproc,
--						      pre_vproc);
-+						      soc_data->proc_max_volt);
- 				return ret;
- 			}
--		} while (vproc > new_vproc + VOLT_TOL ||
--			 vsram > new_vsram + VOLT_TOL);
--	}
-+		}
-+
-+		pre_vproc = vproc;
-+		pre_vsram = vsram;
-+
-+		if (--retry < 0) {
-+			dev_err(info->cpu_dev,
-+				"over loop count, failed to set voltage\n");
-+			return -EINVAL;
-+		}
-+	} while (vproc != new_vproc || vsram != new_vsram);
- 
- 	return 0;
- }
-@@ -261,8 +207,8 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
- 	 * If the new voltage or the intermediate voltage is higher than the
- 	 * current voltage, scale up voltage first.
- 	 */
--	target_vproc = (inter_vproc > vproc) ? inter_vproc : vproc;
--	if (pre_vproc < target_vproc) {
-+	target_vproc = max(inter_vproc, vproc);
-+	if (pre_vproc <= target_vproc) {
- 		ret = mtk_cpufreq_set_voltage(info, target_vproc);
- 		if (ret) {
- 			dev_err(cpu_dev,
-@@ -417,6 +363,15 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
- 	 */
- 	info->need_voltage_tracking = (info->sram_reg != NULL);
- 
-+	/*
-+	 * We assume min voltage is 0 and tracking target voltage using
-+	 * min_volt_shift for each iteration.
-+	 * The vtrack_max is 3 times of expeted iteration count.
-+	 */
-+	info->vtrack_max = 3 * DIV_ROUND_UP(max(info->soc_data->sram_max_volt,
-+						info->soc_data->proc_max_volt),
-+					    info->soc_data->min_volt_shift);
-+
- 	return 0;
- 
- out_disable_inter_clock:
--- 
-2.18.0
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gQS4gRG9uZW5m
+ZWxkIDxKYXNvbkB6eDJjNC5jb20+DQo+IFNlbnQ6IDA1IE1heSAyMDIyIDEyOjM2DQo+IFRvOiBE
+YXZpZCBMYWlnaHQgPERhdmlkLkxhaWdodEBBQ1VMQUIuQ09NPg0KPiBDYzogVGhvbWFzIEdsZWl4
+bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+OyBQZXRlciBaaWpsc3RyYSA8cGV0ZXJ6QGluZnJhZGVh
+ZC5vcmc+OyBCb3Jpc2xhdiBQZXRrb3YNCj4gPGJwQGFsaWVuOC5kZT47IExLTUwgPGxpbnV4LWtl
+cm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyB4ODZAa2VybmVsLm9yZzsgRmlsaXBlIE1hbmFuYQ0KPiA8
+ZmRtYW5hbmFAc3VzZS5jb20+OyBsaW51eC1jcnlwdG9Admdlci5rZXJuZWwub3JnDQo+IFN1Ympl
+Y3Q6IFJlOiBbcGF0Y2ggMy8zXSB4ODYvZnB1OiBNYWtlIEZQVSBwcm90ZWN0aW9uIG1vcmUgcm9i
+dXN0DQo+IA0KPiBPbiBUaHUsIE1heSA1LCAyMDIyIGF0IDE6MzQgUE0gRGF2aWQgTGFpZ2h0IDxE
+YXZpZC5MYWlnaHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiAuLi4NCj4gPiA+ICsgICAg
+IGN5Y2xlc190IGVuZCwgc3RhcnQgPSBnZXRfY3ljbGVzKCk7DQo+ID4gPiAgICAgICBibGFrZTJz
+X3VwZGF0ZSgmaW5wdXRfcG9vbC5oYXNoLCBpbiwgbmJ5dGVzKTsNCj4gPiA+ICsgICAgIGVuZCA9
+IGdldF9jeWNsZXMoKTsNCj4gPg0KPiA+IElmIGdldF9jeWNsZXMoKSBpcyByZHRzYyB0aGVuIHRo
+YXQgZ2l2ZXMgbWVhbmluZ2xlc3MgbnVtYmVycy4NCj4gPiBUaGUgY3B1IGNsb2NrIGZyZXF1ZW5j
+eSB3aWxsIGNoYW5nZSBvbiB5b3UuDQo+ID4NCj4gPiBZb3UgY2FuIHVzZSBvbmUgb2YgdGhlIHBl
+cmZvcm1hbmNlIGNvdW50ZXJzIHRvIGdldCBhbiBhY3R1YWwNCj4gDQo+IEluZGVlZC4gSW4gdGhl
+IHByb2Nlc3Mgb2Ygd2lyaW5nIHVwIHJkcG1jIG5vdy4NCg0KSSd2ZSB1c2VkIHRoaXMgYmVmb3Jl
+IG5vdy4NCkJ1dCB0aGUgbG9vcCBnZXR0aW5nIHRoZSBwbWMgdmFsdWUgaW4gbm9uLWRldGVybWlu
+aXN0aWMuDQpTbyBJIHNvbWV0aW1lcyByZW1vdmUgaXQuDQpBbHNvIHlvdSBuZWVkIHRvIGFkZCBh
+IHNlcmlhbGlzaW5nIGluc3RydWN0aW9uIC0gb3RoZXJ3aXNlDQp0aGUgcG1jIGdldCByZWFkIGJl
+Zm9yZSB0aGUgY29kZSB5b3UgYXJlIG1lYXN1cmluZw0KYWN0dWFsbHkgZmluaXNoZXMuDQoNCkkn
+dmUgdXNlZCBzaW1pbGFyIGNvZGUgdG8gbWVhc3VyZSBpdGVyYXRpb25zIG9uIHRoZSBpcCBjaGVj
+a3N1bSBjb2RlLg0KQ2FuIHNob3cgaG93IG1hbnkgYnl0ZXMvY2xvY2sgdGhhdCBhY2hpZXZlcyBp
+biBpdHMgaW5uZXIgbG9vcC4NCldoaWNoIGNhbiBtYXRjaCB3aGF0IHlvdSBtaWdodCBleHBlY3Qg
+dGhlIGluc3RydWN0aW9ucyB0byBnZW5lcmF0ZS4NCg0KCURhdmlkDQoNCnN0YXRpYyBpbmxpbmUg
+dW5zaWduZWQgaW50IHJkcG1jKHVuc2lnbmVkIGludCBjb3VudGVyKQ0Kew0KICAgICAgICB1bnNp
+Z25lZCBpbnQgbG93LCBoaWdoOw0KDQogICAgICAgIGFzbSB2b2xhdGlsZSgicmRwbWMiIDogIj1h
+IiAobG93KSwgIj1kIiAoaGlnaCkgOiAiYyIgKGNvdW50ZXIpKTsNCg0KICAgICAgICAvLyByZXR1
+cm4gbG93IGJpdHMsIGNvdW50ZXIgbWlnaHQgdG8gMzIgb3IgNDAgYml0cyB3aWRlLg0KICAgICAg
+ICByZXR1cm4gbG93Ow0KfQ0KDQpzdGF0aWMgaW5saW5lIHVuc2lnbmVkIGludCByZHRzYyh2b2lk
+KQ0Kew0KICAgICAgICB1bnNpZ25lZCBpbnQgbG93LCBoaWdoOw0KDQogICAgICAgIGFzbSB2b2xh
+dGlsZSgicmR0c2MiIDogIj1hIiAobG93KSwgIj1kIiAoaGlnaCkpOw0KDQogICAgICAgIHJldHVy
+biBsb3c7DQp9DQoNCnVuc2lnbmVkIGludCByZWFkX2NwdV9jeWNsZXModm9pZCkNCnsNCiAgICAg
+ICAgc3RhdGljIHN0cnVjdCBwZXJmX2V2ZW50X2F0dHIgcGVyZl9hdHRyID0gew0KICAgICAgICAg
+ICAgICAgIC50eXBlID0gUEVSRl9UWVBFX0hBUkRXQVJFLA0KICAgICAgICAgICAgICAgIC5jb25m
+aWcgPSBQRVJGX0NPVU5UX0hXX0NQVV9DWUNMRVMsDQogICAgICAgICAgICAgICAgLnBpbm5lZCA9
+IDEsDQogICAgICAgIH07DQogICAgICAgIHN0YXRpYyBfX3RocmVhZCBzdHJ1Y3QgcGVyZl9ldmVu
+dF9tbWFwX3BhZ2UgKnBjOw0KICAgICAgICBzdGF0aWMgaW50IHBtY19mYWlsZWQ7DQoNCiAgICAg
+ICAgdW5zaWduZWQgaW50IHNlcSwgaWR4LCBjb3VudDsNCg0KICAgICAgICBpZiAocG1jX2ZhaWxl
+ZCkNCiAgICAgICAgICAgICAgICByZXR1cm4gcmR0c2MoKTsNCg0KICAgICAgICBpZiAoIXBjKSB7
+DQogICAgICAgICAgICAgICAgaW50IHBlcmZfZmQ7DQogICAgICAgICAgICAgICAgcGVyZl9mZCA9
+IHN5c2NhbGwoX19OUl9wZXJmX2V2ZW50X29wZW4sICZwZXJmX2F0dHIsIDAsIC0xLCAtMSwgMCk7
+DQogICAgICAgICAgICAgICAgaWYgKHBlcmZfZmQgPCAwKSB7DQogICAgICAgICAgICAgICAgICAg
+ICAgICBwbWNfZmFpbGVkID0gMTsNCiAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZHRz
+YygpOw0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgICAgICBwYyA9IG1tYXAoTlVMTCwg
+c3lzY29uZihfU0NfUEFHRVNJWkUpLCBQUk9UX1JFQUQsIE1BUF9TSEFSRUQsIHBlcmZfZmQsIDAp
+Ow0KICAgICAgICAgICAgICAgIGNsb3NlKHBlcmZfZmQpOw0KICAgICAgICAgICAgICAgIGlmIChw
+YyA9PSBNQVBfRkFJTEVEKSB7DQogICAgICAgICAgICAgICAgICAgICAgICBwbWNfZmFpbGVkID0g
+MTsNCiAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZHRzYygpOw0KICAgICAgICAgICAg
+ICAgIH0NCiAgICAgICAgfQ0KDQogICAgICAgIGRvIHsNCiAgICAgICAgICAgICAgICBzZXEgPSBw
+Yy0+bG9jazsNCiAgICAgICAgICAgICAgICBhc20gdm9sYXRpbGUoIiI6OjoibWVtb3J5Iik7DQog
+ICAgICAgICAgICAgICAgaWR4ID0gcGMtPmluZGV4Ow0KICAgICAgICAgICAgICAgIGlmICghaWR4
+KSAvLyAgfHwgIXBjLT5jYXBfdXNlcl9yZHBtYykNCiAgICAgICAgICAgICAgICAgICAgICAgIHJl
+dHVybiAwOw0KICAgICAgICAgICAgICAgIGNvdW50ID0gcGMtPm9mZnNldCArIHJkcG1jKGlkeCAt
+IDEpOw0KICAgICAgICAgICAgICAgIGFzbSB2b2xhdGlsZSgiIjo6OiJtZW1vcnkiKTsNCiAgICAg
+ICAgfSB3aGlsZSAocGMtPmxvY2sgIT0gc2VxKTsNCg0KICAgICAgICByZXR1cm4gY291bnQ7DQp9
+DQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBG
+YXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2
+IChXYWxlcykNCg==
 
