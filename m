@@ -2,172 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3698FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DABAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243355AbiEEHUi convert rfc822-to-8bit (ORCPT
+        id S1343603AbiEEHVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
+        Thu, 5 May 2022 03:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343586AbiEEHUb (ORCPT
+        with ESMTP id S233719AbiEEHVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:20:31 -0400
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BECE3CFE4;
-        Thu,  5 May 2022 00:16:53 -0700 (PDT)
-Received: by mail-qt1-f169.google.com with SMTP id fu47so2570467qtb.5;
-        Thu, 05 May 2022 00:16:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Psb/QuXIO3rdiKJBYSV64pOzSRPQoJS6TszufIyjNe8=;
-        b=g2oXlQYt/GvBDNAKvS1NTWm5TO2W3PXM4aHDp1hk1eVk5SPrnIXuWalW+cnQA7UkLx
-         dHhDqz8AV+ww1QH+CZKGrqsWA1cRorVvFiqjZmicr2eN0/oBPAfFfnRl6r2a5zL+wMac
-         UGwtRNf8jqTMNojHw2e30toFvvGOJ1ee25KYALeyGpdNWhrulhjYi1ZRfCDmfywTsqBh
-         ToQA+VG0iANMMQGGGDt4S2xM1MTPB6B65H+XtopNi0PnQy2ybXw7YqQtEpJIFB+4q446
-         7Vj1IGlMYob0fjrKUMOWfoYqIDOXXBA/p2y2p19YUYm262qzR/uJTkku3YBr2ItCIQR0
-         OxVQ==
-X-Gm-Message-State: AOAM533Nb2QkuJUGGkW1TGiv8eLNeOfUkTQlWi5VrQSuysEpMXEEN3g4
-        F/kxt0RVdPcS0xUv7nUyd/C3uDKPD0sUiw==
-X-Google-Smtp-Source: ABdhPJxfcJiP6e3pG1LiEAfAF5dLVDxXwJYl+kiyO2WxFqjRf6BA2lTAv1LUus/hlk6wsBIhMPjW5w==
-X-Received: by 2002:ac8:7d4a:0:b0:2f3:bbe2:f97f with SMTP id h10-20020ac87d4a000000b002f3bbe2f97fmr1592188qtb.355.1651735012120;
-        Thu, 05 May 2022 00:16:52 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id w24-20020ac87198000000b002f39b99f697sm426369qto.49.2022.05.05.00.16.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 00:16:50 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id f38so6205971ybi.3;
-        Thu, 05 May 2022 00:16:50 -0700 (PDT)
-X-Received: by 2002:a05:6902:352:b0:63e:94c:883c with SMTP id
- e18-20020a056902035200b0063e094c883cmr19378252ybs.365.1651735010190; Thu, 05
- May 2022 00:16:50 -0700 (PDT)
+        Thu, 5 May 2022 03:21:02 -0400
+Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D313DDCA;
+        Thu,  5 May 2022 00:17:22 -0700 (PDT)
+Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 7447B60327;
+        Thu,  5 May 2022 09:17:19 +0200 (CEST)
+Date:   Thu, 5 May 2022 09:17:18 +0200
+From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     "H . Nikolaus Schaller" <hns@goldelico.com>,
+        Huijin Park <huijin.park@samsung.com>,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
+Subject: Re: [PATCH] mmc: core: Restore (almost) the busy polling for
+ MMC_SEND_OP_COND
+Message-ID: <20220505071718.GA4520@math.uni-bielefeld.de>
+References: <20220304105656.149281-1-ulf.hansson@linaro.org>
+ <CAPDyKFr1PzSaiKqB4ZoqTS_8bGsEH=aB3ARhxyGu+cYeRqeBew@mail.gmail.com>
+ <20220504054652.GA7851@math.uni-bielefeld.de>
+ <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220504093000.132579-1-clement.leger@bootlin.com> <20220504093000.132579-5-clement.leger@bootlin.com>
-In-Reply-To: <20220504093000.132579-5-clement.leger@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 5 May 2022 09:16:38 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
-Message-ID: <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 04/12] net: pcs: add Renesas MII converter driver
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Clément,
+Ulf Hansson wrote on Wed  4/05/22 11:08:
+> On Wed, 4 May 2022 at 07:46, Jean Rene Dawin
+> <jdawin@math.uni-bielefeld.de> wrote:
+> >
+> > Ulf Hansson wrote on Mon  7/03/22 13:17:
+> > > On Fri, 4 Mar 2022 at 11:57, Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> > > >
+> > > > Commit 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1"),
+> > > > significantly decreased the polling period from ~10-12ms into just a couple
+> > > > of us. The purpose was to decrease the total time spent in the busy polling
+> > > > loop, but unfortunate it has lead to problems, that causes eMMC cards to
+> > > > never gets out busy and thus fails to be initialized.
+> > > >
+> > > > To fix the problem, but also to try to keep some of the new improved
+> > > > behaviour, let's start by using a polling period of 1-2ms, which then
+> > > > increases for each loop, according to common polling loop in
+> > > > __mmc_poll_for_busy().
+> > > >
+> > > > Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+> > > > Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+> > > > Cc: Huijin Park <huijin.park@samsung.com>
+> > > > Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+> > > > Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> > > > ---
+> > > >
+> > > > Jean Rene and H. Nikolaus, if this doesn't work, please try extending the
+> > > > the MMC_OP_COND_PERIOD_US a bit, to so see if we can find a value that always
+> > > > works.
+> > > >
+> > > > Kind regards
+> > > > Uffe
+> >
+> > >
+> > > Applied for fixes and by adding two tested-by tags from you, thanks!
+> > >
+> > > Kind regards
+> > > Uffe
+> >
+> > Hi,
+> >
+> > with the current value of MMC_OP_COND_PERIOD_US = 1ms I still see
+> >
+> > mmc1: Card stuck being busy! __mmc_poll_for_busy
+> > mmc1: error -110 doing runtime resume
+> >
+> > regularly. The same with 2ms. Setting it to 4ms makes the messages go
+> > away. Would it be ok to increase MMC_OP_COND_PERIOD_US to 4ms?
+> 
+> It doesn't look like we have a very good alternative - unless the
+> problem is tied to a particular type of eMMC card, is it? (If so, we
+> can add a card-quirk).
+> 
+> The only other option I see, would then be to add a generic DT
+> property for eMMCs, that allows us to specify the OP_COND polling
+> period for it. See
+> Documentation/devicetree/bindings/mmc/mmc-card.yaml.
 
-On Wed, May 4, 2022 at 11:31 AM Clément Léger <clement.leger@bootlin.com> wrote:
-> Add a PCS driver for the MII converter that is present on the Renesas
-> RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
-> reuse it in both the switch driver and the stmmac driver. Currently,
-> this driver only allows the PCS to be used by the dual Cortex-A7
-> subsystem since the register locking system is not used.
->
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Hi,
 
-Thanks for your patch!
+ok, I will test with another beaglebone which has a different emmc chip.
 
-> --- /dev/null
-> +++ b/drivers/net/pcs/pcs-rzn1-miic.c
-
-> +static int miic_probe(struct platform_device *pdev)
-> +{
-> +       struct device *dev = &pdev->dev;
-> +       struct miic *miic;
-> +       u32 mode_cfg;
-> +       int ret;
-> +
-> +       ret = miic_parse_dt(dev, &mode_cfg);
-> +       if (ret < 0)
-> +               return -EINVAL;
-> +
-> +       miic = devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
-> +       if (!miic)
-> +               return -ENOMEM;
-> +
-> +       spin_lock_init(&miic->lock);
-> +       miic->dev = dev;
-> +       miic->base = devm_platform_ioremap_resource(pdev, 0);
-> +       if (!miic->base)
-> +               return -EINVAL;
-> +
-> +       pm_runtime_enable(dev);
-> +       ret = pm_runtime_resume_and_get(dev);
-> +       if (ret < 0)
-
-Missing pm_runtime_disable(dev).
-
-> +               return ret;
-> +
-> +       ret = miic_init_hw(miic, mode_cfg);
-> +       if (ret)
-> +               goto disable_runtime_pm;
-> +
-> +       /* miic_create() relies on that fact that data are attached to the
-> +        * platform device to determine if the driver is ready so this needs to
-> +        * be the last thing to be done after everything is initialized
-> +        * properly.
-> +        */
-> +       platform_set_drvdata(pdev, miic);
-> +
-> +       return 0;
-> +
-> +disable_runtime_pm:
-> +       pm_runtime_put(dev);
-
-Missing pm_runtime_disable(dev).
-
-> +
-> +       return ret;
-> +}
-> +
-> +static int miic_remove(struct platform_device *pdev)
-> +{
-> +       pm_runtime_put(&pdev->dev);
-
-Missing pm_runtime_disable(dev).
-
-> +
-> +       return 0;
-> +}
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Regards,
+Jean Rene
