@@ -2,96 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC6BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE99C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245731AbiEEHPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
+        id S1343492AbiEEHQd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 03:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234790AbiEEHPI (ORCPT
+        with ESMTP id S240362AbiEEHQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:15:08 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C7C33E85;
-        Thu,  5 May 2022 00:11:29 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 244LXu5f013451;
-        Thu, 5 May 2022 00:11:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=h4K4sOayga0gZI8RfBh9lbccbKmt+58cwl9qH4N2V6A=;
- b=AS++L2ACiWLYnaHP1LGi8vPbztbpw7m7DuTrro3r5sxhvxND18YYb5M+voofmTdcOt81
- 46oFOMItEQRTIiKIU6Bl8gaMtQpqHkqLkhjutZxM/qMtUxRpRWDifO392wxt4qN0WM+Q
- UUPdhl8BsjSXkl22P+rgXYdPr1brLFyaGSfPblO7p9GhAyYeD3pxwDdkbpfZCOKQgJ8u
- Omg16XikjSHHS7/LAjXR4sDVafRZJM9KSA3jPD15iRr0usrsv4faTuJ+DO7Vo2jbRsiE
- VWVYi07ddNO3JLJcCA88iMJ5A0ChRbDGUVyBqsWR6xzXhFrRao1OI8aIy8OnSU/8PPCx NA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3fuscx3t0m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 00:11:21 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 5 May
- 2022 00:11:20 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 5 May 2022 00:11:20 -0700
-Received: from [10.9.118.10] (EL-LT0043.marvell.com [10.9.118.10])
-        by maili.marvell.com (Postfix) with ESMTP id 2F4A63F70A1;
-        Thu,  5 May 2022 00:11:07 -0700 (PDT)
-Message-ID: <735b9c21-6a8f-0f28-d11d-bd9bbd78986b@marvell.com>
-Date:   Thu, 5 May 2022 09:11:02 +0200
+        Thu, 5 May 2022 03:16:30 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E316235273
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:12:51 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id h10so6163785ybc.4
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 00:12:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lfIOkRZ6twwlsVq7LPAuc7rDKCIGPs8QeABSEQr/fQs=;
+        b=H7H2f3q0+qqzRnTvoXnZweOxqGU80TTLxMshqe+rVobEvVXkJPNQwH88IjPYhPFAZW
+         qCfLwAwNjNN1nmJZTJ1rBtogddVOqLPeq8LVBHwpJEJyOspd0H/SV3ihJ09fmr5hNd8V
+         NiIjZ2kTydUQN+1xM5zo8rH+aXlPEq0lh8daLYLq+YoS1eHkHCZQvg+PYZk/dLDheGML
+         2sk9dlTD2cfGuxMayM9Z7i6eR2mvxqLxsmX8/4cZuNbdFw/uc6u2D9cJs1UmL2M493FA
+         C7PKU6FUoP2KUGXzhMshB3a4YNITUloo25lV0OTA0Ps/83WM+7Ph+xEAsY9hl+rVPV1l
+         ykMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lfIOkRZ6twwlsVq7LPAuc7rDKCIGPs8QeABSEQr/fQs=;
+        b=VS3Lu3TJ/yd6cNvEC0+1+G+zLCMy8lpvKfvStM4DOVN2881Z5y+Gxdl1equZSGDzTE
+         OAO7L5MfpckvgBbAHGR/icHFroje+Oj72Rmr5Br5WC05O04O6PaGjOpREg3PsRdGQzWF
+         othppMZIQWWknv3l2IFmcWNUw4ugo4v47tz3PrrBbn0xz7B0qPiqd0yCeGSULdeD16Tb
+         fdAL1nmeVrWdr+xpH6HtYs1IOBN5cSfgwOcQHXnQrT41CXCH5Je4FnztC3hjcY00uxmN
+         a4PgjiEmyq1h2rpsUuKJ8OR9grtre0sgOGcWPN26wTjJyFzYEWuYWd5ohZ4uCE4o4UPx
+         xjhw==
+X-Gm-Message-State: AOAM532AxsAWhBVgJWgNfmaVf6O8MMMIOKWwBhEhgRkA4iKE2eqSoRpy
+        Jptu2cig7P0jkJ3T5N7+ZH5LXM1ILG2h3CIFXmfqkA==
+X-Google-Smtp-Source: ABdhPJxjJOcBPijJ+UuYDZbSy+0Q+ExeJS8fHz1umGyJQhtJVG0eLOe7bhN2Zp5Oeiew6kT5WeRnFin143BDpNcOwew=
+X-Received: by 2002:a25:3623:0:b0:649:e6fd:2b54 with SMTP id
+ d35-20020a253623000000b00649e6fd2b54mr8839710yba.625.1651734771001; Thu, 05
+ May 2022 00:12:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101
- Thunderbird/100.0
-Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
-Content-Language: en-US
-To:     Grant Grundler <grundler@chromium.org>,
-        Dmitrii Bezrukov <dbezrukov@marvell.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        "Yi Chou" <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>
-References: <20220418231746.2464800-1-grundler@chromium.org>
- <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
- <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com>
- <CANEJEGtVFE8awJz3j9j7T2BseJ5qMd_7er7WbdPQNgrdz9F5dg@mail.gmail.com>
- <BY3PR18MB4578949E822F4787E95A126CB4C09@BY3PR18MB4578.namprd18.prod.outlook.com>
- <CANEJEGvsfnry=tFOyx+cTRHJyTo2-TNOe1u4AWV+J=amrFyZpw@mail.gmail.com>
- <BY3PR18MB4578158E656F2508B43B21F6B4C39@BY3PR18MB4578.namprd18.prod.outlook.com>
- <CANEJEGuVwMa9ufwBM817dnbUxBghM0mcsPvrwx1vAWLoZ+CLaA@mail.gmail.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-In-Reply-To: <CANEJEGuVwMa9ufwBM817dnbUxBghM0mcsPvrwx1vAWLoZ+CLaA@mail.gmail.com>
+References: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
+In-Reply-To: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Thu, 5 May 2022 09:12:14 +0200
+Message-ID: <CANpmjNN5B5xjcTfcAF78d9Bpxqypt8p=OHTLU+QHbtV6vJJjeg@mail.gmail.com>
+Subject: Re: [PATCH] mm/kfence: reset PG_slab and memcg_data before freeing __kfence_pool
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Muchun Song <songmuchun@bytedance.com>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: mPpyEPWLBG1ygaxvhhBGlCOAr_F_gBsQ
-X-Proofpoint-ORIG-GUID: mPpyEPWLBG1ygaxvhhBGlCOAr_F_gBsQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-05_02,2022-05-04_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 5 May 2022 at 09:01, Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+>
+> When kfence fails to initialize kfence pool, it frees the pool.
+> But it does not reset PG_slab flag and memcg_data of struct page.
+>
+> Below is a BUG because of this. Let's fix it by resetting PG_slab
+> and memcg_data before free.
+>
+> [    0.089149] BUG: Bad page state in process swapper/0  pfn:3d8e06
+> [    0.089149] page:ffffea46cf638180 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d8e06
+> [    0.089150] memcg:ffffffff94a475d1
+> [    0.089150] flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
+> [    0.089151] raw: 0017ffffc0000200 ffffea46cf638188 ffffea46cf638188 0000000000000000
+> [    0.089152] raw: 0000000000000000 0000000000000000 00000000ffffffff ffffffff94a475d1
+> [    0.089152] page dumped because: page still charged to cgroup
+> [    0.089153] Modules linked in:
+> [    0.089153] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B   W         5.18.0-rc1+ #965
+> [    0.089154] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+> [    0.089154] Call Trace:
+> [    0.089155]  <TASK>
+> [    0.089155]  dump_stack_lvl+0x49/0x5f
+> [    0.089157]  dump_stack+0x10/0x12
+> [    0.089158]  bad_page.cold+0x63/0x94
+> [    0.089159]  check_free_page_bad+0x66/0x70
+> [    0.089160]  __free_pages_ok+0x423/0x530
+> [    0.089161]  __free_pages_core+0x8e/0xa0
+> [    0.089162]  memblock_free_pages+0x10/0x12
+> [    0.089164]  memblock_free_late+0x8f/0xb9
+> [    0.089165]  kfence_init+0x68/0x92
+> [    0.089166]  start_kernel+0x789/0x992
+> [    0.089167]  x86_64_start_reservations+0x24/0x26
+> [    0.089168]  x86_64_start_kernel+0xa9/0xaf
+> [    0.089170]  secondary_startup_64_no_verify+0xd5/0xdb
+> [    0.089171]  </TASK>
 
-Hi Grant and Dmitrii,
+This is probably:
 
->> So to close session I guess need to set is_rsc_completed to true when 
->> number of frags is going to exceed value MAX_SKB_FRAGS, then packet will 
->> be built and submitted to stack.
->> But of course need to check that there will not be any other corner cases 
->> with this new change.
-> 
-> Ok. Sounds like I should post a v2 then and just drop 1/5 and 5/5
-> patches.  Will post that tomorrow.
+Fixes: 0ce20dd84089 ("mm: add Kernel Electric-Fence infrastructure")
 
-I think the part with check `hw_head_ >= ring->size` still can be used safely (patch 5).
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> ---
+>  mm/kfence/core.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> index a203747ad2c0..2ab3d473321e 100644
+> --- a/mm/kfence/core.c
+> +++ b/mm/kfence/core.c
+> @@ -642,6 +642,13 @@ static bool __init kfence_init_pool_early(void)
+>          * fails for the first page, and therefore expect addr==__kfence_pool in
+>          * most failure cases.
+>          */
+> +       for (char *p = (char *)addr; p < __kfence_pool + KFENCE_POOL_SIZE; p += PAGE_SIZE) {
+> +               struct page *page;
+> +
+> +               page = virt_to_page(p);
 
-For patch 1 - I agree it may make things worse, so either drop or think on how to interpret invalid `next` and stop LRO session.
+#ifdef CONFIG_MEMCG
 
-Thanks,
-   Igor
+> +               page->memcg_data = 0;
+
+#endif
+
+> +               __ClearPageSlab(page);
+
+We're now using __folio_set_slab(), so I'm guessing this should be
+__folio_clear_slab()?
+
+> +       }
+>         memblock_free_late(__pa(addr), KFENCE_POOL_SIZE - (addr - (unsigned long)__kfence_pool));
+>         __kfence_pool = NULL;
+>         return false;
+> --
+> 2.32.0
+>
