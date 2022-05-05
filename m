@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20666C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C30DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383479AbiEESVx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36396 "EHLO
+        id S236351AbiEESV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 14:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383106AbiEEST3 (ORCPT
+        with ESMTP id S1383116AbiEEST3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:29 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86C915837;
-        Thu,  5 May 2022 11:15:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E1318E11;
+        Thu,  5 May 2022 11:15:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774545; x=1683310545;
+  t=1651774548; x=1683310548;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wc7k9mBOhm2yjTFK7ZxMkJGA1JBjjIRE6jOaW+UZtN4=;
-  b=LVp5lEU8dxCQDmu73smJUEWuvFRNjL6hcyuQJJU5mUiEjbb7anyatK42
-   7JWhlIxNXNGed1lb3YSFueWbxgFIJal6YCtPMIftbSV032Y6bsL6Xgn9D
-   OoFkJ1QPFfHNV8RUgh4JXUYe3e4pDDxtSuZbDaTentQL+27etxK7QLceA
-   rtVmiR+xrDcGxxxSuysrVdoplIpaHqqqUj5YLtY/CCHwX8B4ozg6j+Cyx
-   /AdTW/Hiu4/Un5LRI98Ap3X6yIBB/eabbCH9rkM9oXzP68W3a/q2Xwf6Q
-   uvKH8/Wbp79ABnI35xCPruRn9/Df3d6R/1Pxg0vywAMaTXW+UzCNWdL5Z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746235"
+  bh=5Wv/IPFVTRe4jyjKqgjJvRX4XujCf32I2mYt7uAyjxc=;
+  b=LSaAo5qWfvnwSsvP1iKSjcm9P5eoebmLnJcYczlbGPV1hd14fwG4kOxv
+   cHtF6AnEiQrxXcHtVlnhc5TAAS3Jl515Z9Zt4Cf9o2THrJiE8IBehr22l
+   KYN8fLXVqk/5IpC9gotJucuwiay1p2ZyLihgzVzggEAkFheO07TzfVaDX
+   FUtR1sIBDXMvLGyfAG752q8sG32wq8XUdjfb6t3zoyDKsF0CNhWcRXiFa
+   fjhNIw5TaY4jeH2ll9V37JZZIjwEUNddPZIoYySmam0z/5csiuSqquy5Y
+   gz1Q+YEhKE2BQQ0to03qN2N99lBB2xrPEs+agql8R1QtnEEAA+OR91/3n
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746246"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="328746235"
+   d="scan'208";a="328746246"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:41 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083170"
+   d="scan'208";a="665083188"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:41 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 013/104] KVM: TDX: Make TDX VM type supported
-Date:   Thu,  5 May 2022 11:14:07 -0700
-Message-Id: <f371c6545dc9040ce1aa3b4fcd5f84a6ef47c4e7.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 018/104] KVM: TDX: Add helper functions to print TDX SEAMCALL error
+Date:   Thu,  5 May 2022 11:14:12 -0700
+Message-Id: <5171b6919ddf95e6b43c7d28b10caba61a8d83ff.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,126 +57,78 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-NOTE: This patch is in position of the patch series for developers to be
-able to test codes during the middle of the patch series although this
-patch series doesn't provide functional features until the all the patches
-of this patch series.  When merging this patch series, this patch can be
-moved to the end.
-
-As first step TDX VM support, return that TDX VM type supported to device
-model, e.g. qemu.  The callback to create guest TD is vm_init callback for
-KVM_CREATE_VM.  Add a place holder function and call a function to
-initialize TDX module on demand because in that callback VMX is enabled by
-hardware_enable callback (vmx_hardware_enable).
+Add helper functions to print out errors from the TDX module in a uniform
+manner.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/main.c    | 18 ++++++++++++++++--
- arch/x86/kvm/vmx/tdx.c     |  6 ++++++
- arch/x86/kvm/vmx/vmx.c     |  5 -----
- arch/x86/kvm/vmx/x86_ops.h |  3 ++-
- 4 files changed, 24 insertions(+), 8 deletions(-)
+ arch/x86/kvm/Makefile        |  2 +-
+ arch/x86/kvm/vmx/tdx_error.c | 22 ++++++++++++++++++++++
+ arch/x86/kvm/vmx/tdx_ops.h   |  3 +++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/kvm/vmx/tdx_error.c
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 7be4941e4c4d..47bfa94e538e 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -10,6 +10,12 @@
- static bool __read_mostly enable_tdx = IS_ENABLED(CONFIG_INTEL_TDX_HOST);
- module_param_named(tdx, enable_tdx, bool, 0444);
+diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
+index e2c05195cb95..f1ad445df505 100644
+--- a/arch/x86/kvm/Makefile
++++ b/arch/x86/kvm/Makefile
+@@ -24,7 +24,7 @@ kvm-$(CONFIG_KVM_XEN)	+= xen.o
+ kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+ 			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o vmx/main.o
+ kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
+-kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o
++kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/tdx_error.o
  
-+static bool vt_is_vm_type_supported(unsigned long type)
+ kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
+ 
+diff --git a/arch/x86/kvm/vmx/tdx_error.c b/arch/x86/kvm/vmx/tdx_error.c
+new file mode 100644
+index 000000000000..61ed855d1188
+--- /dev/null
++++ b/arch/x86/kvm/vmx/tdx_error.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++/* functions to record TDX SEAMCALL error */
++
++#include <linux/kernel.h>
++#include <linux/bug.h>
++
++#include "tdx_ops.h"
++
++void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out)
 +{
-+	return type == KVM_X86_DEFAULT_VM ||
-+		(enable_tdx && tdx_is_vm_type_supported(type));
++	if (!out) {
++		pr_err_ratelimited("SEAMCALL[%lld] failed: 0x%llx\n",
++				op, error_code);
++		return;
++	}
++
++	pr_err_ratelimited(
++		"SEAMCALL[%lld] failed: 0x%llx "
++		"RCX 0x%llx, RDX 0x%llx, R8 0x%llx, R9 0x%llx, R10 0x%llx, R11 0x%llx\n",
++		op, error_code,
++		out->rcx, out->rdx, out->r8, out->r9, out->r10, out->r11);
 +}
-+
- static __init int vt_hardware_setup(void)
- {
- 	int ret;
-@@ -33,6 +39,14 @@ static int __init vt_post_hardware_enable_setup(void)
- 	return 0;
- }
+diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
+index 85adbf49c277..8cc2f01c509b 100644
+--- a/arch/x86/kvm/vmx/tdx_ops.h
++++ b/arch/x86/kvm/vmx/tdx_ops.h
+@@ -9,12 +9,15 @@
+ #include <asm/cacheflush.h>
+ #include <asm/asm.h>
+ #include <asm/kvm_host.h>
++#include <asm/tdx.h>
  
-+static int vt_vm_init(struct kvm *kvm)
-+{
-+	if (is_td(kvm))
-+		return -EOPNOTSUPP;	/* Not ready to create guest TD yet. */
-+
-+	return vmx_vm_init(kvm);
-+}
-+
- struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.name = "kvm_intel",
- 
-@@ -43,9 +57,9 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.hardware_disable = vmx_hardware_disable,
- 	.has_emulated_msr = vmx_has_emulated_msr,
- 
--	.is_vm_type_supported = vmx_is_vm_type_supported,
-+	.is_vm_type_supported = vt_is_vm_type_supported,
- 	.vm_size = sizeof(struct kvm_vmx),
--	.vm_init = vmx_vm_init,
-+	.vm_init = vt_vm_init,
- 	.vm_destroy = vmx_vm_destroy,
- 
- 	.vcpu_precreate = vmx_vcpu_precreate,
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 34aac9b5d43e..99bda653ef35 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -79,6 +79,12 @@ int __init tdx_module_setup(void)
- 	return 0;
- }
- 
-+bool tdx_is_vm_type_supported(unsigned long type)
-+{
-+	/* enable_tdx check is done by the caller. */
-+	return type == KVM_X86_TDX_VM;
-+}
-+
- int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
- {
- 	u32 max_pa;
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 5312aa6339b3..b5846e0fc78f 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7173,11 +7173,6 @@ int vmx_vcpu_create(struct kvm_vcpu *vcpu)
- 	return err;
- }
- 
--bool vmx_is_vm_type_supported(unsigned long type)
--{
--	return type == KVM_X86_DEFAULT_VM;
--}
--
- #define L1TF_MSG_SMT "L1TF CPU bug present and SMT on, data leak possible. See CVE-2018-3646 and https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for details.\n"
- #define L1TF_MSG_L1D "L1TF CPU bug present and virtualization mitigation disabled, data leak possible. See CVE-2018-3646 and https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for details.\n"
- 
-diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 544ae23998f7..9d8e8abac6d7 100644
---- a/arch/x86/kvm/vmx/x86_ops.h
-+++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -25,7 +25,6 @@ void vmx_hardware_unsetup(void);
- int vmx_check_processor_compatibility(void);
- int vmx_hardware_enable(void);
- void vmx_hardware_disable(void);
--bool vmx_is_vm_type_supported(unsigned long type);
- int vmx_vm_init(struct kvm *kvm);
- void vmx_vm_destroy(struct kvm *kvm);
- int vmx_vcpu_precreate(struct kvm *kvm);
-@@ -131,8 +130,10 @@ void vmx_setup_mce(struct kvm_vcpu *vcpu);
+ #include "tdx_errno.h"
+ #include "tdx_arch.h"
  
  #ifdef CONFIG_INTEL_TDX_HOST
- int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops);
-+bool tdx_is_vm_type_supported(unsigned long type);
- #else
- static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { return 0; }
-+static inline bool tdx_is_vm_type_supported(unsigned long type) { return false; }
- #endif
  
- #endif /* __KVM_X86_VMX_X86_OPS_H */
++void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
++
+ static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
+ {
+ 	clflush_cache_range(__va(addr), PAGE_SIZE);
 -- 
 2.25.1
 
