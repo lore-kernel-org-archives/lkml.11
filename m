@@ -2,129 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 739A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238778AbiEEC1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 22:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
+        id S238809AbiEEC1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 22:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236673AbiEEC1R (ORCPT
+        with ESMTP id S238813AbiEEC1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 22:27:17 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2504BFD0;
-        Wed,  4 May 2022 19:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651717419; x=1683253419;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wA6x1/zwYLOPI3LiA5XZehsRzpeivSsd5DiD94s7U7s=;
-  b=P8Nflcl5kfkF6DcrOp4zeVmliUxFYSePJE7SqUgrbDcLtycKOdu3wrOD
-   TgKb6I/JVuG9DQFT+FE0VxbTjsX088zGqKqlVvocgiA8bcyfAvWtG/Syx
-   wV7RGqkm65FijuIvDI+J2JXm6JzU9pz51p5Bc0kL2zEBePuftRGwG/CiT
-   sIzVpHwuY9YetKEceeOI0snAm8QAXEdtcd/cbbFtPOf0PoDabQKA3fJCW
-   B9mOaUshgMyO61yB5PgPxDhJgHFXJkHiOQKdu7iKO5d41Tfxn8E0y4xAs
-   0YS72goyyaNrCeQdDH7Mhzjoi85fDeuON2PbmjHYa8CWII0BTDrka/dhh
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="265556721"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="265556721"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 19:23:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="734683186"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga005.jf.intel.com with ESMTP; 04 May 2022 19:23:37 -0700
-Date:   Thu, 5 May 2022 10:15:45 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Tianfei Zhang <tianfei.zhang@intel.com>
-Cc:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        linux-fpga@vger.kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Subject: Re: [PATCH v4] uio: dfl: add HSSI subsystem feature id
-Message-ID: <20220505021545.GA417720@yilunxu-OptiPlex-7050>
-References: <20220505001628.681226-1-tianfei.zhang@intel.com>
+        Wed, 4 May 2022 22:27:36 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A470D4C788
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 19:23:58 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d22so3106681plr.9
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 19:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q38L+5vJ92fuvVynN1L7WfjgLwHAa0h+20EWg5+2ZbA=;
+        b=P1Sax+qeu8zu7OldU9p7tZCHML7RqVZDZ+OohB5xa0quMwTa//Q/W5bBINaeWZmMTA
+         FNJmexTiachc8+FGGTh66kh6yvjOGrWhpfLpfCvux0Fk3q6kcj5Q812TPjuNKtJ4Yumm
+         iTH3Fxv1LELwtuUGByweo5R3busBdI5CHPkGTXOlZTaEIfiz/vvAF69mv3T4HtB7xz/f
+         Qb6666sIgEqjxvooH1Dg+KfY4UFOFyHz9w4P3LxNi/+fmQOlpCH312Kv/3iYoJyxSFxS
+         BWYGwhUkOWAnG/g/hxfevnSIcqHOOlkrLSiKr05W3i/RCSZ9L2z+UWODHGKG1gQ80jwe
+         vavQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q38L+5vJ92fuvVynN1L7WfjgLwHAa0h+20EWg5+2ZbA=;
+        b=4m3F3k/pWiJSCQot66BcXz3e+RYkNh/cqvXS1YqhkXZphQSaA1hG6wAaiL3YyjkNr2
+         aZ0OwrzaXZPCyqrzTl5GLkGVnDRN8hmhsS6gpxliAlW+4nLvuGmCo1ucbWHuHpxJTsoI
+         yc9HHVcM+i7xVYletMTxSkVJrMHb5JVYk/wGSVhUmzOLcYcZLDb1onmIfrzOxUUCASYN
+         je9vZgSQO9eoHffUQQoCMTlLREESVtXlFSll1HcZ/U3tbBVDrwSTiiMGmE030e96fKP9
+         yFk08XQAmdeoculUl4VNyRh23Gv/dYxb+jk1ejmN9vvYHAopkeaPLMv+o9f0TLevc/Ux
+         jlHg==
+X-Gm-Message-State: AOAM531YIrx9Rm20HUqaN7h/xAw7BZBT79CaWVsrOMOO1QUEIBbn4v5P
+        9sJ1fanxPe8zT4xiYNJ7Q4s=
+X-Google-Smtp-Source: ABdhPJx3T+F8sg9zQWRkrt6YeWsYaOfA1Oh/4dVFRxavhm+mWavC+T8fNbpZyDH0w/5d6xql/TEwbQ==
+X-Received: by 2002:a17:902:ccc1:b0:15a:24df:a7cc with SMTP id z1-20020a170902ccc100b0015a24dfa7ccmr24973092ple.42.1651717438190;
+        Wed, 04 May 2022 19:23:58 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id y12-20020a170902700c00b0015eb200cc00sm188663plk.138.2022.05.04.19.23.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 19:23:57 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     miquel.raynal@bootlin.com
+Cc:     richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] mtd: rawnand: cs553x: simplify the return expression of cs553x_write_ctrl_byte()
+Date:   Thu,  5 May 2022 02:23:54 +0000
+Message-Id: <20220505022354.61458-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505001628.681226-1-tianfei.zhang@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 08:16:28PM -0400, Tianfei Zhang wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add the Device Feature List (DFL) feature id for the
-> High Speed Serial Interface (HSSI) Subsystem to the
-> table of ids supported by the uio_dfl driver.
-> 
-> The HSSI Subsystem is a configurable set of IP blocks
-> to be used as part of a Ethernet or PCS/FEC/PMA pipeline.
-> Like the Ethernet group used by the N3000 card, the HSSI
-> Subsystem does not fully implement a network device from
-> a Linux netdev perspective and is controlled and monitored
-> from user space software via the uio interface.
-> 
-> The Feature ID table of DFL can be found:
-> https://github.com/OPAE/dfl-feature-id
-> 
-> Reviewed-by: Tom Rix <trix@redhat.com>
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Please re-order the tags. The earliest at the top and the latest at the
-bottom.
+Simplify the return expression.
 
-"SoB chains should reflect the **real** route a patch took
-as it was propagated to the maintainers and ultimately to Linus, with
-the first SoB entry signalling primary authorship of a single author."
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/mtd/nand/raw/cs553x_nand.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-For more details, please refer to Documentation/process/submitting-patches.rst
-
-
-For you case, I assume:
-
-  Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-  Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-  Reviewed-by: Tom Rix <trix@redhat.com>
-  Acked-by: Xu Yilun <yilun.xu@intel.com>
-
-is it?
-
-Thanks,
-Yilun
+diff --git a/drivers/mtd/nand/raw/cs553x_nand.c b/drivers/mtd/nand/raw/cs553x_nand.c
+index 6edf78c16fc8..f0a15717cf05 100644
+--- a/drivers/mtd/nand/raw/cs553x_nand.c
++++ b/drivers/mtd/nand/raw/cs553x_nand.c
+@@ -104,17 +104,12 @@ static int cs553x_write_ctrl_byte(struct cs553x_nand_controller *cs553x,
+ 				  u32 ctl, u8 data)
+ {
+ 	u8 status;
+-	int ret;
+ 
+ 	writeb(ctl, cs553x->mmio + MM_NAND_CTL);
+ 	writeb(data, cs553x->mmio + MM_NAND_IO);
+-	ret = readb_poll_timeout_atomic(cs553x->mmio + MM_NAND_STS, status,
++	return readb_poll_timeout_atomic(cs553x->mmio + MM_NAND_STS, status,
+ 					!(status & CS_NAND_CTLR_BUSY), 1,
+ 					100000);
+-	if (ret)
+-		return ret;
+-
+-	return 0;
+ }
+ 
+ static void cs553x_data_in(struct cs553x_nand_controller *cs553x, void *buf,
+-- 
+2.25.1
 
 
-> ---
-> v4: add Reviewed-by and Acked-by tag and add Feature ID table url in git message.
-> v3: change the name of this feature id to HSSI_SUBSYS and rewrite
->     the git message.
-> v2: add HSSI introduction and the git repo of Feature ID table.
-> ---
->  drivers/uio/uio_dfl.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
-> index 89c0fc7b0cbc..8f39cc8bb034 100644
-> --- a/drivers/uio/uio_dfl.c
-> +++ b/drivers/uio/uio_dfl.c
-> @@ -45,9 +45,11 @@ static int uio_dfl_probe(struct dfl_device *ddev)
->  }
->  
->  #define FME_FEATURE_ID_ETH_GROUP	0x10
-> +#define FME_FEATURE_ID_HSSI_SUBSYS	0x15
->  
->  static const struct dfl_device_id uio_dfl_ids[] = {
->  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
-> +	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
-> -- 
-> 2.26.2
