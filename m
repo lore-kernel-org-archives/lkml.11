@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC35BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382482AbiEERCN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
+        id S234225AbiEERCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 13:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382406AbiEERBr (ORCPT
+        with ESMTP id S1382418AbiEERBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:01:47 -0400
+        Thu, 5 May 2022 13:01:50 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DC45D5DA
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:58:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271FE5D5E6
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:58:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651769882; x=1683305882;
+  t=1651769884; x=1683305884;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=uLF6qXh+XOVZJNuYD6lAJ6RB4iqOqKmveOdC3HuSOiQ=;
-  b=hHPIxn3QGW8VWhPOsY7ptpnWPZhkGmwuN9e9BPqK+5uO9z2ijD7ikKvP
-   0MzNY8S8UDq63CwMC0mwUjpEaNxQ0ipfZj4trYqOMri16oDobF3StrP3r
-   qVwjnL45khEbDN2a6U7ts6flsywLLEhn7e5RmplDaZI9LOUIlRq76bw8F
-   Ia7/1lLKukH/zvQxEgjDwbOB6CvdFH9kKTGiJZJ4obA6C+ZtCy08Sw2ll
-   bTjr8XFFPmf/JPJsk9/oa3FvaosWXj53vqcYWKYsh9EZKYDThFby4caYn
-   FWomUHqxdLXUQfKmIs3drL+cdzb/ThjqYCguiLuF1gSJjKIWWVtEDf4H7
+  bh=2xg8NMgfDJBeW9nL56be8X0CEqfuwLq35xcbONKerds=;
+  b=LLvzmp47sD8BNYUIMfPSM0SnQg1mzE4LQJp5W+zTr0mdJBz20H2hBuWM
+   SxXS4Ok1hTWKZs85PJL3JuBtynpUsRR3JcM+FyX9yOI/5WseGvEjkHb0K
+   qCxfK7boIqdxDyOdzrHPjTwdMRaHOz51Hcs/r+auqSqShpt7mgOa4ItrA
+   Za87WeMeYpGF51ijYz2dj5fWxi+yBZFOeAcaxV/F8Mp0zFGhOaGScWePw
+   GAKLWuxA2IVVdkhKVUHp1OySWGiXdirgF4twn65xZM7FDg2vwECNbuB/a
+   rYhvXi2qLh0zoWzDpOBOkQOhnQxXD643sQV9Wa8MAloLY8fw8JcwwgIdu
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248718288"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248718299"
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="248718288"
+   d="scan'208";a="248718299"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 09:57:23 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 09:57:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="709032957"
+   d="scan'208";a="709032995"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 09:57:21 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 09:57:26 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V1 16/23] perf intel-pt: Track sideband system-wide when needed
-Date:   Thu,  5 May 2022 19:56:32 +0300
-Message-Id: <20220505165639.361733-17-adrian.hunter@intel.com>
+Subject: [PATCH V1 18/23] libperf evlist: Allow mixing per-thread and per-cpu mmaps
+Date:   Thu,  5 May 2022 19:56:34 +0300
+Message-Id: <20220505165639.361733-19-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220505165639.361733-1-adrian.hunter@intel.com>
 References: <20220505165639.361733-1-adrian.hunter@intel.com>
@@ -58,50 +57,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-User space tasks can migrate between CPUs, so when tracing selected CPUs,
-sideband for all CPUs is still needed. This is in preparation for allowing
-system-wide events on all CPUs while the user requested events are on only
-user requested CPUs.
+mmap_per_evsel() will skip events that do not match the CPU, so all CPUs
+can be iterated in any case.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/arch/x86/util/intel-pt.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ tools/lib/perf/evlist.c | 36 +++++++-----------------------------
+ 1 file changed, 7 insertions(+), 29 deletions(-)
 
-diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
-index e45d64dec57c..62be78bc90b6 100644
---- a/tools/perf/arch/x86/util/intel-pt.c
-+++ b/tools/perf/arch/x86/util/intel-pt.c
-@@ -864,20 +864,22 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
+diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
+index 048b546f9444..0acf43946479 100644
+--- a/tools/lib/perf/evlist.c
++++ b/tools/lib/perf/evlist.c
+@@ -508,29 +508,6 @@ mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+ 	return 0;
+ }
  
- 	/* Add dummy event to keep tracking */
- 	if (opts->full_auxtrace) {
-+		bool need_system_wide_tracking;
- 		struct evsel *tracking_evsel;
- 
--		err = parse_events(evlist, "dummy:u", NULL);
--		if (err)
--			return err;
-+		/*
-+		 * User space tasks can migrate between CPUs, so when tracing
-+		 * selected CPUs, sideband for all CPUs is still needed.
-+		 */
-+		need_system_wide_tracking = evlist->core.has_user_cpus &&
-+					    !intel_pt_evsel->core.attr.exclude_user;
- 
--		tracking_evsel = evlist__last(evlist);
-+		tracking_evsel = evlist__add_aux_dummy(evlist, need_system_wide_tracking);
-+		if (!tracking_evsel)
-+			return -ENOMEM;
- 
- 		evlist__set_tracking_event(evlist, tracking_evsel);
- 
--		tracking_evsel->core.attr.freq = 0;
--		tracking_evsel->core.attr.sample_period = 1;
+-static int
+-mmap_per_thread(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+-		struct perf_mmap_param *mp)
+-{
+-	int thread;
+-	int nr_threads = perf_thread_map__nr(evlist->threads);
 -
--		tracking_evsel->no_aux_samples = true;
- 		if (need_immediate)
- 			tracking_evsel->immediate = true;
+-	for (thread = 0; thread < nr_threads; thread++) {
+-		int output = -1;
+-		int output_overwrite = -1;
+-
+-		if (mmap_per_evsel(evlist, ops, thread, mp, 0, thread,
+-				   &output, &output_overwrite))
+-			goto out_unmap;
+-	}
+-
+-	return 0;
+-
+-out_unmap:
+-	perf_evlist__munmap(evlist);
+-	return -1;
+-}
+-
+ static int
+ mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+ 	     struct perf_mmap_param *mp)
+@@ -561,9 +538,14 @@ static int perf_evlist__nr_mmaps(struct perf_evlist *evlist)
+ {
+ 	int nr_mmaps;
+ 
++	/* One for each CPU */
+ 	nr_mmaps = perf_cpu_map__nr(evlist->all_cpus);
+-	if (perf_cpu_map__empty(evlist->all_cpus))
+-		nr_mmaps = perf_thread_map__nr(evlist->threads);
++	if (perf_cpu_map__empty(evlist->all_cpus)) {
++		/* Plus one for each thread */
++		nr_mmaps += perf_thread_map__nr(evlist->threads);
++		/* Minus the per-thread CPU (-1) */
++		nr_mmaps -= 1;
++	}
+ 
+ 	return nr_mmaps;
+ }
+@@ -573,7 +555,6 @@ int perf_evlist__mmap_ops(struct perf_evlist *evlist,
+ 			  struct perf_mmap_param *mp)
+ {
+ 	struct perf_evsel *evsel;
+-	const struct perf_cpu_map *cpus = evlist->all_cpus;
+ 
+ 	if (!ops || !ops->get || !ops->mmap)
+ 		return -EINVAL;
+@@ -592,9 +573,6 @@ int perf_evlist__mmap_ops(struct perf_evlist *evlist,
+ 	if (evlist->pollfd.entries == NULL && perf_evlist__alloc_pollfd(evlist) < 0)
+ 		return -ENOMEM;
+ 
+-	if (perf_cpu_map__empty(cpus))
+-		return mmap_per_thread(evlist, ops, mp);
+-
+ 	return mmap_per_cpu(evlist, ops, mp);
+ }
  
 -- 
 2.25.1
