@@ -2,171 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA94C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00624C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380655AbiEEOdd (ORCPT
+        id S1380667AbiEEOeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        Thu, 5 May 2022 10:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiEEOdb (ORCPT
+        with ESMTP id S1380716AbiEEOeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:33:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744A524BE0;
-        Thu,  5 May 2022 07:29:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22306B82DA4;
-        Thu,  5 May 2022 14:29:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21FC8C385A8;
-        Thu,  5 May 2022 14:29:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651760988;
-        bh=N3cfcZ5R177Vy3ShBjYhQisk3rhZYNwWw0AXe+7cFhw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WVYXrUIFs641fCAlWtqH+Q3leAL9deBOOIh/RfcMd7tKmEr8vmjp+3qnxy++3zriP
-         oYpYWFiC4G/G5rPnqhkQja9Dgu6xxpeOfAMKxUKvXmBj7yM12b6H6e8s+wVERHmoHT
-         U7u8xPfTWb2axgiIk12fGizSgmPtpET6qPTlix1Q9rsTUlUYzrUYjdLBCH6LY3LHY6
-         S1fxVwLP/WWVnX0xuKq68GzxBpqezqd4k/a/ZvyNRbZ2VWPJoQ9C00daaKgYFQfpKU
-         BsxTfdrXtg5H0sgZwrA7YmgygM6RobbuR/jP6dcjSDhV/73umbK/ameX6YmU6X9n86
-         kXgAg2PTBq2RA==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH v2] f2fs: fix to do sanity check on total_data_blocks
-Date:   Thu,  5 May 2022 22:15:07 +0800
-Message-Id: <20220505141507.6616-1-chao@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 5 May 2022 10:34:14 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FCA101EE;
+        Thu,  5 May 2022 07:30:34 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id z2so7513695ejj.3;
+        Thu, 05 May 2022 07:30:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uPRFuYIOzOX+lfHSk0TAnDa37PyGEjlIVUZQBvDYK1w=;
+        b=Ms9X8X7IdWm5uZCCq9ScGLgW/sXkqzuQt2MfNvGCiSUdy3p1lmn/MQbFiO9gmHa4l5
+         SisY3i4Tnyif2yoKWa2WiCMUkEzJbVgp1xQN5CNGnuu0DG72B/S5X4+cqBg5ZzNFBI46
+         +KOpXVb50bBGy2bXxdsH/KdSPtoQW9d0hKi7dqah4HYBemjgMXT1+8mgOZfEHDiAYQTj
+         788BxS6V3RIr8akFPjMSeRasMYTWAOfMCBH2tamxmzbyA2CCzHQ1rAwJWmtmE2Urfxi9
+         hODTnyoCuYr0su4GNyEX6kBsTk/R7WmfF9k5DE1I6PRYGokbU+fSQseIw/uUqg3Y4So0
+         HBFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uPRFuYIOzOX+lfHSk0TAnDa37PyGEjlIVUZQBvDYK1w=;
+        b=HqTfpE5AOOhcb/aInSfzu6dl+xsDVzA7F8ECoeruD93LbZGW0BubJOOtzlnZrShun7
+         YFP7SvaZ21a0Y+ZojtU49Fj8YfcghqrOpp5DWlfHXkX1sRiUKUQ8RgM4mA02yQ3PgJf1
+         aLB0SYZ1EmCJRNWzqQGqqFrf7F8zoAJiZrDM/ZP5IoU4eIzVmUpE/WVWb+wQe2eolRRk
+         wXcafGLfGuRZsX1G+5em+ypuU2VYAg2CEiGJJWVz/ARpAcLyCt+aD7VTCRfeUTY1UYaT
+         mzUwni3wOFNZ1ZwUfJ/BFwZBfIVqmVGznq15WtZ3LNcbNDZWJWXiZKebj/YdSQvenV0b
+         LGlw==
+X-Gm-Message-State: AOAM531p21hV/MKrhg9M+fjMotm/CHtYHqkhFwRn1M5bx1O67ldps6l5
+        B5ecVc6yYamTe3Emne6atW0=
+X-Google-Smtp-Source: ABdhPJyPihA5bLvhSw6UjJz5kS4lcJeRXQCszddNar6sz3CWTvzELecqGlLzWWo3/pL8xJfE3F+E5w==
+X-Received: by 2002:a17:907:a0c9:b0:6f4:bbdf:8081 with SMTP id hw9-20020a170907a0c900b006f4bbdf8081mr9156501ejc.257.1651761032841;
+        Thu, 05 May 2022 07:30:32 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id b18-20020aa7dc12000000b0042617ba63acsm918452edu.54.2022.05.05.07.30.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 07:30:32 -0700 (PDT)
+Message-ID: <6273df88.1c69fb81.1757e.5347@mx.google.com>
+X-Google-Original-Message-ID: <YnPfhlqqNkxWMwU5@Ansuel-xps.>
+Date:   Thu, 5 May 2022 16:30:30 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH RESEND 0/5] dt-bindings: support Ethernet devices as LED
+ triggers
+References: <20220505135512.3486-1-zajec5@gmail.com>
+ <6273d900.1c69fb81.fbc61.4680@mx.google.com>
+ <b9ef7ce4-2a9d-9ecb-0aee-3f671c25d13f@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <b9ef7ce4-2a9d-9ecb-0aee-3f671c25d13f@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As Yanming reported in bugzilla:
+On Thu, May 05, 2022 at 04:21:33PM +0200, Rafał Miłecki wrote:
+> On 5.05.2022 16:02, Ansuel Smith wrote:
+> > On Thu, May 05, 2022 at 03:55:07PM +0200, Rafał Miłecki wrote:
+> > > From: Rafał Miłecki <rafal@milecki.pl>
+> > > 
+> > > Some LEDs are designed to represent a state of another device. That may
+> > > be USB port, Ethernet interface, CPU, hard drive and more.
+> > > 
+> > > We already have support for LEDs that are designed to indicate USB port
+> > > (e.g. light on when USB device gets connected). There is DT binding for
+> > > that and Linux implementation in USB trigger.
+> > > 
+> > > This patchset adds support for describing LEDs that should react to
+> > > Ethernet interface status. That is commonly used in routers. They often
+> > > have LED to display state and activity of selected physical port. It's
+> > > also common to have multiple LEDs, each reacting to a specific link
+> > > speed.
+> > > 
+> > 
+> > I notice this is specific to ethernet speed... I wonder if we should
+> > expand this also to other thing like duplex state or even rx/tx.
+> 
+> I didn't see any router with separated Rx/Tx LEDs, but it still sounds
+> like a valid case.
+>
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215916
+Not a normal configuration but it's doable. For qca8k you can really set
+the led to do whatever you want.
 
-The kernel message is shown below:
+> We could add flags for that in proposed field like:
+> trigger-sources = <&port (SPEED_1000 | LINK | TX)>;
+> 
+> Or add separated field for non-speed flags like:
+> trigger-sources = <&port SPEED_1000 (LINK | TX)>;
+> 
+> Let's see what DT experts say about it.
 
-kernel BUG at fs/f2fs/segment.c:2560!
-Call Trace:
- allocate_segment_by_default+0x228/0x440
- f2fs_allocate_data_block+0x13d1/0x31f0
- do_write_page+0x18d/0x710
- f2fs_outplace_write_data+0x151/0x250
- f2fs_do_write_data_page+0xef9/0x1980
- move_data_page+0x6af/0xbc0
- do_garbage_collect+0x312f/0x46f0
- f2fs_gc+0x6b0/0x3bc0
- f2fs_balance_fs+0x921/0x2260
- f2fs_write_single_data_page+0x16be/0x2370
- f2fs_write_cache_pages+0x428/0xd00
- f2fs_write_data_pages+0x96e/0xd50
- do_writepages+0x168/0x550
- __writeback_single_inode+0x9f/0x870
- writeback_sb_inodes+0x47d/0xb20
- __writeback_inodes_wb+0xb2/0x200
- wb_writeback+0x4bd/0x660
- wb_workfn+0x5f3/0xab0
- process_one_work+0x79f/0x13e0
- worker_thread+0x89/0xf60
- kthread+0x26a/0x300
- ret_from_fork+0x22/0x30
-RIP: 0010:new_curseg+0xe8d/0x15f0
-
-The root cause is: ckpt.valid_block_count is inconsistent with SIT table,
-stat info indicates filesystem has free blocks, but SIT table indicates
-filesystem has no free segment.
-
-So that during garbage colloection, it triggers panic when LFS allocator
-fails to find free segment.
-
-This patch tries to fix this issue by checking consistency in between
-ckpt.valid_block_count and block accounted from SIT.
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
-v2:
-- adjust check condition according to the case Jaegeuk mentioned.
- fs/f2fs/segment.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
-
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 3a3e2cec2ac4..942d6d8c18e6 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4462,6 +4462,7 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 	unsigned int readed, start_blk = 0;
- 	int err = 0;
- 	block_t total_node_blocks = 0;
-+	block_t total_data_blocks = 0;
- 
- 	do {
- 		readed = f2fs_ra_meta_pages(sbi, start_blk, BIO_MAX_VECS,
-@@ -4488,6 +4489,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 			seg_info_from_raw_sit(se, &sit);
- 			if (IS_NODESEG(se->type))
- 				total_node_blocks += se->valid_blocks;
-+			else
-+				total_data_blocks += se->valid_blocks;
- 
- 			if (f2fs_block_unit_discard(sbi)) {
- 				/* build discard map only one time */
-@@ -4529,6 +4532,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 		old_valid_blocks = se->valid_blocks;
- 		if (IS_NODESEG(se->type))
- 			total_node_blocks -= old_valid_blocks;
-+		else
-+			total_data_blocks -= old_valid_blocks;
- 
- 		err = check_block_count(sbi, start, &sit);
- 		if (err)
-@@ -4536,6 +4541,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 		seg_info_from_raw_sit(se, &sit);
- 		if (IS_NODESEG(se->type))
- 			total_node_blocks += se->valid_blocks;
-+		else
-+			total_data_blocks += se->valid_blocks;
- 
- 		if (f2fs_block_unit_discard(sbi)) {
- 			if (is_set_ckpt_flags(sbi, CP_TRIMMED_FLAG)) {
-@@ -4557,13 +4564,24 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 	}
- 	up_read(&curseg->journal_rwsem);
- 
--	if (!err && total_node_blocks != valid_node_count(sbi)) {
-+	if (err)
-+		return err;
-+
-+	if (total_node_blocks != valid_node_count(sbi)) {
- 		f2fs_err(sbi, "SIT is corrupted node# %u vs %u",
- 			 total_node_blocks, valid_node_count(sbi));
--		err = -EFSCORRUPTED;
-+		return -EFSCORRUPTED;
- 	}
- 
--	return err;
-+	if (total_data_blocks + total_node_blocks >
-+				valid_user_blocks(sbi)) {
-+		f2fs_err(sbi, "SIT is corrupted data# %u %u vs %u",
-+			 total_data_blocks, total_node_blocks,
-+			 valid_user_blocks(sbi));
-+		return -EFSCORRUPTED;
-+	}
-+
-+	return 0;
- }
- 
- static void init_free_segmap(struct f2fs_sb_info *sbi)
 -- 
-2.32.0
-
+	Ansuel
