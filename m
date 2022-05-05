@@ -2,89 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5565C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DED9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380686AbiEESuO (ORCPT
+        id S1384287AbiEESuq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        Thu, 5 May 2022 14:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355541AbiEEStx (ORCPT
+        with ESMTP id S1383956AbiEESuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:49:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8CDF140DF
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:44:26 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC45D106F;
-        Thu,  5 May 2022 11:44:26 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 44E493FA31;
-        Thu,  5 May 2022 11:44:25 -0700 (PDT)
-Message-ID: <e5c9bf77-7a86-ff6c-1a0f-57ba6d12ff6b@arm.com>
-Date:   Thu, 5 May 2022 20:44:16 +0200
+        Thu, 5 May 2022 14:50:37 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA7526C9;
+        Thu,  5 May 2022 11:46:37 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id e189so5234322oia.8;
+        Thu, 05 May 2022 11:46:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IVyzORSKT8eaHP7gPPygWOO58G/gzdrL4ii4heJM7tI=;
+        b=K+IVz58Ahcniss6cK41cHBoVkHAjyaw/E23zsZCOJH70LfVR1q8aB/5wNZQMV2eNFn
+         To8MZKFtIW9oFiGl1qKZCxvuJa01Do3hTDtoL2EfnCMG3LkT1Ao3cssbEOaakeeA5KT+
+         FGs55BQSeMpB1MCf/7Msf/lIrEoualk5eAcQ3q8KqVL41+oGcjQo+iHDHvvoOsed0AEu
+         YynCi0q7lk6sqGQ5pLM+cGvCDP/LVD0jjNjV6tXtFVfl1daT5plE+x5ejoXEdXDX0A0Y
+         FIqL2zA3YRAObmRWJ+TU4SCRy0MTuY5SfLXrpi0OXLmXP+ESO4idYAMEc5rbr+66bGt7
+         HT9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IVyzORSKT8eaHP7gPPygWOO58G/gzdrL4ii4heJM7tI=;
+        b=B3LfAzhg1QiprvvkXb12Sj9WNQOlmCskL6YwApRI6CC6UEK6CZmzMoHkIDQYbywAWK
+         SUJSMBIOWzz43tNoNZkEKdmh9NoWp8KpKWUpXj6wQw2PUqAzNVIPHMV2KcQ8G/OqA/OR
+         jrn4OWmiH1nJlMBJge0U4fHU6M2tMRUkTShGPVHNo2Kb7Fwv+G8WAJwExS0/zi7hWfgc
+         3JhH3bPfPXvZTcr7u7OvBQu6rgW5s6X3APDA0JN5Xe/u2UfwcU9y0u8bwzR7iBXBCC8V
+         4epqwzoUVOtgDbbbmGBAuN2N3fzC+vdBMR4a7T7dtuvssPqR1FZsEY6BGDtDP+IYW/LO
+         Q1VA==
+X-Gm-Message-State: AOAM530aLSmsSKtP77KieZDynCRSMweDF+NFzsJBmxGPSr4+rJbrs+FR
+        QHhpvDPh8M9bccs5Zu4YL0EWTIU1jaXFw+4Od0g=
+X-Google-Smtp-Source: ABdhPJy6twYA8xOfy/VSJ3VoU0+N6Qe4iodqV7CKTl8LVfS/WR18bs/60zISOGPFsWPBVg8Zt5Gz6NII8Yvpb+EKgSU=
+X-Received: by 2002:a05:6808:f8d:b0:325:1e81:ffe5 with SMTP id
+ o13-20020a0568080f8d00b003251e81ffe5mr3220346oiw.253.1651776396452; Thu, 05
+ May 2022 11:46:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v8 1/7] sched/fair: Provide u64 read for 32-bits arch
- helper
-Content-Language: en-US
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
-        vdonnefort@gmail.com
-Cc:     linux-kernel@vger.kernel.org, morten.rasmussen@arm.com,
-        chris.redpath@arm.com, qperret@google.com, tao.zhou@linux.dev
-References: <20220429141148.181816-1-vincent.donnefort@arm.com>
- <20220429141148.181816-2-vincent.donnefort@arm.com>
- <251d4cd4-7a28-af7b-942e-4e9f762fc05f@arm.com>
-In-Reply-To: <251d4cd4-7a28-af7b-942e-4e9f762fc05f@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220505194717.065db7ab@canb.auug.org.au> <YnQToaOno0MZzJ5r@dev-arch.thelio-3990X>
+In-Reply-To: <YnQToaOno0MZzJ5r@dev-arch.thelio-3990X>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 5 May 2022 14:46:25 -0400
+Message-ID: <CADnq5_Ma_4zWHnqjrii97niJ3pvUnUeWDi6EyFt3z5cR=7cXzA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the amdgpu tree
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jack Xiao <Jack.Xiao@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ vdonnefort@gmail.com
-- vincent.donnefort@arm.com
+On Thu, May 5, 2022 at 2:12 PM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Hi Stephen,
+>
+> On Thu, May 05, 2022 at 07:47:17PM +1000, Stephen Rothwell wrote:
+> > Hi all,
+> >
+> > After merging the amdgpu tree, today's linux-next build (powerpc
+> > allyesconfig) failed like this:
+> >
+>
+> <snip long error message>
+>
+> >
+> > Caused by commit
+> >
+> >   028c3fb37e70 ("drm/amdgpu/mes11: initiate mes v11 support")
+> >
+> > This build has __BIG_ENDIAN set.
+> >
+> > I have applied the following patch for today.
+> >
+> > From: Stephen Rothwell <sfr@canb.auug.org.au>
+> > Date: Thu, 5 May 2022 19:14:25 +1000
+> > Subject: [PATCH] mark CONFIG_DRM_AMDGPU as depending on CONFIG_CPU_LITTLE_ENDIAN
+> >
+> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > ---
+> >  drivers/gpu/drm/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+> > index e88c497fa010..2aaa9ef1168d 100644
+> > --- a/drivers/gpu/drm/Kconfig
+> > +++ b/drivers/gpu/drm/Kconfig
+> > @@ -244,6 +244,7 @@ source "drivers/gpu/drm/radeon/Kconfig"
+> >  config DRM_AMDGPU
+> >       tristate "AMD GPU"
+> >       depends on DRM && PCI && MMU
+> > +     depends on CPU_LITTLE_ENDIAN
+> >       select FW_LOADER
+> >       select DRM_DISPLAY_DP_HELPER
+> >       select DRM_DISPLAY_HDMI_HELPER
+> > --
+> > 2.35.1
+>
+> This fixup makes CONFIG_DRM_AMDGPU unselectable on any architecture that
+> does not have CONFIG_CPU_LITTLE_ENDIAN, such as x86_64. I was rather
+> surprised when my AMD test system did not reach the login screen and
+> there were no error messages in dmesg, only to find that
+> CONFIG_DRM_AMDGPU had disappeared from my build.
+>
+> If this is not fixed by the time you do next-20220506, would you
+> consider swapping the logic like so? This should allow all implicitly
+> little endian architectures to work (at least, I tested it with x86_64),
+> while preventing errors for CONFIG_CPU_BIG_ENDIAN configurations.
 
-On 05/05/2022 20:25, Dietmar Eggemann wrote:
-> On 29/04/2022 16:11, Vincent Donnefort wrote:
->> Introducing macro helpers u64_u32_{store,load}() to factorize lockless
->> accesses to u64 variables for 32-bits architectures.
->>
->> Users are for now cfs_rq.min_vruntime and sched_avg.last_update_time. To
->> accommodate the later where the copy lies outside of the structure
->> (cfs_rq.last_udpate_time_copy instead of sched_avg.last_update_time_copy),
->> use the _copy() version of those helpers.
->>
->> Those new helpers encapsulate smp_rmb() and smp_wmb() synchronization and
->> therefore, have a small penalty in set_task_rq_fair() and init_cfs_rq().
-> 
-> ... but obviously only on 32bit machines. And for set_task_rq_fair() we
-> now do one smp_rmb per cfs_rq (prev and next), like we do one smp_wmb()
-> per cfs_rq in update_cfs_rq_load_avg().
-> 
-> [...]
-> 
->> @@ -3786,8 +3770,9 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
->>  	decayed |= __update_load_avg_cfs_rq(now, cfs_rq);
->>  
->>  #ifndef CONFIG_64BIT
-> 
-> Can we not get rid of this last CONFIG_64BIT here?
-> 
->> -	smp_wmb();
->> -	cfs_rq->load_last_update_time_copy = sa->last_update_time;
->> +	u64_u32_store_copy(sa->last_update_time,
->> +			   cfs_rq->last_update_time_copy,
->> +			   sa->last_update_time);
-> 
-> (sa->last_update_time = sa->last_update_time); should dissolve on 64bit.
-> 
->>  #endif
-> 
-> [...]
-> 
-> Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+This is fixed.  Will push out a new branch shortly.
 
+Alex
+
+>
+> Cheers,
+> Nathan
+>
+> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+> index 2aaa9ef1168d..a57843733a96 100644
+> --- a/drivers/gpu/drm/Kconfig
+> +++ b/drivers/gpu/drm/Kconfig
+> @@ -244,7 +244,7 @@ source "drivers/gpu/drm/radeon/Kconfig"
+>  config DRM_AMDGPU
+>         tristate "AMD GPU"
+>         depends on DRM && PCI && MMU
+> -       depends on CPU_LITTLE_ENDIAN
+> +       depends on !CPU_BIG_ENDIAN
+>         select FW_LOADER
+>         select DRM_DISPLAY_DP_HELPER
+>         select DRM_DISPLAY_HDMI_HELPER
