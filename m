@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387265AbiEFACp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35218 "EHLO
+        id S233742AbiEFAC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 20:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387116AbiEFABr (ORCPT
+        with ESMTP id S1387122AbiEFABs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:01:47 -0400
+        Thu, 5 May 2022 20:01:48 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851BD612A4
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B48612AC
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651795073; x=1683331073;
+  t=1651795074; x=1683331074;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=TyPidIU9s9JbwJNwvFvgLrTu4E+Y5y97BFEdQg2cUk8=;
-  b=me41SlqkT0DwRfIzvo/ciQAoCLD1qsyy+SULhWMBbDYPBkr6IZBCGILz
-   uIBBkZP4/VYX7Ffh8bgJA8nLbrhIbPTBA2xAc+WtH8pbKY1H7yx4tz8uq
-   ck7ONI9SE6ZKZ7wXCYnavlaJ3ogLfekAiQBLloYruWD/sz6cu3NzM2ReF
-   bwGOb053f/Rbuc44c5xkws0eciOSfLdaYQhqIyc8VViJ9s+gw663F4dPV
-   PlJ1Kd4Jb3u9vsIFkfKHMmRreHCTv3+2LxNqywYCsWgJJHEiT3/oNxi5i
-   jY5rcNx6HdPYnoYWaPxmbP9kVjV2p7ka0JfPewu+Nu7FXmgFQlHdpjPFo
+  bh=eMvcJDLLgv1piJPvn9rpsQ5W0zxPoYZ7HqfVKzdrDNs=;
+  b=g/tj6SB7eJFUNZLsZ3LhFWCGdd10Xz9MKBaIfRpP9IW2YfmJefGgwa2+
+   4ddlXKmn3mQPSUYG1JmM0O4sfDR5UdFrtfxQtyDR+QxfgJXzaCMTVf8zC
+   SpKKIMXEoOW7H/UlEcXdgk5Owqm5V/ik/wdjM+A2xGfCse3hEzbEFI9XK
+   4PQ835JONUcHQE3zV3SzfFTJHm9JvQjbHTGlq3rC4Yu/Ug2P6k1dqDnI/
+   Pki4RLkjLElxqU+YzXQX0jfU3DZjZcYyaiMj5AqZ/rvNeTCT5wyBhC/fm
+   +43fkWETQwU/mBPAiyFbYUjWVvvWbPSW/ZsPJNtKp4v3AgxeYKaqnxzv9
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283639"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283643"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283639"
+   d="scan'208";a="250283643"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:50 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914380"
+   d="scan'208";a="694914386"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:50 -0700
+  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:51 -0700
 From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
@@ -54,9 +53,9 @@ Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
         iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org,
         Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 15/29] x86/hpet: Add helper function hpet_set_comparator_periodic()
-Date:   Thu,  5 May 2022 16:59:54 -0700
-Message-Id: <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 17/29] x86/hpet: Reserve an HPET channel for the hardlockup detector
+Date:   Thu,  5 May 2022 16:59:56 -0700
+Message-Id: <20220506000008.30892-18-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -64,140 +63,232 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Programming an HPET channel as periodic requires setting the
-HPET_TN_SETVAL bit in the channel configuration. Plus, the comparator
-register must be written twice (once for the comparator value and once for
-the periodic value). Since this programming might be needed in several
-places (e.g., the HPET clocksource and the HPET-based hardlockup detector),
-add a helper function for this purpose.
+The HPET hardlockup detector needs a dedicated HPET channel. Hence, create
+a new HPET_MODE_NMI_WATCHDOG mode category to indicate that it cannot be
+used for other purposes. Using MSI interrupts greatly simplifies the
+implementation of the detector. Specifically, it helps to avoid the
+complexities of routing the interrupt via the IO-APIC (e.g., potential
+race conditions that arise from re-programming the IO-APIC while also
+servicing an NMI). Therefore, only reserve the timer if it supports Front
+Side Bus interrupt delivery.
 
-A helper function hpet_set_comparator_oneshot() could also be implemented.
-However, such function would only program the comparator register and the
-function would be quite small. Hence, it is better to not bloat the code
-with such an obvious function.
+HPET channels are reserved at various stages. First, from
+x86_late_time_init(), hpet_time_init() checks if the HPET timer supports
+Legacy Replacement Routing. If this is the case, channels 0 and 1 are
+reserved as HPET_MODE_LEGACY.
+
+At a later stage, from lockup_detector_init(), reserve the HPET channel
+for the hardlockup detector. Then, the HPET clocksource reserves the
+channels it needs and then the remaining channels are given to the HPET
+char driver via hpet_alloc().
+
+Hence, the channel assigned to the HPET hardlockup detector depends on
+whether the first two channels are reserved for legacy mode.
+
+Lastly, only reserve the channel for the hardlockup detector if enabled
+in the kernel command line.
 
 Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Tony Luck <tony.luck@intel.com>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: x86@kernel.org
-Originally-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
-When programming the HPET channel in periodic mode, a udelay(1) between
-the two successive writes to HPET_Tn_CMP was introduced in commit
-e9e2cdb41241 ("[PATCH] clockevents: i386 drivers"). The commit message
-does not give any reason for such delay. The hardware specification does
-not seem to require it. The refactoring in this patch simply carries such
-delay.
----
 Changes since v5:
- * None
+ * Added a check for the allowed maximum frequency of the HPET.
+ * Added hpet_hld_free_timer() to properly free the reserved HPET channel
+   if the initialization is not completed.
+ * Call hpet_assign_irq() with as_nmi = true.
+ * Relocated declarations of functions and data structures of the detector
+   to not depend on CONFIG_HPET_TIMER.
 
 Changes since v4:
- * Implement function only for periodic mode. This removed extra logic to
-   to use a non-zero period value as a proxy for periodic mode
-   programming. (Thomas)
- * Added a comment on the history of the udelay() when programming the
-   channel in periodic mode. (Ashok)
+ * Reworked timer reservation to use Thomas' rework on HPET channel
+   management.
+ * Removed hard-coded channel number for the hardlockup detector.
+ * Provided more details on the sequence of HPET channel reservations.
+   (Thomas Gleixner)
+ * Only reserve a channel for the hardlockup detector if enabled via
+   kernel command line. The function reserving the channel is called from
+   hardlockup detector. (Thomas Gleixner)
+ * Shorten the name of hpet_hardlockup_detector_get_timer() to
+   hpet_hld_get_timer(). (Andi)
+ * Simplify error handling when a channel is not found. (Tony)
 
 Changes since v3:
- * Added back a missing hpet_writel() for time configuration.
+ * None
 
 Changes since v2:
- *  Introduced this patch.
+ * None
 
 Changes since v1:
- * N/A
+ * None
 ---
- arch/x86/include/asm/hpet.h |  2 ++
- arch/x86/kernel/hpet.c      | 49 ++++++++++++++++++++++++++++---------
- 2 files changed, 39 insertions(+), 12 deletions(-)
+ arch/x86/include/asm/hpet.h |  22 ++++++++
+ arch/x86/kernel/hpet.c      | 105 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 127 insertions(+)
 
 diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index be9848f0883f..486e001413c7 100644
+index 486e001413c7..5762bd0169a1 100644
 --- a/arch/x86/include/asm/hpet.h
 +++ b/arch/x86/include/asm/hpet.h
-@@ -74,6 +74,8 @@ extern void hpet_disable(void);
- extern unsigned int hpet_readl(unsigned int a);
- extern void hpet_writel(unsigned int d, unsigned int a);
- extern void force_hpet_resume(void);
-+extern void hpet_set_comparator_periodic(int channel, unsigned int cmp,
-+					 unsigned int period);
+@@ -103,4 +103,26 @@ static inline int is_hpet_enabled(void) { return 0; }
+ #define default_setup_hpet_msi	NULL
  
- #ifdef CONFIG_HPET_EMULATE_RTC
- 
+ #endif
++
++#ifdef CONFIG_X86_HARDLOCKUP_DETECTOR_HPET
++/**
++ * struct hpet_hld_data - Data needed to operate the detector
++ * @has_periodic:		The HPET channel supports periodic mode
++ * @channel:			HPET channel assigned to the detector
++ * @channe_priv:		Private data of the assigned channel
++ * @ticks_per_second:		Frequency of the HPET timer
++ * @irq:			IRQ number assigned to the HPET channel
++ */
++struct hpet_hld_data {
++	bool			has_periodic;
++	u32			channel;
++	struct hpet_channel	*channel_priv;
++	u64			ticks_per_second;
++	int			irq;
++};
++
++extern struct hpet_hld_data *hpet_hld_get_timer(void);
++extern void hpet_hld_free_timer(struct hpet_hld_data *hdata);
++#endif /* CONFIG_X86_HARDLOCKUP_DETECTOR_HPET */
++
+ #endif /* _ASM_X86_HPET_H */
 diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 47678e7927ff..2c6713b40921 100644
+index 02d25e00e93f..ee9275c013f5 100644
 --- a/arch/x86/kernel/hpet.c
 +++ b/arch/x86/kernel/hpet.c
-@@ -294,6 +294,39 @@ static void hpet_enable_legacy_int(void)
- 	hpet_legacy_int_enabled = true;
- }
+@@ -20,6 +20,7 @@ enum hpet_mode {
+ 	HPET_MODE_LEGACY,
+ 	HPET_MODE_CLOCKEVT,
+ 	HPET_MODE_DEVICE,
++	HPET_MODE_NMI_WATCHDOG,
+ };
  
-+/**
-+ * hpet_set_comparator_periodic() - Helper function to set periodic channel
-+ * @channel:	The HPET channel
-+ * @cmp:	The value to be written to the comparator/accumulator
-+ * @period:	Number of ticks per period
+ struct hpet_channel {
+@@ -216,6 +217,7 @@ static void __init hpet_reserve_platform_timers(void)
+ 			break;
+ 		case HPET_MODE_CLOCKEVT:
+ 		case HPET_MODE_LEGACY:
++		case HPET_MODE_NMI_WATCHDOG:
+ 			hpet_reserve_timer(&hd, hc->num);
+ 			break;
+ 		}
+@@ -1496,3 +1498,106 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
+ }
+ EXPORT_SYMBOL_GPL(hpet_rtc_interrupt);
+ #endif
++
++#ifdef CONFIG_X86_HARDLOCKUP_DETECTOR_HPET
++
++/*
++ * We program the timer in 32-bit mode to reduce the number of register
++ * accesses. The maximum value of watch_thresh is 60 seconds. The HPET counter
++ * should not wrap around more frequently than that. Thus, the frequency of the
++ * HPET timer must be less than 71.582788 MHz. For safety, limit the frequency
++ * to 85% the maximum frequency.
 + *
-+ * Helper function for updating comparator, accumulator and period values.
-+ *
-+ * In periodic mode, HPET needs HPET_TN_SETVAL to be set before writing
-+ * to the Tn_CMP to update the accumulator. Then, HPET needs a second
-+ * write (with HPET_TN_SETVAL cleared) to Tn_CMP to set the period.
-+ * The HPET_TN_SETVAL bit is automatically cleared after the first write.
-+ *
-+ * This function takes a 1 microsecond delay. However, this function is supposed
-+ * to be called only once (or when reprogramming the timer) as it deals with a
-+ * periodic timer channel.
-+ *
-+ * See the following documents:
-+ *   - Intel IA-PC HPET (High Precision Event Timers) Specification
-+ *   - AMD-8111 HyperTransport I/O Hub Data Sheet, Publication # 24674
++ * The frequency of the HPET on systems in the field is usually less than 24MHz.
 + */
-+void hpet_set_comparator_periodic(int channel, unsigned int cmp, unsigned int period)
++#define HPET_HLD_MAX_FREQ 60845000ULL
++
++static struct hpet_hld_data *hld_data;
++
++/**
++ * hpet_hld_free_timer - Free the reserved timer for the hardlockup detector
++ *
++ * Free the resources held by the HPET channel reserved for the hard lockup
++ * detector and make it available for other uses.
++ *
++ * Returns: none
++ */
++void hpet_hld_free_timer(struct hpet_hld_data *hdata)
 +{
-+	unsigned int v = hpet_readl(HPET_Tn_CFG(channel));
-+
-+	hpet_writel(v | HPET_TN_SETVAL, HPET_Tn_CFG(channel));
-+
-+	hpet_writel(cmp, HPET_Tn_CMP(channel));
-+
-+	udelay(1);
-+	hpet_writel(period, HPET_Tn_CMP(channel));
++	hdata->channel_priv->mode = HPET_MODE_UNUSED;
++	hdata->channel_priv->in_use = 0;
++	kfree(hld_data);
 +}
 +
- static int hpet_clkevt_set_state_periodic(struct clock_event_device *evt)
- {
- 	unsigned int channel = clockevent_to_channel(evt)->num;
-@@ -306,19 +339,11 @@ static int hpet_clkevt_set_state_periodic(struct clock_event_device *evt)
- 	now = hpet_readl(HPET_COUNTER);
- 	cmp = now + (unsigned int)delta;
- 	cfg = hpet_readl(HPET_Tn_CFG(channel));
--	cfg |= HPET_TN_ENABLE | HPET_TN_PERIODIC | HPET_TN_SETVAL |
--	       HPET_TN_32BIT;
-+	cfg |= HPET_TN_ENABLE | HPET_TN_PERIODIC | HPET_TN_32BIT;
- 	hpet_writel(cfg, HPET_Tn_CFG(channel));
--	hpet_writel(cmp, HPET_Tn_CMP(channel));
--	udelay(1);
--	/*
--	 * HPET on AMD 81xx needs a second write (with HPET_TN_SETVAL
--	 * cleared) to T0_CMP to set the period. The HPET_TN_SETVAL
--	 * bit is automatically cleared after the first write.
--	 * (See AMD-8111 HyperTransport I/O Hub Data Sheet,
--	 * Publication # 24674)
--	 */
--	hpet_writel((unsigned int)delta, HPET_Tn_CMP(channel));
++/**
++ * hpet_hld_get_timer - Get an HPET channel for the hardlockup detector
++ *
++ * Reseve an HPET channel and return the timer information to caller only if a
++ * channel is available and supports FSB mode. This function is called by the
++ * hardlockup detector only if enabled in the kernel command line.
++ *
++ * Returns: a pointer with the properties of the reserved HPET channel.
++ */
++struct hpet_hld_data *hpet_hld_get_timer(void)
++{
++	struct hpet_channel *hc = hpet_base.channels;
++	int i, irq;
 +
-+	hpet_set_comparator_periodic(channel, cmp, (unsigned int)delta);
++	if (hpet_freq > HPET_HLD_MAX_FREQ)
++		return NULL;
 +
- 	hpet_start_counter();
- 	hpet_print_config();
- 
++	for (i = 0; i < hpet_base.nr_channels; i++) {
++		hc = hpet_base.channels + i;
++
++		/*
++		 * Associate the first unused channel to the hardlockup
++		 * detector. Bailout if we cannot find one. This may happen if
++		 * the HPET clocksource has taken all the timers. The HPET driver
++		 * (/dev/hpet) should not take timers at this point as channels
++		 * for such driver can only be reserved from user space.
++		 */
++		if (hc->mode == HPET_MODE_UNUSED)
++			break;
++	}
++
++	if (i == hpet_base.nr_channels)
++		return NULL;
++
++	if (!(hc->boot_cfg & HPET_TN_FSB_CAP))
++		return NULL;
++
++	hld_data = kzalloc(sizeof(*hld_data), GFP_KERNEL);
++	if (!hld_data)
++		return NULL;
++
++	hc->mode = HPET_MODE_NMI_WATCHDOG;
++	hc->in_use = 1;
++	hld_data->channel_priv = hc;
++
++	if (hc->boot_cfg & HPET_TN_PERIODIC_CAP)
++		hld_data->has_periodic = true;
++
++	if (!hpet_domain)
++		hpet_domain = hpet_create_irq_domain(hpet_blockid);
++
++	if (!hpet_domain)
++		goto err;
++
++	/* Assign an IRQ with NMI delivery mode. */
++	irq = hpet_assign_irq(hpet_domain, hc, hc->num, true);
++	if (irq <= 0)
++		goto err;
++
++	hc->irq = irq;
++	hld_data->irq = irq;
++	hld_data->channel = i;
++	hld_data->ticks_per_second = hpet_freq;
++
++	return hld_data;
++
++err:
++	hpet_hld_free_timer(hld_data);
++	hld_data = NULL;
++	return NULL;
++}
++#endif /* CONFIG_X86_HARDLOCKUP_DETECTOR_HPET */
 -- 
 2.17.1
 
