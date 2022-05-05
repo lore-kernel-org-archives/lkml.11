@@ -2,201 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B62DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E32FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382523AbiEERtU (ORCPT
+        id S1382902AbiEERv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43170 "EHLO
+        Thu, 5 May 2022 13:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382936AbiEERtD (ORCPT
+        with ESMTP id S1380815AbiEERvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:49:03 -0400
-Received: from mx0b-0039f301.pphosted.com (mx0b-0039f301.pphosted.com [148.163.137.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E103895;
-        Thu,  5 May 2022 10:45:20 -0700 (PDT)
-Received: from pps.filterd (m0174681.ppops.net [127.0.0.1])
-        by mx0b-0039f301.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 245Asdjj005537;
-        Thu, 5 May 2022 11:23:53 GMT
-Received: from eur03-am5-obe.outbound.protection.outlook.com (mail-am5eur03lp2053.outbound.protection.outlook.com [104.47.8.53])
-        by mx0b-0039f301.pphosted.com (PPS) with ESMTPS id 3fuqdg3tu4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 11:23:53 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SWng4yKFJZVTZrExouY9P1XMV0mMcW9xBqhIwMtW7B/vju+IAJ53IKtco16NqlcTW2ScpFlaJfe36EvsqXr0wHZ3vjhYx8oWkjYAQBxdFzSa3dbU2xK7VaJpjXJC00IGd6chZBEWRl8c5f5g/jqz6+4uNUgoWKA6ogWTS8X/0YDOY4CSJpnb0YuT4TufNhkoGDRBrMWlB8ZOc7rxmgEZPH+hrlUatg9dr6Mry2lZSc7SyIog3KGUCH9y0cEDR/EukMa/6VTBeeGYLOoIi3jyBLaQOxGumjyi0YRzttxvbNEx3oP3JcnbUUJO/WXwo+Wr1U8q4MgkCnAKvceBW0gk8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4xGUwUuUoab1+R6pmneiVsp3l5RD8vxHmjbWXoNJXAI=;
- b=G9RxglP418jg8Dk+xH35HoWBghvYR7Wy5lKuEo6Uyb+UFcfbrhFu7DgXUxfGSLKF76KgUWrNUNddbrB4L+qGDwwXr1TbUeQSIFLQkiAl+Fub/EasMsYW5jWtlpzQaqJtIBOWK1TcNAC8bL0ObBMolAlBjgADxGasAMKtbwARivaNnbZF0ZEDxcuHtNX4NsJBC/sWJJzwv50jQIfKHj1kNqAsFGMrlph17hv5AKZOj4SO9bhgog+NC0xGB3OR0rq2Ok0MniQFRZHs/ZaVl7NBzBzSlQreo6dNTW1CgrEazBPvrvkwgyKW3BZC1YDFWjoJ8TjNsFZXyRB0GxDoYSv3PA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=epam.com; dmarc=pass action=none header.from=epam.com;
- dkim=pass header.d=epam.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=epam.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4xGUwUuUoab1+R6pmneiVsp3l5RD8vxHmjbWXoNJXAI=;
- b=LGvHTKOFHC1laibTBGKQ5LHyRgnhYYSIa69jed3NkXNm3SyRrb4GbOpOQCAZiPn3lum7M1tG7TErBUQhWMVwJ7H0VmkxUHo0vUPnz9ucKI+jvZil4sNPUbUOjJM/xNUgPiobelgEfUlPP9yBeQe2kqhZqgRgN+7aIvI0QlFjrV1Bk0ESfOkMyP42+Ibrrf2T5zW1dDhicoxgPe8M0nzAUnvJJ1YJTJxs4GgQrMhK29Uzc+R7r1wwLtV6+lRvRZ8GzUAYen2md2ZPgmKrIkCWyUndZMScI3mQ7cFyYncNTEIkONCiDuQS/RxXedcA0rHtiAkN/Wbq7qkzhjooGO3BSQ==
-Received: from PA4PR03MB7136.eurprd03.prod.outlook.com (2603:10a6:102:ea::23)
- by DB8PR03MB6010.eurprd03.prod.outlook.com (2603:10a6:10:ef::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.27; Thu, 5 May
- 2022 11:23:50 +0000
-Received: from PA4PR03MB7136.eurprd03.prod.outlook.com
- ([fe80::d9f2:1306:69a6:e191]) by PA4PR03MB7136.eurprd03.prod.outlook.com
- ([fe80::d9f2:1306:69a6:e191%6]) with mapi id 15.20.5206.027; Thu, 5 May 2022
- 11:23:50 +0000
-From:   Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>
-CC:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 0/1] dt-bindings: Add device-perms property description
-Thread-Topic: [PATCH v3 0/1] dt-bindings: Add device-perms property
- description
-Thread-Index: AQHYYHKYgJFkAcUSN0uqJ7iSPlGuXA==
-Date:   Thu, 5 May 2022 11:23:50 +0000
-Message-ID: <cover.1651749565.git.oleksii_moisieiev@epam.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 30aea31b-268c-431d-d711-08da2e89bac3
-x-ms-traffictypediagnostic: DB8PR03MB6010:EE_
-x-microsoft-antispam-prvs: <DB8PR03MB601064DC5E9D79772BAE1B64E3C29@DB8PR03MB6010.eurprd03.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mgMFSQ9zO+f/dplp3/TqJbFIGJNnz+gecePohMBkVh9iNDKySFEG4rjU51zb07cz6YfTftQYh/AJ3w9bnneuhg8vDIZpPiBqkiK0vKgRmJOLrhjFTHNkSfdC82Ymhx5tuFXPqQqZY4VpkH1sq6ctPJQfhusqqjlLlXJjgnJxV6gLRgNLCJsA6a7DVlyyd/0bnvjQm+vHtpUbQZK5y1bFnnYLD7+fdImxJtMjn4FKOocnaC3m6WPkPFi2GrHDGuSzU+wl8pJa+aFMj5m0wVUoBQ6xWLXGgVYT6XGi+E9CEvb4LZ5aFhqnDpY9v8Q/uN8cmFd6iPM3IKE9DjmVp4J5bCeeopfEn9YAauk5VMLFCkItawvQdv+TV0DVVt3G0/o3PVNvixDNz/D6cKVEXjR/u672sdo5FbE2kLYI/bL9ogRKiyqVNqVzzVTPyYxbv5CPIFS+9emWX4HDHZ/dzHuhrca2dXf3ZrLMz1qHZw7v/lNFhjT69W4OL3ISN2VMqhhNZDLBjSe+pCeMka/XP2kNTxwE5eO1NyzDQzNx2meZerjmUrN14v0LFZW9GByI8+O2092ozuLWDk2D9ML5l9VtqeJaYeO8RHzygU49u0SFoFueMeQTQXSlXKC3HmHQjh3r69IKbjZiSh+LERjIecMwA6PXoHB+DsvSh2LlUCy94J6pOFG2hzozBtziJRC7OsXJCw3wuBdhbgX5zE0+2uJxdeUs69AA9UANxI5xRMRcRf/eopiq78WzoShLnv7sh/P68WHgrICAjMp7D7lI48rMlQswr2G4+3n6Mffj33Se+QU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR03MB7136.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38070700005)(2616005)(55236004)(36756003)(186003)(86362001)(83380400001)(122000001)(966005)(54906003)(66446008)(66946007)(66476007)(66556008)(8936002)(5660300002)(316002)(91956017)(64756008)(76116006)(4326008)(8676002)(6506007)(26005)(71200400001)(6512007)(508600001)(2906002)(6486002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?tL+NeVuDpqQVt9FhFTbXflFUBb7IRazp7Y0w3RY6dfdw2CNoEtnG4vuykZ?=
- =?iso-8859-1?Q?NT5FKJPfYpBkry/Xqz7ymK95xuPEA3jnTX0Zd0QfFzgnFowlMujq4d7+ct?=
- =?iso-8859-1?Q?bRh0s7Hh8WdhRl6h/3gl9ceSXkoo8lrnivNOmHF5D4Zqa5thcRU48Ygwk+?=
- =?iso-8859-1?Q?V86L3lk9N5MV+97EOb6PkFLTWddprNbzhPZ8oGoRCeVHM1JiZJU7HlEuKA?=
- =?iso-8859-1?Q?1oaxnlj1HmpngQg0wnbPLZrVrX9rKaebHkAa++PTPqu0sYNKXy4Hw08O/G?=
- =?iso-8859-1?Q?XGVnMnW41gp+ZUpr4KXjB0Zj2TfohFtHqJLkFWBJ0cp1R12Erkpmv+7XG/?=
- =?iso-8859-1?Q?WF4kmlEXXwaajP6BOT+s03U2hmLj1N7udlk04pspIeH1ghpZSQXq2j0ajP?=
- =?iso-8859-1?Q?O+W/ROE7wvwejpy71W4zIt0/fIkrGyxDAOcEN/nsKNwsBcPwkB0SBXtlKQ?=
- =?iso-8859-1?Q?hCQQRMgfcvtY9GQT2Ya9qgqZBQzXhmBq2kfK7PIFXPQy9B2auMd/wWHYoY?=
- =?iso-8859-1?Q?e4so+1R3PW2wI7SJDqJlDqjrUT4+vwGK7t7R2W/YgiF4woA6IEOkJwXiLf?=
- =?iso-8859-1?Q?KcMDMFXGrMRvoNSgyiwzL4hykRN+ZwhGkvaY/pc4030QOx102+1EFfYKJR?=
- =?iso-8859-1?Q?0x+2wMetYoYxqP66fs5S5FVfOLATA2+2hUoOyH0jwCIxx5KPXv5LMV+8rc?=
- =?iso-8859-1?Q?uErRTI5DgbVEppjw/N3qoQC/ORLd/6BRcYQF5QN9tE6gFGU3hnPLEqdBhx?=
- =?iso-8859-1?Q?ZxMXAtseXE5YrgyKcTuL8ROO/KR9kP7msnwRmzfnYwHh84qvf7ritmQYI0?=
- =?iso-8859-1?Q?ZMSrmraa5wfO2kbeJMwt8NKxRunG0Hk6Kb9LwRxwi64OSmS1kRt0YUm+f+?=
- =?iso-8859-1?Q?KWi+ND1fzIWlipLbBxX25x6+LX5gT09IVYAFLhPWfnlPXtKP3ejh/iuNf/?=
- =?iso-8859-1?Q?DrCQu8+PCyTLALvyN3NWG95zKUZj6Ast73dJq8zFv/Qc8dkoHaHHEea+J/?=
- =?iso-8859-1?Q?dYmQQ11UrYZMn5EEU92IuU/GPIEF2zp5N8cvFY0wNSDjmqmIg7LqD0ZMHN?=
- =?iso-8859-1?Q?SVSZEWqHC6cVULz/KCsi1Umd/qmiLQhjqWgLr3lPoosQ5NJsYYAdqZZ5Oz?=
- =?iso-8859-1?Q?dWqpz3n0dyLU4ImtGAkPryFrM7NcmYP3m/eV4PTxbJHL2IcFhXxLXmI+UK?=
- =?iso-8859-1?Q?hrvithesIb3yt3VUUiXU6PAp5HyKhYR5BvJU46WmQEJTUu53sGowr4UKGa?=
- =?iso-8859-1?Q?TcHgI89WaoxlBmhy7IuLHBFz4INktDPLzYFlIn9/EUbXoe6XuXttPt5Hj8?=
- =?iso-8859-1?Q?MjGU6xeDpCeTzmDJon916jpa/GOQM0lcUdr4trlWlXvnvByhFC+vb65j1c?=
- =?iso-8859-1?Q?0CK+TGBta0I9+6aMsBQp/BvrtteQYoiDv7LLZ17bn16uDZt287VQFAabzm?=
- =?iso-8859-1?Q?++7+PCU7iInPL4uyvR/8N4nIqLEVncCncjwa3lcHcw2mM4czjJ4WweavON?=
- =?iso-8859-1?Q?huWUwMfaQQ4bU8o0/Re8ewLPafDGwLgN9beS54c911+MKPBDK+pf1fMoCu?=
- =?iso-8859-1?Q?ddzxauhYBMZkEu2/8GGFYlc4DSaUakVE1jX66sYGnODuoWU9yyHLOFI+7h?=
- =?iso-8859-1?Q?tDljEObQ0U/8pWAGk6AXNnvfl34zZttXfa5kUW3nhg373lS9NwLrj07qcK?=
- =?iso-8859-1?Q?OiJEqqNPjh7c7qjIcGEIsd5H/S80beLP4owFixo6GBzq+WuWl3vkhNqjIH?=
- =?iso-8859-1?Q?oybB26b04XRNDLjRkJNEDWdgkGavH6GJNmYsDxWeSKpkxp1OjypJtPXxf2?=
- =?iso-8859-1?Q?rDpD8MVwcpiVFqE+s80i979rhNlmbXA=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 5 May 2022 13:51:55 -0400
+X-Greylist: delayed 564 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 10:48:14 PDT
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FEF4C404
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:48:14 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id 62FF824002A
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 19:38:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
+        t=1651772328; bh=KHnBAH4NavijbLBgpxqUDpbWR0IBU0dr4uSK4a3Nlk4=;
+        h=From:To:Cc:Subject:Date:Autocrypt:OpenPGP:From;
+        b=nxZea6oDnG8bIvjpguQzu/InPhhAzG4Hx9WGjP7rvkb+/Rk1zXDdn0t2aPfnPoGwu
+         36OZk9uyICDRizYUkAPZjYlSji0svdTHEMkBqekT/r4M6xI8uCRLb/J4mVvrRih8L+
+         wcLHoAqapR5osDKiTYIkmkgBT6fAorfef2lJbTNP4tguAPI+L1vjEEHjAOYaj2mKyI
+         o2OAN9tkTE1/vk/xbJWZkbdm+emfGsbrjDKtUJLKmMmvReYdVjVvvEyusTiMuCGdsX
+         A3TFM5WASxJAhDHbnK71n5UqntJXUYM/LoVFwza0B/fnooqlSgC2B2mOwtC/kQX1O+
+         xyFh7UdXWz8Vg==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4KvLXP6rDbz9rxV;
+        Thu,  5 May 2022 19:38:45 +0200 (CEST)
+From:   Manuel Ullmann <manuel.ullmann@posteo.de>
+To:     Jordan Leppert <jordanleppert@protonmail.com>
+Cc:     Igor Russkikh <irusskikh@marvell.com>,
+        Manuel Ullmann <labre@posteo.de>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, regressions@lists.linux.dev,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        Holger =?utf-8?Q?Hoffst=C3=A4tte?= 
+        <holger@applied-asynchrony.com>, koo5 <kolman.jindrich@gmail.com>,
+        Dmitry Bezrukov <dbezrukov@marvell.com>
+Subject: Re: [EXT] [PATCH] net: atlantic: always deep reset on pm op, fixing
+ null deref regression
+References: <87czgt2bsb.fsf@posteo.de>
+        <1f4b595a-1553-f015-c7a0-6d3075bdbcda@marvell.com>
+        <99KGBavpdWUsYAzz1AIlqoFSVt9JXUAmj3Sbso-671ku1gnhokcfi3D9bbh_2xYS_wWYRQOhGxgUsZKsgqkyIivlelLor9zNvpOLC0I3nxA=@protonmail.com>
+Date:   Thu, 05 May 2022 17:39:02 +0000
+In-Reply-To: <99KGBavpdWUsYAzz1AIlqoFSVt9JXUAmj3Sbso-671ku1gnhokcfi3D9bbh_2xYS_wWYRQOhGxgUsZKsgqkyIivlelLor9zNvpOLC0I3nxA=@protonmail.com>
+        (Jordan Leppert's message of "Thu, 05 May 2022 10:24:49 +0000")
+Message-ID: <87ee17nakp.fsf@posteo.de>
 MIME-Version: 1.0
-X-OriginatorOrg: epam.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR03MB7136.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30aea31b-268c-431d-d711-08da2e89bac3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2022 11:23:50.4827
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b41b72d0-4e9f-4c26-8a69-f949f367c91d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: j2gSS1M3W0i+6+VPxgxUEZsfkG9jsYV6bCbnddjqPIbvP5jb9uDQuF4vpcf2dYYKybq+FlR4Hu8vl2aTR0L/UlWQpYfeQIZuWFml5gl7w6g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR03MB6010
-X-Proofpoint-ORIG-GUID: 83o3QyupwgDF7axEO6UCuP-gnyih5BwE
-X-Proofpoint-GUID: 83o3QyupwgDF7axEO6UCuP-gnyih5BwE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-05_04,2022-05-05_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=1 mlxscore=1 bulkscore=0
- clxscore=1011 impostorscore=0 priorityscore=1501 spamscore=1
- malwarescore=0 phishscore=0 lowpriorityscore=0 mlxlogscore=209
- suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205050082
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Autocrypt: addr=manuel.ullmann@posteo.de; prefer-encrypt=mutual; keydata=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
+OpenPGP: url=https://posteo.de/keys/manuel.ullmann@posteo.de.asc; preference=encrypt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce device-perms property which is intended to set the device
-permissions for the System Management interfaces.
-An example of this interface is SCMI (System Control and Management
-Interface) which controls clocks/power-domains/resets etc from the
-Firmware. This property sets the device_id to set the device permissions
-for the Fimware using BASE_SET_DEVICE_PERMISSIONS message (see 4.2.2.10 of =
-[0]).
-Device permissions management described in DEN 0056, Section 4.2.2.10 [0].
-Given parameter should set the device_id, needed to set device
-permissions in the Firmware.
-This property is used by trusted Agent to set permissions for the devices,
-passed-through to the non-trusted Agents. Trusted Agent will use device-per=
-ms to
-set the Device permissions for the Firmware (See Section 4.2.2.10 [0]
-for details).
-Agents concept is described in Section 4.2.1 [0].
+>>
+>>
+>> > The impact of this regression is the same for resume that I saw on
+>> > thaw: the kernel hangs and nothing except SysRq rebooting can be done.
+>> >
+>> > The null deref occurs at the same position as on thaw.
+>> > BUG: kernel NULL pointer dereference
+>> > RIP: aq_ring_rx_fill+0xcf/0x210 [atlantic]
+>> >
+>> > Fixes regression in cbe6c3a8f8f4 ("net: atlantic: invert deep par in
+>> > pm functions, preventing null derefs"), where I disabled deep pm
+>> > resets in suspend and resume, trying to make sense of the
+>> > atl_resume_common deep parameter in the first place.
+>> >
+>> > It turns out, that atlantic always has to deep reset on pm operations
+>> > and the parameter is useless. Even though I expected that and tested
+>> > resume, I screwed up by kexec-rebooting into an unpatched kernel, thus
+>> > missing the breakage.
+>> >
+>> > This fixup obsoletes the deep parameter of atl_resume_common, but I
+>> > leave the cleanup for the maintainers to post to mainline.
+>> >
+>> > PS: I'm very sorry for this regression.
+>>
+>>
+>> Hi Manuel,
+>>
+>> Unfortunately I've missed to review and comment on previous patch - it w=
+as too quickly accepted.
+>>
+>> I'm still in doubt on your fixes, even after rereading the original prob=
+lem.
+>> Is it possible for you to test this with all the possible combinations?
+>> suspend/resume with device up/down,
+>> hibernate/restore with device up/down?
 
-device-perms in Device-tree node example:
-usb@e6590000
-{
-    device-perms =3D <&scmi 19>;
-    clocks =3D <&scmi_clock 3>, <&scmi_clock 2>;
-    resets =3D <&scmi_reset 10>, <&scmi_reset 9>;
-    power-domains =3D <&scmi_power 0>;
-};
+I confirm that suspend/resume/hibernation/thaw keeps working in all
+cases. Thaw would work without the original patch, if the device is down
+before hibernation. I also originally described this behaviour on
+bugzilla at
 
-Given example shows the configuration of the hsusb node, which is using
-scmi to contol clocks, resets and power-domains. device-perms links to
-&scmi phandle and set the permission parameter 19, which should match
-defined id for usb in the Firmware.
+https://bugzilla.kernel.org/show_bug.cgi?id=3D215798
 
-Current implementation defines Xen hypervisor as trusted Agent and OS
-(Linux or other) as non-trusted Agent.
-Trusted Agent will use device-perms to set the device permissions for
-the Agents. Non-trusted Agent (OS) should not have an access to the permiss=
-ions
-settings, so no code to process device-perms was presented in Linux
-kernel.
+See also Jordan=E2=80=99s confirmation below.
 
-We are currently contributing changes to Xen, which are intended to
-mediate SCMI access from Guests to the Firmware. Xen uses device-perms to s=
-et
-the permissions for the devices. See [1] thread for details.
+I think, the main reason, why this could break, is, that the deep
+parameter had no real impact until the breaking commit. So it was
+practically untested, when the allocation/free functions were split.
 
-[0] https://developer.arm.com/documentation/den0056/latest
-[1] https://xen.markmail.org/message/mmi4fpb4qr6e3kad
+Another thing, that I tested, was guarding all null pointer references
+with null checks, which failed at first, because GCC optimized them
+out. I think I have the atlantic tree for this (bad) fix attempt
+floating around. I can try to rebase and create a patch from this and
+post it to the Github issue, if you are interested.
+https://github.com/Aquantia/AQtion/issues/32
 
----
-Changes V1 -> V2:
-   - update parameter name, made it xen-specific
-   - add xen vendor bindings
+Don=E2=80=99t have time for this before the weekend though.
 
-Changes V2 -> V3:
-   - update parameter name, make it generic
-   - update parameter format, add link to controller
-   - do not include xen vendor bindings as already upstreamed
+>> I'll try to do the same on our side, but we don't have much resources fo=
+r that now unfortunately..
+>>
+>> > Fixes: cbe6c3a8f8f4315b96e46e1a1c70393c06d95a4c
+>>
+>>
+>> That tag format is incorrect I think..
 
-Oleksii Moisieiev (1):
-  dt-bindings: Add device-perms property description
+Thanks for pointing that out. Also, are those stable Cc tags correct?
+Because I figured, that the x in the documentation could be also the
+branch name and not a placeholder. Should I resend the patch, fixing the
+tags? Won=E2=80=99t get to it before tomorrow, though.
 
- .../bindings/firmware/device-perms.yaml       | 43 +++++++++++++++++++
- 1 file changed, 43 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/firmware/device-perms=
-.yaml
+>> Igor
 
---=20
-2.27.0
+> With the proposed patch (deep parameter is always true), I've managed to =
+test:
+> 1. Hibernate/restore (with device down/up)
+> 2. Suspend/resume (with device down/up)
+>
+> I put the device down with the command:
+> sudo ip link set <connection> down
+>
+> I hope that's correct, if not please let me know correct command.
+
+This should be the correct.
+
+Manuel
