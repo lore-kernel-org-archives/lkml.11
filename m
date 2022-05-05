@@ -2,77 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE67C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D35EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382350AbiEERFw (ORCPT
+        id S1353533AbiEERGf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
+        Thu, 5 May 2022 13:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344870AbiEERFd (ORCPT
+        with ESMTP id S238942AbiEERG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:05:33 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BD35B3DC;
-        Thu,  5 May 2022 10:01:52 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so3006973wme.3;
-        Thu, 05 May 2022 10:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:date:content-transfer-encoding
-         :user-agent:mime-version;
-        bh=WdAvXMilkjeXGxCjt4xSahrQ1dbVlNr+hNx2Eah+WlM=;
-        b=hTNmdPYIZqmJ813s+jCFPFG2FxNmfsZ1OymxifcGYmreRrJs6FAySX+Z8IlZ5qxpcX
-         V3QWT2s8/IsLlbXcnNM8SL9NsLo1XKhBgS9UZuyXYk7cPVrwMWQyJJB/L+yfRepwM8e9
-         KHl4uL7I/3cyXenNxV6FWEryxat4r1bg6E46kkj0vtEvDBBJm4E/B6ux8ak9MlOq9biI
-         4mYzdf1WfB4+iVRc8jVtaNyY68o/m8gfFsZ87CW3q+Q1Z2MI+6Ms2bXDjLu8Po24hPc8
-         aXKIpYyxq+kQuDokdWomLpkAl6/bU+GLb2ZExxsHJQTg6TDWcjKpmpCVpf3QVE3SGOgO
-         sZ8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=WdAvXMilkjeXGxCjt4xSahrQ1dbVlNr+hNx2Eah+WlM=;
-        b=AqO330shtCkFNr4P/yXzQxQekrB8dFO679MPsfvD7ToVbbVC8GMA5UzQB1U9mspBhW
-         DU5+EgqSmDXqcKIa7FCEXMTX1pUx/Gdm1P8N/RkX2j8Q9gqhP0rwp3BxHyxQKUgHo1Zw
-         SMEbjMb1fsyR1quU/3j5E2/qOc0y/g4LDJOJaWvT6q5ylwgwxwVCJyAoPpS7KVueeCMe
-         knREJ5HGT66iDAlH520QyINk+3UE5VZPpsRpZcZehhwF3y8C2+GSDOrI04hSfTGaOouz
-         QMbQq3NGO+k4cDRL++2m3Kcm45MKY+AG15N+uLL7U6zGmIsUvyPm7dAGZYRtm4RVJ3L/
-         JZsw==
-X-Gm-Message-State: AOAM532RDh3pf/iHvMsbQp8w/TdguWw+ZOBG1u9gQXPlnUF2gHXy4OMg
-        RogiUJcFPrEzJB8jRydZHIuJjphISeU=
-X-Google-Smtp-Source: ABdhPJwGhkNOC7bMhu95RxFbVVMEfYOF2frj3xLBCZmE2FFo4w9Rz+9PZHPCh0N0pN22TBVrX7RUyw==
-X-Received: by 2002:a05:600c:4fc6:b0:393:fb29:1f3f with SMTP id o6-20020a05600c4fc600b00393fb291f3fmr5964866wmq.60.1651770110800;
-        Thu, 05 May 2022 10:01:50 -0700 (PDT)
-Received: from [192.168.11.155] (94-21-221-167.pool.digikabel.hu. [94.21.221.167])
-        by smtp.gmail.com with ESMTPSA id g6-20020a056000118600b0020c5253d8d6sm1644791wrx.34.2022.05.05.10.01.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 10:01:50 -0700 (PDT)
-Message-ID: <052a814001aaa46eab844f1d9693ddd9d731c164.camel@gmail.com>
-Subject: 9 bit serial / non-blocking TCSADRAIN
-From:   =?ISO-8859-1?Q?Baltaz=E1r?= Radics <baltazar.radics@gmail.com>
-To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 05 May 2022 19:01:48 +0200
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
-MIME-Version: 1.0
+        Thu, 5 May 2022 13:06:28 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB8B2AE;
+        Thu,  5 May 2022 10:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651770168; x=1683306168;
+  h=from:to:cc:subject:date:message-id;
+  bh=iBIx4dif3zA1MnfTXgjhJYQX6/T/BHqzgCVF3qHd3U0=;
+  b=McnK0390HTkmOd2oeek/w5OFZspBIB6fjt0RaccWiAP9C/SOXT+8W4+l
+   o+CKlkKsXma5Ed0ge/vkabPbb6pCjnVRAwJt272MLDVi+DeFITv3EC+7o
+   58gSCr5EJ4Wa0Kwo8xCMR4Jfzl2ByxkcBryLyQ3msmJvynOdPDLR5INLe
+   79X62nxoUzg2QUHygZpqtN1P/g/3g/C2FU6EuJHvFzEL8df49kCjJKN3l
+   Xov7PgEVWV17JvaLRiBxx5tjOfPyNYGDlctuOTvs8x0Y5dwAmCjSQO82g
+   XZ2/tzAfuqtBqzdagWDjxDgW3E7LRl5LPFEhKp8NkgufZ72hPjxSdscHr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="354620448"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="354620448"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:02:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="585442467"
+Received: from srpawnik.iind.intel.com ([10.99.123.68])
+  by orsmga008.jf.intel.com with ESMTP; 05 May 2022 10:02:39 -0700
+From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+To:     rafael@kernel.org, lenb@kernel.org,
+        srinivas.pandruvada@linux.intel.com, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     sumeet.r.pawnikar@intel.com
+Subject: [PATCH v2] ACPI: DPTF: Add support for high frequency impedance notification
+Date:   Thu,  5 May 2022 22:30:19 +0530
+Message-Id: <20220505170019.26047-1-sumeet.r.pawnikar@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+Add high frequency impedance notification support under DPTF.
+This returns high frequency impedance value that can be obtained
+from battery fuel gauge whenever there is change over a threshold.
+Also, corrected the typo from IMPEDANCED_CHNGED to IMPEDANCE_CHANGED.
 
-I want to use a raspberry pi's serial to communicate over a protocol
-that uses 9-bit characters, so currently I'm using the stick parity
-mode (CMSPAR) and toggling between odd and even parity, then using
-tcsetattr with TCSADRAIN as the second argument, which blocks until all
-bytes are transmitted. Is there a non-blocking api to do the same
-thing, so I can use it from poll / select? (If there's a better way to
-do 9 bit character size, that'd be even better. For my protocol, the
-9th bit is only used to tell address bytes from data bytes, so I don't
-have to change it often, so I guess my current method isn't too
-horrible.)
+Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+---
+v1-->v2 : Addressed review comment recevied from Srinivas Pandruvada to add
+          corrected the spelling from IMPEDANCED_CHNGED to IMPEDANCE_CHANGED
+          under commit message. 
+---
+ drivers/acpi/dptf/dptf_power.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Thanks!
+diff --git a/drivers/acpi/dptf/dptf_power.c b/drivers/acpi/dptf/dptf_power.c
+index dc1f52a5b3f4..2ef53ca88714 100644
+--- a/drivers/acpi/dptf/dptf_power.c
++++ b/drivers/acpi/dptf/dptf_power.c
+@@ -117,7 +117,7 @@ static const struct attribute_group dptf_battery_attribute_group = {
+ #define POWER_STATE_CHANGED		0x81
+ #define STEADY_STATE_POWER_CHANGED	0x83
+ #define POWER_PROP_CHANGE_EVENT	0x84
+-#define IMPEDANCED_CHNGED		0x85
++#define IMPEDANCE_CHANGED		0x85
+ #define VOLTAGE_CURRENT_CHANGED	0x86
+ 
+ static long long dptf_participant_type(acpi_handle handle)
+@@ -150,6 +150,9 @@ static void dptf_power_notify(acpi_handle handle, u32 event, void *data)
+ 	case STEADY_STATE_POWER_CHANGED:
+ 		attr = "max_steady_state_power_mw";
+ 		break;
++	case IMPEDANCE_CHANGED:
++		attr = "high_freq_impedance_mohm";
++		break;
+ 	case VOLTAGE_CURRENT_CHANGED:
+ 		attr = "no_load_voltage_mv";
+ 		break;
+-- 
+2.17.1
+
