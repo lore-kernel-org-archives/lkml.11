@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9846DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 209DEC35294
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384727AbiEES34 (ORCPT
+        id S1384573AbiEES3d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36388 "EHLO
+        Thu, 5 May 2022 14:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383120AbiEEST3 (ORCPT
+        with ESMTP id S1383164AbiEESTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:29 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DE819003;
-        Thu,  5 May 2022 11:15:48 -0700 (PDT)
+        Thu, 5 May 2022 14:19:39 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00A619C12;
+        Thu,  5 May 2022 11:15:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774548; x=1683310548;
+  t=1651774549; x=1683310549;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wbnROJIV0sPi9VRc1Kym0LCeIa3DweI4YQjfi8+X354=;
-  b=mfxDZPEr94V/ZAnXY3mgcfZZzZoiwm4KPVcK3qJD9hpk8HvAvnWLx6aN
-   voI/Quw4aGN4Le45RQS+yd15NCKmdJaNEZnY5t3GZDvaWhUNF0+KAK7HC
-   +BnEUb/ON+r2sgRgleyKFkm44hPlzQ7jELqXmF6N2Y1hBBgfLqL/0lej4
-   hSA7yjOdvnh8OknkEnxI5JhrzwDcDoZoIIHn7P/KrBWHGUQgnJLFpWjCp
-   a+UF8W0Pf5HISGffTm84juXUFiDgBTgnGqnFPNsEMlMcNqSG9beL1L9Jw
-   w0O775dfYRn0QNTBV2MGe2KL+3IRn2+jurlhB+KTYoNk+3XRy3kkO7XJ+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746248"
+  bh=A805Zxruh6yYNtylIzj9f+DsWSAMkPS9vWZxb71Yd8s=;
+  b=LbdoH7CLMgyMgejVfSCnK2pU3cpjMhFfdYIGBhk3z9rop4tmd0yr8JIS
+   IisN8B6ml1O58EjSh8RdiD2bx1ay9NrqIG8Ern62J9apKcFWmaVXWreTj
+   /mO8I2ORNuohHc+noJUtNk0VxRs1fAZemI7ObfS8Lw7nVZ0kTRd0OxKB1
+   ZeqIHvu7Nrf2UZUGfnI3SL4hJ6X+f55aU8P/hy28+qbXSU6OU3rC1/k5y
+   aAK2T7t+PImv3DzRdBjn1umapZYjVjbkNkAnlDknjWfK6YMcpz3R0eA9R
+   VO0gxkXiXCcJ0Voql0ZwvZSoW+sQnal5v5yKR6/aAd1j6+GFNDkcPbEb9
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354844"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="328746248"
+   d="scan'208";a="268354844"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:48 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083191"
+   d="scan'208";a="665083344"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:48 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 019/104] [MARKER] The start of TDX KVM patch series: TD VM creation/destruction
-Date:   Thu,  5 May 2022 11:14:13 -0700
-Message-Id: <daaf60d85584a303dd5e08820b5abdd24662ac11.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 056/104] [MARKER] The start of TDX KVM patch series: KVM TDP MMU MapGPA
+Date:   Thu,  5 May 2022 11:14:50 -0700
+Message-Id: <f5b4f8c9b7cd100b0a11b3561470a8587c8c7f5c.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,29 +58,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This empty commit is to mark the start of patch series of TD VM
-creation/destruction.
+This empty commit is to mark the start of patch series of KVM TDP MMU
+MapGPA.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-index b7a14bc73853..5e0deaebf843 100644
+index c3e675bea802..5797d172176d 100644
 --- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
 +++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-@@ -15,8 +15,8 @@ Patch Layer status
+@@ -11,6 +11,7 @@ What qemu can do
+ - TDX VM TYPE is exposed to Qemu.
+ - Qemu can create/destroy guest of TDX vm type.
+ - Qemu can create/destroy vcpu of TDX vm type.
++- Qemu can populate initial guest memory image.
+ 
+ Patch Layer status
  ------------------
-   Patch layer                          Status
- * TDX, VMX coexistence:                 Applied
--* TDX architectural definitions:        Applying
--* TD VM creation/destruction:           Not yet
-+* TDX architectural definitions:        Applied
-+* TD VM creation/destruction:           Applying
- * TD vcpu creation/destruction:         Not yet
- * TDX EPT violation:                    Not yet
+@@ -19,7 +20,7 @@ Patch Layer status
+ * TDX architectural definitions:        Applied
+ * TD VM creation/destruction:           Applied
+ * TD vcpu creation/destruction:         Applied
+-* TDX EPT violation:                    Applying
++* TDX EPT violation:                    Applied
  * TD finalization:                      Not yet
+ * TD vcpu enter/exit:                   Not yet
+ * TD vcpu interrupts/exit/hypercall:    Not yet
 -- 
 2.25.1
 
