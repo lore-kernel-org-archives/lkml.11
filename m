@@ -2,175 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28868C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234180AbiEEBHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 21:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S234253AbiEEBKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 21:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234124AbiEEBHV (ORCPT
+        with ESMTP id S234132AbiEEBKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 21:07:21 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A24348306;
-        Wed,  4 May 2022 18:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651712623; x=1683248623;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HOTvegPQV0wBWkw4gry8ln/1sFHr7kpC/Ihf5d3BMQE=;
-  b=PM8Y7veyYW9GteiOKFpf9TiUD8wMGx898oh4ljHlvTR8im01f7VsKrlJ
-   xo13rM41y93VTahO5/MGB133kvkgVUzpBDZgVK3zHRJwwfhyLv+3ffz6Y
-   Np/GszEqSyl0pCyXuqDDX9INiaQrOVXP9CH2PyatvAJo1vAad2x04iV31
-   L+RhsiqJrQgb5P8JwkRo+ZjFxoSqFjhMUroXY+UqL0u84dvnBhBDifRRj
-   dvLb2OpwymCojG8NQv2AJjRl4A4aGLdQbSpp9QPbNvZRKBclRMED4kuui
-   kla2o4M+WERlU9YpvWU284YR5vu9mu8uWkdI/Vy9iy3WDDTlF/swQ4U+L
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="249930897"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="249930897"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 18:03:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="621059599"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 04 May 2022 18:03:36 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmPu4-000Bws-2c;
-        Thu, 05 May 2022 01:03:36 +0000
-Date:   Thu, 5 May 2022 09:03:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Wolfram Sang <wsa-dev@sang-engineering.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
- mpc5xxx_get_bus_frequency() to use fwnode
-Message-ID: <202205050858.278Tyg5Q-lkp@intel.com>
-References: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+        Wed, 4 May 2022 21:10:01 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69D849255;
+        Wed,  4 May 2022 18:06:23 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KtwWL2m53z4xLR;
+        Thu,  5 May 2022 11:06:22 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651712782;
+        bh=RZnJ0Bs+kbVt1yem4FzbL5vfR8id23cYqPzyEgoi81c=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RBVw8GZ8R3A/EwTg6NUH+P9cm5DupsyP4ld8AKiOVhydvtIUVS/z0WIHeT/bg454b
+         zEHmN7iUOEcsDL6nT72OQLZF3PQyaakQNH3bUej2KfiT3aq2jsmIGHtXkEup2SBbuK
+         ccFebvsj2pGx9nceyhMAeeQ+Iv+NXI37xY+R1b+5AJ0QgzfahOzwmRQH031WTesUKh
+         TbHvXBzKXOBUMMiUv8uyvr2C+MUBKABUtaHJDCIcmhoIDKq0ogqOEG/yTE5a6jajsf
+         Zd9YY0JI55DTYwSBg3cjZXvlFrOeNBkAQeuasD3ikJrTLVzqkaHCkYbpuihUmKCIwX
+         TuoMjOUn4PrsQ==
+Date:   Thu, 5 May 2022 11:06:21 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Rob Clark <robdclark@gmail.com>, Sean Paul <seanpaul@chromium.org>,
+        Dave Airlie <airlied@linux.ie>
+Cc:     DRI <dri-devel@lists.freedesktop.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: linux-next: manual merge of the drm-msm tree with the drm tree
+Message-ID: <20220505110621.66f8420c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+Content-Type: multipart/signed; boundary="Sig_/kJJbsRGS0nnN8.2vkWr5UrV";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+--Sig_/kJJbsRGS0nnN8.2vkWr5UrV
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I love your patch! Yet something to improve:
+Hi all,
 
-[auto build test ERROR on powerpc/next]
-[also build test ERROR on wsa/i2c/for-next mkl-can-next/testing broonie-spi/for-next tty/tty-testing linus/master v5.18-rc5 next-20220504]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Today's linux-next merge of the drm-msm tree got conflicts in:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/powerpc-52xx-Remove-dead-code-i-e-mpc52xx_get_xtal_freq/20220504-215701
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: powerpc-pcm030_defconfig (https://download.01.org/0day-ci/archive/20220505/202205050858.278Tyg5Q-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7bff10cee4f441153a56de337715dd4f40c55521
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/powerpc-52xx-Remove-dead-code-i-e-mpc52xx_get_xtal_freq/20220504-215701
-        git checkout 7bff10cee4f441153a56de337715dd4f40c55521
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+  drivers/gpu/drm/msm/edp/edp.h
+  drivers/gpu/drm/msm/edp/edp_ctrl.c
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+between commit:
 
-All errors (new ones prefixed by >>):
+  da68386d9edb ("drm: Rename dp/ to display/")
 
-   drivers/i2c/busses/i2c-mpc.c: In function 'mpc_i2c_get_fdr_52xx':
->> drivers/i2c/busses/i2c-mpc.c:242:30: error: expected identifier or '(' before '=' token
-     242 |         struct fwnode_handle = of_fwnode_handle(node);
-         |                              ^
-   In file included from include/linux/of_address.h:6,
-                    from drivers/i2c/busses/i2c-mpc.c:14:
->> include/linux/of.h:176:10: error: expected statement before ')' token
-     176 |         })
-         |          ^
-   drivers/i2c/busses/i2c-mpc.c:242:32: note: in expansion of macro 'of_fwnode_handle'
-     242 |         struct fwnode_handle = of_fwnode_handle(node);
-         |                                ^~~~~~~~~~~~~~~~
-   drivers/i2c/busses/i2c-mpc.c:243:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     243 |         const struct mpc_i2c_divider *div = NULL;
-         |         ^~~~~
->> drivers/i2c/busses/i2c-mpc.c:250:62: error: 'fwnode' undeclared (first use in this function); did you mean 'node'?
-     250 |                 *real_clk = mpc5xxx_fwnode_get_bus_frequency(fwnode) / 2048;
-         |                                                              ^~~~~~
-         |                                                              node
-   drivers/i2c/busses/i2c-mpc.c:250:62: note: each undeclared identifier is reported only once for each function it appears in
+from the drm tree and commit:
 
+  f1fc2b87de47 ("drm/msm: drop old eDP block support (again)")
 
-vim +242 drivers/i2c/busses/i2c-mpc.c
+from the drm-msm tree.
 
-   238	
-   239	static int mpc_i2c_get_fdr_52xx(struct device_node *node, u32 clock,
-   240						  u32 *real_clk)
-   241	{
- > 242		struct fwnode_handle = of_fwnode_handle(node);
-   243		const struct mpc_i2c_divider *div = NULL;
-   244		unsigned int pvr = mfspr(SPRN_PVR);
-   245		u32 divider;
-   246		int i;
-   247	
-   248		if (clock == MPC_I2C_CLOCK_LEGACY) {
-   249			/* see below - default fdr = 0x3f -> div = 2048 */
- > 250			*real_clk = mpc5xxx_fwnode_get_bus_frequency(fwnode) / 2048;
-   251			return -EINVAL;
-   252		}
-   253	
-   254		/* Determine divider value */
-   255		divider = mpc5xxx_fwnode_get_bus_frequency(fwnode) / clock;
-   256	
-   257		/*
-   258		 * We want to choose an FDR/DFSR that generates an I2C bus speed that
-   259		 * is equal to or lower than the requested speed.
-   260		 */
-   261		for (i = 0; i < ARRAY_SIZE(mpc_i2c_dividers_52xx); i++) {
-   262			div = &mpc_i2c_dividers_52xx[i];
-   263			/* Old MPC5200 rev A CPUs do not support the high bits */
-   264			if (div->fdr & 0xc0 && pvr == 0x80822011)
-   265				continue;
-   266			if (div->divider >= divider)
-   267				break;
-   268		}
-   269	
-   270		*real_clk = mpc5xxx_fwnode_get_bus_frequency(fwnode) / div->divider;
-   271		return (int)div->fdr;
-   272	}
-   273	
+I fixed it up (I just removed the files) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/kJJbsRGS0nnN8.2vkWr5UrV
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJzIw0ACgkQAVBC80lX
+0GwAwgf7BHcAx9ccnxJxgWEJEcGjyL2UQRZmwg4SaWyjbRygl+eaXZH60jyIQap3
+hmcm3ujc6Fs0Lxt79qdmNYCGMniFP0NGtR0eXA+Ga35z/hwPqafqF+2eLKn7iTZt
+yTRbd6Hm4LthV2Gz0eNTfsdrJWmVXtY2VK55Th4lhBrPkk3Uk8/E8LrO+CG5Dj4/
+HptzKNckTu105pNNkkulJeNIcjqBjegnA0Uz0u/M2mAcL4TiIHUsKS0l2SvZ6mvT
+c7oSL/FngmSLMiIXvWz7yISCqupTxT1x6bZjvJL+dORXn5HmxYeiR0Gm58lP5weP
+v2vJ5klirdUqSFTU0q7b3qxa3wkXyQ==
+=KdJg
+-----END PGP SIGNATURE-----
+
+--Sig_/kJJbsRGS0nnN8.2vkWr5UrV--
