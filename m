@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388BBC43217
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE98EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380285AbiEEN7S (ORCPT
+        id S1380174AbiEEN7U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47494 "EHLO
+        Thu, 5 May 2022 09:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380298AbiEEN7A (ORCPT
+        with ESMTP id S1380347AbiEEN7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:59:00 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24756255;
-        Thu,  5 May 2022 06:55:20 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id gh6so8940803ejb.0;
-        Thu, 05 May 2022 06:55:20 -0700 (PDT)
+        Thu, 5 May 2022 09:59:09 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A5F1834B;
+        Thu,  5 May 2022 06:55:29 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id i19so8873989eja.11;
+        Thu, 05 May 2022 06:55:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yEHOMcuhZdD8iiVryYSYsQQJvPICrzWTzhkdXbqbOh4=;
-        b=f0oe8b34qhyHBhRStMC/F4qC80Gsw+fZFC2Ma/awi+7RWzk5h1+3HRlfNufs6nAMS8
-         7rIeRKou7pZ79oJx1CXV/FEgXdNFiURLRIn7gWMheU+a3IYR6whf27aLpqu/1YLgGWa/
-         7vMMQmkCL45KIR0LRq9xa9XnlheqZIy9GWcbfTqGJvNyRkmAcxUhj77BnXsEy0z4QbH3
-         hCs5XxwTQQehukEcWpaZ2MSgSs7HI/CVXdzhihcSZ9Gtg2QgAwFvR8pkSl/T+QxLHOSq
-         BIhklJ5fsYzBW+yDzpmOTx7WUYjUjaAZQM0jj75FmUEHFANokGeIIW4tiLE/TeeagWbi
-         K+0w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ahkARIN+8V3yBAvDKNOhMu072AYtqbFU/lpjoQxJ3Ks=;
+        b=gyhScaHs263fn2FMoFIaeIpmB1OR6lK4hIvTWKMnoqsCeTC4u7f5XlTXbu1qDGT80A
+         7fcgacj4FhqraB8kY6V759+NYx4cX2hkWcGvb32qC9sVoAGgT0c4dRd6y7e+IOJSFnNl
+         PHH4QW2DAEqWANTXLaKCgcW6G7rVVLpcz1Y9yRu2BHdODLKSj7bnvTA+PdIgmneIxKQn
+         oC0YfGZpHfaQqXIvYNm6WzICki7T1sEtt3tFgVSroKZ0jNV5NchrvnoWG+0aocWXlN2T
+         BarZsb5ZxvXwki1O9/qbU1o/HM708vc56H6LtIseoYFnr1ECso98W2oRXzZ4Y6JD/N+5
+         dK2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yEHOMcuhZdD8iiVryYSYsQQJvPICrzWTzhkdXbqbOh4=;
-        b=y7NRw/JyHcv/vEdSaXeoThF5FJfWKzyn2TiANafympfQzstkUjJVtdl/a/yI36RBZW
-         Pm/KMfpMVwMCEQ168aZece4ImUD7qdzu6Ztw6Q4udTygDxYJ4EyNgDkasOzOW7sc8F/o
-         PSr1BCTxhzHd9cr/VEQtcIO8YCY7skcUfOLOsncLoBH4K8a+SCZ914AkxOBWiCWQEZZV
-         IFpIuqUCTgAgREOXyvA0n5veWxn8gEJHmdVUh2IE5ZI+0c59w1acYRdHG/ZswKdrAxkm
-         KU+ksoo4g0m0fTpE4lw56TA9vqz4OmssOAOv6kb4RAv1XGxdVRkhzHVg+WMyJwi7AUwj
-         /fQQ==
-X-Gm-Message-State: AOAM530uu8gBS1bJGlNVjSvgjHzg2vX241AYHPkDxKY1/6RhEyX7mtDL
-        L4adJlRLDnEHhSfQ8mrvTjo=
-X-Google-Smtp-Source: ABdhPJxktlUW+KP6G/s7o+RKbaEpK2t+eFGt0AQo9Buyj9Kw3iqH3RtqwEM0hoyWgp102NXkAmi8bg==
-X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id d9-20020a1709063ce900b006efa8aaab46mr26563882ejh.579.1651758919171;
-        Thu, 05 May 2022 06:55:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ahkARIN+8V3yBAvDKNOhMu072AYtqbFU/lpjoQxJ3Ks=;
+        b=D4u2Bx7nQGaPPfrDj3pV00Lmfdiw/k60rB5PoCdnO62pcg9svUDiMyxJO5KZCHoziD
+         kXTcAf0PuHML6/rerD111Bls12pBQEKXC14WCH+nswz4PtiwMrKXwEAHESV03Oe1oncC
+         1JbxO7aVcqoGM0uQLFtHYqU0fqKzPHHEqDvsixxwzmXIsLAimxBbe+1UycAzlxxXTH3W
+         N58PCQQCUM4fOcokmNsoqL6d/ES3tnc+XiHp2ahG5d67nFPG97NzDtpkXtxBuwEnjjZC
+         W5NdspzxS/ccCYLmpUtedlNoF8UiZwx+S2cMW13ztJrynCUtLZEeSES+0l6EMrAgfOtb
+         W3Ng==
+X-Gm-Message-State: AOAM530qkHmiNA+u5cJAL+qMkR0iJ+fele4w1jWwkh8va5ml/G+StHDh
+        IJ6zVwMCtErq0SCwjfJKiq8=
+X-Google-Smtp-Source: ABdhPJzi3vKiAPWHMT0W9f/YUPiDcbp8oCkahrkdy1du7Mdl6X0NgMbhUvQRlzLOh3T78kfW8HG0HA==
+X-Received: by 2002:a17:906:2646:b0:6d5:d889:c92b with SMTP id i6-20020a170906264600b006d5d889c92bmr27143703ejc.696.1651758928315;
+        Thu, 05 May 2022 06:55:28 -0700 (PDT)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.17
+        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:55:18 -0700 (PDT)
+        Thu, 05 May 2022 06:55:27 -0700 (PDT)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -68,10 +68,12 @@ Cc:     Pavel Machek <pavel@ucw.cz>,
         Jonathan Corbet <corbet@lwn.net>,
         John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH RESEND 0/5] dt-bindings: support Ethernet devices as LED triggers
-Date:   Thu,  5 May 2022 15:55:07 +0200
-Message-Id: <20220505135512.3486-1-zajec5@gmail.com>
+Subject: [PATCH RESEND 2/5] dt-bindings: net: allow Ethernet devices as LED triggers
+Date:   Thu,  5 May 2022 15:55:09 +0200
+Message-Id: <20220505135512.3486-3-zajec5@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220505135512.3486-1-zajec5@gmail.com>
+References: <20220505135512.3486-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -81,36 +83,28 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-Some LEDs are designed to represent a state of another device. That may
-be USB port, Ethernet interface, CPU, hard drive and more.
+This allows specifying Ethernet interfaces and switch ports as triggers
+for LEDs activity.
 
-We already have support for LEDs that are designed to indicate USB port
-(e.g. light on when USB device gets connected). There is DT binding for
-that and Linux implementation in USB trigger.
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-This patchset adds support for describing LEDs that should react to
-Ethernet interface status. That is commonly used in routers. They often
-have LED to display state and activity of selected physical port. It's
-also common to have multiple LEDs, each reacting to a specific link
-speed.
-
-Patch 5/5 is proof of concept and is not meant to be applied yet.
-
-Rafał Miłecki (5):
-  dt-bindings: net: add bitfield defines for Ethernet speeds
-  dt-bindings: net: allow Ethernet devices as LED triggers
-  dt-bindings: leds: add Ethernet triggered LEDs to example
-  ARM: dts: BCM5301X: Add triggers for Luxul XWR-1200 network LEDs
-  leds: trigger: netdev: support DT "trigger-sources" property
-
- .../devicetree/bindings/leds/common.yaml      | 21 +++++++++++++++
- .../bindings/net/ethernet-controller.yaml     |  3 +++
- arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts | 22 +++++++++++----
- drivers/leds/trigger/ledtrig-netdev.c         | 26 ++++++++++++++++++
- include/dt-bindings/net/eth.h                 | 27 +++++++++++++++++++
- 5 files changed, 94 insertions(+), 5 deletions(-)
- create mode 100644 include/dt-bindings/net/eth.h
-
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 4f15463611f8..ebeb4446d253 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -232,6 +232,9 @@ properties:
+           required:
+             - speed
+ 
++allOf:
++  - $ref: /schemas/leds/trigger-source.yaml
++
+ additionalProperties: true
+ 
+ ...
 -- 
 2.34.1
 
