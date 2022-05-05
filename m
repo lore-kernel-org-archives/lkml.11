@@ -2,80 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378174AbiEEMzY (ORCPT
+        id S1378050AbiEEMz3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        Thu, 5 May 2022 08:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378324AbiEEMzT (ORCPT
+        with ESMTP id S1378323AbiEEMzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 08:55:19 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCC3562C8
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:51:38 -0700 (PDT)
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437145623C
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:51:35 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KvD915p86z4ySp;
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KvD912Bcwz4x7V;
         Thu,  5 May 2022 22:51:33 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
         s=201909; t=1651755093;
-        bh=ubB6SgfDI+P/k0hjAXWGeJL0PaKlzbLWzO8P81xOKRU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UT76O0MVOxgFBUcqfS+zazksdH1WlzfSxD9DLhoC8ByPMcfUoMgpr87iGkGfjrKCd
-         +9abcqvXbSs4zO4Dywl7DiSOoS1M/gGuZMEWjZN6SILB2Xvmixiv6lMdaWij74v5q2
-         XwJXjOjeKGUwzS1UIJsh+uN0XvWGzkmIc0wkbJFyA03xNBRVynRVf3QQNgpPTsWeSe
-         PW9lhIRoDlCTLyNHqFVp8zCEvtqE5eXwRIKukVnqMCezRrCMRcE+igexH0wn1QobtB
-         fEfnKKfPfjIO5LlxkMrvG6mHsqErhh2wo1ocoPEYvyIqAcxN2TngT1Cw14sVrbaAxS
-         7AqF2QtIMDwrg==
+        bh=sji0xzBiYEtjDzYHRPtYyc+hLhCR46cOmSmiDGv7lNA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MNMW6XqvCFNs4TRfjW4X0WwbwfDrtbS/NICBT5GlE9X5MotXCMNYXziabKSu32cOg
+         zdt0+9BItayFwBfbVP4EbBc+acXLV7fz1KLYh+B1VQt9gUXN76efezyFoBnvaiAtX9
+         RELATlO/ufjSA7CweABYWuUYyOdpqdXaDDBZAIdK8ldFJcNr9OpO6/fRnKYbijwKRW
+         oyHL3Ehv0tj4VQbZr7aYn06o8/uZwoG647lEKinH99YeyQDEel5yRb/w7qHVARHpHF
+         qdLcF1CYRc9f6BK5YyPRlAiZ2ig/t3x8pcq0xOnmPctLX2FsDu9D3s5Uaad71UOH8w
+         awFq0wetKugzg==
 From:   Michael Ellerman <mpe@ellerman.id.au>
 To:     <linuxppc-dev@lists.ozlabs.org>
 Cc:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] arch/Kconfig: Drop references to powerpc PAGE_SIZE symbols
-Date:   Thu,  5 May 2022 22:51:23 +1000
-Message-Id: <20220505125123.2088143-2-mpe@ellerman.id.au>
+Subject: [PATCH 1/2] powerpc: Add generic PAGE_SIZE config symbols
+Date:   Thu,  5 May 2022 22:51:22 +1000
+Message-Id: <20220505125123.2088143-1-mpe@ellerman.id.au>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220505125123.2088143-1-mpe@ellerman.id.au>
-References: <20220505125123.2088143-1-mpe@ellerman.id.au>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the previous commit powerpc added PAGE_SIZE related config symbols
-using the generic names.
+Other arches (sh, mips, hexagon) use standard names for PAGE_SIZE
+related config symbols.
 
-So there's no need to refer to them in the definition of
-PAGE_SIZE_LESS_THAN_64KB etc, the negative dependency on the generic
-symbol is sufficient (in this case !PAGE_SIZE_64KB).
+Add matching symbols for powerpc, which are enabled by default but
+depend on our architecture specific PAGE_SIZE symbols.
+
+This allows generic/driver code to express dependencies on the PAGE_SIZE
+without needing to refer to architecture specific config symbols.
 
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- arch/Kconfig | 2 --
- 1 file changed, 2 deletions(-)
+ arch/powerpc/Kconfig | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 31c4fdc4a4ba..d235c9089d17 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1007,12 +1007,10 @@ config PAGE_SIZE_LESS_THAN_64KB
- 	depends on !IA64_PAGE_SIZE_64KB
- 	depends on !PAGE_SIZE_64KB
- 	depends on !PARISC_PAGE_SIZE_64KB
--	depends on !PPC_64K_PAGES
- 	depends on PAGE_SIZE_LESS_THAN_256KB
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 145af02df3dc..02994361cc7a 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -759,6 +759,22 @@ config PPC_256K_PAGES
  
- config PAGE_SIZE_LESS_THAN_256KB
- 	def_bool y
--	depends on !PPC_256K_PAGES
- 	depends on !PAGE_SIZE_256KB
+ endchoice
  
- # This allows to use a set of generic functions to determine mmap base
++config PAGE_SIZE_4KB
++	def_bool y
++	depends on PPC_4K_PAGES
++
++config PAGE_SIZE_16KB
++	def_bool y
++	depends on PPC_16K_PAGES
++
++config PAGE_SIZE_64KB
++	def_bool y
++	depends on PPC_64K_PAGES
++
++config PAGE_SIZE_256KB
++	def_bool y
++	depends on PPC_256K_PAGES
++
+ config PPC_PAGE_SHIFT
+ 	int
+ 	default 18 if PPC_256K_PAGES
 -- 
 2.35.1
 
