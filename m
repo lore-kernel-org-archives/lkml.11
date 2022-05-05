@@ -2,156 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AABEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 133F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346858AbiEEITt (ORCPT
+        id S1347083AbiEEIUS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
+        Thu, 5 May 2022 04:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244879AbiEEITk (ORCPT
+        with ESMTP id S1346931AbiEEIUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:19:40 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9A5129CB8
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:16:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651738560;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GqkF1KE8HpAmQB4r+M2R5O0GOtheHQHEI+M7f5J9eiQ=;
-        b=aQyEueKv5bawpWRSIfoAGtZLZ80Vps99RIbc9x9eUFLziVJNZcCnlIyrSvrcJEDEGS+qhc
-        rMs+6dx/zzMSqr9OErHkErm77kxpapWMmGZw4ow3tA5B3BZ/i7jGFHpbghN01JRtwTxSL8
-        GofBUTtpBAMRG+ovwfDzQvxANDYxm5E=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-610-ZjAlkKR0NMmEFb5-35Pp1g-1; Thu, 05 May 2022 04:14:34 -0400
-X-MC-Unique: ZjAlkKR0NMmEFb5-35Pp1g-1
-Received: by mail-pl1-f198.google.com with SMTP id g12-20020a170902740c00b0015d243ff163so1938319pll.19
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:14:33 -0700 (PDT)
+        Thu, 5 May 2022 04:20:03 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B06488AC
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:16:14 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id dk23so7246694ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dbqRuE1CwLabN+x/TH0QISlcTwlgIHsGqNhIQOAw7D8=;
+        b=Hm5+RkpWUVUenENqa5HRpdatP8eR2ck2VhwJhLldJlknP4AFbWGCfkzPTyjQMbv5Aj
+         9jUNaesVcrQywmr/KUMu7zGOxfiUbCcKbhyH2y1Pg13a+0yjeAHcUm1+0aBOmYqNTbac
+         O0wacDk8GguBSoX0x++JbGS4MBOa4qeqS5aUPaUfo8FT9xFAb8hK0TKSxAgpSpJgBmHn
+         zhF+HnSjo0qnz8IUn9JIt/xWQric63Sh//wc4R1VzUN+LpFBN8YjIiJ1nzcsHOvgWK0N
+         MC7U1ZAt4gkuQRHwFFYivfGXJmTGaOdJ5Y5gR5P6q826rp3/XBrw2igHfCBsNDJz8jkP
+         B7zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=GqkF1KE8HpAmQB4r+M2R5O0GOtheHQHEI+M7f5J9eiQ=;
-        b=nhdx/KPXiRTLDbCpAua+UKKLGf77JtKzJJbm3hwiCl6V5elRU/Q7229QpBJ2SHVTFu
-         1fVvu9SLMnxnb3xXEdIiGi5xj2v4oMT3mrbnMCh1kQEk2GN2EQkwsMrLlN8QbIzKnNoP
-         lQkJcmqblqZsB8DNdmRwrO6fWclBXdNGnKo6PqSS7dTPO951BFE7AfWXQbcwEnOHw56p
-         IIrtdpLB/t2UfR6jufVUbcGYeiHUNMBytSImNxmb947/Z5Pkd1fxIHOsCsbZg7hwJbXz
-         M68Bj0ovNJlkGtBTVpUXGGrMarZ/83Y8fpBo5PhUqS33kKlp8Bs4z8LwZ/0zLmlN0YqW
-         m0qQ==
-X-Gm-Message-State: AOAM530sqBL5cxwXGX8QVdSNbB0X6HK/Z3AXWXaR06o9Dyk0AiJS0APg
-        RuCiRgg/yMUEb+bwfxB3zbcd2ncTRt9BdQpJbH/RlXRoHaPv5g2g9qFlZESCAdQAJOV88KtkzKl
-        1o3wQEg17KhJwyMZhN/hP3st6
-X-Received: by 2002:a17:902:f60c:b0:156:82c9:e44b with SMTP id n12-20020a170902f60c00b0015682c9e44bmr26008991plg.106.1651738472903;
-        Thu, 05 May 2022 01:14:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKcqfKIUUPplDvbeDmjS+7tfF7ZK8ifv0ssT8p8bQdwz6KKEmOnlHoAb/8OBDNJIL2fD47Dg==
-X-Received: by 2002:a17:902:f60c:b0:156:82c9:e44b with SMTP id n12-20020a170902f60c00b0015682c9e44bmr26008973plg.106.1651738472663;
-        Thu, 05 May 2022 01:14:32 -0700 (PDT)
-Received: from [10.72.13.116] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d15-20020aa7868f000000b0050dc76281aesm742906pfo.136.2022.05.05.01.14.30
+        bh=dbqRuE1CwLabN+x/TH0QISlcTwlgIHsGqNhIQOAw7D8=;
+        b=gwwUC6veaVdclOcCBmITw2zcgVMJH0QxjFMfPTXm7wlFJYlHUMAK4Y2vk4M5tk+tyu
+         pwVP1AW9ktbE9+9nNq1b7+hoiPQ6HdLDG7cgDQO5UaOUpEGkgRPez9xiGi0HDPj9/6Rk
+         NjYphzwfG8js/gkZdA6eVU4lTdqGzPYQ4ukjco/EiYyPE5oxm52NfyEpBjj8wntxrZyc
+         Xd5soxu4G56rOORiwvurd7JAVMZwtpNre+mj2i8b8tOimHzWP5gDwXCL7hsAK3b/WHQX
+         iJKAGE6Y1hz+PEqH1o6goi8X9Z+RjpWhSSk6/OaHzcVK4a1BB5C+Vpip5i20vysJJM+M
+         JzoA==
+X-Gm-Message-State: AOAM530e5Uau9wPnqLMRq7AVgT2d9CtI5TmHVxkzBIKei8DhwD+Qg1pD
+        B+Oni9RdZ9eLxX669nmGez2QpA==
+X-Google-Smtp-Source: ABdhPJzOCxFTc+gf0aPuaRSWhYAXjy0l7MDIrOGEIPgZqgkJfuPQ7mT1moyZeaGlGLk0Eg5tRdUQNQ==
+X-Received: by 2002:a17:907:6294:b0:6e1:ea4:74a3 with SMTP id nd20-20020a170907629400b006e10ea474a3mr24398950ejc.168.1651738573066;
+        Thu, 05 May 2022 01:16:13 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b18-20020aa7dc12000000b0042617ba63acsm475480edu.54.2022.05.05.01.16.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 01:14:32 -0700 (PDT)
-Message-ID: <ad4c0688-6e4b-bc66-55c3-8d33493f7c8c@redhat.com>
-Date:   Thu, 5 May 2022 16:14:25 +0800
+        Thu, 05 May 2022 01:16:12 -0700 (PDT)
+Message-ID: <04af4087-cd03-667a-52f0-f801b783602a@linaro.org>
+Date:   Thu, 5 May 2022 10:16:11 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH 3/3] vdpa/mlx5: Add RX MAC VLAN filter support
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 1/2] dt-bindings: clock: Add Qualcomm SC8280XP GCC
+ bindings
 Content-Language: en-US
-To:     Eli Cohen <elic@nvidia.com>, "mst@redhat.com" <mst@redhat.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>
-References: <20220411122942.225717-1-elic@nvidia.com>
- <20220411122942.225717-4-elic@nvidia.com>
- <eb381955-0a64-011f-2732-943c60541b18@redhat.com>
- <DM8PR12MB540032F367E9DB4C277AB946ABC19@DM8PR12MB5400.namprd12.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <DM8PR12MB540032F367E9DB4C277AB946ABC19@DM8PR12MB5400.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220505025457.1693716-1-bjorn.andersson@linaro.org>
+ <20220505025457.1693716-2-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220505025457.1693716-2-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/05/2022 04:54, Bjorn Andersson wrote:
+> Add binding for the Qualcomm SC8280XP Global Clock controller.
+> 
+> The clock-names property is purposefully omitted, to clearly communicate
+> to the writer (and reader) of the DeviceTree source based on this
+> binding that the order of "clocks" is significant, in contrast to
+> previous GCC bindings.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
 
-在 2022/5/2 13:38, Eli Cohen 写道:
->>> +static virtio_net_ctrl_ack handle_ctrl_vlan(struct mlx5_vdpa_dev *mvdev, u8 cmd)
->>> +{
->>> +	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
->>> +	virtio_net_ctrl_ack status = VIRTIO_NET_ERR;
->>> +	struct mlx5_control_vq *cvq = &mvdev->cvq;
->>> +	struct virtio_net_ctrl_vlan vlan;
->>> +	size_t read;
->>> +	u16 id;
->>> +
->>> +	switch (cmd) {
->>> +	case VIRTIO_NET_CTRL_VLAN_ADD:
->>> +		read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->riov, (void *)&vlan, sizeof(vlan));
->>> +		if (read != sizeof(vlan))
->>> +			break;
->>> +
->>> +		id = mlx5vdpa16_to_cpu(mvdev, vlan.id);
->>> +		if (mac_vlan_add(ndev, ndev->config.mac, id, true))
->>> +			break;
->> This may work now but I wonder if we had the plan to support
->> VIRTIO_NET_F_CTRL_RX?
->>
->> if $mac is not in $mac_table
->>       drop;
->> if $vlan is not in $vlan_table
->>       drop;
->>
->> With that features we probably requires the dedicated vlan filters
->> without a mac? Or do we want to a $mac * $vlans rules?
->>
->> If yes, maybe it's better to decouple vlan filters from mac now.
->>
-> If we use dedicated filter tables for VLAN and MAC working in series,
-> we may not have full control over incoming traffic filtering.
-> For example, suppose we have VLAN table allowing v1 and v2 to go through,
-> and a MAC table allowing m1 and m2 to go through.
->
-> If we want only (v1, m1) and (v2, m2) to go through but not (v1, m2) or (v2, m1)
-> then it would not be possible to block the latter.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
-Yes, but this is currently how virtio-net work in the spec.
-
-
->
-> As I can see, the spec does not require that finesse
-
-
-Yes.
-
-
->   but I wonder if this not
-> what real life requires.
-
-
-Then we need to extend the spec.
-
-
-> If you think we should follow the spec let me know and will prepare a new version.
-
-
-It should be fine now. (But if we want too support CTRL_RX we need some 
-refactoring on the codes).
-
-So:
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-Thanks
-
-
->
-
+Best regards,
+Krzysztof
