@@ -2,80 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4350C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3456DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349952AbiEEInN (ORCPT
+        id S1349932AbiEEIpd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
+        Thu, 5 May 2022 04:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350246AbiEEInH (ORCPT
+        with ESMTP id S232818AbiEEIpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:43:07 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D324949CBC;
-        Thu,  5 May 2022 01:39:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
-        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=0S0y/Rdk5Z4jKRvQmXg7i6mtMuCdFPTssifWTZDLJYc=; b=gaoOwYpXivZzZ1DtvcqcuGuWnr
-        9asAcKr/aWFEoP1l/b0tBhBIoJnDAwSSCxvgDbjuvaCAGi6KmqXdB6iys0TftjF2fnuwjpFKSu+R3
-        C1lXozBHaxkYi3xnGPq4YS3Dud5xTGpthOeFdlVd+p5H/tERa1XWoU89zv6NdNG5k1gw=;
-Received: from [217.114.218.24] (helo=localhost.localdomain)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nmX0z-0000IR-Lu; Thu, 05 May 2022 10:39:13 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     Ryder Lee <ryder.lee@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4] PCI: mediatek-gen3: Change driver name to mtk-pcie-gen3
-Date:   Thu,  5 May 2022 10:39:07 +0200
-Message-Id: <20220505083907.86598-1-nbd@nbd.name>
-X-Mailer: git-send-email 2.35.1
+        Thu, 5 May 2022 04:45:31 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF17E49F8C;
+        Thu,  5 May 2022 01:41:52 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id EA1B11F41053
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651740111;
+        bh=/QeZ5vMr5HKTzS4nnc319BmT5r9JF4pfYQjq6kNPoOE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=H7GjKQm0tpa2/3pSsk5EGKWYdgv+In5yZAveILwiE6K5rA4yrAqG9Rj4hIFKuAo6V
+         eezcCF+lfVm/9WJak5nUmDJM7ZSbQm9RYLS6CQ/ws1nLk0BJmMinmKpKdkfPMuU2da
+         OrTUYRAmF39kan7DMHJbGd9J4yvHaWKfmBKZ0Qo5upAeLI1unSBRY6xS7W74/H+yyV
+         uA6npuFaiLvjC9ujvkEWi/FyqcEnN6eNbri3Qgc2UvHSi0r1qVwNngb2yckVCiDBb/
+         puY8qRD9oqY3uANsEHzkWuBrZtswj0zjjQDtE9lVWSYyYTwG7dPqyytCIliydTBqOH
+         xeNN0y34Gbl2g==
+Message-ID: <5d532a9c-8227-610c-d0ae-9352b91b42e5@collabora.com>
+Date:   Thu, 5 May 2022 10:41:48 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 1/9] dt-bindings: cpufreq: mediatek: Add MediaTek CCI
+ property
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        matthias.bgg@gmail.com
+Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
+        hsinyi@google.com, khilman@baylibre.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220504130540.5902-1-rex-bc.chen@mediatek.com>
+ <20220504130540.5902-2-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220504130540.5902-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-driver_register() will refuse to register another driver with the same name.
-This change allows pcie-mediatek-gen3 to coexist with pcie-mediatek built into
-the kernel.
+Il 04/05/22 15:05, Rex-BC Chen ha scritto:
+> MediaTek Cache Coherent Interconnect (CCI) uses software devfreq module
+> for scaling clock frequency and adjust voltage.
+> The phandle could be linked between CPU and MediaTek CCI for some
+> MediaTek SoCs, like MT8183 and MT8186.
+> 
+> The reason we need the link status between cpufreq and MediaTek cci is
+> cpufreq and mediatek cci could share the same regulator in some MediaTek
+> SoCs. Therefore, to prevent the issue of high frequency and low voltage,
+> we need to use this to make sure mediatek cci is ready.
+> 
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/pci/controller/pcie-mediatek-gen3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index 3e8d70bfabc6..2e665cd7e735 100644
---- a/drivers/pci/controller/pcie-mediatek-gen3.c
-+++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-@@ -1021,7 +1021,7 @@ static struct platform_driver mtk_pcie_driver = {
- 	.probe = mtk_pcie_probe,
- 	.remove = mtk_pcie_remove,
- 	.driver = {
--		.name = "mtk-pcie",
-+		.name = "mtk-pcie-gen3",
- 		.of_match_table = mtk_pcie_of_match,
- 		.pm = &mtk_pcie_pm_ops,
- 	},
--- 
-2.35.1
 
