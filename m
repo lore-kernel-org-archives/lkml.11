@@ -2,251 +2,388 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B82FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244097AbiEESiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
+        id S1384691AbiEESmq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 14:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383258AbiEEShG (ORCPT
+        with ESMTP id S1384398AbiEESmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:37:06 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FF654BF6;
-        Thu,  5 May 2022 11:27:45 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:59748)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmgCW-00GUwm-HZ; Thu, 05 May 2022 12:27:44 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37118 helo=localhost.localdomain)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmgCV-002BtP-9e; Thu, 05 May 2022 12:27:44 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Thu,  5 May 2022 13:26:43 -0500
-Message-Id: <20220505182645.497868-10-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        Thu, 5 May 2022 14:42:33 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB6D66AC9
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:31:34 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id t85so5010619vst.4
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=I+s6eSEgX7VT4YaUGMk4yfqAJuzTQqz0OALDSN2MMSU=;
+        b=CsbJ2EBkJc0pw1NmzWz9EkEATe4y7DS/nOd5MSXdyvNixrpj9+6/TMyeXyc6fzMhpQ
+         5MFt38cLvLoeRLy7qQzgdrRMukjYBI2d/VVrrp9119qUPe+TlmUa6YMGL8xb45xIA+db
+         YJw3j9btT4wJ5TIBVxV8OP18kXRdIO0o/dNTIeoqNKFa8j7twcj1haiXKxK2iIFCmco5
+         9YLuVhqPj3iMzbEWvHWVKvGC3Dm/mepbbtABgw+jNJ5plEgv8Uds3oxSsakwV7iP5usy
+         u8yUnCvREBiad30MTfMk2WVUNDf6XzRYdIU67gdxWMVZVsfKaIkwDz+PRTWqmcjECf6Z
+         Ns9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=I+s6eSEgX7VT4YaUGMk4yfqAJuzTQqz0OALDSN2MMSU=;
+        b=nxHbzZgX672PX/CbopEq7/JpO9zXJmkpDOA7aobybl26csJKBwtU0rxPTvW7a32jmk
+         /shY+vQmnS7Grh80phZBSMqMy+7dUTc/ZACD09S3GeTyY0SeZAxCqFPJIO2SQQGWJ4bL
+         P+WU8fT6r6ySbPH79PtSKnk3dWAJJedT97gE0SnWXSDGOfHvggDFluLlTYQ6Lir/IEHe
+         ybKo5c2BxyhulOqUCh33PUAN87+g67BDU3eyk6pyw7HtqKfOsj8Srou6wT3Xh0rNJPDw
+         eO5+dkD9siFk2GwboelV0xP5VvvjIyvlYLpshwfP93KIC5od37tWAYnoyGB6HaqE41Kz
+         aRKA==
+X-Gm-Message-State: AOAM533xdsvzIZhvGe//zsooq2Db4dwNaFd38JSFjYPE8QMz3uUbeIGO
+        0FwrQ2hZoSVfDC8c5gtab/t2mT8dyb4Py2pIpW8XTg==
+X-Google-Smtp-Source: ABdhPJy7isFowmjW0tmGC1Z/BsOtM9+GJM4XoeRS0JMAbE1UYpCjcHWh3h9fECkO5Agey+Ti4Z8GVLzn19g6zESncvo=
+X-Received: by 2002:a05:6102:2929:b0:32d:6662:72e2 with SMTP id
+ cz41-20020a056102292900b0032d666272e2mr3983463vsb.56.1651775493500; Thu, 05
+ May 2022 11:31:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nmgCV-002BtP-9e;;;mid=<20220505182645.497868-10-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18zgtbYXeo0wufUpFXuk3BN2RWYjqaP86w=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH v4 10/12] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20220505043846.3165303-1-irogers@google.com> <87b89e2c-da5c-52c3-40dc-448e874cb5d8@linux.intel.com>
+ <CAP-5=fVHhWu1uJHnTfFYWvM02_F-bFBZaaOYo8zPRiA=ODRxGQ@mail.gmail.com> <12c03e85-cb48-d264-5f04-e9bf9faaf739@linux.intel.com>
+In-Reply-To: <12c03e85-cb48-d264-5f04-e9bf9faaf739@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 5 May 2022 11:31:20 -0700
+Message-ID: <CAP-5=fW9Cp3ShO=tTQddDWXz+nrSip99HrNW7Wv5_Qsy1UT7bw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] perf evlist: Keep topdown counters in weak group
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+Cc:     Caleb Biggers <caleb.biggers@intel.com>,
+        Perry Taylor <perry.taylor@intel.com>,
+        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Haowen Bai <baihaowen@meizu.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop playing with tsk->__state to remove TASK_WAKEKILL while a ptrace
-command is executing.
+On Thu, May 5, 2022 at 11:15 AM Liang, Kan <kan.liang@linux.intel.com> wrot=
+e:
+>
+> On 5/5/2022 11:18 AM, Ian Rogers wrote:
+> > On Thu, May 5, 2022 at 4:56 AM Liang, Kan <kan.liang@linux.intel.com> w=
+rote:
+> >>
+> >> Hi Ian,
+> >>
+> >> Thanks for the patches.
+> >>
+> >> On 5/5/2022 12:38 AM, Ian Rogers wrote:
+> >>> On Intel Icelake, topdown events must always be grouped with a slots
+> >>> event as leader. When a metric is parsed a weak group is formed and
+> >>> retried if perf_event_open fails. The retried events aren't grouped
+> >>> breaking the slots leader requirement. This change modifies the weak
+> >>> group "reset" behavior so that topdown events aren't broken from the
+> >>> group for the retry.
+> >>>
+> >>> $ perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-b=
+ound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-mi=
+sses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycl=
+es,baclears.any,ARITH.DIVIDER_ACTIVE}:W' -a sleep 1
+> >>>
+> >>>    Performance counter stats for 'system wide':
+> >>>
+> >>>       47,867,188,483      slots                                      =
+                   (92.27%)
+> >>>      <not supported>      topdown-bad-spec
+> >>>      <not supported>      topdown-be-bound
+> >>>      <not supported>      topdown-fe-bound
+> >>>      <not supported>      topdown-retiring
+> >>>        2,173,346,937      branch-instructions                        =
+                   (92.27%)
+> >>>           10,540,253      branch-misses             #    0.48% of all=
+ branches          (92.29%)
+> >>>           96,291,140      bus-cycles                                 =
+                   (92.29%)
+> >>>            6,214,202      cache-misses              #   20.120 % of a=
+ll cache refs      (92.29%)
+> >>>           30,886,082      cache-references                           =
+                   (76.91%)
+> >>>       11,773,726,641      cpu-cycles                                 =
+                   (84.62%)
+> >>>       11,807,585,307      instructions              #    1.00  insn p=
+er cycle           (92.31%)
+> >>>                    0      mem-loads                                  =
+                   (92.32%)
+> >>>        2,212,928,573      mem-stores                                 =
+                   (84.69%)
+> >>>       10,024,403,118      ref-cycles                                 =
+                   (92.35%)
+> >>>           16,232,978      baclears.any                               =
+                   (92.35%)
+> >>>           23,832,633      ARITH.DIVIDER_ACTIVE                       =
+                   (84.59%)
+> >>>
+> >>>          0.981070734 seconds time elapsed
+> >>>
+> >>> After:
+> >>>
+> >>> $ perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-b=
+ound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-mi=
+sses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycl=
+es,baclears.any,ARITH.DIVIDER_ACTIVE}:W' -a sleep 1
+> >>>
+> >>>    Performance counter stats for 'system wide':
+> >>>
+> >>>          31040189283      slots                                      =
+                   (92.27%)
+> >>>           8997514811      topdown-bad-spec          #     28.2% bad s=
+peculation         (92.27%)
+> >>>          10997536028      topdown-be-bound          #     34.5% backe=
+nd bound           (92.27%)
+> >>>           4778060526      topdown-fe-bound          #     15.0% front=
+end bound          (92.27%)
+> >>>           7086628768      topdown-retiring          #     22.2% retir=
+ing                (92.27%)
+> >>>           1417611942      branch-instructions                        =
+                   (92.26%)
+> >>>              5285529      branch-misses             #    0.37% of all=
+ branches          (92.28%)
+> >>>             62922469      bus-cycles                                 =
+                   (92.29%)
+> >>>              1440708      cache-misses              #    8.292 % of a=
+ll cache refs      (92.30%)
+> >>>             17374098      cache-references                           =
+                   (76.94%)
+> >>>           8040889520      cpu-cycles                                 =
+                   (84.63%)
+> >>>           7709992319      instructions              #    0.96  insn p=
+er cycle           (92.32%)
+> >>>                    0      mem-loads                                  =
+                   (92.32%)
+> >>>           1515669558      mem-stores                                 =
+                   (84.68%)
+> >>>           6542411177      ref-cycles                                 =
+                   (92.35%)
+> >>>              4154149      baclears.any                               =
+                   (92.35%)
+> >>>             20556152      ARITH.DIVIDER_ACTIVE                       =
+                   (84.59%)
+> >>>
+> >>>          1.010799593 seconds time elapsed
+> >>>
+> >>> Signed-off-by: Ian Rogers <irogers@google.com>
+> >>> ---
+> >>>    tools/perf/arch/x86/util/evsel.c | 12 ++++++++++++
+> >>>    tools/perf/util/evlist.c         | 16 ++++++++++++++--
+> >>>    tools/perf/util/evsel.c          | 10 ++++++++++
+> >>>    tools/perf/util/evsel.h          |  3 +++
+> >>>    4 files changed, 39 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/u=
+til/evsel.c
+> >>> index ac2899a25b7a..40b171de2086 100644
+> >>> --- a/tools/perf/arch/x86/util/evsel.c
+> >>> +++ b/tools/perf/arch/x86/util/evsel.c
+> >>> @@ -3,6 +3,7 @@
+> >>>    #include <stdlib.h>
+> >>>    #include "util/evsel.h"
+> >>>    #include "util/env.h"
+> >>> +#include "util/pmu.h"
+> >>>    #include "linux/string.h"
+> >>>
+> >>>    void arch_evsel__set_sample_weight(struct evsel *evsel)
+> >>> @@ -29,3 +30,14 @@ void arch_evsel__fixup_new_cycles(struct perf_even=
+t_attr *attr)
+> >>>
+> >>>        free(env.cpuid);
+> >>>    }
+> >>> +
+> >>> +bool arch_evsel__must_be_in_group(const struct evsel *evsel)
+> >>> +{
+> >>> +     if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
+> >>> +         !pmu_have_event("cpu", "slots"))
+> >>> +             return false;
+> >>> +
+> >>
+> >> The big core of ADL also supports Perf_metrics. At least, we should
+> >> check both "cpu" and "cpu_core" here.
+> >>
+> >> Thanks,
+> >> Kan
+> >
+> > Thanks Kan, we have the same problem for
+> > arch_evlist__add_default_attrs and arch_evlist__leader:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/too=
+ls/perf/arch/x86/util/evlist.c?h=3Dperf/core
+>
+> These are known issues. Zhengjun already have some patches to fix them,
+> but hasn't posted yet.
+>
+> The arch_evlist__add_default_attrs impacts the perf stat default. On the
+> ADL, perf stat default doesn't display the topdown events.
+>
+> The arch_evlist__leader impacts the sampling read of the topdown events.
+> Sampling read the topdown events should always fail with the current
+> perf tool on ADL.
+>
+> We already have many backlogs on ADL. I think it's better not to
+> introduce more issues.
+>
+> > So I think fixing all of these should be a follow up. I am working to
+> > get access to an Alderlake system, could we land this first?
+> >
+>
+> I think we can use pmu_name to replace the "cpu" to fix the issue for
+> the hybrid platform. For a hybrid platform, the pmu_name is either
+> cpu_atom or cpu_core.
+>
+> Besides, the topdown events may have a PMU prefix, e.g.,
+> cpu_core/topdown-be-bound/. The strcasecmp may not work well for this cas=
+e.
+>
+> How about the below patch?
+> If it's OK for you, could you please merge it into your V2 patch set?
+> I can do the test on a ADL system.
+>
+> diff --git a/tools/perf/arch/x86/util/evsel.c
+> b/tools/perf/arch/x86/util/evsel.c
+> index 40b171de2086..551ae2bab70e 100644
+> --- a/tools/perf/arch/x86/util/evsel.c
+> +++ b/tools/perf/arch/x86/util/evsel.c
+> @@ -33,11 +33,12 @@ void arch_evsel__fixup_new_cycles(struct
+> perf_event_attr *attr)
+>
+>   bool arch_evsel__must_be_in_group(const struct evsel *evsel)
+>   {
+> -       if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
+> -           !pmu_have_event("cpu", "slots"))
+> +       const char *pmu_name =3D evsel->pmu_name ? evsel->pmu_name : "cpu=
+";
+> +
+> +       if (!pmu_have_event(pmu_name, "slots"))
+>                 return false;
 
-Instead remove TASK_WAKEKILL from the definition of TASK_TRACED, and
-implement a new jobctl flag TASK_PTRACE_FROZEN.  This new flag is set
-in jobctl_freeze_task and cleared when ptrace_stop is awoken or in
-jobctl_unfreeze_task (when ptrace_stop remains asleep).
+Hmm. The idea with this test is to see if the architecture supports
+topdown events before going further. There's a similar test in all the
+arch_evlist functions. I think with cpu_core this needs to become:
 
-In signal_wake_up add __TASK_TRACED to state along with TASK_WAKEKILL
-when the wake up is for a fatal signal.  Skip adding __TASK_TRACED
-when TASK_PTRACE_FROZEN is not set.  This has the same effect as
-changing TASK_TRACED to __TASK_TRACED as all of the wake_ups that use
-TASK_KILLABLE go through signal_wake_up.
+if (!pmu_have_event("cpu", "slots") && !pmu_have_event("cpu_core", "slots")=
+ )
 
-Handle a ptrace_stop being called with a pending fatal signal.
-Previously it would have been handled by schedule simply failing to
-sleep.  As TASK_WAKEKILL is no longer part of TASK_TRACED schedule
-will sleep with a fatal_signal_pending.   The code in signal_wake_up
-guarantees that the code will be awaked by any fatal signal that
-codes after TASK_TRACED is set.
+But we should add a helper function for this. It is odd to have this
+change supporting Alderlake but the existing evlist work not. Perhaps
+we should just wait until Zhengjun's patches land.
 
-Previously the __state value of __TASK_TRACED was changed to
-TASK_RUNNING when woken up or back to TASK_TRACED when the code was
-left in ptrace_stop.  Now when woken up ptrace_stop now clears
-JOBCTL_PTRACE_FROZEN and when left sleeping ptrace_unfreezed_traced
-clears JOBCTL_PTRACE_FROZEN.
+Thanks,
+Ian
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- include/linux/sched.h        |  2 +-
- include/linux/sched/jobctl.h |  2 ++
- include/linux/sched/signal.h |  5 +++--
- kernel/ptrace.c              | 21 ++++++++-------------
- kernel/sched/core.c          |  5 +----
- kernel/signal.c              | 14 ++++++--------
- 6 files changed, 21 insertions(+), 28 deletions(-)
-
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index d5e3c00b74e1..610f2fdb1e2c 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -103,7 +103,7 @@ struct task_group;
- /* Convenience macros for the sake of set_current_state: */
- #define TASK_KILLABLE			(TASK_WAKEKILL | TASK_UNINTERRUPTIBLE)
- #define TASK_STOPPED			(TASK_WAKEKILL | __TASK_STOPPED)
--#define TASK_TRACED			(TASK_WAKEKILL | __TASK_TRACED)
-+#define TASK_TRACED			__TASK_TRACED
- 
- #define TASK_IDLE			(TASK_UNINTERRUPTIBLE | TASK_NOLOAD)
- 
-diff --git a/include/linux/sched/jobctl.h b/include/linux/sched/jobctl.h
-index fa067de9f1a9..d556c3425963 100644
---- a/include/linux/sched/jobctl.h
-+++ b/include/linux/sched/jobctl.h
-@@ -19,6 +19,7 @@ struct task_struct;
- #define JOBCTL_TRAPPING_BIT	21	/* switching to TRACED */
- #define JOBCTL_LISTENING_BIT	22	/* ptracer is listening for events */
- #define JOBCTL_TRAP_FREEZE_BIT	23	/* trap for cgroup freezer */
-+#define JOBCTL_PTRACE_FROZEN_BIT	24	/* frozen for ptrace */
- 
- #define JOBCTL_STOP_DEQUEUED	(1UL << JOBCTL_STOP_DEQUEUED_BIT)
- #define JOBCTL_STOP_PENDING	(1UL << JOBCTL_STOP_PENDING_BIT)
-@@ -28,6 +29,7 @@ struct task_struct;
- #define JOBCTL_TRAPPING		(1UL << JOBCTL_TRAPPING_BIT)
- #define JOBCTL_LISTENING	(1UL << JOBCTL_LISTENING_BIT)
- #define JOBCTL_TRAP_FREEZE	(1UL << JOBCTL_TRAP_FREEZE_BIT)
-+#define JOBCTL_PTRACE_FROZEN	(1UL << JOBCTL_PTRACE_FROZEN_BIT)
- 
- #define JOBCTL_TRAP_MASK	(JOBCTL_TRAP_STOP | JOBCTL_TRAP_NOTIFY)
- #define JOBCTL_PENDING_MASK	(JOBCTL_STOP_PENDING | JOBCTL_TRAP_MASK)
-diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
-index 3c8b34876744..e66948abbee4 100644
---- a/include/linux/sched/signal.h
-+++ b/include/linux/sched/signal.h
-@@ -435,9 +435,10 @@ extern void calculate_sigpending(void);
- 
- extern void signal_wake_up_state(struct task_struct *t, unsigned int state);
- 
--static inline void signal_wake_up(struct task_struct *t, bool resume)
-+static inline void signal_wake_up(struct task_struct *t, bool fatal)
- {
--	signal_wake_up_state(t, resume ? TASK_WAKEKILL : 0);
-+	fatal = fatal && !(t->jobctl & JOBCTL_PTRACE_FROZEN);
-+	signal_wake_up_state(t, fatal ? TASK_WAKEKILL | __TASK_TRACED : 0);
- }
- static inline void ptrace_signal_wake_up(struct task_struct *t, bool resume)
- {
-diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 05953ac9f7bd..83ed28262708 100644
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -197,7 +197,7 @@ static bool ptrace_freeze_traced(struct task_struct *task)
- 	spin_lock_irq(&task->sighand->siglock);
- 	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
- 	    !__fatal_signal_pending(task)) {
--		WRITE_ONCE(task->__state, __TASK_TRACED);
-+		task->jobctl |= JOBCTL_PTRACE_FROZEN;
- 		ret = true;
- 	}
- 	spin_unlock_irq(&task->sighand->siglock);
-@@ -207,23 +207,19 @@ static bool ptrace_freeze_traced(struct task_struct *task)
- 
- static void ptrace_unfreeze_traced(struct task_struct *task)
- {
--	if (READ_ONCE(task->__state) != __TASK_TRACED)
--		return;
--
--	WARN_ON(!task->ptrace || task->parent != current);
-+	unsigned long flags;
- 
- 	/*
--	 * PTRACE_LISTEN can allow ptrace_trap_notify to wake us up remotely.
--	 * Recheck state under the lock to close this race.
-+	 * The child may be awake and may have cleared
-+	 * JOBCTL_PTRACE_FROZEN (see ptrace_resume).  The child will
-+	 * not set JOBCTL_PTRACE_FROZEN or enter __TASK_TRACED anew.
- 	 */
--	spin_lock_irq(&task->sighand->siglock);
--	if (READ_ONCE(task->__state) == __TASK_TRACED) {
-+	if (lock_task_sighand(task, &flags)) {
-+		task->jobctl &= ~JOBCTL_PTRACE_FROZEN;
- 		if (__fatal_signal_pending(task))
- 			wake_up_state(task, __TASK_TRACED);
--		else
--			WRITE_ONCE(task->__state, TASK_TRACED);
-+		unlock_task_sighand(task, &flags);
- 	}
--	spin_unlock_irq(&task->sighand->siglock);
- }
- 
- /**
-@@ -256,7 +252,6 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
- 	 */
- 	read_lock(&tasklist_lock);
- 	if (child->ptrace && child->parent == current) {
--		WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
- 		/*
- 		 * child->sighand can't be NULL, release_task()
- 		 * does ptrace_unlink() before __exit_signal().
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d575b4914925..3c351707e830 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6304,10 +6304,7 @@ static void __sched notrace __schedule(unsigned int sched_mode)
- 
- 	/*
- 	 * We must load prev->state once (task_struct::state is volatile), such
--	 * that:
--	 *
--	 *  - we form a control dependency vs deactivate_task() below.
--	 *  - ptrace_{,un}freeze_traced() can change ->state underneath us.
-+	 * that we form a control dependency vs deactivate_task() below.
- 	 */
- 	prev_state = READ_ONCE(prev->__state);
- 	if (!(sched_mode & SM_MASK_PREEMPT) && prev_state) {
-diff --git a/kernel/signal.c b/kernel/signal.c
-index d2d0c753156c..a58b68a2d3c6 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2209,14 +2209,12 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
- 	}
- 
- 	/*
--	 * schedule() will not sleep if there is a pending signal that
--	 * can awaken the task.
--	 *
--	 * After this point ptrace_signal_wake_up will clear TASK_TRACED
--	 * if ptrace_unlink happens.  Handle previous ptrace_unlinks
--	 * here to prevent ptrace_stop sleeping in schedule.
-+	 * After this point ptrace_signal_wake_up or signal_wake_up
-+	 * will clear TASK_TRACED if ptrace_unlink happens or a fatal
-+	 * signal comes in.  Handle previous ptrace_unlinks and fatal
-+	 * signals here to prevent ptrace_stop sleeping in schedule.
- 	 */
--	if (!current->ptrace)
-+	if (!current->ptrace || __fatal_signal_pending(current))
- 		return exit_code;
- 
- 	set_special_state(TASK_TRACED);
-@@ -2305,7 +2303,7 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
- 	current->exit_code = 0;
- 
- 	/* LISTENING can be set only during STOP traps, clear it */
--	current->jobctl &= ~JOBCTL_LISTENING;
-+	current->jobctl &= ~(JOBCTL_LISTENING | JOBCTL_PTRACE_FROZEN);
- 
- 	/*
- 	 * Queued signals ignored us while we were stopped for tracing.
--- 
-2.35.3
-
+>         return evsel->name &&
+> -               (!strcasecmp(evsel->name, "slots") ||
+> -                !strncasecmp(evsel->name, "topdown", 7));
+> +               (strcasestr(evsel->name, "slots") ||
+> +                strcasestr(evsel->name, "topdown"));
+>   }
+>
+>
+>
+> Thanks,
+> Kan
+>
+> > Thanks,
+> > Ian
+> >
+> >>> +     return evsel->name &&
+> >>> +             (!strcasecmp(evsel->name, "slots") ||
+> >>> +              !strncasecmp(evsel->name, "topdown", 7));
+> >>> +}
+> >>> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+> >>> index 52ea004ba01e..dfa65a383502 100644
+> >>> --- a/tools/perf/util/evlist.c
+> >>> +++ b/tools/perf/util/evlist.c
+> >>> @@ -1790,8 +1790,17 @@ struct evsel *evlist__reset_weak_group(struct =
+evlist *evsel_list, struct evsel *
+> >>>                if (evsel__has_leader(c2, leader)) {
+> >>>                        if (is_open && close)
+> >>>                                perf_evsel__close(&c2->core);
+> >>> -                     evsel__set_leader(c2, c2);
+> >>> -                     c2->core.nr_members =3D 0;
+> >>> +                     /*
+> >>> +                      * We want to close all members of the group an=
+d reopen
+> >>> +                      * them. Some events, like Intel topdown, requi=
+re being
+> >>> +                      * in a group and so keep these in the group.
+> >>> +                      */
+> >>> +                     if (!evsel__must_be_in_group(c2) && c2 !=3D lea=
+der) {
+> >>> +                             evsel__set_leader(c2, c2);
+> >>> +                             c2->core.nr_members =3D 0;
+> >>> +                             leader->core.nr_members--;
+> >>> +                     }
+> >>> +
+> >>>                        /*
+> >>>                         * Set this for all former members of the grou=
+p
+> >>>                         * to indicate they get reopened.
+> >>> @@ -1799,6 +1808,9 @@ struct evsel *evlist__reset_weak_group(struct e=
+vlist *evsel_list, struct evsel *
+> >>>                        c2->reset_group =3D true;
+> >>>                }
+> >>>        }
+> >>> +     /* Reset the leader count if all entries were removed. */
+> >>> +     if (leader->core.nr_members)
+> >>> +             leader->core.nr_members =3D 0;
+> >>>        return leader;
+> >>>    }
+> >>>
+> >>> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+> >>> index d38722560e80..b7c0c9775673 100644
+> >>> --- a/tools/perf/util/evsel.c
+> >>> +++ b/tools/perf/util/evsel.c
+> >>> @@ -3082,3 +3082,13 @@ int evsel__source_count(const struct evsel *ev=
+sel)
+> >>>        }
+> >>>        return count;
+> >>>    }
+> >>> +
+> >>> +bool __weak arch_evsel__must_be_in_group(const struct evsel *evsel _=
+_maybe_unused)
+> >>> +{
+> >>> +     return false;
+> >>> +}
+> >>> +
+> >>> +bool evsel__must_be_in_group(const struct evsel *evsel)
+> >>> +{
+> >>> +     return arch_evsel__must_be_in_group(evsel);
+> >>> +}
+> >>> diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
+> >>> index 45d674812239..0ed2850b7ebb 100644
+> >>> --- a/tools/perf/util/evsel.h
+> >>> +++ b/tools/perf/util/evsel.h
+> >>> @@ -488,6 +488,9 @@ bool evsel__has_leader(struct evsel *evsel, struc=
+t evsel *leader);
+> >>>    bool evsel__is_leader(struct evsel *evsel);
+> >>>    void evsel__set_leader(struct evsel *evsel, struct evsel *leader);
+> >>>    int evsel__source_count(const struct evsel *evsel);
+> >>> +bool evsel__must_be_in_group(const struct evsel *evsel);
+> >>> +
+> >>> +bool arch_evsel__must_be_in_group(const struct evsel *evsel);
+> >>>
+> >>>    /*
+> >>>     * Macro to swap the bit-field postition and size.
