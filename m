@@ -2,242 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B638CC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354814AbiEEKFW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 06:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
+        id S239050AbiEEKKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 06:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiEEKFR (ORCPT
+        with ESMTP id S229956AbiEEKKk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 06:05:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853BE3FBE6;
-        Thu,  5 May 2022 03:01:37 -0700 (PDT)
-Date:   Thu, 05 May 2022 10:01:34 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651744895;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z4GOj4AlaUGIahgAX8O+PASWinkQN7XkOfhPgLMO7ZY=;
-        b=F/AAhowoiki3Y7LOBUdCOa2aLBUPgmZLQt196f2M2W7RN5crt3iNQt4OM4vlIySx7er66t
-        3uZqNQiBtK2p2tefemFi6WoWYPCsDzE3BHste1FhpDcRS67gw7EYylqvgbxKQ/IE3uTIOU
-        SXprWChiMNyMV4+ksxS6bR2Cq1DKVEeHcnEe29+Deh8SWaIBUBXo0S8mOTmErRghp5QYLl
-        nIARhxunO3ATGRFh1qKuYi4nxqePRhsMbBm/FqaXZuj2hmv3vPsQI7y1OQI4/fskUWD0Ug
-        u54+y5MAptKM+HacxKBveHRN3SY87BnSgtrHKFchX0lcaN2aAK8ghZ6bSlc+Cw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651744895;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z4GOj4AlaUGIahgAX8O+PASWinkQN7XkOfhPgLMO7ZY=;
-        b=u7rkUkdE/5wdsEOifSbGd5duU2+TP/YlIoellLuMjLtaRUTDEvfyiIQT6iKep0P4GMqBr3
-        CM8xuFlhYLk1U/Aw==
-From:   "tip-bot2 for Thomas Pfaff" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: irq/urgent] genirq: Synchronize interrupt thread startup
-Cc:     Thomas Pfaff <tpfaff@pcs.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, stable@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <552fe7b4-9224-b183-bb87-a8f36d335690@pcs.com>
-References: <552fe7b4-9224-b183-bb87-a8f36d335690@pcs.com>
+        Thu, 5 May 2022 06:10:40 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE496115F
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 03:07:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651745221; x=1683281221;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SKQZZk5pvsgQPXaaeLMVmNMurd3L6Uu+aDpSNIeJhJk=;
+  b=JswJ7qluE251jlkh/wdsddjBQrFjMfpFGEjrBeRN6AHtLI8+Y32Y34w/
+   ITqArqa3LYAkpkV4xKEuL6KxFzRjmGSo7FWJTkSCm+m0fs7tvUL2O3NFt
+   VBz3WFxLkGNpAtzpN4Yjkaa7LLTgkAmJbGQp+7NIrn/X0kuYgnDBuyHMx
+   ajacYBmlExMrkkbY4sM9qpF2UbgeEjuuttjtt6kuKu6YQ3gvm1YqIIgMp
+   85Vp+oueBs80Kf2P5E9hkt3SMwP6KNbVsqFtqMAw5HSJOxLUfUl8nS3ik
+   HWnPo22IgiFRtu7qvlEehYGs8M87Nja00Mz/s8sxlfcW+NUeOjcr0XXnY
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="328603065"
+X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
+   d="scan'208";a="328603065"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:07:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
+   d="scan'208";a="664901178"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 05 May 2022 03:06:57 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmYNs-000CHJ-R9;
+        Thu, 05 May 2022 10:06:56 +0000
+Date:   Thu, 5 May 2022 18:06:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        will@kernel.org, axboe@kernel.dk
+Cc:     kbuild-all@lists.01.org, mb@lightnvm.io,
+        ckeepax@opensource.cirrus.com, manjunatha.venkatesh@nxp.com,
+        mst@redhat.com, javier@javigon.com, mikelley@microsoft.com,
+        jasowang@redhat.com, sunilmut@microsoft.com,
+        bjorn.andersson@linaro.org, rvmanjumce@gmail.com,
+        ashish.deshpande@nxp.com
+Subject: Re: [PATCH v3] [PATCH v3] uwb: nxp: sr1xx: UWB driver support for
+ sr1xx series chip
+Message-ID: <202205051830.f36qJQ6E-lkp@intel.com>
+References: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
 MIME-Version: 1.0
-Message-ID: <165174489401.4207.10702670782105619927.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/urgent branch of tip:
+Hi Manjunatha,
 
-Commit-ID:     8707898e22fd665bc1d7b18b809be4b56ce25bdd
-Gitweb:        https://git.kernel.org/tip/8707898e22fd665bc1d7b18b809be4b56ce25bdd
-Author:        Thomas Pfaff <tpfaff@pcs.com>
-AuthorDate:    Mon, 02 May 2022 13:28:29 +02:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Thu, 05 May 2022 11:54:05 +02:00
+Thank you for the patch! Perhaps something to improve:
 
-genirq: Synchronize interrupt thread startup
+[auto build test WARNING on char-misc/char-misc-testing]
+[also build test WARNING on linux/master linus/master v5.18-rc5 next-20220504]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-A kernel hang can be observed when running setserial in a loop on a kernel
-with force threaded interrupts. The sequence of events is:
+url:    https://github.com/intel-lab-lkp/linux/commits/Manjunatha-Venkatesh/uwb-nxp-sr1xx-UWB-driver-support-for-sr1xx-series-chip/20220505-020126
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 35a7609639c49f76f13f206402cbf692c4ae3e4e
+config: sparc-buildonly-randconfig-r005-20220505 (https://download.01.org/0day-ci/archive/20220505/202205051830.f36qJQ6E-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/037b22462c3f4715f0a04e1be05cd12986880d21
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Manjunatha-Venkatesh/uwb-nxp-sr1xx-UWB-driver-support-for-sr1xx-series-chip/20220505-020126
+        git checkout 037b22462c3f4715f0a04e1be05cd12986880d21
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/misc/
 
-   setserial
-     open("/dev/ttyXXX")
-       request_irq()
-     do_stuff()
-      -> serial interrupt
-         -> wake(irq_thread)
-	      desc->threads_active++;
-     close()
-       free_irq()
-         kthread_stop(irq_thread)
-     synchronize_irq() <- hangs because desc->threads_active != 0
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The thread is created in request_irq() and woken up, but does not get on a
-CPU to reach the actual thread function, which would handle the pending
-wake-up. kthread_stop() sets the should stop condition which makes the
-thread immediately exit, which in turn leaves the stale threads_active
-count around.
+All warnings (new ones prefixed by >>):
 
-This problem was introduced with commit 519cc8652b3a, which addressed a
-interrupt sharing issue in the PCIe code.
+>> drivers/misc/sr1xx.c:125:6: warning: no previous prototype for 'sr1xx_wait_for_irq_gpio_low' [-Wmissing-prototypes]
+     125 | void sr1xx_wait_for_irq_gpio_low(struct sr1xx_dev *sr1xx_dev)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/misc/sr1xx.c:720:5: warning: no previous prototype for 'sr1xx_dev_suspend' [-Wmissing-prototypes]
+     720 | int sr1xx_dev_suspend(struct device *dev)
+         |     ^~~~~~~~~~~~~~~~~
+>> drivers/misc/sr1xx.c:736:5: warning: no previous prototype for 'sr1xx_dev_resume' [-Wmissing-prototypes]
+     736 | int sr1xx_dev_resume(struct device *dev)
+         |     ^~~~~~~~~~~~~~~~
 
-Before that commit free_irq() invoked synchronize_irq(), which waits for
-the hard interrupt handler and also for associated threads to complete.
 
-To address the PCIe issue synchronize_irq() was replaced with
-__synchronize_hardirq(), which only waits for the hard interrupt handler to
-complete, but not for threaded handlers.
+vim +/sr1xx_wait_for_irq_gpio_low +125 drivers/misc/sr1xx.c
 
-This was done under the assumption, that the interrupt thread already
-reached the thread function and waits for a wake-up, which is guaranteed to
-be handled before acting on the stop condition. The problematic case, that
-the thread would not reach the thread function, was obviously overlooked.
+   118	
+   119	/**
+   120	 * sr1xx_wait_for_irq_gpio_low
+   121	 *
+   122	 * Function to wait till irq gpio goes low state
+   123	 *
+   124	 */
+ > 125	void sr1xx_wait_for_irq_gpio_low(struct sr1xx_dev *sr1xx_dev)
+   126	{
+   127		int retry_count = 0;
+   128	
+   129		do {
+   130			udelay(10);
+   131			retry_count++;
+   132			if (retry_count == MAX_RETRY_COUNT_FOR_HANDSHAKE) {
+   133				dev_info(&sr1xx_dev->spi->dev,
+   134					 "Slave not released the IRQ even after 10ms");
+   135				break;
+   136			}
+   137		} while (gpio_get_value(sr1xx_dev->irq_gpio));
+   138	}
+   139	
 
-Make sure that the interrupt thread is really started and reaches
-thread_fn() before returning from __setup_irq().
-
-This utilizes the existing wait queue in the interrupt descriptor. The
-wait queue is unused for non-shared interrupts. For shared interrupts the
-usage might cause a spurious wake-up of a waiter in synchronize_irq() or the
-completion of a threaded handler might cause a spurious wake-up of the
-waiter for the ready flag. Both are harmless and have no functional impact.
-
-[ tglx: Amended changelog ]
-
-Fixes: 519cc8652b3a ("genirq: Synchronize only with single thread on free_irq()")
-Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/552fe7b4-9224-b183-bb87-a8f36d335690@pcs.com
----
- kernel/irq/internals.h |  2 ++
- kernel/irq/irqdesc.c   |  2 ++
- kernel/irq/manage.c    | 39 +++++++++++++++++++++++++++++----------
- 3 files changed, 33 insertions(+), 10 deletions(-)
-
-diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
-index 99cbdf5..f09c603 100644
---- a/kernel/irq/internals.h
-+++ b/kernel/irq/internals.h
-@@ -29,12 +29,14 @@ extern struct irqaction chained_action;
-  * IRQTF_WARNED    - warning "IRQ_WAKE_THREAD w/o thread_fn" has been printed
-  * IRQTF_AFFINITY  - irq thread is requested to adjust affinity
-  * IRQTF_FORCED_THREAD  - irq action is force threaded
-+ * IRQTF_READY     - signals that irq thread is ready
-  */
- enum {
- 	IRQTF_RUNTHREAD,
- 	IRQTF_WARNED,
- 	IRQTF_AFFINITY,
- 	IRQTF_FORCED_THREAD,
-+	IRQTF_READY,
- };
- 
- /*
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index 939d21c..0099b87 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -407,6 +407,7 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
- 	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
- 	mutex_init(&desc->request_mutex);
- 	init_rcu_head(&desc->rcu);
-+	init_waitqueue_head(&desc->wait_for_threads);
- 
- 	desc_set_defaults(irq, desc, node, affinity, owner);
- 	irqd_set(&desc->irq_data, flags);
-@@ -575,6 +576,7 @@ int __init early_irq_init(void)
- 		raw_spin_lock_init(&desc[i].lock);
- 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
- 		mutex_init(&desc[i].request_mutex);
-+		init_waitqueue_head(&desc[i].wait_for_threads);
- 		desc_set_defaults(i, &desc[i], node, NULL, NULL);
- 	}
- 	return arch_early_irq_init();
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index c03f71d..e3e245a 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -1249,6 +1249,31 @@ static void irq_wake_secondary(struct irq_desc *desc, struct irqaction *action)
- }
- 
- /*
-+ * Internal function to notify that a interrupt thread is ready.
-+ */
-+static void irq_thread_set_ready(struct irq_desc *desc,
-+				 struct irqaction *action)
-+{
-+	set_bit(IRQTF_READY, &action->thread_flags);
-+	wake_up(&desc->wait_for_threads);
-+}
-+
-+/*
-+ * Internal function to wake up a interrupt thread and wait until it is
-+ * ready.
-+ */
-+static void wake_up_and_wait_for_irq_thread_ready(struct irq_desc *desc,
-+						  struct irqaction *action)
-+{
-+	if (!action || !action->thread)
-+		return;
-+
-+	wake_up_process(action->thread);
-+	wait_event(desc->wait_for_threads,
-+		   test_bit(IRQTF_READY, &action->thread_flags));
-+}
-+
-+/*
-  * Interrupt handler thread
-  */
- static int irq_thread(void *data)
-@@ -1259,6 +1284,8 @@ static int irq_thread(void *data)
- 	irqreturn_t (*handler_fn)(struct irq_desc *desc,
- 			struct irqaction *action);
- 
-+	irq_thread_set_ready(desc, action);
-+
- 	sched_set_fifo(current);
- 
- 	if (force_irqthreads() && test_bit(IRQTF_FORCED_THREAD,
-@@ -1683,8 +1710,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
- 	}
- 
- 	if (!shared) {
--		init_waitqueue_head(&desc->wait_for_threads);
--
- 		/* Setup the type (level, edge polarity) if configured: */
- 		if (new->flags & IRQF_TRIGGER_MASK) {
- 			ret = __irq_set_trigger(desc,
-@@ -1780,14 +1805,8 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
- 
- 	irq_setup_timings(desc, new);
- 
--	/*
--	 * Strictly no need to wake it up, but hung_task complains
--	 * when no hard interrupt wakes the thread up.
--	 */
--	if (new->thread)
--		wake_up_process(new->thread);
--	if (new->secondary)
--		wake_up_process(new->secondary->thread);
-+	wake_up_and_wait_for_irq_thread_ready(desc, new);
-+	wake_up_and_wait_for_irq_thread_ready(desc, new->secondary);
- 
- 	register_irq_proc(irq, desc);
- 	new->dir = NULL;
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
