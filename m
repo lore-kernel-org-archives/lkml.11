@@ -2,73 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1297C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 22:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 22:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386353AbiEEWhz (ORCPT
+        id S1386378AbiEEWiN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 18:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
+        Thu, 5 May 2022 18:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiEEWhx (ORCPT
+        with ESMTP id S1386356AbiEEWiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 18:37:53 -0400
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB045DBF5;
-        Thu,  5 May 2022 15:34:13 -0700 (PDT)
-Received: by mail-oi1-f182.google.com with SMTP id l16so5811153oil.6;
-        Thu, 05 May 2022 15:34:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8+Gp8y6AxYwsLaD1GmNXpXLFzoVgQnSYTYyRgrz67PQ=;
-        b=IW0PDxUcTpf4yNSmyMKMX7/PkXoOPks5kmzS1NDw4czCgRjkqTftWk7wINAdCq9cE9
-         Fh/38ksqt2lYhF0Fa7oTYGf/7t7LCA8TmsRYJlUCfHqObilC7L3Pc0CsRhfr7Jogzwr6
-         3kzqGjtnqPrhhCLh+l8t9zjVTWkYniaNXHE3dknnONNX/j18/m+e6UVnsAbfKedSE977
-         S2SY0la5wGDhmYqwURTxbovgJ6zMooN8M7i0fn+Anqwj2apk/+tujsP2cABllQrj9KyO
-         Kdm06hYIBUq0JCCwnz82TXBSCQSwAQDrMylU51pCMymBjMsMAGx+cJSvQR6AYbAliUle
-         PwwQ==
-X-Gm-Message-State: AOAM533LoqalkMEnQZtEy3UsrIElEAXoNGfzrye4R4WKF2PRHcAG5TAS
-        02X7pIaHXWVWVOt1a6+U5Q==
-X-Google-Smtp-Source: ABdhPJwk/3PSlCYefmrHUoAVQxOOHyS1icmf4PYkQDgH+ehi0kExi085swYRKdAwFVklmawPVf/pZQ==
-X-Received: by 2002:a05:6808:1710:b0:2f9:6c36:70cd with SMTP id bc16-20020a056808171000b002f96c3670cdmr195020oib.299.1651790052506;
-        Thu, 05 May 2022 15:34:12 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c6-20020a0568301ae600b0060603221238sm1072314otd.8.2022.05.05.15.34.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 15:34:11 -0700 (PDT)
-Received: (nullmailer pid 319908 invoked by uid 1000);
-        Thu, 05 May 2022 22:34:11 -0000
-Date:   Thu, 5 May 2022 17:34:11 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     krzysztof.kozlowski@linaro.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: arm: sunplus: Add bindings for Sunplus
- SP7021 SoC boards
-Message-ID: <YnRQ4ya2trphqQuo@robh.at.kernel.org>
-References: <20220505064430.124657-1-qinjian@cqplus1.com>
+        Thu, 5 May 2022 18:38:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECCD6004D;
+        Thu,  5 May 2022 15:34:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10B5E61E53;
+        Thu,  5 May 2022 22:34:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5974AC385A4;
+        Thu,  5 May 2022 22:34:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651790066;
+        bh=Fjpze9p+LviKLUP0aU8SZtUfet1POQ58RsbqdrFG4aU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XwneceNDSaXq0hOFu7m5dCZ1neE5qHMCBgJzH3zC53YNIaSFbDNDny3OnGfu2GNJg
+         XQanp2o4W4s0eA6VsGWPNCgBGEmW9HZo1YKXAoWwYvsJL2lfK441u05n2CtAU30dMk
+         nVi/vU5qjS8pFdXl687zzS49PRYxHKyxY4WJA8EE=
+Date:   Thu, 5 May 2022 22:48:54 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc:     linux-serial@vger.kernel.org, michal.simek@xilinx.com,
+        jirislaby@kernel.org, git@xilinx.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] tty: xilinx_uartps: fixes and improvements
+Message-ID: <YnQ4Ngu8xt7DBi5C@kroah.com>
+References: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505064430.124657-1-qinjian@cqplus1.com>
+In-Reply-To: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 02:44:30PM +0800, Qin Jian wrote:
-> This introduces bindings for boards based Sunplus SP7021 SoC.
+On Fri, Apr 29, 2022 at 01:44:15PM +0530, Shubhrajyoti Datta wrote:
+> Many of the stuff is reported by static analysis
+> changes are 
 > 
-> This patch is separated from the patch series:
-> Add Sunplus SP7021 SoC Support. [1]
-> To simply thing, I extract it from the original and resend this patch.
+> - Update the copyright text
+> - Check the return valuesof runtime and clock enable calls
+> - Check the ignore_status in the isr 
+> - Prevent writing to the fifo when controller is disabled.
+> 
+> Michal Simek (1):
+>   xilinx: Update copyright text to correct format
+> 
+> Shubhrajyoti Datta (6):
+>   tty: xilinx_uartps: Check the clk_enable return value
+>   tty: xilinx_uartps: Add check for runtime_get_sync calls
+>   tty: xilinx_uartps: Check clk_enable return type
+>   tty: xilinx_uartps: Make the timeout unsigned
+>   serial: uartps: Fix the ignore_status
+>   serial: uartps: Prevent writes when the controller is disabled
 
-This information doesn't belong in the commit msg. You should put 
-context like this below the '---'.
+Nit, why is the subject line prefix not unified here?  Shouldn't they
+all be "tty: xilinx_uartps:" like 4 of them are?
 
-Who suggested splitting this out? Normally, new SoC families series are 
-applied as a whole by the SoC maintainers (Arnd/Olof).
+Can you fix up and resend?
 
-Rob
+thanks,
+
+greg k-h
