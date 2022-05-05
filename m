@@ -2,218 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE69C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA94C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380613AbiEEOdO (ORCPT
+        id S1380655AbiEEOdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
+        Thu, 5 May 2022 10:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiEEOdI (ORCPT
+        with ESMTP id S229570AbiEEOdb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:33:08 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9AB19C27
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 07:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651760968; x=1683296968;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=I3uC7ZNoLkMV2PN+MYFwGVHik6Az91nOYBK1xrNI5L4=;
-  b=epHx5awCkV+66y88syUgK9pwxMRiKLz8I9lsXh4C/IZoh3Dlq2DoGH3O
-   v7I4ModiV38P6edHJZZpGtWKZgYg4rlFppG4xbf7aYqWrCgZ+QNxU1lM/
-   I+ZviYXz4zls4ouEPBryOiNFPF4+/85t80LShB/GBlXLuipvfRH3wCGR/
-   kyA5GR6Ad6mpIMjU2BbTCfzCRXAQbaJdTlI4CdIex15Ky7olVeDNEe47T
-   KfKDZuHmquomkSNWTaplCPgw0G676PMLDX16XQCLAoYhCMLcYEnDuTwNj
-   ppTUObtgJZXHyXM0I+IKR2y3i6ZTeIm8FeR3WDD/lm9zV2Fxcm9gyObxh
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248032384"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="248032384"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 07:29:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="568613289"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by fmsmga007.fm.intel.com with ESMTP; 05 May 2022 07:29:27 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 5 May 2022 07:29:27 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 5 May 2022 07:29:27 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 5 May 2022 07:29:27 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 5 May 2022 07:29:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gNoUL7qu1Zc7cB7gSn8LgMcfRC9//n+PlrdbLDw/YQyJ/DnrVxXZDWWGDqngpX2bbcVw5VD9zlvMAcOPDOTJz0iA5jw0IyBF0hY5ceFiJb99Mc77QmKMqmqbvG2VMqGaogNuRQsg5sBWJRyKIHUZVMZlBEat1zZzAQzdmAv/u2NpFYHelefXCKE2cD0jrVgVbgriUE1gZKtMUqYj28rxAH4TITADxqQl4gR3eAB2WzJUXNDvXvvNtxdDz6jTsE50FC0HX8dUokR9bQsRT5jdBWVhdh5b0R3iNVa1WyOcIZHVYdVVrKlrMIAGc3EYqwoNXmwPl0zqbnTu/GZd53ZxJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XHu5GZtpJLDXVNUa4XSke2+tRRLvUnHVjz2tQUeGi9M=;
- b=EI2XhGRuJishOeStXjYVOJCNpPR6yGnjVpqi4e2jNd6dT8i0WCGzC4o1XpXO38A9o4xzc/JZKtnahFOAQj82SSgI4oRdentNmZe1fDIPrKQqOVNjY1GwLOOOR3/um5cRmFEEVr4YXUHJk3m030expPIBvaGgejvcLdg5zQlhDJyO1EcnQ0Zz1Km5TGA8cmiAUD9KHNNUE6G++YkStIxnj0IPbAMDACYXlFy+kvYpS1GafoV/cN97pw31GP59uEfzD1JEk7G7Hv0iWA/0NLWveeCQWG1K78xk1oEt1YvqU7j3a8K+xbfE8scmQpqcnLqGSooZ0ewZLS2mfFy+Xg9y7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3062.namprd11.prod.outlook.com (2603:10b6:a03:92::18)
- by DM4PR11MB6095.namprd11.prod.outlook.com (2603:10b6:8:aa::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Thu, 5 May
- 2022 14:29:24 +0000
-Received: from BYAPR11MB3062.namprd11.prod.outlook.com
- ([fe80::90eb:f194:6b40:c4ff]) by BYAPR11MB3062.namprd11.prod.outlook.com
- ([fe80::90eb:f194:6b40:c4ff%5]) with mapi id 15.20.5206.027; Thu, 5 May 2022
- 14:29:24 +0000
-Date:   Thu, 5 May 2022 22:29:16 +0800
-From:   Aaron Lu <aaron.lu@intel.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-CC:     kernel test robot <oliver.sang@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, <lkp@lists.01.org>,
-        <lkp@intel.com>, <ying.huang@intel.com>, <feng.tang@intel.com>,
-        <zhengjun.xing@linux.intel.com>, <fengwei.yin@intel.com>
-Subject: Re: [mm/page_alloc]  f26b3fa046:  netperf.Throughput_Mbps -18.0%
- regression
-Message-ID: <YnPfPH4bbLIkCeNp@ziqianlu-desk1>
-References: <20220420013526.GB14333@xsang-OptiPlex-9020>
- <YmvMDyx05UoPFtQy@ziqianlu-desk1>
- <20220429133918.GC3441@techsingularity.net>
- <YnOKWNE3PZzzohNH@ziqianlu-desk1>
- <20220505110947.GD3441@techsingularity.net>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220505110947.GD3441@techsingularity.net>
-X-ClientProxiedBy: HK2PR0302CA0022.apcprd03.prod.outlook.com
- (2603:1096:202::32) To BYAPR11MB3062.namprd11.prod.outlook.com
- (2603:10b6:a03:92::18)
+        Thu, 5 May 2022 10:33:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744A524BE0;
+        Thu,  5 May 2022 07:29:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22306B82DA4;
+        Thu,  5 May 2022 14:29:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21FC8C385A8;
+        Thu,  5 May 2022 14:29:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651760988;
+        bh=N3cfcZ5R177Vy3ShBjYhQisk3rhZYNwWw0AXe+7cFhw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WVYXrUIFs641fCAlWtqH+Q3leAL9deBOOIh/RfcMd7tKmEr8vmjp+3qnxy++3zriP
+         oYpYWFiC4G/G5rPnqhkQja9Dgu6xxpeOfAMKxUKvXmBj7yM12b6H6e8s+wVERHmoHT
+         U7u8xPfTWb2axgiIk12fGizSgmPtpET6qPTlix1Q9rsTUlUYzrUYjdLBCH6LY3LHY6
+         S1fxVwLP/WWVnX0xuKq68GzxBpqezqd4k/a/ZvyNRbZ2VWPJoQ9C00daaKgYFQfpKU
+         BsxTfdrXtg5H0sgZwrA7YmgygM6RobbuR/jP6dcjSDhV/73umbK/ameX6YmU6X9n86
+         kXgAg2PTBq2RA==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH v2] f2fs: fix to do sanity check on total_data_blocks
+Date:   Thu,  5 May 2022 22:15:07 +0800
+Message-Id: <20220505141507.6616-1-chao@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7d68791a-fc66-4661-7dd2-08da2ea3a718
-X-MS-TrafficTypeDiagnostic: DM4PR11MB6095:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM4PR11MB6095A3B1B7F34F7440CF69778BC29@DM4PR11MB6095.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MemPJW59MpoDnJNUyFkU6j4xToJ3+OZSc2ZTeGiiSoL28opVQCT5hcLyvUc24BMz8Tk56U9RPlwjWaKqME4Ch/3yxDzRuUze19i4AeMp1WX1eD1HByr3TKodKQjVunYTQJiHsAgC2W4t2+DlB5tmh5tWDHrWbaldVTfrV183e0qROx1uQ7JjW3USBFUgzjC5c5JJSYsLeBAgR+dZy1mAO7S9ZMn0NSI0zZA4r35W2xJ0/eXutC8cLKDwL9ZmdLHPjz6xNLoudWrztEFa7wgajTtPDk98ncaS+iWrSXdez+P08mAEcooRULUnWAgf6T7Qo7mtW2XbL2iF1C6pWw/WhYrnx7Dz6T3a/tjHUm1EPtQVA81+SZO/AsswUbrBySF8Sd+vru0t7uNMNgBfXUGGP/7hgJYmT+58s02h9dkAtVGin2pnr+qdVxB38tT9ktD5P4IcgWCtgWcKPboowDz5Pp06TLgXeWS8+/HY7q1B7JdvO1bh/Mmm4cq2cKBlTigZ8B3L8vzNQV6VuhUvHOFVB/H47aaCE3F0op7zvzHyhi4f3a7FlA1L9cCOZj73jjs5FhZuMV/DNxr0zC863hlbtM7OA7OEwqgcXYWxBn5DInMlwCzSrgTUciP4BnckZ7uIjPN4BPXOOY6lM2O+ZFq7AA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3062.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(186003)(316002)(44832011)(6512007)(9686003)(38100700002)(508600001)(6666004)(33716001)(8936002)(86362001)(6486002)(54906003)(6916009)(82960400001)(7416002)(83380400001)(66556008)(5660300002)(66476007)(4326008)(8676002)(2906002)(6506007)(66946007)(26005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G46ZtIEd8RWENAosU8Cz5H7kNdhoX3K6ynG0Fco0AgXNgeutkZKtN35bNwLI?=
- =?us-ascii?Q?R5cSko/T9N1szSSubd9QLxPrDVfJNC7ZApUn2zVv+9Dt9cS6ZqByUCVDbq6L?=
- =?us-ascii?Q?gXwev9uQSPscv3xef35WgM2EFeMM4j0yGGmmr0rR4DyB2eHUR7tJBwLlibsz?=
- =?us-ascii?Q?rOPG5QM6CPnrp8MZKJu0SmeMKYYugSNj/wD9fDdeWYgegDnt0w8USDhQBIbQ?=
- =?us-ascii?Q?I43wiEKd5XWUV+oLzLwl+Y8+t7abGv97tHaR8FP0utJ90E+0mD2GeseZUVZI?=
- =?us-ascii?Q?qF0rBomac2GoASKrKhxGdn5fPCvsRJwuPOts5VWgZ0PcCkrvLTdX1c1EEg9L?=
- =?us-ascii?Q?0+CGW5qMscbEgSkdPCjzTtuXeYv4gt7PtHdbcugQ3nh4adnn0LZDgiaAlosO?=
- =?us-ascii?Q?4TfcnnB8NnCIWN0ZDlPPzmQGyjUlY+EZukAi8zHXgscc/BzNCySNXSAf323o?=
- =?us-ascii?Q?s6RWBXFWjN+AMjCesKY0XtvBIYz1h9shFM8QtCv4lHZQgAXBVAtrSRpYVLY5?=
- =?us-ascii?Q?+3YY3oqFXD4/gvdUAIZjGFwJMyICIR1FFilBcvHcO3BonQ1LawSTOgwn1vou?=
- =?us-ascii?Q?56hfXlzGW7Qv+FrO2BMxdXCYTEOembub+pgL5K7wtX0pdEBo12nC3P7B+P8g?=
- =?us-ascii?Q?0F7yuQBoAIqEiMQA0sskO4GRgAikDU283emnimkzhhPWLDO6OPxDDRz0DYxv?=
- =?us-ascii?Q?sMcp5oiKdeHGM9J4wwQfYnKyNK1jc8nqLsO87JhZlReS6MiRN382kjXJD4Gm?=
- =?us-ascii?Q?wCV1iRQMlW/qA0xg6kyPomy35sFDXCQTEaRJ51CDfax7eJrPFUDP3yla2cWO?=
- =?us-ascii?Q?z6quj+5hPz4B1oYSfaX+E9qEEpBSS8aZeiOhbdiqs/qIw1oePCg2T/LL/Yuj?=
- =?us-ascii?Q?pJaTJKA5A2LKeRARvxfvikdjwOF79ZjakPDx3ExXOIRiBni9SQotnPdzgpNc?=
- =?us-ascii?Q?bSwXSXwNPVVc5jscixm0gplLCqgJW4vZUDeI52ULtCysvov5PxFzsfmqwEsj?=
- =?us-ascii?Q?DOyCjVHZkKholqXxmU5MwB9LZmrKU57olTckQlbTW5Xm7Iq6ICKStQwEAn+c?=
- =?us-ascii?Q?lK/8Ew50X+jvwEgMxlk/l4GkEVLr9qObeVLzuwmFwDEgglRdv+vOI9V4wLav?=
- =?us-ascii?Q?VKknQqecAGIh84mCGJaVhVuGmMy8WtETkjX/HnTUaM5/IokSqv+CYYQJ1wBG?=
- =?us-ascii?Q?uFfuDht6ZgJDUeiYY9ck2F6NzXctnOAXFuaqT8EkgtSMDA8K0guOnwTM2ySM?=
- =?us-ascii?Q?G4I2WMZDYgzEDabnG4hALwkOlzMKtSYyA/wIYtmOnGZAARk+uqJ4iFlsE9k3?=
- =?us-ascii?Q?OUIFiGeM9uqJovThQKVwdMexuUKMxOEvn/4csmAVld6hTX3xTz0rIN41mqtF?=
- =?us-ascii?Q?bUkns0nhmP5c0rTIqznhTbUVG0LW3NUWSwh9WX/fdncxuRCT0x+wTF1PVVoT?=
- =?us-ascii?Q?KSI3O8IH13K6aUkWO8dOkxiKKXPmo9sAd2yt65O1Q/uceY9f/aUB2+uSLoIZ?=
- =?us-ascii?Q?0rnSXVZz4m4atAXEAcQ3Mm+GQyAKaReTKY/hmyeaew4nKisBQ8zeUMcrnF78?=
- =?us-ascii?Q?yULv0BlNW+zsipJ3eomBNMmGP45fr0B+BR/2slylfVIa1p8qHHi1hXwwgBI+?=
- =?us-ascii?Q?5b03dB+i89TxwwVphtjJvB1KR3yJGma9o2lWGXqmdkfIVX4lTk7Vbi/7iAll?=
- =?us-ascii?Q?a4VFLjPYIPf4ZRVCuK4eBUf35qo0je3ipOHtZxogHtEIo8tRET47C52m5MmO?=
- =?us-ascii?Q?+5t2k+wNVA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d68791a-fc66-4661-7dd2-08da2ea3a718
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3062.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 14:29:24.7105
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pvrskQjynLlTM+wKypJsI0sfplEQr9M7tueMJnykq1nsKP1JfGGHNkWgIFJXgm1zxe6EclYV6un4ZBzCNiJZkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6095
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 12:09:47PM +0100, Mel Gorman wrote:
-> On Thu, May 05, 2022 at 04:27:04PM +0800, Aaron Lu wrote:
-> > On Fri, Apr 29, 2022 at 02:39:18PM +0100, Mel Gorman wrote:
-> > > On Fri, Apr 29, 2022 at 07:29:19PM +0800, Aaron Lu wrote:
-> > 
-> > ... ...
-> > 
-> > > > The said change looks like this:
-> > > > (relevant comment will have to be adjusted)
-> > > > 
-> > > > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > > > index 505d59f7d4fa..130a02af8321 100644
-> > > > --- a/mm/page_alloc.c
-> > > > +++ b/mm/page_alloc.c
-> > > > @@ -3332,18 +3332,19 @@ static int nr_pcp_high(struct per_cpu_pages *pcp, struct zone *zone,
-> > > >  		       bool free_high)
-> > > >  {
-> > > >  	int high = READ_ONCE(pcp->high);
-> > > > +	int batch = READ_ONCE(pcp->batch);
-> > > >  
-> > > > -	if (unlikely(!high || free_high))
-> > > > +	if (unlikely(!high))
-> > > >  		return 0;
-> > > >  
-> > > > -	if (!test_bit(ZONE_RECLAIM_ACTIVE, &zone->flags))
-> > > > -		return high;
-> > > > -
-> > > >  	/*
-> > > >  	 * If reclaim is active, limit the number of pages that can be
-> > > >  	 * stored on pcp lists
-> > > >  	 */
-> > > > -	return min(READ_ONCE(pcp->batch) << 2, high);
-> > > > +	if (test_bit(ZONE_RECLAIM_ACTIVE, &zone->flags) || free_high)
-> > > > +		return min(batch << 2, high);
-> > > > +
-> > > > +	return high;
-> > > >  }
-> > > >  
-> > > >  static void free_unref_page_commit(struct page *page, int migratetype,
-> > > > 
-> > > > Does this look sane? If so, I can prepare a formal patch with proper
-> > > > comment and changelog, thanks.
-> > > 
-> > > I think it looks reasonable sane. The corner case is that if
-> > > ((high - (batch >> 2)) > cachesize) that the pages will not get recycled
-> > 
-> > When free_high is true, the above diff changed the return value of
-> > nr_pcp_high() from 0 to min(batch << 2, pcp->high) so the corner case is
-> > when (min(batch << 2, pcp->high) > cachesize)?
-> > 
-> 
-> Yes. It's not perfect due to cache aliasing so the actual point where it
-> matters will be variable. Whatever the value is, there a value where the
-> corner case applies that pages do not get recycled quickly enough and
-> are no longer cache-hot.
+As Yanming reported in bugzilla:
 
-Understood. And as you said, it's a tradeoff.
+https://bugzilla.kernel.org/show_bug.cgi?id=215916
+
+The kernel message is shown below:
+
+kernel BUG at fs/f2fs/segment.c:2560!
+Call Trace:
+ allocate_segment_by_default+0x228/0x440
+ f2fs_allocate_data_block+0x13d1/0x31f0
+ do_write_page+0x18d/0x710
+ f2fs_outplace_write_data+0x151/0x250
+ f2fs_do_write_data_page+0xef9/0x1980
+ move_data_page+0x6af/0xbc0
+ do_garbage_collect+0x312f/0x46f0
+ f2fs_gc+0x6b0/0x3bc0
+ f2fs_balance_fs+0x921/0x2260
+ f2fs_write_single_data_page+0x16be/0x2370
+ f2fs_write_cache_pages+0x428/0xd00
+ f2fs_write_data_pages+0x96e/0xd50
+ do_writepages+0x168/0x550
+ __writeback_single_inode+0x9f/0x870
+ writeback_sb_inodes+0x47d/0xb20
+ __writeback_inodes_wb+0xb2/0x200
+ wb_writeback+0x4bd/0x660
+ wb_workfn+0x5f3/0xab0
+ process_one_work+0x79f/0x13e0
+ worker_thread+0x89/0xf60
+ kthread+0x26a/0x300
+ ret_from_fork+0x22/0x30
+RIP: 0010:new_curseg+0xe8d/0x15f0
+
+The root cause is: ckpt.valid_block_count is inconsistent with SIT table,
+stat info indicates filesystem has free blocks, but SIT table indicates
+filesystem has no free segment.
+
+So that during garbage colloection, it triggers panic when LFS allocator
+fails to find free segment.
+
+This patch tries to fix this issue by checking consistency in between
+ckpt.valid_block_count and block accounted from SIT.
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+v2:
+- adjust check condition according to the case Jaegeuk mentioned.
+ fs/f2fs/segment.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 3a3e2cec2ac4..942d6d8c18e6 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4462,6 +4462,7 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 	unsigned int readed, start_blk = 0;
+ 	int err = 0;
+ 	block_t total_node_blocks = 0;
++	block_t total_data_blocks = 0;
+ 
+ 	do {
+ 		readed = f2fs_ra_meta_pages(sbi, start_blk, BIO_MAX_VECS,
+@@ -4488,6 +4489,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 			seg_info_from_raw_sit(se, &sit);
+ 			if (IS_NODESEG(se->type))
+ 				total_node_blocks += se->valid_blocks;
++			else
++				total_data_blocks += se->valid_blocks;
+ 
+ 			if (f2fs_block_unit_discard(sbi)) {
+ 				/* build discard map only one time */
+@@ -4529,6 +4532,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 		old_valid_blocks = se->valid_blocks;
+ 		if (IS_NODESEG(se->type))
+ 			total_node_blocks -= old_valid_blocks;
++		else
++			total_data_blocks -= old_valid_blocks;
+ 
+ 		err = check_block_count(sbi, start, &sit);
+ 		if (err)
+@@ -4536,6 +4541,8 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 		seg_info_from_raw_sit(se, &sit);
+ 		if (IS_NODESEG(se->type))
+ 			total_node_blocks += se->valid_blocks;
++		else
++			total_data_blocks += se->valid_blocks;
+ 
+ 		if (f2fs_block_unit_discard(sbi)) {
+ 			if (is_set_ckpt_flags(sbi, CP_TRIMMED_FLAG)) {
+@@ -4557,13 +4564,24 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 	}
+ 	up_read(&curseg->journal_rwsem);
+ 
+-	if (!err && total_node_blocks != valid_node_count(sbi)) {
++	if (err)
++		return err;
++
++	if (total_node_blocks != valid_node_count(sbi)) {
+ 		f2fs_err(sbi, "SIT is corrupted node# %u vs %u",
+ 			 total_node_blocks, valid_node_count(sbi));
+-		err = -EFSCORRUPTED;
++		return -EFSCORRUPTED;
+ 	}
+ 
+-	return err;
++	if (total_data_blocks + total_node_blocks >
++				valid_user_blocks(sbi)) {
++		f2fs_err(sbi, "SIT is corrupted data# %u %u vs %u",
++			 total_data_blocks, total_node_blocks,
++			 valid_user_blocks(sbi));
++		return -EFSCORRUPTED;
++	}
++
++	return 0;
+ }
+ 
+ static void init_free_segmap(struct f2fs_sb_info *sbi)
+-- 
+2.32.0
+
