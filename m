@@ -2,175 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFD4C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C502C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235872AbiEESch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S1384043AbiEEScr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 14:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384134AbiEESX5 (ORCPT
+        with ESMTP id S1385219AbiEESaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:23:57 -0400
-X-Greylist: delayed 601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 11:17:11 PDT
-Received: from mr85p00im-ztdg06021101.me.com (mr85p00im-ztdg06021101.me.com [17.58.23.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C5C5EBEE
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:17:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
-        t=1651774036; bh=Sv0gairPZCvJcETF74arcxG7IPuoEuc9W1XozjergCE=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=R/hxUUGsq8oFMGmXzwg6AmJtGw1hK25Z7lPYq6s/Iova6QY5ldiZ7dbkRfoNq0sCc
-         o685hfuHDWsIonvqpzrktfa+rskZ+Vx7VrrEl4QytvkejoLCsHPoXjPDixMI325LW+
-         z3/JcnR6dxNdwzSx+Ynewi5d8VXN5P/h4fjiuMeouPBcrwfMKBRovLpsHNuasYgJM7
-         xFp/wprDMcmht5fZmkq0Z/Sn1S/DlEVEB/VCemVc0lfc1wRzvgAaDVSgb8ZY0qO6Oh
-         HyvsITbmzQ7TbZgw/AA2TP6mVo8HcAPAZEyqXMTzdWMKJ5eGiqNdU1MhL3OyFdviVi
-         QyX022h0+CQgQ==
-Received: from hitch.danm.net (mr38p00im-dlb-asmtp-mailmevip.me.com [17.57.152.18])
-        by mr85p00im-ztdg06021101.me.com (Postfix) with ESMTPSA id 4B7A18071D;
-        Thu,  5 May 2022 18:07:16 +0000 (UTC)
-From:   Dan Moulding <dmoulding@me.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-doc@vger.kernel.org, tglx@linutronix.de,
-        akpm@linux-foundation.org, corbet@lwn.net,
-        Dan Moulding <dmoulding@me.com>
-Subject: [PATCH 1/1] init: Add "hostname" kernel parameter
-Date:   Thu,  5 May 2022 12:06:51 -0600
-Message-Id: <20220505180651.22849-2-dmoulding@me.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220505180651.22849-1-dmoulding@me.com>
-References: <20220505180651.22849-1-dmoulding@me.com>
+        Thu, 5 May 2022 14:30:16 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4158B5EDF8;
+        Thu,  5 May 2022 11:20:49 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 1eb1b739602ff014; Thu, 5 May 2022 20:19:27 +0200
+Received: from kreacher.localnet (unknown [213.134.161.219])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id A82C666C2F2;
+        Thu,  5 May 2022 20:19:26 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux PCI <linux-pci@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH v1 11/11] PCI/PM: Replace pci_set_power_state() in pci_pm_thaw_noirq()
+Date:   Thu, 05 May 2022 20:18:09 +0200
+Message-ID: <3639079.MHq7AAxBmi@kreacher>
+In-Reply-To: <4738492.GXAFRqVoOG@kreacher>
+References: <4738492.GXAFRqVoOG@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: X3NDRHDIs7pX8M3aaDuMEpjHW1IxvI5-
-X-Proofpoint-ORIG-GUID: X3NDRHDIs7pX8M3aaDuMEpjHW1IxvI5-
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.572,17.0.605.474.0000000_definitions?=
- =?UTF-8?Q?=3D2022-01-14=5F01:2022-01-14=5F01,2020-02-14=5F11,2020-01-23?=
- =?UTF-8?Q?=5F02_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 mlxlogscore=999 spamscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205050123
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.161.219
+X-CLIENT-HOSTNAME: 213.134.161.219
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrfedugdduvdduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrdduiedurddvudelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeiuddrvdduledphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepjedprhgtphhtthhopehlihhnuhigqdhptghisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepmhhikhgrrdifvghsthgvrhgsvghrgheslhhinhhugidrihhnthgv
+ lhdrtghomhdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehnrghthhgrnheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghnuggvrhhsrdhrohigvghllheslhhinhgrrhhordhorhhg
+X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The gethostname system call returns the hostname for the current
-machine. However, the kernel has no mechanism to initially set the
-current machine's name in such a way as to guarantee that the first
-userspace process to call gethostname will receive a meaningful
-result. It relies on some unspecified userspace process to first call
-sethostname before gethostname can produce a meaningful name.
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Traditionally the machine's hostname is set from userspace by the init
-system. The init system, in turn, often relies on a configuration file
-(say, /etc/hostname) to provide the value that it will supply in the
-call to sethostname. Consequently, the file system containing
-/etc/hostname usually must be available before the hostname will be
-set. There may, however, be earlier userspace processes that could
-call gethostname before the file system containing /etc/hostname is
-mounted. Such a process will get some other, likely meaningless, name
-from gethostname (such as "(none)", "localhost", or "darkstar").
+Calling pci_set_power_state() to put the given device into D0 in
+pci_pm_thaw_noirq() may cause it to restore the device's BARs, which
+is redundant before calling pci_restore_state(), so replace it with
+a direct pci_power_up() call followed by pci_update_current_state()
+if it returns a nonzeor value, in analogy with
+pci_pm_default_resume_early().
 
-A real-world example where this can happen, and lead to undesirable
-results, is with mdadm. When assembling arrays, mdadm distinguishes
-between "local" arrays and "foreign" arrays. A local array is one that
-properly belongs to the current machine, and a foreign array is one
-that is (possibly temporarily) attached to the current machine, but
-properly belongs to some other machine. To determine if an array is
-local or foreign, mdadm may compare the "homehost" recorded on the
-array with the current hostname. If mdadm is run before the root file
-system is mounted, perhaps because the root file system itself resides
-on an md-raid array, then /etc/hostname isn't yet available and the
-init system will not yet have called sethostname, causing mdadm to
-incorrectly conclude that all of the local arrays are foreign.
+Avoid code duplication by introducing a wrapper function to contain
+the repeating pattern and calling it in both places.
 
-Solving this problem *could* be delegated to the init system. It could
-be left up to the init system (including any init system that starts
-within an initramfs, if one is in use) to ensure that sethostname is
-called before any other userspace process could possibly call
-gethostname. However, it may not always be obvious which processes
-could call gethostname (for example, udev itself might not call
-gethostname, but it could via udev rules invoke processes that
-do). Additionally, the init system has to ensure that the hostname
-configuration value is stored in some place where it will be readily
-accessible during early boot. Unfortunately, every init system will
-attempt to (or has already attempted to) solve this problem in a
-different, possibly incorrect, way. This makes getting consistently
-working configurations harder for users.
-
-I believe it is better for the kernel to provide the means by which
-the hostname may be set early, rather than making this a problem for
-the init system to solve. The option to set the hostname during early
-startup, via a kernel parameter, provides a simple, reliable way to
-solve this problem. It also could make system configuration easier for
-some embedded systems.
-
-Signed-off-by: Dan Moulding <dmoulding@me.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 13 +++++++++++++
- init/version.c                                  | 17 +++++++++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/pci/pci-driver.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 3f1cc5e317ed..873481d72e94 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1615,6 +1615,19 @@
- 			Valid parameters: "on", "off"
- 			Default: "on"
+Index: linux-pm/drivers/pci/pci-driver.c
+===================================================================
+--- linux-pm.orig/drivers/pci/pci-driver.c
++++ linux-pm/drivers/pci/pci-driver.c
+@@ -551,10 +551,15 @@ static void pci_pm_default_resume(struct
+ 	pci_enable_wake(pci_dev, PCI_D0, false);
+ }
  
-+	hostname=	[KNL] Set the hostname (aka UTS nodename).
-+			Format: <string>
-+			This allows setting the system's hostname during early
-+			startup. This sets the name returned by gethostname.
-+			Using this parameter to set the hostname makes it
-+			possible to ensure the hostname is correctly set before
-+			any userspace processes run, avoiding the possibility
-+			that a process may call gethostname before the hostname
-+			has been explicitly set, resulting in the calling
-+			process getting an incorrect result. The string must
-+			not exceed the maximum allowed hostname length (usually
-+			64 characters) and will be truncated otherwise.
-+
- 	hlt		[BUGS=ARM,SH]
- 
- 	hpet=		[X86-32,HPET] option to control HPET usage
-diff --git a/init/version.c b/init/version.c
-index 1a356f5493e8..66d237d5629c 100644
---- a/init/version.c
-+++ b/init/version.c
-@@ -11,6 +11,8 @@
- #include <linux/build-salt.h>
- #include <linux/elfnote-lto.h>
- #include <linux/export.h>
-+#include <linux/init.h>
-+#include <linux/printk.h>
- #include <linux/uts.h>
- #include <linux/utsname.h>
- #include <generated/utsrelease.h>
-@@ -35,6 +37,21 @@ struct uts_namespace init_uts_ns = {
- };
- EXPORT_SYMBOL_GPL(init_uts_ns);
- 
-+static int __init early_hostname(char *arg)
-+{
-+	size_t bufsize = sizeof(init_uts_ns.name.nodename);
-+	size_t maxlen  = bufsize - 1;
-+
-+	strncpy(init_uts_ns.name.nodename, arg, bufsize);
-+	if (strlen(arg) > maxlen) {
-+		pr_warn("hostname parameter exceeds %zd characters and will be truncated",
-+			maxlen);
-+		init_uts_ns.name.nodename[maxlen] = '\0';
-+	}
-+	return 0;
+-static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
++static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+ {
+ 	pci_power_up(pci_dev);
+ 	pci_update_current_state(pci_dev, PCI_D0);
 +}
-+early_param("hostname", early_hostname);
 +
- /* FIXED STRINGS! Don't touch! */
- const char linux_banner[] =
- 	"Linux version " UTS_RELEASE " (" LINUX_COMPILE_BY "@"
--- 
-2.35.1
++static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
++{
++	pci_pm_power_up_and_verify_state(pci_dev);
+ 	pci_restore_state(pci_dev);
+ 	pci_pme_restore(pci_dev);
+ }
+@@ -1079,7 +1084,7 @@ static int pci_pm_thaw_noirq(struct devi
+ 	 * in case the driver's "freeze" callbacks put it into a low-power
+ 	 * state.
+ 	 */
+-	pci_set_power_state(pci_dev, PCI_D0);
++	pci_pm_power_up_and_verify_state(pci_dev);
+ 	pci_restore_state(pci_dev);
+ 
+ 	if (pci_has_legacy_pm_support(pci_dev))
+
+
 
