@@ -2,117 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 20:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F64DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 20:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385848AbiEEUcK (ORCPT
+        id S1385860AbiEEUdR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 16:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
+        Thu, 5 May 2022 16:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354028AbiEEUcH (ORCPT
+        with ESMTP id S1384948AbiEEUdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 16:32:07 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8296C2BB37;
-        Thu,  5 May 2022 13:28:21 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.98.182]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MdwRi-1oLUuu0jeY-00b4o2; Thu, 05 May 2022 22:27:10 +0200
-Received: by leknes.fjasle.eu (Postfix, from userid 1000)
-        id B61AF3C088; Thu,  5 May 2022 22:27:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
-        t=1651782424; bh=oGd2e0sWzuw2lfacuEfCkKF+JuznQDoibFgyz7j1FOw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FaLJ+2jWftfmPh62O8eA9LWVOpI6bCmG5q2wumrSva1zb8Lt/1da5TlQqhSISYxfV
-         3pWN2pxZKshK6qG2ZAlazcmz8TTIL9aTwzrsh4MAmQGR8+JO8wVmXZblUEf84WC++W
-         TiErDSzNaNjx6X6fzUMEEHREyY6mRvxkVgjnPEo4=
-Date:   Thu, 5 May 2022 22:27:04 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-um@lists.infradead.org,
-        linux-s390@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v3 12/15] modpost: simplify the ->is_static initialization
-Message-ID: <YnQzGMfWqnP6CMir@fjasle.eu>
-References: <20220505072244.1155033-1-masahiroy@kernel.org>
- <20220505072244.1155033-13-masahiroy@kernel.org>
+        Thu, 5 May 2022 16:33:14 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113CC5F8F5
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 13:29:32 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id p7-20020a05600c358700b00393e80c59daso4482562wmq.0
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 13:29:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Nhiu0fngZGCp2SeeUlWWgcjMH+09fel050MQuuk+CH0=;
+        b=c1oSeU4BaXTY3ReYOr/uFAyO9izBH2dG1Qlnf+8Hr8Uw3vUsoKOHenuz7wpGz1G3lv
+         ym40wpjP1R1uTQtgYd8gikEnTIRqUlXoWrvkAnzPHg8AGFpeocUHG2kgkwMQX9NL3etq
+         +mxfkjnSDJDdW3HnR8hp/i6C1WPmJXk+LFZvFqsi3IRZIzWwmnN90bnnpRzXLIKPG6Zc
+         eHtIJrBosNasWd3p+NDNF3vx4pBQ+ez3FTfArfU5wI/onzupOfKc35+xFiIfqWc6qqRh
+         q7Ut2jUxdfhmab/DvgF8OIAbxIYnzwpEPb49AiYU/N0TsdomVI/zvfwD+IaQxuFI+dnI
+         g5xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Nhiu0fngZGCp2SeeUlWWgcjMH+09fel050MQuuk+CH0=;
+        b=VQvKR7CDIuvpPC310g7LVTJcqNUFWPKA0v/rK3jmF779qNKntzm97knR43Rb98WdFD
+         8z/UZv1JPTIooaSF96Ch2EG6lHJOmoRNUdQlFJLsnH7EZ4zdsfgQRF+Xi9FyNlZ/7TvJ
+         mj28o3BZ/JPlqgo4wvCUUUan4HlqGEk3YfgL3NaOTZuJdyN3rzzYlbPzNltCQk4JTGyD
+         19GxKL3OT552DbnWxvLqD75Ihk6Uw5Ezl552u7LqW0M07/FqQVi1FPlS2pjNAFY09shj
+         Siow6pka1MZpZ+eco2td0LfqWMWc/kaVfR6lcyJWnMSqZCBH/+V2M00ghTsgHQwjmIJc
+         bRUA==
+X-Gm-Message-State: AOAM533kBH0upmTsQILSdnpeAqYqCZCXV720hzZ5hqznDpA4tDjG3a6V
+        IjKtMTASQhOf+XYl/NDMfG4Jkg==
+X-Google-Smtp-Source: ABdhPJyTndqxOkEr/uFOGU4QF0R1aF80DfUbLWNbePR/UUOLh1w33usRsZPRT7oIn/7Jas5VFkmrmQ==
+X-Received: by 2002:a7b:cd15:0:b0:394:497d:ad1c with SMTP id f21-20020a7bcd15000000b00394497dad1cmr35505wmj.182.1651782570542;
+        Thu, 05 May 2022 13:29:30 -0700 (PDT)
+Received: from [192.168.0.222] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n13-20020a056000170d00b0020c5253d911sm2035574wrc.93.2022.05.05.13.29.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 13:29:30 -0700 (PDT)
+Message-ID: <6d45f060-85e6-f3ff-ef00-6c68a2ada7a1@linaro.org>
+Date:   Thu, 5 May 2022 22:29:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505072244.1155033-13-masahiroy@kernel.org>
-X-Provags-ID: V03:K1:LK2u+J2AhRjCi+eMNFHoFnTinbNPkEFuFiOuKWVtzJ00eRjm6z7
- tNvjulmaQd0h6NqxBCm22IwvsWk8KlKkc6Ii6th88VKmMWg5MlEkkUpaXLqSy7hm061+Hs8
- UD92p80tBHi8TG7LLOvYD2q5nEGx/b88ke8OExKVbAFL5cXXGXR/lOQyJDZrWpGGW8T00jj
- JAPWLP7gyGdYvch2xT3Gw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:OxAiCGOEiWk=:9v6pZlNBsR1l7vFzSHm9UI
- /rD6j6qbY07+oT4+AyXX+8s8GdCCDK9+2h3F1C5GfCE4WbIIm1+MyqDLdz9pQ1kr1drl6HDQL
- mLMC7CawdirGi/+SQAWuOxWNkG06NUrvND+SqkMCsISquldvjozq/TV+y219fr1VGCksL5Tro
- F3em6lKfungyYh6g0OHXZlFaHPlPU5G8jos/UzxAYI2dqTiiu5Zi2YNXJyBVHiyJBDnR4du6f
- oedVr8+AQ86/m7v8tG4KXewdDs+4LunPIEVMcQCZmcQBFkkMPzZAwTYv7b3+5Dkp+eFTafJIL
- DOxPYInPHjDQZ3YpjNA8xpyYu2C/rRM+jb8P02LWzU6paRv/p9pgO/lOQL4oBIFQbqJ1DbtGa
- CRIOFERb8zjO2S7jr1FGl44q4ySvT+X1TJkog7BMk0XG712rdLQ9IxQBh1oaKwTt8kslwrMNc
- QVkL3lXMtoH9dj9fuLZzCnXUT7+sB+8wHMN73LyZWZfQoiCBuM17nLSL0LeRxvP36JCelL7Vl
- 5zi8CbPjRaSVVtvh7nK22PIH9epnfrEF3wcpoBeVEThuZ1lEJZOvKSDuZH42mmhK5BCVV6FwG
- wLCpKeZEzfsRzM+O+RKRbUDV03g0i9Qks6wQ4q3MTboCf81M1UyFXm7pDprkdC91RC066O/M4
- nVtIm+BqMUkqLUXR31hp2A+GSF8kq8ZnuaKpMsOLt19fVst3NmNkq7ij/oFYqgxLNoks=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC v2] dt-bindings: net: dsa: convert binding for mediatek
+ switches
+Content-Language: en-US
+To:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+References: <20220505150008.126627-1-linux@fw-web.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220505150008.126627-1-linux@fw-web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 04:22:41PM +0900 Masahiro Yamada wrote:
-> ->is_static is set to true at allocation, then to false if the symbol
-> comes from the dump file.
+On 05/05/2022 17:00, Frank Wunderlich wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
 > 
-> It is simpler to use !mod->from_dump as the init value.
+> Convert txt binding to yaml binding for Mediatek switches.
 > 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
-> (no changes since v2)
-> 
-> Changes in v2:
->   - New patch
-> 
->  scripts/mod/modpost.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index e07542a90fc6..4edd5b223f49 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -242,7 +242,7 @@ static struct symbol *alloc_symbol(const char *name)
->  
->  	memset(s, 0, sizeof(*s));
->  	strcpy(s->name, name);
-> -	s->is_static = true;
-> +
->  	return s;
->  }
->  
-> @@ -376,6 +376,7 @@ static struct symbol *sym_add_exported(const char *name, struct module *mod,
->  
->  	s = alloc_symbol(name);
->  	s->module = mod;
-> +	s->is_static = !mod->from_dump;
->  	s->is_gpl_only = gpl_only;
->  	list_add_tail(&s->list, &mod->exported_symbols);
->  	hash_add_symbol(s);
-> @@ -2523,7 +2524,6 @@ static void read_dump(const char *fname)
->  			mod->from_dump = true;
->  		}
->  		s = sym_add_exported(symname, mod, gpl_only);
-> -		s->is_static = false;
->  		sym_set_crc(s, crc);
->  		sym_update_namespace(symname, namespace);
->  	}
-> -- 
-> 2.32.0
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
 
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+Thank you for your patch. There is something to discuss/improve.
+
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +  core-supply:
+> +    description: |
+
+Drop | everywhere where it is not needed (so in all places, AFAICT)
+
+> +      Phandle to the regulator node necessary for the core power.
+> +
+> +  "#gpio-cells":
+> +    description: |
+> +      Must be 2 if gpio-controller is defined.
+
+Skip description, it's obvious from the GPIO controller schema.
+
+> +    const: 2
+> +
+> +  gpio-controller:
+> +    type: boolean
+> +    description: |
+> +      if defined, MT7530's LED controller will run on GPIO mode.
+> +
+> +  "#interrupt-cells":
+> +    const: 1
+> +
+> +  interrupt-controller:
+> +    type: boolean
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  io-supply:
+> +    description: |
+> +      Phandle to the regulator node necessary for the I/O power.
+> +      See Documentation/devicetree/bindings/regulator/mt6323-regulator.txt
+> +      for details for the regulator setup on these boards.
+> +
+> +  mediatek,mcm:
+> +    type: boolean
+> +    description: |
+> +      if defined, indicates that either MT7530 is the part on multi-chip
+> +      module belong to MT7623A has or the remotely standalone chip as the
+> +      function MT7623N reference board provided for.
+> +
+> +  reset-gpios:
+> +    description: |
+> +      Should be a gpio specifier for a reset line.
+
+Skip description.
+
+> +    maxItems: 1
+> +
+> +  reset-names:
+> +    description: |
+> +      Should be set to "mcm".
+
+Skip description.
+
+> +    const: mcm
+> +
+> +  resets:
+> +    description: |
+> +      Phandle pointing to the system reset controller with line index for
+> +      the ethsys.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +allOf:
+> +  - $ref: "dsa.yaml#"
+> +  - if:
+> +      required:
+> +        - mediatek,mcm
+> +    then:
+> +      required:
+> +        - resets
+> +        - reset-names
+> +    else:
+> +      required:
+> +        - reset-gpios
+> +
+> +  - if:
+> +      required:
+> +        - interrupt-controller
+> +    then:
+> +      required:
+> +        - interrupts
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          items:
+> +            - const: mediatek,mt7530
+> +    then:
+> +      required:
+> +        - core-supply
+> +        - io-supply
+> +
+> +
+> +patternProperties:
+
+patternProperties go before allOf, just after regular properties.
+
+> +  "^(ethernet-)?ports$":
+> +    type: object
+
+Also on this level:
+    unevaluatedProperties: false
+
+> +
+> +    patternProperties:
+> +      "^(ethernet-)?port@[0-9]+$":
+> +        type: object
+> +        description: Ethernet switch ports
+> +
+> +        properties:
+> +          reg:
+> +            description: |
+> +              Port address described must be 6 for CPU port and from 0 to 5 for user ports.
+
+This looks like not wrapped @80 character.
+
+> +
+> +        unevaluatedProperties: false
+> +
+> +        allOf:
+> +          - $ref: dsa-port.yaml#
+> +          - if:
+> +              properties:
+> +                label:
+> +                  items:
+> +                    - const: cpu
+> +            then:
+> +              required:
+> +                - reg
+> +                - phy-mode
+> +
+> +unevaluatedProperties: false
+
+
+
+
+Best regards,
+Krzysztof
