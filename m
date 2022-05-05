@@ -2,158 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8771C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385608AbiEESak (ORCPT
+        id S1355303AbiEESc1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
+        Thu, 5 May 2022 14:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383520AbiEESUi (ORCPT
+        with ESMTP id S1384135AbiEESX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:20:38 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438135DBD5;
-        Thu,  5 May 2022 11:16:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774583; x=1683310583;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xE7g35oLs8X/G1hv5apUVp7r06NZAdcT7tVknFwA1W0=;
-  b=nwC4MINmtibQZ4zbGtXYIe1w+FCUAiRotweNWiFBGhIBgA8ZMzLndlxX
-   cRtcBgnTgU60LsxNf7ekbRxOCDYmr4hf1UMobYjgVGEE8I+gNFZWBAEMB
-   7tvHMKu7zyZgvcZa7PYOQcl9kAIu2Gk0d0EWX+a/xwuLZloCDNdfFa3lO
-   M0jDSZoUfJ1IsTShfcCv8sBOqeFyTo1qot41rslVa7eVujZRz6spwau3W
-   Pjrk8gRoGpAg5/Pp9Cn+arn6d8Jt0NiPGvG8NQYBrkZU3Lk2K0iV5jlAB
-   FVaxNcrwu4gybdTJonqXSyk3AGA1svCRO6wwlF30UbA6XrOQL/VkRuBRL
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354877"
-X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="268354877"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:54 -0700
-X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083469"
-Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:54 -0700
-From:   isaku.yamahata@intel.com
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
-        Sean Christopherson <seanjc@google.com>,
-        Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 091/104] KVM: TDX: Handle TDX PV HLT hypercall
-Date:   Thu,  5 May 2022 11:15:25 -0700
-Message-Id: <c020ee0b90c424a7010e979c9b32a28e9c488a51.1651774251.git.isaku.yamahata@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
-References: <cover.1651774250.git.isaku.yamahata@intel.com>
+        Thu, 5 May 2022 14:23:57 -0400
+Received: from mr85p00im-ztdg06021101.me.com (mr85p00im-ztdg06021101.me.com [17.58.23.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE6B5EBF1
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:17:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
+        t=1651774030; bh=vV23b489VnzdeEn4Z7rQnBMy0kazXjtap6IBmGHeeE8=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=DwS7D4ptU2KXBmq0w02Ka2EqgTtUKV656G6JlQgYSAYw8k87Io2+joE37XcH+GGKJ
+         ChDTo4Hu1RvjPBMcnl6Ewhw2eBnoPwN7fDGO5KdgtfAlkw1bnF0eFgfvJgyLSVtne7
+         bs84FoM+oMr0MGIiQ0iqkq2hyAWYzH1Ffej0a57nI1EjQNXhxxtb2rKGJ0j0hEV+xb
+         OaknqB/HKhZnt5Wu3UPs+gwWsjd8UTUyEJ+mY/fjr1qmdgBS3hisRAXQ5TnA4QYLpt
+         YBI0bW9gZfQ7c1UtoCWQ5SMMNAnSRebmDEvFjGg/fy+LM83Iz8dmbTyVeVJn37zT21
+         Q7c1ASv5CJ6WA==
+Received: from hitch.danm.net (mr38p00im-dlb-asmtp-mailmevip.me.com [17.57.152.18])
+        by mr85p00im-ztdg06021101.me.com (Postfix) with ESMTPSA id 955A280C8E;
+        Thu,  5 May 2022 18:07:09 +0000 (UTC)
+From:   Dan Moulding <dmoulding@me.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-doc@vger.kernel.org, tglx@linutronix.de,
+        akpm@linux-foundation.org, corbet@lwn.net,
+        Dan Moulding <dmoulding@me.com>
+Subject: [PATCH 0/1] Allow setting hostname before userspace starts
+Date:   Thu,  5 May 2022 12:06:50 -0600
+Message-Id: <20220505180651.22849-1-dmoulding@me.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: 7yxFzX1JusZoB8njsR0L-PwOAlnBWngT
+X-Proofpoint-ORIG-GUID: 7yxFzX1JusZoB8njsR0L-PwOAlnBWngT
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.572,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-01-14=5F01:2022-01-14=5F01,2020-02-14=5F11,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0 bulkscore=0
+ clxscore=1011 mlxlogscore=414 spamscore=0 malwarescore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205050123
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+Some userspace processes may rely on gethostname to always return the
+correct machine name. However, the only way that the hostname may be
+set is by some other userspace process calling sethostname
+first. During boot, if a process that depends on gethostname runs
+before sethostname has been called, then the process that called
+gethostname is going to get an incorrect result.
 
-Wire up TDX PV HLT hypercall to the KVM backend function.
+A real-world case where this comes up is with mdadm, which if
+gethostname returns the wrong name, can cause local md-raid arrays to
+appear to be foreign arrays. This can alter how mdadm assembles the
+array, or can even cause array assembly to fail. I imagine there are
+probbaly other real-world cases where undesirable behavior results when
+the hostname is not set early enough.
 
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
----
- arch/x86/kvm/vmx/tdx.c | 42 +++++++++++++++++++++++++++++++++++++++++-
- arch/x86/kvm/vmx/tdx.h |  3 +++
- 2 files changed, 44 insertions(+), 1 deletion(-)
+I'm proposing adding the option to set the hostname from a kernel
+parameter, so that the correct host name can be guaranteed to be set
+before any userspace process can call gethostname.
 
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index c7cdfee397ec..631917eb873e 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -653,7 +653,32 @@ void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 
- bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu)
- {
--	return pi_has_pending_interrupt(vcpu);
-+	bool ret = pi_has_pending_interrupt(vcpu);
-+	struct vcpu_tdx *tdx = to_tdx(vcpu);
-+
-+	if (ret || vcpu->arch.mp_state != KVM_MP_STATE_HALTED)
-+		return true;
-+
-+	if (tdx->interrupt_disabled_hlt)
-+		return false;
-+
-+	/*
-+	 * This is for the case where the virtual interrupt is recognized,
-+	 * i.e. set in vmcs.RVI, between the STI and "HLT".  KVM doesn't have
-+	 * access to RVI and the interrupt is no longer in the PID (because it
-+	 * was "recognized".  It doesn't get delivered in the guest because the
-+	 * TDCALL completes before interrupts are enabled.
-+	 *
-+	 * TDX modules sets RVI while in an STI interrupt shadow.
-+	 * - TDExit(typically TDG.VP.VMCALL<HLT>) from the guest to TDX module.
-+	 *   The interrupt shadow at this point is gone.
-+	 * - It knows that there is an interrupt that can be delivered
-+	 *   (RVI > PPR && EFLAGS.IF=1, the other conditions of 29.2.2 don't
-+	 *    matter)
-+	 * - It forwards the TDExit nevertheless, to a clueless hypervisor that
-+	 *   has no way to glean either RVI or PPR.
-+	 */
-+	return !!xchg(&tdx->buggy_hlt_workaround, 0);
- }
- 
- void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
-@@ -966,6 +991,17 @@ static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
- 	return 1;
- }
- 
-+static int tdx_emulate_hlt(struct kvm_vcpu *vcpu)
-+{
-+	struct vcpu_tdx *tdx = to_tdx(vcpu);
-+
-+	/* See tdx_protected_apic_has_interrupt() to avoid heavy seamcall */
-+	tdx->interrupt_disabled_hlt = tdvmcall_a0_read(vcpu);;
-+
-+	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+	return kvm_emulate_halt_noskip(vcpu);
-+}
-+
- static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- {
- 	if (tdvmcall_exit_type(vcpu))
-@@ -974,6 +1010,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- 	switch (tdvmcall_leaf(vcpu)) {
- 	case EXIT_REASON_CPUID:
- 		return tdx_emulate_cpuid(vcpu);
-+	case EXIT_REASON_HLT:
-+		return tdx_emulate_hlt(vcpu);
- 	default:
- 		break;
- 	}
-@@ -1311,6 +1349,8 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
- 	struct kvm_vcpu *vcpu = apic->vcpu;
- 	struct vcpu_tdx *tdx = to_tdx(vcpu);
- 
-+	/* See comment in tdx_protected_apic_has_interrupt(). */
-+	tdx->buggy_hlt_workaround = 1;
- 	/* TDX supports only posted interrupt.  No lapic emulation. */
- 	__vmx_deliver_posted_interrupt(vcpu, &tdx->pi_desc, vector);
- }
-diff --git a/arch/x86/kvm/vmx/tdx.h b/arch/x86/kvm/vmx/tdx.h
-index b0bb239b51bf..a456ca6ec187 100644
---- a/arch/x86/kvm/vmx/tdx.h
-+++ b/arch/x86/kvm/vmx/tdx.h
-@@ -116,6 +116,9 @@ struct vcpu_tdx {
- 	bool host_state_need_restore;
- 	u64 msr_host_kernel_gs_base;
- 
-+	bool interrupt_disabled_hlt;
-+	unsigned int buggy_hlt_workaround;
-+
- 	/*
- 	 * Dummy to make pmu_intel not corrupt memory.
- 	 * TODO: Support PMU for TDX.  Future work.
+I can imagine an even better way to do this would be to have the
+hostname written to some non-volatile storage (like a firmware NVRAM
+variable or such), which the kernel could read out during early
+boot. But, alas, such designs require hardware support, standards, and
+cooperation. This proposal is an alternative that can provide a simple
+and immediate solution.
+
+I'm sending this to linux-kernel since I don't see any list that's a
+better fit. If there is any other I should send to instead, please let
+me know. (linux-doc also included since kernel-parameters.txt is
+touched).
+
+Thank you for consideration,
+
+  -- Dan
+
+Dan Moulding (1):
+  init: Add "hostname" kernel parameter
+
+ Documentation/admin-guide/kernel-parameters.txt | 13 +++++++++++++
+ init/version.c                                  | 17 +++++++++++++++++
+ 2 files changed, 30 insertions(+)
+
 -- 
-2.25.1
+2.35.1
 
