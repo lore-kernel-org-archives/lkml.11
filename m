@@ -2,53 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E718C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347014AbiEEIVl (ORCPT
+        id S1348132AbiEEIVp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        Thu, 5 May 2022 04:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347321AbiEEIU2 (ORCPT
+        with ESMTP id S1347313AbiEEIU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 04:20:28 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7F3496A6
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:16:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE894990E;
+        Thu,  5 May 2022 01:16:48 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E5F9F1F895;
-        Thu,  5 May 2022 08:16:46 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 887BE1F8A4;
+        Thu,  5 May 2022 08:16:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651738606; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1651738607; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7yFjXHXMXwZa6Ccja7xlX/k6b/j03dysFoZbs8/tSS0=;
-        b=tZpw7w2YZs7zI4Wv0ZhcBunFcpmESyHgadFim0wkQdlTZDZz7ZNdx1QNcQvdlPsvcwlSM2
-        QWD8TVciM+/T64Fk45IKVJjeUCiDTZIQ8t9ZdDRgywz13/SQqfAoPJSygm1LjbV/XUYDrk
-        5x1A1Gezd16QvlIB5qynYPOvcggWS7A=
+        bh=M6eg+rFc1MumAtFExaebcTMQjlP8JRCZ6MaTwnyhXTA=;
+        b=PRWXK75Iy6glOCFP+BRMxBlVtN2eHikrFDyCXtCZLSYh/NlKtBEhjsX7rYe7cPq6dpCFly
+        qvF85uuWPEVq+aRqbBWAp2SNiiVWB76NOqlqkde8eV21BTItvL14AtMhA40lzTs2DmU8P+
+        I7XPM8jeaQbxgQQTxLE8bS2JFHwffU0=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B70D213B11;
-        Thu,  5 May 2022 08:16:46 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 404C813B11;
+        Thu,  5 May 2022 08:16:47 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id CFNgK+6Hc2K1BwAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 05 May 2022 08:16:46 +0000
+        id wBleDu+Hc2K1BwAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 05 May 2022 08:16:47 +0000
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Subject: [PATCH v3 12/21] xen/xenbus: add xenbus_setup_ring() service function
-Date:   Thu,  5 May 2022 10:16:31 +0200
-Message-Id: <20220505081640.17425-13-jgross@suse.com>
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH v3 14/21] xen/netfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+Date:   Thu,  5 May 2022 10:16:33 +0200
+Message-Id: <20220505081640.17425-15-jgross@suse.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220505081640.17425-1-jgross@suse.com>
 References: <20220505081640.17425-1-jgross@suse.com>
@@ -58,121 +63,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most PV device frontends share very similar code for setting up shared
-ring buffers:
-
-- allocate page(s)
-- init the ring admin data
-- give the backend access to the ring via grants
-
-Tearing down the ring requires similar actions in all frontends again:
-
-- remove grants
-- free the page(s)
-
-Provide service functions xenbus_setup_ring() and xenbus_teardown_ring()
-for that purpose.
+Simplify netfront's ring creation and removal via xenbus_setup_ring()
+and xenbus_teardown_ring().
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- drivers/xen/xenbus/xenbus_client.c | 69 ++++++++++++++++++++++++++++++
- include/xen/xenbus.h               |  4 ++
- 2 files changed, 73 insertions(+)
+ drivers/net/xen-netfront.c | 53 +++++++++-----------------------------
+ 1 file changed, 12 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/xen/xenbus/xenbus_client.c b/drivers/xen/xenbus/xenbus_client.c
-index df6890681231..1a2e0d94ccd1 100644
---- a/drivers/xen/xenbus/xenbus_client.c
-+++ b/drivers/xen/xenbus/xenbus_client.c
-@@ -407,6 +407,75 @@ int xenbus_grant_ring(struct xenbus_device *dev, void *vaddr,
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 966bee2a6902..65ab907aca5a 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -1921,8 +1921,7 @@ static int setup_netfront(struct xenbus_device *dev,
+ 			struct netfront_queue *queue, unsigned int feature_split_evtchn)
+ {
+ 	struct xen_netif_tx_sring *txs;
+-	struct xen_netif_rx_sring *rxs = NULL;
+-	grant_ref_t gref;
++	struct xen_netif_rx_sring *rxs;
+ 	int err;
+ 
+ 	queue->tx_ring_ref = INVALID_GRANT_REF;
+@@ -1930,33 +1929,19 @@ static int setup_netfront(struct xenbus_device *dev,
+ 	queue->rx.sring = NULL;
+ 	queue->tx.sring = NULL;
+ 
+-	txs = (struct xen_netif_tx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
+-	if (!txs) {
+-		err = -ENOMEM;
+-		xenbus_dev_fatal(dev, err, "allocating tx ring page");
++	err = xenbus_setup_ring(dev, GFP_NOIO | __GFP_HIGH, (void **)&txs,
++				1, &queue->tx_ring_ref);
++	if (err)
+ 		goto fail;
+-	}
+-	SHARED_RING_INIT(txs);
+-	FRONT_RING_INIT(&queue->tx, txs, XEN_PAGE_SIZE);
+ 
+-	err = xenbus_grant_ring(dev, txs, 1, &gref);
+-	if (err < 0)
+-		goto fail;
+-	queue->tx_ring_ref = gref;
++	XEN_FRONT_RING_INIT(&queue->tx, txs, XEN_PAGE_SIZE);
+ 
+-	rxs = (struct xen_netif_rx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
+-	if (!rxs) {
+-		err = -ENOMEM;
+-		xenbus_dev_fatal(dev, err, "allocating rx ring page");
++	err = xenbus_setup_ring(dev, GFP_NOIO | __GFP_HIGH, (void **)&rxs,
++				1, &queue->rx_ring_ref);
++	if (err)
+ 		goto fail;
+-	}
+-	SHARED_RING_INIT(rxs);
+-	FRONT_RING_INIT(&queue->rx, rxs, XEN_PAGE_SIZE);
+ 
+-	err = xenbus_grant_ring(dev, rxs, 1, &gref);
+-	if (err < 0)
+-		goto fail;
+-	queue->rx_ring_ref = gref;
++	XEN_FRONT_RING_INIT(&queue->rx, rxs, XEN_PAGE_SIZE);
+ 
+ 	if (feature_split_evtchn)
+ 		err = setup_netfront_split(queue);
+@@ -1972,24 +1957,10 @@ static int setup_netfront(struct xenbus_device *dev,
+ 
+ 	return 0;
+ 
+-	/* If we fail to setup netfront, it is safe to just revoke access to
+-	 * granted pages because backend is not accessing it at this point.
+-	 */
+  fail:
+-	if (queue->rx_ring_ref != INVALID_GRANT_REF) {
+-		gnttab_end_foreign_access(queue->rx_ring_ref,
+-					  (unsigned long)rxs);
+-		queue->rx_ring_ref = INVALID_GRANT_REF;
+-	} else {
+-		free_page((unsigned long)rxs);
+-	}
+-	if (queue->tx_ring_ref != INVALID_GRANT_REF) {
+-		gnttab_end_foreign_access(queue->tx_ring_ref,
+-					  (unsigned long)txs);
+-		queue->tx_ring_ref = INVALID_GRANT_REF;
+-	} else {
+-		free_page((unsigned long)txs);
+-	}
++	xenbus_teardown_ring((void **)&queue->rx.sring, 1, &queue->rx_ring_ref);
++	xenbus_teardown_ring((void **)&queue->tx.sring, 1, &queue->tx_ring_ref);
++
+ 	return err;
  }
- EXPORT_SYMBOL_GPL(xenbus_grant_ring);
- 
-+/*
-+ * xenbus_setup_ring
-+ * @dev: xenbus device
-+ * @vaddr: pointer to starting virtual address of the ring
-+ * @nr_pages: number of pages to be granted
-+ * @grefs: grant reference array to be filled in
-+ *
-+ * Allocate physically contiguous pages for a shared ring buffer and grant it
-+ * to the peer of the given device. The ring buffer is initially filled with
-+ * zeroes. The virtual address of the ring is stored at @vaddr and the
-+ * grant references are stored in the @grefs array. In case of error @vaddr
-+ * will be set to NULL and @grefs will be filled with INVALID_GRANT_REF.
-+ */
-+int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
-+		      unsigned int nr_pages, grant_ref_t *grefs)
-+{
-+	unsigned long ring_size = nr_pages * XEN_PAGE_SIZE;
-+	unsigned int i;
-+	int ret;
-+
-+	*vaddr = alloc_pages_exact(ring_size, gfp | __GFP_ZERO);
-+	if (!*vaddr) {
-+		ret = -ENOMEM;
-+		goto err;
-+	}
-+
-+	ret = xenbus_grant_ring(dev, *vaddr, nr_pages, grefs);
-+	if (ret)
-+		goto err;
-+
-+	return 0;
-+
-+ err:
-+	if (*vaddr)
-+		free_pages_exact(*vaddr, ring_size);
-+	for (i = 0; i < nr_pages; i++)
-+		grefs[i] = INVALID_GRANT_REF;
-+	*vaddr = NULL;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(xenbus_setup_ring);
-+
-+/*
-+ * xenbus_teardown_ring
-+ * @vaddr: starting virtual address of the ring
-+ * @nr_pages: number of pages
-+ * @grefs: grant reference array
-+ *
-+ * Remove grants for the shared ring buffer and free the associated memory.
-+ * On return the grant reference array is filled with INVALID_GRANT_REF.
-+ */
-+void xenbus_teardown_ring(void **vaddr, unsigned int nr_pages,
-+			  grant_ref_t *grefs)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < nr_pages; i++) {
-+		if (grefs[i] != INVALID_GRANT_REF) {
-+			gnttab_end_foreign_access(grefs[i], 0);
-+			grefs[i] = INVALID_GRANT_REF;
-+		}
-+	}
-+
-+	if (*vaddr)
-+		free_pages_exact(*vaddr, nr_pages * XEN_PAGE_SIZE);
-+	*vaddr = NULL;
-+}
-+EXPORT_SYMBOL_GPL(xenbus_teardown_ring);
- 
- /**
-  * Allocate an event channel for the given xenbus_device, assigning the newly
-diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
-index b13eb86395e0..b533b4adc835 100644
---- a/include/xen/xenbus.h
-+++ b/include/xen/xenbus.h
-@@ -226,6 +226,10 @@ int xenbus_watch_pathfmt(struct xenbus_device *dev, struct xenbus_watch *watch,
- int xenbus_switch_state(struct xenbus_device *dev, enum xenbus_state new_state);
- int xenbus_grant_ring(struct xenbus_device *dev, void *vaddr,
- 		      unsigned int nr_pages, grant_ref_t *grefs);
-+int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
-+		      unsigned int nr_pages, grant_ref_t *grefs);
-+void xenbus_teardown_ring(void **vaddr, unsigned int nr_pages,
-+			  grant_ref_t *grefs);
- int xenbus_map_ring_valloc(struct xenbus_device *dev, grant_ref_t *gnt_refs,
- 			   unsigned int nr_grefs, void **vaddr);
  
 -- 
 2.35.3
