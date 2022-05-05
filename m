@@ -2,75 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA38CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377332AbiEEMmp (ORCPT
+        id S1377405AbiEEMnW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        Thu, 5 May 2022 08:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376382AbiEEMmk (ORCPT
+        with ESMTP id S1346505AbiEEMnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:42:40 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC363554AC;
-        Thu,  5 May 2022 05:39:00 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvCqM4BhTzGpTN;
-        Thu,  5 May 2022 20:36:15 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 20:38:59 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
- 2022 20:38:58 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <eddie.huang@mediatek.com>, <sean.wang@mediatek.com>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <lee.jones@linaro.org>
-Subject: [PATCH] rtc: mt6397: check return value after calling platform_get_resource()
-Date:   Thu, 5 May 2022 20:50:43 +0800
-Message-ID: <20220505125043.1594771-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 5 May 2022 08:43:19 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AED554AD;
+        Thu,  5 May 2022 05:39:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=MR1Suk6Z26VQH6EVEjcO9jgsClsEMNnUR8xQJnq/MaA=; b=l0RlIqaVNL6SklggkXb7Ebiv5v
+        fMacZdF2nfntj7gRwgmz7Cz2sDP6p/qAa698ar2YKEkURpxh8AVSYsOOlPWLFXHIGBkz8RdLmlxpl
+        eWlB26GsRtVM6jAbefI+uvyZFFSnyaGrlf9v3maBuPCA1uWcwI+bTDXeOctA8SUKP3omiW/YJv2ht
+        jkPVJwr11StUKPCfA0lLjpgJz5NH4RPCb1Rjs4p8L7KyOH5kjB+JBGGxvUFRJLD8VouJ4TdfZcqUn
+        6h+wGf5sHxy7GFnuza78MBvD+IxAtUs8+fOk3oaZCoRGC047syaUSwiH+UBUPj8FQQ6IntmQIsgdE
+        AaYVknLg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nmalb-00FqUS-L5; Thu, 05 May 2022 12:39:35 +0000
+Date:   Thu, 5 May 2022 05:39:35 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Russ Weight <russell.h.weight@intel.com>,
+        Tianfei zhang <tianfei.zhang@intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] test_firmware: fix end of loop test in upload_read_show()
+Message-ID: <YnPFh6ULhhPloue2@bombadil.infradead.org>
+References: <YnOm+9tEN+xerpov@kili>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnOm+9tEN+xerpov@kili>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+On Thu, May 05, 2022 at 01:29:15PM +0300, Dan Carpenter wrote:
+> If we iterate through a loop using list_for_each_entry() without
+> hitting a break, then the iterator points to bogus memory.  The
+> if (tst->name != test_fw_config->upload_name) { will likely still work
+> but technically it's an out of bounds read.
+> 
+> Fixes: a31ad463b72d ("test_firmware: Add test support for firmware upload")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  lib/test_firmware.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/lib/test_firmware.c b/lib/test_firmware.c
+> index 76115c1a2629..c82b65947ce6 100644
+> --- a/lib/test_firmware.c
+> +++ b/lib/test_firmware.c
+> @@ -1392,7 +1392,8 @@ static ssize_t upload_read_show(struct device *dev,
+>  				struct device_attribute *attr,
+>  				char *buf)
+>  {
+> -	struct test_firmware_upload *tst;
+> +	struct test_firmware_upload *tst = NULL;
+> +	struct test_firmware_upload *tst_iter;
+>  	int ret = -EINVAL;
+>  
+>  	if (!test_fw_config->upload_name) {
+> @@ -1401,11 +1402,13 @@ static ssize_t upload_read_show(struct device *dev,
+>  	}
+>  
+>  	mutex_lock(&test_fw_mutex);
 
-Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/rtc/rtc-mt6397.c | 2 ++
- 1 file changed, 2 insertions(+)
+Note the mutex lock.
 
-diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
-index 80dc479a6ff0..1d297af80f87 100644
---- a/drivers/rtc/rtc-mt6397.c
-+++ b/drivers/rtc/rtc-mt6397.c
-@@ -269,6 +269,8 @@ static int mtk_rtc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	rtc->addr_base = res->start;
- 
- 	rtc->data = of_device_get_match_data(&pdev->dev);
--- 
-2.25.1
+> -	list_for_each_entry(tst, &test_upload_list, node)
+> -		if (tst->name == test_fw_config->upload_name)
+> +	list_for_each_entry(tst_iter, &test_upload_list, node)
 
+If a lock is held I can't see how the premise of this patch is
+correct and we ensure we don't remove entries while holdingg
+the lock.
+
+Generalizing this problem seems like a bigger issue, no?
+
+Additionally this patch doesn't apply at all on linux-next.
+
+  Luis
+
+> +		if (tst_iter->name == test_fw_config->upload_name) {
+> +			tst = tst_iter;
+>  			break;
+> +		}
+>  
+> -	if (tst->name != test_fw_config->upload_name) {
+> +	if (!tst) {
+>  		pr_err("Firmware name not found: %s\n",
+>  		       test_fw_config->upload_name);
+>  		goto out;
+> -- 
+> 2.35.1
+> 
