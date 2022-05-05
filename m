@@ -2,123 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0699C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:13:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383051AbiEESQl (ORCPT
+        id S1383060AbiEESR0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        Thu, 5 May 2022 14:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242421AbiEESQe (ORCPT
+        with ESMTP id S1383052AbiEESRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:16:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2527E5C66B;
-        Thu,  5 May 2022 11:12:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC78EB82E2B;
-        Thu,  5 May 2022 18:12:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166B9C385A4;
-        Thu,  5 May 2022 18:12:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651774371;
-        bh=WCTrfyIGMORRs4jTd94rX0toCSZo6++euRRkU7UoJ1k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YeWCFMS6ouaJZXwFCFa913pvJPovGxKh9T3XXsWnAfH9Afh3cqp7rUi38sHHMqXMg
-         rVGJWDLlAWo0l+i0TLrAutyM0Yt0T7Z7ATsFf0vSNnydX8mVxlA6vRrx/sKD/EhP0/
-         2BRberpL5FYsumRjFD8BHx0PLRQ+4GvHRdZofiP8ISJS3iVtEIN5zyKJEZ1nDNOOTc
-         B22izljyLVHgqTXrXeqGajURvvWl+82r18kIBZFyQ8TQAopf5TeChuQ0Gz4/3E5dcd
-         sDw4WDNo7uR3YrUXYRGNUK+c8aX6ZQKjINYAv1qZcPtEa9MfK7QVzxZCw/kUQ0VBeS
-         SIR26kRfb0AxQ==
-Date:   Thu, 5 May 2022 11:12:49 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Alex Deucher <alexdeucher@gmail.com>,
-        Jack Xiao <Jack.Xiao@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the amdgpu tree
-Message-ID: <YnQToaOno0MZzJ5r@dev-arch.thelio-3990X>
-References: <20220505194717.065db7ab@canb.auug.org.au>
+        Thu, 5 May 2022 14:17:18 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 661D25D1B8
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651774414;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vIQ6rERKH4luifLFHwoZPkiKhXSs2wHfoxIuk8Um0/k=;
+        b=TLNDTprPjPH19mgtlKi7WWzndGSNbw1k2jG+4k8JIrrCqIxVTcsJvFz8/4P/xPoi7aFxcD
+        31mQ3REts6rNBGfJ1YSeXW2buDHtgUukzqrf+Vxoico7rrYOVkNAMH8zVNYr7q+uTSNraj
+        689a4VGODemT1ya8b4yVdphXet/dBGg=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-313-qaLVb_EYND6U8hRAa-kWmw-1; Thu, 05 May 2022 14:13:32 -0400
+X-MC-Unique: qaLVb_EYND6U8hRAa-kWmw-1
+Received: by mail-qt1-f197.google.com with SMTP id t25-20020a05622a181900b002f3b32a6e30so3958913qtc.11
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:13:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vIQ6rERKH4luifLFHwoZPkiKhXSs2wHfoxIuk8Um0/k=;
+        b=wAv7byU+QJdEzj/mlXZO163Em+43ZPz4TgWLz0Qj3YYJXIYmk/gfnzylY+4wLoGKGm
+         AmvutdEEQqIsg7Skrbf99/sob4mdKXJkpMdg2xp/Kf58vjIP4Q0LOiCNHdLk5bvCCjkB
+         nf5CuiYbquE0OjNyw35pZHq7f7ydSoFJX0d0ujL7/qTAsL4YLaM0twNPop0MLkL9AK3v
+         xrdH+hNbiotthawS/m3mQXPZ4VrzCQqNMHmSwYpFRiH4heZSP8ZS1Jwt8RypCE7l0ybO
+         91CnfPLHnoxpV+V+CcAsDs5XmnH4eA/kXKaGyb7yag+BxHmBJh+VLy1qkU6r06WubX5t
+         jKMQ==
+X-Gm-Message-State: AOAM531KQptckN6AC1G+Aq04W8ELvdclHznxr1s4GDGDKzFUC4drevS3
+        OKzmctQwSEDVd8lPeyACy5XV9CBhXbxk4a66r4q38mmhGu7s6oPK4yZb9hW3jRmcPx2SGanyTZX
+        PFo43/GWjG0oJbCS4STufogRS
+X-Received: by 2002:a37:9342:0:b0:69f:b0b9:b60d with SMTP id v63-20020a379342000000b0069fb0b9b60dmr21180454qkd.728.1651774412135;
+        Thu, 05 May 2022 11:13:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzZDVSrYF0/IHka2CQ1470+9YJmZLCgwnZ+Aoo3cSeAePgqRTe09cEGUHwjWj3klSG0nnBjLg==
+X-Received: by 2002:a37:9342:0:b0:69f:b0b9:b60d with SMTP id v63-20020a379342000000b0069fb0b9b60dmr21180443qkd.728.1651774411955;
+        Thu, 05 May 2022 11:13:31 -0700 (PDT)
+Received: from fedora (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id i22-20020ac871d6000000b002f3ad89629dsm1230752qtp.2.2022.05.05.11.13.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 11:13:31 -0700 (PDT)
+Date:   Thu, 5 May 2022 14:13:29 -0400
+From:   Adrien Thierry <athierry@redhat.com>
+To:     Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/3] staging: vchiq_arm: add reference to vchiq device in
+ vchiq_state
+Message-ID: <YnQTyS+37rTkvQ4/@fedora>
+References: <20220502183045.206519-1-athierry@redhat.com>
+ <20220502183045.206519-2-athierry@redhat.com>
+ <60a0ad1e-92d5-5032-7672-3da9ea606348@i2se.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505194717.065db7ab@canb.auug.org.au>
+In-Reply-To: <60a0ad1e-92d5-5032-7672-3da9ea606348@i2se.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+Hi Stefan,
 
-On Thu, May 05, 2022 at 07:47:17PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the amdgpu tree, today's linux-next build (powerpc
-> allyesconfig) failed like this:
-> 
+> the patch looks good to me. It would be nice to mention that with adding
+> the device reference it would possible to introduce common kernel logging.
 
-<snip long error message>
+Sure, I can mention this in the next version.
 
-> 
-> Caused by commit
-> 
->   028c3fb37e70 ("drm/amdgpu/mes11: initiate mes v11 support")
-> 
-> This build has __BIG_ENDIAN set.
-> 
-> I have applied the following patch for today.
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Thu, 5 May 2022 19:14:25 +1000
-> Subject: [PATCH] mark CONFIG_DRM_AMDGPU as depending on CONFIG_CPU_LITTLE_ENDIAN
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  drivers/gpu/drm/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-> index e88c497fa010..2aaa9ef1168d 100644
-> --- a/drivers/gpu/drm/Kconfig
-> +++ b/drivers/gpu/drm/Kconfig
-> @@ -244,6 +244,7 @@ source "drivers/gpu/drm/radeon/Kconfig"
->  config DRM_AMDGPU
->  	tristate "AMD GPU"
->  	depends on DRM && PCI && MMU
-> +	depends on CPU_LITTLE_ENDIAN
->  	select FW_LOADER
->  	select DRM_DISPLAY_DP_HELPER
->  	select DRM_DISPLAY_HDMI_HELPER
-> -- 
-> 2.35.1
+Thanks,
 
-This fixup makes CONFIG_DRM_AMDGPU unselectable on any architecture that
-does not have CONFIG_CPU_LITTLE_ENDIAN, such as x86_64. I was rather
-surprised when my AMD test system did not reach the login screen and
-there were no error messages in dmesg, only to find that
-CONFIG_DRM_AMDGPU had disappeared from my build.
+Adrien
 
-If this is not fixed by the time you do next-20220506, would you
-consider swapping the logic like so? This should allow all implicitly
-little endian architectures to work (at least, I tested it with x86_64),
-while preventing errors for CONFIG_CPU_BIG_ENDIAN configurations.
-
-Cheers,
-Nathan
-
-diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-index 2aaa9ef1168d..a57843733a96 100644
---- a/drivers/gpu/drm/Kconfig
-+++ b/drivers/gpu/drm/Kconfig
-@@ -244,7 +244,7 @@ source "drivers/gpu/drm/radeon/Kconfig"
- config DRM_AMDGPU
- 	tristate "AMD GPU"
- 	depends on DRM && PCI && MMU
--	depends on CPU_LITTLE_ENDIAN
-+	depends on !CPU_BIG_ENDIAN
- 	select FW_LOADER
- 	select DRM_DISPLAY_DP_HELPER
- 	select DRM_DISPLAY_HDMI_HELPER
