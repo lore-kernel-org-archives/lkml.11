@@ -2,135 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14475C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358537AbiEELm0 (ORCPT
+        id S1354211AbiEELnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 07:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44632 "EHLO
+        Thu, 5 May 2022 07:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358241AbiEELl7 (ORCPT
+        with ESMTP id S231760AbiEELnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 07:41:59 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0369D53E30
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:38:14 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id gh6so8215418ejb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 04:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KgLO+C2/yOlfu/wchcN06UvJAW7HmrFszzDOb32BWIc=;
-        b=avupb/HFUW83+Itv9KEKJpUV9154BtGQV9mBeBuVuAW0qTnE5liQxBOSOM7uJS+QLq
-         ID14hRVgFsYn2hlVQ4T02BqWIk1wD60GfIr2r92oM+PqjhGl8aDIqgY+34tekiXEB2sO
-         n2TEkI7hlKKZPKisDCVvcA1/jppqPdpapdmWvCYg46NSMagiHA7MBEjxj8lMTcxB/lBt
-         jX+y6b9HJSA4r0/1V7ICZNheTF0qDHyZSNgGCwobcdXPBKZ07Y2iAa+YCFsToud4qjnv
-         g0LTt/alnMGknJLqwXtBrNw6U+TX647OspT3fYaNIV/YTwI1JlpMbLsEG53rabwZ6fBi
-         QyvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KgLO+C2/yOlfu/wchcN06UvJAW7HmrFszzDOb32BWIc=;
-        b=XW3VSCT7Lx781Yrqm0E5Suo4V8s9ZUAAzsmtRp9WeVKR2bEh/g7+ATn1A6oZotfop4
-         boqtqlDMPm8POSt0ftLxhXzcA6eJaoow8Zfp5FpOMmvmPtbjKRO1EWVfWHK80II/QWjz
-         c7lz+wY9zDun1Sqo3ZTb9KdcUlHlTypVtGlpitjIOM0Ssaak+5uyx4JR5K0sZ9fSljmQ
-         P0q7To9p3kHIkxU9GJvWa6n0H2Ur3QcPubbYzvUXzdqI/gHrvkR4tF1tE3YSyjDoF+VS
-         KYFBhdsmz01sf3/cd56JRTC2nn8Jpz8IlYAPctO4YUpd665njXFfJgjJpJ+WIHt/2T7P
-         kHqg==
-X-Gm-Message-State: AOAM5317nCLF6XtOTB0LUHIx17rLThq3Veaxp0zNuJGJ9oR3N79pQN+r
-        4yVNOMgSzkF6o8Gzl7a3aXNovQ==
-X-Google-Smtp-Source: ABdhPJzrPkCIO5OQIuDm4iIyHx+cCI9ZlcNZkwkZiyOWeM12UbIS3zVmC1+k5MTg3pxGQO393gfI9A==
-X-Received: by 2002:a17:906:6a1c:b0:6f4:b0e0:2827 with SMTP id qw28-20020a1709066a1c00b006f4b0e02827mr9260907ejc.249.1651750692479;
-        Thu, 05 May 2022 04:38:12 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g9-20020a1709063b0900b006f3ef214db6sm661006ejf.28.2022.05.05.04.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 04:38:12 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 3/6] ARM: dts: qcom: cleanup QFPROM nodes
-Date:   Thu,  5 May 2022 13:37:59 +0200
-Message-Id: <20220505113802.243301-3-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220505113802.243301-1-krzysztof.kozlowski@linaro.org>
-References: <20220505113802.243301-1-krzysztof.kozlowski@linaro.org>
+        Thu, 5 May 2022 07:43:05 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58AC49922
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:39:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651750766; x=1683286766;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=AD2yT7DFP+hTGlKNWiI4lemreQHZJLeyzDnOs058URo=;
+  b=CEnDzXoGLNfY6yvhGTd8JiNhh1uR0PiUseu6QTszpSEAK4ewXw+woxqU
+   CpG6Drt9ez9mYNhS0Ga38NoZgJraZih6/iF6WrEoNjinbHhqDlMyuYZ0V
+   2oapnRd0qGMBHYSoOBkYgPhOBBrmiDdrSJOK9RSaGUCFBeXHMKqGLXgR1
+   mGp4SqCvHaLAHQCejo6ZG3vINcH7WHyv42SYnQlIqQhBXr+8MLj3xGT9Q
+   jn4qEKAyZ04qUQR5p3HskMCPcXA8Nezkr9FRH0zrg1aK6M6obEcSl/E5A
+   tAo3iSUUBXR7J7g8POd2Zvv8axLGrjYYR7MkPli2RMsDsScRSAcvrHBOm
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="266922604"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="266922604"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 04:39:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="734857195"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 05 May 2022 04:39:24 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmZpM-000CMB-7R;
+        Thu, 05 May 2022 11:39:24 +0000
+Date:   Thu, 5 May 2022 19:38:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jgunthorpe:vfio_group_locking 24/28] drivers/vfio/vfio.c:1152:16:
+ sparse: sparse: Using plain integer as NULL pointer
+Message-ID: <202205051928.3PBzM39q-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cleanup coding style of QFPROM nodes - put compatible as first property
-and drop tabs before '=' character.
+tree:   https://github.com/jgunthorpe/linux vfio_group_locking
+head:   0459b33a59543ac21e35b3c9c1ce106968109e6c
+commit: bc90cf758ddd2ba50b99a407ec35b5f3c8218662 [24/28] vfio: Split up vfio_group_get_device_fd()
+config: h8300-randconfig-s032-20220505 (https://download.01.org/0day-ci/archive/20220505/202205051928.3PBzM39q-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/jgunthorpe/linux/commit/bc90cf758ddd2ba50b99a407ec35b5f3c8218662
+        git remote add jgunthorpe https://github.com/jgunthorpe/linux
+        git fetch --no-tags jgunthorpe vfio_group_locking
+        git checkout bc90cf758ddd2ba50b99a407ec35b5f3c8218662
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/vfio/
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/qcom-apq8064.dtsi | 6 +++---
- arch/arm/boot/dts/qcom-apq8084.dtsi | 4 ++--
- arch/arm/boot/dts/qcom-msm8974.dtsi | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/arm/boot/dts/qcom-apq8064.dtsi b/arch/arm/boot/dts/qcom-apq8064.dtsi
-index 3bf870b7de00..d3cb099cb691 100644
---- a/arch/arm/boot/dts/qcom-apq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-apq8064.dtsi
-@@ -797,9 +797,9 @@ ref_muxoff: adc-channel@f {
- 
- 		qfprom: qfprom@700000 {
- 			compatible = "qcom,apq8064-qfprom", "qcom,qfprom";
--			reg		= <0x00700000 0x1000>;
--			#address-cells	= <1>;
--			#size-cells	= <1>;
-+			reg = <0x00700000 0x1000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
- 			ranges;
- 			tsens_calib: calib {
- 				reg = <0x404 0x10>;
-diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
-index 503b4ae9fb1a..cb01faa23eb7 100644
---- a/arch/arm/boot/dts/qcom-apq8084.dtsi
-+++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
-@@ -240,10 +240,10 @@ apcs: syscon@f9011000 {
- 		};
- 
- 		qfprom: qfprom@fc4bc000 {
--			#address-cells = <1>;
--			#size-cells = <1>;
- 			compatible = "qcom,apq8084-qfprom", "qcom,qfprom";
- 			reg = <0xfc4bc000 0x1000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
- 			tsens_calib: calib@d0 {
- 				reg = <0xd0 0x18>;
- 			};
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 5d2ab5ceb65c..df49be66d0b8 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1118,10 +1118,10 @@ restart@fc4ab000 {
- 		};
- 
- 		qfprom: qfprom@fc4bc000 {
--			#address-cells = <1>;
--			#size-cells = <1>;
- 			compatible = "qcom,msm8974-qfprom", "qcom,qfprom";
- 			reg = <0xfc4bc000 0x1000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
- 			tsens_calib: calib@d0 {
- 				reg = <0xd0 0x18>;
- 			};
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/vfio/vfio.c:1152:16: sparse: sparse: Using plain integer as NULL pointer
+
+vim +1152 drivers/vfio/vfio.c
+
+  1106	
+  1107	static struct file *vfio_device_open(struct vfio_device *device)
+  1108	{
+  1109		struct file *filep;
+  1110		int ret;
+  1111	
+  1112		ret = vfio_device_assign_container(device);
+  1113		if (ret)
+  1114			return ERR_PTR(ret);
+  1115	
+  1116		if (!try_module_get(device->dev->driver->owner)) {
+  1117			ret = -ENODEV;
+  1118			goto err_unassign_container;
+  1119		}
+  1120	
+  1121		mutex_lock(&device->dev_set->lock);
+  1122		device->open_count++;
+  1123		if (device->open_count == 1 && device->ops->open_device) {
+  1124			ret = device->ops->open_device(device);
+  1125			if (ret)
+  1126				goto err_undo_count;
+  1127		}
+  1128		mutex_unlock(&device->dev_set->lock);
+  1129	
+  1130		/*
+  1131		 * We can't use anon_inode_getfd() because we need to modify
+  1132		 * the f_mode flags directly to allow more than just ioctls
+  1133		 */
+  1134		filep = anon_inode_getfile("[vfio-device]", &vfio_device_fops,
+  1135					   device, O_RDWR);
+  1136		if (IS_ERR(filep)) {
+  1137			ret = PTR_ERR(filep);
+  1138			goto err_close_device;
+  1139		}
+  1140	
+  1141		/*
+  1142		 * TODO: add an anon_inode interface to do this.
+  1143		 * Appears to be missing by lack of need rather than
+  1144		 * explicitly prevented.  Now there's need.
+  1145		 */
+  1146		filep->f_mode |= (FMODE_LSEEK | FMODE_PREAD | FMODE_PWRITE);
+  1147	
+  1148		/*
+  1149		 * On success the ref of device is moved to the file and
+  1150		 * put in vfio_device_fops_release()
+  1151		 */
+> 1152		return 0;
+  1153	
+  1154	err_close_device:
+  1155		mutex_lock(&device->dev_set->lock);
+  1156		if (device->open_count == 1 && device->ops->close_device)
+  1157			device->ops->close_device(device);
+  1158	err_undo_count:
+  1159		device->open_count--;
+  1160		mutex_unlock(&device->dev_set->lock);
+  1161		module_put(device->dev->driver->owner);
+  1162	err_unassign_container:
+  1163		vfio_group_try_dissolve_container(device->group);
+  1164		return ERR_PTR(ret);
+  1165	}
+  1166	
+
 -- 
-2.32.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
