@@ -2,60 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242426AbiEEHpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
+        id S1345698AbiEEHpp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 03:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiEEHpF (ORCPT
+        with ESMTP id S1345513AbiEEHpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:45:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F86B19001;
-        Thu,  5 May 2022 00:41:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 5 May 2022 03:45:43 -0400
+X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 00:42:04 PDT
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7356A488A0
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651736523;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VLRlNqVxUT2J8rpKP9C1tMXllHlMCc2mtFE3UdmkF1o=;
+        b=ANme/2kUU5M7JshotflJC6kkKiABEn9g1Q4ANKtIRkIKCjtK9Pcf8rWzmXYKUj+rInedLF
+        /DCD5Jx6wdXRMDOzh6PK9KD6XgBUeHCVESZRytqcjaq4snGm5s08PAz3eo7L4J/QOH7XJ/
+        tl0mEFmF5ad4HK0xG6mBhjioAikVuWw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-533-H4NCAMwpMLKptHmppoGcfw-1; Thu, 05 May 2022 03:35:01 -0400
+X-MC-Unique: H4NCAMwpMLKptHmppoGcfw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EFE3CCE2B58;
-        Thu,  5 May 2022 07:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4F7C385A4;
-        Thu,  5 May 2022 07:41:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651736483;
-        bh=74ezfr/w0KPipHAnnDo94/lRplVZheOxjXtKUicNzPw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vAS0wwFRvDF+I6bSDns0bzizbwPcGziTroPYUuRL3JtrFwY3XWbcOgwQgT7WqYL+g
-         ouWzXy+6Mbq/1QKXygsv6ez/CA+vTJ3Zq9jlqAuN7Ha1jqF+PEwOtrad7GxgChPtv9
-         dYqkAjwe3+3HERl07kFwzYzjbT3FNDD58f0zrVBStlhYPT6cIzHkOX8vi/K5KlYENO
-         UQGnUtO+3RiquNZ1nPK5p+iHT6H0fNpoY3b/DZvMucSmf3WeSCRl7KKTY7bsFwVRLa
-         9N0dmQ3Aj5+FM5Zae8giBmsyEgLB/DHQ4xs0DpPkV+lTHo07buBEKW+bAp27WOxDTM
-         WJro4eI4TVa3w==
-Date:   Thu, 5 May 2022 15:40:59 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH] arm64: dts: imx8m*venice: add missing clock-names to
- pcie_phy
-Message-ID: <20220505074059.GA14615@dragon>
-References: <20220429161629.8297-1-tharvey@gateworks.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 73A0C86B8AB;
+        Thu,  5 May 2022 07:35:00 +0000 (UTC)
+Received: from starship (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5141640D2820;
+        Thu,  5 May 2022 07:34:58 +0000 (UTC)
+Message-ID: <c5cb5f62818a0d5aa03bd730312b93541cdeb97d.camel@redhat.com>
+Subject: Re: [PATCH v3 08/14] KVM: SVM: Update AVIC settings when changing
+ APIC mode
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Thu, 05 May 2022 10:34:57 +0300
+In-Reply-To: <f308ae5c-968d-eab4-2caa-29517e5ac982@amd.com>
+References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
+         <20220504073128.12031-9-suravee.suthikulpanit@amd.com>
+         <ff67344c0efe06d1422aa84e56738a0812c69bfc.camel@redhat.com>
+         <f308ae5c-968d-eab4-2caa-29517e5ac982@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220429161629.8297-1-tharvey@gateworks.com>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 09:16:29AM -0700, Tim Harvey wrote:
-> Define the missing clock-names property for the pcie_phy required by
-> the fsl,imx8-pcie-phy dt bindings.
+On Thu, 2022-05-05 at 08:38 +0700, Suravee Suthikulpanit wrote:
+> Maxim,
 > 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> On 5/4/22 7:19 PM, Maxim Levitsky wrote:
+> > On Wed, 2022-05-04 at 02:31 -0500, Suravee Suthikulpanit wrote:
+> > > Update and refresh AVIC settings when guest APIC mode is updated
+> > > (e.g. changing between disabled, xAPIC, or x2APIC).
+> > > 
+> > > Signed-off-by: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>
+> > > ---
+> > >   arch/x86/kvm/svm/avic.c | 16 ++++++++++++++++
+> > >   arch/x86/kvm/svm/svm.c  |  1 +
+> > >   2 files changed, 17 insertions(+)
+> > > 
+> > > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > > index 3ebeea19b487..d185dd8ddf17 100644
+> > > --- a/arch/x86/kvm/svm/avic.c
+> > > +++ b/arch/x86/kvm/svm/avic.c
+> > > @@ -691,6 +691,22 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+> > >   	avic_handle_ldr_update(vcpu);
+> > >   }
+> > >   
+> > > +void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
+> > > +{
+> > > +	struct vcpu_svm *svm = to_svm(vcpu);
+> > > +
+> > > +	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
+> > > +		return;
+> > > +
+> > > +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
+> > > +		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
+> > > +		return;
+> > > +	}
+> > > +
+> > > +	kvm_vcpu_update_apicv(&svm->vcpu);
+> > Why to have this call? I think that all that is needed is only to call the
+> > avic_refresh_apicv_exec_ctrl.
+> 
+> When APIC mode is updated on each vCPU, we need to check and update
+> vcpu->arch.apicv_active accordingly, which happens in the kvm_vcpu_update_apicv()
 
-Applied, thanks!
+This makes sense, but IMHO it would be better then to call kvm_vcpu_update_apicv
+from the common code when apic mode changes then, because this logic should apply
+to APICv as well.
+
+In fact that logic of not activating AVIC was added in patch 12 
+(and on second thought I think it  should be split to a separate patch), 
+was added to common code, thus calling kvm_vcpu_update_apicv when the condition
+of 'apic is disabled on this vCPU' should also be done by the common code.
+
+Best regards,
+	Maxim Levitsky
+
+> 
+> One test case that would fail w/o the kvm_vcpu_update_apicv() is when
+> we boot a Linux guest w/ guest kernel option _nox2apic_, which Linux forces APIC
+> mode of vCPUs with APIC ID 255 and higher to disable. W/o this line of code, the VM
+> would not boot w/ more than 255 vCPUs.
+> 
+> Regards,
+> Suravee
+> 
+
+
