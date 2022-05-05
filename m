@@ -2,87 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95121C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344942AbiEEI5w (ORCPT
+        id S1350678AbiEEI64 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        Thu, 5 May 2022 04:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350660AbiEEI5k (ORCPT
+        with ESMTP id S1345018AbiEEI6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:57:40 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E814839F
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:54:01 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id j6so3124287pfe.13
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:54:01 -0700 (PDT)
+        Thu, 5 May 2022 04:58:46 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C450D4AE08
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:55:06 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id f2so4046921ioh.7
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=qsLVNCQbuqNelZfcG6SxH1A2kbkVX6IY27mcYuqmtzk=;
-        b=hEBwtnbs2qsJgQ6Y3heHEf4jDHU69XMtUIPlTYr5E7Mwo4jsLOvz9FxXKLh854/sPQ
-         bK9Gth2BLbto3q5+hQvwkKFE0dqt69oDvPedSJ95mr00ChZWS7EjAd9igGYRkKqQAsd2
-         vAVyvodLYegU7aQNOfH9d6ESJyo/NghjtPrDm0OMGoQMhnk5/kgeq78jU0UexUtklvQN
-         d8zh2PCMSOdzz4IpQCwJg/wqploxBlOovLM3o+VWlvLV2uJwjYt47XwBQAalSI8d0Vpi
-         TjzqvaTSJuNxVpU96Oe1mAeBPa+GHUVLTiH5mTlQqpBjgFaBrB/3szDYyIUbhacHXiBC
-         hoNA==
+        bh=XRbImXS7yZjOSKJpbk8D2qEogzCI5zzUCNGCXkZ4ORI=;
+        b=itRUh1dwQfTmRruVf3tQRZTPHU7Q3LOQmD46K2PgD63vClU5QD1rKPPIjkhgtLXcuB
+         b/DTrLyF+Zv4hWALhGeK13DLEj9w2CPGWsdw+DPkgS5YcTKdH4ODYx6Dib5R1UkVZg2O
+         phpswVF3Zi0Eaqu52fpaMAOJXJQinwJvhUB2Ly7tNCVqb2YBT+tu57hcTnWvYaf49OGa
+         zQFFXlZ7SawuqXjPhrVYSu1S+HF+r3uiA94IZ4dl4sVsVHlrGd7YpZW8pRxmEKc4nwJr
+         owZsh7QYjRj9Bwc259EmGttM/+0UWE9ABmd+dMEQt2Hf05KbbZwwyk20anpZobX0p8bC
+         JzeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qsLVNCQbuqNelZfcG6SxH1A2kbkVX6IY27mcYuqmtzk=;
-        b=ixhuCrO0h2CM04PQtOUmAvCiAJOjZHbfxa3QZiAhsn9Gqwr7yRXq9O8nCRsk73BGXU
-         S65rmB6pFNTOcdqxTXfNpfPLdkmBI06PEqr8dGhyObe8vKBuiV/jS5KFQJ1emgrHdP4K
-         YNohQlBbhtlrRlQM8XWGfpkOPtGAzgzD3kD/S2hbEPC22e/MBpHrPMqxbv2T1LFD+dJy
-         ccPYtfXWx8ZloT0MCfENDGVoO527YCJyMeCA6BH/C9wopa7k1Pl5ubg7sFGDRcclHswe
-         KuZ+l4CwVxH4cbDYMnlLjPMysiYqOVB8Xd2wctk6+Qju66/QBN2tAQhdxWTUhFdfAEpy
-         TUSQ==
-X-Gm-Message-State: AOAM533vjqtJtJnCqK5ETXiFIQMKxCw7s7qnoqjMlsTH4KApitToi0XK
-        cCb55V1vugbRCtxmCpi+Qug3Gw==
-X-Google-Smtp-Source: ABdhPJxx/Nw6BtoZublv6LltW3nNlrc2IvnZviGEus5evK/SUN+o7dLcUxn30ZDTaOdfsZ3C01YK6w==
-X-Received: by 2002:a62:8684:0:b0:50d:972b:d9d2 with SMTP id x126-20020a628684000000b0050d972bd9d2mr24615633pfd.4.1651740841059;
-        Thu, 05 May 2022 01:54:01 -0700 (PDT)
+        bh=XRbImXS7yZjOSKJpbk8D2qEogzCI5zzUCNGCXkZ4ORI=;
+        b=KzcBdTkq1WNafVy4nSI8C+WH8nKFEny4Xem4po5OCdowlWmnY2ThqTRTXp80gNjJ41
+         mnXagSOBy0S1xrceGzO7TPwt9bld+DdPT4JV1FdgHem6zt3yEMMrauFip8lHD5aXBaFf
+         nTula4wQp4r91XtBlQB/TngplWc5yZr57QtRirdwtOVH2iakn9HNQgeR0icVD3zz8ajP
+         2Mgu2ZtiKiprnETo+vm/znmGBA74dCdQGQW+3m2iYxT2J7biaampLrS2yu3qTHisf+2t
+         bJh/cQoTaCGlZFePq5XGOp4YHGMHLaQ6173+Q+eWfprysRr5Xf5uuzPBq0ss0A66AkzL
+         eSUg==
+X-Gm-Message-State: AOAM531zN+IoltBqxe/qsajRaASVudJa+40VMUHQGqF2c1+71SY/j4mv
+        kPHXkFWqESlAVdCxU4CnJte4dAxuIkTGlQ==
+X-Google-Smtp-Source: ABdhPJxk2kal36tmSOj1u1bseqzNs8vNHgDOt6a/BDP1nICDYU6wjZQCZwyllBJW4uJTWz/H755R5w==
+X-Received: by 2002:a65:490d:0:b0:39e:58cb:b1eb with SMTP id p13-20020a65490d000000b0039e58cbb1ebmr21792988pgs.390.1651740298043;
+        Thu, 05 May 2022 01:44:58 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id t22-20020a1709028c9600b0015e8d4eb1ecsm955056plo.54.2022.05.05.01.54.00
+        by smtp.gmail.com with ESMTPSA id t3-20020a170902e84300b0015e8d4eb267sm935629plg.177.2022.05.05.01.44.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 01:54:00 -0700 (PDT)
-Date:   Thu, 5 May 2022 14:23:58 +0530
+        Thu, 05 May 2022 01:44:57 -0700 (PDT)
+Date:   Thu, 5 May 2022 14:14:55 +0530
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     rafael@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
-        roger.lu@mediatek.com, hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v5 0/9] cpufreq: mediatek: Cleanup and support MT8183 and
- MT8186
-Message-ID: <20220505085358.nmohfx3akk7to46r@vireshk-i7>
-References: <20220504130540.5902-1-rex-bc.chen@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Hector Martin <marcan@marcan.st>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] MAINTAINERS: Add entries for Apple SoC cpufreq
+ driver
+Message-ID: <20220505084455.x575yl2evgty5x3j@vireshk-i7>
+References: <20220504075153.185208-1-marcan@marcan.st>
+ <20220504075153.185208-2-marcan@marcan.st>
+ <20220504101750.wmuicq3dytnxrw5o@vireshk-i7>
+ <e0445aa6-0c96-b80d-154e-274be0c1a025@marcan.st>
+ <c374bea4-554d-2e50-4ac6-fb4a2e4fec67@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504130540.5902-1-rex-bc.chen@mediatek.com>
+In-Reply-To: <c374bea4-554d-2e50-4ac6-fb4a2e4fec67@linaro.org>
 User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04-05-22, 21:05, Rex-BC Chen wrote:
->   arm64: dts: mediatek: Add opp table and clock property for MT8183
->     cpufreq
->   arm64: dts: mediatek: Add MediaTek CCI node for MT8183
->   arm64: dts: mediatek: Add mediatek,cci property for MT8183 cpufreq
+On 05-05-22, 10:42, Krzysztof Kozlowski wrote:
+> On 04/05/2022 16:52, Hector Martin wrote:
+> > On 04/05/2022 19.17, Viresh Kumar wrote:
+> >> This should be the last patch instead, or should at least be added
+> >> after the files are merged first. If someone checks out at this
+> >> commit, the files won't be available but still linked here.
+> > 
+> > Isn't that backwards? 
+> 
+> No, because we have tools for checking valid paths (in some places), so
+> when using that tool, the history is not bisectable.
+> 
+> > If someone touches the files, we want them to be
+> > able to get_maintainer.pl, so the MAINTAINERS entries should come first.
+> > It doesn't really cause any issues if there are entries that point at
+> > files that don't exist yet, right?
+> 
+> It hurts any current or future tools checking for valid paths.
+> 
+> > 
+> > Though this is mostly a moot point because the purpose of splitting this
+> > out is so we can merge this one patch through the SoC tree, at which
+> > point the ordering isn't guaranteed (unless the whole series goes
+> > through SoC). 
+> 
+> Just add each path change to respective commit adding that file. It
+> should not be a separate commit, at first place.
+> 
+> Separate commits are for adding entire Maintainers entry.
 
-I guess these would also go through my tree? Please get them acked by
-SoC maintainers.
-
-I would also need an Ack from Rob for the binding patch.
+And there is no need for this patch to go via SoC tree, we can handle
+minor conflicts later on if required.
 
 -- 
 viresh
