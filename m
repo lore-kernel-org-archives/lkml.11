@@ -2,81 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241089AbiEEDX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 23:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S241232AbiEEDYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 23:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236815AbiEEDXV (ORCPT
+        with ESMTP id S241063AbiEEDXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 23:23:21 -0400
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CA44DF44;
-        Wed,  4 May 2022 20:19:44 -0700 (PDT)
-Received: by mail-ot1-f43.google.com with SMTP id c5-20020a9d75c5000000b00605ff3b9997so2197196otl.0;
-        Wed, 04 May 2022 20:19:44 -0700 (PDT)
+        Wed, 4 May 2022 23:23:50 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A134A914;
+        Wed,  4 May 2022 20:20:12 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-e93bbb54f9so3099057fac.12;
+        Wed, 04 May 2022 20:20:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Yqvha5JiEOg0BqFJb68cq4K7lvQBkFi6q99HJWKVi7I=;
-        b=icSsnMl+MtK2B5fzF/5U9TNqq9Gzsknouk5GYbsqvlkdPEYHLMmC6z+OO7kX08HPiF
-         FE4pimbvDo1i+KIGB+ybNJT01LvJ9zEoL3soMQSkwrx9D3qlPPhFIlMdB6x6ljuMDaf8
-         fpHsERR195z5lMs4okroaCg0INudxmerxigz6U2wDLMUTqHYY7p+AlA++BmkkjW1VqQA
-         QCjioFC45s11bupcnqT1PFZiOADKqj6Mj5bGKCxJF7xPsz4UX5jKsKIL9LMPz1evo7Zv
-         wW7KJOboHSoGz/lOxH0sW1Wn8wJV5+X1Ip6tdykcoy3wH3kACJudYMEfSNxMjT3uN1j/
-         at6w==
-X-Gm-Message-State: AOAM531njWFcrdtCD39wWkpHFt+id/MAKnFxRn7z3KOmDNbMy6rklrvw
-        KjvimQItChxBfQjJ1wipQQ==
-X-Google-Smtp-Source: ABdhPJznORmirZQGS7vd9EyHowL4V4l2q++7ZFFUosNNbliY0OsyuT1Hz46Ncjg4IYM0YxRGp7esNA==
-X-Received: by 2002:a05:6830:33ca:b0:605:e2f6:d39c with SMTP id q10-20020a05683033ca00b00605e2f6d39cmr8367138ott.123.1651720783380;
-        Wed, 04 May 2022 20:19:43 -0700 (PDT)
+        bh=CrA17Qkb0CGAcxobetRuqhXdLCc6EA43fw6FG/p5S1E=;
+        b=k1Czu6bDWIUyNBtpfEEId28O54y6GifY5gkSM27lFHHfhUGn5f931N+UZ1kJNk6jFD
+         O8ChRqqkWEl77ZtTp/UsGUy5Y60O0Iih+Znn+haVHdSxMkaXKu+8+9CEGQYjBZXcNnkk
+         gJO2XyL4fEKmo5l/eqBepc1GfRoIhlx4ZbpV2aHzklR5smK/eQWUMcUnBUv5kUy+bxiL
+         dcrfMfrrtXHbDozop4xYvCmZxbQBmkoqZ/t6YmhkbK14jJe0IF5hGSaHOQqY3OTudMnq
+         Z2eiXDVcNJdySx4wkhuh5KKZEq/qZw6smo3V67PGpJXLtQbEVSy/8aVJAYhLhBtosj0+
+         lDQA==
+X-Gm-Message-State: AOAM532UtBGKvbgvSHaSUCcF8qQf1p1kJn+KKrjai19ht1UhpScOkEDk
+        4tGtBICwplsuHskk0Vmv5Q==
+X-Google-Smtp-Source: ABdhPJzZQHh5WERFjAKOY3FAKRrPmpzqMKJk92HlEORtCPCzwuVwho6/SAe7wJIjVr2bBIKTX1VSCQ==
+X-Received: by 2002:a05:6870:f146:b0:db:c90:99bb with SMTP id l6-20020a056870f14600b000db0c9099bbmr1270130oac.55.1651720811913;
+        Wed, 04 May 2022 20:20:11 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l21-20020a544515000000b00325cda1ffb8sm240936oil.55.2022.05.04.20.19.42
+        by smtp.gmail.com with ESMTPSA id l9-20020a056870204900b000e90b37d2f5sm157137oad.24.2022.05.04.20.20.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 20:19:42 -0700 (PDT)
-Received: (nullmailer pid 2748179 invoked by uid 1000);
-        Thu, 05 May 2022 03:19:42 -0000
-Date:   Wed, 4 May 2022 22:19:42 -0500
+        Wed, 04 May 2022 20:20:11 -0700 (PDT)
+Received: (nullmailer pid 2748967 invoked by uid 1000);
+        Thu, 05 May 2022 03:20:10 -0000
+Date:   Wed, 4 May 2022 22:20:10 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     Peng Fan <peng.fan@nxp.com>, kernel@pengutronix.de,
-        linux-imx@nxp.com, robh+dt@kernel.org, s.hauer@pengutronix.de,
-        shawnguo@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, festevam@gmail.com
-Subject: Re: [PATCH V2 1/3] arm64: dts: freescale: Add i.MX93 dtsi support
-Message-ID: <YnNCTlM75jwRiyq2@robh.at.kernel.org>
-References: <20220503122951.4147636-1-peng.fan@oss.nxp.com>
- <20220503122951.4147636-2-peng.fan@oss.nxp.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next] dt-bindings: net: lan966x: fix example
+Message-ID: <YnNCalSon6Z7x38+@robh.at.kernel.org>
+References: <20220503132038.2714128-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220503122951.4147636-2-peng.fan@oss.nxp.com>
+In-Reply-To: <20220503132038.2714128-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 03 May 2022 20:29:49 +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Tue, 03 May 2022 15:20:38 +0200, Michael Walle wrote:
+> In commit 4fdabd509df3 ("dt-bindings: net: lan966x: remove PHY reset")
+> the PHY reset was removed, but I failed to remove it from the example.
+> Fix it.
 > 
-> The i.MX 93 applications processors are the first in the i.MX portfolio
-> to integrate the scalable Arm Cortex-A55 core, bringing performance
-> and energy efficiency to Linux-based edge applications and the
-> Arm Ethos-U65 microNPU, enabling developers to create more capable,
-> cost-effective and energy-efficient ML applications.
-> 
-> Add the basic dtsi support for i.MX93.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> Fixes: 4fdabd509df3 ("dt-bindings: net: lan966x: remove PHY reset")
+> Reported-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->  arch/arm64/boot/dts/freescale/imx93-pinfunc.h | 623 ++++++++++++++++++
->  arch/arm64/boot/dts/freescale/imx93.dtsi      | 337 ++++++++++
->  2 files changed, 960 insertions(+)
->  create mode 100755 arch/arm64/boot/dts/freescale/imx93-pinfunc.h
->  create mode 100644 arch/arm64/boot/dts/freescale/imx93.dtsi
+>  .../devicetree/bindings/net/microchip,lan966x-switch.yaml     | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
