@@ -2,91 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60933C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCAFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378291AbiEEM6K (ORCPT
+        id S1377565AbiEENBF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
+        Thu, 5 May 2022 09:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378418AbiEEM6E (ORCPT
+        with ESMTP id S233634AbiEENBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:58:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F775674C;
-        Thu,  5 May 2022 05:54:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2DC261E0C;
-        Thu,  5 May 2022 12:54:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3489BC385A8;
-        Thu,  5 May 2022 12:54:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651755259;
-        bh=6lsmH0CxgqYKBOcML9+EDkwriT9FTWy1+KKvkIcEEc0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c8RxOr9faMCBiRtMQ5zYMH4HMGNtFnSpywnsWHCaLmRJ32wDcwkkYuSbGcQeFmthK
-         /fe3QHQCQaDHRJKWSuA4EMgP5Sz/aSteyeVk7veahmLe4ulzVRxmNbBux6tCivlfTz
-         oOiYMUEpf+Vr7hGbc7tm8SHP3ogwJ84S7gQvzVKjdX/WvpSmBtav/LSI+xBiyMV5iX
-         95nd+Ai6d5wAwH5HdcJZYOsjhmn8s+/w145K3ESSk91/ysHnAMLft+KY/8u1KJwwAm
-         tS28s56PJRveoEubU+hTlrlEuyXuCsnkWi0TOpU0G9JluMovwtjhjnV2mZBYcg4gd0
-         dGczW2ilWeqbA==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nmazo-009Cyd-PY; Thu, 05 May 2022 13:54:16 +0100
+        Thu, 5 May 2022 09:01:01 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90184AE08
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:57:21 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id i19so8541252eja.11
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:57:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=FM/Z6quK2HFXaGlKN2qHDcgt6AtRbU+Icwi43NmIU6g=;
+        b=e7ujymya9ex2b8NDhVyC0LmZepjwDZX1dOJK1JDnnmGuRG6AyTOFnHJ4J2V7rtz1p/
+         FBP0QGnQxWCfs+GWzsqJKxqz66EmleSHDZtXvbKHaBCbdrS6bFMgGWAdoBaq5hRTvKk1
+         IAbU4QUVUeqgtXnBEA9JGXIncA6nXjki8yuyg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=FM/Z6quK2HFXaGlKN2qHDcgt6AtRbU+Icwi43NmIU6g=;
+        b=sOyYf/HHARlxxiJG+eA9fAwacOMvW95YYojFAx0VdCJeTFCpHZxJmdNSYLGnTovc5g
+         tlATu8XW0x9y3xeqKQu23vwISyIIRid+ao8QYfu2l3lD3bbt+6BiXHu+ELxEB/1Mt1WJ
+         qJFSzPQFmPfk0MDZMRZjoHHVQB07eOmzRJrm9M52Asscm+AJeabYUZQ/LWppEJsrN9LW
+         77QphSUihRpaMBaaDyzBTBx4jKFAs26btD55qJO/YEnmZtAqsHMMKAeYGAZ1wRc3rZRf
+         3umYstJ8jhdkLII3yQqhpVD0ZBjGJfZCMtC7jZMoT+GrZhFJILukhxah7Li/qMvgJuXu
+         Afog==
+X-Gm-Message-State: AOAM533r/MDjEyTW7zpB/thRc3R2AV68ACGF913JtVVI73dMHJfTGDV/
+        nm5qxATjRV13fe5/T6YOOPZvTg==
+X-Google-Smtp-Source: ABdhPJydB+X7T3Uinb/cc9VMJSsCVdAEUcKhuzhNyoyqd8YRzscpNiO1NJQT0fjm1pOxqN4/qUBFXA==
+X-Received: by 2002:a17:906:58ca:b0:6f4:444f:31ef with SMTP id e10-20020a17090658ca00b006f4444f31efmr19843303ejs.135.1651755440390;
+        Thu, 05 May 2022 05:57:20 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id n15-20020a05640206cf00b0042617ba6386sm823998edy.16.2022.05.05.05.57.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 05:57:19 -0700 (PDT)
+Date:   Thu, 5 May 2022 14:57:18 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH 2/3] fbdev/simplefb: Cleanup fb_info in .fb_destroy
+ rather than .remove
+Message-ID: <YnPJroqQ+oxqJqIx@phenom.ffwll.local>
+Mail-Followup-To: Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+        Hans de Goede <hdegoede@redhat.com>
+References: <20220504215151.55082-1-javierm@redhat.com>
+ <20220504215722.56970-1-javierm@redhat.com>
+ <974f4d00-89bc-a2da-6d65-ca4207300794@suse.de>
 MIME-Version: 1.0
-Date:   Thu, 05 May 2022 13:54:16 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH V2] gpio: max77620: Make the irqchip immutable
-In-Reply-To: <CAMRc=MeXUN6P8kWxB75GsXdKD7Owz9mX5HpgfQoMGeJh-z3=Rw@mail.gmail.com>
-References: <20220504144406.36744-1-jonathanh@nvidia.com>
- <CAMRc=MeXUN6P8kWxB75GsXdKD7Owz9mX5HpgfQoMGeJh-z3=Rw@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <6629e06d06f647923c04502ce3133f76@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: brgl@bgdev.pl, jonathanh@nvidia.com, linus.walleij@linaro.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <974f4d00-89bc-a2da-6d65-ca4207300794@suse.de>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-05 13:42, Bartosz Golaszewski wrote:
-> On Wed, May 4, 2022 at 4:44 PM Jon Hunter <jonathanh@nvidia.com> wrote:
->> 
->> Commit 6c846d026d49 ("gpio: Don't fiddle with irqchips marked as
->> immutable") added a warning to indicate if the gpiolib is altering the
->> internals of irqchips. Following this change the following warning is
->> now observed for the max77620 gpio driver ...
->> 
->>  WARNING KERN gpio gpiochip0: (max77620-gpio): not an immutable chip,
->>         please consider fixing it!
->> 
->> Fix the above warning by making the max77620 gpio driver immutable.
->> 
->> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
->> ---
+On Thu, May 05, 2022 at 09:29:40AM +0200, Thomas Zimmermann wrote:
+> Hi
 > 
-> Queued for fixes, thanks!
+> Am 04.05.22 um 23:57 schrieb Javier Martinez Canillas:
+> > The driver is calling framebuffer_release() in its .remove callback, but
+> > this will cause the struct fb_info to be freed too early. Since it could
+> > be that a reference is still hold to it if user-space opened the fbdev.
+> > 
+> > This would lead to a use-after-free error if the framebuffer device was
+> > unregistered but later a user-space process tries to close the fbdev fd.
+> > 
+> > The correct thing to do is to only unregister the framebuffer in the
+> > driver's .remove callback, but do any cleanup in the fb_ops.fb_destroy.
+> > 
+> > Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> > Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> 
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+> 
+> Please see my question below.
+> 
+> > ---
+> > 
+> >   drivers/video/fbdev/simplefb.c | 8 +++++++-
+> >   1 file changed, 7 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
+> > index 94fc9c6d0411..2c198561c338 100644
+> > --- a/drivers/video/fbdev/simplefb.c
+> > +++ b/drivers/video/fbdev/simplefb.c
+> > @@ -84,6 +84,10 @@ struct simplefb_par {
+> >   static void simplefb_clocks_destroy(struct simplefb_par *par);
+> >   static void simplefb_regulators_destroy(struct simplefb_par *par);
+> > +/*
+> > + * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
+> > + * of unregister_framebuffer() or fb_release(). Do any cleanup here.
+> > + */
+> >   static void simplefb_destroy(struct fb_info *info)
+> >   {
+> >   	struct simplefb_par *par = info->par;
+> > @@ -94,6 +98,8 @@ static void simplefb_destroy(struct fb_info *info)
+> >   	if (info->screen_base)
+> >   		iounmap(info->screen_base);
+> > +	framebuffer_release(info);
+> > +
+> >   	if (mem)
+> >   		release_mem_region(mem->start, resource_size(mem));
+> 
+> The original problem with fbdev hot-unplug was that vmwgfx needed the
+> framebuffer region to be released. If we release it only after userspace
+> closed it's final file descriptor, vmwgfx could have already failed.
+> 
+> I still don't fully get why this code apparently works or at least doesn't
+> blow up occasionally. Any ideas?
 
-You mean fixes for *5.19*, right?
+See my other reply, releasing hw stuff should be done from ->remove, not
+->fb_destroy.
 
-Thanks,
+Also note that none of the patches discussed moved around anything here,
+we simply leaked things a bit when only unregistering the fb and not going
+through the device->remove callback. I guess in practice it works because
+unregistering the device sends out a uevent, and userspace then closes all
+it's device fd as a reaction to that, and usually that's fast enough to
+not upset anyone?
 
-         M.
+No idea tbh.
+-Daniel
+
+> Best regards
+> Thomas
+> 
+> >   }
+> > @@ -545,8 +551,8 @@ static int simplefb_remove(struct platform_device *pdev)
+> >   {
+> >   	struct fb_info *info = platform_get_drvdata(pdev);
+> > +	/* simplefb_destroy takes care of info cleanup */
+> >   	unregister_framebuffer(info);
+> > -	framebuffer_release(info);
+> >   	return 0;
+> >   }
+> 
+> -- 
+> Thomas Zimmermann
+> Graphics Driver Developer
+> SUSE Software Solutions Germany GmbH
+> Maxfeldstr. 5, 90409 Nürnberg, Germany
+> (HRB 36809, AG Nürnberg)
+> Geschäftsführer: Ivo Totev
+
+
+
+
 -- 
-Jazz is not dead. It just smells funny...
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
