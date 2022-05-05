@@ -2,100 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE98C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378865AbiEENJa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
+        id S232399AbiEENJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 09:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378845AbiEENJZ (ORCPT
+        with ESMTP id S1378766AbiEENIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:09:25 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA5612A98;
-        Thu,  5 May 2022 06:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=K5gn/7sp7L1lwAyBxMpQcFTyNqRFPph4Q66pGuhOfbY=; b=TwG/Y7SJWPlxMzvXvY6UbL6sJ+
-        CFdPhtngSc5X84rkj+dUERbEGZ73AHlrth6uXHT5iHF+Ye3jngcDInSWu4kT86DX2OSO8YnWqUqG4
-        pAQZ9NyHCOskp48HSEIXauRLverJszCC+n5H+8mWBhsdkvUOLKX9Llx6ExJu+0irM3/ShF79oYDx5
-        GWv6C1bWPCCo69R58DuhXQ+KO7UKApDx6uPydfhCGg/uVUE+Ka6kiRZJis5Y83J9M0MXPLPMXhBP7
-        byVsFvVwebplom62LBjJYn+vYrdl3OKyJ2sxoIOgI7viJrbJEbgpDUOLBnUqQgTTXKrcrWDWXP9a5
-        BHj9CxuQ==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nmbAj-0000uD-EM; Thu, 05 May 2022 15:05:33 +0200
-Message-ID: <3bee47db-f771-b502-82a3-d6fac388aa89@igalia.com>
-Date:   Thu, 5 May 2022 10:05:18 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Should arm64 have a custom crash shutdown handler?
-Content-Language: en-US
-To:     Mark Rutland <mark.rutland@arm.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        will Deacon <will@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Thu, 5 May 2022 09:08:47 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F4B56425;
+        Thu,  5 May 2022 06:05:06 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A04AD60017;
+        Thu,  5 May 2022 13:05:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651755905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AiujlfoIRvGrufRRXdpTmkdQRZg0L/jgVK7rFYQ9oos=;
+        b=DAt0uupYGjyZUZhWiAog41K1Gc6Xaxnjq37AGUk8DEH+7VmPs/EVTyG7naFqP68zK/1US2
+        NxzQiyMH6UwL/feEvi7dVh+OBzRdzfryPRTzOtQYqzsqbxjD90SzEzxvyASu4k3HAD6IQs
+        j7mRgrjTYBMfxJ4mZKonuXBMBJ0eNfJXyP/Skb3ZHcGlfgmzxLFnTY07ZiQ9W/ulXb/iGI
+        ZsCC3JZohz2O0be3Tuyc/taH/DY2hafiQXM20mNnVro1gISZrfEdn9arJs0VUuBsUa0Kq9
+        26ne/H8pbhWwNcM/n5khjbhFkleuATMme1J8Sw8/Xi9xRgCtiNAdkdO+/8Z1PQ==
+Date:   Thu, 5 May 2022 15:03:43 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-References: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
- <874k24igjf.wl-maz@kernel.org>
- <92645c41-96fd-2755-552f-133675721a24@igalia.com>
- <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 04/12] net: pcs: add Renesas MII converter
+ driver
+Message-ID: <20220505150343.7bcd198a@fixe.home>
+In-Reply-To: <CAMuHMdU1DZeigT1ES4FMrtLpnRA0fMp6k4ZhDs7U0=CvAuOxgA@mail.gmail.com>
+References: <20220504093000.132579-1-clement.leger@bootlin.com>
+        <20220504093000.132579-5-clement.leger@bootlin.com>
+        <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
+        <20220505143236.31fc6b58@fixe.home>
+        <CAMuHMdU1DZeigT1ES4FMrtLpnRA0fMp6k4ZhDs7U0=CvAuOxgA@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05/2022 09:53, Mark Rutland wrote:
-> [...]
-> Looking at those, the cleanup work is all arch-specific. What exactly would we
-> need to do on arm64, and why does it need to happen at that point specifically?
-> On arm64 we don't expect as much paravirtualization as on x86, so it's not
-> clear to me whether we need anything at all.
-> 
->> Anyway, the idea here was to gather a feedback on how "receptive" arm64
->> community would be to allow such customization, appreciated your feedback =)
-> 
-> ... and are you trying to do this for Hyper-V or just using that as an example?
-> 
-> I think we're not going to be very receptive without a more concrete example of
-> what you want.
-> 
-> What exactly do *you* need, and *why*? Is that for Hyper-V or another hypervisor?
-> 
-> Thanks
-> Mark.
+Le Thu, 5 May 2022 15:00:28 +0200,
+Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
 
-Hi Mark, my plan would be doing that for Hyper-V - kind of the same
-code, almost. For example, in hv_crash_handler() there is a stimer
-clean-up and the vmbus unload - my understanding is that this same code
-would need to run in arm64. Michael Kelley is CCed, he was discussing
-with me in the panic notifiers thread and may elaborate more on the needs.
+> Hi Cl=C3=A9ment,
+>=20
+> On Thu, May 5, 2022 at 2:33 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@boo=
+tlin.com> wrote:
+> > Le Thu, 5 May 2022 09:16:38 +0200,
+> > Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit : =20
+> > > On Wed, May 4, 2022 at 11:31 AM Cl=C3=A9ment L=C3=A9ger <clement.lege=
+r@bootlin.com> wrote: =20
+> > > > Add a PCS driver for the MII converter that is present on the Renes=
+as
+> > > > RZ/N1 SoC. This MII converter is reponsible for converting MII to
+> > > > RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows=
+ to
+> > > > reuse it in both the switch driver and the stmmac driver. Currently,
+> > > > this driver only allows the PCS to be used by the dual Cortex-A7
+> > > > subsystem since the register locking system is not used.
+> > > >
+> > > > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =
+=20
+> > >
+> > > Thanks for your patch!
+> > > =20
+> > > > --- /dev/null
+> > > > +++ b/drivers/net/pcs/pcs-rzn1-miic.c =20
+> > > =20
+> > > > +static int miic_probe(struct platform_device *pdev)
+> > > > +{
+> > > > +       struct device *dev =3D &pdev->dev;
+> > > > +       struct miic *miic;
+> > > > +       u32 mode_cfg;
+> > > > +       int ret;
+> > > > +
+> > > > +       ret =3D miic_parse_dt(dev, &mode_cfg);
+> > > > +       if (ret < 0)
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       miic =3D devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
+> > > > +       if (!miic)
+> > > > +               return -ENOMEM;
+> > > > +
+> > > > +       spin_lock_init(&miic->lock);
+> > > > +       miic->dev =3D dev;
+> > > > +       miic->base =3D devm_platform_ioremap_resource(pdev, 0);
+> > > > +       if (!miic->base)
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       pm_runtime_enable(dev);
+> > > > +       ret =3D pm_runtime_resume_and_get(dev);
+> > > > +       if (ret < 0) =20
+> > >
+> > > Missing pm_runtime_disable(dev). =20
+> >
+> > Maybe using devm_pm_runtime_enable() would be sufficient and avoid such
+> > calls. =20
+>=20
+> That's an option.
+> Note that that still won't allow you to get rid of the .remove() callback,
+> as you still have to call pm_runtime_put() manually.
 
-But also (not related with my specific plan), I've seen KVM quiesce code
-on x86 as well [see kvm_crash_shutdown() on arch/x86] , I'm not sure if
-this is necessary for arm64 or if this already executing in some
-abstracted form, I didn't dig deep - probably Vitaly is aware of that,
-hence I've CCed him here.
+Yes, of course :) I'll do the modifications.
 
-Cheers,
+Thanks,
 
-
-Guilherme
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
