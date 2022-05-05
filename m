@@ -2,137 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17712C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380194AbiEENzy (ORCPT
+        id S1380175AbiEEN4N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38694 "EHLO
+        Thu, 5 May 2022 09:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349716AbiEENxj (ORCPT
+        with ESMTP id S1380343AbiEENze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:53:39 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D44583B4
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651758596; x=1683294596;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9l6WaRb6oGd/EhXo4amB8hePW2EHsrBipNj6o911jRY=;
-  b=mcxCgXKK5oaksOWrwHxKClSXQCKvlBFe53f2aMiG09LTrFstfuCmJHCa
-   WEOO6Uo3NMjLlx4D3kXRdzFTWs5Z3jXG5XbCkSGkyKp+M3dUTyyaxLU2N
-   Y14RWeTMqXzmoCTkNo0XiR8cZD38E7fGM6JsFDktJRv5HqDdQI49Gkkem
-   S+QjFRR6v/LfijlIS3yOd+70UE6+/Pb1rsYf2/xQQQo8MiteNIM0dU0db
-   3eO+nNbpYvxNuGQtsoaPKW1FPoS0e0M7bnfGP0sbVIsEWvDtFTaBYyQiu
-   +qJUr2B0ZlpEQA2JsJlI5SN1m1WrM7zqIB6H8Jp3AdvcfmC3YFQhd+GPG
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="157922937"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 May 2022 06:49:56 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 5 May 2022 06:49:56 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 5 May 2022 06:49:54 -0700
-Message-ID: <58edb055-5320-f377-8a2f-1252e1bbea84@microchip.com>
-Date:   Thu, 5 May 2022 15:49:47 +0200
+        Thu, 5 May 2022 09:55:34 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7E459325
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:51:31 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id j6so3676430pfe.13
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 06:51:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oIH9/l+jKgs9B5DRYw7FbS58vVe4zVtylGwe2TjrN9M=;
+        b=iWb/KiI5Nh4F/zht1nOaD5nXxGZBVUw70MvhbB/MJ6c+5LPqpREBzsf6zsAQsrRDm8
+         rx/RYqOl+t8yV2aaX7MVFWaZvRX9f5nKsomJH2A+eg3KYprH4WqxwzJSyMckr3iJaKXk
+         JiCQBoCdirntvgQwkNUj81coh+byvO158gtCySbTKTu7QRCz3MZhlApdPH//ifXBchv0
+         UvitkHWl28bD8tdx70HEP8vaf9H3st3Uu54CmlDnMyBi7D2FUbHJQVrUAG71YMXAoyw8
+         GcDd05HWhgN9qLBr6esb2aJMpkMvKgXc/DFPVtmeJ6Fnr1DS5S6T0cBS3lXFfjEVmAnn
+         Zh/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oIH9/l+jKgs9B5DRYw7FbS58vVe4zVtylGwe2TjrN9M=;
+        b=BvQgHn7lAvFLTk5e9yMwoBydHCXwKIwpzZz30u63GGLTpvKAhai2U8C5NevFsyqwaI
+         +9tEV+BvOU6p59ZXpgJ0Fpq07T7zQRk6ggqTxWkXr5EXumuBMgyMXyI9ga1LXWoeghbe
+         uXKRVdaEV9YgOhaNB6G01eQJ+rEqqr4BO0prfxHuxPwWWajls6r/jYQvRBmTFcaxqrQ9
+         UVdhu37/R0U7AZcnk5LgX/MsC4T1O9jb3QGCwnrko4y08fNd5JiLEWGNfVkw5kAt6goo
+         /sHik6vBmJbLhDRXgta+YRSj1pyPFTJ+0L1lOPC3L+oGg+KavcSp7KCDvxj3xEIhATIA
+         H0yA==
+X-Gm-Message-State: AOAM531qNMnHKUvSwZof9gTXQDDMOt19B//1ADaLXszHUuViLboimDNp
+        WDDYgTdVa4t0Vjzoc4Cw+0B8cSaZ/ePJwRCaWYiV9g==
+X-Google-Smtp-Source: ABdhPJxpS0BcW8ju409ItQiIAiHo+aqD0i1wKv4dQJui6EWLaCpdb50z1BFUKtJYPkQggkeD3Blgh/QiSI1KJedl4Ug=
+X-Received: by 2002:a05:6a02:283:b0:342:703e:1434 with SMTP id
+ bk3-20020a056a02028300b00342703e1434mr21850337pgb.74.1651758691003; Thu, 05
+ May 2022 06:51:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/3] ARM: configs: at91: Remove MTD_BLOCK and use
- MTD_UBI_BLOCK for read only block FS
-Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <codrin.ciubotariu@microchip.com>, <eugen.hristev@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220420134740.193563-1-tudor.ambarus@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220420134740.193563-1-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1649219184.git.kai.huang@intel.com> <522e37eb-68fc-35db-44d5-479d0088e43f@intel.com>
+ <ecf718abf864bbb2366209f00d4315ada090aedc.camel@intel.com>
+ <de24ac7e-349c-e49a-70bb-31b9bc867b10@intel.com> <9b388f54f13b34fe684ef77603fc878952e48f87.camel@intel.com>
+ <d98ca73b-2d2d-757d-e937-acc83cfedfb0@intel.com> <c90a10763969077826f42be6f492e3a3e062326b.camel@intel.com>
+ <fc1ca04d94ad45e79c0297719d5ef50a7c33c352.camel@intel.com>
+ <664f8adeb56ba61774f3c845041f016c54e0f96e.camel@intel.com>
+ <1b681365-ef98-ec78-96dc-04e28316cf0e@intel.com> <8bf596b45f68363134f431bcc550e16a9a231b80.camel@intel.com>
+ <6bb89ca6e7346f4334f06ea293f29fd12df70fe4.camel@intel.com>
+In-Reply-To: <6bb89ca6e7346f4334f06ea293f29fd12df70fe4.camel@intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Thu, 5 May 2022 06:51:20 -0700
+Message-ID: <CAPcyv4iP3hcNNDxNdPT+iB0E4aUazfqFWwaa_dtHpVf+qKPNcQ@mail.gmail.com>
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Mike Rapoport <rppt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/04/2022 at 15:47, Tudor Ambarus wrote:
-> Using mtdblock on raw flashes is generally a bad idea as it lacks
-> wear-leveling, bad block handling or power-cut management.
-> What happens when you use mtdblock and you change any sector of your
-> mtdblockX device, is that it reads the whole corresponding eraseblock into
-> the memory, erases the eraseblock, changes the sector in RAM, and writes
-> the whole eraseblock back. If you have a power failure when the eraseblock
-> is being erased, you lose all the block device sectors in it. The flash
-> will likely decay soon because the eraseblocks will wear out.
-> 
-> Remove this archaic tool as its use case should rather be only for debug
-> purposes. This means that write-capable block file systems like ext2,
-> ext3, FAT, etc. will no longer be addressed with at91 defconfigs. For
-> read only block filesystems like SquashFS, use MTD_UBI_BLOCK instead and
-> benefit of UBI's bit-flip handling and wear-levelling.
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-
-For the whole series:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-and queued in at91-defconfig for 5.19.
-
-Best regards,
-   Nicolas
-
-> ---
->   arch/arm/configs/at91_dt_defconfig | 2 +-
->   arch/arm/configs/sama5_defconfig   | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/configs/at91_dt_defconfig b/arch/arm/configs/at91_dt_defconfig
-> index 549d01be0b47..cf79510631ea 100644
-> --- a/arch/arm/configs/at91_dt_defconfig
-> +++ b/arch/arm/configs/at91_dt_defconfig
-> @@ -50,13 +50,13 @@ CONFIG_DEVTMPFS_MOUNT=y
->   CONFIG_MTD=y
->   CONFIG_MTD_TESTS=m
->   CONFIG_MTD_CMDLINE_PARTS=y
-> -CONFIG_MTD_BLOCK=y
->   CONFIG_MTD_DATAFLASH=y
->   CONFIG_MTD_RAW_NAND=y
->   CONFIG_MTD_NAND_ATMEL=y
->   CONFIG_MTD_SPI_NOR=y
->   CONFIG_MTD_UBI=y
->   CONFIG_MTD_UBI_FASTMAP=y
-> +CONFIG_MTD_UBI_BLOCK=y
->   CONFIG_BLK_DEV_LOOP=y
->   CONFIG_BLK_DEV_RAM=y
->   CONFIG_BLK_DEV_RAM_COUNT=4
-> diff --git a/arch/arm/configs/sama5_defconfig b/arch/arm/configs/sama5_defconfig
-> index 03dd80c2a19e..1c4c5a035518 100644
-> --- a/arch/arm/configs/sama5_defconfig
-> +++ b/arch/arm/configs/sama5_defconfig
-> @@ -57,13 +57,13 @@ CONFIG_DEVTMPFS_MOUNT=y
->   CONFIG_MTD=y
->   CONFIG_MTD_TESTS=m
->   CONFIG_MTD_CMDLINE_PARTS=y
-> -CONFIG_MTD_BLOCK=y
->   CONFIG_MTD_CFI=y
->   CONFIG_MTD_RAW_NAND=y
->   CONFIG_MTD_NAND_ATMEL=y
->   CONFIG_MTD_SPI_NOR=y
->   CONFIG_MTD_UBI=y
->   CONFIG_MTD_UBI_FASTMAP=y
-> +CONFIG_MTD_UBI_BLOCK=y
->   CONFIG_BLK_DEV_LOOP=y
->   CONFIG_BLK_DEV_RAM=y
->   CONFIG_BLK_DEV_RAM_COUNT=4
+[ add Mike ]
 
 
--- 
-Nicolas Ferre
+On Thu, May 5, 2022 at 2:54 AM Kai Huang <kai.huang@intel.com> wrote:
+[..]
+>
+> Hi Dave,
+>
+> Sorry to ping (trying to close this).
+>
+> Given we don't need to consider kmem-hot-add legacy PMEM after TDX module
+> initialization, I think for now it's totally fine to exclude legacy PMEMs from
+> TDMRs.  The worst case is when someone tries to use them as TD guest backend
+> directly, the TD will fail to create.  IMO it's acceptable, as it is supposedly
+> that no one should just use some random backend to run TD.
+
+The platform will already do this, right? I don't understand why this
+is trying to take proactive action versus documenting the error
+conditions and steps someone needs to take to avoid unconvertible
+memory. There is already the CONFIG_HMEM_REPORTING that describes
+relative performance properties between initiators and targets, it
+seems fitting to also add security properties between initiators and
+targets so someone can enumerate the numa-mempolicy that avoids
+unconvertible memory.
+
+No, special casing in hotplug code paths needed.
+
+>
+> I think w/o needing to include legacy PMEM, it's better to get all TDX memory
+> blocks based on memblock, but not e820.  The pages managed by page allocator are
+> from memblock anyway (w/o those from memory hotplug).
+>
+> And I also think it makes more sense to introduce 'tdx_memblock' and
+> 'tdx_memory' data structures to gather all TDX memory blocks during boot when
+> memblock is still alive.  When TDX module is initialized during runtime, TDMRs
+> can be created based on the 'struct tdx_memory' which contains all TDX memory
+> blocks we gathered based on memblock during boot.  This is also more flexible to
+> support other TDX memory from other sources such as CLX memory in the future.
+>
+> Please let me know if you have any objection?  Thanks!
+
+It's already the case that x86 maintains sideband structures to
+preserve memory after exiting the early memblock code. Mike, correct
+me if I am wrong, but adding more is less desirable than just keeping
+the memblock around?
