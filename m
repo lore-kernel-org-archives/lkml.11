@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D30C4707E
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9846DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385717AbiEESao (ORCPT
+        id S1384727AbiEES34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
+        Thu, 5 May 2022 14:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383455AbiEESUL (ORCPT
+        with ESMTP id S1383120AbiEEST3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:20:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4206E5DA6E;
-        Thu,  5 May 2022 11:16:16 -0700 (PDT)
+        Thu, 5 May 2022 14:19:29 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DE819003;
+        Thu,  5 May 2022 11:15:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774576; x=1683310576;
+  t=1651774548; x=1683310548;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=p7v50OG3pQWVTT5t2I7uMFA6egL57y4i1JmJKjiM3zE=;
-  b=n64hQxiE1xXWGjDXozTTGbzz6NmRsKvQgYbiJzLeHqN2no06k5/Z96JW
-   YH2QjeW+qxM2VPkqmMQFyk7/X/9BCMIOfCrgr3rPeCjixCzoTZtsyiXQC
-   SREbj9JJVSqx/8nhKwdmtVT5Qr/xKuZxjU7N1Nc5de3VjYoU5mkaTZBdh
-   d7uYs8iY9UY5vxRd/OnAFFscgi8/eksfLz9O17yMcGf7WCk8qy6JbDAhz
-   aPaQnR4eVymgQH7kChw25x/1Qn0/ndKEO+iKndQ8QmOJJmdpVcG07AyEM
-   mtiNsjo0gKpkdAPnv8zfM3i9Az6wYSRLkeVd2IZJ9oemtSW1vzL5lkiVp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354875"
+  bh=wbnROJIV0sPi9VRc1Kym0LCeIa3DweI4YQjfi8+X354=;
+  b=mfxDZPEr94V/ZAnXY3mgcfZZzZoiwm4KPVcK3qJD9hpk8HvAvnWLx6aN
+   voI/Quw4aGN4Le45RQS+yd15NCKmdJaNEZnY5t3GZDvaWhUNF0+KAK7HC
+   +BnEUb/ON+r2sgRgleyKFkm44hPlzQ7jELqXmF6N2Y1hBBgfLqL/0lej4
+   hSA7yjOdvnh8OknkEnxI5JhrzwDcDoZoIIHn7P/KrBWHGUQgnJLFpWjCp
+   a+UF8W0Pf5HISGffTm84juXUFiDgBTgnGqnFPNsEMlMcNqSG9beL1L9Jw
+   w0O775dfYRn0QNTBV2MGe2KL+3IRn2+jurlhB+KTYoNk+3XRy3kkO7XJ+
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746248"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="268354875"
+   d="scan'208";a="328746248"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:54 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083462"
+   d="scan'208";a="665083191"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:54 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 089/104] KVM: TDX: handle KVM hypercall with TDG.VP.VMCALL
-Date:   Thu,  5 May 2022 11:15:23 -0700
-Message-Id: <3d6b7a3dd4b766b444546d37b7e307c2482258ca.1651774251.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 019/104] [MARKER] The start of TDX KVM patch series: TD VM creation/destruction
+Date:   Thu,  5 May 2022 11:14:13 -0700
+Message-Id: <daaf60d85584a303dd5e08820b5abdd24662ac11.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,59 +58,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-The TDX Guest-Host communication interface (GHCI) specification defines
-the ABI for the guest TD to issue hypercall.   It reserves vendor specific
-arguments for VMM specific use.  Use it as KVM hypercall and handle it.
+This empty commit is to mark the start of patch series of TD VM
+creation/destruction.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 3c6cf08a2e3c..9c712f661a7c 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -918,8 +918,39 @@ static int tdx_handle_triple_fault(struct kvm_vcpu *vcpu)
- 	return 0;
- }
- 
-+static int tdx_emulate_vmcall(struct kvm_vcpu *vcpu)
-+{
-+	unsigned long nr, a0, a1, a2, a3, ret;
-+
-+	/*
-+	 * ABI for KVM tdvmcall argument:
-+	 * In Guest-Hypervisor Communication Interface(GHCI) specification,
-+	 * Non-zero leaf number (R10 != 0) is defined to indicate
-+	 * vendor-specific.  KVM uses this for KVM hypercall.  NOTE: KVM
-+	 * hypercall number starts from one.  Zero isn't used for KVM hypercall
-+	 * number.
-+	 *
-+	 * R10: KVM hypercall number
-+	 * arguments: R11, R12, R13, R14.
-+	 */
-+	nr = kvm_r10_read(vcpu);
-+	a0 = kvm_r11_read(vcpu);
-+	a1 = kvm_r12_read(vcpu);
-+	a2 = kvm_r13_read(vcpu);
-+	a3 = kvm_r14_read(vcpu);
-+
-+	ret = __kvm_emulate_hypercall(vcpu, nr, a0, a1, a2, a3, true);
-+
-+	tdvmcall_set_return_code(vcpu, ret);
-+
-+	return 1;
-+}
-+
- static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- {
-+	if (tdvmcall_exit_type(vcpu))
-+		return tdx_emulate_vmcall(vcpu);
-+
- 	switch (tdvmcall_leaf(vcpu)) {
- 	default:
- 		break;
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index b7a14bc73853..5e0deaebf843 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -15,8 +15,8 @@ Patch Layer status
+ ------------------
+   Patch layer                          Status
+ * TDX, VMX coexistence:                 Applied
+-* TDX architectural definitions:        Applying
+-* TD VM creation/destruction:           Not yet
++* TDX architectural definitions:        Applied
++* TD VM creation/destruction:           Applying
+ * TD vcpu creation/destruction:         Not yet
+ * TDX EPT violation:                    Not yet
+ * TD finalization:                      Not yet
 -- 
 2.25.1
 
