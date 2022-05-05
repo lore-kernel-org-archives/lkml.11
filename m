@@ -2,63 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F98C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238039AbiEECVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 22:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
+        id S238087AbiEECW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 22:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234203AbiEECVv (ORCPT
+        with ESMTP id S234203AbiEECWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 22:21:51 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46919483AB
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 19:18:13 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id a191so2586287pge.2
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 19:18:13 -0700 (PDT)
+        Wed, 4 May 2022 22:22:24 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6944C483AC;
+        Wed,  4 May 2022 19:18:47 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o69so2884850pjo.3;
+        Wed, 04 May 2022 19:18:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=pIXDVokFolVKrzalTPKUm2CP3QVEc7PDIydFuy2ELrg=;
-        b=VTMfiv/xxi6fGdCelW3OOBaUHSCm7CuZK+BQdtEUII66q8gebxTf/i43wtPpxuwg46
-         5OXvSyTPQJ4h5XCfeXHkYuEyDfjap7ZqgOq+130hL11jSuDpUzvwjrVjbo/uTaqtGsPe
-         msDZ7TOhh6Q62Cl41WK66/t5wy29qmqTdjeeo0wWa9CP411/IOJ8EcHvJgal+ZwepiMK
-         4HRNPzZWvsiVxGNUZQsbHKlaiwdWDw7d6hKuwuyNnQ6j8RCQGl7JYJvIbvHdXCSkg+hk
-         ARyfUqXY63VnGRzvh4aa/DJntuX5ziUFLzXtAGQOWXALdGZDcweQepSrO1tTJNUvo6W7
-         vfHw==
+        bh=oqH/dbbnTtMr+EJMMPwH7Zk0jku9Sj+hQp0KzdVsugw=;
+        b=T9u9/ydtEfx4h7GiWCbnQJEONx/wv/NLn/Q8oiiIpydcJ6xFfpYHLZBlEFO/4CoCir
+         ShGNzad5HoGqrhfRFKHINOHXjSiUAdKBWGoLNj2Mb4LAV+tXIhwn9PQGsJ2eD9XZOxsy
+         Hco8NgdM0V2bscMlgx4+3zFgkZ4U881TpMXTELfTXwT84ZSkWaZaqDKKNC3m9EYEEH6U
+         BQ0RmjmCB6tleevSaYtC7jnckQ8L2Aj3F9y959NMrCEPiTZJFUTiuBZ7dFa5BA15CBpI
+         g4pNflh+Uep4NpERyidWv2Tg+Wx2JmqOkWnZ1lvO/YnYjxiNo1ugb6QSq9O2RwtWpY5J
+         OhTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=pIXDVokFolVKrzalTPKUm2CP3QVEc7PDIydFuy2ELrg=;
-        b=NNZy+1zeCqhwShUf8ad0TZGVBZxaJ0j0PxzcA8Q3jWOj3nfX5eIjghiqkLQwcgdcYy
-         8e/Vx5xT4UoRLpU8B0kRDaniu6EMIbJpQnsV4fGK3KntYl7TzGd9rHMsSWKJXiov+xHS
-         Q0Otjf5A/YeIZDoC9sUEasDuRX/1eMBtRUcz0DPY1F+T/5bNidoSo4rV1J+QbBLfM3dM
-         F0+uoZhKaR1ncmJm2/QBP0KxX1xlmMhPJzfClpIHk1UjkJ5FlGLetzxM04SDBuG0+vex
-         Zz4yjahTd6yjGnggjLMxCgoDnWVNdPdwSZXRe99dn4moJph5W/QupFVOvUAQ8EiQwmOs
-         tHTA==
-X-Gm-Message-State: AOAM533RI1iLsY0kHW3PNILX6BE18JQ9kqYyC5V93M+7RVWJVFUTvfLX
-        4Ewz/gjs1H/sWDLw1Dbd1s8=
-X-Google-Smtp-Source: ABdhPJzWZdSl8kCzaGbBSh6IuuBwK7I7BYee0kVZukFZY0T4WG5+0idnYzYBVwUf4sMRTt4ffT1k1Q==
-X-Received: by 2002:a65:6cc9:0:b0:399:26da:29af with SMTP id g9-20020a656cc9000000b0039926da29afmr20022746pgw.489.1651717092863;
-        Wed, 04 May 2022 19:18:12 -0700 (PDT)
+        bh=oqH/dbbnTtMr+EJMMPwH7Zk0jku9Sj+hQp0KzdVsugw=;
+        b=2miliKcK+BQJl06G41NCkHSl2LUCKZ7ngrDN4D6vpQap2RoHM1XIlw82WO2/kaLQ57
+         jc0vP2zyDgUrRMFritChSJhj2k+3/ycIa+gtj2XgIvyAs4pGJgcSP17LyzXujkaTCE0S
+         6QnDdtBqgIHwY1bz6/9SO1M+1g7kwJL/p0UHliQLIHFY8MhLd9xE8e2nzzPUQpsdryp2
+         F5QbPAuO2OykeJBXViu49liXgJneQs03NOL9KZn9/2te9ueC2Z0ClF6XJ1aPkcZgPvzD
+         bTIBXqnKeEsnRxqIERKOpALu00SgiTpsuGLxtpXQ82iwvV+Nqr3MfNqJ+b3AsIcY8lht
+         Ukww==
+X-Gm-Message-State: AOAM532EFSFChoaaN/5/SsFvs/zScq7/uI8OyPjpLi0CHCzZyUlvS9g+
+        M+K+Du+1je5yxdYCKeLGM59j4tGp7Cs=
+X-Google-Smtp-Source: ABdhPJwgy/prmxbKZo0DsO2jpkkSYuhFpok7c1JvIOChR1kwDE++l6JWyaMFGipguogzHTqWR0xKTw==
+X-Received: by 2002:a17:902:be03:b0:15e:cac2:f98c with SMTP id r3-20020a170902be0300b0015ecac2f98cmr5230043pls.172.1651717126996;
+        Wed, 04 May 2022 19:18:46 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m1-20020a17090aab0100b001cd4989fecesm3967290pjq.26.2022.05.04.19.18.11
+        by smtp.gmail.com with ESMTPSA id b5-20020a17090acc0500b001d792761e2esm2653102pju.47.2022.05.04.19.18.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 19:18:12 -0700 (PDT)
+        Wed, 04 May 2022 19:18:46 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     lgirdwood@gmail.com
-Cc:     broonie@kernel.org, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+To:     dmitry.torokhov@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
         Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] ASoC: mediatek: simplify the return expression of mtk_dai_pcm_prepare()
-Date:   Thu,  5 May 2022 02:18:08 +0000
-Message-Id: <20220505021808.54337-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] Input: synaptics-rmi4: simplify the return expression of rmi_driver_of_probe()
+Date:   Thu,  5 May 2022 02:18:43 +0000
+Message-Id: <20220505021843.54399-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,35 +71,29 @@ Simplify the return expression.
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- sound/soc/mediatek/mt8195/mt8195-dai-pcm.c | 8 +-------
+ drivers/input/rmi4/rmi_driver.c | 8 +-------
  1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c b/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
-index 151914c873ac..12644ded83d5 100644
---- a/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
-+++ b/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
-@@ -213,8 +213,6 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
- static int mtk_dai_pcm_prepare(struct snd_pcm_substream *substream,
- 			       struct snd_soc_dai *dai)
+diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
+index 258d5fe3d395..eec5d926da25 100644
+--- a/drivers/input/rmi4/rmi_driver.c
++++ b/drivers/input/rmi4/rmi_driver.c
+@@ -991,14 +991,8 @@ static int rmi_driver_remove(struct device *dev)
+ static int rmi_driver_of_probe(struct device *dev,
+ 				struct rmi_device_platform_data *pdata)
  {
--	int ret;
+-	int retval;
 -
- 	dev_dbg(dai->dev, "%s(), id %d, stream %d, widget active p %d, c %d\n",
- 		__func__, dai->id, substream->stream,
- 		dai->playback_widget->active, dai->capture_widget->active);
-@@ -222,11 +220,7 @@ static int mtk_dai_pcm_prepare(struct snd_pcm_substream *substream,
- 	if (dai->playback_widget->active || dai->capture_widget->active)
- 		return 0;
- 
--	ret = mtk_dai_pcm_configure(substream, dai);
--	if (ret)
--		return ret;
+-	retval = rmi_of_property_read_u32(dev, &pdata->reset_delay_ms,
++	return rmi_of_property_read_u32(dev, &pdata->reset_delay_ms,
+ 					"syna,reset-delay-ms", 1);
+-	if (retval)
+-		return retval;
 -
 -	return 0;
-+	return mtk_dai_pcm_configure(substream, dai);
  }
- 
- static int mtk_dai_pcm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+ #else
+ static inline int rmi_driver_of_probe(struct device *dev,
 -- 
 2.25.1
 
