@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 964A2C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70339C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384334AbiEESYR (ORCPT
+        id S1384152AbiEESX6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
+        Thu, 5 May 2022 14:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383317AbiEESTp (ORCPT
+        with ESMTP id S1383303AbiEESTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:45 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49B85DBD5;
-        Thu,  5 May 2022 11:16:01 -0700 (PDT)
+        Thu, 5 May 2022 14:19:44 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1965B5DA6F;
+        Thu,  5 May 2022 11:15:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774561; x=1683310561;
+  t=1651774559; x=1683310559;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SOHEj5Fn64+hYv6cZsOEgx/aKfn1VDBjHKB7akkORwQ=;
-  b=FVUpTXIlGR/+Z2llGt5AfbQjR/lhclUO/hVkE/em9m+DgXIPCgm880Mc
-   I+e/3OLCnbdDrwFPfW0jCPL0ANfH8mUiDLCEQHww7Zk9Q6dfj5TllCzhi
-   gUSUEaYqGNL4xUarrLioophlxy16tl024xQ+z9LVAlrjfOABaThvBm+Vf
-   tUZCfM6TUcmOZi132NQXTlxkT3/Y4Z4nzWGHmrZ8YywMJ9D3CYvGkpjQO
-   a9m35NCwjkI/MIed3Gl6EjvHHtIfPSgYe9Nu1Iy/CqxX5yux0ZK9scbSB
-   ZEsk0b7CdXJ1l3PpRmMIloM3taNLIGZvIiWY0DWiKpp2L+vLFUzrB8f6L
+  bh=DJF4BaiDnESk/UyNoRkpJippmzFVNyq9HJDxTNJdc0s=;
+  b=D8frs94jk1U2ife4WDcBFOJmOt2xXkLl2AChNEPecMO4xu6JNaiIX9kL
+   BBmy+o8qvH8Hdbjw8C/lhkzUduyda6rWecgcK7V/mxVFsqY7E6jKHx/pA
+   AYsHLrXGA7l724yRCHMCfmEgkCg1qxltPRJ2CEloxzdzxdTIHlCVd0iOo
+   ePpeSzeSp8p4dI/LD0JboadeJAuJJGSQfD4PqFtdy0jpW4AHPuvJMMq72
+   GNYPWXlBJmEJ0DtKEyAT9FUqBzCJXhGituTWvZjKvuj++QQuFsCuQzdTS
+   IAkfefU9M+8kefMYjBPm/yTBIwivtB4vl/3/paIluCRFxGGiKbSxfP4RL
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113932"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354854"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248113932"
+   d="scan'208";a="268354854"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:49 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083448"
+   d="scan'208";a="665083369"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:49 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 085/104] KVM: TDX: handle EXIT_REASON_OTHER_SMI
-Date:   Thu,  5 May 2022 11:15:19 -0700
-Message-Id: <59e90973b777eb6992e41e3d8a949e8a99711bce.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 062/104] KVM: TDX: Finalize VM initialization
+Date:   Thu,  5 May 2022 11:14:56 -0700
+Message-Id: <8f5bd8677abfc01e8b02e6d6a72a14acbdf579e7.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,47 +58,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-If the control reaches EXIT_REASON_OTHER_SMI, #SMI is delivered and
-handled right after returning from the TDX module to KVM nothing needs to
-be done in KVM.  Continue TDX vcpu execution.
+To protect the initial contents of the guest TD, the TDX module measures
+the guest TD during the build process as SHA-384 measurement.  The
+measurement of the guest TD contents needs to be completed to make the
+guest TD ready to run.
+
+Add a new subcommand, KVM_TDX_FINALIZE_VM, for VM-scoped
+KVM_MEMORY_ENCRYPT_OP to finalize the measurement and mark the TDX VM ready
+to run.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/uapi/asm/vmx.h | 1 +
- arch/x86/kvm/vmx/tdx.c          | 7 +++++++
- 2 files changed, 8 insertions(+)
+ arch/x86/include/uapi/asm/kvm.h       |  1 +
+ arch/x86/kvm/vmx/tdx.c                | 21 +++++++++++++++++++++
+ tools/arch/x86/include/uapi/asm/kvm.h |  1 +
+ 3 files changed, 23 insertions(+)
 
-diff --git a/arch/x86/include/uapi/asm/vmx.h b/arch/x86/include/uapi/asm/vmx.h
-index 946d761adbd3..3d9b4598e166 100644
---- a/arch/x86/include/uapi/asm/vmx.h
-+++ b/arch/x86/include/uapi/asm/vmx.h
-@@ -34,6 +34,7 @@
- #define EXIT_REASON_TRIPLE_FAULT        2
- #define EXIT_REASON_INIT_SIGNAL			3
- #define EXIT_REASON_SIPI_SIGNAL         4
-+#define EXIT_REASON_OTHER_SMI           6
+diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+index 3e919b3c7d7b..f058eab57c32 100644
+--- a/arch/x86/include/uapi/asm/kvm.h
++++ b/arch/x86/include/uapi/asm/kvm.h
+@@ -535,6 +535,7 @@ enum kvm_tdx_cmd_id {
+ 	KVM_TDX_INIT_VM,
+ 	KVM_TDX_INIT_VCPU,
+ 	KVM_TDX_INIT_MEM_REGION,
++	KVM_TDX_FINALIZE_VM,
  
- #define EXIT_REASON_INTERRUPT_WINDOW    7
- #define EXIT_REASON_NMI_WINDOW          8
+ 	KVM_TDX_CMD_NR_MAX,
+ };
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index b3fc9d95fffd..1f31dead31f2 100644
+index 3981cd509686..78418e553017 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1209,6 +1209,13 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
- 	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
+@@ -1228,6 +1228,24 @@ static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
+ 	return ret;
+ }
  
- 	switch (exit_reason.basic) {
-+	case EXIT_REASON_OTHER_SMI:
-+		/*
-+		 * If reach here, it's not a Machine Check System Management
-+		 * Interrupt(MSMI).  #SMI is delivered and handled right after
-+		 * SEAMRET, nothing needs to be done in KVM.
-+		 */
-+		return 1;
- 	default:
++static int tdx_td_finalizemr(struct kvm *kvm)
++{
++	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
++	u64 err;
++
++	if (!is_td_initialized(kvm) || is_td_finalized(kvm_tdx))
++		return -EINVAL;
++
++	err = tdh_mr_finalize(kvm_tdx->tdr.pa);
++	if (WARN_ON_ONCE(err)) {
++		pr_tdx_error(TDH_MR_FINALIZE, err, NULL);
++		return -EIO;
++	}
++
++	kvm_tdx->finalized = true;
++	return 0;
++}
++
+ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
+ {
+ 	struct kvm_tdx_cmd tdx_cmd;
+@@ -1247,6 +1265,9 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
+ 	case KVM_TDX_INIT_MEM_REGION:
+ 		r = tdx_init_mem_region(kvm, &tdx_cmd);
  		break;
- 	}
++	case KVM_TDX_FINALIZE_VM:
++		r = tdx_td_finalizemr(kvm);
++		break;
+ 	default:
+ 		r = -EINVAL;
+ 		goto out;
+diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
+index af39f3adc179..7f5eb5536ec5 100644
+--- a/tools/arch/x86/include/uapi/asm/kvm.h
++++ b/tools/arch/x86/include/uapi/asm/kvm.h
+@@ -534,6 +534,7 @@ enum kvm_tdx_cmd_id {
+ 	KVM_TDX_INIT_VM,
+ 	KVM_TDX_INIT_VCPU,
+ 	KVM_TDX_INIT_MEM_REGION,
++	KVM_TDX_FINALIZE_VM,
+ 
+ 	KVM_TDX_CMD_NR_MAX,
+ };
 -- 
 2.25.1
 
