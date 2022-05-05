@@ -2,121 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C6DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359765AbiEEMPq (ORCPT
+        id S1376300AbiEEMQN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
+        Thu, 5 May 2022 08:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244504AbiEEMPo (ORCPT
+        with ESMTP id S1359849AbiEEMQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:15:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C166411;
-        Thu,  5 May 2022 05:12:05 -0700 (PDT)
-X-UUID: 85c1ab05184f4bf5b38b80821f60b2ec-20220505
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:a9a785a5-7a76-42bf-98a6-8a23df82c485,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:8
-X-CID-META: VersionHash:faefae9,CLOUDID:144d5216-2e53-443e-b81a-655c13977218,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 85c1ab05184f4bf5b38b80821f60b2ec-20220505
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
-        (envelope-from <jianjun.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1724677628; Thu, 05 May 2022 20:12:00 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 5 May 2022 20:11:59 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 5 May 2022 20:11:58 +0800
-Message-ID: <d017583a2472e7d4bf4684b1aabeebd93c80c68b.camel@mediatek.com>
-Subject: Re: [PATCH v7 2/2] phy: mediatek: Add PCIe PHY driver
-From:   Jianjun Wang <jianjun.wang@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-CC:     Wei-Shun Chang <weishunc@google.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
-        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
-        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
-        <jian.yang@mediatek.com>
-Date:   Thu, 5 May 2022 20:11:58 +0800
-In-Reply-To: <bad44be8-abc7-169f-bc7a-cef3692c9a71@collabora.com>
-References: <20220422142331.17173-1-jianjun.wang@mediatek.com>
-         <20220422142331.17173-3-jianjun.wang@mediatek.com>
-         <bad44be8-abc7-169f-bc7a-cef3692c9a71@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 5 May 2022 08:16:09 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1789864C1
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651752750; x=1683288750;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2DhPSKq1r7S3sDZ7dC36QkPcIiYnpBlQkC9n0su6nWA=;
+  b=AsvY5a+si04NRTl0EiIu4c3xx4/xbf5aACiBkXrmzE3zAMvwTVgcmST5
+   PIwW74aB0YaaLk8k1arjd/pnCZaQDTXLYV0SGiin1bwjcd/HFO5tSB6CR
+   ackoBDM54XkxwBMsho4mUVIIHy8QTBYmT6Ti1PTM7Gx5wtEoTsQm7COeO
+   0yWV6QW7A9mHjIvCiZUbvXCM0/nEioE4YYXkw31/9W5TP6farap/Ay8M2
+   IJ9KzU6qeKM/rxsDtXdCiAW2VIoJKkyJi9J+MW14sbXJZM5qIUbu4eQ3y
+   KKApGvQqIhSRrzfJ5hXeIZmOIfZkwQgZF11djHSt2MZiTZ2b9Y6JSdNhy
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="268240484"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="268240484"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 05:12:29 -0700
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="563215563"
+Received: from minhaowa-mobl.ccr.corp.intel.com (HELO [10.255.30.75]) ([10.255.30.75])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 05:12:26 -0700
+Message-ID: <22359719-15c8-5215-fdf3-7eec60f2c106@linux.intel.com>
+Date:   Thu, 5 May 2022 20:12:24 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 2/4] iommu/vt-d: Check domain force_snooping against
+ attached devices
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Cc:     "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220505010710.1477739-1-baolu.lu@linux.intel.com>
+ <20220505010710.1477739-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276F768185B4CB64C2D027E8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276F768185B4CB64C2D027E8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Angelo,
+On 2022/5/5 16:43, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, May 5, 2022 9:07 AM
+>>
+>> As domain->force_snooping only impacts the devices attached with the
+>> domain, there's no need to check against all IOMMU units. At the same
+>> time, for a brand new domain (hasn't been attached to any device), the
+>> force_snooping field could be set, but the attach_dev callback will
+>> return failure if it wants to attach to a device which IOMMU has no
+>> snoop control capability.
+> 
+> The description about brand new domain is not very clear. I think the
+> point here is that force_snooping could be set on a domain no matter
+> whether it has been attached or not and once set it is an immutable
+> flag. If no device attached the operation always succeeds then this
+> empty domain can be only attached to a device of which the IOMMU
+> supports snoop control.
 
-On Tue, 2022-04-26 at 18:06 +0200, AngeloGioacchino Del Regno wrote:
-> Il 22/04/22 16:23, Jianjun Wang ha scritto:
-> > Add PCIe GEN3 PHY driver support on MediaTek chipsets.
-> > 
-> > Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
-> 
-> Hello Jianjun,
-> there's only one last bit to fix, check below:
-> 
-> > ---
-> >   drivers/phy/mediatek/Kconfig        |  11 ++
-> >   drivers/phy/mediatek/Makefile       |   1 +
-> >   drivers/phy/mediatek/phy-mtk-pcie.c | 267
-> > ++++++++++++++++++++++++++++
-> >   3 files changed, 279 insertions(+)
-> >   create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
-> > 
-> 
-> ..snip..
-> 
-> > +static int mtk_pcie_read_efuse(struct mtk_pcie_phy *pcie_phy)
-> > +{
-> > +	struct device *dev = pcie_phy->dev;
-> > +	bool nvmem_enabled;
-> > +	int ret, i;
-> > +
-> > +	/* nvmem data is optional */
-> > +	nvmem_enabled = device_property_read_bool(dev, "nvmem-cells");
-> 
-> device_property_read_bool() returns device_property_present().
-> 
-> I would prefer that, instead, you call the latter:
-> 
-> 	nvmem_enabled = device_property_present(dev, "nvmem-cells");
-> 
-> It's the same, yes, but this will increase human readability, as the
-> function
-> name clearly states the intention here.
-
-Thanks for your review and sorry for the late response, I'll replace it
-with 'device_property_present' in the next version.
-
-Thanks.
+Exactly. Will update this description.
 
 > 
-> Thanks,
-> Angelo
+>>   static bool intel_iommu_enforce_cache_coherency(struct iommu_domain
+>> *domain)
+>>   {
+>>   	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>>
+>> -	if (!domain_update_iommu_snooping(NULL))
+>> +	if (dmar_domain->force_snooping)
+>> +		return true;
+>> +
+>> +	if (!domain_support_force_snooping(dmar_domain))
+>>   		return false;
+>> +
 > 
+> Who guarantees that domain->devices won't change between
+> above condition check and following set operation?
 
+Good catch. Should lift the lock up here.
+
+> 
+>> +	domain_set_force_snooping(dmar_domain);
+>>   	dmar_domain->force_snooping = true;
+>> +
+>>   	return true;
+>>   }
+>>
+> 
+> Thanks
+> Kevin
+
+Best regards,
+baolu
