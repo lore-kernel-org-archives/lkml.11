@@ -2,294 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A164C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D363C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383268AbiEESda (ORCPT
+        id S1348513AbiEESdg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        Thu, 5 May 2022 14:33:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385413AbiEESa0 (ORCPT
+        with ESMTP id S1387125AbiEEScN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:30:26 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349AC5DBE6;
-        Thu,  5 May 2022 11:21:11 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 6b9b41d5d424d27d; Thu, 5 May 2022 20:19:44 +0200
-Received: from kreacher.localnet (unknown [213.134.161.219])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id F2AB966C2F2;
-        Thu,  5 May 2022 20:19:42 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH v1 01/11] PCI/PM: Split pci_raw_set_power_state()
-Date:   Thu, 05 May 2022 20:00:33 +0200
-Message-ID: <13038676.uLZWGnKmhe@kreacher>
-In-Reply-To: <4738492.GXAFRqVoOG@kreacher>
-References: <4738492.GXAFRqVoOG@kreacher>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
+        Thu, 5 May 2022 14:32:13 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7526E64
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:25:16 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id y26-20020a25ad1a000000b0064a54b86bbaso1407657ybi.6
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:25:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Sft0aEle5FJBG0zu9fL28JLPynIEDLy2Y66OeP2apJI=;
+        b=FPmA3loXH7U1+PgnU7d8LHvM48Kpsr6ukJE6Pu8MKYUKs048VGExOWz7QAiGFpuD2O
+         FoK/1HZLhm/gSNpyTrJt7DTz0WhGhSyr0iBNMKmA4Zp5hJzvohNGSFRSEMOe6EEhyDRO
+         YLdHkud5odMSRV+9fM8p8N4KGK3DOhhx20IqDX+VkUWJzCtGGc8q9lvn16O9RymmgXpL
+         Fm3wua6LTtrbrc64wVsjeKQagxgJ63u3yW8CtokozmLvrrK6IUElS/q+RFgc2iDIeRH0
+         L/Yt7HheMPOEk5vnuLKIghfUcrkRR2jHBB2kfOOfrOld5eYbFqhPXV1aZPVJBmv5QUZ5
+         wEKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Sft0aEle5FJBG0zu9fL28JLPynIEDLy2Y66OeP2apJI=;
+        b=lVWKyFD4fI1ejIXJFOXi7nn35fHbopiHQOHeAnwU10kLKnwpZuv2mO2klc3p7ev+VB
+         LhGmFrMY/JN5n256y/FQGxXd6ojIg0SZorMkxzLnNoiOCI4vZv7XmiK9pMHW0Dzg7uKq
+         nSeSMFftwvPoMT7/ZczS70lqhXmX/amPonlMST+X72VmUSsfwNqDXh4IZxdl8zWGv7Th
+         Xf28YXqd9ZdXS2brBHxcTmdszqfKEOne1wLh8ENdkeswxONQ2s4jOvvSXJb9qbcnSHBm
+         6a284DyuAQCR6rMI8JLykWfUbcFmH/dt9OWFflgBHoVdE2J2ptcg7zFEL83458fEmIyZ
+         yvCg==
+X-Gm-Message-State: AOAM532hAyNBq3v0sFsuK3GSjru2krsU7SQb8rXeHs5IytFaJLFtdczL
+        x+FPWaIzc7AyNX5GoFw1IPSe3mvCQcdb
+X-Google-Smtp-Source: ABdhPJxQVDsSNLDtS9UPqhmAedPtZ2IhstTNzju4ZkjhWpfJE7tYgdL4f/1QYS8vWLUOk3PUz7tFnnHS45Zs
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:8e1c:fc1e:d94:1da8])
+ (user=irogers job=sendgmr) by 2002:a25:950:0:b0:648:ba7a:b98d with SMTP id
+ u16-20020a250950000000b00648ba7ab98dmr23765230ybm.42.1651775110313; Thu, 05
+ May 2022 11:25:10 -0700 (PDT)
+Date:   Thu,  5 May 2022 11:25:05 -0700
+Message-Id: <20220505182505.3313191-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+Subject: [PATCH v3] perf test: Add skip to --per-thread test
+From:   Ian Rogers <irogers@google.com>
+To:     Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Cc:     svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com,
+        hca@linux.ibm.com, Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.161.219
-X-CLIENT-HOSTNAME: 213.134.161.219
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrfedugdduvdduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrdduiedurddvudelnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeiuddrvdduledphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepjedprhgtphhtthhopehlihhnuhigqdhptghisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepmhhikhgrrdifvghsthgvrhgsvghrgheslhhinhhugidrihhnthgv
- lhdrtghomhdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehnrghthhgrnheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghnuggvrhhsrdhrohigvghllheslhhinhgrrhhordhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+As reported in:
+https://lore.kernel.org/linux-perf-users/20220428122821.3652015-1-tmricht@linux.ibm.com/
+the 'instructions:u' event may not be supported. Add a skip using 'perf
+record'.
 
-The transitions from low-power states to D0 and the other way around
-are unnecessarily tangled in pci_raw_set_power_state() which makes it
-rather hard to follow.
+Switch some code away from pipe to make the failures clearer.
 
-Moreover, the only caller of pci_raw_set_power_state() passing PCI_D0
-as its state argument is pci_power_up(), so the code carrying out
-transitions into D0 can be put directly into that function.
-
-Accordingly, move the code handling transitions from low-power states
-into D0 directly into pci_power_up() and rename the remaining part
-of pci_raw_set_power_state() to pci_set_low_power_state(), because
-it only handles transitions into low-power state now.
-
-While at it, fix up some white space, update some comments and modify
-messages printed by pci_power_up() and pci_set_low_power_state() to
-be less confusing (which is the only expected functional impact of
-this change).
-
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+Tested-by: Thomas Richter <tmricht@linux.ibm.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- drivers/pci/pci.c |  143 +++++++++++++++++++++++++++++++-----------------------
- 1 file changed, 83 insertions(+), 60 deletions(-)
+ tools/perf/tests/shell/record.sh | 46 ++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 5 deletions(-)
 
-Index: linux-pm/drivers/pci/pci.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci.c
-+++ linux-pm/drivers/pci/pci.c
-@@ -1068,10 +1068,11 @@ static inline bool platform_pci_bridge_d
+diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
+index d98f4d4a00e1..00c7285ce1ac 100755
+--- a/tools/perf/tests/shell/record.sh
++++ b/tools/perf/tests/shell/record.sh
+@@ -5,11 +5,43 @@
+ set -e
+ 
+ err=0
++perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
++
++cleanup() {
++  rm -f ${perfdata}
++  rm -f ${perfdata}.old
++  trap - exit term int
++}
++
++trap_cleanup() {
++  cleanup
++  exit 1
++}
++trap trap_cleanup exit term int
++
+ test_per_thread() {
+   echo "Basic --per-thread mode test"
+-  perf record -e instructions:u --per-thread -o- true 2> /dev/null \
+-    | perf report -i- -q \
+-    | egrep -q true
++  if ! perf record -e instructions:u -o ${perfdata} --quiet true 2> /dev/null
++  then
++    echo "Per-thread record [Skipped instructions:u not supported]"
++    if [ $err -ne 1 ]
++    then
++      err=2
++    fi
++    return
++  fi
++  if ! perf record -e instructions:u --per-thread -o ${perfdata} true 2> /dev/null
++  then
++    echo "Per-thread record of instructions:u [Failed]"
++    err=1
++    return
++  fi
++  if ! perf report -i ${perfdata} -q | egrep -q true
++  then
++    echo "Per-thread record [Failed missing output]"
++    err=1
++    return
++  fi
+   echo "Basic --per-thread mode test [Success]"
  }
  
- /**
-- * pci_raw_set_power_state - Use PCI PM registers to set the power state of
-- *			     given PCI device
-+ * pci_set_low_power_state - Put a PCI device into a low-power state.
-  * @dev: PCI device to handle.
-- * @state: PCI power state (D0, D1, D2, D3hot) to put the device into.
-+ * @state: PCI power state (D1, D2, D3hot) to put the device into.
-+ *
-+ * Use the device's PCI_PM_CTRL register to put it into a low-power state.
-  *
-  * RETURN VALUE:
-  * -EINVAL if the requested state is invalid.
-@@ -1080,10 +1081,9 @@ static inline bool platform_pci_bridge_d
-  * 0 if device already is in the requested state.
-  * 0 if device's power state has been successfully changed.
-  */
--static int pci_raw_set_power_state(struct pci_dev *dev, pci_power_t state)
-+static int pci_set_low_power_state(struct pci_dev *dev, pci_power_t state)
- {
- 	u16 pmcsr;
--	bool need_restore = false;
- 
- 	/* Check if we're already there */
- 	if (dev->current_state == state)
-@@ -1092,7 +1092,7 @@ static int pci_raw_set_power_state(struc
- 	if (!dev->pm_cap)
- 		return -EIO;
- 
--	if (state < PCI_D0 || state > PCI_D3hot)
-+	if (state < PCI_D1 || state > PCI_D3hot)
- 		return -EINVAL;
- 
- 	/*
-@@ -1101,8 +1101,7 @@ static int pci_raw_set_power_state(struc
- 	 * we can go from D1 to D3, but we can't go directly from D3 to D1;
- 	 * we'd have to go from D3 to D0, then to D1.
- 	 */
--	if (state != PCI_D0 && dev->current_state <= PCI_D3cold
--	    && dev->current_state > state) {
-+	if (dev->current_state <= PCI_D3cold && dev->current_state > state) {
- 		pci_err(dev, "invalid power transition (from %s to %s)\n",
- 			pci_power_name(dev->current_state),
- 			pci_power_name(state));
-@@ -1116,70 +1115,30 @@ static int pci_raw_set_power_state(struc
- 
- 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
- 	if (PCI_POSSIBLE_ERROR(pmcsr)) {
--		pci_err(dev, "can't change power state from %s to %s (config space inaccessible)\n",
-+		pci_err(dev, "Unable to change power state from %s to %s, device inaccessible\n",
- 			pci_power_name(dev->current_state),
- 			pci_power_name(state));
- 		return -EIO;
- 	}
- 
--	/*
--	 * If we're (effectively) in D3, force entire word to 0.
--	 * This doesn't affect PME_Status, disables PME_En, and
--	 * sets PowerState to 0.
--	 */
--	switch (dev->current_state) {
--	case PCI_D0:
--	case PCI_D1:
--	case PCI_D2:
--		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
--		pmcsr |= state;
--		break;
--	case PCI_D3hot:
--	case PCI_D3cold:
--	case PCI_UNKNOWN: /* Boot-up */
--		if ((pmcsr & PCI_PM_CTRL_STATE_MASK) == PCI_D3hot
--		 && !(pmcsr & PCI_PM_CTRL_NO_SOFT_RESET))
--			need_restore = true;
--		fallthrough;	/* force to D0 */
--	default:
--		pmcsr = 0;
--		break;
--	}
-+	pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-+	pmcsr |= state;
- 
- 	/* Enter specified state */
- 	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
- 
--	/*
--	 * Mandatory power management transition delays; see PCI PM 1.1
--	 * 5.6.1 table 18
--	 */
--	if (state == PCI_D3hot || dev->current_state == PCI_D3hot)
-+	/* Mandatory power management transition delays; see PCI PM 1.2. */
-+	if (state == PCI_D3hot)
- 		pci_dev_d3_sleep(dev);
--	else if (state == PCI_D2 || dev->current_state == PCI_D2)
-+	else if (state == PCI_D2)
- 		udelay(PCI_PM_D2_DELAY);
- 
- 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
--	dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
-+	dev->current_state = pmcsr & PCI_PM_CTRL_STATE_MASK;
- 	if (dev->current_state != state)
--		pci_info_ratelimited(dev, "refused to change power state from %s to %s\n",
--			 pci_power_name(dev->current_state),
--			 pci_power_name(state));
--
--	/*
--	 * According to section 5.4.1 of the "PCI BUS POWER MANAGEMENT
--	 * INTERFACE SPECIFICATION, REV. 1.2", a device transitioning
--	 * from D3hot to D0 _may_ perform an internal reset, thereby
--	 * going to "D0 Uninitialized" rather than "D0 Initialized".
--	 * For example, at least some versions of the 3c905B and the
--	 * 3c556B exhibit this behaviour.
--	 *
--	 * At least some laptop BIOSen (e.g. the Thinkpad T21) leave
--	 * devices in a D3hot state at boot.  Consequently, we need to
--	 * restore at least the BARs so that the device will be
--	 * accessible to its driver.
--	 */
--	if (need_restore)
--		pci_restore_bars(dev);
-+		pci_info_ratelimited(dev, "Refused to change power state from %s to %s\n",
-+				     pci_power_name(dev->current_state),
-+				     pci_power_name(state));
- 
- 	if (dev->bus->self)
- 		pcie_aspm_pm_state_change(dev->bus->self);
-@@ -1312,8 +1271,72 @@ static int pci_dev_wait(struct pci_dev *
-  */
- int pci_power_up(struct pci_dev *dev)
- {
-+	bool need_restore = false;
-+	u16 pmcsr;
-+
- 	pci_platform_power_transition(dev, PCI_D0);
--	return pci_raw_set_power_state(dev, PCI_D0);
-+
-+	if (dev->current_state == PCI_D0)
-+		return 0;
-+
-+	if (!dev->pm_cap)
-+		return -EIO;
-+
-+	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-+	if (PCI_POSSIBLE_ERROR(pmcsr)) {
-+		pci_err(dev, "Unable to change power state from %s to D0, device inaccessible\n",
-+			pci_power_name(dev->current_state));
-+		return -EIO;
-+	}
-+
-+	/*
-+	 * If we're (effectively) in D3, force entire word to 0. This doesn't
-+	 * affect PME_Status, disables PME_En, and sets PowerState to 0.
-+	 */
-+	if (dev->current_state >= PCI_D3hot) {
-+		if ((pmcsr & PCI_PM_CTRL_STATE_MASK) == PCI_D3hot &&
-+		    !(pmcsr & PCI_PM_CTRL_NO_SOFT_RESET))
-+			need_restore = true;
-+
-+		pmcsr = 0;
-+	} else {
-+		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-+	}
-+
-+	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
-+
-+	/* Mandatory transition delays; see PCI PM 1.2. */
-+	if (dev->current_state == PCI_D3hot)
-+		pci_dev_d3_sleep(dev);
-+	else if (dev->current_state == PCI_D2)
-+		udelay(PCI_PM_D2_DELAY);
-+
-+	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-+	dev->current_state = pmcsr & PCI_PM_CTRL_STATE_MASK;
-+	if (dev->current_state != PCI_D0)
-+		pci_info_ratelimited(dev, "Refused to change power state from %s to D0\n",
-+				     pci_power_name(dev->current_state));
-+
-+	/*
-+	 * According to section 5.4.1 of the "PCI BUS POWER MANAGEMENT
-+	 * INTERFACE SPECIFICATION, REV. 1.2", a device transitioning
-+	 * from D3hot to D0 _may_ perform an internal reset, thereby
-+	 * going to "D0 Uninitialized" rather than "D0 Initialized".
-+	 * For example, at least some versions of the 3c905B and the
-+	 * 3c556B exhibit this behaviour.
-+	 *
-+	 * At least some laptop BIOSen (e.g. the Thinkpad T21) leave
-+	 * devices in a D3hot state at boot.  Consequently, we need to
-+	 * restore at least the BARs so that the device will be
-+	 * accessible to its driver.
-+	 */
-+	if (need_restore)
-+		pci_restore_bars(dev);
-+
-+	if (dev->bus->self)
-+		pcie_aspm_pm_state_change(dev->bus->self);
-+
-+	return 0;
+@@ -18,6 +50,10 @@ test_register_capture() {
+   if ! perf list | egrep -q 'br_inst_retired.near_call'
+   then
+     echo "Register capture test [Skipped missing instruction]"
++    if [ $err -ne 1 ]
++    then
++      err=2
++    fi
+     return
+   fi
+   if ! perf record --intr-regs=\? 2>&1 | egrep -q 'available registers: AX BX CX DX SI DI BP SP IP FLAGS CS SS R8 R9 R10 R11 R12 R13 R14 R15'
+@@ -37,8 +73,8 @@ test_register_capture() {
+   echo "Register capture test [Success]"
  }
  
- /**
-@@ -1394,7 +1417,7 @@ int pci_set_power_state(struct pci_dev *
- 	 * To put device in D3cold, we put device into D3hot in native
- 	 * way, then put device into D3cold with platform ops
- 	 */
--	error = pci_raw_set_power_state(dev, state > PCI_D3hot ?
-+	error = pci_set_low_power_state(dev, state > PCI_D3hot ?
- 					PCI_D3hot : state);
- 
- 	if (pci_platform_power_transition(dev, state))
-
-
+-# Test for platform support and return TEST_SKIP
+-[ $(uname -m) = s390x ] && exit 2
+ test_per_thread
+ test_register_capture
++
++cleanup
+ exit $err
+-- 
+2.36.0.512.ge40c2bad7a-goog
 
