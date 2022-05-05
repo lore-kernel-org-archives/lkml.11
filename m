@@ -2,86 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B367C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234989AbiEEBOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 21:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57876 "EHLO
+        id S234766AbiEEBOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 21:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234849AbiEEBOB (ORCPT
+        with ESMTP id S235166AbiEEBOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 21:14:01 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8790023BEE
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 18:10:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651713019; x=1683249019;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XgW8rlF4IpFvJOQeR4CXpS7+6gb9RvEfOiJoKHKujHw=;
-  b=EQogdNyNieyjnnc1G7R1DhWjdrBta38PONpTUzvy3ugsMWo7roy7ZWat
-   FbbgGavzpu02YXNkt3u3eXudS1DOOMPd9yszjKsCqREkyaXO2ysM9pTCz
-   L3Eoo4rVqA3JslmijCrY24XdHvAsLMXIUD7bH9aIk/VdMEubmxgwczRgJ
-   EkeFZjujgNQSvCyIR/BudPCZBt6eEFRYUJU7kieuD/YgIzN0uGxsYtJqp
-   /nlcrytgvKulGbRVAPXWcZ8dzOo66nOsIbgPxdkIWNYMrzpie3jVRlh2k
-   Zi3To8DOpktcsBYxUxTQWJy2DoGj6qS2cq0knZ1v4/tcJFdblK8EKW4vO
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267832615"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="267832615"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 18:10:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="708713927"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 04 May 2022 18:10:16 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>
-Cc:     Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 4/4] iommu/vt-d: Remove hard coding PGSNP bit in PASID entries
-Date:   Thu,  5 May 2022 09:07:10 +0800
-Message-Id: <20220505010710.1477739-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220505010710.1477739-1-baolu.lu@linux.intel.com>
-References: <20220505010710.1477739-1-baolu.lu@linux.intel.com>
+        Wed, 4 May 2022 21:14:07 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A474C79B;
+        Wed,  4 May 2022 18:10:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YZ3u0VP+Dmz+bUwsOr46MWuxSWaaRBaF3I0ZydiCLpA=; b=wDsc0R4sL6hPDSTF0noRMQfruf
+        mzz4NVOEq4T1/rAJmnOh6QDn2l/0XMSNDTDGyIGfHQ5zS9HgzG51JGSruyZqaQqfCKhngFbzP/mHg
+        DZ8u9OGlibmBwMEKD7zOeInXcHL6iTbqIc1sSoQyx8UFTYKOchdZ+LltLkiFW85QXJXI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmQ0b-001Hnn-Jk; Thu, 05 May 2022 03:10:21 +0200
+Date:   Thu, 5 May 2022 03:10:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 07/11] leds: trigger: netdev: use mutex instead of
+ spinlocks
+Message-ID: <YnMj/SY8BhJuebFO@lunn.ch>
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-8-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503151633.18760-8-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As enforce_cache_coherency has been introduced into the iommu_domain_ops,
-the kernel component which owns the iommu domain is able to opt-in its
-requirement for force snooping support. The iommu driver has no need to
-hard code the page snoop control bit in the PASID table entries anymore.
+> @@ -400,7 +400,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
+>  
+>  	cancel_delayed_work_sync(&trigger_data->work);
+>  
+> -	spin_lock_bh(&trigger_data->lock);
+> +	mutex_lock(&trigger_data->lock);
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/pasid.c | 3 ---
- 1 file changed, 3 deletions(-)
+I'm not sure you can convert a spin_lock_bh() in a mutex_lock().
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 41a0e3b02c79..0abfa7fc7fb0 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -710,9 +710,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	pasid_set_fault_enable(pte);
- 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
- 
--	if (domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
--		pasid_set_pgsnp(pte);
--
- 	/*
- 	 * Since it is a second level only translation setup, we should
- 	 * set SRE bit as well (addresses are expected to be GPAs).
--- 
-2.25.1
+Did you check this? What context is the notifier called in?
 
+    Andrew
