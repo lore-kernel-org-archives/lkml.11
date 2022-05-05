@@ -2,139 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 386E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C73C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385437AbiEETv2 (ORCPT
+        id S1385403AbiEETvk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        Thu, 5 May 2022 15:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385368AbiEETun (ORCPT
+        with ESMTP id S1385483AbiEETvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:50:43 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A26D5DA7D;
-        Thu,  5 May 2022 12:47:02 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id A6FE71F45CD3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651780021;
-        bh=riKUyF3QA26FPC6IN4C9exUYKfoEiGvXUwpYMcRDj7M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEVITc3sCSDV2yoTf1mQwuHfgdj8nF+d/X2n/ZXKi5YwM4pS/WjEOl1DDvuWwo0cX
-         HRjoOZee/WLN0iYDbwq3L9ydeRrTcCQoKLpcx3sD6uXW+L9di4gL1P7yjES8JrRTZW
-         /PIYVbLAV0WClG+LBhsMYiLY/8LzDaRruJ/whCVuUVJngCTA1WixTyslwdSff4daGY
-         S1mjJ6Uv2yolUv3Wcyb5cKE92j4ate6tCwKPdN+rxgyrb2k6tY1s/Lt5JHd2DrTKJ1
-         F4I3r5vPy3rqobPCxOvXQ9V6zXFeE1WG9wn3UTDOOPczbAqri0k0AX1IX5CBw5MNrz
-         5qD5Q98uEZ7nQ==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 16/16] arm64: dts: mediatek: asurada: Add SPMI regulators
-Date:   Thu,  5 May 2022 15:45:50 -0400
-Message-Id: <20220505194550.3094656-17-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220505194550.3094656-1-nfraprado@collabora.com>
-References: <20220505194550.3094656-1-nfraprado@collabora.com>
+        Thu, 5 May 2022 15:51:19 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFEB5EBE3
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 12:47:31 -0700 (PDT)
+Received: from pps.filterd (m0148664.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 245FhOpo003652;
+        Thu, 5 May 2022 19:47:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
+ bh=C3QEOZbwGY5sXGcx1EpjDtWP0ojZE1TLeKrfEOzEke0=;
+ b=VF2gFtW6wqp/nmndXtcLTS/8b435NXPUh13SQhzacfCr3W3akrSKQapAdF64ArztphY4
+ zbAWp8V6BzBtWiyqY17nbTIF1VFIq6KejA37pnMzhRafKZ99klqNW8HZ0T0cF0Vl/gpW
+ jBw8pSyWNysnS6998PFZRzsnR15rNSGOAT0eMu4cWrs7OMHo5JqJEZ8voBiBkBoBbl0z
+ ljEIRCzGNL88Pu/wv52ZwS5gfX+7BYHXArJbj4s4WYF5+7+6GchByksxNx73GYU18PCq
+ ojIz7rCNYn4dYjaPBSDI8LIvD/oa0o41nf93PwMhP7JnuRmROKt2w5oHLO0h7GQ24FgS ZA== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fvhfd2336-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 May 2022 19:47:00 +0000
+Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
+        by g4t3427.houston.hpe.com (Postfix) with ESMTP id 346D25E;
+        Thu,  5 May 2022 19:46:59 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 7FB9E4D;
+        Thu,  5 May 2022 19:46:58 +0000 (UTC)
+Received: by dog.eag.rdlabs.hpecorp.net (Postfix, from userid 200934)
+        id 275CF30193E67; Thu,  5 May 2022 14:46:58 -0500 (CDT)
+From:   Steve Wahl <steve.wahl@hpe.com>
+To:     Joerg Roedel <jroedel@suse.de>,
+        Kyung Min Park <kyung.min.park@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/vt-d: Increase DMAR_UNITS_SUPPORTED
+Date:   Thu,  5 May 2022 14:46:58 -0500
+Message-Id: <20220505194658.246121-1-steve.wahl@hpe.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: ZiQt0AfFhekgODgw_TIdFOWhuDP_me1a
+X-Proofpoint-GUID: ZiQt0AfFhekgODgw_TIdFOWhuDP_me1a
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-05_08,2022-05-05_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 suspectscore=0 mlxlogscore=999
+ mlxscore=0 spamscore=0 malwarescore=0 impostorscore=0 phishscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205050131
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Asurada platform uses regulators from MT6315 PMICs acessible through
-SPMI. Add support for them.
+Increase DMAR_UNITS_SUPPORTED to support 64 sockets with 10 DMAR units
+each, for a total of 640.
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+remapping doesn't support X2APIC mode x2apic disabled"; and the system
+fails to boot.
 
+Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
+Reviewed-by: Mike Travis <mike.travis@hpe.com>
 ---
 
-Changes in v2:
-- Added this patch
+Note that we could not find a reason for connecting
+DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
+it seemed like the two would continue to match on earlier processors.
+There doesn't appear to be kernel code that assumes that the value of
+one is related to the other.
 
- .../boot/dts/mediatek/mt8192-asurada.dtsi     | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ include/linux/dmar.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index a9ffa74b2764..7f4cee928f71 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -7,6 +7,7 @@
- #include "mt8192.dtsi"
- #include "mt6359.dtsi"
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/spmi/spmi.h>
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 45e903d84733..9d4867b8f42e 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -19,7 +19,7 @@
+ struct acpi_dmar_header;
  
- / {
- 	aliases {
-@@ -683,6 +684,54 @@ cr50@0 {
- 	};
- };
- 
-+&spmi {
-+	#address-cells = <2>;
-+	#size-cells = <0>;
-+
-+	mt6315_6: pmic@6 {
-+		compatible = "mediatek,mt6315-regulator";
-+		reg = <0x6 SPMI_USID>;
-+
-+		regulators {
-+			mt6315_6_vbuck1: vbuck1 {
-+				regulator-compatible = "vbuck1";
-+				regulator-name = "Vbcpu";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+
-+			mt6315_6_vbuck3: vbuck3 {
-+				regulator-compatible = "vbuck3";
-+				regulator-name = "Vlcpu";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+		};
-+	};
-+
-+	mt6315_7: pmic@7 {
-+		compatible = "mediatek,mt6315-regulator";
-+		reg = <0x7 SPMI_USID>;
-+
-+		regulators {
-+			mt6315_7_vbuck1: vbuck1 {
-+				regulator-compatible = "vbuck1";
-+				regulator-name = "Vgpu";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+			};
-+		};
-+	};
-+};
-+
- &uart0 {
- 	status = "okay";
- };
+ #ifdef	CONFIG_X86
+-# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
++# define	DMAR_UNITS_SUPPORTED	640
+ #else
+ # define	DMAR_UNITS_SUPPORTED	64
+ #endif
 -- 
-2.36.0
+2.26.2
 
