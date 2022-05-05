@@ -2,88 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF081C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9A4C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385067AbiEETey (ORCPT
+        id S1385111AbiEETfz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
+        Thu, 5 May 2022 15:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351650AbiEETel (ORCPT
+        with ESMTP id S236532AbiEETft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:34:41 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD1A55492;
-        Thu,  5 May 2022 12:31:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=26sf2Bz2SDgQmdCQw3Y4ZTnImgJ2MyGCiyio6ZL3q3Y=; b=OX97Z/D1CJSI6hriVTxC2kAnOw
-        1KITEk45cAtwCpY9rkRCDUh3KDg2O2YzMgXcmuPrqXaafenIhWWC1+LyxgtF/580Mzq9ZdOBGqQII
-        szuZz7L+gnBGPa0DhyrfUrxKFOKAOdS+/7tX8dF3YT6RRRi5n+Pvq9GzAiarMSPSGIbrEUOikWcQ4
-        luIwkR5QmpMMR3ULcRXOtddO+8na/Jrhq18XXAepQbZ7X+3+2omWFwgyxPBez0WA9LEkMMiNJ8gOK
-        /vnX5br4i70krbeAId+z+Wo/kxx7sPLDtH+XBAxzqCS0vo9z0RVsXdy6BbySPaaEQO2JnHI7/cIaw
-        LlqXpVFA==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nmhB9-0009Pt-2n; Thu, 05 May 2022 21:30:24 +0200
-Message-ID: <95fd6c2b-8a80-7161-953c-0660c9cc046f@igalia.com>
-Date:   Thu, 5 May 2022 16:28:55 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
-Content-Language: en-US
-To:     Hari Bathini <hbathini@linux.ibm.com>, akpm@linux-foundation.org,
-        bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-9-gpiccoli@igalia.com>
- <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 5 May 2022 15:35:49 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 618DB5B3D5;
+        Thu,  5 May 2022 12:32:08 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.91,203,1647270000"; 
+   d="scan'208";a="120034524"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 06 May 2022 04:32:07 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 395D740E1669;
+        Fri,  6 May 2022 04:32:02 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [RFC PATCH 0/4] Add CPG wrapper for Renesas RZ/Five SoC
+Date:   Thu,  5 May 2022 20:31:39 +0100
+Message-Id: <20220505193143.31826-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05/2022 15:55, Hari Bathini wrote:
-> [...] 
-> 
-> The change looks good. I have tested it on an LPAR (ppc64).
-> 
-> Reviewed-by: Hari Bathini <hbathini@linux.ibm.com>
+Hi All,
 
-Thanks a bunch Hari, much appreciated!
+This patch series adds CPG wrapper for Renesas RZ/Five SoC. RZ/Five SoC
+has almost identical clock structure compared to RZ/G2UL, so
+r9a07g043-cpg.c file is re-used to add support for Renesas RZ/Five SoC.
+
+Sending this as RFC in case there is a better approach for patch#2 to
+avoid looping. This patch has been tested on Renesas RZ/Five SMARC EVK.
+Below is the clock structure reported by Linux with this patch series:
+
+/ # cat /sys/devices/soc0/family 
+RZ/Five
+/ # cat /sys/devices/soc0/machine 
+Renesas SMARC EVK based on r9a07g043
+/ # cat /sys/devices/soc0/revision 
+0
+/ # cat /sys/devices/soc0/soc_id 
+r9a07g043
+/ # cat /sys/kernel/debug/clk/clk_summary 
+                                 enable  prepare  protect                                duty  hardware
+   clock                          count    count    count        rate   accuracy phase  cycle    enable
+-------------------------------------------------------------------------------------------------------
+ extal                                3        3        0    24000000          0     0  50000         Y
+    .pll6                             0        0        0   500000000          0     0  50000         Y
+       .pll6_250                      0        0        0   250000000          0     0  50000         Y
+          HP                          0        0        0   250000000          0     0  50000         Y
+    .pll3                             1        1        0  1600000000          0     0  50000         Y
+       .pll3_533                      0        0        0   533333333          0     0  50000         Y
+          .sel_pll3_3                 0        0        0   533333333          0     0  50000         Y
+             divpl3c                  0        0        0   266666667          0     0  50000         Y
+                SPI1                  0        0        0    66666666          0     0  50000         Y
+                   spi_clk2           0        0        0    66666666          0     0  50000         N
+                SPI0                  0        0        0   133333333          0     0  50000         Y
+                   spi_clk            0        0        0   133333333          0     0  50000         N
+       .pll3_400                      0        0        0   400000000          0     0  50000         Y
+       .pll3_div2                     1        1        0   800000000          0     0  50000         Y
+          .pll3_div2_4                1        1        0   200000000          0     0  50000         Y
+             M0                       0        0        0   200000000          0     0  50000         Y
+                eth1_axi              0        0        0   200000000          0     0  50000         N
+                eth0_axi              0        0        0   200000000          0     0  50000         N
+             P1                       2        2        0   200000000          0     0  50000         Y
+                iax45_clk             1        1        0   200000000          0     0  50000         Y
+                usb_pclk              0        0        0   200000000          0     0  50000         N
+                usb0_func             0        0        0   200000000          0     0  50000         N
+                usb1_host             0        0        0   200000000          0     0  50000         N
+                usb0_host             0        0        0   200000000          0     0  50000         N
+                sdhi1_aclk            0        0        0   200000000          0     0  50000         N
+                sdhi0_aclk            0        0        0   200000000          0     0  50000         N
+                dmac_aclk             1        1        0   200000000          0     0  50000         Y
+                P1_DIV2               0        0        0   100000000          0     0  50000         Y
+                   dmac_pclk          0        0        0   100000000          0     0  50000         N
+             .pll3_div2_4_2           0        0        0   100000000          0     0  50000         Y
+                ZT                    0        0        0   100000000          0     0  50000         Y
+                   eth1_chi           0        0        0   100000000          0     0  50000         N
+                   eth0_chi           0        0        0   100000000          0     0  50000         N
+                P2                    0        0        0   100000000          0     0  50000         Y
+                   iax45_pclk         0        0        0   100000000          0     0  50000         N
+    .pll2                             1        1        0  1600000000          0     0  50000         Y
+       .clk_533                       0        0        0   533333333          0     0  50000         Y
+          sd1                         0        0        0   533333333          0     0  50000         Y
+             sdhi1_clk_hs             0        0        0   533333333          0     0  50000         N
+             SD1_DIV4                 0        0        0   133333333          0     0  50000         Y
+                sdhi1_imclk2          0        0        0   133333333          0     0  50000         N
+                sdhi1_imclk           0        0        0   133333333          0     0  50000         N
+          sd0                         0        0        0   533333333          0     0  50000         Y
+             sdhi0_clk_hs             0        0        0   533333333          0     0  50000         N
+             SD0_DIV4                 0        0        0   133333333          0     0  50000         Y
+                sdhi0_imclk2          0        0        0   133333333          0     0  50000         N
+                sdhi0_imclk           0        0        0   133333333          0     0  50000         N
+          .clk_266                    0        0        0   266666666          0     0  50000         Y
+       .clk_800                       0        0        0   800000000          0     0  50000         Y
+          .clk_400                    0        0        0   400000000          0     0  50000         Y
+       .pll2_div2                     1        1        0   800000000          0     0  50000         Y
+          .pll2_div2_10               0        0        0    80000000          0     0  50000         Y
+             TSU                      0        0        0    80000000          0     0  50000         Y
+                tsu_pclk              0        0        0    80000000          0     0  50000         N
+                adc_adclk             0        0        0    80000000          0     0  50000         N
+          .pll2_div2_8                1        1        0   100000000          0     0  50000         Y
+             P0                       1        1        0   100000000          0     0  50000         Y
+                adc_pclk              0        0        0   100000000          0     0  50000         N
+                canfd                 0        0        0   100000000          0     0  50000         N
+                rspi2                 0        0        0   100000000          0     0  50000         N
+                rspi1                 0        0        0   100000000          0     0  50000         N
+                rspi0                 0        0        0   100000000          0     0  50000         N
+                sci1                  0        0        0   100000000          0     0  50000         N
+                sci0                  0        0        0   100000000          0     0  50000         N
+                scif4                 0        0        0   100000000          0     0  50000         N
+                scif3                 0        0        0   100000000          0     0  50000         N
+                scif2                 0        0        0   100000000          0     0  50000         N
+                scif1                 0        0        0   100000000          0     0  50000         N
+                scif0                 2        2        0   100000000          0     0  50000         Y
+                i2c3                  0        0        0   100000000          0     0  50000         N
+                i2c2                  0        0        0   100000000          0     0  50000         N
+                i2c1                  0        0        0   100000000          0     0  50000         N
+                i2c0                  0        0        0   100000000          0     0  50000         N
+                ssi3_sfr              0        0        0   100000000          0     0  50000         N
+                ssi3_pclk             0        0        0   100000000          0     0  50000         N
+                ssi2_sfr              0        0        0   100000000          0     0  50000         N
+                ssi2_pclk             0        0        0   100000000          0     0  50000         N
+                ssi1_sfr              0        0        0   100000000          0     0  50000         N
+                ssi1_pclk             0        0        0   100000000          0     0  50000         N
+                ssi0_sfr              0        0        0   100000000          0     0  50000         N
+                ssi0_pclk             0        0        0   100000000          0     0  50000         N
+                wdt2_pclk             0        0        0   100000000          0     0  50000         N
+                wdt0_pclk             0        0        0   100000000          0     0  50000         N
+                ostm2                 0        0        0   100000000          0     0  50000         N
+                ostm1                 0        0        0   100000000          0     0  50000         N
+                ostm0                 0        0        0   100000000          0     0  50000         N
+                P0_DIV2               0        0        0    50000000          0     0  50000         Y
+    .pll1                             0        0        0  1000000000          0     0  50000         Y
+       I                              0        0        0  1000000000          0     0  50000         Y
+    .osc_div1000                      0        0        0       24000          0     0  50000         Y
+    .osc                              1        1        0    24000000          0     0  50000         Y
+       gpio                           1        2        0    24000000          0     0  50000         Y
+       wdt2_clk                       0        0        0    24000000          0     0  50000         N
+       wdt0_clk                       0        0        0    24000000          0     0  50000         N
+/ # 
+/ # 
+
+This patch series depends on branch [0].
+
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/geert/
+renesas-drivers.git/log/?h=renesas-clk-for-v5.19
+
+Cheers,
+Prabhakar
+
+Lad Prabhakar (4):
+  dt-bindings: clock: r9a07g043-cpg: Add Renesas RZ/Five CPG Clock and
+    Reset Definitions
+  clk: renesas: rzg2l-cpg: Add support to stack the resets instead of
+    indexing
+  clk: renesas: r9a07g043: Split up core, module and resets array
+  clk: renesas: r9a07g043: Add support for RZ/Five SoC
+
+ drivers/clk/renesas/r9a07g043-cpg.c       | 514 ++++++++++++----------
+ drivers/clk/renesas/rzg2l-cpg.c           |  76 +++-
+ drivers/clk/renesas/rzg2l-cpg.h           |   4 +-
+ include/dt-bindings/clock/r9a07g043-cpg.h |  20 +
+ 4 files changed, 376 insertions(+), 238 deletions(-)
+
+-- 
+2.25.1
+
