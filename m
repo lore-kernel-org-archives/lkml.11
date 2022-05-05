@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A792C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AED7C3527D
 	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385863AbiEESax (ORCPT
+        id S1385799AbiEESas (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
+        Thu, 5 May 2022 14:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383439AbiEESUK (ORCPT
+        with ESMTP id S1383453AbiEESUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:20:10 -0400
+        Thu, 5 May 2022 14:20:11 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607B95DA65;
-        Thu,  5 May 2022 11:16:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420C95DA6F;
+        Thu,  5 May 2022 11:16:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774575; x=1683310575;
+  t=1651774576; x=1683310576;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=pGVWdXymcfkAJa+MRlBkaFoB6YnKT+c72nrlPC0H22U=;
-  b=P4370nbxEdFCJs0kbOzRoU6bxCzD4APy5tE4x/WWv9cv/wQ+5jkXNSQ7
-   QrHdqiDZYUOYT4zq5BmraJVpH4xCANsLhMWz+AjmRsmleQgj5YzDXXfMT
-   oVnVG3wlnaWP2IVFXFYIMzuYuD8OMbm9OB3aWGm8nfKliIRxNeQTJjwpU
-   6ERFaC5EalJTQiFT887xSp0OWjhXxBTBDFQ98gYIZX3nsUdVJb2RH4pRD
-   cMzGZE5jc3w6ZJgYUhB2AvMgKkaLlxMd2sTHO6C0XgI3LpV2+u0pKnh2w
-   btbrU/BYfQ4UwXmfikjmg6rOBSGGeehfhX2VQWhWh2FGz3iz7xILF3NJw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354867"
+  bh=dQW6WFHQdnwK7Za9a0thwXd0uTEe0ieRUqRCfR5Ix14=;
+  b=Exm/xn/GCxa5GGGmsfetlEnD4GPpYJ7WpQxDFnU0BnsR+8/QkDhvD85D
+   i4wdDBtbDW2TOHg3MPoNplkuV94cjx9juwI4YAfjAQooNyxPLqHcE/wc0
+   HrMWrpaYhtW5QNNcoZS9ArERXReVNpp4x1gZj/rm2gHN99HL+DbWLJio7
+   DGr72LO9OpWPE4PjJ1XFmqxx7/4ws61PsAke0/KYRpGT3mkGjXL8mxe39
+   GVOkn2uNDjtRJhyeGo4fMaotVuLtlG/FTWwtpiUVZoFkVgqYoON8igzQf
+   XtDTiqUsZPIUGHIDqeJLmIRdskXoDKnF7goO3wVRebhukLVm3BgL7rCCF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354869"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="268354867"
+   d="scan'208";a="268354869"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:50 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:54 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083390"
+   d="scan'208";a="665083459"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:50 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 069/104] KVM: TDX: restore user ret MSRs
-Date:   Thu,  5 May 2022 11:15:03 -0700
-Message-Id: <8c065b3e16a754b80e7af5734330040295d657db.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 088/104] KVM: TDX: Add a place holder for handler of TDX hypercalls (TDG.VP.VMCALL)
+Date:   Thu,  5 May 2022 11:15:22 -0700
+Message-Id: <b92b43b3d961716efab78f700d26648792ceda76.1651774251.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,83 +58,169 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Several user ret MSRs are clobbered on TD exit.  Restore those values on
-TD exit and before returning to ring 3.
+The TDX module specification defines TDG.VP.VMCALL API (TDVMCALL for short)
+for the guest TD to call hypercall to VMM.  When the guest TD issues
+TDG.VP.VMCALL, the guest TD exits to VMM with a new exit reason of
+TDVMCALL.  The arguments from the guest TD and returned values from the VMM
+are passed in the guest registers.  The guest RCX registers indicates which
+registers are used.  Define helper functions to access those registers as
+ABI.
 
+Define the TDVMCALL exit reason, which is carved out from the VMX exit
+reason namespace as the TDVMCALL exit from TDX guest to TDX-SEAM is really
+just a VM-Exit.  Add a place holder to handle TDVMCALL exit.
+
+Co-developed-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 43 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ arch/x86/include/uapi/asm/vmx.h |  4 ++-
+ arch/x86/kvm/vmx/tdx.c          | 56 ++++++++++++++++++++++++++++++++-
+ arch/x86/kvm/vmx/tdx.h          | 13 ++++++++
+ 3 files changed, 71 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/include/uapi/asm/vmx.h b/arch/x86/include/uapi/asm/vmx.h
+index 3d9b4598e166..cb0a0565219a 100644
+--- a/arch/x86/include/uapi/asm/vmx.h
++++ b/arch/x86/include/uapi/asm/vmx.h
+@@ -92,6 +92,7 @@
+ #define EXIT_REASON_UMWAIT              67
+ #define EXIT_REASON_TPAUSE              68
+ #define EXIT_REASON_BUS_LOCK            74
++#define EXIT_REASON_TDCALL              77
+ 
+ #define VMX_EXIT_REASONS \
+ 	{ EXIT_REASON_EXCEPTION_NMI,         "EXCEPTION_NMI" }, \
+@@ -154,7 +155,8 @@
+ 	{ EXIT_REASON_XRSTORS,               "XRSTORS" }, \
+ 	{ EXIT_REASON_UMWAIT,                "UMWAIT" }, \
+ 	{ EXIT_REASON_TPAUSE,                "TPAUSE" }, \
+-	{ EXIT_REASON_BUS_LOCK,              "BUS_LOCK" }
++	{ EXIT_REASON_BUS_LOCK,              "BUS_LOCK" }, \
++	{ EXIT_REASON_TDCALL,                "TDCALL" }
+ 
+ #define VMX_EXIT_REASON_FLAGS \
+ 	{ VMX_EXIT_REASONS_FAILED_VMENTRY,	"FAILED_VMENTRY" }
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index a54ee22b6c64..80fe76214b3d 100644
+index 2f88871b5b86..3c6cf08a2e3c 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -591,6 +591,28 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 	vcpu->kvm->vm_bugged = true;
+@@ -98,6 +98,41 @@ static __always_inline unsigned long tdexit_intr_info(struct kvm_vcpu *vcpu)
+ 	return kvm_r9_read(vcpu);
  }
  
-+struct tdx_uret_msr {
-+	u32 msr;
-+	unsigned int slot;
-+	u64 defval;
-+};
++#define BUILD_TDVMCALL_ACCESSORS(param, gpr)				\
++static __always_inline							\
++unsigned long tdvmcall_##param##_read(struct kvm_vcpu *vcpu)		\
++{									\
++	return kvm_##gpr##_read(vcpu);					\
++}									\
++static __always_inline void tdvmcall_##param##_write(struct kvm_vcpu *vcpu, \
++						     unsigned long val)	\
++{									\
++	kvm_##gpr##_write(vcpu, val);					\
++}
++BUILD_TDVMCALL_ACCESSORS(a0, r12);
++BUILD_TDVMCALL_ACCESSORS(a1, r13);
++BUILD_TDVMCALL_ACCESSORS(a2, r14);
++BUILD_TDVMCALL_ACCESSORS(a3, r15);
 +
-+static struct tdx_uret_msr tdx_uret_msrs[] = {
-+	{.msr = MSR_SYSCALL_MASK,},
-+	{.msr = MSR_STAR,},
-+	{.msr = MSR_LSTAR,},
-+	{.msr = MSR_TSC_AUX,},
-+};
-+
-+static void tdx_user_return_update_cache(void)
++static __always_inline unsigned long tdvmcall_exit_type(struct kvm_vcpu *vcpu)
 +{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(tdx_uret_msrs); i++)
-+		kvm_user_return_update_cache(tdx_uret_msrs[i].slot,
-+					     tdx_uret_msrs[i].defval);
++	return kvm_r10_read(vcpu);
++}
++static __always_inline unsigned long tdvmcall_leaf(struct kvm_vcpu *vcpu)
++{
++	return kvm_r11_read(vcpu);
++}
++static __always_inline void tdvmcall_set_return_code(struct kvm_vcpu *vcpu,
++						     long val)
++{
++	kvm_r10_write(vcpu, val);
++}
++static __always_inline void tdvmcall_set_return_val(struct kvm_vcpu *vcpu,
++						    unsigned long val)
++{
++	kvm_r11_write(vcpu, val);
 +}
 +
- static void tdx_restore_host_xsave_state(struct kvm_vcpu *vcpu)
+ static inline bool is_td_vcpu_created(struct vcpu_tdx *tdx)
  {
- 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
-@@ -630,6 +652,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	return tdx->tdvpr.added;
+@@ -798,7 +833,8 @@ static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+ 					struct vcpu_tdx *tdx)
+ {
+ 	guest_enter_irqoff();
+-	tdx->exit_reason.full = __tdx_vcpu_run(tdx->tdvpr.pa, vcpu->arch.regs, 0);
++	tdx->exit_reason.full = __tdx_vcpu_run(tdx->tdvpr.pa, vcpu->arch.regs,
++					tdx->tdvmcall.regs_mask);
+ 	guest_exit_irqoff();
+ }
  
- 	tdx_vcpu_enter_exit(vcpu, tdx);
+@@ -831,6 +867,11 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
  
-+	tdx_user_return_update_cache();
- 	tdx_restore_host_xsave_state(vcpu);
- 	tdx->host_state_need_restore = true;
+ 	tdx_complete_interrupts(vcpu);
  
-@@ -1474,6 +1497,26 @@ int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
- 	if (WARN_ON_ONCE(x86_ops->tlb_remote_flush))
- 		return -EIO;
++	if (tdx->exit_reason.basic == EXIT_REASON_TDCALL)
++		tdx->tdvmcall.rcx = vcpu->arch.regs[VCPU_REGS_RCX];
++	else
++		tdx->tdvmcall.rcx = 0;
++
+ 	return EXIT_FASTPATH_NONE;
+ }
  
-+	for (i = 0; i < ARRAY_SIZE(tdx_uret_msrs); i++) {
-+		/*
-+		 * Here it checks if MSRs (tdx_uret_msrs) can be saved/restored
-+		 * before returning to user space.
-+		 *
-+		 * this_cpu_ptr(user_return_msrs)->registerd isn't checked
-+		 * because the registration is done at vcpu runtime by
-+		 * kvm_set_user_return_msr().
-+		 * Here is setting up cpu feature before running vcpu,
-+		 * registered is alreays false.
-+		 */
-+		tdx_uret_msrs[i].slot = kvm_find_user_return_msr(tdx_uret_msrs[i].msr);
-+		if (tdx_uret_msrs[i].slot == -1) {
-+			/* If any MSR isn't supported, it is a KVM bug */
-+			pr_err("MSR %x isn't included by kvm_find_user_return_msr\n",
-+				tdx_uret_msrs[i].msr);
-+			return -EIO;
-+		}
+@@ -877,6 +918,17 @@ static int tdx_handle_triple_fault(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
+ 
++static int handle_tdvmcall(struct kvm_vcpu *vcpu)
++{
++	switch (tdvmcall_leaf(vcpu)) {
++	default:
++		break;
 +	}
 +
- 	max_pkgs = topology_max_packages();
- 	tdx_mng_key_config_lock = kcalloc(max_pkgs, sizeof(*tdx_mng_key_config_lock),
- 				   GFP_KERNEL);
++	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
++	return 1;
++}
++
+ void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
+ {
+ 	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
+@@ -1274,6 +1326,8 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
+ 		return tdx_handle_exception(vcpu);
+ 	case EXIT_REASON_EXTERNAL_INTERRUPT:
+ 		return tdx_handle_external_interrupt(vcpu);
++	case EXIT_REASON_TDCALL:
++		return handle_tdvmcall(vcpu);
+ 	case EXIT_REASON_EPT_VIOLATION:
+ 		return tdx_handle_ept_violation(vcpu);
+ 	case EXIT_REASON_EPT_MISCONFIG:
+diff --git a/arch/x86/kvm/vmx/tdx.h b/arch/x86/kvm/vmx/tdx.h
+index 1268a49fdf18..b0bb239b51bf 100644
+--- a/arch/x86/kvm/vmx/tdx.h
++++ b/arch/x86/kvm/vmx/tdx.h
+@@ -95,6 +95,19 @@ struct vcpu_tdx {
+ 
+ 	struct list_head cpu_list;
+ 
++	union {
++		struct {
++			union {
++				struct {
++					u16 gpr_mask;
++					u16 xmm_mask;
++				};
++				u32 regs_mask;
++			};
++			u32 reserved;
++		};
++		u64 rcx;
++	} tdvmcall;
+ 	union tdx_exit_reason exit_reason;
+ 
+ 	bool initialized;
 -- 
 2.25.1
 
