@@ -2,84 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379219AbiEENXl (ORCPT
+        id S1379248AbiEENZR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        Thu, 5 May 2022 09:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379120AbiEENXf (ORCPT
+        with ESMTP id S235258AbiEENZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:23:35 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADD656F94;
-        Thu,  5 May 2022 06:19:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1DNfkVatFPseIRLRTaf5GG9N3vrErBYge1wmaOwIZns=; b=LZPrJ/vjUPasOI43ov6ddZJwu/
-        p0j9nUctyDj+SFAaWk7zI/PPi78KLqVLLq7RTp94cYeImH/Oz48mhUea8dNQwA1mwowWHdOQsW6Eg
-        J9jMvU+x/33EcKgIVyWm0n8bR0BGRO5lxV56aAC+ZiKkzr7QN6HHEuJe/z6LDqeVex0+JBQrvmL32
-        aVZeBYzmKvwP1cTw04LEGcx5Ku3dP26Y06ygZFvgIBF4N9l3WAyf1CRHjPuNa99Apa0axXvsaCvB2
-        XF+dUTRht+ESY831J5TV75e00FEes8HLRzqS9eAvvPd25eOysvNknOidWwX4l6Ek+jpeGolt7tcpV
-        USHVIKPg==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nmbOP-0001q2-IE; Thu, 05 May 2022 15:19:41 +0200
-Message-ID: <3a52c5ac-e8c3-64dc-d94f-e210ccb19a70@igalia.com>
-Date:   Thu, 5 May 2022 10:19:27 -0300
+        Thu, 5 May 2022 09:25:15 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6434A44A0A;
+        Thu,  5 May 2022 06:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651756896; x=1683292896;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Kq5s4HkqETdpFGmupob4Ar1Psqe2LdMq9WDLKKEnRjQ=;
+  b=Z/jgZoxK4/2fmmOSQ1j+STBfn42JulH3+qJrTGamTvjjqveJdcQd4sLH
+   oJMV1f/tPeK8ioSmektT03KrTnlqr5yakUqMi5FSfv9pXWtue4gIdKFec
+   BVxigLlT8jPsxdDqWOI5Rtcnhp/9q39Cz83ykXOUvg3s69JQKL1rC34iQ
+   P7uYxeUxIHmzC8MiUlv+OzMj4uJ6rPw0AZ3BQ/EdWlCjzA+Y1+XE0N47Z
+   9OXesKhDqqsk/XDXMyNaoAHR+UvIvzhmZAe0fmt1S5syXzn6x89e4JPaW
+   aUFFqj6xrv84VRhzthQLuAhZpGJwD88zBw9n6uA3UBBIQOdR2geZEIpi9
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="157919934"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 May 2022 06:21:35 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 5 May 2022 06:21:34 -0700
+Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 5 May 2022 06:21:33 -0700
+From:   Eugen Hristev <eugen.hristev@microchip.com>
+To:     <linux-media@vger.kernel.org>, <hverkuil@xs4all.nl>
+CC:     <linux-kernel@vger.kernel.org>,
+        Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [RFC PATCH] media: atmel: atmel-isc: move media_pipeline_* to (un)prepare cb
+Date:   Thu, 5 May 2022 16:21:31 +0300
+Message-ID: <20220505132131.50994-1-eugen.hristev@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Should arm64 have a custom crash shutdown handler?
-Content-Language: en-US
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        will Deacon <will@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-References: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
- <874k24igjf.wl-maz@kernel.org>
- <92645c41-96fd-2755-552f-133675721a24@igalia.com>
- <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
- <3bee47db-f771-b502-82a3-d6fac388aa89@igalia.com>
- <YnPN33qN7oVQa4fA@FVFF77S0Q05N.cambridge.arm.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YnPN33qN7oVQa4fA@FVFF77S0Q05N.cambridge.arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05/2022 10:15, Mark Rutland wrote:
-> [...]
-> Without a strong justification, we wouldn't add such hooks to arm64.
-> 
-> Could you start by trying to use the notifiers, and if you encounter a problem,
-> *then* we consider an alternative? That should mean we have a concrete reason.
-> 
-> Thanks,
-> Mark.
+Move the media_pipeline_start/stop calls from start/stop streaming to
+the new prepare_streaming and unprepare_streaming callbacks.
 
-That's a good idea Mark. I'm not expert in Hyper-V - I could try that
-for a fact, but let's see if Michael has a strong reason on why this
-need to be done in arch code and panic notifiers aren't enough.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
 
-Thanks,
+Only applies on top of
+[RFC PATCHv2] vb2: add support for (un)prepare_streaming queue ops
+
+and the series
+[PATCH v10 0/5] media: atmel: atmel-isc: implement media controller
++
+[PATCH v10 0/8] media: atmel: atmel-isc: various fixes
 
 
-Guilherme
+
+ drivers/media/platform/atmel/atmel-isc-base.c | 27 ++++++++++++-------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index 4d71e92aa5ea..894c22081397 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -324,6 +324,13 @@ static int isc_configure(struct isc_device *isc)
+ 	return isc_update_profile(isc);
+ }
+ 
++static int isc_prepare_streaming(struct vb2_queue *vq)
++{
++	struct isc_device *isc = vb2_get_drv_priv(vq);
++
++	return media_pipeline_start(&isc->video_dev.entity, &isc->mpipe);
++}
++
+ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
+ {
+ 	struct isc_device *isc = vb2_get_drv_priv(vq);
+@@ -332,10 +339,6 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
+ 	unsigned long flags;
+ 	int ret;
+ 
+-	ret = media_pipeline_start(&isc->video_dev.entity, &isc->mpipe);
+-	if (ret)
+-		goto err_pipeline_start;
+-
+ 	/* Enable stream on the sub device */
+ 	ret = v4l2_subdev_call(isc->current_subdev->sd, video, s_stream, 1);
+ 	if (ret && ret != -ENOIOCTLCMD) {
+@@ -384,9 +387,6 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
+ 	v4l2_subdev_call(isc->current_subdev->sd, video, s_stream, 0);
+ 
+ err_start_stream:
+-	media_pipeline_stop(&isc->video_dev.entity);
+-
+-err_pipeline_start:
+ 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
+ 	list_for_each_entry(buf, &isc->dma_queue, list)
+ 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_QUEUED);
+@@ -396,6 +396,14 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
+ 	return ret;
+ }
+ 
++static void isc_unprepare_streaming(struct vb2_queue *vq)
++{
++	struct isc_device *isc = vb2_get_drv_priv(vq);
++
++	/* Stop media pipeline */
++	media_pipeline_stop(&isc->video_dev.entity);
++}
++
+ static void isc_stop_streaming(struct vb2_queue *vq)
+ {
+ 	struct isc_device *isc = vb2_get_drv_priv(vq);
+@@ -425,9 +433,6 @@ static void isc_stop_streaming(struct vb2_queue *vq)
+ 	if (ret && ret != -ENOIOCTLCMD)
+ 		v4l2_err(&isc->v4l2_dev, "stream off failed in subdev\n");
+ 
+-	/* Stop media pipeline */
+-	media_pipeline_stop(&isc->video_dev.entity);
+-
+ 	/* Release all active buffers */
+ 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
+ 	if (unlikely(isc->cur_frm)) {
+@@ -466,6 +471,8 @@ static const struct vb2_ops isc_vb2_ops = {
+ 	.start_streaming	= isc_start_streaming,
+ 	.stop_streaming		= isc_stop_streaming,
+ 	.buf_queue		= isc_buffer_queue,
++	.prepare_streaming	= isc_prepare_streaming,
++	.unprepare_streaming	= isc_unprepare_streaming,
+ };
+ 
+ static int isc_querycap(struct file *file, void *priv,
+-- 
+2.25.1
+
