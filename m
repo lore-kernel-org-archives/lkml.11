@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D455C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383179AbiEESfm (ORCPT
+        id S1383764AbiEESfv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
+        Thu, 5 May 2022 14:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385318AbiEESaU (ORCPT
+        with ESMTP id S1385269AbiEESaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:30:20 -0400
+        Thu, 5 May 2022 14:30:18 -0400
 Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A22E54BF4;
-        Thu,  5 May 2022 11:21:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C929913FBD;
+        Thu,  5 May 2022 11:20:53 -0700 (PDT)
 Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
  by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id cb2124d2900a9eb5; Thu, 5 May 2022 20:19:37 +0200
+ id 673a922d1a087de5; Thu, 5 May 2022 20:19:29 +0200
 Received: from kreacher.localnet (unknown [213.134.161.219])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id BEF7266C2F2;
-        Thu,  5 May 2022 20:19:36 +0200 (CEST)
+        by v370.home.net.pl (Postfix) with ESMTPSA id 422AB66C2F5;
+        Thu,  5 May 2022 20:19:28 +0200 (CEST)
 From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
 To:     Linux PCI <linux-pci@vger.kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
@@ -33,9 +33,9 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Bjorn Helgaas <helgaas@kernel.org>,
         Nathan Chancellor <nathan@kernel.org>,
         Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH v1 05/11] PCI/PM: Do not call pci_update_current_state() from pci_power_up()
-Date:   Thu, 05 May 2022 20:09:12 +0200
-Message-ID: <3695055.kQq0lBPeGt@kreacher>
+Subject: [PATCH v1 10/11] PCI/PM: Rearrange pci_set_power_state()
+Date:   Thu, 05 May 2022 20:16:50 +0200
+Message-ID: <2139440.Mh6RI2rZIc@kreacher>
 In-Reply-To: <4738492.GXAFRqVoOG@kreacher>
 References: <4738492.GXAFRqVoOG@kreacher>
 MIME-Version: 1.0
@@ -53,140 +53,63 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Notice that calling pci_update_current_state() from pci_power_up() is
-redundant and may be harmful in some cases.
+The part of pci_set_power_state() related to transitions into
+low-power states is unnecessary convoluted, so clearly divide it
+into the D3cold special case and the general case covering all of
+the other states.
 
-First, if the device is in a low-power state before pci_power_up()
-gets called for it and platform_pci_set_power_state() successfully
-changes its power state to D0, pci_update_current_state() will update
-current_state to reflect that and pci_power_up() will return success
-right away without restoring the device's BARs or reconfiguring ASPM
-which may be necessary.  This is arguably incorrect and definitely
-inconsistent with the case when platform_pci_set_power_state() returns
-an error (for example, because the device is not power-manageable by
-the platform firmware).
-
-Second, current_state should not be overwritten until the decision
-whether or not to restore the device's BARs is made, because that
-decision generally depends on its value.  Again, calling
-pci_update_current_state() in pci_power_up() is not consistent with
-this observation.
-
-Next, pci_power_up() attempts to read from the device's PCI_PM_CTRL
-register regardless of the current_state value unless it is PCI_D0,
-including the case when pci_update_current_state() sets current_state
-to PCI_D3cold to indicate that the device is not accessible.  If the
-register read is not successful, current_state will be set to
-PCI_D3cold anyway, so that pci_update_current_state() action is
-redundant.
-
-Further, if pci_update_current_state() reads the device's PCI_PM_CTRL
-register, pci_power_up() will repeat that read going forward and
-it is not necessary to update current_state in the meantime.
-
-Finally, if pm_cap is not set (in which case the PCI_PM_CTRL register
-is not present), the power state of the device should be determined
-with the help of the platform firmware or set to D0 if that's not
-possible and pci_update_current_state() does not do that.
-
-Accordingly, rearrange pci_power_up() so as to address the above
-shortcomings.
+Also fix a potential issue with calling pci_bus_set_current_state()
+to set the current state of all devices on the subordinate bus to
+D3cold without checking if the power state of the parent bridge has
+really changed to D3cold.
 
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
- drivers/pci/pci.c |   49 ++++++++++++++++++++++++++++---------------------
- 1 file changed, 28 insertions(+), 21 deletions(-)
+ drivers/pci/pci.c |   28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
 Index: linux-pm/drivers/pci/pci.c
 ===================================================================
 --- linux-pm.orig/drivers/pci/pci.c
 +++ linux-pm/drivers/pci/pci.c
-@@ -1192,23 +1192,24 @@ static int pci_dev_wait(struct pci_dev *
-  */
- int pci_power_up(struct pci_dev *dev)
- {
--	bool need_restore = false;
-+	bool need_restore;
-+	pci_power_t state;
- 	u16 pmcsr;
--	int ret;
+@@ -1446,19 +1446,25 @@ int pci_set_power_state(struct pci_dev *
+ 	if (state >= PCI_D3hot && (dev->dev_flags & PCI_DEV_FLAGS_NO_D3))
+ 		return 0;
  
--	ret = platform_pci_set_power_state(dev, PCI_D0);
--	if (!ret) {
--		pci_update_current_state(dev, PCI_D0);
--	} else if (!dev->pm_cap) { /* Fall back to PCI_D0 */
--		dev->current_state = PCI_D0;
--		return 0;
--	}
-+	platform_pci_set_power_state(dev, PCI_D0);
+-	/*
+-	 * To put device in D3cold, we put device into D3hot in native
+-	 * way, then put device into D3cold with platform ops
+-	 */
+-	error = pci_set_low_power_state(dev, state > PCI_D3hot ?
+-					PCI_D3hot : state);
++	if (state == PCI_D3cold) {
++		/*
++		 * To put the device in D3cold, put it into D3hot in the native
++		 * way, then put it into D3cold using platform ops.
++		 */
++		error = pci_set_low_power_state(dev, PCI_D3hot);
+ 
+-	if (pci_platform_power_transition(dev, state))
+-		return error;
++		if (pci_platform_power_transition(dev, PCI_D3cold))
++			return error;
+ 
+-	/* Powering off a bridge may power off the whole hierarchy */
+-	if (state == PCI_D3cold)
+-		pci_bus_set_current_state(dev->subordinate, PCI_D3cold);
++		/* Powering off a bridge may power off the whole hierarchy */
++		if (dev->current_state == PCI_D3cold)
++			pci_bus_set_current_state(dev->subordinate, PCI_D3cold);
++	} else {
++		error = pci_set_low_power_state(dev, state);
 +
-+	if (!dev->pm_cap) {
-+		state = platform_pci_get_power_state(dev);
-+		if (state == PCI_UNKNOWN)
-+			dev->current_state = PCI_D0;
-+		else
-+			dev->current_state = state;
- 
--	if (dev->current_state == PCI_D0)
--		return 0;
-+		if (state == PCI_D0)
-+			return 0;
- 
--	if (!dev->pm_cap)
- 		return -EIO;
++		if (pci_platform_power_transition(dev, state))
++			return error;
 +	}
  
- 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
- 	if (PCI_POSSIBLE_ERROR(pmcsr)) {
-@@ -1218,26 +1219,31 @@ int pci_power_up(struct pci_dev *dev)
- 		return -EIO;
- 	}
- 
-+	state = pmcsr & PCI_PM_CTRL_STATE_MASK;
-+
-+	need_restore = (state == PCI_D3hot || dev->current_state >= PCI_D3hot) &&
-+			!(pmcsr & PCI_PM_CTRL_NO_SOFT_RESET);
-+
-+	if (state == PCI_D0) {
-+		dev->current_state = PCI_D0;
-+		goto end;
-+	}
-+
- 	/*
- 	 * If we're (effectively) in D3, force entire word to 0. This doesn't
- 	 * affect PME_Status, disables PME_En, and sets PowerState to 0.
- 	 */
--	if (dev->current_state >= PCI_D3hot) {
--		if ((pmcsr & PCI_PM_CTRL_STATE_MASK) == PCI_D3hot &&
--		    !(pmcsr & PCI_PM_CTRL_NO_SOFT_RESET))
--			need_restore = true;
--
-+	if (state == PCI_D3hot)
- 		pmcsr = 0;
--	} else {
-+	else
- 		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
--	}
- 
- 	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
- 
- 	/* Mandatory transition delays; see PCI PM 1.2. */
--	if (dev->current_state == PCI_D3hot)
-+	if (state == PCI_D3hot)
- 		pci_dev_d3_sleep(dev);
--	else if (dev->current_state == PCI_D2)
-+	else if (state == PCI_D2)
- 		udelay(PCI_PM_D2_DELAY);
- 
- 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-@@ -1246,6 +1252,7 @@ int pci_power_up(struct pci_dev *dev)
- 		pci_info_ratelimited(dev, "Refused to change power state from %s to D0\n",
- 				     pci_power_name(dev->current_state));
- 
-+end:
- 	/*
- 	 * According to section 5.4.1 of the "PCI BUS POWER MANAGEMENT
- 	 * INTERFACE SPECIFICATION, REV. 1.2", a device transitioning
+ 	return 0;
+ }
 
 
 
