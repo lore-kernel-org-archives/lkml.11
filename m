@@ -2,138 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A149C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345568AbiEEHoX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        id S242426AbiEEHpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 03:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345413AbiEEHoR (ORCPT
+        with ESMTP id S230419AbiEEHpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:44:17 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB8218388
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:40:39 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d25so3014887pfo.10
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 00:40:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g5+cU6rju5q4PixcXKa5q0u5g3HxteJZ5Y7imLW6zec=;
-        b=aC1SKi4r1y8gQCHUieTZ02NfjxR/NT7PnVvgPER49hsL0t10jaJr0/EOvqWfXWWZbi
-         hui3ac+un3NS7SeDvijuxGNLKCFTPZ0nIGSJrX8WOBSC8RKLxx10nTmR9wmBMwkk0Ahi
-         pDRstdJIC4m7UfS73Z3CESXtKP116DxrNOTFNDtnRkZZFDe4HQ0KlWyN2ahpRwj75ZMp
-         0jjvUstov+9usyDNkTkyoFTMlL4VUEM4V5LMW5VkaaYQIQxeDOD60kh00nGp2sxg1MfB
-         pADNqPC4D2W/tHZfunItlxaXoJKfBQ0PFVRHV7WR01soQBeOpeQG4nQXd6srhyskD7Kw
-         1trA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g5+cU6rju5q4PixcXKa5q0u5g3HxteJZ5Y7imLW6zec=;
-        b=UDGulMN6RF1nrmJKItnSf3t7fb0z4FaML6sjoHdLpguzaq3OmPgj77v1JXmIVZHaft
-         skoJBIVIMUSHaYtDZmzWiSnLDCvhnjzLCn2pXPUeSRdQUHIAG1noH52eZ67svPRl6g9H
-         b2Dhls2+3NA+TCoNkzaLMRITjA1yZG8zU6M80hUDoeSL6aKTw333u2ir141eInpRE/2k
-         ZzTkRTKZi4SfR1NMypDqquEtfB4fiWYlwWWWNTM5h0Qp8DYuSGv857zCQ/Yjz3ScXoMw
-         lenqDsD6hYWAIPPimvwM3Lb4ly83rpfpVunlgyDEFNl/PjvKNAfCaPT8dJWuYi9IJq/K
-         xsyQ==
-X-Gm-Message-State: AOAM532hfu/ZHWZBHOIF8tN1wX1tAjV6tyKXvNIc5lEuSwXAWVn3q/1C
-        rCci3y1KiS4MFn+szpTs+r4=
-X-Google-Smtp-Source: ABdhPJw20k22tZv728rddyr0QfZY9ymgsPLiRKtRYR7lT+jEnb5pM2AP2kMYj3hTQiSrMXTAZIqQlQ==
-X-Received: by 2002:a63:1d26:0:b0:3c1:eb3f:9daf with SMTP id d38-20020a631d26000000b003c1eb3f9dafmr18535970pgd.284.1651736438698;
-        Thu, 05 May 2022 00:40:38 -0700 (PDT)
-Received: from hyeyoo.. ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id t68-20020a625f47000000b0050dc76281dcsm655084pfb.182.2022.05.05.00.40.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 00:40:38 -0700 (PDT)
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: [PATCH v2] mm/kfence: reset PG_slab and memcg_data before freeing __kfence_pool
-Date:   Thu,  5 May 2022 16:39:20 +0900
-Message-Id: <20220505073920.1880661-1-42.hyeyoo@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
-References: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
+        Thu, 5 May 2022 03:45:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F86B19001;
+        Thu,  5 May 2022 00:41:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EFE3CCE2B58;
+        Thu,  5 May 2022 07:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4F7C385A4;
+        Thu,  5 May 2022 07:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651736483;
+        bh=74ezfr/w0KPipHAnnDo94/lRplVZheOxjXtKUicNzPw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vAS0wwFRvDF+I6bSDns0bzizbwPcGziTroPYUuRL3JtrFwY3XWbcOgwQgT7WqYL+g
+         ouWzXy+6Mbq/1QKXygsv6ez/CA+vTJ3Zq9jlqAuN7Ha1jqF+PEwOtrad7GxgChPtv9
+         dYqkAjwe3+3HERl07kFwzYzjbT3FNDD58f0zrVBStlhYPT6cIzHkOX8vi/K5KlYENO
+         UQGnUtO+3RiquNZ1nPK5p+iHT6H0fNpoY3b/DZvMucSmf3WeSCRl7KKTY7bsFwVRLa
+         9N0dmQ3Aj5+FM5Zae8giBmsyEgLB/DHQ4xs0DpPkV+lTHo07buBEKW+bAp27WOxDTM
+         WJro4eI4TVa3w==
+Date:   Thu, 5 May 2022 15:40:59 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH] arm64: dts: imx8m*venice: add missing clock-names to
+ pcie_phy
+Message-ID: <20220505074059.GA14615@dragon>
+References: <20220429161629.8297-1-tharvey@gateworks.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220429161629.8297-1-tharvey@gateworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When kfence fails to initialize kfence pool, it frees the pool.
-But it does not reset PG_slab flag and memcg_data of struct page.
+On Fri, Apr 29, 2022 at 09:16:29AM -0700, Tim Harvey wrote:
+> Define the missing clock-names property for the pcie_phy required by
+> the fsl,imx8-pcie-phy dt bindings.
+> 
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 
-Below is a BUG because of this. Let's fix it by resetting PG_slab
-and memcg_data before free.
-
-[    0.089149] BUG: Bad page state in process swapper/0  pfn:3d8e06
-[    0.089149] page:ffffea46cf638180 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d8e06
-[    0.089150] memcg:ffffffff94a475d1
-[    0.089150] flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
-[    0.089151] raw: 0017ffffc0000200 ffffea46cf638188 ffffea46cf638188 0000000000000000
-[    0.089152] raw: 0000000000000000 0000000000000000 00000000ffffffff ffffffff94a475d1
-[    0.089152] page dumped because: page still charged to cgroup
-[    0.089153] Modules linked in:
-[    0.089153] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B   W         5.18.0-rc1+ #965
-[    0.089154] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-[    0.089154] Call Trace:
-[    0.089155]  <TASK>
-[    0.089155]  dump_stack_lvl+0x49/0x5f
-[    0.089157]  dump_stack+0x10/0x12
-[    0.089158]  bad_page.cold+0x63/0x94
-[    0.089159]  check_free_page_bad+0x66/0x70
-[    0.089160]  __free_pages_ok+0x423/0x530
-[    0.089161]  __free_pages_core+0x8e/0xa0
-[    0.089162]  memblock_free_pages+0x10/0x12
-[    0.089164]  memblock_free_late+0x8f/0xb9
-[    0.089165]  kfence_init+0x68/0x92
-[    0.089166]  start_kernel+0x789/0x992
-[    0.089167]  x86_64_start_reservations+0x24/0x26
-[    0.089168]  x86_64_start_kernel+0xa9/0xaf
-[    0.089170]  secondary_startup_64_no_verify+0xd5/0xdb
-[    0.089171]  </TASK>
-
-Fixes: 0ce20dd84089 ("mm: add Kernel Electric-Fence infrastructure")
-Fixes: 8f0b36497303 ("mm: kfence: fix objcgs vector allocation")
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
-
-v1 -> v2:
-	- Use folio instead of page
-	- Add Fixes: tags
-	- Wrap #ifdef ~ #endif around folio->memcg_data = 0;
-
- mm/kfence/core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-index a203747ad2c0..bb1c6c489d0a 100644
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -642,6 +642,15 @@ static bool __init kfence_init_pool_early(void)
- 	 * fails for the first page, and therefore expect addr==__kfence_pool in
- 	 * most failure cases.
- 	 */
-+	for (char *p = (char *)addr; p < __kfence_pool + KFENCE_POOL_SIZE; p += PAGE_SIZE) {
-+		struct folio *folio;
-+
-+		folio = virt_to_folio(p);
-+		__folio_clear_slab(folio);
-+#ifdef CONFIG_MEMCG
-+		folio->memcg_data = 0;
-+#endif
-+	}
- 	memblock_free_late(__pa(addr), KFENCE_POOL_SIZE - (addr - (unsigned long)__kfence_pool));
- 	__kfence_pool = NULL;
- 	return false;
--- 
-2.32.0
-
+Applied, thanks!
