@@ -2,78 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 529CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D77C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380540AbiEEOXR (ORCPT
+        id S1380596AbiEEOYO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47632 "EHLO
+        Thu, 5 May 2022 10:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240498AbiEEOXQ (ORCPT
+        with ESMTP id S240498AbiEEOYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:23:16 -0400
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76155A58F;
-        Thu,  5 May 2022 07:19:32 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id s131so4482646oie.1;
-        Thu, 05 May 2022 07:19:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jAYaOtPPbiHUybmB7ECbYM6eAkDRJOEMsqqS3ybjkQQ=;
-        b=G9nGEnS1fueEVxdoAaDNBPje0FXuzI5XvaCEBoTmHeeyH2sHT3jdVoQFFyNK7XxOOr
-         z/0Sot5BArxV6jaDg8FPZjwxD93XYcvce+tV9BSdrfeGpwk+mw9hi/vhVE2KfhgAYzJu
-         OPB/o+mmykinmWI/ccGSqEFXSdsQNZtq/QnjtPjnFiUtaocpPDqrDT59RgskU7hn4XkF
-         Rtfk7IxM/C7exzT9u++3WL4JthpyLpekYOd8asCpR9KzqRmC2BhNS2G5IdOvBAsdgNH8
-         KB5exF6JefFEZEs4EElPxNfZCSX1jcMaw+QeivdL9zcVZMWPQ1piTBQ8tBhmySYUSQkn
-         gbwg==
-X-Gm-Message-State: AOAM530smVaxP+UELWd3xD6vwVmWhwIoTHrn4h/aTSLFd5mqCWtD8fIc
-        40IReCXrucYPnWML0ecWQw==
-X-Google-Smtp-Source: ABdhPJwzj1x/MsCJLVyAu9Nd+++VQJgMcMB80x9zI4S6ZvGYcmKumkCZtUjcj0Pana/B8hDQli9+Qw==
-X-Received: by 2002:aca:d9c3:0:b0:2fa:6f51:7bfe with SMTP id q186-20020acad9c3000000b002fa6f517bfemr2552470oig.59.1651760371705;
-        Thu, 05 May 2022 07:19:31 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z8-20020a05687041c800b000e686d1386csm517724oac.6.2022.05.05.07.19.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 07:19:31 -0700 (PDT)
-Received: (nullmailer pid 3821732 invoked by uid 1000);
-        Thu, 05 May 2022 14:19:30 -0000
-Date:   Thu, 5 May 2022 09:19:30 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, - <patches@opensource.cirrus.com>,
+        Thu, 5 May 2022 10:24:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9558915A2D;
+        Thu,  5 May 2022 07:20:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6F82B82D81;
+        Thu,  5 May 2022 14:20:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55907C385A4;
+        Thu,  5 May 2022 14:20:22 +0000 (UTC)
+Date:   Thu, 5 May 2022 15:20:18 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
         Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: mfd: wlf,arizona: Add spi-max-frequency
-Message-ID: <YnPc8jIzRfQ/nMAP@robh.at.kernel.org>
-References: <20220504084304.46173-1-krzysztof.kozlowski@linaro.org>
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH v22 5/9] arm64: kdump: Reimplement crashkernel=X
+Message-ID: <YnPdIvOktZBQYLjg@arm.com>
+References: <ae7211ad-e2ac-f5b1-5aa0-701802132e73@huawei.com>
+ <YmlphvZVMsGfFksp@arm.com>
+ <YmoMvV1wzHT5V1aw@MiWiFi-R3L-srv>
+ <YmoPhvkXQFZQOcIO@MiWiFi-R3L-srv>
+ <3fc41a94-4247-40f3-14e7-f11e3001ec33@huawei.com>
+ <YmtaiJhwIgP6m2Sk@MiWiFi-R3L-srv>
+ <a9c736a0-f2b3-5b8a-94d9-80742ccd2700@huawei.com>
+ <23e2dcf4-4e9a-5298-d5d8-8761b0bbbe21@huawei.com>
+ <YnGmCwaWkvCrJoU2@arm.com>
+ <YnM9w69l5dbE+k15@MiWiFi-R3L-srv>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504084304.46173-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YnM9w69l5dbE+k15@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 04 May 2022 10:43:04 +0200, Krzysztof Kozlowski wrote:
-> The Wolfson Microelectronics Arizona audio can be connected via SPI bus
-> (e.g. WM5110 on Exynos5433 TM2 board), so allow SPI peripheral
-> properties.
+On Thu, May 05, 2022 at 11:00:19AM +0800, Baoquan He wrote:
+> On 05/03/22 at 11:00pm, Catalin Marinas wrote:
+> > So, to recap, IIUC you are fine with:
+> > 
+> > 	crashkernel=Y		- allocate within ZONE_DMA with fallback
+> > 				  above with a default in ZONE_DMA (like
+> > 				  x86, 256M or swiotlb size)
 > 
-> Reported-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>         Ack to this one.
 > 
-> ---
 > 
-> Changes since v1:
-> 1. Allow all SPI properties, not only max-frequency.
-> ---
->  Documentation/devicetree/bindings/mfd/wlf,arizona.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> > 	crashkernel=Y,high	- allocate from above ZONE_DMA
 > 
+>         Not exactly. If there's only ZONE_DMA, crashkernel,high will
+>         be reserved in ZONE_DMA, and crashkernel,low will be ignored.
+>         Other than this, ack.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Yes, that's fine.
+
+> > 	crashkernel=Y,low	- allocate within ZONE_DMA
+> 
+>         Ack to this one.
+> > 
+> > 'crashkernel' overrides the high and low while the latter two can be
+> > passed independently.
+> 
+>         crashkernel=,high can be passed independently, then a crashkernel=,low
+>         is needed implicitly. If people don't want crashkernel=,low
+>         explicitly, crashkernel=0,low need be specified.
+
+I find this complicating the interface. I don't know the background to
+the x86 implementation but we diverge already on arm64 since we talk
+about ZONE_DMA rather than 4G limit (though for most platforms these
+would be the same).
+
+I guess we could restate the difference between crashkernel= and
+crashkernel=,high as the hint to go for allocation above ZONE_DMA first.
+
+>         An independent crashkernel=,low makes no sense. Crashkernel=,low
+>         should be paird with crashkernel=,high.
+
+You could argue that crashkernel=,low gives the current crashkernel=
+behaviour, i.e. either all within ZONE_DMA or fail to allocate. So it
+may have some value on its own.
+
+>         My personal opinion according to the existed senmantics on x86.
+>         Otherwise, the guidance of crashkernel= |,high|,low reservation
+>         will be complicated to write.
+
+It's more that I find the current semantics unnecessarily confusing. But
+even reading the x86_64 text it's not that clear. For example the
+default low allocation for crashkernel= and crashkernel=,high is only
+mentioned in the crashkernel=,low description.
+
+-- 
+Catalin
