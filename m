@@ -2,821 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73820C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA64C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234224AbiEEQNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
+        id S1381701AbiEEQOe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 12:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381930AbiEEQM3 (ORCPT
+        with ESMTP id S1382328AbiEEQOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 12:12:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523705C873;
-        Thu,  5 May 2022 09:08:42 -0700 (PDT)
+        Thu, 5 May 2022 12:14:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF701D0FC;
+        Thu,  5 May 2022 09:10:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A5561DEA;
-        Thu,  5 May 2022 16:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A87AC385B0;
-        Thu,  5 May 2022 16:08:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B22161E38;
+        Thu,  5 May 2022 16:10:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FE18C385A8;
+        Thu,  5 May 2022 16:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651766921;
-        bh=Ju0Rrb93btnGx8eJ81md1f7mUzJpF5JETERn7cCRZZA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TGt6GvWOudqxoz9QnSPT63Pt3LGxkVT3yAwsWvgCCm2y+xyHqwqmOIWH/NoPEGXNy
-         VCKqgZy/3Wrz/N5arVnErVsvdKjEZKbnh+fSEodOneuDgVw7svxU/hXWCD52HJUWqE
-         xL41T2VL4ncHT7DaerDGCQ8YKNhX34miPgLeUg0IwlzP+QbK9IgpqryW/h59NMoYgv
-         FHZmra8+hkUh90BotZBHRuYsRAaykl1AWD8J6K8p/wAO983fEqTTqbi6JWmkbgkuZT
-         oocagnLmx3xL+dlN7Op4aeBKU/KxiCe8UjR+hKS1MACcWinC69SMnxWyrheq9AJy9W
-         I4gSNqg8jExcA==
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
+        s=k20201202; t=1651767031;
+        bh=y1bm/ePw6qN7M+uAMLXPbjzr3hDC7iN+2T5U5hZp75c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=V+TiGeXpnpx8QAPISZ/tFZ1vgqt07jnZ/e8UGsZFjYbSOIbxjOaFyb/UjHBhqn5hx
+         Z64n0P5wnIuaGgxiRpF7HUD9ziSD/Vy04koyZ+3OiNayjnxjzS0fZIDvEf4IlnjJDh
+         ZFqZNchd+Rmh0D+frE/gcDMj07LtCQDi4bliOoYzYtwBViRsBNVzjXBMPmC2/Yp3+O
+         avJDoEKTBRLhRLGuv5dd4ZPPntedsmPSHGr9oDetkDU8rgxRb4BichpG/ijCid5diK
+         e/q4W6AYEDDk6fNQ6Z+JXpgOmkNdUU12Kp4sKoGZvuLv591DrEpNAjn9EHl9SCvfts
+         lHbL5gffrnaQA==
+Date:   Thu, 5 May 2022 11:10:28 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [RFC V3 19/20] rv/safety_app: Add an safety_app sample
-Date:   Thu,  5 May 2022 18:06:59 +0200
-Message-Id: <6b5d674059991ff6899d945711f7ae317e547b48.1651766361.git.bristot@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1651766361.git.bristot@kernel.org>
-References: <cover.1651766361.git.bristot@kernel.org>
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
+        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        "open list:SUPERH" <linux-sh@vger.kernel.org>,
+        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
+        <sparclinux@vger.kernel.org>
+Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
+ it as necessary
+Message-ID: <20220505161028.GA492600@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the sample code of a safety application that uses the
-watchdog as a safety monitor and the RV monitors to monitor
-this interaction/get feedback from kernel about the watchdog states.
+On Wed, May 04, 2022 at 11:31:28PM +0200, Arnd Bergmann wrote:
+> On Wed, May 4, 2022 at 11:08 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Fri, Apr 29, 2022 at 03:49:59PM +0200, Niklas Schnelle wrote:
+> > > We introduce a new HAS_IOPORT Kconfig option to indicate support for
+> > > I/O Port access. In a future patch HAS_IOPORT=n will disable compilation
+> > > of the I/O accessor functions inb()/outb() and friends on architectures
+> > > which can not meaningfully support legacy I/O spaces such as s390 or
+> > > where such support is optional.
+> >
+> > So you plan to drop inb()/outb() on architectures where I/O port space
+> > is optional?  So even platforms that have I/O port space may not be
+> > able to use it?
+> >
+> > This feels like a lot of work where the main benefit is to keep
+> > Kconfig from offering drivers that aren't of interest on s390.
+> >
+> > Granted, there may be issues where inb()/outb() does the wrong thing
+> > such as dereferencing null pointers when I/O port space isn't
+> > implemented.  I think that's a defect in inb()/outb() and could be
+> > fixed there.
+> 
+> The current implementation in asm-generic/io.h implements inb()/outb()
+> using readb()/writeb() with a fixed architecture specific offset.
+> 
+> There are three possible things that can happen here:
+> 
+> a) there is a host bridge driver that maps its I/O ports to this window,
+>     and everything works
+> b) the address range is reserved and accessible but no host bridge
+>    driver has mapped its registers there, so an access causes a
+>    page fault
+> c) the architecture does not define an offset, and accessing low I/O
+>     ports ends up as a NULL pointer dereference
+> 
+> The main goal is to avoid c), which is what happens on s390, but
+> can also happen elsewhere. Catching b) would be nice as well,
+> but is much harder to do from generic code as you'd need an
+> architecture specific inline asm statement to insert a ex_table
+> fixup, or a runtime conditional on each access.
 
-This tool first creates a trace instance to follow the RV events
-and then enables RV monitor. After that, the tool configures
-the watchdog and starts running the main loop.
+Or s390 could implement its own inb().
 
-The main loop runs a use-case-specific function, like checking
-the system. If the system is running as expected, it pings the
-watchdog. After pinging the watchdog, the tool then collects
-trace information to see if the RV monitor received the expected
-events and is in a safe/safe_nwo state.
+I'm hearing that generic powerpc kernels have to run both on machines
+that have I/O port space and those that don't.  That makes me think
+s390 could do something similar.
 
-For further information, run safety_app --help
-
-The safety-app specification was developed together with Gabriele Paoloni,
-in the context of the Linux Foundation Elisa Project.
-
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- tools/tracing/rv/safety_app/Makefile     |  51 ++
- tools/tracing/rv/safety_app/safety_app.c | 645 +++++++++++++++++++++++
- 2 files changed, 696 insertions(+)
- create mode 100644 tools/tracing/rv/safety_app/Makefile
- create mode 100644 tools/tracing/rv/safety_app/safety_app.c
-
-diff --git a/tools/tracing/rv/safety_app/Makefile b/tools/tracing/rv/safety_app/Makefile
-new file mode 100644
-index 000000000000..002531022e45
---- /dev/null
-+++ b/tools/tracing/rv/safety_app/Makefile
-@@ -0,0 +1,51 @@
-+NAME	:=	safety_app
-+VERSION	:=	0.1
-+
-+# From libtracefs:
-+# Makefiles suck: This macro sets a default value of $(2) for the
-+# variable named by $(1), unless the variable has been set by
-+# environment or command line. This is necessary for CC and AR
-+# because make sets default values, so the simpler ?= approach
-+# won't work as expected.
-+define allow-override
-+  $(if $(or $(findstring environment,$(origin $(1))),\
-+            $(findstring command line,$(origin $(1)))),,\
-+    $(eval $(1) = $(2)))
-+endef
-+
-+# Allow setting CC and AR, or setting CROSS_COMPILE as a prefix.
-+$(call allow-override,CC,$(CROSS_COMPILE)gcc)
-+$(call allow-override,AR,$(CROSS_COMPILE)ar)
-+$(call allow-override,STRIP,$(CROSS_COMPILE)strip)
-+$(call allow-override,PKG_CONFIG,pkg-config)
-+$(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
-+$(call allow-override,LDCONFIG,ldconfig)
-+
-+INSTALL	=	install
-+FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
-+		-fasynchronous-unwind-tables -fstack-clash-protection
-+WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
-+
-+TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
-+
-+CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(WOPTS) $(TRACEFS_HEADERS)
-+LDFLAGS	:=	-ggdb
-+LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
-+FILES	:=	Makefile
-+BINDIR	:=	/usr/bin
-+
-+OBJ	:=	$(NAME).o
-+
-+.PHONY:	all
-+all:	$(OBJ)
-+	$(CC) -o $(NAME) $(LDFLAGS) $(OBJ) $(LIBS)
-+
-+.PHONY: install
-+install:
-+	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
-+	$(INSTALL) $(NAME) -m 755 $(DESTDIR)$(BINDIR)
-+	$(STRIP) $(DESTDIR)$(BINDIR)/$(NAME)
-+
-+.PHONY: clean
-+clean:
-+	@rm -rf *~ $(OBJ) $(NAME)
-diff --git a/tools/tracing/rv/safety_app/safety_app.c b/tools/tracing/rv/safety_app/safety_app.c
-new file mode 100644
-index 000000000000..03962a92ebc3
---- /dev/null
-+++ b/tools/tracing/rv/safety_app/safety_app.c
-@@ -0,0 +1,645 @@
-+// SPDX-License-Identifier: LGPL-2.1
-+/*
-+ * This is the starting point for a safety monitor.
-+ *
-+ * The safety_check() function is where you need to add your own code.
-+ *
-+ * Copyright: Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
-+ */
-+#define _GNU_SOURCE
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <getopt.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <sys/ioctl.h>
-+#include <linux/watchdog.h>
-+#include <tracefs/tracefs.h>
-+
-+#define MAX_PATH	1024
-+
-+static int		config_watchdog_id;
-+static char		config_watchdog_path[MAX_PATH];
-+static int		config_nowayout;
-+static char		config_nowayout_path[MAX_PATH];
-+static long long	config_timeout = 10;
-+static long		config_cycles;
-+static long		config_monitor_period = 1;
-+static char		*config_rv_monitor = "safe_wtd";
-+static char		*config_rv_reactor = "panic";
-+static int		config_stop_monitor = 0;
-+static int		config_restart_monitor = 0;
-+
-+/*
-+ * print_msg - print a message to stdout
-+ */
-+void print_msg(const char *fmt, ...)
-+{
-+	char message[1024];
-+	va_list ap;
-+
-+	va_start(ap, fmt);
-+	vsnprintf(message, sizeof(message), fmt, ap);
-+	va_end(ap);
-+
-+	fprintf(stdout, "%s", message);
-+	fflush(NULL);
-+}
-+
-+/*
-+ * ==================================================================
-+ * The code section bellow is responsible for enabling the RV monitor.
-+ * ==================================================================
-+ */
-+
-+/*
-+ * __disable_rv_monitor - disables the RV monitor
-+ *
-+ * Unconditionally disables the RV monitor and set the reactor to nop.
-+ */
-+static void __disable_rv_monitor(char *monitor)
-+{
-+	char path[MAX_PATH];
-+	int retval;
-+
-+	snprintf(path, MAX_PATH, "rv/monitors/%s/enable", monitor);
-+	retval = tracefs_instance_file_write(NULL, path, "0\n");
-+	if (retval < 0) {
-+		perror("Error disabling the RV monitor");
-+		return;
-+	}
-+
-+	snprintf(path, MAX_PATH, "rv/monitors/%s/reactors", monitor);
-+	retval = tracefs_instance_file_write(NULL, path, "nop\n");
-+	if (retval < 0) {
-+		perror("Error disabling the RV reactor");
-+		return;
-+	}
-+}
-+
-+/*
-+ * disable_rv_monitor - conditionally disables the RV monitor
-+ */
-+static void disable_rv_monitor(char *monitor)
-+{
-+	if (!config_stop_monitor)
-+		return;
-+
-+	__disable_rv_monitor(monitor);
-+}
-+
-+/*
-+ * enable_rv_monitor - sets the 'reactor' and enable RV 'monitor'
-+ */
-+static int enable_rv_monitor(char *monitor, char *reactor)
-+{
-+	char buffer[MAX_PATH];
-+	char path[MAX_PATH];
-+	int size = 2;
-+	int retval;
-+	char *on;
-+
-+	snprintf(path, MAX_PATH, "rv/monitors/%s/enable", monitor);
-+	on = tracefs_instance_file_read(NULL, path, &size);
-+	if (on && on[0] == '1') {
-+		if (!config_restart_monitor)
-+			return 0;
-+		__disable_rv_monitor(monitor);
-+	}
-+
-+	snprintf(path, MAX_PATH, "rv/monitors/%s/reactors", monitor);
-+	snprintf(buffer, MAX_PATH, "%s\n", reactor);
-+	retval = tracefs_instance_file_write(NULL, path, buffer);
-+	if (retval < 0) {
-+		perror("Error enabling the RV reactor");
-+		return -1;
-+	}
-+
-+	snprintf(path, MAX_PATH, "rv/monitors/%s/enable", monitor);
-+	retval = tracefs_instance_file_write(NULL, path, "1\n");
-+	if (retval < 0) {
-+		perror("Error enabling the RV monitor");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/*
-+ * ==================================================================
-+ * The code section bellow is responsible for parsing the RV monitor output.
-+ * ==================================================================
-+ */
-+struct trace_instance {
-+	struct tracefs_instance		*inst;
-+	struct tep_handle		*tep;
-+	struct trace_seq		*seq;
-+};
-+
-+int ping_counter = 0;
-+int last_state_running = 0;
-+
-+/*
-+ * handle_safe_wtd_rv_event - parse events from the safe_wtd RV monitor
-+ */
-+static int
-+handle_safe_wtd_rv_event(struct trace_seq *s, struct tep_record *record,
-+			 struct tep_event *event, void *context)
-+{
-+	/*
-+	 * From kernel/trace/rv/monitors/safe_wtd/model.h
-+	 */
-+	enum states_safe_wtd {
-+		init = 0,
-+		closed_running,
-+		closed_running_nwo,
-+		nwo,
-+		opened,
-+		opened_nwo,
-+		reopened,
-+		safe,
-+		safe_nwo,
-+		set,
-+		set_nwo,
-+		started,
-+		started_nwo,
-+		stopped,
-+		state_max
-+	};
-+
-+	enum events_safe_wtd {
-+		close = 0,
-+		nowayout,
-+		open,
-+		other_threads,
-+		ping,
-+		set_safe_timeout,
-+		start,
-+		stop,
-+		event_max
-+	};
-+	unsigned long long val;
-+
-+
-+	tep_get_field_val(s, event, "event", record, &val, 1);
-+	if (val == ping)
-+		ping_counter++;
-+
-+	tep_get_field_val(s, event, "next_state", record, &val, 1);
-+	if (val == safe || val == safe_nwo)
-+		last_state_running = 1;
-+	else
-+		last_state_running = 0;
-+
-+	return 0;
-+}
-+
-+/*
-+ * collect_registered_events - call the existing callback function for the event
-+ *
-+ * If an event has a registered callback function, call it.
-+ * Otherwise, ignore the event.
-+ */
-+static int
-+collect_registered_events(struct tep_event *event, struct tep_record *record,
-+			  int cpu, void *context)
-+{
-+	struct trace_instance *trace = context;
-+	struct trace_seq *s = trace->seq;
-+
-+	if (!event->handler)
-+		return 0;
-+
-+	event->handler(s, record, event, context);
-+
-+	return 0;
-+}
-+
-+/*
-+ * check_rv_events - parse trace events and check for the desired states
-+ *
-+ * Return 0 if success, 1 otherwise.
-+ */
-+static int check_rv_events(struct trace_instance *trace)
-+{
-+	int prev_ping_counter = ping_counter;
-+	int retval;
-+	int pings;
-+
-+	retval = tracefs_iterate_raw_events(trace->tep, trace->inst, NULL, 0,
-+					    collect_registered_events, trace);
-+	if (retval < 0) {
-+		print_msg("Error iterating on events\n");
-+		return 1;
-+	}
-+
-+	pings = ping_counter - prev_ping_counter;
-+	print_msg("RV read %d ping(s) and is %s the watchdog\n", pings,
-+			last_state_running ? "running" : "not running");
-+
-+	/*
-+	 * If there is exactly one ping and the last state is running,
-+	 * it is safe.
-+	 */
-+	if (pings == 1 && last_state_running) {
-+		/* reset the variable */
-+		last_state_running = 0;
-+		return 0;
-+	} else {
-+		return 1;
-+	}
-+}
-+
-+/*
-+ * trace_instance_destroy - destroy and free a trace instance
-+ */
-+static void trace_instance_destroy(struct trace_instance *trace)
-+{
-+	if (!trace)
-+		return;
-+
-+	if (trace->inst) {
-+		tracefs_instance_destroy(trace->inst);
-+		tracefs_instance_free(trace->inst);
-+	}
-+
-+	if (trace->seq)
-+		free(trace->seq);
-+
-+	if (trace->tep)
-+		tep_free(trace->tep);
-+
-+	free(trace);
-+}
-+
-+/*
-+ * trace_instance_init - create a trace instance to read monitor's event
-+ *
-+ * It is more than the tracefs instance, as it contains other
-+ * things required for the tracing, such as the local events and
-+ * a seq file.
-+ */
-+static struct trace_instance *trace_instance_init(void)
-+{
-+	struct trace_instance *trace;
-+
-+	trace = calloc(1, sizeof(*trace));
-+	if (!trace)
-+		return NULL;
-+
-+	trace->seq = calloc(1, sizeof(*trace->seq));
-+	if (!trace->seq)
-+		goto destroy_instance;
-+
-+	trace_seq_init(trace->seq);
-+
-+	trace->inst = tracefs_instance_create("safety_app");
-+	if (!trace->inst)
-+		goto destroy_instance;
-+
-+	trace->tep = tracefs_local_events(NULL);
-+	if (!trace->tep)
-+		goto destroy_instance;
-+
-+	/*
-+	 * register for both monitors, it is free.
-+	 */
-+	tep_register_event_handler(trace->tep, -1, "rv", "event_safe_wtd",
-+				   handle_safe_wtd_rv_event, trace);
-+	tracefs_event_enable(trace->inst, "rv", "event_safe_wtd");
-+
-+	return trace;
-+
-+destroy_instance:
-+	trace_instance_destroy(trace);
-+	return NULL;
-+}
-+
-+/*
-+ * ==================================================================
-+ * The code section bellow are helper functions to use a watchdog device.
-+ * ==================================================================
-+ */
-+
-+/*
-+ * set_nowayout - set the watchdog's nowayout option
-+ */
-+static int set_nowayout(char *nowayout_path)
-+{
-+	int nowayout_fd;
-+	int retval;
-+
-+	print_msg("nowayout\n");
-+
-+	nowayout_fd = open(nowayout_path, O_WRONLY);
-+	if (nowayout_path < 0) {
-+		perror("Error opening nowayout fd");
-+		return -1;
-+	}
-+
-+	retval = write(nowayout_fd, "1", 1);
-+	if (retval != 1) {
-+		perror("Error setting nowayout");
-+		close(nowayout_fd);
-+		return -1;
-+	}
-+
-+	close(nowayout_fd);
-+	return 0;
-+}
-+
-+/*
-+ * open_watchdog - open watchdog at the watchdog_path
-+ */
-+static int open_watchdog(char *watchdog_path)
-+{
-+	int watchdog_fd;
-+
-+	print_msg("open %s\n", watchdog_path);
-+
-+	watchdog_fd = open(watchdog_path, O_WRONLY);
-+	if (watchdog_fd < 0) {
-+		perror("Error opening watchdog");
-+		return -1;
-+	}
-+
-+	return watchdog_fd;
-+}
-+
-+/*
-+ * set_timeout - set the timeout in seconds for the previously opened watchdog_fd
-+ */
-+static int set_timeout(int watchdog_fd, int timeout)
-+{
-+	int retval;
-+
-+	print_msg("set_timeout %d\n", timeout);
-+
-+	retval = ioctl(watchdog_fd, WDIOC_SETTIMEOUT, &timeout);
-+	if (retval) {
-+		perror("Error set_timeout");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/*
-+ * ping - ping (or pet) the watchdog
-+ */
-+static int ping(int watchdog_fd)
-+{
-+	int retval;
-+
-+	print_msg("ping\n");
-+
-+	retval = write(watchdog_fd, "1", 1);
-+	if (retval != 1) {
-+		perror("Error resseting watchdog");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/*
-+ * stop - try to the watchdog
-+ *
-+ * Writing "V" to the watchdog is a special case. Unless nowayout is set,
-+ * it will stop the watchdog device.
-+ */
-+static void stop(int watchdog_fd)
-+{
-+	int retval;
-+
-+	print_msg("stop\n");
-+
-+	retval = write(watchdog_fd, "V", 1);
-+	if (retval != 1)
-+		perror("Error disabling the watchdog");
-+}
-+
-+/*
-+ * usage - print usage message
-+ */
-+static void usage(char *usage, int exitval)
-+{
-+	int i;
-+
-+	static const char * const msg[] = {
-+		"  usage: safety_app [-i id] [-t timeout in seconds ] [-n nowayout_path] \\",
-+		"			[-c cycles] [-p period] [-N] \\",
-+		"			[-N] [-r reactor] [-s] [-R] \\",
-+		"			[-h] \\",
-+		"",
-+		"Watchdog options",
-+		"	-i/--id:		watchdog id",
-+		"	-t/--timeout:		watchdog timeout",
-+		"	-n/--nowayout:		set nowayout",
-+		"",
-+		"Safety monitor options",
-+		"	-c/--cycles:		run cycle nr ping, 0 means forever (default)",
-+		"	-p/--period:		monitor loop period",
-+		"",
-+		"RV monitor options",
-+		"	-r/--reactor		set the reactor (panic is automatically set if no other reactor is passed)",
-+		"	-s/--stop-mon		stop the rv monitor at the end of the execution",
-+		"	-R/--restart-mon	restart the monitor if already started",
-+		"",
-+		"Generic options",
-+		"	-h/--help:		print help message",
-+		NULL,
-+	};
-+
-+	if (usage)
-+		fprintf(stderr, "%s\n", usage);
-+
-+	fprintf(stderr, "sample safety monitor (version %s)\n", VERSION);
-+
-+	for (i = 0; msg[i]; i++)
-+		fprintf(stderr, "%s\n", msg[i]);
-+	exit(exitval);
-+}
-+
-+static long long get_long_from_str(char *start)
-+{
-+	long value;
-+	char *end;
-+
-+	errno = 0;
-+	value = strtoll(start, &end, 10);
-+	if (errno || start == end) {
-+		fprintf(stderr, "Invalid value '%s'", start);
-+		return -1;
-+	}
-+
-+	return value;
-+}
-+
-+static int parse_args(int argc, char **argv)
-+{
-+	int c;
-+
-+	while (1) {
-+		static struct option long_options[] = {
-+			{"help",		no_argument,		0, 'h'},
-+			{"id",			required_argument,	0, 'i'},
-+			{"timeout",		required_argument,	0, 't'},
-+			{"nowayout",		optional_argument,	0, 'n'},
-+			{"cycles",		required_argument,	0, 'c'},
-+			{"period",		required_argument,	0, 'p'},
-+			{"reactor",		required_argument,	0, 'r'},
-+			{"stop-mon",		no_argument,		0, 's'},
-+			{"restart-mon",		no_argument,		0, 'R'},
-+			{0, 0, 0, 0}
-+		};
-+
-+		/* getopt_long stores the option index here. */
-+		int option_index = 0;
-+
-+		c = getopt_long(argc, argv, "hi:t:n::c:p:r:sR",
-+				 long_options, &option_index);
-+
-+		/* Detect the end of the options. */
-+		if (c == -1)
-+			break;
-+
-+		switch (c) {
-+		case 'i':
-+			config_watchdog_id = get_long_from_str(optarg);
-+			break;
-+		case 't':
-+			config_timeout = get_long_from_str(optarg);
-+			break;
-+		case 'n':
-+			config_nowayout = 1;
-+			if (optarg)
-+				strncpy(config_nowayout_path, optarg, MAX_PATH);
-+			break;
-+		case 'c':
-+			config_cycles = get_long_from_str(optarg);
-+			break;
-+		case 'p':
-+			config_monitor_period = get_long_from_str(optarg);
-+			break;
-+		case 'r':
-+			config_rv_reactor = optarg;
-+			break;
-+		case 's':
-+			config_stop_monitor = 1;
-+			break;
-+		case 'R':
-+			config_restart_monitor = 1;
-+			break;
-+		case 'h':
-+			usage("Help message", 0);
-+			break;
-+		default:
-+			usage("Invalid option", 1);
-+		}
-+	}
-+
-+	if (!strlen(config_nowayout_path)) {
-+		snprintf(config_nowayout_path, MAX_PATH,
-+			 "/sys/devices/virtual/watchdog/watchdog%i/nowayout",
-+			 config_watchdog_id);
-+	}
-+
-+	if (config_monitor_period > config_timeout)
-+		usage("Monitor period higher than the watchdog timeout.\n", 1);
-+
-+	snprintf(config_watchdog_path, MAX_PATH, "/dev/watchdog%d", config_watchdog_id);
-+
-+	return 0;
-+}
-+
-+/*
-+ * safety_check - check if the system is working properly
-+ *
-+ * This is the function where the system check will be actually done.
-+ * It will be periodically called by the safety_app. If it returns
-+ * true, the watchdog will be pinged and the system will continue running.
-+ * If this function returns false, the safety_app will not ping the
-+ * watchdog and will exit with an error.
-+ */
-+static int safety_check(void)
-+{
-+	/*
-+	 * Add your code here.
-+	 *
-+	 * Return 0 to make the safety monitor to skip the watchdog ping and
-+	 * exit with error, or just kill the system yourself.
-+	 */
-+	return 1;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	struct trace_instance *trace;
-+	int exit_val = 1;
-+	int watchdog_fd;
-+	long cycles = 0;
-+	int retval;
-+
-+	parse_args(argc, argv);
-+
-+	trace = trace_instance_init();
-+
-+	retval = enable_rv_monitor(config_rv_monitor, config_rv_reactor);
-+	if (retval) {
-+		perror("Cannot proceed without the RV monitor");
-+		goto out_destroy_trace;
-+	}
-+
-+	if (config_nowayout)
-+		set_nowayout(config_nowayout_path);
-+
-+	watchdog_fd = open_watchdog(config_watchdog_path);
-+	if (watchdog_fd < 0) {
-+		perror("Error opening watchdog");
-+		exit(1);
-+	}
-+
-+	if (config_timeout) {
-+		retval = set_timeout(watchdog_fd, config_timeout);
-+		if (retval)
-+			goto out_close_watchdog;
-+	}
-+
-+	retval = check_rv_events(trace);
-+	if (retval) {
-+		print_msg("RV monitor returned a failure, it is not safe to continue\n");
-+		goto out_close_watchdog;
-+	}
-+
-+	do {
-+		retval = safety_check();
-+		if (!retval)
-+			goto out_close_watchdog;
-+
-+		retval = ping(watchdog_fd);
-+		if (retval)
-+			goto out_close_watchdog;
-+
-+		retval = check_rv_events(trace);
-+		if (retval) {
-+			print_msg("RV monitor returned a failure, it is not safe to continue\n");
-+			goto out_close_watchdog;
-+		}
-+
-+		sleep(config_monitor_period);
-+	} while (!config_cycles || ++cycles < config_cycles);
-+
-+	stop(watchdog_fd);
-+
-+	exit_val = 0;
-+
-+out_close_watchdog:
-+	close(watchdog_fd);
-+	disable_rv_monitor(config_rv_monitor);
-+out_destroy_trace:
-+	trace_instance_destroy(trace);
-+	return exit_val;
-+}
--- 
-2.35.1
-
+Bjorn
