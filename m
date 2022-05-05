@@ -2,109 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C7C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A44C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349028AbiEEIct (ORCPT
+        id S1349031AbiEEIdB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        Thu, 5 May 2022 04:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348951AbiEEIco (ORCPT
+        with ESMTP id S242326AbiEEIc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:32:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A205E366BE;
-        Thu,  5 May 2022 01:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=we+pAHqfCL1HrPHWKdp8u/GbNSzdRAevWAngCc03fN8=; b=TVABNaAxngnB0uwZp5oPcegIj+
-        9eBlOfM5JnxFBnJVZyaha8SVflbybX2X7+bHwaS2M8O8eAyllYorc1XsoLyq4rwePjIB//4SdoMNz
-        iscl0WZuQnSaGdBkeescihMp0NoPl5QmMgq/VFCwkG5K1KtXNbmg9aHaf6aOZP6zl7hpLfwJtLxm1
-        pBwHgLYVaWbd8AkW3CGiEiP8jgGlqvE2rCbDCGLPBJ/GlrclNDinHAsNUqh6NoPtnyr9SeqNFlGOZ
-        mn1MQRQhSGsVJ6WD5v4BOpfODZ/TAOv9zkWa3OBGadLaITiw3sxaVnAyGBcsxM9Oy5qik39RPiYxY
-        SDHAfmuA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nmWqY-00BJut-Ai; Thu, 05 May 2022 08:28:26 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 42061980FA2; Thu,  5 May 2022 10:28:24 +0200 (CEST)
-Date:   Thu, 5 May 2022 10:28:24 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     "Luck, Tony" <tony.luck@intel.com>, hdegoede@redhat.com,
-        markgross@kernel.org, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        corbet@lwn.net, gregkh@linuxfoundation.org,
-        andriy.shevchenko@linux.intel.com, jithu.joseph@intel.com,
-        ashok.raj@intel.com, rostedt@goodmis.org, dan.j.williams@intel.com,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
-        ravi.v.shankar@intel.com
-Subject: Re: [PATCH v5 07/10] platform/x86/intel/ifs: Add scan test support
-Message-ID: <20220505082824.GD2501@worktop.programming.kicks-ass.net>
-References: <20220422200219.2843823-1-tony.luck@intel.com>
- <20220428153849.295779-1-tony.luck@intel.com>
- <20220428153849.295779-8-tony.luck@intel.com>
- <87r159jxaq.ffs@tglx>
- <YnLLekoripdY2oQU@agluck-desk3.sc.intel.com>
- <87tua4j3es.ffs@tglx>
+        Thu, 5 May 2022 04:32:58 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142723B2B9
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:29:15 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id m20so7283429ejj.10
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:29:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=r1ONu4s4iEqTc1LBebyXg4nKGWbafPc2J0KdemsntpY=;
+        b=edknxnsQZ7hN0sFSDhsHS9VCi8jrauwubYjQhb70ivFiLSHkzVb7z/ZZDIK/BZz7KS
+         TTjBot8KBAzHHb2eHoyhoBERT3nKPWDmzXKtGtHTttVR0oPcgmWGBiNQmd/okLD7Nldj
+         bbF+Sleyj4/VbC0iO3jn2NYHBHfKA/JMLEuLqi0qZdsvj04gpKrIRMcefx7f7+QBpcMi
+         tNmXLE+7nAAOmfkZ6CI5TLPSOw2ywb4KtIJPyu6faPkBSZ6qtfkrp7hW/ebe+ypwEjNX
+         P4jtdKfzxyLfm+fieZjl4SdGH4sjBDN13lttEUZA0XQds70vBkR5h0k/K29IkCS5AN+A
+         zklg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=r1ONu4s4iEqTc1LBebyXg4nKGWbafPc2J0KdemsntpY=;
+        b=0KzkHIKDflYNn2LsH8MfdB7AdATz61ugR3z+IdtoCWc2yZ21LhjE5SS3BTmADqVeF0
+         PaWATdtPdLEaEpON+WmpACF0HJXnEdIrTc4FRdJxO9iP6pb3E4b7Ptq42A/18+w2ZoDi
+         iit044i0wuqD1QSqbSqExCE/pN0N3eyE+tut2tes2LceisKCl9TeuWF7F9AuDZqXwNp/
+         xl1yDoroknZU7oF3/v6UMVaxOu+MdlLyk3ssntkFDOOnZc1jaGEiKmikW+HnZkD/g46t
+         FubyflugG23MSgplgUZHFVGyyIUNqDOt6MgwFQQG/kFqK2fHdXJsVCRV5yTx/caW5e+r
+         jT+Q==
+X-Gm-Message-State: AOAM532OAbbitAUWp3h+MqhXtYAkyQ/TcuEDNxgHcaGhNm2HrRAl9egM
+        7ELm23Tkqa8+nCPa88PuulgErw==
+X-Google-Smtp-Source: ABdhPJxw9q1w3VyKXums+Q+aXrIVReNi1wHYk414TPadm+8sGRGqWaf8U8rKWnbv39OdiIHFP3CpOw==
+X-Received: by 2002:a17:907:72ca:b0:6f3:f6e5:9085 with SMTP id du10-20020a17090772ca00b006f3f6e59085mr24412656ejc.628.1651739353584;
+        Thu, 05 May 2022 01:29:13 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id a12-20020a50f0cc000000b00425d6c76494sm517695edm.1.2022.05.05.01.29.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 01:29:13 -0700 (PDT)
+Message-ID: <70c49385-6fa2-2cb9-8a82-3e28f0fc2064@linaro.org>
+Date:   Thu, 5 May 2022 10:29:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tua4j3es.ffs@tglx>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 4/4] dt-bindings: input: mt-matrix-keypad: add guardian mt
+ matrix keypad bindings definition
+Content-Language: en-US
+To:     Gireesh.Hiremath@in.bosch.com, linux-omap@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org, bcousson@baylibre.com,
+        tony@atomide.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, dmitry.torokhov@gmail.com,
+        mkorpershoek@baylibre.com, davidgow@google.com,
+        m.felsch@pengutronix.de, swboyd@chromium.org,
+        fengping.yu@mediatek.com, y.oudjana@protonmail.com,
+        rdunlap@infradead.org, colin.king@intel.com
+Cc:     sjoerd.simons@collabora.co.uk, VinayKumar.Shettar@in.bosch.com,
+        Govindaraji.Sivanantham@in.bosch.com, anaclaudia.dias@de.bosch.com
+References: <20220504105254.1576-1-Gireesh.Hiremath@in.bosch.com>
+ <20220504105254.1576-4-Gireesh.Hiremath@in.bosch.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220504105254.1576-4-Gireesh.Hiremath@in.bosch.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 01:15:07AM +0200, Thomas Gleixner wrote:
-> We don't have stomp_cpumask() today, but that's trivial enough to
-> implement.
+On 04/05/2022 12:52, Gireesh.Hiremath@in.bosch.com wrote:
+> From: Gireesh Hiremath <Gireesh.Hiremath@in.bosch.com>
+> 
+> Add binding definition for the support of the Guardian
+> mt matrix keypad driver.
+> 
+> Signed-off-by: Gireesh Hiremath <Gireesh.Hiremath@in.bosch.com>
+> ---
+>  .../bindings/input/mt-matrix-keypad.yaml      | 134 ++++++++++++++++++
+>  1 file changed, 134 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/input/mt-matrix-keypad.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/input/mt-matrix-keypad.yaml b/Documentation/devicetree/bindings/input/mt-matrix-keypad.yaml
+> new file mode 100644
+> index 000000000000..b52cd478f638
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/input/mt-matrix-keypad.yaml
+> @@ -0,0 +1,134 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/input/mt-matrix-keypad.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: GPIO driven mt matrix keypad device tree bindings
+> +
+> +maintainers:
+> +  - vinay <VinayKumar.Shettar@in.bosch.com>
+> +
+> +description: |
+> +  GPIO driven mt matrix keypad is used to interface a SoC with a mt matrix
+> +  keypad. The mt matrix keypad supports multiple gpio line, all gpio line act
 
-I don't think we want to gift people a random cpumask stop_machine(),
-but here's one that stops a core. It runs the @fn on every cpu since I
-thought to have understood that was the requirement for this muck.
+s/line/lines/
 
-*completely* untestededed.
+> +  as row as wel as column lines, a key can be placed at each intersection
 
-diff --git a/kernel/stop_machine.c b/kernel/stop_machine.c
-index 6da7b91af353..2e7324e44e38 100644
---- a/kernel/stop_machine.c
-+++ b/kernel/stop_machine.c
-@@ -631,6 +631,34 @@ int stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus)
- }
- EXPORT_SYMBOL_GPL(stop_machine);
- 
-+/*
-+ * stop_core_cpuslocked - stop_machine a core
-+ * @cpu: any cpu in the targeted core
-+ * @fn: the function to run
-+ * @data: the data ptr for @fn()
-+ *
-+ * RETURNS:
-+ * 0 if all executions of @fn returned 0, any non zero return value if any
-+ * returned non zero.
-+ */
-+int stop_core_cpuslocked(unsigned int cpu, cpu_stop_fn_t fn, void *data)
-+{
-+	const struct cpumask *smt_mask = cpu_smt_mask(cpu);
-+
-+	struct multi_stop_data msdata = {
-+		.fn = fn,
-+		.data = data,
-+		.num_threads = cpumask_weight(smt_mask);
-+		.active_cpus = smt_mask,
-+	};
-+
-+	lockdep_assert_cpus_held();
-+
-+	/* Set the initial state and stop all online cpus. */
-+	set_state(&msdata, MULTI_STOP_PREPARE);
-+	return stop_cpus(smt_mask, multi_cpu_stop, &msdata);
-+}
-+
- /**
-  * stop_machine_from_inactive_cpu - stop_machine() from inactive CPU
-  * @fn: the function to run
+s/wel/well/
+
+> +  of a unique row number not equal to a unique column and they are diagonally
+> +  symmetric.
+> +
+
+What is "mt" in the "mt matrix"?
+
+> +  Example- For 5 gpio lines, possible matrix is 5x5 and maximum possible
+> +        keys are 10.
+> +
+> +        Sample matrix table for 7 button and 5 gpio line
+> +
+> +        ------------------------------------------------------
+> +        |Row\Col |GPIO 0 | GPIO 1 | GPIO 2 | GPIO 3 | GPIO 4 |
+> +        ------------------------------------------------------
+> +        | GPIO 0 |  X    | KEY_9  | KEY_2  |   X    | KEY_1  |
+> +        ------------------------------------------------------
+> +        | GPIO 1 | KEY_9 |  X     | KEY_6  |   X    |  X     |
+> +        ------------------------------------------------------
+> +        | GPIO 2 | KEY_2 | KEY_6  |  X     | KEY_4  | KEY_7  |
+> +        ------------------------------------------------------
+> +        | GPIO 3 |  X    |  X     | KEY_4  |  X     | KEY_8  |
+> +        ------------------------------------------------------
+> +        | GPIO 4 | KEY_1 |  X     | KEY_7  | KEY_8  |  X     |
+> +        ------------------------------------------------------
+> +        X - invalid key
+> +        KEY_x - preferred key code
+> +
+> +  The mt matrix keypad can sense a key-press and key-release by means of GPIO
+> +  lines and report the event using GPIO interrupts to the cpu.
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - const: gpio-mt-matrix-keypad
+> +      - items:
+> +          - enum:
+> +              - gpio-mt-matrix-keypad
+> +          - const: gpio-mt-matrix-keypad
+
+Aren't all these compatibles the same?
+
+> +
+> +  debounce-delay-ms:
+> +    description: Delay after the first bounce of button.
+> +    default: 0
+> +
+> +  col-scan-delay-us:
+> +    description: Delay before scanning next active line.
+> +    default: 0
+> +
+> +  number-of-button:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: Number of button connected to the keypad controller.
+
+s/button/buttons/ I presume.
+
+> +
+> +  linux,no-autorepeat:
+> +    description: |
+> +      Disable the Linux input system's autorepeat feature on the input device.
+> +
+> +  gpio-activelow:
+> +    description: Gpio line are active low.
+
+No, GPIOs should instead use common flags.
+
+> +
+> +  line-gpios:
+> +    description: |
+> +      Gpio lines connected to keypad controller.
+> +      all gpio line act as row as wel as column lines.
+> +
+> +  linux,keymap:
+> +    $ref: '/schemas/types.yaml#/definitions/uint32-array'
+> +    description: |
+> +      An array of packed 1-cell entries containing the equivalent of row,
+> +      column and linux key-code. The 32-bit big endian cell is packed as:
+> +          row << 24 | column << 16 | key-code
+
+But anyway this should be just merged into matrix-keypad. It's a simpler
+set of that binding.
+
+> +
+> +required:
+> +  - compatible
+> +  - number-of-button
+> +  - line-gpios
+> +  - linux,keymap
+> +
+> +additionalProperties: true
+
+This cannot be true.
+
+> +
+> +examples:
+> +  - |
+> +    mt_matrix_keypad {
+
+No underscores in node names. Generic node name, so just "keypad".
+
+
+
+Best regards,
+Krzysztof
