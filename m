@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D67DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2D0C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384424AbiEESYW (ORCPT
+        id S1384616AbiEESYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
+        Thu, 5 May 2022 14:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383315AbiEESTo (ORCPT
+        with ESMTP id S1383313AbiEESTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:44 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581BF5DBD1;
-        Thu,  5 May 2022 11:16:00 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A015DBC6;
+        Thu,  5 May 2022 11:15:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774560; x=1683310560;
+  t=1651774559; x=1683310559;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5TcLcP+p51HgP1gzMxR+mwJRzVkAUNArKCx6uZxhAyE=;
-  b=RU0cpuZL9oFZA7eNUkXaeDFz2nM9jArwZmbC44wt2b2YTPgLvCRpru8F
-   Kt/W2RCZ1Fya6/EdKwjjyqM7xuxR8Uk7D300qgtDuCAvkL9wtpUM478M1
-   RVF9RcO+juixDeFOaPHR9Z1tlmhYEpMr6BFa5kVm7W4eUl9CPRjbgyJBf
-   LjOiLj2m78MJJaWupa2YoMAI2kSv1/pvP3Ug0PwQEvQ2Fb609+8TAl/cX
-   tjMIt0vUkWdJLuHpCxyjCncHqBPwvgg/4TmukmwziIbE/hal5CwNL68ia
-   BMsnBcd+7ZfaezwLZjlX2aE35s69n6PmPqX2ExkECG/gZS6v6tiqhWskf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268097123"
+  bh=VeGHay8OCa05hjiRm2lQG6GZXIFXJVMCyPZmh9n40Yk=;
+  b=Zf8FG/T0R+Tl9IOx7JQ0HqJgR6Ots8CD7Vg7G7Brxez6qSaUp+KAQEwB
+   fZ28EAA7aKh9SzM4TVVU/NRA8XuPaLA4oyU16PK0+JcuOviueH4xYK/z6
+   k5MV67Xa+dF36i/qDkNBUtu87AR2Wn2WVN9bkjVIEeksgzmlSTeL/Qj1z
+   HjvPp26mzqxsZEu1aDNK08jX1iQ/JLDWy162oeKe9I+xl29h2WGhItfa/
+   lxInDu2HhLbkVUqtJ+l+9Y2FhoYQYt4mTWbvAFsBpyFGQUhdhInjx6DtZ
+   3ggeaJk3KTq21nMDBBcTK0xwnxQU6BjtevI09Rgm32KQKmtdMq+dg6Ylj
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113930"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="268097123"
+   d="scan'208";a="248113930"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:55 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083500"
+   d="scan'208";a="665083445"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:55 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 099/104] KVM: TDX: Silently discard SMI request
-Date:   Thu,  5 May 2022 11:15:33 -0700
-Message-Id: <05e71e67d894d656a2ebe54cd5c1b0e206628d93.1651774251.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 084/104] KVM: TDX: Add a place holder to handle TDX VM exit
+Date:   Thu,  5 May 2022 11:15:18 -0700
+Message-Id: <731f560faad173e525f2a7649080125dc221069d.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,185 +58,235 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX doesn't support system-management mode (SMM) and system-management
-interrupt (SMI) in guest TDs.  Because guest state (vcpu state, memory
-state) is protected, it must go through the TDX module APIs to change guest
-state, injecting SMI and changing vcpu mode into SMM.  The TDX module
-doesn't provide a way for VMM to inject SMI into guest TD and a way for VMM
-to switch guest vcpu mode into SMM.
-
-We have two options in KVM when handling SMM or SMI in the guest TD or the
-device model (e.g. QEMU): 1) silently ignore the request or 2) return a
-meaningful error.
-
-For simplicity, we implemented the option 1).
+Wire up handle_exit and handle_exit_irqoff methods and add a place holder
+to handle VM exit.  Add helper functions to get exit info, exit
+qualification, etc.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/lapic.c       |  7 +++++--
- arch/x86/kvm/vmx/main.c    | 43 ++++++++++++++++++++++++++++++++++----
- arch/x86/kvm/vmx/tdx.c     | 27 ++++++++++++++++++++++++
- arch/x86/kvm/vmx/x86_ops.h |  8 +++++++
- arch/x86/kvm/x86.c         |  3 ++-
- 5 files changed, 81 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/main.c    | 35 ++++++++++++++--
+ arch/x86/kvm/vmx/tdx.c     | 81 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/kvm/vmx/x86_ops.h | 11 ++++++
+ 3 files changed, 124 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index f8e190da769f..bc329c4488a9 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -1146,8 +1146,11 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
- 
- 	case APIC_DM_SMI:
- 		result = 1;
--		kvm_make_request(KVM_REQ_SMI, vcpu);
--		kvm_vcpu_kick(vcpu);
-+		if (static_call(kvm_x86_has_emulated_msr)(vcpu->kvm,
-+							  MSR_IA32_SMBASE)) {
-+			kvm_make_request(KVM_REQ_SMI, vcpu);
-+			kvm_vcpu_kick(vcpu);
-+		}
- 		break;
- 
- 	case APIC_DM_NMI:
 diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index dec9689afab2..b8d0b875d8d9 100644
+index 74ca538edf46..95b7a90aa0d7 100644
 --- a/arch/x86/kvm/vmx/main.c
 +++ b/arch/x86/kvm/vmx/main.c
-@@ -233,6 +233,41 @@ static int vt_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	return vmx_get_msr(vcpu, msr_info);
+@@ -188,6 +188,23 @@ static bool vt_protected_apic_has_interrupt(struct kvm_vcpu *vcpu)
+ 	return tdx_protected_apic_has_interrupt(vcpu);
  }
  
-+static int vt_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
++static int vt_handle_exit(struct kvm_vcpu *vcpu,
++			     enum exit_fastpath_completion fastpath)
 +{
 +	if (is_td_vcpu(vcpu))
-+		return tdx_smi_allowed(vcpu, for_injection);
++		return tdx_handle_exit(vcpu, fastpath);
 +
-+	return vmx_smi_allowed(vcpu, for_injection);
++	return vmx_handle_exit(vcpu, fastpath);
 +}
 +
-+static int vt_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
++static void vt_handle_exit_irqoff(struct kvm_vcpu *vcpu)
 +{
-+	if (unlikely(is_td_vcpu(vcpu)))
-+		return tdx_enter_smm(vcpu, smstate);
++	if (is_td_vcpu(vcpu))
++		return tdx_handle_exit_irqoff(vcpu);
 +
-+	return vmx_enter_smm(vcpu, smstate);
-+}
-+
-+static int vt_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
-+{
-+	if (unlikely(is_td_vcpu(vcpu)))
-+		return tdx_leave_smm(vcpu, smstate);
-+
-+	return vmx_leave_smm(vcpu, smstate);
-+}
-+
-+static void vt_enable_smi_window(struct kvm_vcpu *vcpu)
-+{
-+	if (is_td_vcpu(vcpu)) {
-+		tdx_enable_smi_window(vcpu);
-+		return;
-+	}
-+
-+	/* RSM will cause a vmexit anyway.  */
-+	vmx_enable_smi_window(vcpu);
++	vmx_handle_exit_irqoff(vcpu);
 +}
 +
  static void vt_apicv_post_state_restore(struct kvm_vcpu *vcpu)
  {
  	struct pi_desc *pi = vcpu_to_pi_desc(vcpu);
-@@ -571,10 +606,10 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 
- 	.setup_mce = vmx_setup_mce,
- 
--	.smi_allowed = vmx_smi_allowed,
--	.enter_smm = vmx_enter_smm,
--	.leave_smm = vmx_leave_smm,
--	.enable_smi_window = vmx_enable_smi_window,
-+	.smi_allowed = vt_smi_allowed,
-+	.enter_smm = vt_enter_smm,
-+	.leave_smm = vt_leave_smm,
-+	.enable_smi_window = vt_enable_smi_window,
- 
- 	.can_emulate_instruction = vmx_can_emulate_instruction,
- 	.apic_init_signal_blocked = vmx_apic_init_signal_blocked,
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 4618934700cc..0b464c6bd81d 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1829,6 +1829,33 @@ int tdx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
- 	return 1;
+@@ -371,6 +388,18 @@ static void vt_request_immediate_exit(struct kvm_vcpu *vcpu)
+ 	vmx_request_immediate_exit(vcpu);
  }
  
-+int tdx_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
++static void vt_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
++			u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code)
 +{
-+	/* SMI isn't supported for TDX. */
-+	WARN_ON_ONCE(1);
-+	return false;
++	if (is_td_vcpu(vcpu)) {
++		tdx_get_exit_info(vcpu, reason, info1, info2, intr_info,
++				error_code);
++		return;
++	}
++
++	vmx_get_exit_info(vcpu, reason, info1, info2, intr_info, error_code);
 +}
 +
-+int tdx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+ static int vt_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
+ {
+ 	if (!is_td(kvm))
+@@ -444,7 +473,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 
+ 	.vcpu_pre_run = vt_vcpu_pre_run,
+ 	.vcpu_run = vt_vcpu_run,
+-	.handle_exit = vmx_handle_exit,
++	.handle_exit = vt_handle_exit,
+ 	.skip_emulated_instruction = vmx_skip_emulated_instruction,
+ 	.update_emulated_instruction = vmx_update_emulated_instruction,
+ 	.set_interrupt_shadow = vt_set_interrupt_shadow,
+@@ -479,7 +508,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.set_identity_map_addr = vmx_set_identity_map_addr,
+ 	.get_mt_mask = vmx_get_mt_mask,
+ 
+-	.get_exit_info = vmx_get_exit_info,
++	.get_exit_info = vt_get_exit_info,
+ 
+ 	.vcpu_after_set_cpuid = vmx_vcpu_after_set_cpuid,
+ 
+@@ -493,7 +522,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.load_mmu_pgd = vt_load_mmu_pgd,
+ 
+ 	.check_intercept = vmx_check_intercept,
+-	.handle_exit_irqoff = vmx_handle_exit_irqoff,
++	.handle_exit_irqoff = vt_handle_exit_irqoff,
+ 
+ 	.request_immediate_exit = vt_request_immediate_exit,
+ 
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 39220f63a005..b3fc9d95fffd 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -78,6 +78,26 @@ static __always_inline hpa_t set_hkid_to_hpa(hpa_t pa, u16 hkid)
+ 	return pa;
+ }
+ 
++static __always_inline unsigned long tdexit_exit_qual(struct kvm_vcpu *vcpu)
 +{
-+	/* smi_allowed() is always false for TDX as above. */
-+	WARN_ON_ONCE(1);
++	return kvm_rcx_read(vcpu);
++}
++
++static __always_inline unsigned long tdexit_ext_exit_qual(struct kvm_vcpu *vcpu)
++{
++	return kvm_rdx_read(vcpu);
++}
++
++static __always_inline unsigned long tdexit_gpa(struct kvm_vcpu *vcpu)
++{
++	return kvm_r8_read(vcpu);
++}
++
++static __always_inline unsigned long tdexit_intr_info(struct kvm_vcpu *vcpu)
++{
++	return kvm_r9_read(vcpu);
++}
++
+ static inline bool is_td_vcpu_created(struct vcpu_tdx *tdx)
+ {
+ 	return tdx->tdvpr.added;
+@@ -819,6 +839,25 @@ void tdx_inject_nmi(struct kvm_vcpu *vcpu)
+ 	td_management_write8(to_tdx(vcpu), TD_VCPU_PEND_NMI, 1);
+ }
+ 
++void tdx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
++{
++	struct vcpu_tdx *tdx = to_tdx(vcpu);
++	u16 exit_reason = tdx->exit_reason.basic;
++
++	if (exit_reason == EXIT_REASON_EXCEPTION_NMI)
++		vmx_handle_exception_nmi_irqoff(vcpu, tdexit_intr_info(vcpu));
++	else if (exit_reason == EXIT_REASON_EXTERNAL_INTERRUPT)
++		vmx_handle_external_interrupt_irqoff(vcpu,
++						     tdexit_intr_info(vcpu));
++}
++
++static int tdx_handle_triple_fault(struct kvm_vcpu *vcpu)
++{
++	vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
++	vcpu->mmio_needed = 0;
 +	return 0;
 +}
 +
-+int tdx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+ void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
+ {
+ 	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
+@@ -1152,6 +1191,48 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
+ 	__vmx_deliver_posted_interrupt(vcpu, &tdx->pi_desc, vector);
+ }
+ 
++int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
 +{
-+	WARN_ON_ONCE(1);
++	union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
++
++	if (unlikely(exit_reason.non_recoverable || exit_reason.error)) {
++		if (exit_reason.basic == EXIT_REASON_TRIPLE_FAULT)
++			return tdx_handle_triple_fault(vcpu);
++
++		kvm_pr_unimpl("TD exit 0x%llx, %d hkid 0x%x hkid pa 0x%llx\n",
++			      exit_reason.full, exit_reason.basic,
++			      to_kvm_tdx(vcpu->kvm)->hkid,
++			      set_hkid_to_hpa(0, to_kvm_tdx(vcpu->kvm)->hkid));
++		goto unhandled_exit;
++	}
++
++	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
++
++	switch (exit_reason.basic) {
++	default:
++		break;
++	}
++
++unhandled_exit:
++	vcpu->run->exit_reason = KVM_EXIT_UNKNOWN;
++	vcpu->run->hw.hardware_exit_reason = exit_reason.full;
 +	return 0;
 +}
 +
-+void tdx_enable_smi_window(struct kvm_vcpu *vcpu)
++void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
++		u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code)
 +{
-+	/* SMI isn't supported for TDX.  Silently discard SMI request. */
-+	WARN_ON_ONCE(1);
-+	vcpu->arch.smi_pending = false;
++	struct vcpu_tdx *tdx = to_tdx(vcpu);
++
++	*reason = tdx->exit_reason.full;
++
++	*info1 = tdexit_exit_qual(vcpu);
++	*info2 = tdexit_ext_exit_qual(vcpu);
++
++	*intr_info = tdexit_intr_info(vcpu);
++	*error_code = 0;
 +}
 +
  int tdx_dev_ioctl(void __user *argp)
  {
  	struct kvm_tdx_capabilities __user *user_caps;
 diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 64e7da448906..63573629a365 100644
+index 0ef1e94d4196..53cf6d5a72a1 100644
 --- a/arch/x86/kvm/vmx/x86_ops.h
 +++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -159,6 +159,10 @@ void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
- bool tdx_is_emulated_msr(u32 index, bool write);
- int tdx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr);
- int tdx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr);
-+int tdx_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection);
-+int tdx_enter_smm(struct kvm_vcpu *vcpu, char *smstate);
-+int tdx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate);
-+void tdx_enable_smi_window(struct kvm_vcpu *vcpu);
+@@ -147,10 +147,15 @@ void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu);
+ void tdx_vcpu_put(struct kvm_vcpu *vcpu);
+ void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu);
+ bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu);
++void tdx_handle_exit_irqoff(struct kvm_vcpu *vcpu);
++int tdx_handle_exit(struct kvm_vcpu *vcpu,
++		enum exit_fastpath_completion fastpath);
+ 
+ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
+ 			   int trig_mode, int vector);
+ void tdx_inject_nmi(struct kvm_vcpu *vcpu);
++void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
++		u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code);
  
  int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
  int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
-@@ -199,6 +203,10 @@ static inline void tdx_get_exit_info(
- static inline bool tdx_is_emulated_msr(u32 index, bool write) { return false; }
- static inline int tdx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr) { return 1; }
- static inline int tdx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr) { return 1; }
-+static inline int tdx_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection) { return false; }
-+static inline int tdx_enter_smm(struct kvm_vcpu *vcpu, char *smstate) { return 0; }
-+static inline int tdx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate) { return 0; }
-+static inline void tdx_enable_smi_window(struct kvm_vcpu *vcpu) {}
+@@ -178,10 +183,16 @@ static inline void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu) {}
+ static inline void tdx_vcpu_put(struct kvm_vcpu *vcpu) {}
+ static inline void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu) {}
+ static inline bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu) { return false; }
++static inline void tdx_handle_exit_irqoff(struct kvm_vcpu *vcpu) {}
++static inline int tdx_handle_exit(struct kvm_vcpu *vcpu,
++		enum exit_fastpath_completion fastpath) { return 0; }
+ 
+ static inline void tdx_deliver_interrupt(
+ 	struct kvm_lapic *apic, int delivery_mode, int trig_mode, int vector) {}
+ static inline void tdx_inject_nmi(struct kvm_vcpu *vcpu) {}
++static inline void tdx_get_exit_info(
++	struct kvm_vcpu *vcpu, u32 *reason, u64 *info1, u64 *info2,
++	u32 *intr_info, u32 *error_code) {}
  
  static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
  static inline int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp) { return -EOPNOTSUPP; }
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index f367d0dcef97..38e1f00cd224 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4787,7 +4787,8 @@ static int kvm_vcpu_ioctl_nmi(struct kvm_vcpu *vcpu)
- 
- static int kvm_vcpu_ioctl_smi(struct kvm_vcpu *vcpu)
- {
--	kvm_make_request(KVM_REQ_SMI, vcpu);
-+	if (static_call(kvm_x86_has_emulated_msr)(vcpu->kvm, MSR_IA32_SMBASE))
-+		kvm_make_request(KVM_REQ_SMI, vcpu);
- 
- 	return 0;
- }
 -- 
 2.25.1
 
