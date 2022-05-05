@@ -2,78 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C076EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F19DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351774AbiEEN2w (ORCPT
+        id S1377353AbiEENan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
+        Thu, 5 May 2022 09:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377265AbiEEN2i (ORCPT
+        with ESMTP id S1344383AbiEENaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:28:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCE95677D;
-        Thu,  5 May 2022 06:24:56 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvDtw5FdMzhYv6;
-        Thu,  5 May 2022 21:24:24 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+        Thu, 5 May 2022 09:30:39 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5FE396BA
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:26:57 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KvDxP6FS9zhY9w;
+        Thu,  5 May 2022 21:26:33 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 21:24:55 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.152) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ 15.1.2375.24; Thu, 5 May 2022 21:26:55 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 21:24:54 +0800
-From:   Wang Weiyang <wangweiyang2@huawei.com>
-To:     <zohar@linux.ibm.com>, <dmitry.kasatkin@gmail.com>,
-        <jmorris@namei.org>, <serge@hallyn.com>
-CC:     <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-integrity@vger.kernel.org>,
-        <wangweiyang2@huawei.com>
-Subject: [PATCH 3/3] ima: Append line feed to ima/binary_runtime_measurements
-Date:   Thu, 5 May 2022 21:23:01 +0800
-Message-ID: <20220505132301.124832-4-wangweiyang2@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220505132301.124832-1-wangweiyang2@huawei.com>
-References: <20220505132301.124832-1-wangweiyang2@huawei.com>
+ 15.1.2375.24; Thu, 5 May 2022 21:26:55 +0800
+Subject: Re: [PATCH v3] arm64: add the printing of tpidr_elx in __show_regs()
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220505095640.312-1-thunder.leizhen@huawei.com>
+ <YnPLQJhu5B1Cxvoh@FVFF77S0Q05N.cambridge.arm.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <c6c22386-af37-1acc-63e9-2bb85028aa8c@huawei.com>
+Date:   Thu, 5 May 2022 21:26:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.152]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
+In-Reply-To: <YnPLQJhu5B1Cxvoh@FVFF77S0Q05N.cambridge.arm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no LF in binary_runtime_measurements output. It is little weird,
-so append LF to it.
 
-Example:
 
-/ # cat /sys/kernel/security/ima/binary_runtime_measurements
-...imaboot_aggregate/ #
+On 2022/5/5 21:04, Mark Rutland wrote:
+> On Thu, May 05, 2022 at 05:56:40PM +0800, Zhen Lei wrote:
+>> Commit 7158627686f0 ("arm64: percpu: implement optimised pcpu access
+>> using tpidr_el1") and commit 6d99b68933fb ("arm64: alternatives: use
+>> tpidr_el2 on VHE hosts") use tpidr_elx to cache my_cpu_offset to optimize
+>> pcpu access. However, when performing reverse execution based on the
+>> registers and the memory contents in kdump, this information is sometimes
+>> required if there is a pcpu access.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>  arch/arm64/kernel/process.c | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> v2 --> v3:
+>> 1) Relace "switch (read_sysreg(CurrentEL))" statement with
+>>    "if (is_kernel_in_hyp_mode())" statement.
+>> 2) Change the register name to lowercase.
+>>
+>> v1 --> v2:
+>> Directly print the tpidr_elx register of the current exception level.
+>> Avoid coupling with the implementation of 'my_cpu_offset'.
+>>
+>> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+>> index 7fa97df55e3ad3f..7b6bccce9721c36 100644
+>> --- a/arch/arm64/kernel/process.c
+>> +++ b/arch/arm64/kernel/process.c
+>> @@ -216,6 +216,11 @@ void __show_regs(struct pt_regs *regs)
+>>  	show_regs_print_info(KERN_DEFAULT);
+>>  	print_pstate(regs);
+>>  
+>> +	if (is_kernel_in_hyp_mode())
+>> +		printk("tpidr_el2 : %016llx\n", read_sysreg(tpidr_el2));
+>> +	else
+>> +		printk("tpidr_el1 : %016llx\n", read_sysreg(tpidr_el1));
+> 
+> If we care about the offset specifically, this would be simpler as:
+> 
+> 	printk("cpu offset : 0x%016lx\n", __my_cpu_offset());
 
-Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
----
- security/integrity/ima/ima_fs.c | 1 +
- 1 file changed, 1 insertion(+)
+The function name is __show_regs(), so not using register name may not be good.
+In fact, some other architectures may also have this problem. If we use my_cpu_offset,
+we may need to put it in a public.
 
-diff --git a/security/integrity/ima/ima_fs.c b/security/integrity/ima/ima_fs.c
-index cd1683dad3bf..0a2f9cb25b20 100644
---- a/security/integrity/ima/ima_fs.c
-+++ b/security/integrity/ima/ima_fs.c
-@@ -183,6 +183,7 @@ int ima_measurements_show(struct seq_file *m, void *v)
- 			show = IMA_SHOW_BINARY_OLD_STRING_FMT;
- 		field->field_show(m, show, &e->template_data[i]);
- 	}
-+	seq_puts(m, "\n");
- 	return 0;
- }
- 
+> 
+> ... which should do the right thing even if we repurpose the TPIDRs and move the offset elsewhere.
+> 
+> As Will says, we should only log this for !user_mode(regs), so it could
+> be placed in the block below, immediately before we print the kernel PC, i.e.
+> 
+> 	if (!user_mode_regs) {
+> 		printk("cpu offset : %016lx\n", __my_cpu_offset());
+> 		printk("pc : %pS\n", (void *)regs->pc);
+> 		printk("lr : %pS\n", (void *)ptrauth_strip_insn_pac(lr));
+> 		...
+> 	}
+> 
+> ... or in a separate block which checks the same condition.
+> 
+> Thanks,
+> Mark.
+> 
+>> +
+>>  	if (!user_mode(regs)) {
+>>  		printk("pc : %pS\n", (void *)regs->pc);
+>>  		printk("lr : %pS\n", (void *)ptrauth_strip_insn_pac(lr));
+>> -- 
+>> 2.25.1
+>>
+> .
+> 
+
 -- 
-2.17.1
-
+Regards,
+  Zhen Lei
