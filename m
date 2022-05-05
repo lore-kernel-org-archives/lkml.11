@@ -2,250 +2,497 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5805C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C537C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241537AbiEEDkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 23:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
+        id S241563AbiEEDmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 23:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241538AbiEEDkG (ORCPT
+        with ESMTP id S229580AbiEEDmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 23:40:06 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9714A3CA;
-        Wed,  4 May 2022 20:36:28 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 244Nl8PD030007;
-        Thu, 5 May 2022 03:36:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=4imIRbOUcq6sxIkvtRiWtTHNxuvtIQN1giBALvpfGOQ=;
- b=Fm1yc+jdCUaxWL3AESNGw24ouFBVQfYY7FDrguAHcB9WNv/R1lH2tFqo8vmoLe0Dus/d
- 9pUkDRSv6ZhmnxWHZJDAjS4rlQpsppPbEbLivK6UQDAXNXM16a2cfrfLxPko8id/AIZi
- ZRFboxHU1QQEhAr6nHjlPpfa3pDGLmve7eqet8aaieseIwebC8dxQOhDRRZkeCr5eOUB
- YFANI1LsEDDgYozbVx5HynfbJI/uJG+M7P+q9kA4k8xs4aFpBZmJ6NxNQyeGteNzfNfH
- bVsiqPQbc6UPPnt954sV21eILsqf5THASu9UMyXqid9dDReYuRetzCO8p+SqjtxVv92e gA== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruq0j7wg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 05 May 2022 03:36:06 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2453ZTPT010710;
-        Thu, 5 May 2022 03:36:05 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fs1a6e82n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 05 May 2022 03:36:05 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jCRYe74qn2E/3eZuQ/iGslu1BekwgjmXIpYiK/KRNOeywIzgHHxjB5oZYWoZaO9vPLHvRJDGm6fCBNL1uxyzrtjv5Pb3l5SS1E6l75IY+wxoY6JQMxmltPnNB2tciKibuYF+0xul+CIcCdEnAYO7y+dONUewncdMAGjSJp4IOwrht/lobtnTugNdsPLIEiv8GEFRpr4VX6H9s/pvBRw5ekMHBhOfr+Z9FMbsC/J8dhvWGKKD6JR9vS9u4Usvnx22YbKitJpuDJkqBJBdRCN0Rea2Ig0p5f2KfqJla3eTkHHj2Zjtx74JuTE9qlrsPjxQSqpWjD2RNevJoMIkonojog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4imIRbOUcq6sxIkvtRiWtTHNxuvtIQN1giBALvpfGOQ=;
- b=YWms58TajKQ2LstrFBqEVTCWUJiIitCHqDbbsadQL9jnSOgKiseouBOXooqTcOFjfKBU5PRTSt7G23PUcJcQ2+BbdTIn1aG/BdDhLdqVzNHPEfgMbninc1HxKXn3YtWCEwB0bB5rBbM4flz15cUPq4y/E65N3pvWgIK9lo3V5SqVFBdA/Ux5NkX7vpu/RcJJcMulN56+ytKhZ2zPbjf+TbfJePjHrbZCx2MUCbuxESVjWPmIsjGWrnpp6g38Yx042hzII/+WPJ9ju0EN+U612oo3MnoYU7voepRgwd+sTN+NAKX/YDl2hOh04pHK+hduivOvVI6SAcIyqKZfMzn4oA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Wed, 4 May 2022 23:42:37 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBB24993B;
+        Wed,  4 May 2022 20:38:58 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id e24so3024181pjt.2;
+        Wed, 04 May 2022 20:38:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4imIRbOUcq6sxIkvtRiWtTHNxuvtIQN1giBALvpfGOQ=;
- b=y1nyBOODtEzfCjG6uBMgy92wR7mjaaLWNIU9ynQ9Tc2QCLnjJhEatLryRn2wMYouPBs90ZGeV9Y8F+8fBWuPsamm6MrM6jP0y/aOKm9j6AH4lBzNT1Nv1LcOtczwRgmttNvRbIhrWDleMXm33R/S22a5MlzAOQtKO7yprbjHe6k=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by BN7PR10MB2674.namprd10.prod.outlook.com (2603:10b6:406:ca::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Thu, 5 May
- 2022 03:36:03 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::9d76:7926:9b76:f461]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::9d76:7926:9b76:f461%7]) with mapi id 15.20.5206.024; Thu, 5 May 2022
- 03:36:02 +0000
-Message-ID: <f77412f1-ffe5-659d-8a7d-578e0e8c5e2c@oracle.com>
-Date:   Wed, 4 May 2022 20:36:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v9 4/4] mm: hugetlb_vmemmap: add hugetlb_optimize_vmemmap
- sysctl
-Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     corbet@lwn.net, akpm@linux-foundation.org, mcgrof@kernel.org,
-        keescook@chromium.org, yzaikin@google.com, osalvador@suse.de,
-        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZPBvAqUw20crx3aNHCyas6EixYg8m1kbUePaLTq2gJo=;
+        b=e/vZ5NfbJjoFjAvkELH+FyGzoOlL7N0RXFR3GjfN6tOLxxwVNTErdyCFkGN/CFPV/C
+         d73r8yaBU71rZQzvCx6kYdYfHaC6zGULrJlsxNsoHnFj/F6IZPJuiVKCuFVqVi1y8DN6
+         /9G5buQGNubGRbJmPZgImZepy+MGzZz2NAvDJcuhdrgwGh+cbirA8IlsqeoIJMBUe/L3
+         v7eF67dBua3OJs61zmQmyl0pVykUcLa74hRrjRHyVueNtiRNR7Ex6GVP75n1/XJr0vCd
+         rBfmCK/M1tbXQhaovOYb28+4iqghk6IRZ0/vXWnzBzkqRGFShUNQeYeU+6JeNLOXjERB
+         0f3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZPBvAqUw20crx3aNHCyas6EixYg8m1kbUePaLTq2gJo=;
+        b=g7PKVgE1fFUoNwwXwofaVXLKDDOt4Qss3n2NuYS0cLi9dmETaHurrqh6+mEd+3jfeJ
+         xKnWzUZ554fOR8061R62HAPNg9cZ1Wa5j2K0u9REJuQXvnAO6/5/dtK+vguYscmVG6Pe
+         BEE80InOTg2LMPpg0NaiS7A75duSYXxrfu2KlLRLbyJz3UUotCYSoHe1qYPQzkZpEw98
+         srZSiH2rnJT6T6e8qxYiLuN2pe9Zr/a8PQPVwLBs/fCR5KGReNNN506DdojimftSepfT
+         NMNpBgFfjeX7rj/yeVS4R+oO/rN0ekJzY1ESQp6SBE0GKmtqlSppZeEOb5brLJfBpq/B
+         G7ug==
+X-Gm-Message-State: AOAM531BYvafTkEHpKRZUY8Kfw5TJ6XcPUZ1uqTz2pwaQajt00ifwVxX
+        2EmFO2lkifXOmTFRZBGBYK0=
+X-Google-Smtp-Source: ABdhPJyobp8oe3zvObToQ8GzYvP+nTJweQSsbEo5kvC2H+sK7voCdR5R7/1zpMDJG5zpj+O2tz99FA==
+X-Received: by 2002:a17:90a:aa98:b0:1b8:5adb:e35f with SMTP id l24-20020a17090aaa9800b001b85adbe35fmr3598531pjq.192.1651721937817;
+        Wed, 04 May 2022 20:38:57 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id j5-20020a170903028500b0015e8d4eb243sm270595plr.141.2022.05.04.20.38.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 20:38:57 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.xin16@zte.com.cn
+To:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com
+Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, william.kucharski@oracle.com,
+        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
+        songmuchun@bytedance.com, surenb@google.com,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
-References: <20220429121816.37541-1-songmuchun@bytedance.com>
- <20220429121816.37541-5-songmuchun@bytedance.com>
- <eadec7de-2e1a-2fb3-3317-c7b492a84e2b@oracle.com>
- <YnM4DRFhdD6iZIs1@FVFYT0MHHV2J.googleapis.com>
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-In-Reply-To: <YnM4DRFhdD6iZIs1@FVFYT0MHHV2J.googleapis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4PR03CA0314.namprd03.prod.outlook.com
- (2603:10b6:303:dd::19) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
+        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: [PATCH] mm/memcg: support control THP behaviour in cgroup
+Date:   Thu,  5 May 2022 03:38:15 +0000
+Message-Id: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1870a15b-d7b7-4983-ed6f-08da2e4860fc
-X-MS-TrafficTypeDiagnostic: BN7PR10MB2674:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR10MB2674A7EE59B3C46910E81838E2C29@BN7PR10MB2674.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vGS/xdby4x/lhJidVIV9VETeS7BEhc2npFfe2XWwEH/QmgQC6NwCgse0DNhlZ0VasFGaR9zSHFuSEDodU0+5NOdCBR+uR7hc+XB8SHpDV4KguvcfchloZqF+qOwIZamaOO6lr/AskdUQrln+yeDgvxkmeMZUkCKAaAiX5HAk0oTMIg2bg9AJHQpfnlulWgNtWaD6ExC/6VQ+XONxaRQN5hAP/WM1ac9rz7i2Z2BLtTZOEfsxC/Vl9Cqt6L6xWlFC9kNxu4Yq6qPV9gnqgpuy32xRkpUsS9DfqtM6/3TtlAfUiMc5lqaQsXnyU9W0Aw1lhezwr2qfLm43gejLc9PEZPSwmRK6Re76dr2xSbJcM/guWAQTkZ8bKfpIZ9YaATVVNGd4zPuzDbfjsfHMFLv7U9HCdI4GlhJvL/zs7NtMQns3DDPwts4ELHTa+gxHfh8Apw4L6e/3ewm3mgct8LXPGoqwAll3MNJJeGzvjGTtIwnvV/y+tiQ+tX5ugEYxWAx18Az1tSzKR5IzFcOLgCxdu2HoGwpE0wobM6zlVXjiXr9LL4rNIKBeXqfrqGSMOwBXE8wD5imAxQ9fmk83OKtKEuy49FsBmhf5eLg6L8UUsOnv/9flbwgN02p9iFhB7U/JYbpbxs2h76+8RcACb0WEccghKgkk0nzNvcIA7sFhp9pESkI2lHbqqJK2qZNwAD2eeXAraNxi0xcB6Tl3qOVaqc5GXWmNC3VyML8X4Rei4PKviO1nSfVYSV3k4XIgwn2Zc9DmPkM+9NoDHbINkUqWEeJ2LAiO83+99RcizXzH0M3MeFKell+InZlt80ezvUfMGQG/syn7TaGpkpZ20W3CvQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(8676002)(6486002)(966005)(38100700002)(38350700002)(2616005)(508600001)(8936002)(186003)(44832011)(66556008)(83380400001)(31696002)(5660300002)(7416002)(2906002)(66476007)(6512007)(36756003)(31686004)(86362001)(26005)(52116002)(53546011)(6506007)(6916009)(316002)(66946007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cnZUM3dtaytGYXh5UVFKeVVLNlIrdFFXQ2JCc0U4UHhqMHgza2NoY2JDS2Jo?=
- =?utf-8?B?cEhKdFZYZ05CS1h0VTZiRHdWbTZOUER2OWNPdnpTTXMvSlU4YUE2NHVWREI2?=
- =?utf-8?B?bkhSWERZWStLTTdNQkc2M1BWS0xFUzNmcUduWW5OWGFTQzRrdDZOd2ZjMVND?=
- =?utf-8?B?K29hbjRORysrUm9EMjkydk94bVlqT1kyYkpzUGVOemowZHZpNTdUUGZsYUo5?=
- =?utf-8?B?bVpBbVp0bmh1bk1pdzlyV0xJSEp6MCt4U1lWb2xEQWhRUjM5N0YyT3ErSkdP?=
- =?utf-8?B?K1p1cmNPaGV5bjZXaDZIT1JmeWlsOGNMRUh5WVN1M0FhUjlvQU5zNHlEeGdT?=
- =?utf-8?B?OEhjcVc1dWh6QSs0bExWT3BLLzRQZEp5djR5aGxzbHM3anNiY2ZZV3VIQUw1?=
- =?utf-8?B?V3pNbnE5MDB6R0pGWW9QY0g4SjBPaDB4eFEzMEVJQ0JQdHBTTXV6TW41Uyt4?=
- =?utf-8?B?T3plT2VieWpBZGZMYXhMUDlhZWl3RmRFUDAxZkE1NXJscjMvcDBSWHZpMU9L?=
- =?utf-8?B?SkRDd0tqcHlHc2R0bFN6ZElsa2s1NjBVUUNpSExMYkZwTkgvTGUwM25ySy9O?=
- =?utf-8?B?Nm8wbWttOXhZNWV5RUFjUHNsOUVESVJ5eVdLb2NybFAzb29XRGEvYzlCekFC?=
- =?utf-8?B?a2FKQTUwZUdvaWJEVDcwRzVuRjNNSEtmOTI5STYxSy96aWpIYUMxMnVHTkNM?=
- =?utf-8?B?TWxJZFNoTE5LK0Y4ZU5KS2NuRkU3TE4zZStMSjk2NmhINi9GNzJqc1JEb3dl?=
- =?utf-8?B?N254T0VGUjNEZFJCdjZ0clk2YWhlc2NJUHFtTEorTkhDQXpSbEg5eU0wTWl1?=
- =?utf-8?B?NHhBb1dPUExTSzdIRi9UL2tnVVJGb1laN0VRc2NIcG1HN0g0WmV4cXdvTkVl?=
- =?utf-8?B?VitaaVA2bnJvYzJiZnJuWUd5UTVTSzZXaDVOZjIwZVY0Zmd6REdIVGVSbkVG?=
- =?utf-8?B?c1dOUVdyVThZOUl3UWZwbW9ZdUdZaGN3dkJaeTJMdmhhTzNxclpjUitMcVJp?=
- =?utf-8?B?T2U2akQvWllwY1NDY0RnNDJ1VngyN1dQeTFzMWJaaTdUY3dSaThnV0RlTGJM?=
- =?utf-8?B?b1UrVE8rWFJ6TWRSWU5tOEl1QnBUdHJIand2OTBHcTVnSkZXK0pZb2VJUCs2?=
- =?utf-8?B?cUxCcjhkSEVGN0Z4cGFtOXdabjI0d2F6dEpaTHQ1YTg0U3QyZVdRRTFpcVlX?=
- =?utf-8?B?UVZCWFJPN3RXTzVFUFZDUzRRSFYrL0JOa3hpSWt0MGJCbmdiODNlTEZPa205?=
- =?utf-8?B?cGt3SXJkcW4rN0FLbGh5b05qT2pRNVJJSTZNaGxvdlg4M29FUCtINXVpYVhr?=
- =?utf-8?B?bU0vQTBqL01DV09IKzR0TUNBL0pOU3pmbVpjS3c5RnBFMFVZb0h5VjhIdEsz?=
- =?utf-8?B?YzBMV0h4bzJqR3RFM1BhRGNJdzk2YzFCWjQ0NFArQlRpMDA5VzdWU0w4VzY1?=
- =?utf-8?B?b1hHWmx4TWN2ekFwNjNKeVhBUmZMdFAxeDJERjlPNUgzL0tQcmE3b0RPb3lh?=
- =?utf-8?B?YUhaNTRMVk16T214UHpncEpYZlhWK2JzandVcEdiVWJJR0JXTEEwL1lEVDE2?=
- =?utf-8?B?NFBHSHBjOHBBWkJvSTkxcUlHMmpvOWhnaHBmbGJtUlFobEdPTUx1Z0ErbmFX?=
- =?utf-8?B?NGtERDRBZnBZUE9tblMrblVWWC9FZ0U2UjBERlhIYXc0V0tIMVZKZXVSV1c4?=
- =?utf-8?B?SU50bHcxTDFERExHRS9ZYmZlcm1oT3htVFdRazFYRGhodXlpNml2bHJSY3Z4?=
- =?utf-8?B?RTZTTjFmT1VWYlcyczc1RUROTE10UzdWb0FkTm5wRzFsbmxXMGFIcjI0cjJ1?=
- =?utf-8?B?SnBOODB0UWZYbDlmUHcxSDgzcGVlMjZrYTA5cWJIRFpRRHdWMWl3QW0wUFpG?=
- =?utf-8?B?cXo3WVVFS3JTeUE1ZElNK2M0YnJJMmh4dFVFdHZWeVJ4NFN0YnhablkraC9a?=
- =?utf-8?B?dnV2ekdhdWtyeHNwU1ZrOCtPbHdWS3NoYkR1eGtoS1Z6VXN3WHczQWlZSTFR?=
- =?utf-8?B?U2FjNXdTdDhsUWc1QXNFdW5jUTdVZkFqU3hBN2xibXhCb1htcTNDek5JWkpC?=
- =?utf-8?B?T0htMmVjcjh2cWpmMDNtR2xmTXZnb21QOW5ucDdyaXptc2FvY2U3YVByZG1H?=
- =?utf-8?B?N2dyQXUzM280bTJBQ2dqN1Y2RVRwZmdrdGdmTEFQYVlZSmlRKzRMRkVSSFNY?=
- =?utf-8?B?bTFLOHhzUnNOY2U1VGVRTjVLV2xxQ1lJSENoMDJvb1krcEdZSVhFaDc0dEFy?=
- =?utf-8?B?K05qbDZzNjNlYlppWEhzdnh2cHdpMnVxb1U0WnJjbnRGQ1dncVlKV3RXd01B?=
- =?utf-8?B?QnQ1SjNUVlgvcXp5VHFBVkhsQnF6VjRLVXFlRXN6bHVESXIwajRTa0F1MzRC?=
- =?utf-8?Q?SAQZjVI/i9pDUZeA=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1870a15b-d7b7-4983-ed6f-08da2e4860fc
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 03:36:02.7932
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +HNi0IDj8SdYmN6MkOqgVnJafhIgYJTLHj9Ijn1AD5NTBdtBMlFJRvQtr89swhJflGf72DqgkonfQwxQXDoeJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR10MB2674
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-05-05_01:2022-05-04,2022-05-05 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 malwarescore=0
- spamscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205050025
-X-Proofpoint-ORIG-GUID: euVHL2JYeDTGUL8vCGJP-229MK4IzCi9
-X-Proofpoint-GUID: euVHL2JYeDTGUL8vCGJP-229MK4IzCi9
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/4/22 19:35, Muchun Song wrote:
-> On Wed, May 04, 2022 at 03:12:39PM -0700, Mike Kravetz wrote:
->> On 4/29/22 05:18, Muchun Song wrote:
->>> +static void vmemmap_optimize_mode_switch(enum vmemmap_optimize_mode to)
->>> +{
->>> +	if (vmemmap_optimize_mode == to)
->>> +		return;
->>> +
->>> +	if (to == VMEMMAP_OPTIMIZE_OFF)
->>> +		static_branch_dec(&hugetlb_optimize_vmemmap_key);
->>> +	else
->>> +		static_branch_inc(&hugetlb_optimize_vmemmap_key);
->>> +	vmemmap_optimize_mode = to;
->>> +}
->>> +
->>>  static int __init hugetlb_vmemmap_early_param(char *buf)
->>>  {
->>>  	bool enable;
->>> +	enum vmemmap_optimize_mode mode;
->>>  
->>>  	if (kstrtobool(buf, &enable))
->>>  		return -EINVAL;
->>>  
->>> -	if (enable)
->>> -		static_branch_enable(&hugetlb_optimize_vmemmap_key);
->>> -	else
->>> -		static_branch_disable(&hugetlb_optimize_vmemmap_key);
->>> +	mode = enable ? VMEMMAP_OPTIMIZE_ON : VMEMMAP_OPTIMIZE_OFF;
->>> +	vmemmap_optimize_mode_switch(mode);
->>>  
->>>  	return 0;
->>>  }
->>> @@ -60,6 +80,8 @@ int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
->>>  	vmemmap_end	= vmemmap_addr + (vmemmap_pages << PAGE_SHIFT);
->>>  	vmemmap_reuse	= vmemmap_addr - PAGE_SIZE;
->>>  
->>> +	VM_BUG_ON_PAGE(!vmemmap_pages, head);
->>> +
->>>  	/*
->>>  	 * The pages which the vmemmap virtual address range [@vmemmap_addr,
->>>  	 * @vmemmap_end) are mapped to are freed to the buddy allocator, and
->>> @@ -69,8 +91,10 @@ int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
->>>  	 */
->>>  	ret = vmemmap_remap_alloc(vmemmap_addr, vmemmap_end, vmemmap_reuse,
->>>  				  GFP_KERNEL | __GFP_NORETRY | __GFP_THISNODE);
->>> -	if (!ret)
->>> +	if (!ret) {
->>>  		ClearHPageVmemmapOptimized(head);
->>> +		static_branch_dec(&hugetlb_optimize_vmemmap_key);
->>> +	}
->>>  
->>>  	return ret;
->>>  }
->>> @@ -84,6 +108,8 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
->>>  	if (!vmemmap_pages)
->>>  		return;
->>>  
->>> +	static_branch_inc(&hugetlb_optimize_vmemmap_key);
->>
->> Can you explain the reasoning behind doing the static_branch_inc here in free,
->> and static_branch_dec in alloc?
->> IIUC, they may not be absolutely necessary but you could use the count to
->> know how many optimized pages are in use?  Or, I may just be missing
->> something.
->>
-> 
-> Partly right. One 'count' is not enough. I have implemented this with similar
-> approach in v6 [1]. Except the 'count', we also need a lock to do synchronization.
-> However, both count and synchronization are included in static_key_inc/dec
-> infrastructure. It is simpler to use static_key_inc/dec directly, right? 
-> 
-> [1] https://lore.kernel.org/all/20220330153745.20465-5-songmuchun@bytedance.com/
-> 
+From: Yang Yang <yang.yang29@zte.com.cn> 
 
-Sorry, but I am a little confused.
+Using THP may promote the performance of memory, but increase memory
+footprint. Applications may use madvise to decrease footprint, but
+not all applications support using madvise, and it takes much costs
+to re-code all the applications. And we notice container becomes more
+and more popular to manage a set of tasks.
 
-vmemmap_optimize_mode_switch will static_key_inc to enable and static_key_dec
-to disable.  In addition each time we optimize (allocate) a hugetlb page after
-enabling we will static_key_inc.
+So add support for cgroup to control THP behaviour will provide much
+convenience, administrator may only enable THP for important containers,
+and disable it for other containers. Then we can enjoy the high performance
+of THP while minimize memory footprint without re-coding any application.
 
-Suppose we have 1 hugetlb page optimized.  So static count == 2 IIUC.
-The someone turns off optimization via sysctl.  static count == 1 ???
-If we then add another hugetlb page via nr_hugepages it seems that it
-would be optimized as static count == 1.  Is that correct?  Do we need
-to free all hugetlb pages with optimization before we can add new pages
-without optimization?
+Cgroupv1 is used for many distributions, so and this it.
 
+Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+---
+ include/linux/huge_mm.h    | 33 +--------------
+ include/linux/khugepaged.h | 19 +++------
+ include/linux/memcontrol.h | 53 ++++++++++++++++++++++++
+ mm/huge_memory.c           | 34 ++++++++++++++++
+ mm/khugepaged.c            | 36 ++++++++++++++++-
+ mm/memcontrol.c            | 82 ++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 211 insertions(+), 46 deletions(-)
+
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index fbf36bb1be22..fa2cb3d06ecb 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -141,38 +141,6 @@ static inline bool transhuge_vma_enabled(struct vm_area_struct *vma,
+ 	return true;
+ }
+ 
+-/*
+- * to be used on vmas which are known to support THP.
+- * Use transparent_hugepage_active otherwise
+- */
+-static inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma)
+-{
+-
+-	/*
+-	 * If the hardware/firmware marked hugepage support disabled.
+-	 */
+-	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_NEVER_DAX))
+-		return false;
+-
+-	if (!transhuge_vma_enabled(vma, vma->vm_flags))
+-		return false;
+-
+-	if (vma_is_temporary_stack(vma))
+-		return false;
+-
+-	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_FLAG))
+-		return true;
+-
+-	if (vma_is_dax(vma))
+-		return true;
+-
+-	if (transparent_hugepage_flags &
+-				(1 << TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
+-		return !!(vma->vm_flags & VM_HUGEPAGE);
+-
+-	return false;
+-}
+-
+ bool transparent_hugepage_active(struct vm_area_struct *vma);
+ 
+ #define transparent_hugepage_use_zero_page()				\
+@@ -302,6 +270,7 @@ static inline struct list_head *page_deferred_list(struct page *page)
+ 	 */
+ 	return &page[2].deferred_list;
+ }
++inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma);
+ 
+ #else /* CONFIG_TRANSPARENT_HUGEPAGE */
+ #define HPAGE_PMD_SHIFT ({ BUILD_BUG(); 0; })
+diff --git a/include/linux/khugepaged.h b/include/linux/khugepaged.h
+index 2fcc01891b47..b77b065ebf16 100644
+--- a/include/linux/khugepaged.h
++++ b/include/linux/khugepaged.h
+@@ -26,16 +26,9 @@ static inline void collapse_pte_mapped_thp(struct mm_struct *mm,
+ }
+ #endif
+ 
+-#define khugepaged_enabled()					       \
+-	(transparent_hugepage_flags &				       \
+-	 ((1<<TRANSPARENT_HUGEPAGE_FLAG) |		       \
+-	  (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG)))
+-#define khugepaged_always()				\
+-	(transparent_hugepage_flags &			\
+-	 (1<<TRANSPARENT_HUGEPAGE_FLAG))
+-#define khugepaged_req_madv()					\
+-	(transparent_hugepage_flags &				\
+-	 (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
++extern inline int khugepaged_enabled(void);
++extern inline int khugepaged_always(struct vm_area_struct *vma);
++extern inline int khugepaged_req_madv(struct vm_area_struct *vma);
+ #define khugepaged_defrag()					\
+ 	(transparent_hugepage_flags &				\
+ 	 (1<<TRANSPARENT_HUGEPAGE_DEFRAG_KHUGEPAGED_FLAG))
+@@ -57,9 +50,9 @@ static inline int khugepaged_enter(struct vm_area_struct *vma,
+ 				   unsigned long vm_flags)
+ {
+ 	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
+-		if ((khugepaged_always() ||
+-		     (shmem_file(vma->vm_file) && shmem_huge_enabled(vma)) ||
+-		     (khugepaged_req_madv() && (vm_flags & VM_HUGEPAGE))) &&
++		if ((khugepaged_always(vma) ||
++		    (shmem_file(vma->vm_file) && shmem_huge_enabled(vma)) ||
++		    (khugepaged_req_madv(vma) && (vm_flags & VM_HUGEPAGE))) &&
+ 		    !(vm_flags & VM_NOHUGEPAGE) &&
+ 		    !test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
+ 			if (__khugepaged_enter(vma->vm_mm))
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 8ea4b541c31e..c5f9f4b267bd 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -28,6 +28,13 @@ struct page;
+ struct mm_struct;
+ struct kmem_cache;
+ 
++/*
++ * Increase when sub cgroup enable transparent hugepage, decrease when
++ * sub cgroup disable transparent hugepage. Help decide whether to run
++ * khugepaged.
++ */
++extern atomic_t sub_thp_count;
++
+ /* Cgroup-specific page state, on top of universal node page state */
+ enum memcg_stat_item {
+ 	MEMCG_SWAP = NR_VM_NODE_STAT_ITEMS,
+@@ -343,6 +350,7 @@ struct mem_cgroup {
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ 	struct deferred_split deferred_split_queue;
+ #endif
++	unsigned long thp_flag;
+ 
+ 	struct mem_cgroup_per_node *nodeinfo[];
+ };
+@@ -1127,6 +1135,32 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
+ 						gfp_t gfp_mask,
+ 						unsigned long *total_scanned);
+ 
++static inline unsigned long mem_cgroup_thp_flag(struct mem_cgroup *memcg)
++{
++	if (unlikely(memcg == NULL) || mem_cgroup_disabled() ||
++	    mem_cgroup_is_root(memcg))
++		return transparent_hugepage_flags;
++
++	return memcg->thp_flag;
++}
++
++static inline int memcg_sub_thp_enabled(void)
++{
++	return atomic_read(&sub_thp_count) != 0;
++}
++
++static inline void memcg_sub_thp_enable(struct mem_cgroup *memcg)
++{
++	if (!mem_cgroup_is_root(memcg))
++		atomic_inc(&sub_thp_count);
++}
++
++static inline void memcg_sub_thp_disable(struct mem_cgroup *memcg)
++{
++	if (!mem_cgroup_is_root(memcg))
++		atomic_dec(&sub_thp_count);
++}
++
+ #else /* CONFIG_MEMCG */
+ 
+ #define MEM_CGROUP_ID_SHIFT	0
+@@ -1524,6 +1558,25 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
+ {
+ 	return 0;
+ }
++
++static inline unsigned long mem_cgroup_thp_flag(struct mem_cgroup *memcg)
++{
++	return transparent_hugepage_flags;
++}
++
++static inline int memcg_sub_thp_enabled(void)
++{
++	return 0;
++}
++
++static inline void memcg_sub_thp_enable(struct mem_cgroup *memcg)
++{
++}
++
++static inline void memcg_sub_thp_disable(struct mem_cgroup *memcg)
++{
++}
++
+ #endif /* CONFIG_MEMCG */
+ 
+ static inline void __inc_lruvec_kmem_state(void *p, enum node_stat_item idx)
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 6bf0ec9ac4e4..09c80b6a18d6 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -3173,4 +3173,38 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+ 	update_mmu_cache_pmd(vma, address, pvmw->pmd);
+ 	trace_remove_migration_pmd(address, pmd_val(pmde));
+ }
++
++/*
++ * to be used on vmas which are known to support THP.
++ * Use transparent_hugepage_active otherwise
++ */
++inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma)
++{
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(vma->vm_mm);
++
++	/*
++	 * If the hardware/firmware marked hugepage support disabled.
++	 */
++	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_NEVER_DAX))
++		return false;
++
++	if (!transhuge_vma_enabled(vma, vma->vm_flags))
++		return false;
++
++	if (vma_is_temporary_stack(vma))
++		return false;
++
++	if (mem_cgroup_thp_flag(memcg) & (1 << TRANSPARENT_HUGEPAGE_FLAG))
++		return true;
++
++	if (vma_is_dax(vma))
++		return true;
++
++	if (mem_cgroup_thp_flag(memcg) &
++	    (1 << TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
++		return !!(vma->vm_flags & VM_HUGEPAGE);
++
++	return false;
++}
++
+ #endif
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index eb444fd45568..8386d8d1d423 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -454,7 +454,7 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+ 		return shmem_huge_enabled(vma);
+ 
+ 	/* THP settings require madvise. */
+-	if (!(vm_flags & VM_HUGEPAGE) && !khugepaged_always())
++	if (!(vm_flags & VM_HUGEPAGE) && !khugepaged_always(vma))
+ 		return false;
+ 
+ 	/* Only regular file is valid */
+@@ -1537,6 +1537,40 @@ void collapse_pte_mapped_thp(struct mm_struct *mm, unsigned long addr)
+ 	goto drop_hpage;
+ }
+ 
++inline int khugepaged_enabled(void)
++{
++	if ((transparent_hugepage_flags &
++	    ((1<<TRANSPARENT_HUGEPAGE_FLAG) |
++	    (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))) ||
++	    memcg_sub_thp_enabled())
++		return 1;
++	else
++		return 0;
++}
++
++inline int khugepaged_req_madv(struct vm_area_struct *vma)
++{
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(vma->vm_mm);
++
++	if (mem_cgroup_thp_flag(memcg) &
++	    (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
++		return 1;
++	else
++		return 0;
++}
++
++inline int khugepaged_always(struct vm_area_struct *vma)
++{
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(vma->vm_mm);
++
++	if (mem_cgroup_thp_flag(memcg) &
++	    (1<<TRANSPARENT_HUGEPAGE_FLAG))
++		return 1;
++	else
++		return 0;
++}
++
++
+ static void khugepaged_collapse_pte_mapped_thps(struct mm_slot *mm_slot)
+ {
+ 	struct mm_struct *mm = mm_slot->mm;
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index e1b5823ac060..1372324f76e3 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -63,6 +63,7 @@
+ #include <linux/resume_user_mode.h>
+ #include <linux/psi.h>
+ #include <linux/seq_buf.h>
++#include <linux/khugepaged.h>
+ #include "internal.h"
+ #include <net/sock.h>
+ #include <net/ip.h>
+@@ -99,6 +100,8 @@ static bool cgroup_memory_noswap __ro_after_init;
+ static DECLARE_WAIT_QUEUE_HEAD(memcg_cgwb_frn_waitq);
+ #endif
+ 
++atomic_t sub_thp_count __read_mostly = ATOMIC_INIT(0);
++
+ /* Whether legacy memory+swap accounting is active */
+ static bool do_memsw_account(void)
+ {
+@@ -4823,6 +4826,71 @@ static int mem_cgroup_slab_show(struct seq_file *m, void *p)
+ }
+ #endif
+ 
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++static int mem_cgroup_thp_flag_show(struct seq_file *sf, void *v)
++{
++	const char *output;
++	struct mem_cgroup *memcg = mem_cgroup_from_seq(sf);
++	unsigned long flag = mem_cgroup_thp_flag(memcg);
++
++	if (test_bit(TRANSPARENT_HUGEPAGE_FLAG, &flag))
++		output = "[always] madvise never";
++	else if (test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, &flag))
++		output = "always [madvise] never";
++	else
++		output = "always madvise [never]";
++
++	seq_printf(sf, "%s\n", output);
++	return 0;
++}
++
++static ssize_t mem_cgroup_thp_flag_write(struct kernfs_open_file *of,
++				char *buf, size_t nbytes, loff_t off)
++{
++	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
++	ssize_t ret = nbytes;
++	unsigned long *flag;
++
++	if (!mem_cgroup_is_root(memcg))
++		flag = &memcg->thp_flag;
++	else
++		flag = &transparent_hugepage_flags;
++
++	if (sysfs_streq(buf, "always")) {
++		if (!test_bit(TRANSPARENT_HUGEPAGE_FLAG, flag)) {
++			set_bit(TRANSPARENT_HUGEPAGE_FLAG, flag);
++			/* change disable to enable */
++			if (!test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag))
++				memcg_sub_thp_enable(memcg);
++		}
++	} else if (sysfs_streq(buf, "madvise")) {
++		if (!test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag)) {
++			set_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag);
++			/* change disable to enable */
++			if (!test_bit(TRANSPARENT_HUGEPAGE_FLAG, flag))
++				memcg_sub_thp_enable(memcg);
++		}
++	} else if (sysfs_streq(buf, "never")) {
++		/* change enable to disable */
++		if (test_bit(TRANSPARENT_HUGEPAGE_FLAG, flag) ||
++		    test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag)) {
++			clear_bit(TRANSPARENT_HUGEPAGE_FLAG, flag);
++			clear_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag);
++			memcg_sub_thp_disable(memcg);
++		}
++	} else
++		ret = -EINVAL;
++
++	if (ret > 0) {
++		int err = start_stop_khugepaged();
++
++		if (err)
++			ret = err;
++	}
++	return ret;
++}
++#endif
++
+ static struct cftype mem_cgroup_legacy_files[] = {
+ 	{
+ 		.name = "usage_in_bytes",
+@@ -4948,6 +5016,13 @@ static struct cftype mem_cgroup_legacy_files[] = {
+ 		.write = mem_cgroup_reset,
+ 		.read_u64 = mem_cgroup_read_u64,
+ 	},
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	{
++		.name = "transparent_hugepage.enabled",
++		.seq_show = mem_cgroup_thp_flag_show,
++		.write = mem_cgroup_thp_flag_write,
++	},
++#endif
+ 	{ },	/* terminate */
+ };
+ 
+@@ -5145,8 +5220,14 @@ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
+ 	page_counter_set_high(&memcg->swap, PAGE_COUNTER_MAX);
+ 	if (parent) {
+ 		memcg->swappiness = mem_cgroup_swappiness(parent);
++		memcg->thp_flag = mem_cgroup_thp_flag(parent);
+ 		memcg->oom_kill_disable = parent->oom_kill_disable;
+ 
++		if (memcg->thp_flag &
++		    ((1<<TRANSPARENT_HUGEPAGE_FLAG) |
++		    (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG)))
++			memcg_sub_thp_enable(memcg);
++
+ 		page_counter_init(&memcg->memory, &parent->memory);
+ 		page_counter_init(&memcg->swap, &parent->swap);
+ 		page_counter_init(&memcg->kmem, &parent->kmem);
+@@ -5220,6 +5301,7 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
+ 	memcg_offline_kmem(memcg);
+ 	reparent_shrinker_deferred(memcg);
+ 	wb_memcg_offline(memcg);
++	memcg_sub_thp_disable(memcg);
+ 
+ 	drain_all_stock(memcg);
+ 
 -- 
-Mike Kravetz
+2.25.1
+
