@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D053BC43219
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3979FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358226AbiEELmK (ORCPT
+        id S1358455AbiEELmQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 07:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        Thu, 5 May 2022 07:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358337AbiEELmA (ORCPT
+        with ESMTP id S1358308AbiEELmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 07:42:00 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0438B53B7A
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:38:17 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id i27so8145734ejd.9
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 04:38:16 -0700 (PDT)
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3649A54180
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:38:14 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id n10so8170699ejk.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 04:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eLgQPwziK+ko4kQyG3I37Mp7K7CNGQrMU0x5X86Viy4=;
-        b=hHO6dNn457mwN8ZY11w+Ya9foj5hhTMPgJvqcokiXZmXsKrOgOfZy01GeiOTTGHYlC
-         nIJL2+pu+smRvh8aT+so+QIIMTOYU6H2spQh7fW0nVbrPhzNOhJ/x8ESXZtWfrVnYPmj
-         UDs1MWCcftcp3a6X1fUm31l8Bb23z/boJHsKoUvUj40B+sMPI/nxzNQB+OpcK2eX0r4U
-         KEYzoVHeskta63tNXL67NKXh6vXJnrCcJba1jmD82sbrtwEKOcohKaGgibns/U922LxO
-         jRJvwTD+XtnBxNYQoz1KWBe2Rsj3mtz5b/F5/Mv2fUasPz3OFXipG5405qodDVHrj0pf
-         vAAQ==
+        bh=0B77eQYKO8uoHd8GX7CLVmghS1xkaBRJ4WQ/0qKLNzg=;
+        b=BPCYwh2H94L/C1Fle5H+kc06hUfHDJfB5SwTcw3auNm+LQO/k4CLdgmoIl4dp9AXlc
+         v8PLbZCrUF7h+BAhGEAF3F1BCI9mBXAqXNAzw1YyAbHo5Q9F99k8+9jRghb4SCK2jO3V
+         o3RBTG3fj3wq8cDCgBc6QnGu/J7vK+HIzYwLbfTjgOAEp3YFVQfLn2Wk5Jahn34Irne1
+         /tkCAM5YjoOBQd0AjDl8msHIEHm5+N7I0GghvFf9tX5xtBGCOzHooUU83wqRQiszfcHv
+         TUwtJ8zQnd2zyS1kSp8WMCCDerYPwWdYJn/EvGGHHpfk6lDAt0HlzAY98AaWo02tXvv8
+         t8xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eLgQPwziK+ko4kQyG3I37Mp7K7CNGQrMU0x5X86Viy4=;
-        b=3snvY78xHJm1RIWWYL7lcMsQIjylqFWWjTxVZGAdwnMjmO0UWdpaWHnqqVMs1r7qB1
-         4EQd71YTbJiHvfGa8dMjxfUZU/A4R8y3jjSkzSBq3jm0XX2TiXK61N/V++nR/qI2qY4C
-         wAGR952tgBZzVdzW8Wymdk56BirVm87iPY0/+urnafwmEyIvJhkcT2Xc1yG+Y7Wxeom/
-         YZsyescgIhBNMPOKAC3MlPWDXhaAXg7SBHRWv9XpmLe2Fvrwtwx2NJwsXoWWoEBVh8in
-         WODl70PRjC1RxNw9oQcGOXTBMmsac0mYNL+XsU/xzzOKGnPTk9DCyUaiWlHzVWKYYJjU
-         h3Ow==
-X-Gm-Message-State: AOAM5338UQdMDpT/dpPMxS0ULhLEWXcGdvPBYp5QtV2qv3icBCdQ5zON
-        Z0DD3Gq+JAwNThMpY8YbwHweYw==
-X-Google-Smtp-Source: ABdhPJz56RQddCKde8syNeZ99IESBlDy9ESB9ITrwMeCYoMWTZUXN/j4oCItchLbl2oXlmaZPfTRcw==
-X-Received: by 2002:a17:907:8a0c:b0:6f4:7fc2:b0b0 with SMTP id sc12-20020a1709078a0c00b006f47fc2b0b0mr13945675ejc.251.1651750695502;
-        Thu, 05 May 2022 04:38:15 -0700 (PDT)
+        bh=0B77eQYKO8uoHd8GX7CLVmghS1xkaBRJ4WQ/0qKLNzg=;
+        b=PuxXYR9lIOKtHqg2rjtsWq7FRGfdd3RjKXTzcXS66/ykgEWRF3PPE3CZlV2wFyjdNt
+         w4Af+ch6H0nCptZ7DOj1pXN0ah0dcmFFnscf1wo3Wi1ZeqVoR9irEsCw+ASfZQMFcT5c
+         uNs/D34HLmVe1hXStujU4aLS5pOpgMpkbazQ5H2vaiqN4+DoDiesiyFMArZeGNP6sZT3
+         WDhu2Wc6YmRFzyukAjDmoOBRVQFVJ/cqYY4ewbcpn+l8M+CcaOTmCEF0Gp3Mxc76PfGi
+         z8Stt1bsG79HKT/WDDnBaTQVSOLT2OMn7UxuLNV3WCVh35ieaBGpl7a0+Kf4sXDIsqJ0
+         b2tg==
+X-Gm-Message-State: AOAM531yWM++yvr+Jnv1u1RSbXBDtuYhlUz9NNkUAj5MzdI6HpVmw7n9
+        J83XRkXiw1em9bL2KRSpcHp8NQ==
+X-Google-Smtp-Source: ABdhPJz2hiw2ca+vQ4cCnCAtms89wFZqljglbhxrF+3KD6v4Ous4H21EyTHhv5R35xFgbWC0Sddxzg==
+X-Received: by 2002:a17:907:8688:b0:6f4:3d77:f9c7 with SMTP id qa8-20020a170907868800b006f43d77f9c7mr19969992ejc.716.1651750693517;
+        Thu, 05 May 2022 04:38:13 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g9-20020a1709063b0900b006f3ef214db6sm661006ejf.28.2022.05.05.04.38.14
+        by smtp.gmail.com with ESMTPSA id g9-20020a1709063b0900b006f3ef214db6sm661006ejf.28.2022.05.05.04.38.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 04:38:15 -0700 (PDT)
+        Thu, 05 May 2022 04:38:13 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 6/6] arm64: dts: qcom: sdm630: correct QFPROM byte offsets
-Date:   Thu,  5 May 2022 13:38:02 +0200
-Message-Id: <20220505113802.243301-6-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4/6] ARM: dts: qcom: apq8064: add unit addresses to QFPROM regions
+Date:   Thu,  5 May 2022 13:38:00 +0200
+Message-Id: <20220505113802.243301-4-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220505113802.243301-1-krzysztof.kozlowski@linaro.org>
 References: <20220505113802.243301-1-krzysztof.kozlowski@linaro.org>
@@ -70,48 +70,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NVMEM bindings expect that 'bits' property holds offset and size of
-region within a byte, so it applies a constraint of <0, 7> for the
-offset.  Using 25 as HSTX trim offset is within 4-byte QFPROM word, but
-outside of the byte:
-
-  sdm630-sony-xperia-nile-discovery.dtb: qfprom@780000: hstx-trim@240:bits:0:0: 25 is greater than the maximum of 7
-  sdm630-sony-xperia-nile-discovery.dtb: qfprom@780000: gpu-speed-bin@41a0:bits:0:0: 21 is greater than the maximum of 7
-
-Align the offsets to match the bindings.
+QFPROM children have 'reg' so they must have unit address.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
 ---
+ arch/arm/boot/dts/qcom-apq8064.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Not tested on SDM630 hardware, but similar behavior on SDM845 works
-fine (although causes a read of 4 bytes instead of 1).
----
- arch/arm64/boot/dts/qcom/sdm630.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-index 505e10674cb6..c713aa6e7044 100644
---- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-@@ -558,13 +558,13 @@ qfprom: qfprom@780000 {
+diff --git a/arch/arm/boot/dts/qcom-apq8064.dtsi b/arch/arm/boot/dts/qcom-apq8064.dtsi
+index d3cb099cb691..028d52b5d075 100644
+--- a/arch/arm/boot/dts/qcom-apq8064.dtsi
++++ b/arch/arm/boot/dts/qcom-apq8064.dtsi
+@@ -801,10 +801,10 @@ qfprom: qfprom@700000 {
+ 			#address-cells = <1>;
  			#size-cells = <1>;
- 
- 			qusb2_hstx_trim: hstx-trim@240 {
--				reg = <0x240 0x1>;
--				bits = <25 3>;
-+				reg = <0x243 0x1>;
-+				bits = <1 3>;
+ 			ranges;
+-			tsens_calib: calib {
++			tsens_calib: calib@404 {
+ 				reg = <0x404 0x10>;
  			};
- 
- 			gpu_speed_bin: gpu-speed-bin@41a0 {
--				reg = <0x41a0 0x1>;
--				bits = <21 7>;
-+				reg = <0x41a2 0x1>;
-+				bits = <5 7>;
+-			tsens_backup: backup_calib {
++			tsens_backup: backup_calib@414 {
+ 				reg = <0x414 0x10>;
  			};
  		};
- 
 -- 
 2.32.0
 
