@@ -2,129 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 457D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2350FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237094AbiEENWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
+        id S1379279AbiEENX0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 09:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379071AbiEENWA (ORCPT
+        with ESMTP id S236579AbiEENXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:22:00 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80E4A4C42F
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:18:21 -0700 (PDT)
+        Thu, 5 May 2022 09:23:14 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D381532D2
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651756699;
+        s=mimecast20190719; t=1651756774;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bSE7VVBnWsfXxxTEbF0LrnB6UoyHMPPc7LdLn8ugniU=;
-        b=gF1QoGR7tTgdJDqcX5OoRNA8K+kU7UODcTsgiDypVkuLnhHei0pwRiiqB8ajPUC//IFOmZ
-        Xndbb+y5djTFkKyOY26cDxYtCEvOPQiSRgbbyw5jsNT2MmY5Aj9EFdfqT/KDFzzLjHxPRc
-        SMkD5/aEpEGv3kfNtzTmflrQSUOT1kM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=IW6fOs7e5307KfibthmglvTovnRowFL+yzU/9f+OYUE=;
+        b=a+/cQB3/ytrQ4GXerRzjZmwV4PbYFMPOH9cJt2HPMHvavlQb2AVIr9A00uAo/kzkO2BeQ8
+        q7u3dzbDRVGpXnfxazuqdFIX+igQotxoEUBagJx8fFlRU3YWQNyTFalS4JYebbfLAGpYgN
+        dWtfkS5ppyUlmatIp2znQ1SQDsABk5c=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-139-JhhDd-uOM3eVMiD_xGdGGw-1; Thu, 05 May 2022 09:18:14 -0400
-X-MC-Unique: JhhDd-uOM3eVMiD_xGdGGw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 527CD1C05AF3;
-        Thu,  5 May 2022 13:18:14 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1589B463EC0;
-        Thu,  5 May 2022 13:18:14 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id 04BE41C00FC; Thu,  5 May 2022 15:18:12 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH v5 1/2] timer: add a function to adjust timeouts to be upper bound
-Date:   Thu,  5 May 2022 15:18:10 +0200
-Message-Id: <20220505131811.3744503-2-asavkov@redhat.com>
-In-Reply-To: <20220505131811.3744503-1-asavkov@redhat.com>
-References: <87zgkwjtq2.ffs@tglx>
- <20220505131811.3744503-1-asavkov@redhat.com>
+ us-mta-374-ZG-mPil3MV-6GXp4zB39yg-1; Thu, 05 May 2022 09:19:33 -0400
+X-MC-Unique: ZG-mPil3MV-6GXp4zB39yg-1
+Received: by mail-wm1-f70.google.com with SMTP id r186-20020a1c44c3000000b00393f52ed5ceso4477973wma.7
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 06:19:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IW6fOs7e5307KfibthmglvTovnRowFL+yzU/9f+OYUE=;
+        b=xQrDlwUMKesR8vMlQ3z7fB6UdG94AJG7GuVbv+jTtdXFTmvxQ5XQubbxRCbE7K7OBY
+         vIuORDi/FGXmBdD1tcXuxyp4/ij4ZBiYVepSdnku7G2o5UDLnnzS6iIel/DtuGqhXFCY
+         aDqmWVf77Rn0/S39ejBxQXJAmriFZn6TxDz92Upr3XCzrS0DPXScHV6J71xM2B0n9wAb
+         aAjSBjbvmUk7YdT2QtU4OI0xw1jVERkvNdtHjlhI8YMrwji/ybdBlNZ/UgrXYlCPlc4V
+         XvxyVmRSK0fpI13DXUNPlIzVuLMVwOlSVx7jpEW1V2ziDDe+wSW6MUnRgwA17VA/vShv
+         RVIA==
+X-Gm-Message-State: AOAM533SlaMuOGpI8HeWWAAk4BOFbxn+yC7pR/D5z9YLtE2u7D1yfsDn
+        Qi9rumZuEU+kbtjzf6m5QaoAqd3WL7ii0LlUfCxW5s6ISYISyGP5Fied4dSZWfj5NKFQSif8nWF
+        Cnv96q5Pjm8s8xbAiAx66QDTr5oShYvzq8vn+r1eYSrXGLLi5eZTL55RXvWU5sI4uZ5cSj9/7R7
+        Q=
+X-Received: by 2002:a05:600c:1d18:b0:394:6469:abec with SMTP id l24-20020a05600c1d1800b003946469abecmr4767706wms.89.1651756771955;
+        Thu, 05 May 2022 06:19:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJznOboZJQssf1bkI3Rw7a6NAaieRAgtKHnzU4znuTG9Om0VUyJQMtC9zyn0YmSBtfpe6zPe9g==
+X-Received: by 2002:a05:600c:1d18:b0:394:6469:abec with SMTP id l24-20020a05600c1d1800b003946469abecmr4767666wms.89.1651756771561;
+        Thu, 05 May 2022 06:19:31 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id c17-20020a7bc011000000b003942a244f40sm6395959wmb.25.2022.05.05.06.19.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 06:19:31 -0700 (PDT)
+Message-ID: <d53319d8-acaf-7b57-20cf-f35cc5969895@redhat.com>
+Date:   Thu, 5 May 2022 15:19:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 4/4] fbdev: vesafb: Cleanup fb_info in .fb_destroy
+ rather than .remove
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20220505113128.264963-1-javierm@redhat.com>
+ <20220505113128.264963-5-javierm@redhat.com>
+ <YnPK3RLPdtvFze+8@phenom.ffwll.local>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YnPK3RLPdtvFze+8@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current timer wheel implementation is optimized for performance and
-energy usage but lacks in precision. This, normally, is not a problem as
-most timers that use timer wheel are used for timeouts and thus rarely
-expire, instead they often get canceled or modified before expiration.
-Even when they don't, expiring a bit late is not an issue for timeout
-timers.
+Hello Daniel,
 
-TCP keepalive timer is a special case, it's aim is to prevent timeouts,
-so triggering earlier rather than later is desired behavior. In a
-reported case the user had a 3600s keepalive timer for preventing firewall
-disconnects (on a 3650s interval). They observed keepalive timers coming
-in up to four minutes late, causing unexpected disconnects.
+On 5/5/22 15:02, Daniel Vetter wrote:
 
-Add a new upper_bound_timeout() function that takes a relative timeout
-and adjusts it based on timer wheel granularity so that supplied value
-effectively becomes an upper bound for the timer.
+[snip]
 
-This was previously discussed here:
-https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
+>>  static void vesafb_destroy(struct fb_info *info)
+>>  {
+>>  	struct vesafb_par *par = info->par;
+>> @@ -187,7 +191,13 @@ static void vesafb_destroy(struct fb_info *info)
+>>  	arch_phys_wc_del(par->wc_cookie);
+>>  	if (info->screen_base)
+>>  		iounmap(info->screen_base);
+>> +
+>> +	if (((struct vesafb_par *)(info->par))->region)
+>> +		release_region(0x3c0, 32);
+> 
+> This move seems rather iffy, so maybe justify it with "makes the code
+> exactly as busted before 27599aacbaef ("fbdev: Hot-unplug firmware fb
+> devices on forced removal")"
+>
 
-Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- include/linux/timer.h |  1 +
- kernel/time/timer.c   | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+I think that will just drop this change. While being here I wanted the release
+order to be the inverse of the order in which the driver acquires them. But I
+will only move the framebuffer_release() that is the problematic bit.
 
-diff --git a/include/linux/timer.h b/include/linux/timer.h
-index fda13c9d1256..b209d31d543f 100644
---- a/include/linux/timer.h
-+++ b/include/linux/timer.h
-@@ -168,6 +168,7 @@ static inline int timer_pending(const struct timer_list * timer)
- 	return !hlist_unhashed_lockless(&timer->entry);
- }
+Someone if care enough could fix the rest of the driver.
  
-+extern unsigned long upper_bound_timeout(unsigned long timeout);
- extern void add_timer_on(struct timer_list *timer, int cpu);
- extern int del_timer(struct timer_list * timer);
- extern int mod_timer(struct timer_list *timer, unsigned long expires);
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 9dd2a39cb3b0..b087a481d06f 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -545,6 +545,20 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
- 	return idx;
- }
- 
-+/**
-+ * upper_bound_timeout - return adjusted timeout
-+ * @timeout: timeout value in jiffies
-+ *
-+ * This function return supplied timeout adjusted to timer wheel granularity
-+ * effectively making supplied value an upper bound at which the timer will
-+ * expire.
-+ */
-+unsigned long upper_bound_timeout(unsigned long timeout)
-+{
-+	return timeout - (timeout >> LVL_CLK_SHIFT);
-+}
-+EXPORT_SYMBOL(upper_bound_timeout);
-+
- static void
- trigger_dyntick_cpu(struct timer_base *base, struct timer_list *timer)
- {
+> Also same comments as on v1 about adding more details about what/how this
+> fixes, with that: Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+>
+
+Yes, I'll do that too. Thanks again for your comments and feedback.
+
 -- 
-2.34.1
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
