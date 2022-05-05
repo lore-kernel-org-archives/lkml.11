@@ -2,83 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0656EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8701C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382086AbiEEQjO (ORCPT
+        id S1354403AbiEEQnZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
+        Thu, 5 May 2022 12:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243243AbiEEQiz (ORCPT
+        with ESMTP id S234363AbiEEQnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 12:38:55 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79254D4C;
-        Thu,  5 May 2022 09:35:15 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MuHJu018680;
-        Tue, 3 May 2022 00:52:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=YDpybZyMtUto8vzB7am4iv3VtisKb3L6fXgrRs5sN9s=;
- b=xxIyeuW5EZadlLJb3Kn928Omyai87Hz6btNX6PGK9Ya5irtQo6toZxvB5IH58cg5gPX4
- 5sB+duHYXCJvGyUBSwCcesmTF/wpLCGWCwd0jgPxwrktRxPZbyg0ZS0CDahAO8Ta9jOO
- x1A7/EXyAqIokZ+PoL7zRg7Xl625MHGPlC5LJx+/MkrVvqcEgyUH8KuSYPb3rovdmzg+
- 9Fef3o0M3FimBH1g1TbKg/ZnY0AvIAFttHDFq4Eah9B2Pl4fiVTEFWpw4tiwbK6gmkmQ
- ojbW/Ep3+cUc6IsItoRpJIUjbxSMG5FnYGp2/41KhpTXrlrmzoyxfI6dUF8Ov/7eqE8U 4g== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frwnt4kx7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:05 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430orCC009030;
-        Tue, 3 May 2022 00:52:04 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xbb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:04 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plju010389;
-        Tue, 3 May 2022 00:52:03 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-30;
-        Tue, 03 May 2022 00:52:03 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Enze Li <lienze@kylinos.cn>, jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH v2] scsi: sr: add handling of memory allocation failures when calling get_capabilities
-Date:   Mon,  2 May 2022 20:51:40 -0400
-Message-Id: <165153836364.24053.1228657933500703944.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220427025647.298358-1-lienze@kylinos.cn>
-References: <20220413100008.522912-1-lienze@kylinos.cn> <20220427025647.298358-1-lienze@kylinos.cn>
+        Thu, 5 May 2022 12:43:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A730580DE;
+        Thu,  5 May 2022 09:39:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD9A0B82E08;
+        Thu,  5 May 2022 16:39:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9EBC385A8;
+        Thu,  5 May 2022 16:39:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651768779;
+        bh=GBXigcmNZ6oOn9FevkRokCy3qepznYTUsv2xJiimIl0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ut2f2uWjvBhhVRVR4NRdJXuyTTf9QAxePd4HC5EVHI7fhBzaDBKpX++IvnSnuPQwz
+         eQ4/hHwUE4NHoPQsThPFTkXyPkT5h3uiKbQ0GQLkVwUUlwAL9o1QEfcvl12wHw9jnC
+         38o+fGeJ4tA63JRmsQTFUWcONUVI/wcjF7+YkZyYCtvADZGhv3APyKD9igryOlKbCY
+         vRfI2+/BUto/ADMC7B3bWo2pCiMpbTGJHnsu47Q2AfEaWb0hCwMiDj+4dgjNlVRMEn
+         AcW9RpKGEDU6wJ5N5wLx62gbShhetgWJeaZmULspwTiQL0SD0IKJLthqzlqcsVdVUt
+         X20i7NbU+HMlg==
+Date:   Thu, 5 May 2022 09:39:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Allen Pais <apais@linux.microsoft.com>, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?B?UmFm?= =?UTF-8?B?YcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v4 1/1] firmware: tee_bnxt: Use UUID API for exporting
+ the UUID
+Message-ID: <20220505093938.571702fd@kernel.org>
+In-Reply-To: <20220504091407.70661-1-andriy.shevchenko@linux.intel.com>
+References: <20220504091407.70661-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: DFm3DGdgo6sAmZIKJAHLWD1d82YL0M0b
-X-Proofpoint-GUID: DFm3DGdgo6sAmZIKJAHLWD1d82YL0M0b
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 10:56:47 +0800, Enze Li wrote:
-
-> The function get_capabilities() has the possibility of failing to
-> allocate transfer buffer, but it does not currently handle this, which
-> may lead to exceptions when accessing the buffer.
+On Wed,  4 May 2022 12:14:07 +0300 Andy Shevchenko wrote:
+> There is export_uuid() function which exports uuid_t to the u8 array.
+> Use it instead of open coding variant.
 > 
-> This patch adds handling when memory allocation fails.
+> This allows to hide the uuid_t internals.
 > 
-> 
-> [...]
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
+> v4: added tag (Christoph), resent with 126858db81a5 (in next) in mind (Florian)
 
-Applied to 5.19/scsi-queue, thanks!
-
-[1/1] scsi: sr: add handling of memory allocation failures when calling get_capabilities
-      https://git.kernel.org/mkp/scsi/c/ebc95c790653
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Judging by the history of the file this may go via the tee tree or
+net-next. Since tee was not CCed I presume the latter is preferred.
+Please let us know if that's incorrect otherwise we'll apply tomorrow :)
