@@ -2,96 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17444C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380342AbiEEOE0 (ORCPT
+        id S1357440AbiEEOGZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        Thu, 5 May 2022 10:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380310AbiEEODr (ORCPT
+        with ESMTP id S1380320AbiEEOGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:03:47 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5AA4EA01
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:59:58 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id k27so5323881edk.4
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 06:59:58 -0700 (PDT)
+        Thu, 5 May 2022 10:06:21 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1264B5838B;
+        Thu,  5 May 2022 07:02:42 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id bv19so8940107ejb.6;
+        Thu, 05 May 2022 07:02:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8cdP+QQ3RkXNjtwvBi4VN1FsvGgtTlKBfCuL8UUAtAI=;
-        b=E8qBemq4oTx4YPbWRWMJzV2qIbcvYOdveNbfeZemz+4dZQ+I0m7fLXmsY75j+/wiX5
-         XaE1LThAuxmxZgvbTboIF71ZZ5XDfPUtgSQz8ZVQ2PL1AE4CxYt/PmItFNePGMLFoNgb
-         A8tRUVmKiVc6KZIJU/kk/0DlACH0+77UO+Qz0=
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Q9neuIG6NME92B0FTzFk6RBoNBkN6kIQjOv1wlxUZcU=;
+        b=XIIk6Ky7qtfn8kZ/UQxBkUibIgQ47XkLw3jhb74lL4r+BcqtYPw3WOBfHbeNqIEIBf
+         s6IqSw0ArC0/JQs86L/9KZN/GBBCHaIjS0o0vp79Pp/Xzj6m1WWRjlc15KM58Sn42Kub
+         sEYbu21flVZvQcqwv201GAWI+nbswCy45nSKmKnc95jpoZbmMIxjY+CXNsHHBgrIlQLd
+         c/ckr5COEpUhkD1kXWhgB8csewg2A8syj3ZKZkxf125j9zuQ5IndrpJWOtG3gBsn4OJ+
+         lfGBNNHIfwijVGk0SAJXQs+sqf0SV8f9QBTQ+SY9XUqQ+MVVSZk26mYtg+zVWrZjmvzP
+         JcHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8cdP+QQ3RkXNjtwvBi4VN1FsvGgtTlKBfCuL8UUAtAI=;
-        b=R3NzU9qSF03drxAjub/vMlVuZhN52nw62YHsAI6f6bEMmMcy2nvUXlNi/PaqXcjpJL
-         bNonDZu5c1N04GRkbLhD5iD9WuMZa/Nkjv8IFNuUsfd5nRmvwKbERGDiAykDYACNht3c
-         m0j3waDIDG7FGMn9FrBJdOW3HvDERbbyqh1pwXDnqkYmxQDV2vLYN86gmlO6Nxk4UysA
-         r+g6iepN/vRNsVT9QKvQ7WV49quKLkQHZ1W2+lFCDKA5Dsg8ox6O+pX8iy8KvnU/l25U
-         2DqyW5l2PkLdEviTFfzn6WlnQFTBhLdxsd3qQ7IEGUvD7cAKvvNTlgjtR9pzISmeUJh9
-         /wJw==
-X-Gm-Message-State: AOAM530+80SHXgRBli/2OI3YkN2Lp5X3Tea82tKCG8aj9xoK+NoZ1pQ0
-        pRKDtjhCutW4N1ULQzdtjMxT7wasdhzP9l2+0vkaWw==
-X-Google-Smtp-Source: ABdhPJzTe+CDKCcscUgOgvXLSyK5NVYs7EmJWj3tio4m59arkqFAPKBq+XxNeijdGRs92739wL1GOOxDMjNo+9z+bh8=
-X-Received: by 2002:a05:6402:5ca:b0:423:f330:f574 with SMTP id
- n10-20020a05640205ca00b00423f330f574mr30384732edx.116.1651759197275; Thu, 05
- May 2022 06:59:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <20220505123033.sgcyx7kfl4kcfcds@ws.net.home>
-In-Reply-To: <20220505123033.sgcyx7kfl4kcfcds@ws.net.home>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Thu, 5 May 2022 15:59:45 +0200
-Message-ID: <CAJfpegv2asQoevG992+1yruSrmMus57CoQ+=Cssf7O50FhyJyQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-To:     Karel Zak <kzak@redhat.com>
-Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Christian Brauner <brauner@kernel.org>,
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Q9neuIG6NME92B0FTzFk6RBoNBkN6kIQjOv1wlxUZcU=;
+        b=oTSbgYD8EUS4yIa9lUZ/nWpozcE15VZvgdA7YgGkZzUvF/CdOoflWNzXGAPoTREYmO
+         Axm+Ey65P6J7zAi734pA4+Kv5TDxP+m7FRAgW/EdX1WuFoeV/UzEWSv2pW9JlACYjPEk
+         Pn1wRntZFha46GwN2nOtFlPPFM5Y5SMBI3SAQyirhetAl/GF5fNNO6Z+wNjrPICHLiYv
+         mGmVxQn4n5RsIulyUIbzJmCxbNC4ZTF1RH38tyc1eDoVmPaLdQAenboav88nuGOkhnt0
+         42VUBWuhm2eYeC5TTiU9uIA60Mt1aCR8470zf5v2VvT3pboWaLqrqEOK3M9XX0FRSO0l
+         e8jg==
+X-Gm-Message-State: AOAM531MaxgdvKODGjWUAboaZ1hl/cN77HKYM6JFakuYJogJS2zRLeCa
+        GtI7oUnRaKI6fJ/E+pXcbuY=
+X-Google-Smtp-Source: ABdhPJyX7xzlri/QMUL6XIi2P62Xw0xu4IOyk6r8bZQael56Hh4wyTvmQfVBbU4Raq3O/J5FlDmR6w==
+X-Received: by 2002:a17:906:9749:b0:6f5:6cd:5bd9 with SMTP id o9-20020a170906974900b006f506cd5bd9mr1522345ejy.523.1651759360471;
+        Thu, 05 May 2022 07:02:40 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id h23-20020a1709070b1700b006f3ef214e3fsm769447ejl.165.2022.05.05.07.02.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 07:02:40 -0700 (PDT)
+Message-ID: <6273d900.1c69fb81.fbc61.4680@mx.google.com>
+X-Google-Original-Message-ID: <YnPY/m19uOhuIydH@Ansuel-xps.>
+Date:   Thu, 5 May 2022 16:02:38 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Content-Type: text/plain; charset="UTF-8"
+        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH RESEND 0/5] dt-bindings: support Ethernet devices as LED
+ triggers
+References: <20220505135512.3486-1-zajec5@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220505135512.3486-1-zajec5@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 at 14:30, Karel Zak <kzak@redhat.com> wrote:
-
-> Is there a way how to get mountinfo-like entry by mount ID for some
-> sub-tree? Something like:
+On Thu, May 05, 2022 at 03:55:07PM +0200, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Some LEDs are designed to represent a state of another device. That may
+> be USB port, Ethernet interface, CPU, hard drive and more.
+> 
+> We already have support for LEDs that are designed to indicate USB port
+> (e.g. light on when USB device gets connected). There is DT binding for
+> that and Linux implementation in USB trigger.
+> 
+> This patchset adds support for describing LEDs that should react to
+> Ethernet interface status. That is commonly used in routers. They often
+> have LED to display state and activity of selected physical port. It's
+> also common to have multiple LEDs, each reacting to a specific link
+> speed.
 >
->  getfattr -etext -n ":mnt:info:21" /
 
-Yes:
+I notice this is specific to ethernet speed... I wonder if we should
+expand this also to other thing like duplex state or even rx/tx.
 
-getfattr -etext -n ":mntns:21:info" /
+> Patch 5/5 is proof of concept and is not meant to be applied yet.
+> 
+> Rafał Miłecki (5):
+>   dt-bindings: net: add bitfield defines for Ethernet speeds
+>   dt-bindings: net: allow Ethernet devices as LED triggers
+>   dt-bindings: leds: add Ethernet triggered LEDs to example
+>   ARM: dts: BCM5301X: Add triggers for Luxul XWR-1200 network LEDs
+>   leds: trigger: netdev: support DT "trigger-sources" property
+> 
+>  .../devicetree/bindings/leds/common.yaml      | 21 +++++++++++++++
+>  .../bindings/net/ethernet-controller.yaml     |  3 +++
+>  arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts | 22 +++++++++++----
+>  drivers/leds/trigger/ledtrig-netdev.c         | 26 ++++++++++++++++++
+>  include/dt-bindings/net/eth.h                 | 27 +++++++++++++++++++
+>  5 files changed, 94 insertions(+), 5 deletions(-)
+>  create mode 100644 include/dt-bindings/net/eth.h
+> 
+> -- 
+> 2.34.1
+> 
 
->
-> The interface has to be consistent with some notification system (I
-> see your question about fsnotify/fanotify at linux-fsdevel) and mount
-> ID seems better than paths due to over-mounts, etc.
-
-Right.
-
-If the mount notification doesn't fit into fsnotify well, the original
-patch from David could be used.  I think that part was
-uncontroversial.
-
-Thanks,
-Miklos
+-- 
+	Ansuel
