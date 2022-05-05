@@ -2,79 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B984C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E342C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384992AbiEET3y (ORCPT
+        id S1385000AbiEETal (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
+        Thu, 5 May 2022 15:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiEET3s (ORCPT
+        with ESMTP id S232129AbiEETaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:29:48 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F741F614;
-        Thu,  5 May 2022 12:26:07 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MEVYs026258;
-        Tue, 3 May 2022 00:51:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=d6ct1UaLVba3yw63uAkNVfq9np3/Rqs6yhb3xK0+OpM=;
- b=x2opaEy79OWCROeSa1n03EBsLrLvExky2JzpiJkzaYj1Y74T2aGMG5DGjjGrlID+pldb
- t94tdMR2dVdHiXmvBWbmbUmQn5LGvjd+tgi7sYL2yroIvSEn4XYWZ+4sj7LGgfhs6KOE
- mas05oz+PqBDq/BdUe0XDvl58UScciUgSKzda86lbSLfjjJ8gNcG5OSgI3jiGf0JtuLB
- whIzqlFS0o0i2vbwuzHoObry1x2ArioNQpSEO512YmMAvE0MKbAf3WkNvB/9BxDuEhOJ
- 6NRvnVHGrOADQGxsEJSui9faj1HzivLAo5N6AyeivI0UZn4NznYuc3yEX1K40m9OGPvV DA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruhc4m4u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:51 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oou6008900;
-        Tue, 3 May 2022 00:51:50 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x61-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:50 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plj8010389;
-        Tue, 3 May 2022 00:51:50 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-6;
-        Tue, 03 May 2022 00:51:50 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Haowen Bai <baihaowen@meizu.com>, jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: mac53c94: fix warning comparing pointer to 0
-Date:   Mon,  2 May 2022 20:51:16 -0400
-Message-Id: <165153836359.24053.3311971754935367894.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1647244711-31575-1-git-send-email-baihaowen@meizu.com>
-References: <1647244711-31575-1-git-send-email-baihaowen@meizu.com>
+        Thu, 5 May 2022 15:30:35 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B90734652;
+        Thu,  5 May 2022 12:26:46 -0700 (PDT)
+Received: from leknes.fjasle.eu ([46.142.98.182]) by mrelayeu.kundenserver.de
+ (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MiIhU-1oH5uO3YH8-00fPtT; Thu, 05 May 2022 21:25:22 +0200
+Received: by leknes.fjasle.eu (Postfix, from userid 1000)
+        id 38E543C088; Thu,  5 May 2022 21:25:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
+        t=1651778720; bh=Cwl4zkdeQcVXSxZ/RPcnVgB7zM8oGINbzVc8Y2VMFBk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PwCfqkixa12sjKmUlkGN0KNMba5H+CtsWqxRGlVdXRptb7TBIoy0BO7Sc1zRukI0i
+         EvUm1lkuiTNGLNT1bpJs98zozgIt6sLhIAOebglqQmNOD+itcraoJUvz+J1M7FySUT
+         6hRW+SHN7GBvySLN/CpZb48xBVsXn+jeS7J2nWak=
+Date:   Thu, 5 May 2022 21:25:20 +0200
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-um@lists.infradead.org,
+        linux-s390@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH v3 01/15] modpost: mitigate false-negatives for static
+ EXPORT_SYMBOL checks
+Message-ID: <YnQkoFahOeUVpZhj@fjasle.eu>
+References: <20220505072244.1155033-1-masahiroy@kernel.org>
+ <20220505072244.1155033-2-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: nxzsRVDO7-q06fkTPZkhIg9eMB_E2sBQ
-X-Proofpoint-ORIG-GUID: nxzsRVDO7-q06fkTPZkhIg9eMB_E2sBQ
+In-Reply-To: <20220505072244.1155033-2-masahiroy@kernel.org>
+X-Provags-ID: V03:K1:453ge2nHJXg6JLo5cZeMgSEFhVvVa0swhzjR0uQKtW94gAuyPQc
+ MTjdF1f5pbFygWaA0SosWLKNmyUdXwFK1CUqAPSkq2SKzmSgl51MwQo6xoMn3Z2qWshs+mq
+ zUww0m+Vg1VGGeeohNre8BVjxjh7qSjrYTbvLGMl0VUFNN4UdaEPPhevVoj5lG7DWNaJkaT
+ +cWvR/fsod9psxrnhT2vQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:E/c3KfkTYqI=:WfyzXN1Ql6zaAT4DiqwkTJ
+ g6eBKNFCR1ckva7OwYLJxj89Ptoc7lU/QO4lc4dF5H5MR2oC9dEcNMIvgldHzZ1mwtZO3jDSa
+ kxXT3P45Oly90jDN6piciVbpmS5PiIN98iFiMY3xWoFqxSTsPukcGbRFtCCtqCpdJFGsxrvUv
+ 50PptUYBB9qVbLMaGXWWcKdHnFpYHU85kTiui3ORX1eGuyp6gSGp64oE2KjBNxWkD+Pg3AsPO
+ cjxqaI7hrDswa87uvVmP/XszaYYmgeCjDOs7Jr9YdeSMDqnDsm+FxJTDEg1WvBF7kSY0KAPpl
+ 4ne04Q3EQdkaXgf1PIurv/NyYByPMvji1xwcjkPIOqTx+r5ywtC2RPfAAmqI+tOzChPjNmanI
+ ui6sUW2f6hOzXSmEtMWJPjbFXh9she7QBrCgtg46CgWI/MwDRl4mRYh7jgZWv40k5DuML+pIw
+ eFQ4OVTUOUdwWqOUnH9p4Ot93BBAaDOYcSpkgUtcWqF5BY1O3QqdVRYTO1i5ttyQq5K1f+MmL
+ UtUNOAZJCqH/RQkfD4FMcz57oBp90XzENlKNb1c8Zo+iAeQ/Wcgvk2VXpQY3suOnZP1qS4k5D
+ e6+MqTSwhVcXqK3nrnpHGT6bvgoYPw+15z7ABCJjY0qInVfWDyYmeKpkhgCzomsPr51wgB5Xo
+ WYfEQXww31bqGHvnVdV0RE0g76zSdQvhaaCCPbDEjn2MlbFHgAeTjpB1gInHE8B0sXfg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 15:58:31 +0800, Haowen Bai wrote:
-
-> Fix the following coccicheck warning:
-> drivers/scsi/mac53c94.c:237:12-13: WARNING comparing pointer to 0
+On Thu, May 05, 2022 at 04:22:30PM +0900 Masahiro Yamada wrote:
+> The 'static' specifier and EXPORT_SYMBOL() are an odd combination.
 > 
+> Since commit 15bfc2348d54 ("modpost: check for static EXPORT_SYMBOL*
+> functions"), modpost tries to detect it, but there are false negatives.
 > 
+> Here is the sample code.
+> 
+> [Sample 1]
+> 
+>   Makefile:
+> 
+>     obj-m += mymod1.o mymod2.o
+> 
+>   mymod1.c:
+> 
+>     #include <linux/export.h>
+>     #include <linux/module.h>
+>     static void foo(void) {}
+>     EXPORT_SYMBOL(foo);
+>     MODULE_LICENSE("GPL");
+> 
+>   mymod2.c:
+> 
+>     #include <linux/module.h>
+>     void foo(void) {}
+>     MODULE_LICENSE("GPL");
+> 
+> mymod1 exports the static symbol 'foo', but modpost cannot catch it
+> because it is fooled by the same name symbol in another module, mymod2.
+> (Without mymod2, modpost can detect the error in mymod1)
+> 
+> find_symbol() returns the first symbol found in the hash table with the
+> given name. This hash table is global, so it may return a symbol from
+> an unrelated module. So, a global symbol in a module may unset the
+> 'is_static' flag of another module.
+> 
+> To mitigate this issue, add sym_find_with_module(), which receives the
+> module pointer as the second argument. If non-NULL pointer is passed, it
+> returns the symbol in the specified module. If NULL is passed, it is
+> equivalent to find_module().
+> 
+> Please note there are still false positives in the composite module,
+> like below (or when both are built-in). I have no idea how to do this
+> correctly.
+> 
+> [Sample 2]  (not fixed by this commit)
+> 
+>   Makefile:
+>     obj-m += mymod.o
+>     mymod-objs := mymod1.o mymod2.o
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
 
-Applied to 5.19/scsi-queue, thanks!
+I like the detailed commit description!
 
-[1/1] scsi: mac53c94: fix warning comparing pointer to 0
-      https://git.kernel.org/mkp/scsi/c/93de8df20537
+Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+
+> 
+> (no changes since v2)
+> 
+> Changes in v2:
+>   - Rename the new func to sym_find_with_module()
+> 
+>  scripts/mod/modpost.c | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
+> 
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index b605f4a58759..a55fa2b88a9a 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -272,7 +272,7 @@ static void sym_add_unresolved(const char *name, struct module *mod, bool weak)
+>  	list_add_tail(&sym->list, &mod->unresolved_symbols);
+>  }
+>  
+> -static struct symbol *find_symbol(const char *name)
+> +static struct symbol *sym_find_with_module(const char *name, struct module *mod)
+>  {
+>  	struct symbol *s;
+>  
+> @@ -281,12 +281,17 @@ static struct symbol *find_symbol(const char *name)
+>  		name++;
+>  
+>  	for (s = symbolhash[tdb_hash(name) % SYMBOL_HASH_SIZE]; s; s = s->next) {
+> -		if (strcmp(s->name, name) == 0)
+> +		if (strcmp(s->name, name) == 0 && (!mod || s->module == mod))
+>  			return s;
+>  	}
+>  	return NULL;
+>  }
+>  
+> +static struct symbol *find_symbol(const char *name)
+> +{
+> +	return sym_find_with_module(name, NULL);
+> +}
+> +
+>  struct namespace_list {
+>  	struct list_head list;
+>  	char namespace[];
+> @@ -2063,8 +2068,9 @@ static void read_symbols(const char *modname)
+>  
+>  		if (bind == STB_GLOBAL || bind == STB_WEAK) {
+>  			struct symbol *s =
+> -				find_symbol(remove_dot(info.strtab +
+> -						       sym->st_name));
+> +				sym_find_with_module(remove_dot(info.strtab +
+> +								sym->st_name),
+> +						     mod);
+>  
+>  			if (s)
+>  				s->is_static = false;
+> -- 
+> 2.32.0
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
+↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
+     -- frykten for herren er opphav til kunnskap --
