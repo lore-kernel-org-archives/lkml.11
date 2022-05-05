@@ -2,107 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 854F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D76FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376799AbiEEMee (ORCPT
+        id S1376780AbiEEMeq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        Thu, 5 May 2022 08:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358555AbiEEMeZ (ORCPT
+        with ESMTP id S1376795AbiEEMej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:34:25 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B514D4EDC4
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:30:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651753844;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YlZT13jIA/It2oCfOEpEIe9Baj4YpyTZ8d0J7CEtWsQ=;
-        b=OUf7E+YHkOvM2zS2vtDgKzaBaw/o1s6wu/V4XxHTQZ9JuWIO2PskvMN00sWGvxU4PSt5zN
-        RUc4K8AOYOeLUjAPWkSY/jObnwZMVZnW3XYpXwXdzUoBvdD0TfU0GqXwVQf3qOIWcSoMhF
-        WE490gTwYkvN/2Odib22xJMPubDA23Q=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-343-0xIDvD5lPEWJE6D9hkjW7Q-1; Thu, 05 May 2022 08:30:39 -0400
-X-MC-Unique: 0xIDvD5lPEWJE6D9hkjW7Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B60953810D27;
-        Thu,  5 May 2022 12:30:38 +0000 (UTC)
-Received: from ws.net.home (unknown [10.36.112.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 06CB8463E1C;
-        Thu,  5 May 2022 12:30:35 +0000 (UTC)
-Date:   Thu, 5 May 2022 14:30:33 +0200
-From:   Karel Zak <kzak@redhat.com>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-Message-ID: <20220505123033.sgcyx7kfl4kcfcds@ws.net.home>
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
+        Thu, 5 May 2022 08:34:39 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF03555340;
+        Thu,  5 May 2022 05:30:59 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KvCbr3cvGzHnVD;
+        Thu,  5 May 2022 20:26:16 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 20:30:57 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 20:30:57 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>
+CC:     <rafael@kernel.org>, <daniel.lezcano@linaro.org>
+Subject: [PATCH] thermal: broadcom: check return value after calling platform_get_resource()
+Date:   Thu, 5 May 2022 20:42:41 +0800
+Message-ID: <20220505124241.1590861-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 02:23:23PM +0200, Miklos Szeredi wrote:
-> Examples:
-> 
-> $ getfattr -etext -n ":" .
-> # file: .
-> :="mnt:\000mntns:"
-> 
-> $ getfattr -etext -n ":mnt:" .
-> # file: .
-> :mnt:="info"
-> 
-> $ getfattr -etext -n ":mnt:info" .
-> # file: .
-> :mnt:info="21 1 254:0 / / rw,relatime - ext4 /dev/root rw\012"
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Is there a way how to get mountinfo-like entry by mount ID for some
-sub-tree? Something like:
+Fixes: 250e211057c7 ("thermal: broadcom: Add Stingray thermal driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/thermal/broadcom/sr-thermal.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- getfattr -etext -n ":mnt:info:21" /
-
-The interface has to be consistent with some notification system (I
-see your question about fsnotify/fanotify at linux-fsdevel) and mount
-ID seems better than paths due to over-mounts, etc.
-
-> $ getfattr -etext -n ":mntns:" .
-> # file: .
-> :mntns:="21:\00022:\00024:\00025:\00023:\00026:\00027:\00028:\00029:\00030:\00031:"
-> 
-> $ getfattr -etext -n ":mntns:28:" .
-> # file: .
-> :mntns:28:="info"
-
-  Karel
-
+diff --git a/drivers/thermal/broadcom/sr-thermal.c b/drivers/thermal/broadcom/sr-thermal.c
+index 475ce2900771..799128deb91c 100644
+--- a/drivers/thermal/broadcom/sr-thermal.c
++++ b/drivers/thermal/broadcom/sr-thermal.c
+@@ -60,6 +60,8 @@ static int sr_thermal_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	sr_thermal->regs = (void __iomem *)devm_memremap(&pdev->dev, res->start,
+ 							 resource_size(res),
+ 							 MEMREMAP_WB);
 -- 
- Karel Zak  <kzak@redhat.com>
- http://karelzak.blogspot.com
+2.25.1
 
