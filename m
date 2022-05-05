@@ -2,76 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E873FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382063AbiEEQwq (ORCPT
+        id S1382088AbiEEQwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42340 "EHLO
+        Thu, 5 May 2022 12:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244049AbiEEQwn (ORCPT
+        with ESMTP id S1382045AbiEEQwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 12:52:43 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D939157B14;
-        Thu,  5 May 2022 09:49:03 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:41442)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmeey-006uoh-6M; Thu, 05 May 2022 10:49:00 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37064 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmeex-0031MX-9y; Thu, 05 May 2022 10:48:59 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <20220504224058.476193-9-ebiederm@xmission.com>
-        <YnPIF9DvM9L0k+0U@linutronix.de>
-Date:   Thu, 05 May 2022 11:48:34 -0500
-In-Reply-To: <YnPIF9DvM9L0k+0U@linutronix.de> (Sebastian Andrzej Siewior's
-        message of "Thu, 5 May 2022 14:50:31 +0200")
-Message-ID: <87ee189b8d.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C6D56F8F;
+        Thu,  5 May 2022 09:49:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 497FDB82C77;
+        Thu,  5 May 2022 16:49:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D22DC385A4;
+        Thu,  5 May 2022 16:48:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651769340;
+        bh=NRrwDWz8wcT8CnNMt+44/umq8eBIMbarXpA7NUirvD0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q2ZJy0eBfyJo0pa8jJ3E1NRjHXIsLC9LS7Qc3eJ2x3/LjRS8k6+a8VcHPk+B9fbQS
+         WN1qbRo4MZ+c13F02kNyXrYv8Zxyf78TbBfE2TwJ8G2f7J62bkC/khy+TAMI6mAC8Y
+         8lNSs2RjeTd0FgO/9inh1VCqQ03O4WxTc7OmcVLfHAB3Edgd/6cCLQyNycruw+Co7i
+         vP7iWI/PMNXPHTgJhycMsusLH6wtU6H52BQsDTRMfSWWcXnyayTwyiCUhqL8VfiG/L
+         QPX4reT5Za0yR2LohYy0JXTPEXme7fIGEevstDDFIRswSD0f11iUhmgJGM/DDVYD1t
+         hEdkvy6LxjQMQ==
+Date:   Thu, 5 May 2022 09:48:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Ben Greear <greearb@candelatech.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Akira Yokosawa <akiyks@gmail.com>, netdev@vger.kernel.org,
+        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net/core: use ReST block quote in
+ __dev_queue_xmit() comment
+Message-ID: <20220505094858.4a1fcbc6@kernel.org>
+In-Reply-To: <20220505082907.42393-1-bagasdotme@gmail.com>
+References: <20220505082907.42393-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nmeex-0031MX-9y;;;mid=<87ee189b8d.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1++Z+axhusfo6JndgThNVMSOQtg9/DxfAc=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v3 09/11] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
+On Thu,  5 May 2022 15:29:07 +0700 Bagas Sanjaya wrote:
+>   *	to congestion or traffic shaping.
+>   *
+>   * -----------------------------------------------------------------------------------
+> - *      I notice this method can also return errors from the queue disciplines,
+> - *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+> - *      be positive.
+>   *
+> - *      Regardless of the return value, the skb is consumed, so it is currently
+> - *      difficult to retry a send to this method.  (You can bump the ref count
+> - *      before sending to hold a reference for retry if you are careful.)
+> + *        I notice this method can also return errors from the queue disciplines,
+> + *        including NET_XMIT_DROP, which is a positive value.  So, errors can also
+> + *        be positive.
+>   *
+> - *      When calling this method, interrupts MUST be enabled.  This is because
+> - *      the BH enable code must have IRQs enabled so that it will not deadlock.
+> - *          --BLG
+> + *        Regardless of the return value, the skb is consumed, so it is currently
+> + *        difficult to retry a send to this method.  (You can bump the ref count
+> + *        before sending to hold a reference for retry if you are careful.)
+> + *
+> + *        When calling this method, interrupts MUST be enabled.  This is because
+> + *        the BH enable code must have IRQs enabled so that it will not deadlock.
+> + *        --BLG
 
-> On 2022-05-04 17:40:56 [-0500], Eric W. Biederman wrote:
->> Stop playing with tsk->__state to remove TASK_WAKEKILL while a ptrace
->> command is executing.
->> 
->> Instead remove TASK_WAKEKILL from the definition of TASK_TRACED, and
->> implemention a new jobctl flag TASK_PTRACE_FROZEN.  This new flag is
-> implement ?
+Rephrase the text as a normal function documentation and drop 
+the banner and the signature, please.
 
-Yes.  Thank you.
+The place to give people credit for providing the information 
+is the git logs. So you can say something like:
 
-Eric
+  Rephrase the quote from Ben Greear (BLG) as a normal kdoc.
+
+in the commit message.
