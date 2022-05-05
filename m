@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B74C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF606C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377992AbiEEMy2 (ORCPT
+        id S1377929AbiEEMye (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        Thu, 5 May 2022 08:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241981AbiEEMyJ (ORCPT
+        with ESMTP id S1348152AbiEEMyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 08:54:09 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D6743EE3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5EB43EDB;
         Thu,  5 May 2022 05:50:30 -0700 (PDT)
-Received: from kwepemi500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvD796dDCzhYpr;
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvD794drWzhYp0;
         Thu,  5 May 2022 20:49:57 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500010.china.huawei.com (7.221.188.191) with Microsoft SMTP Server
+ kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 20:50:28 +0800
+ 15.1.2375.24; Thu, 5 May 2022 20:50:27 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -32,12 +32,10 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 1/5] net: hns3: fix access null pointer issue when set tx-buf-size as 0
-Date:   Thu, 5 May 2022 20:44:40 +0800
-Message-ID: <20220505124444.2233-2-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/5] net: hns3: updates for -next
+Date:   Thu, 5 May 2022 20:44:39 +0800
+Message-ID: <20220505124444.2233-1-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220505124444.2233-1-huangguangbin2@huawei.com>
-References: <20220505124444.2233-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -49,41 +47,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+This series includes some updates for the HNS3 ethernet driver.
 
-When set tx-buf-size as 0 by ethtool, hns3_init_tx_spare_buffer()
-will return directly and priv->ring->tx_spare->len is uninitialized,
-then print function access priv->ring->tx_spare->len will cause
-this issue.
+Guangbin Huang (1):
+  net: hns3: add query vf ring and vector map relation
 
-When set tx-buf-size as 0 by ethtool, the print function will
-print 0 directly and not access priv->ring->tx_spare->len.
+Hao Chen (1):
+  net: hns3: fix access null pointer issue when set tx-buf-size as 0
 
-Fixes: 2373b35c24ff ("net: hns3: add log for setting tx spare buf size")
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Jie Wang (2):
+  net: hns3: add byte order conversion for PF to VF mailbox message
+  net: hns3: add byte order conversion for VF to PF mailbox message
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 1db8a86f046d..6d20974519fe 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1915,8 +1915,11 @@ static int hns3_set_tunable(struct net_device *netdev,
- 			return ret;
- 		}
- 
--		netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
--			    priv->ring->tx_spare->len);
-+		if (!priv->ring->tx_spare)
-+			netdev_info(netdev, "the active tx spare buf size is 0, disable tx spare buffer\n");
-+		else
-+			netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
-+				    priv->ring->tx_spare->len);
- 
- 		break;
- 	default:
+Yufeng Mo (1):
+  net: hns3: remove the affinity settings of vector0
+
+ .../net/ethernet/hisilicon/hns3/hclge_mbx.h   |  60 +++++-
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    |   7 +-
+ .../hisilicon/hns3/hns3pf/hclge_main.c        |  27 +--
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |   2 -
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 193 +++++++++++++-----
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      |  58 +++---
+ .../hisilicon/hns3/hns3vf/hclgevf_main.h      |   2 +-
+ .../hisilicon/hns3/hns3vf/hclgevf_mbx.c       |  80 +++++---
+ 8 files changed, 269 insertions(+), 160 deletions(-)
+
 -- 
 2.33.0
 
