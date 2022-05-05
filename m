@@ -2,76 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE435C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FC2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232127AbiEEKPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 06:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S1355095AbiEEKP5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 06:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355001AbiEEKPo (ORCPT
+        with ESMTP id S1354964AbiEEKPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 06:15:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EF82B246;
-        Thu,  5 May 2022 03:12:05 -0700 (PDT)
+        Thu, 5 May 2022 06:15:52 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7947450E36
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 03:12:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651745525; x=1683281525;
-  h=from:to:cc:subject:date:message-id;
-  bh=+gHnQv0pisHaCzta/ejCsdha3EXubCXWxzwQAwWLTP0=;
-  b=YTCAi+YClgi3rNtKaz31m7P9eu1SaI6uXvQp0De7/RHWelGhgOkOFN10
-   aHm35T+irRHvngYgeIsLq3ftvhl7Rjv+ZxaZTVuNgO67OJUAS0adhmrd+
-   tn0wGNRJpivWGe0hyGIq2scr9HmXSgMAInN9ysMOmhN2bqQ3fw+E4c13N
-   qMv1lH5hxutqZ0Lwjl6teIDlp2uwFX3T1FbHqNYqCVKCwwARk4jLhX/gU
-   RxQF0EO6cG6Ff9Z8Yd5Hh9DACWQB3mM/+9f095RDJr1P6BToxtUtnvWnt
-   1PRBtpRKG63cFDrCYgvj9DDEsHef+sFFLnJ3FNqy0vR5fizc5flKi0/wf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="265658815"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="265658815"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:12:05 -0700
+  t=1651745533; x=1683281533;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cRZWbElP4dFT+XNyGmAAV3ScG1Vp3t5AsXCPagsnMpA=;
+  b=iruO502LKAiUcoPtHb7Iy5iYGGJjMfPY2X4rKHH4qsSW0bLeHvWK/d+2
+   sxk4GQJ//8CfMoBjezihzI58QcJYu12TFB8+ozgCzp9Nvj7F6A1Wd92IB
+   PtPwVo9YK58CN3AJYmfBGLr7ve9eQ9+TDiRdmOBzH2sr0W5mFy+IjK6N4
+   nq03ilDkthSeoiJo7V9BCQi6NET7IKrSjzbQrkWQKBj/qA2O6HFVtl/e8
+   sZMja2mKLhxb8HsxvfqQZ1JhaoMc5f4Hw7f1APyj1RamjMwl/UeKNSimv
+   lQ9hX9Wq64bYLiS3d7vakCKgF9lH6nkMpD60jKJQ/poE58yhnKKbRvST1
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="268213934"
 X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="563173393"
-Received: from monish-nuc11pahi5.iind.intel.com ([10.223.138.76])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:12:02 -0700
-From:   monish.kumar.r@intel.com
-To:     gregkh@linuxfoundation.org, olebowle@gmx.com, oneukum@suse.com,
-        vpalatin@chromium.org, wangjm221@gmail.com,
-        chris.chiu@canonical.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     monish.kumar.r@intel.com, abhijeet.rao@intel.com
-Subject: [PATCH] Add USB_QUIRK_NO_LPM USB_QUIRK_RESET_RESUME quirks for Dell usb gen 2 device to not fail during enumeration.
-Date:   Thu,  5 May 2022 15:44:59 +0530
-Message-Id: <20220505101459.7804-1-monish.kumar.r@intel.com>
-X-Mailer: git-send-email 2.17.1
+   d="scan'208";a="268213934"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:12:13 -0700
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="549290986"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:12:10 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nmYSt-00CEmE-KK;
+        Thu, 05 May 2022 13:12:07 +0300
+Date:   Thu, 5 May 2022 13:12:07 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        lkp@lists.01.org, lkp@intel.com
+Subject: Re: [serial]  4a218b277f: BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <YnOi9zD44PwSODeX@smile.fi.intel.com>
+References: <20220505091843.GD10410@xsang-OptiPlex-9020>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505091843.GD10410@xsang-OptiPlex-9020>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Monish Kumar R <monish.kumar.r@intel.com>
+On Thu, May 05, 2022 at 05:18:43PM +0800, kernel test robot wrote:
+> 
+> 
+> Greeting,
+> 
+> FYI, we noticed the following commit (built with gcc-11):
+> 
+> commit: 4a218b277fdba357d8e9022ae675c94e59d64b4e ("serial: 8250: dw: Create a generic platform data structure")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> in testcase: reaim
+> version: reaim-x86_64-7.0.1.13-1_20220411
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	nr_task: 100%
+> 	test: shared
+> 	cpufreq_governor: performance
+> 	ucode: 0xec
+> 
+> test-description: REAIM is an updated and improved version of AIM 7 benchmark.
+> test-url: https://sourceforge.net/projects/re-aim-7/
+> 
+> 
+> on test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz with 32G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> +----------------+------------+------------+
+> |                | d9666dfb31 | 4a218b277f |
+> +----------------+------------+------------+
+> | boot_successes | 6          | 6          |
+> +----------------+------------+------------+
+> 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
 
-Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
----
- drivers/usb/core/quirks.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Isn't it what Heikki's patch should fix?
 
-diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
-index 97b44a68668a..257ac37464e8 100644
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -515,6 +515,10 @@ static const struct usb_device_id usb_quirk_list[] = {
- 
- 	/* INTEL VALUE SSD */
- 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
-        
-+	/*DELL USB GEN2 */
-+	{ USB_DEVICE(0x413c, 0xb062), .driver_info = USB_QUIRK_NO_LPM },
-+	{ USB_DEVICE(0x413c, 0xb062), .driver_info = USB_QUIRK_RESET_RESUME },
- 
- 	{ }  /* terminating entry must be last */
- };
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
