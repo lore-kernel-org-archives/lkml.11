@@ -2,146 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 827F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379844AbiEENqY (ORCPT
+        id S1379849AbiEENqw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        Thu, 5 May 2022 09:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379780AbiEENqW (ORCPT
+        with ESMTP id S239808AbiEENqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:46:22 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBC95714E
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:42:41 -0700 (PDT)
-Received: from fsav118.sakura.ne.jp (fsav118.sakura.ne.jp [27.133.134.245])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 245DgKTo042035;
-        Thu, 5 May 2022 22:42:20 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav118.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav118.sakura.ne.jp);
- Thu, 05 May 2022 22:42:20 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav118.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 245DgKNi042032
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 5 May 2022 22:42:20 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <738afe71-2983-05d5-f0fc-d94efbdf7634@I-love.SAKURA.ne.jp>
-Date:   Thu, 5 May 2022 22:42:19 +0900
+        Thu, 5 May 2022 09:46:50 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5875357158;
+        Thu,  5 May 2022 06:43:10 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvFHx3QByzhYqf;
+        Thu,  5 May 2022 21:42:37 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 21:43:07 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: fix bug_on in ext4_writepages
+Date:   Thu, 5 May 2022 21:57:08 +0800
+Message-ID: <20220505135708.2629657-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] checkpatch: warn about flushing system-wide workqueues
-Content-Language: en-US
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-References: <d34dac10-c12f-8bda-35c4-9cb158781db2@I-love.SAKURA.ne.jp>
- <a6288570ed3534b0316723061f5604e3871accef.camel@perches.com>
- <6e4ed62e-888b-6e7a-c13d-67656f39ca94@I-love.SAKURA.ne.jp>
-In-Reply-To: <6e4ed62e-888b-6e7a-c13d-67656f39ca94@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/04/25 9:33, Tetsuo Handa wrote:
-> On 2022/04/25 8:45, Joe Perches wrote:
->> And it's probably more readable using separate lines and it looks as
->> if the 3rd test is unnecessary as it could be combined with the 2nd.
->>
->> 		if ($line =~ /\bflush_scheduled_work\s*\(/ ||
->> 		    $line =~ /\bflush_workqueue\s*\(\s*system(_\w*)?_wq\s*\)/) {
-> 
-> We don't need to worry about possibility like
-> 
-> 	flush_workqueue(system_module1_wq);
-> 
-> ? Then, we can simplify like you suggested.
+we got issue as follows:
+EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
+------------[ cut here ]------------
+kernel BUG at fs/ext4/inode.c:2708!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
+RIP: 0010:ext4_writepages+0x1977/0x1c10
+RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
+RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
+RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
+R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
+R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
+FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ do_writepages+0x130/0x3a0
+ filemap_fdatawrite_wbc+0x83/0xa0
+ filemap_flush+0xab/0xe0
+ ext4_alloc_da_blocks+0x51/0x120
+ __ext4_ioctl+0x1534/0x3210
+ __x64_sys_ioctl+0x12c/0x170
+ do_syscall_64+0x3b/0x90
 
-I initially thought that also doing static checks by scripts/checkpatch.pl
-is better than only doing runtime WARN_ON(). But not all patches are checked
-by scripts/checkpatch.pl . Thus, as an attempt to check without exemptions,
-I now think that doing static checks via BUILD_BUG_ON() is better than
-scripts/checkpatch.pl . I sent below patch to linux-next.git , and so far
-it seems working (I mean, no build failure reports caused by compilers).
+It may happen as follows:
+1. write inline_data inode
+vfs_write
+  new_sync_write
+    ext4_file_write_iter
+      ext4_buffered_write_iter
+        generic_perform_write
+	  ext4_da_write_begin
+	    ext4_da_write_inline_data_begin -> If inline data size too
+	    small will allocate block to write, then mapping will has
+	    dirty page
+	    	ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
+2. fallocate
+do_vfs_ioctl
+  ioctl_preallocate
+    vfs_fallocate
+      ext4_fallocate
+        ext4_convert_inline_data
+	  ext4_convert_inline_data_nolock
+	    ext4_map_blocks -> fail will goto restore data
+	    ext4_restore_inline_data
+	      ext4_create_inline_data
+	      ext4_write_inline_data
+	      ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
+3. writepages
+__ext4_ioctl
+  ext4_alloc_da_blocks
+    filemap_flush
+      filemap_fdatawrite_wbc
+        do_writepages
+	  ext4_writepages
+	    if (ext4_has_inline_data(inode))
+	      BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
 
-Subject: workqueue: Wrap flush_workqueue() using a macro
+To solved this issue, record origin 'EXT4_STATE_MAY_INLINE_DATA' flag, then pass
+value to 'ext4_restore_inline_data', 'ext4_restore_inline_data' will
+decide to if recovery 'EXT4_STATE_MAY_INLINE_DATA' flag according to parameter.
 
-A conversion to stop flushing kernel-global workqueues is in progress.
-Wrap flush_workqueue() and inject BUILD_BUG_ON() checks, in order to
-prevent users who are not aware of this conversion from again start
-flushing kernel-global workqueues.
-
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
 ---
- include/linux/workqueue.h | 21 +++++++++++++++++++++
- kernel/workqueue.c        |  1 +
- 2 files changed, 22 insertions(+)
+ fs/ext4/inline.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/workqueue.h b/include/linux/workqueue.h
-index 7b13fae377e2e..9f78414d507c8 100644
---- a/include/linux/workqueue.h
-+++ b/include/linux/workqueue.h
-@@ -654,4 +654,25 @@ int workqueue_offline_cpu(unsigned int cpu);
- void __init workqueue_init_early(void);
- void __init workqueue_init(void);
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index 9c076262770d..407061c79adc 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1125,8 +1125,8 @@ static int ext4_update_inline_dir(handle_t *handle, struct inode *dir,
+ }
  
-+/*
-+ * Detect attempt to flush system-wide workqueues at compile time when possible.
-+ * See https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp for
-+ * reasons and steps for converting system-wide workqueues into local workqueues.
-+ * Checks for system_wq and system_{long,unbound,highpri}_wq will be added after
-+ * all in-tree users stopped flushing these workqueues.
-+ */
-+#define flush_workqueue(wq)						\
-+({									\
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_freezable_wq) &&	\
-+			 &(wq) == &system_freezable_wq,			\
-+			 "Please avoid flushing system_freezable_wq."); \
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_power_efficient_wq) && \
-+			 &(wq) == &system_power_efficient_wq,		\
-+			 "Please avoid flushing system_power_efficient_wq."); \
-+	BUILD_BUG_ON_MSG(__builtin_constant_p(&(wq) == &system_freezable_power_efficient_wq) &&	\
-+			 &(wq) == &system_freezable_power_efficient_wq, \
-+			 "Please avoid flushing system_freezable_power_efficient_wq."); \
-+	flush_workqueue(wq);						\
-+})
-+
- #endif
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index abcc9a2ac3197..5c612532f3e93 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -2813,6 +2813,7 @@ static void warn_flush_attempt(struct workqueue_struct *wq)
-  * This function sleeps until all work items which were queued on entry
-  * have finished execution, but it is not livelocked by new incoming ones.
-  */
-+#undef flush_workqueue
- void flush_workqueue(struct workqueue_struct *wq)
+ static void ext4_restore_inline_data(handle_t *handle, struct inode *inode,
+-				     struct ext4_iloc *iloc,
+-				     void *buf, int inline_size)
++				     struct ext4_iloc *iloc, void *buf,
++				     int inline_size, bool has_data)
  {
- 	struct wq_flusher this_flusher = {
+ 	int ret;
+ 
+@@ -1138,7 +1138,8 @@ static void ext4_restore_inline_data(handle_t *handle, struct inode *inode,
+ 		return;
+ 	}
+ 	ext4_write_inline_data(inode, iloc, buf, 0, inline_size);
+-	ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
++	if (has_data)
++		ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ }
+ 
+ static int ext4_finish_convert_inline_dir(handle_t *handle,
+@@ -1194,6 +1195,7 @@ static int ext4_convert_inline_data_nolock(handle_t *handle,
+ 	struct buffer_head *data_bh = NULL;
+ 	struct ext4_map_blocks map;
+ 	int inline_size;
++	bool has_data;
+ 
+ 	inline_size = ext4_get_inline_size(inode);
+ 	buf = kmalloc(inline_size, GFP_NOFS);
+@@ -1222,6 +1224,8 @@ static int ext4_convert_inline_data_nolock(handle_t *handle,
+ 	if (error)
+ 		goto out;
+ 
++	has_data = !!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
++
+ 	map.m_lblk = 0;
+ 	map.m_len = 1;
+ 	map.m_flags = 0;
+@@ -1262,7 +1266,8 @@ static int ext4_convert_inline_data_nolock(handle_t *handle,
+ 	unlock_buffer(data_bh);
+ out_restore:
+ 	if (error)
+-		ext4_restore_inline_data(handle, inode, iloc, buf, inline_size);
++		ext4_restore_inline_data(handle, inode, iloc, buf,
++					 inline_size, has_data);
+ 
+ out:
+ 	brelse(data_bh);
 -- 
+2.31.1
 
-Tejun, can we use this approach? If yes, when to apply?
-
-If we can include this patch into 5.18, can be applied as-is.
-If we can include this patch into 5.19, can be applied with checks for
-system_{long,unbound,highpri}_wq added because all flush_workqueue() users
-on system_*_wq are gone in next-20220505.
-
-Now that all flush_workqueue() users on system_*_wq are gone in next-20220505,
-next step is to remove all flush_scheduled_work() users. Therefore, instead of
-using /\bflush_workqueue\s*\(\s*system(_\w*)?_wq\s*\)/ in scripts/checkpatch.pl ,
-I think we can ask BUILD_BUG_ON() for blocking new system_*_wq users, and ask
-scripts/checkpatch.pl for blocking new system_wq users.
