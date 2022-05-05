@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDB5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F94BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354421AbiEESUa (ORCPT
+        id S1383381AbiEESUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
+        Thu, 5 May 2022 14:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383102AbiEEST3 (ORCPT
+        with ESMTP id S1383105AbiEEST3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:29 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82D815829;
-        Thu,  5 May 2022 11:15:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5910715A3F;
+        Thu,  5 May 2022 11:15:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774545; x=1683310545;
+  t=1651774547; x=1683310547;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Wk7ogtc5Ub+4u4KfteyYsotpfo7mJ/YCVxSbhwLcn7s=;
-  b=IZ07dTiu9q0tl2oc2Bek39VlXLVgD+r5z8PQOY8yA4SXI7OpJTV2gaak
-   rQY3xbc8SiWyEkyS193VAuUxC0HWvsD2Ywt+jjBpyPcOuEsjwiciVjbz5
-   1WFoAq/8R8QGi60vXe03FKGvSSBP99f+DBDY84wkQ0RHJ85CpRc2IyjmY
-   JfAhZYezDM/h/13GH4Yq4DBKSghIiRp98vc+F+awP+tNtVSn3MJTkzM/r
-   /OiCex286iGP9Em9YfKDfn7eA+mFoGumhewFx5P8VJzeqmZho3FNhxms9
-   7Upw2fc42sZy+FXDo6JtYYFRryKkER70ZradMpRIPuUB0U+A7YpVhPL/E
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746236"
+  bh=Ammg3A2Mnovfv+rRVb0tQyZFWoZUYbJqVmLEz3yGWKI=;
+  b=VcKxQDnSY0QLG1DkZyBUCiWPXOD6imv7XuqrPFR7RL5nqzdVzGpiEORU
+   NqoJh8RbrI6Ca9AkPpN4KhcxW+v6G08wTbBYbC7h7Zf8UE9ca7OzFkNw/
+   H7FrA9ZhZhZMdFpxERKDD7U+yPDuyk4isU8/0rD4Ar8Tqd1NAZ+2ze5hl
+   YwhetPm3RSXmNgZ7TFWLJ9xQugldF4ysMqckvbc/axDvrV108D1iAoN0k
+   rZ0jWT5lGzsZxyEuzp0NpIT14MJva4xU25VI3dFBG+/Iz1ceP6dGmPFCY
+   WQHvlDjbSipajWxNb54/ZHLxEu2CuIqNHjtlUghJHGUpxDGbXS+oesh7+
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746240"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="328746236"
+   d="scan'208";a="328746240"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:41 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083173"
+   d="scan'208";a="665083182"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:41 -0700
 From:   isaku.yamahata@intel.com
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 014/104] [MARKER] The start of TDX KVM patch series: TDX architectural definitions
-Date:   Thu,  5 May 2022 11:14:08 -0700
-Message-Id: <fd909cd4cdd3dda2f080935e77d8b88e73452252.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 016/104] KVM: TDX: Add TDX "architectural" error codes
+Date:   Thu,  5 May 2022 11:14:10 -0700
+Message-Id: <bd6c66c585e1b4aa906f7b6a7c5e48a15f2a0f18.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -56,52 +56,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-This empty commit is to mark the start of patch series of TDX architectural
-definitions.
+Add error codes for the TDX SEAMCALLs both for TDX VMM side for TDH
+SEAMCALL and TDX guest side for TDG.VP.VMCALL.  KVM issues the TDX
+SEAMCALLs and checks its error code.  KVM handles hypercall from the TDX
+guest and may return an error.  So error code for the TDX guest is also
+needed.
 
+TDX SEAMCALL uses bits 31:0 to return more information, so these error
+codes will only exactly match RAX[63:32].  Error codes for TDG.VP.VMCALL is
+defined by TDX Guest-Host-Communication interface spec.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- .../virt/kvm/intel-tdx-layer-status.rst       | 29 +++++++++++++++++++
+ arch/x86/kvm/vmx/tdx_errno.h | 29 +++++++++++++++++++++++++++++
  1 file changed, 29 insertions(+)
- create mode 100644 Documentation/virt/kvm/intel-tdx-layer-status.rst
+ create mode 100644 arch/x86/kvm/vmx/tdx_errno.h
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+diff --git a/arch/x86/kvm/vmx/tdx_errno.h b/arch/x86/kvm/vmx/tdx_errno.h
 new file mode 100644
-index 000000000000..b7a14bc73853
+index 000000000000..5c878488795d
 --- /dev/null
-+++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/arch/x86/kvm/vmx/tdx_errno.h
 @@ -0,0 +1,29 @@
-+.. SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
++/* architectural status code for SEAMCALL */
 +
-+===================================
-+Intel Trust Dodmain Extensions(TDX)
-+===================================
++#ifndef __KVM_X86_TDX_ERRNO_H
++#define __KVM_X86_TDX_ERRNO_H
 +
-+Layer status
-+============
-+What qemu can do
-+----------------
-+- TDX VM TYPE is exposed to Qemu.
-+- Qemu can try to create VM of TDX VM type and then fails.
++#define TDX_SEAMCALL_STATUS_MASK		0xFFFFFFFF00000000ULL
 +
-+Patch Layer status
-+------------------
-+  Patch layer                          Status
-+* TDX, VMX coexistence:                 Applied
-+* TDX architectural definitions:        Applying
-+* TD VM creation/destruction:           Not yet
-+* TD vcpu creation/destruction:         Not yet
-+* TDX EPT violation:                    Not yet
-+* TD finalization:                      Not yet
-+* TD vcpu enter/exit:                   Not yet
-+* TD vcpu interrupts/exit/hypercall:    Not yet
++/*
++ * TDX SEAMCALL Status Codes (returned in RAX)
++ */
++#define TDX_SUCCESS				0x0000000000000000ULL
++#define TDX_NON_RECOVERABLE_VCPU		0x4000000100000000ULL
++#define TDX_INTERRUPTED_RESUMABLE		0x8000000300000000ULL
++#define TDX_LIFECYCLE_STATE_INCORRECT		0xC000060700000000ULL
++#define TDX_VCPU_NOT_ASSOCIATED			0x8000070200000000ULL
++#define TDX_KEY_GENERATION_FAILED		0x8000080000000000ULL
++#define TDX_KEY_STATE_INCORRECT			0xC000081100000000ULL
++#define TDX_KEY_CONFIGURED			0x0000081500000000ULL
++#define TDX_EPT_WALK_FAILED			0xC0000B0000000000ULL
 +
-+* KVM MMU GPA shared bits:              Not yet
-+* KVM TDP refactoring for TDX:          Not yet
-+* KVM TDP MMU hooks:                    Not yet
-+* KVM TDP MMU MapGPA:                   Not yet
++/*
++ * TDG.VP.VMCALL Status Codes (returned in R10)
++ */
++#define TDG_VP_VMCALL_SUCCESS			0x0000000000000000ULL
++#define TDG_VP_VMCALL_INVALID_OPERAND		0x8000000000000000ULL
++#define TDG_VP_VMCALL_TDREPORT_FAILED		0x8000000000000001ULL
++
++#endif /* __KVM_X86_TDX_ERRNO_H */
 -- 
 2.25.1
 
