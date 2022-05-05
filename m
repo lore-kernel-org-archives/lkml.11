@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30672C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30180C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387241AbiEFACh (ORCPT
+        id S1387250AbiEFACj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
+        Thu, 5 May 2022 20:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387106AbiEFABm (ORCPT
+        with ESMTP id S1387108AbiEFABm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 20:01:42 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B3D60DAA
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD0D61295
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651795073; x=1683331073;
+  t=1651795071; x=1683331071;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=yu43tYTm3rL820NWGTlU5e3BSTdrJeh1cVn1o9Y1twQ=;
-  b=XZulpZrOMMMKJxovH7naHeH3WcgDbT7/GBMVfNzwn4gIMqU3IpJ2Xfo9
-   LNTvFHm0tHHKR0dr/brMB7FC1utQB27pmtGUa/OeBBB1aqR761CvgCbuz
-   QZTOETcWtvH31IqGcJvw1/t7EPq4G+57GqqTy6TwAQ6tiQdz79YxxkPg1
-   N97MX4odfxHaibHWYwbNU9wojq/S65Yy0h/7XnFHXJH+nV5qq7XTxW5SX
-   8hRinGyNVFw4FLetuyE96LxV4LppYtlKAZbPI+VcXpv4TPgSiM9RG1th5
-   RZz0N1SdLsNECXGUmigyNreqvPycb0HBsZMcgC9sao9LkU7gxmmKwe93H
+  bh=60YeowQrYtVQTC/Y9/6aG1nPAySkU1vh5niJqWVSb28=;
+  b=WYRBDqbmyC1mf2GOXxhmq7iTYY4kZm8YZd6zHR5HrpZdJG0d5mn5A3Uh
+   mWuTcc9mFgLkgsFDQQMPs1B3YHjFmH+I5yjpBiOSPLKK8lY2n+uAsxXfi
+   HZ4OxCQBdvlJGevFPGWn6QBJwNrpFzrBFj44UVKT/5KrOJ6uyOSLsgMuW
+   oJ1T+0uPxI1hKNLiwPxcBpBGSO0ep8OlzZOrlxNtJLgMGWBxfF4ZjPZIt
+   iwA1Ff1o/UnehMLB/Ojzpc1faC3A03+kgaPK4aiHwv815hdA9I+cYLqAU
+   wW19A6XL5bYAeScnXC35V3y4mxWspD3M8nZb92Ad6nWOFHQtUhGv8PrxY
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283641"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283636"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283641"
+   d="scan'208";a="250283636"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:51 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914383"
+   d="scan'208";a="694914372"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:50 -0700
+  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:49 -0700
 From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
@@ -53,10 +53,11 @@ Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
         Ricardo Neri <ricardo.neri@intel.com>,
         iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 16/29] x86/hpet: Prepare IRQ assignments to use the X86_ALLOC_AS_NMI flag
-Date:   Thu,  5 May 2022 16:59:55 -0700
-Message-Id: <20220506000008.30892-17-ricardo.neri-calderon@linux.intel.com>
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH v6 13/29] iommu/amd: Compose MSI messages for NMI irqs in non-IR format
+Date:   Thu,  5 May 2022 16:59:52 -0700
+Message-Id: <20220506000008.30892-14-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -64,24 +65,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The flag X86_ALLOC_AS_NMI indicates that the IRQs to be allocated in an
-IRQ domain need to be configured as NMIs.  Add an as_nmi argument to
-hpet_assign_irq(). Even though the HPET clock events do not need NMI
-IRQs, the HPET hardlockup detector does. A subsequent changeset will
-implement the reservation of a channel for it.
+If NMIPass is enabled in a device's DTE, the IOMMU lets NMI interrupt
+messages pass through unmapped. Therefore, the contents of the MSI
+message, not an IRTE, determine how and where the NMI is delivered.
+
+Since the IOMMU driver owns the MSI message of the NMI irq, compose
+it using the non-interrupt-remapping format. Also, let descendant
+irqchips write the MSI as appropriate for the device.
 
 Cc: Andi Kleen <ak@linux.intel.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: x86@kernel.org
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
 Changes since v5:
- * Introduced this patch.
+ * Introduced this patch
 
 Changes since v4:
  * N/A
@@ -95,39 +98,49 @@ Changes since v2:
 Changes since v1:
  * N/A
 ---
- arch/x86/kernel/hpet.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/amd/iommu.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 2c6713b40921..02d25e00e93f 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -618,7 +618,7 @@ static inline int hpet_dev_id(struct irq_domain *domain)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 4d7421b6858d..6e07949b3e2a 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3111,7 +3111,16 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+-		fill_msi_msg(&data->msi_entry, irte_info->index);
++		if (irq_cfg->delivery_mode == APIC_DELIVERY_MODE_NMI)
++			/*
++			 * The IOMMU lets NMIs pass through unmapped. Thus, the
++			 * MSI message, not the IRTE, determines the irq
++			 * configuration. Since we own the MSI message,
++			 * compose it. Descendant irqchips will write it.
++			 */
++			__irq_msi_compose_msg(irq_cfg, &data->msi_entry, true);
++		else
++			fill_msi_msg(&data->msi_entry, irte_info->index);
+ 		break;
+ 
+ 	default:
+@@ -3509,6 +3518,18 @@ static int amd_ir_set_affinity(struct irq_data *data,
+ 	 */
+ 	send_cleanup_vector(cfg);
+ 
++	/*
++	 * When the delivery mode of an irq is NMI, the IOMMU lets the NMI
++	 * interrupt messages pass through unmapped. Hence, changes in the
++	 * destination are to be reflected in the NMI message itself, not the
++	 * IRTE. Thus, descendant irqchips must set the affinity and compose
++	 * write the MSI message.
++	 *
++	 * Also, NMIs do not have an associated vector. No need for cleanup.
++	 */
++	if (cfg->delivery_mode == APIC_DELIVERY_MODE_NMI)
++		return IRQ_SET_MASK_OK;
++
+ 	return IRQ_SET_MASK_OK_DONE;
  }
- 
- static int hpet_assign_irq(struct irq_domain *domain, struct hpet_channel *hc,
--			   int dev_num)
-+			   int dev_num, bool as_nmi)
- {
- 	struct irq_alloc_info info;
- 
-@@ -627,6 +627,8 @@ static int hpet_assign_irq(struct irq_domain *domain, struct hpet_channel *hc,
- 	info.data = hc;
- 	info.devid = hpet_dev_id(domain);
- 	info.hwirq = dev_num;
-+	if (as_nmi)
-+		info.flags |= X86_IRQ_ALLOC_AS_NMI;
- 
- 	return irq_domain_alloc_irqs(domain, 1, NUMA_NO_NODE, &info);
- }
-@@ -755,7 +757,7 @@ static void __init hpet_select_clockevents(void)
- 
- 		sprintf(hc->name, "hpet%d", i);
- 
--		irq = hpet_assign_irq(hpet_domain, hc, hc->num);
-+		irq = hpet_assign_irq(hpet_domain, hc, hc->num, false);
- 		if (irq <= 0)
- 			continue;
  
 -- 
 2.17.1
