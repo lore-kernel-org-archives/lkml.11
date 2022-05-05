@@ -2,54 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC91DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1419C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348374AbiEEIXK (ORCPT
+        id S1347410AbiEEIXT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
+        Thu, 5 May 2022 04:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347322AbiEEIU2 (ORCPT
+        with ESMTP id S1346964AbiEEIU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:20:28 -0400
+        Thu, 5 May 2022 04:20:27 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A6049912;
-        Thu,  5 May 2022 01:16:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23FD4738D;
+        Thu,  5 May 2022 01:16:46 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C5D41210DF;
-        Thu,  5 May 2022 08:16:47 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6F7012129A;
+        Thu,  5 May 2022 08:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651738607; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1651738605; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CBDkywWrMTWS4hJ++nC6A/5fx/cpBVFJCY9cboe51eI=;
-        b=OEjJij1fp5lh4IRX8e9PkSZvFNrlGEYuIQSutmEO+TvPqFZXcgCap5W1giZv0lvoVKgGni
-        BS2MmSOX7SimDLZiVLSOxL7uf/YU1PzAeNCyDghPW9RcDxXya8DHpSwXv98HH1ATacpLgT
-        d9CEKt/6bV7Wm3zIeR43ugE9p4xvL1M=
+        bh=40GR81qLBAKpQ1pdFfw5ZbcFKNAIeNjaSwOGqddCksA=;
+        b=EYWTHAdH5RBPO4czJu3WhK/zfuAs3DPsQSFX7ShogW2nC4Y+RSVboPlZrXxv7vWz6rPt4r
+        hH6yrF93UKdeG02In73kBwMr+ScCL3WB97iWJbmhTeE3jQIFTITqOW8UWBzubf6sOu4oSJ
+        NLeFPsnT2hA+8Ihi6gyc0hhiGm3PHGg=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8E7AD13B12;
-        Thu,  5 May 2022 08:16:47 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3FEC413B11;
+        Thu,  5 May 2022 08:16:45 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id iP9gIe+Hc2K1BwAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 05 May 2022 08:16:47 +0000
+        id WPtXDu2Hc2K1BwAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 05 May 2022 08:16:45 +0000
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-integrity@vger.kernel.org,
+To:     xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>, Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v3 15/21] xen/tpmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
-Date:   Thu,  5 May 2022 10:16:34 +0200
-Message-Id: <20220505081640.17425-16-jgross@suse.com>
+Cc:     Juergen Gross <jgross@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v3 06/21] xen/usb: switch xen-hcd to use INVALID_GRANT_REF
+Date:   Thu,  5 May 2022 10:16:25 +0200
+Message-Id: <20220505081640.17425-7-jgross@suse.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220505081640.17425-1-jgross@suse.com>
 References: <20220505081640.17425-1-jgross@suse.com>
@@ -59,54 +58,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify tpmfront's ring creation and removal via xenbus_setup_ring()
-and xenbus_teardown_ring().
+Instead of using a private macro for an invalid grant reference use
+the common one.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/xen-tpmfront.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+ drivers/usb/host/xen-hcd.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/char/tpm/xen-tpmfront.c b/drivers/char/tpm/xen-tpmfront.c
-index 69df04ae2401..379291826261 100644
---- a/drivers/char/tpm/xen-tpmfront.c
-+++ b/drivers/char/tpm/xen-tpmfront.c
-@@ -253,20 +253,12 @@ static int setup_ring(struct xenbus_device *dev, struct tpm_private *priv)
- 	struct xenbus_transaction xbt;
- 	const char *message = NULL;
- 	int rv;
--	grant_ref_t gref;
+diff --git a/drivers/usb/host/xen-hcd.c b/drivers/usb/host/xen-hcd.c
+index 3e487baf8422..9cbc7c2dab02 100644
+--- a/drivers/usb/host/xen-hcd.c
++++ b/drivers/usb/host/xen-hcd.c
+@@ -87,8 +87,6 @@ struct xenhcd_info {
+ 	bool error;
+ };
  
--	priv->shr = (void *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
--	if (!priv->shr) {
--		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
--		return -ENOMEM;
--	}
+-#define GRANT_INVALID_REF 0
 -
--	rv = xenbus_grant_ring(dev, priv->shr, 1, &gref);
-+	rv = xenbus_setup_ring(dev, GFP_KERNEL, (void **)&priv->shr, 1,
-+			       &priv->ring_ref);
- 	if (rv < 0)
- 		return rv;
+ #define XENHCD_RING_JIFFIES (HZ/200)
+ #define XENHCD_SCAN_JIFFIES 1
  
--	priv->ring_ref = gref;
--
- 	rv = xenbus_alloc_evtchn(dev, &priv->evtchn);
- 	if (rv)
- 		return rv;
-@@ -331,11 +323,7 @@ static void ring_free(struct tpm_private *priv)
- 	if (!priv)
- 		return;
+@@ -1100,17 +1098,17 @@ static void xenhcd_destroy_rings(struct xenhcd_info *info)
+ 		unbind_from_irqhandler(info->irq, info);
+ 	info->irq = 0;
  
--	if (priv->ring_ref)
--		gnttab_end_foreign_access(priv->ring_ref,
--				(unsigned long)priv->shr);
--	else
--		free_page((unsigned long)priv->shr);
-+	xenbus_teardown_ring((void **)&priv->shr, 1, &priv->ring_ref);
+-	if (info->urb_ring_ref != GRANT_INVALID_REF) {
++	if (info->urb_ring_ref != INVALID_GRANT_REF) {
+ 		gnttab_end_foreign_access(info->urb_ring_ref,
+ 					  (unsigned long)info->urb_ring.sring);
+-		info->urb_ring_ref = GRANT_INVALID_REF;
++		info->urb_ring_ref = INVALID_GRANT_REF;
+ 	}
+ 	info->urb_ring.sring = NULL;
  
- 	if (priv->irq)
- 		unbind_from_irqhandler(priv->irq, priv);
+-	if (info->conn_ring_ref != GRANT_INVALID_REF) {
++	if (info->conn_ring_ref != INVALID_GRANT_REF) {
+ 		gnttab_end_foreign_access(info->conn_ring_ref,
+ 					  (unsigned long)info->conn_ring.sring);
+-		info->conn_ring_ref = GRANT_INVALID_REF;
++		info->conn_ring_ref = INVALID_GRANT_REF;
+ 	}
+ 	info->conn_ring.sring = NULL;
+ }
+@@ -1123,8 +1121,8 @@ static int xenhcd_setup_rings(struct xenbus_device *dev,
+ 	grant_ref_t gref;
+ 	int err;
+ 
+-	info->urb_ring_ref = GRANT_INVALID_REF;
+-	info->conn_ring_ref = GRANT_INVALID_REF;
++	info->urb_ring_ref = INVALID_GRANT_REF;
++	info->conn_ring_ref = INVALID_GRANT_REF;
+ 
+ 	urb_sring = (struct xenusb_urb_sring *)get_zeroed_page(
+ 							GFP_NOIO | __GFP_HIGH);
 -- 
 2.35.3
 
