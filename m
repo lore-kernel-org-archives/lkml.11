@@ -2,157 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A413C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE38C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236940AbiEECCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 22:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S237021AbiEECDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 22:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236796AbiEECCB (ORCPT
+        with ESMTP id S233202AbiEECDm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 22:02:01 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D1A496BA
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 18:58:23 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id dv4so2091409qvb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 18:58:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=WAYJaqn/4jsrC63FS7JpHVRiU6idieihWGSlrSqaS3I=;
-        b=DNYx53tiR8bWN5Rudy6owO9Ixme774X8e+nmpe1SjW6ecwZuJrX0anJmb04TuTcfmQ
-         nsSVY0A+55xQD2tpm/vsN+9TbUAOP2wtMTLgtpttkndvotrfdYp4fRHxXyg+A+zQrr2m
-         z/6YEWlANwPGY4sbtEiPShesHnduEBl8BhbLe0N63la8Gn6OlU/rMtN3houdKlafTPvi
-         Ii42F0y8Q24OTXymaz+YBOZnVLEw3SlEJ5N+siB3aYdhJ0U9KcqSLYznoJhsdTaEZ+40
-         ASqpVaj5WPJSw0uGJiprOojIH+M/vyvayNlmbMmIXqu3/LCAsGcrR2eAxsLlG+JcWiBG
-         2PMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=WAYJaqn/4jsrC63FS7JpHVRiU6idieihWGSlrSqaS3I=;
-        b=unjFFsJGsy4+SOtfj8xw6zeyV8MoUswf8DcS4hMb8Jmz/sR+VjAC0jcdx0YZYHvp27
-         73/MEhuvQ7rkH37d678OCfXXyVvoyuUsDFkJUh1RXSZ3v81urFEo10St8dKhODBD/w4O
-         DoXzyLhnTJWVFttUJIZ/87hRQ1pDOVm6i02C0j1tGvvl22fCVxzUyLSP29OOBZqmqMP2
-         tQ3TMo1+ks4Fg+hako3pu8nw+kXnNcezbbeQ1AaZICQ2hOqaaaHUyGgIJIAAdElGtxv1
-         lpaA+dz6qjpVxnUlnA/fMdW6IYKKoxVBpotAPF9ol7lzwvdQh9S2kOJxU/ih8HnYOWhZ
-         yK5w==
-X-Gm-Message-State: AOAM533+hw42BYK2/DbFo5kCNCaqh3QIT4vh8d8gYhJ7VMJTsKDP3o1A
-        WpV+atLCg5guT13B/qSjVDaq2xRjgBNXHJmEF6g=
-X-Google-Smtp-Source: ABdhPJygEgQUQsQir+UNYmEBJVBMaLnGmxatpdvIu/omvFTQoSJH6L8AJi7LsW4mQK/r3ukr9BrT2i/tUdGLebxQfuY=
-X-Received: by 2002:a0c:f092:0:b0:458:1192:7781 with SMTP id
- g18-20020a0cf092000000b0045811927781mr20662982qvk.29.1651715902682; Wed, 04
- May 2022 18:58:22 -0700 (PDT)
+        Wed, 4 May 2022 22:03:42 -0400
+X-Greylist: delayed 1801 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 19:00:03 PDT
+Received: from geosincoor.roylabs.com (geosincoor.roylabs.com [193.233.182.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1AC473BD
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 19:00:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=roylabs.com;
+ h=Content-Type:MIME-Version:Content-Transfer-Encoding:Content-Description:Subject:To:From:Date:Reply-To:Message-ID; i=cas.geo@roylabs.com;
+ bh=bh9iyPqTwXbBCUbKpWQh+6Svj3M=;
+ b=kZvxq3sLDHxsR9YUAkZl/H2sXsq3C/2UblKPhnwFMmf1DWdJXTarExGTIy6YXv7Ck/Kp+ajzx8Xc
+   RI6ATzYr+4msm+YelCJA6ejr0MLrO2v023sF4MhoH4VC66IsJH4VTZ709l5mtz/B0zMfuSUpeveN
+   kdf+uNq7VGXkDmMO02Eabsa1FT0jsl5dVVcN6Du9zAmGk3WldcuJcsyQ9WaTVyeK+2yKS+4+EhkD
+   tR/UrZRrWDoCrM3eEUzIyJ6rxyQ/FCkMNbu6SJar1mer91ierWQ/+Ngkl2OBv5e7rye6mhKwlohA
+   UF4zkDMSkdPtMANecGOXiXYfVb76lhS86rAU5Q==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=roylabs.com;
+ b=NAwu26RrWU/kGiVz1hv/hzUBmo8Mh+5bfG2LKlLH2XnHv5hKpyUeesOIxQWEVVrxndTnFjQRQL2P
+   XGD2lP/JCyWEIM6MiEz2fk2qwVcP91lqoLh1VEjT7yh4wTeoaMUboO+eAUUKcF5t9yIY0U4EsDKA
+   CYEyhYchlhqWOsjt6HOeBV9G14f0avnmMq4+UvGxZj5T9zdATDRbP490yldmSV53Pyo+IYTbPEs7
+   eEIaeSJgxoXLl9KVL9iP+NDfsl2OB70yxnDd97wahgM0yhIYGJC9AVc3wJNj6h6AHuAS1pB0vUGk
+   ZAc5AeOruBnX//yhvNQko5PpMtsGcjtC1P05RA==;
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-From:   Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Date:   Thu, 5 May 2022 06:58:11 +0500
-Message-ID: <CABXGCsMiKe31UaoMV02gW4iJSKnBiO5jGQKej=Zem24mD0ObQw@mail.gmail.com>
-Subject: [BUG][5.18rc5] nvme nvme0: controller is down; will reset:
- CSTS=0xffffffff, PCI_STATUS=0x10
-To:     linux@leemhuis.info,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org, luto@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Re: Good morning.
+To:     linux-kernel@vger.kernel.org
+From:   "Collins Fuller" <cas.geo@roylabs.com>
+Date:   Thu, 05 May 2022 03:29:56 +0200
+Reply-To: collinsfuller1@yandex.com
+Message-ID: <0.0.0.7FF.1D8601FA1DD2B10.0@geosincoor.roylabs.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-Today, for the first time, I encountered the fact that my new nvme disk is down.
-In the kernel logs, I found the following sequence of messages:
+Good morning,
 
-[ 3005.869069] [drm] free PSP TMR buffer
-[ 4626.562712] nvme nvme0: controller is down; will reset:
-CSTS=0xffffffff, PCI_STATUS=0x10
-[ 4626.584716] nvme 0000:06:00.0: enabling device (0000 -> 0002)
-[ 4626.585006] nvme nvme0: Removing after probe failure status: -19
-[ 4626.590776] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 1, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590784] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 3, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590797] nvme0n1: detected capacity change from 7814037168 to 0
-[ 4626.590814] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 4, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590816] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 5, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590816] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 6, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590832] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 7, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590835] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 8, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590838] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 9, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590847] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 10, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.590847] BTRFS error (device nvme0n1p3): bdev /dev/nvme0n1p3
-errs: wr 11, rd 0, flush 0, corrupt 0, gen 0
-[ 4626.593059] BTRFS: error (device nvme0n1p3) in
-btrfs_commit_transaction:2418: errno=-5 IO failure (Error while
-writing out transaction)
-[ 4626.593075] BTRFS info (device nvme0n1p3: state E): forced readonly
-[ 4626.593099] BTRFS warning (device nvme0n1p3: state E): Skipping
-commit of aborted transaction.
-[ 4626.593107] BTRFS: error (device nvme0n1p3: state EA) in
-cleanup_transaction:1982: errno=-5 IO failure
-[ 4626.593137] BTRFS: error (device nvme0n1p3: state EA) in
-btrfs_sync_log:3331: errno=-5 IO failure
+How are you doing today?
 
-Googling turned up a lot of links to various old reports (4.xx kernel)
-and APST issue reports.
-In a bug report on kernel.org [6], the unfortunate users talking with
-each other with no hope of a solution being found.
-The most clarifying article turned out to be [1].
+My name is Collins Fuller and I am a Research Analyst with an Organization =
+based in the UK. I have a lucrative business proposal which will be mutuall=
+y beneficial to the both of us. Kindly respond to my email, so I can give y=
+ou more details.
 
-After analyzing the answer of the commands "nvme id-ctrl /dev/nvme0"
-and "cat /sys/module/nvme_core/parameters/default_ps_max_latency_us".
-
-# nvme id-ctrl /dev/nvme0
-NVME Identify Controller:
-vid       : 0x1bb1
-ssvid     : 0x1bb1
-sn        : 7VS00CLE
-mn        : Seagate FireCuda 530 ZP4000GM30013
-fr        : SU6SM001
-[...]
-ps    0 : mp:8.80W operational enlat:0 exlat:0 rrt:0 rrl:0
-          rwt:0 rwl:0 idle_power:- active_power:-
-ps    1 : mp:7.10W operational enlat:0 exlat:0 rrt:1 rrl:1
-          rwt:1 rwl:1 idle_power:- active_power:-
-ps    2 : mp:5.20W operational enlat:0 exlat:0 rrt:2 rrl:2
-          rwt:2 rwl:2 idle_power:- active_power:-
-ps    3 : mp:0.0620W non-operational enlat:2500 exlat:7500 rrt:3 rrl:3
-          rwt:3 rwl:3 idle_power:- active_power:-
-ps    4 : mp:0.0440W non-operational enlat:10500 exlat:65000 rrt:4 rrl:4
-          rwt:4 rwl:4 idle_power:- active_power:-
-
-# cat /sys/module/nvme_core/parameters/default_ps_max_latency_us
-100000
-
-I concluded that my problem is not related to APST because 2500 + 7500
-+ 10500 + 65000 = 85500 < 100000
-100000 is greater than the total latency of any state (enlat + xlat).
-
-Or am I misinterpreting the results?
-
-Therefore, I would like to ask if there are any other ideas why nvme
-can stop working with the message "controller is down; will reset:
-CSTS=0xffffffff, PCI_STATUS=0x10", which generally does not say
-anything about the reason why this happened.
-
-My kernel is 5.18rc5.
-
-Thanks in advance for any answer that will clear things up. And where
-to dig in search of a solution to the problem.
-
-[1] https://wiki.archlinux.org/title/Solid_state_drive/NVMe
-[2] [# smartctl -a /dev/nvme0] - https://pastebin.com/JwSXwu6c
-[3] [# nvme get-feature /dev/nvme0 -f 0x0c -H] - https://pastebin.com/KZ6FjhGt
-[4] [# nvme id-ctrl /dev/nvme0] - https://pastebin.com/seEkPfF7
-[5] [full dmesg] - https://pastebin.com/aNEaqtCV
-[6] [bug report about Samsung PM951 NVMe] -
-https://bugzilla.kernel.org/show_bug.cgi?id=195039
-
--- 
-Best Regards,
-Mike Gavrilov.
+Regards,
+Collins Fuller
