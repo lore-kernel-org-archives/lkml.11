@@ -2,150 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC24C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C11EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381096AbiEEPJp (ORCPT
+        id S1381128AbiEEPJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        Thu, 5 May 2022 11:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381068AbiEEPIx (ORCPT
+        with ESMTP id S1381152AbiEEPJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:08:53 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6965B890;
-        Thu,  5 May 2022 08:05:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651763112; x=1683299112;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ZL41fg/iVXc49Lpg6aaRizYkJOkiqo4saFIU6Ey9xPs=;
-  b=IwFPB9Nqg/FSiu4E18zbVnLIpaFuvfQN+sfY6CD2wm031GHlCvrKREJ0
-   dl7lMUJAcbESR5faJN6zL1JhmibyuBfwGatfawv3iWK8GJW6CHM6EHO/7
-   +vUfduGCddZS4CbgEAEdUOtXHBVqsZP+qT6ErGxXCmkAyH5LG/CxjeTck
-   M=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 May 2022 08:05:12 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 08:05:11 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 5 May 2022 08:05:11 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 5 May 2022 08:05:07 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v14 4/4] arm64: dts: qcom: sc7280-herobrine: Add lpi pinmux properties for CRD 3.0/3.1
-Date:   Thu, 5 May 2022 20:33:24 +0530
-Message-ID: <1651763004-32533-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651763004-32533-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1651763004-32533-1-git-send-email-quic_srivasam@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Thu, 5 May 2022 11:09:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AF01CB22;
+        Thu,  5 May 2022 08:05:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DA7B61BB6;
+        Thu,  5 May 2022 15:05:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2778C385A8;
+        Thu,  5 May 2022 15:05:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651763138;
+        bh=AV7Ctm48EGltuTuBFDYE7IrEPNSYirdqxElT2gUK6aA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Cuvz24GWC9Qj3KZZ53ITYSvcMm/bfiFx/kZzyWAwYEtWo11Jj37pz4GQQQD22LV77
+         +7Ae6IIZbVryRwEOD1Bxjuurptoy5/xtLQ9MW7c5hdQ45SC4M0eRKB4uses+Z1ak2P
+         b+S+q/8Oa5uGFV1kQKrh6NJPJanNyWuY6Kaf8NddYfZdPTD7Psmy++ZAEEJFcObXmz
+         uSle+r3FeYBqKXxLIP6sK8GofGsuglJUajLGFnXgzLhPKsTtzqDpFNOiOZydwn9ZcM
+         Y58KyBWpG8QlBykTURyXxB+uvR5coBptIV02sndeiljhmMqDZLjP9XKZbAoqvoWRue
+         nCRP4vtwqiK+w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nmd2u-009EuL-7S; Thu, 05 May 2022 16:05:36 +0100
+Date:   Thu, 05 May 2022 16:05:36 +0100
+Message-ID: <87y1zg6mv3.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Michael Walle <michael@walle.cc>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pinctrl: microchip-sgpio: make irq_chip immutable
+In-Reply-To: <CACRpkdZjsdkq2KP-k0pwB5KZo25AeTgW_-iAZ4K84A=s1_+gnQ@mail.gmail.com>
+References: <20220428111622.1395831-1-michael@walle.cc>
+        <CACRpkdZjsdkq2KP-k0pwB5KZo25AeTgW_-iAZ4K84A=s1_+gnQ@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linus.walleij@linaro.org, michael@walle.cc, lars.povlsen@microchip.com, Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add LPASS LPI pinctrl properties, which are required for Audio
-functionality on herobrine based platforms of rev5+
-(aka CRD 3.0/3.1) boards.
+On Thu, 05 May 2022 15:55:01 +0100,
+Linus Walleij <linus.walleij@linaro.org> wrote:
+> 
+> On Thu, Apr 28, 2022 at 1:16 PM Michael Walle <michael@walle.cc> wrote:
+> 
+> > Since recently, the kernel is nagging about mutable irq_chips:
+> >
+> > [    4.967050] gpio gpiochip1: (e2004190.gpio-input): not an immutable chip, please consider fixing it!
+> >
+> > Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
+> > helper functions and call the appropriate gpiolib functions.
+> >
+> > Signed-off-by: Michael Walle <michael@walle.cc>
+> 
+> Patch applied after pulling in Marc's immutable branch.
+> 
+> (Hm a bit confusing since it is a immutable branch with code
+> for immutable GPIO chips ... I assume it is both.)
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 61 +++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
+Both indeed. Immutable^2, or something like that.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-index deaea3a..3cce107 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-@@ -110,6 +110,67 @@ ap_ts_pen_1v8: &i2c13 {
-  * - If a pin is totally internal to Qcard then it gets Qcard name.
-  * - If a pin is not hooked up on Qcard, it gets no name.
-  */
-+&lpass_dmic01_clk {
-+	drive-strength = <8>;
-+	bias-disable;
-+};
-+
-+&lpass_dmic01_clk_sleep {
-+	drive-strength = <2>;
-+};
-+
-+&lpass_dmic01_data {
-+	bias-pull-down;
-+};
-+
-+&lpass_dmic23_clk {
-+	drive-strength = <8>;
-+	bias-disable;
-+};
-+
-+&lpass_dmic23_clk_sleep {
-+	drive-strength = <2>;
-+};
-+
-+&lpass_dmic23_data {
-+	bias-pull-down;
-+};
-+
-+&lpass_rx_swr_clk {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-disable;
-+};
-+
-+&lpass_rx_swr_clk_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_rx_swr_data {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-bus-hold;
-+};
-+
-+&lpass_rx_swr_data_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_tx_swr_clk {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-disable;
-+};
-+
-+&lpass_tx_swr_clk_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_tx_swr_data {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-bus-hold;
-+};
- 
- &mi2s1_data0 {
- 	drive-strength = <6>;
+	M.
+
 -- 
-2.7.4
-
+Without deviation from the norm, progress is not possible.
