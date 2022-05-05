@@ -2,184 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4593CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26009C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381957AbiEEQ3b (ORCPT
+        id S1381974AbiEEQae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
+        Thu, 5 May 2022 12:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380217AbiEEQ31 (ORCPT
+        with ESMTP id S233421AbiEEQac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 12:29:27 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C207318E1C;
-        Thu,  5 May 2022 09:25:45 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 393751F45ABD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651767943;
-        bh=us6VQcZonVRZDNCqwnPC3/ZUDrCZ5LkU3g8yGafttv4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DsrqAmPPKwC1WvZxKzkbXTRjRJEiP/WizLShBmIu304hhlhhHNQSz9qLISwTIbG4W
-         v+6C9yOSV7c/7M3TEtnFvJe94HChoUgbpjOn6Wq2SqjrQtu0kwsVmCwnUlmEmIBirc
-         Po88xEbIChaOX6eNz/QE3ZfTlD8UWv0968oKjyBsx0JJoQrR9SVC1tIhACa4HxuwZG
-         WLyeqN2LlBDs+gUf5pcSTlu3ulu/pfIYCtS/nxaM7Dy24gZUCy/W8KtsAuNrOhSj8m
-         PA8F2q4XiLyQWx9Yhov61BeZXMt2Dkpy3lcK9Bvw6Uo5MNELIFEBZRKrFFCt+7MaRc
-         BmlcLSapwch7g==
-Date:   Thu, 5 May 2022 12:25:37 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Mark Brown <broonie@kernel.org>, kernel@collabora.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shane Chien <shane.chien@mediatek.com>,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 1/3] ASoC: dt-bindings: mediatek: mt8192: Add i2s-share
- properties
-Message-ID: <20220505162537.byiwfe2ghomxhezl@notapiano>
-References: <20220429203039.2207848-1-nfraprado@collabora.com>
- <20220429203039.2207848-2-nfraprado@collabora.com>
- <4826c824-40ce-5726-ed95-5be069233ca7@collabora.com>
- <cbf2fcbae25408b95875278eb37e829bf4671430.camel@mediatek.com>
- <d1c548bb-8a36-79bf-498d-c909bf7e7679@collabora.com>
+        Thu, 5 May 2022 12:30:32 -0400
+Received: from qproxy2-pub.mail.unifiedlayer.com (qproxy2-pub.mail.unifiedlayer.com [69.89.16.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E8621832
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:26:52 -0700 (PDT)
+Received: from outbound-ss-820.bluehost.com (outbound-ss-820.bluehost.com [69.89.24.241])
+        by qproxy2.mail.unifiedlayer.com (Postfix) with ESMTP id 6C13F8032B6E
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:26:52 +0000 (UTC)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway2.mail.pro1.eigbox.com (Postfix) with ESMTP id BDF0D10044817
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:26:51 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id meJXnhGmvQs3CmeJXnky2X; Thu, 05 May 2022 16:26:51 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=A+Opg4aG c=1 sm=1 tr=0 ts=6273facb
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oZkIemNP1mAA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5lkSp0b2IgHK4bHO/GACjq5PfuE/UsQzZEsciE4Dh/U=; b=OotnkAhTGeiq3Il7YVjeNbrX6e
+        btW7pqvme6+4IcQm898qUoYQd22HCVs5+PJ01TNG5mSWaqG3X2EsmH8UFvm9AGsqnJ6phZRF91GYN
+        jc/HC5Fv/8Ocs56SvZi/q2jLzAZ2if0IHq3UFpb8asHYrkz2/DggZ6s9tyuvE23ZlmmQ42jlqKBYZ
+        7pp3DXe/V1IL0a93UR+GmhG0SVNgTVgEGbDc6v5MNiXenHJBwxe+oqY9yj9v6W+XWnVsoJIATsOIs
+        2PXGnJTZBAt9zLmO+xxgOyom/0hMN/B8KuOeXNTMiejtemJzpc8Bym6jBvlVy4xTWr/FK3gvqEq9h
+        Y/p4L+vQ==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:49872 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nmeJW-000wTA-Az; Thu, 05 May 2022 10:26:50 -0600
+Subject: Re: [PATCH 5.17 000/225] 5.17.6-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220504153110.096069935@linuxfoundation.org>
+In-Reply-To: <20220504153110.096069935@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <10860aa0-a7d5-f5a5-8742-7386144ed0fc@w6rz.net>
+Date:   Thu, 5 May 2022 09:26:48 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d1c548bb-8a36-79bf-498d-c909bf7e7679@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nmeJW-000wTA-Az
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:49872
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 10:52:45AM +0200, AngeloGioacchino Del Regno wrote:
-> Il 05/05/22 10:48, Jiaxin Yu ha scritto:
-> > On Thu, 2022-05-05 at 10:08 +0200, AngeloGioacchino Del Regno wrote:
-> > > Il 29/04/22 22:30, Nícolas F. R. A. Prado ha scritto:
-> > > > The Mediatek AFE PCM controller for MT8192 allows sharing of an I2S
-> > > > bus
-> > > > between two busses. Add a pattern for these properties in the
-> > > > dt-binding.
-> > > > 
-> > > > Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> > > > ---
-> > > > 
-> > > >    Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml | 5
-> > > > +++++
-> > > >    1 file changed, 5 insertions(+)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/sound/mt8192-afe-
-> > > > pcm.yaml b/Documentation/devicetree/bindings/sound/mt8192-afe-
-> > > > pcm.yaml
-> > > > index 7a25bc9b8060..5b03c8dbf318 100644
-> > > > --- a/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
-> > > > +++ b/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
-> > > > @@ -54,6 +54,11 @@ properties:
-> > > >          - const: aud_infra_clk
-> > > >          - const: aud_infra_26m_clk
-> > > > +patternProperties:
-> > > > +  "^i2s[0-35-9]-share$":
-> > > > +    description: Name of the I2S bus that is shared with this bus
-> > > > +    pattern: "^I2S[0-35-9]$"
-> > > > +
-> > > >    required:
-> > > >      - compatible
-> > > >      - interrupts
-> > > > 
-> > > 
-> > > The only other way of doing this would be to complicate this in the
-> > > driver
-> > > so that we can do something like
-> > > 
-> > > "i2s-share = <0 2>";  instead of  i2s0-share = "I2S2";
-> > > 
-> > > ...and I don't think that this would be any more straightforward than
-> > > the
-> > > provided way.
-> > > 
-> > > There's an improvement that we can do to that pattern description
-> > > though,
-> > > which would be explaining that declaring 'i2s0-share = "I2S2"' means
-> > > that
-> > > I2S2's data pin will be used as DATA-OUT, while i2s0 is DATA-IN.
-> > > 
-> > > Another thing that comes to mind here is that this is a MediaTek
-> > > specific
-> > > property and *not* a generic one, which means that both the driver
-> > > and
-> > > this binding should be fixed to get a "mediatek," prefix, so, this
-> > > property
-> > > should - in reality - be "mediatek,i2s[0-35-9]-share" instead.
-> > > 
-> > > I think that everyone agrees about that, but let's see what the
-> > > others say.
-> > > 
-> > > Cheers,
-> > > Angelo
-> > 
-> > Hi Angelo,
-> > 
-> > 'i2s0-share = "I2S2"' means that if we want use I2S0, there need open
-> > I2S2 to provide clock. Conversely, if we want to use I2S2, we don't
-> > need to open I2S0. However, MediaTek I2S0 and I2S2 hardware are
-> > generally designed as input. So usually we use 'i2s0-share = "I2S1"'.
-> > Even numbers represent input, odd numbers represent output.
-> > 
-> > Yes, I think adding the "mediatek," prefix is the right way to define a
-> > non-generic property.
-> > 
+On 5/4/22 9:43 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.6 release.
+> There are 225 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 06 May 2022 15:25:19 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.6-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+>
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Hi Jiaxin,
+Tested-by: Ron Economos <re@w6rz.net>
 
-thank you for the insights.
-
-> 
-> Hello Jiaxin,
-> 
-> if I get this correctly, i2s0-share = "I2S2" would be *invalid*... as you
-> just explained, i2sX, where:
-> 
-> X = even number -> always DATA IN
-> X = odd number  -> always DATA OUT
-> 
-> ...this means that the dt-binding needs a pattern to specify that only odd
-> can be assigned to only even.
-
-So, the situation seems different at least on mt8192-asurada-spherion.
-Here, I2S8 is used for the headset microphone and I2S9 for the headset audio.
-Even for input and odd for output agree with Jiaxin's description. However, the
-input bus seems to be the main one, that is, disabling I2S8:
-
-	amixer cset name='UL2_CH1 I2S8_CH1' 0
-	amixer cset name='UL2_CH2 I2S8_CH2' 0
-
-not only disables the microphone but also the audio on the headset. If I add 
-
-	i2s9-share = "I2S8";
-
-on the DT, then everything works, I can disable I2S8 without impacting the
-headset audio. So the pattern for the property on this platform is the opposite
-that Jiaxin mentioned. This tells me that we should keep the binding more
-generic (not assume where odds and evens go). I will still apply the other
-suggestions mentioned though.
-
-Thanks,
-Nícolas
-
-> 
-> Nicolas, take note! :-) :-)
-> 
-> Thanks,
-> Angelo
-> 
-> -- 
-> To unsubscribe, send mail to kernel-unsubscribe@lists.collabora.co.uk.
