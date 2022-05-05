@@ -2,167 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90835C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9121C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358316AbiEELzZ (ORCPT
+        id S1358685AbiEEL43 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 07:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
+        Thu, 5 May 2022 07:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbiEELzX (ORCPT
+        with ESMTP id S1356209AbiEEL41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 07:55:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED9F532F9;
-        Thu,  5 May 2022 04:51:43 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 846C31F8D4;
-        Thu,  5 May 2022 11:51:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651751502; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mVkZP16seFI7V6Y2j5g4tx9yd6zUju4tMIUwikRtuZM=;
-        b=n529iRyin8u2q3PFxoHpdH81Ajn0A11USwjflG9sxDot4D5AyXnjJ0cwcFAdPS0rE/jryu
-        Za1i9xB96fbi28GNovCBvvb/1TFa4BGnC8/dYCrUUi2DJabyle1EoMkBP58Tn/6oUYpBoM
-        A9IHVRGssfxSjwdLJJnYpgiOFRMkaxc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651751502;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mVkZP16seFI7V6Y2j5g4tx9yd6zUju4tMIUwikRtuZM=;
-        b=yvw98h3Q7Emlhc2YpJFEzS3823zRCZwrweAPGR28eCy+o5S0wtN3FrE1XuQgFET6Jkia63
-        9yxmFPn8xbcUsTBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5FE8613A65;
-        Thu,  5 May 2022 11:51:42 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id D+71FU66c2KcbwAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Thu, 05 May 2022 11:51:42 +0000
-Message-ID: <d5348b86-f455-b28e-14ef-972dfdb75585@suse.de>
-Date:   Thu, 5 May 2022 13:51:41 +0200
+        Thu, 5 May 2022 07:56:27 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FD754696;
+        Thu,  5 May 2022 04:52:41 -0700 (PDT)
+X-UUID: 3357646738684a098c04ee1ab0358742-20220505
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:d304df2c-ad96-430f-8eaa-ff25fa176b05,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:1794b1b2-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 3357646738684a098c04ee1ab0358742-20220505
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1062747904; Thu, 05 May 2022 19:52:35 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 5 May 2022 19:52:34 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 5 May 2022 19:52:34 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
+        <hsinyi@google.com>, <khilman@baylibre.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v6 03/10] cpufreq: mediatek: Move voltage limits to platform data
+Date:   Thu, 5 May 2022 19:52:19 +0800
+Message-ID: <20220505115226.20130-4-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 4/4] fbdev: vesafb: Cleanup fb_info in .fb_destroy
- rather than .remove
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org
-References: <20220505113128.264963-1-javierm@redhat.com>
- <20220505113128.264963-5-javierm@redhat.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220505113128.264963-5-javierm@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------3qb0jJDsfMwthAxMyida0Ig6"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------3qb0jJDsfMwthAxMyida0Ig6
-Content-Type: multipart/mixed; boundary="------------qjaYkn7iDSY9Mbq55tpCXTw7";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Javier Martinez Canillas <javierm@redhat.com>,
- linux-kernel@vger.kernel.org
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>, Helge Deller <deller@gmx.de>,
- dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Message-ID: <d5348b86-f455-b28e-14ef-972dfdb75585@suse.de>
-Subject: Re: [PATCH v2 4/4] fbdev: vesafb: Cleanup fb_info in .fb_destroy
- rather than .remove
-References: <20220505113128.264963-1-javierm@redhat.com>
- <20220505113128.264963-5-javierm@redhat.com>
-In-Reply-To: <20220505113128.264963-5-javierm@redhat.com>
+Voltages and shifts are defined as macros originally.
+There are different requirements of these values for each MediaTek SoCs.
+Therefore, we add the platform data and move these values into it.
 
---------------qjaYkn7iDSY9Mbq55tpCXTw7
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/cpufreq/mediatek-cpufreq.c | 84 +++++++++++++++++++++---------
+ 1 file changed, 58 insertions(+), 26 deletions(-)
 
-DQoNCkFtIDA1LjA1LjIyIHVtIDEzOjMxIHNjaHJpZWIgSmF2aWVyIE1hcnRpbmV6IENhbmls
-bGFzOg0KPiBUaGUgZHJpdmVyIGlzIGNhbGxpbmcgZnJhbWVidWZmZXJfcmVsZWFzZSgpIGlu
-IGl0cyAucmVtb3ZlIGNhbGxiYWNrLCBidXQNCj4gdGhpcyB3aWxsIGNhdXNlIHRoZSBzdHJ1
-Y3QgZmJfaW5mbyB0byBiZSBmcmVlZCB0b28gZWFybHkuIFNpbmNlIGl0IGNvdWxkDQo+IGJl
-IHRoYXQgYSByZWZlcmVuY2UgaXMgc3RpbGwgaG9sZCB0byBpdCBpZiB1c2VyLXNwYWNlIG9w
-ZW5lZCB0aGUgZmJkZXYuDQo+IA0KPiBUaGlzIHdvdWxkIGxlYWQgdG8gYSB1c2UtYWZ0ZXIt
-ZnJlZSBlcnJvciBpZiB0aGUgZnJhbWVidWZmZXIgZGV2aWNlIHdhcw0KPiB1bnJlZ2lzdGVy
-ZWQgYnV0IGxhdGVyIGEgdXNlci1zcGFjZSBwcm9jZXNzIHRyaWVzIHRvIGNsb3NlIHRoZSBm
-YmRldiBmZC4NCj4gDQo+IFRoZSBjb3JyZWN0IHRoaW5nIHRvIGRvIGlzIHRvIG9ubHkgdW5y
-ZWdpc3RlciB0aGUgZnJhbWVidWZmZXIgaW4gdGhlDQo+IGRyaXZlcidzIC5yZW1vdmUgY2Fs
-bGJhY2ssIGJ1dCBkbyBhbnkgY2xlYW51cCBpbiB0aGUgZmJfb3BzLmZiX2Rlc3Ryb3kuDQo+
-IA0KPiBTdWdnZXN0ZWQtYnk6IERhbmllbCBWZXR0ZXIgPGRhbmllbC52ZXR0ZXJAZmZ3bGwu
-Y2g+DQo+IFNpZ25lZC1vZmYtYnk6IEphdmllciBNYXJ0aW5leiBDYW5pbGxhcyA8amF2aWVy
-bUByZWRoYXQuY29tPg0KDQpSZXZpZXdlZC1ieTogVGhvbWFzIFppbW1lcm1hbm4gPHR6aW1t
-ZXJtYW5uQHN1c2UuZGU+DQoNCj4gLS0tDQo+IA0KPiBDaGFuZ2VzIGluIHYyOg0KPiAtIEFs
-c28gZG8gdGhlIGNoYW5nZSBmb3IgdmVzYWZiIChUaG9tYXMgWmltbWVybWFubikuDQo+IA0K
-PiAgIGRyaXZlcnMvdmlkZW8vZmJkZXYvdmVzYWZiLmMgfCAxNCArKysrKysrKysrKy0tLQ0K
-PiAgIDEgZmlsZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0K
-PiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vZmJkZXYvdmVzYWZiLmMgYi9kcml2
-ZXJzL3ZpZGVvL2ZiZGV2L3Zlc2FmYi5jDQo+IGluZGV4IGRmNmRlNWE5ZGQ0Yy4uMWYwM2E0
-NDllNTA1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L3Zlc2FmYi5jDQo+
-ICsrKyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYvdmVzYWZiLmMNCj4gQEAgLTE3OSw2ICsxNzks
-MTAgQEAgc3RhdGljIGludCB2ZXNhZmJfc2V0Y29scmVnKHVuc2lnbmVkIHJlZ25vLCB1bnNp
-Z25lZCByZWQsIHVuc2lnbmVkIGdyZWVuLA0KPiAgIAlyZXR1cm4gZXJyOw0KPiAgIH0NCj4g
-ICANCj4gKy8qDQo+ICsgKiBmYl9vcHMuZmJfZGVzdHJveSBpcyBjYWxsZWQgYnkgdGhlIGxh
-c3QgcHV0X2ZiX2luZm8oKSBjYWxsIGF0IHRoZSBlbmQNCj4gKyAqIG9mIHVucmVnaXN0ZXJf
-ZnJhbWVidWZmZXIoKSBvciBmYl9yZWxlYXNlKCkuIERvIGFueSBjbGVhbnVwIGhlcmUuDQo+
-ICsgKi8NCj4gICBzdGF0aWMgdm9pZCB2ZXNhZmJfZGVzdHJveShzdHJ1Y3QgZmJfaW5mbyAq
-aW5mbykNCj4gICB7DQo+ICAgCXN0cnVjdCB2ZXNhZmJfcGFyICpwYXIgPSBpbmZvLT5wYXI7
-DQo+IEBAIC0xODcsNyArMTkxLDEzIEBAIHN0YXRpYyB2b2lkIHZlc2FmYl9kZXN0cm95KHN0
-cnVjdCBmYl9pbmZvICppbmZvKQ0KPiAgIAlhcmNoX3BoeXNfd2NfZGVsKHBhci0+d2NfY29v
-a2llKTsNCj4gICAJaWYgKGluZm8tPnNjcmVlbl9iYXNlKQ0KPiAgIAkJaW91bm1hcChpbmZv
-LT5zY3JlZW5fYmFzZSk7DQo+ICsNCj4gKwlpZiAoKChzdHJ1Y3QgdmVzYWZiX3BhciAqKShp
-bmZvLT5wYXIpKS0+cmVnaW9uKQ0KPiArCQlyZWxlYXNlX3JlZ2lvbigweDNjMCwgMzIpOw0K
-PiArDQo+ICAgCXJlbGVhc2VfbWVtX3JlZ2lvbihpbmZvLT5hcGVydHVyZXMtPnJhbmdlc1sw
-XS5iYXNlLCBpbmZvLT5hcGVydHVyZXMtPnJhbmdlc1swXS5zaXplKTsNCj4gKw0KPiArCWZy
-YW1lYnVmZmVyX3JlbGVhc2UoaW5mbyk7DQo+ICAgfQ0KPiAgIA0KPiAgIHN0YXRpYyBzdHJ1
-Y3QgZmJfb3BzIHZlc2FmYl9vcHMgPSB7DQo+IEBAIC00ODQsMTAgKzQ5NCw4IEBAIHN0YXRp
-YyBpbnQgdmVzYWZiX3JlbW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAg
-IHsNCj4gICAJc3RydWN0IGZiX2luZm8gKmluZm8gPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShw
-ZGV2KTsNCj4gICANCj4gKwkvKiB2ZXNhZmJfZGVzdHJveSB0YWtlcyBjYXJlIG9mIGluZm8g
-Y2xlYW51cCAqLw0KPiAgIAl1bnJlZ2lzdGVyX2ZyYW1lYnVmZmVyKGluZm8pOw0KPiAtCWlm
-ICgoKHN0cnVjdCB2ZXNhZmJfcGFyICopKGluZm8tPnBhcikpLT5yZWdpb24pDQo+IC0JCXJl
-bGVhc2VfcmVnaW9uKDB4M2MwLCAzMik7DQo+IC0JZnJhbWVidWZmZXJfcmVsZWFzZShpbmZv
-KTsNCj4gICANCj4gICAJcmV0dXJuIDA7DQo+ICAgfQ0KDQotLSANClRob21hcyBaaW1tZXJt
-YW5uDQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9u
-cyBHZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFu
-eQ0KKEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBU
-b3Rldg0K
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index d15cbef4a72e..0b6c3479c8cc 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -10,15 +10,21 @@
+ #include <linux/cpumask.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_opp.h>
+ #include <linux/regulator/consumer.h>
+ 
+-#define MIN_VOLT_SHIFT		(100000)
+-#define MAX_VOLT_SHIFT		(200000)
+-#define MAX_VOLT_LIMIT		(1150000)
+ #define VOLT_TOL		(10000)
+ 
++struct mtk_cpufreq_platform_data {
++	int min_volt_shift;
++	int max_volt_shift;
++	int proc_max_volt;
++	int sram_min_volt;
++	int sram_max_volt;
++};
++
+ /*
+  * The struct mtk_cpu_dvfs_info holds necessary information for doing CPU DVFS
+  * on each CPU power/clock domain of Mediatek SoCs. Each CPU cluster in
+@@ -41,6 +47,7 @@ struct mtk_cpu_dvfs_info {
+ 	int intermediate_voltage;
+ 	bool need_voltage_tracking;
+ 	int pre_vproc;
++	const struct mtk_cpufreq_platform_data *soc_data;
+ };
+ 
+ static struct platform_device *cpufreq_pdev;
+@@ -62,6 +69,7 @@ static struct mtk_cpu_dvfs_info *mtk_cpu_dvfs_info_lookup(int cpu)
+ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 					int new_vproc)
+ {
++	const struct mtk_cpufreq_platform_data *soc_data = info->soc_data;
+ 	struct regulator *proc_reg = info->proc_reg;
+ 	struct regulator *sram_reg = info->sram_reg;
+ 	int pre_vproc, pre_vsram, new_vsram, vsram, vproc, ret;
+@@ -73,7 +81,8 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 		return pre_vproc;
+ 	}
+ 	/* Vsram should not exceed the maximum allowed voltage of SoC. */
+-	new_vsram = min(new_vproc + MIN_VOLT_SHIFT, MAX_VOLT_LIMIT);
++	new_vsram = min(new_vproc + soc_data->min_volt_shift,
++			soc_data->sram_max_volt);
+ 
+ 	if (pre_vproc < new_vproc) {
+ 		/*
+@@ -96,10 +105,11 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 				return pre_vproc;
+ 			}
+ 
+-			vsram = min(new_vsram, pre_vproc + MAX_VOLT_SHIFT);
++			vsram = min(new_vsram,
++				    pre_vproc + soc_data->min_volt_shift);
+ 
+-			if (vsram + VOLT_TOL >= MAX_VOLT_LIMIT) {
+-				vsram = MAX_VOLT_LIMIT;
++			if (vsram + VOLT_TOL >= soc_data->sram_max_volt) {
++				vsram = soc_data->sram_max_volt;
+ 
+ 				/*
+ 				 * If the target Vsram hits the maximum voltage,
+@@ -117,7 +127,7 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 				ret = regulator_set_voltage(sram_reg, vsram,
+ 							    vsram + VOLT_TOL);
+ 
+-				vproc = vsram - MIN_VOLT_SHIFT;
++				vproc = vsram - soc_data->min_volt_shift;
+ 			}
+ 			if (ret)
+ 				return ret;
+@@ -151,7 +161,8 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 				return pre_vsram;
+ 			}
+ 
+-			vproc = max(new_vproc, pre_vsram - MAX_VOLT_SHIFT);
++			vproc = max(new_vproc,
++				    pre_vsram - soc_data->max_volt_shift);
+ 			ret = regulator_set_voltage(proc_reg, vproc,
+ 						    vproc + VOLT_TOL);
+ 			if (ret)
+@@ -160,10 +171,11 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 			if (vproc == new_vproc)
+ 				vsram = new_vsram;
+ 			else
+-				vsram = max(new_vsram, vproc + MIN_VOLT_SHIFT);
++				vsram = max(new_vsram,
++					    vproc + soc_data->min_volt_shift);
+ 
+-			if (vsram + VOLT_TOL >= MAX_VOLT_LIMIT) {
+-				vsram = MAX_VOLT_LIMIT;
++			if (vsram + VOLT_TOL >= soc_data->sram_max_volt) {
++				vsram = soc_data->sram_max_volt;
+ 
+ 				/*
+ 				 * If the target Vsram hits the maximum voltage,
+@@ -194,13 +206,14 @@ static int mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
+ 
+ static int mtk_cpufreq_set_voltage(struct mtk_cpu_dvfs_info *info, int vproc)
+ {
++	const struct mtk_cpufreq_platform_data *soc_data = info->soc_data;
+ 	int ret;
+ 
+ 	if (info->need_voltage_tracking)
+ 		ret = mtk_cpufreq_voltage_tracking(info, vproc);
+ 	else
+ 		ret = regulator_set_voltage(info->proc_reg, vproc,
+-					    MAX_VOLT_LIMIT);
++					    soc_data->proc_max_volt);
+ 	if (!ret)
+ 		info->pre_vproc = vproc;
+ 
+@@ -509,9 +522,17 @@ static struct cpufreq_driver mtk_cpufreq_driver = {
+ 
+ static int mtk_cpufreq_probe(struct platform_device *pdev)
+ {
++	const struct mtk_cpufreq_platform_data *data;
+ 	struct mtk_cpu_dvfs_info *info, *tmp;
+ 	int cpu, ret;
+ 
++	data = dev_get_platdata(&pdev->dev);
++	if (!data) {
++		dev_err(&pdev->dev,
++			"failed to get mtk cpufreq platform data\n");
++		return -ENODEV;
++	}
++
+ 	for_each_possible_cpu(cpu) {
+ 		info = mtk_cpu_dvfs_info_lookup(cpu);
+ 		if (info)
+@@ -523,6 +544,7 @@ static int mtk_cpufreq_probe(struct platform_device *pdev)
+ 			goto release_dvfs_info_list;
+ 		}
+ 
++		info->soc_data = data;
+ 		ret = mtk_cpu_dvfs_info_init(info, cpu);
+ 		if (ret) {
+ 			dev_err(&pdev->dev,
+@@ -558,20 +580,27 @@ static struct platform_driver mtk_cpufreq_platdrv = {
+ 	.probe		= mtk_cpufreq_probe,
+ };
+ 
++static const struct mtk_cpufreq_platform_data mt2701_platform_data = {
++	.min_volt_shift = 100000,
++	.max_volt_shift = 200000,
++	.proc_max_volt = 1150000,
++	.sram_min_volt = 0,
++	.sram_max_volt = 1150000,
++};
++
+ /* List of machines supported by this driver */
+ static const struct of_device_id mtk_cpufreq_machines[] __initconst = {
+-	{ .compatible = "mediatek,mt2701", },
+-	{ .compatible = "mediatek,mt2712", },
+-	{ .compatible = "mediatek,mt7622", },
+-	{ .compatible = "mediatek,mt7623", },
+-	{ .compatible = "mediatek,mt8167", },
+-	{ .compatible = "mediatek,mt817x", },
+-	{ .compatible = "mediatek,mt8173", },
+-	{ .compatible = "mediatek,mt8176", },
+-	{ .compatible = "mediatek,mt8183", },
+-	{ .compatible = "mediatek,mt8365", },
+-	{ .compatible = "mediatek,mt8516", },
+-
++	{ .compatible = "mediatek,mt2701", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt2712", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt7622", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt7623", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt8167", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt817x", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt8173", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt8176", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt8183", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt8365", .data = &mt2701_platform_data },
++	{ .compatible = "mediatek,mt8516", .data = &mt2701_platform_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, mtk_cpufreq_machines);
+@@ -580,6 +609,7 @@ static int __init mtk_cpufreq_driver_init(void)
+ {
+ 	struct device_node *np;
+ 	const struct of_device_id *match;
++	const struct mtk_cpufreq_platform_data *data;
+ 	int err;
+ 
+ 	np = of_find_node_by_path("/");
+@@ -592,6 +622,7 @@ static int __init mtk_cpufreq_driver_init(void)
+ 		pr_debug("Machine is not compatible with mtk-cpufreq\n");
+ 		return -ENODEV;
+ 	}
++	data = match->data;
+ 
+ 	err = platform_driver_register(&mtk_cpufreq_platdrv);
+ 	if (err)
+@@ -603,7 +634,8 @@ static int __init mtk_cpufreq_driver_init(void)
+ 	 * and the device registration codes are put here to handle defer
+ 	 * probing.
+ 	 */
+-	cpufreq_pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
++	cpufreq_pdev = platform_device_register_data(NULL, "mtk-cpufreq", -1,
++						     data, sizeof(*data));
+ 	if (IS_ERR(cpufreq_pdev)) {
+ 		pr_err("failed to register mtk-cpufreq platform device\n");
+ 		platform_driver_unregister(&mtk_cpufreq_platdrv);
+-- 
+2.18.0
 
---------------qjaYkn7iDSY9Mbq55tpCXTw7--
-
---------------3qb0jJDsfMwthAxMyida0Ig6
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJzuk0FAwAAAAAACgkQlh/E3EQov+C9
-CBAAkIiJUw3OnjFE97PswhZpdccKT8EMFa/zzkjh+SS+nCzOHUimt0Nf7kvtOYUB5EVmYS6DV+n6
-Kz395oq40et5kks17UL/yTqxryNr4BlIrkgqQwy0f35clZw8iM5QOolgnlXE10gP5oYGrd9W7Tpi
-U+ynq3kYOT2AO+J2GvNxMTEK3pq9pcUiha7HIEG1N52VGrDPDlPaV7Qamx95C5oXvRhkg8yDaW0i
-x1tLe7dY3n7mrPDuG6LqqS6efPUARDcquRvCKr6m7AZpN1amT7ceyW3K93HpBRqDZM25Tq/Vv6Nx
-IH2h3b/J4Oz09a6Z8jjJk/WPdh2IPTr63o2miJx7mWe9OPeepT53WZJRO0R3zDNWOieXNObFXhbY
-I7b0CsBRGU0jdzQCesDf2jlhFQBahxUZxgJvlB35N292k2PMFRgDBxeLkoun5VKVr2kb+iuD6y+D
-iZKrbKWC33D7wOeJeVgEx7CLkmzyxQX5jwytFSZKnU3bZWWjLBVVMjJ5Uwgo0W9PgNi4HRlaQ0Ft
-As9uD7HCg3IWkKjuP51Prw4cuyR2e6XMPhvQa2yeJp2AMXiIVvnUMGvqtb/cg41K7QVD+/7DlBUy
-vdcVGIO0TMbPnGjQmvwm+sCJG2lni9Y9aGrFm2AZXpCX/KVHDGws+mo6hhTxI0CuzyiUv2PVQCs2
-IQs=
-=M+WV
------END PGP SIGNATURE-----
-
---------------3qb0jJDsfMwthAxMyida0Ig6--
