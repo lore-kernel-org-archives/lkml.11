@@ -2,98 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE09C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2207C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381192AbiEEPRN convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39526 "EHLO
+        id S233212AbiEEPTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 11:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381199AbiEEPRJ (ORCPT
+        with ESMTP id S242784AbiEEPSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:17:09 -0400
-X-Greylist: delayed 902 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 08:13:28 PDT
-Received: from mail.actia.se (212-181-117-226.customer.telia.com [212.181.117.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E90A5C35C;
-        Thu,  5 May 2022 08:13:27 -0700 (PDT)
-Received: from S036ANL.actianordic.se (10.12.31.117) by S035ANL.actianordic.se
- (10.12.31.116) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
- 2022 16:58:24 +0200
-Received: from S036ANL.actianordic.se ([fe80::e13e:1feb:4ea6:ec69]) by
- S036ANL.actianordic.se ([fe80::e13e:1feb:4ea6:ec69%10]) with mapi id
- 15.01.2375.024; Thu, 5 May 2022 16:58:24 +0200
-From:   John Ernberg <john.ernberg@actia.se>
-To:     "a.fatoum@pengutronix.de" <a.fatoum@pengutronix.de>
-CC:     "andreas@rammhold.de" <andreas@rammhold.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "david@sigma-star.at" <david@sigma-star.at>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "ebiggers@kernel.org" <ebiggers@kernel.org>,
-        "franck.lenormand@nxp.com" <franck.lenormand@nxp.com>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "horia.geanta@nxp.com" <horia.geanta@nxp.com>,
-        "j.luebbe@pengutronix.de" <j.luebbe@pengutronix.de>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "matthias.schiffer@ew.tq-group.com" 
-        <matthias.schiffer@ew.tq-group.com>,
-        "pankaj.gupta@nxp.com" <pankaj.gupta@nxp.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "s.trumtrar@pengutronix.de" <s.trumtrar@pengutronix.de>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "sumit.garg@linaro.org" <sumit.garg@linaro.org>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        John Ernberg <john.ernberg@actia.se>
-Subject: Re: [PATCH v8 0/6] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Thread-Topic: [PATCH v8 0/6] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Thread-Index: AQHYYJCRaP1BJI53pkGuwIjy0ObIWw==
-Date:   Thu, 5 May 2022 14:58:23 +0000
-Message-ID: <20220505145756.2492566-1-john.ernberg@actia.se>
-References: <20220428140145.870527-1-a.fatoum@pengutronix.de>
-In-Reply-To: <20220428140145.870527-1-a.fatoum@pengutronix.de>
-Accept-Language: en-US, sv-SE
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.35.1
-x-originating-ip: [10.12.12.58]
-x-esetresult: clean, is OK
-x-esetid: 37303A293105C852667D6B
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        Thu, 5 May 2022 11:18:52 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F294F47054;
+        Thu,  5 May 2022 08:15:12 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id y3so9301562ejo.12;
+        Thu, 05 May 2022 08:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=P9U8VtHTMpxS3daOmFxvM8CiEOLd4g2YjivTRqBj1gg=;
+        b=pylu+FcH16PRiwGxvsJ4Lvm8VVlU35vFQHYuCBoWRDRpESWBGDwGuKu0dR9BNAcbqc
+         cKx/JvbNE+O1OdTPQl6gHPG84lxarUomOauCC5h+37/TVx6QZovXxu0XTMAu09utWHin
+         B/eI9jpxuzn/9GpIC0QSQx88YVt0w5HNWJVybF52KdYjdZjezHNF3nZKTU9MuzUAzgvl
+         2E+gls8B87ahmQK74ZKRCUuaVIBgyVu1fyuwjwDFDVDcd/CxOz8RsmsRtJc7X9Gnzb6D
+         VDPU8wCLdF5sluzx4F1K3U6m00TU/VoR2kCAedh8Qq955i57wWN5IVEaQf0zTaNKqaTM
+         0kGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P9U8VtHTMpxS3daOmFxvM8CiEOLd4g2YjivTRqBj1gg=;
+        b=Lao8he9CrL6bv3MSTmtyEmYok3GQv3hALya7AXShs8VChg19TrovSr4koYOJv7ukZG
+         CtWvetLGm+3JNP7JViVbW0PNpegHoparhK8jOFDlszjp02TK/3gXygi+WXJFUq15u9ne
+         6YAOoVb6MhKkUEZbKbQBy/0LhH16WA4uR+4WvQbfgM8SF4olev/e2gtgZRcY5KB621Vh
+         klutoSfk2ITQ2GsogK55setrm7cpAmyuKwKmIJcnvghG/diUOUT65WQaJIlsoR/cAQXA
+         rYveVoWsFZQFRkJbMtoN1CC+6qf09KJugKLQ2gc/zYSjoIAx2WvoR0ZLVq0OBSDszA0O
+         w1vA==
+X-Gm-Message-State: AOAM531nRd1/OicxJIRZBE6AgFigUmUbgckayVCQbwBWUU/CKEDOECBa
+        cC8VW7UUbMvoYcA86JsN1bU=
+X-Google-Smtp-Source: ABdhPJxbaNdvNnwR7fqSaGdLSEy4BrGkyc6cPNhTM1hE34Dag/JoDOsa5U4KH+iru1hh2yxHWfyfyg==
+X-Received: by 2002:a17:907:1c87:b0:6f0:29ea:cc01 with SMTP id nb7-20020a1709071c8700b006f029eacc01mr26942736ejc.671.1651763711293;
+        Thu, 05 May 2022 08:15:11 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id b21-20020aa7c915000000b0042617ba6380sm954779edt.10.2022.05.05.08.15.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 08:15:10 -0700 (PDT)
+Date:   Thu, 5 May 2022 18:15:07 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun.Ramadoss@microchip.com
+Cc:     songliubraving@fb.com, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        robh+dt@kernel.org, andrew@lunn.ch, devicetree@vger.kernel.org,
+        linux@armlinux.org.uk, andrii@kernel.org,
+        UNGLinuxDriver@microchip.com, john.fastabend@gmail.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
+        kpsingh@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, kafai@fb.com, yhs@fb.com,
+        krzysztof.kozlowski+dt@linaro.org, davem@davemloft.net,
+        Woojung.Huh@microchip.com
+Subject: Re: [Patch net-next v13 07/13] net: dsa: microchip: add LAN937x SPI
+ driver
+Message-ID: <20220505151507.5fp3lur74gs4faee@skbuf>
+References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
+ <20220504151755.11737-8-arun.ramadoss@microchip.com>
+ <20220504200726.pn7y73gt7wc2dpsg@skbuf>
+ <52e682a1bcd2aac1097f2b4f1948066fe5bb6924.camel@microchip.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52e682a1bcd2aac1097f2b4f1948066fe5bb6924.camel@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Gave this a go on iMX8QXP with Linux 5.17.5 and I can't quite get it working.
+On Thu, May 05, 2022 at 10:32:17AM +0000, Arun.Ramadoss@microchip.com wrote:
+> > >  static int lan937x_switch_init(struct ksz_device *dev)
+> > >  {
+> > > +     int ret;
+> > > +
+> > >       dev->ds->ops = &lan937x_switch_ops;
+> > > 
+> > > +     /* Check device tree */
+> > > +     ret = lan937x_check_device_id(dev);
+> > > +     if (ret < 0)
+> > > +             return ret;
+> > > +
+> > 
+> > Can't this be called from lan937x_spi_probe() directly, why do you
+> > need
+> > to go through lan937x_switch_register() first?
+> 
+> lan937x_check_device_id function compares the dev->chip_id with the
+> lan937x_switch_chip array and populate the some of the parameters of
+> struct ksz_dev. The dev->chip_id is populated using the dev->dev_ops-
+> >detect in the ksz_switch_register function. If lan937x_check_device_id
+> needs to be called in spi_probe, then chip_id has to be identified as
+> part of spi_probe function. Since ksz_switch_register handles the
+> identifying the chip_id, checking the device_id is part of switch_init.
+>  
+>  if (dev->dev_ops->detect(dev))
+>              return -EINVAL;
+>  
+>  ret = dev->dev_ops->init(dev);
+>  if (ret)
+>             return ret;
 
-I get -ENODEV from add_key() via keyctl. When I traced it in dmesg I couldn't
-get an as clear picture as I would like but CAAM (and thus possibly JRs?)
-initialzing after trusted_key.
+Whatever you do, please use a common pattern for all of ksz9477, ksz8,
+and your lan937x. This includes validation of chip id, placement of the
+chip_data and dev_ops structures, and reuse as much logic as possible.
+The key is to limit the chip-specific information to structured data
+(tables) wherever possible and let common code deal with them.
 
-dmesg snips:
-[    1.296772] trusted_key: Job Ring Device allocation for transform failed
-...
-[    1.799768] caam 31400000.crypto: device ID = 0x0a16040000000100 (Era 9)
-[    1.807142] caam 31400000.crypto: job rings = 2, qi = 0
-[    1.822667] caam algorithms registered in /proc/crypto
-[    1.830541] caam 31400000.crypto: caam pkc algorithms registered in /proc/crypto
-[    1.841807] caam 31400000.crypto: registering rng-caam
+For example there is no reason why struct ksz_chip_data is redefined for
+every switch, why copying from "chip" to "dev" is duplicated for every
+switch, and yet, why every other switch copies from "chip" to "dev" in
+the "switch_init" function yet lan937x does it from "check_device_id".
+So much boilerplate, yet different in subtle ways, makes the code very
+unpleasant to review.
 
-I didn't quite have the time to get a better trace than that.
+I'm sure you'll find a straightforward way to code up a probing function.
 
-Best regards // John Ernberg
+> As per the comment, enable_spi_indirect_access function called twice
+> https://lore.kernel.org/netdev/20220408232557.b62l3lksotq5vuvm@skbuf/
+> I have removed the enable_spi_indirect_access in the lan937x_setup
+> function in v13 patch 6. But it actually failed our regression.
+> The SPI indirect is required for accessing the Internal phy registers.
+> We have enabled it in lan937x_init before registering the
+> mdio_register. We need it for reading the phy id.
+> And another place enabled in lan937x_setup after lan937x_switch_reset
+> function. When I removed enabling in setup function, switch_reset
+> disables the spi indirecting addressing. Because of that further phy
+> register r/w fails. In Summary, we need to enable spi indirect access
+> in both the places, one for mdio_register and another after
+> switch_reset. 
+> 
+> Can I enable it both the places? Kindly suggest. 
+
+So you call lan937x_reset_switch() as the first thing in ds->ops->setup(),
+and this momentarily breaks the earlier MDIO bus setup done from probe
+-> ksz_switch_register() -> dev_ops->init().
+
+So why don't you move the lan937x_enable_spi_indirect_access() and
+lan937x_mdio_register() calls to ds->ops->setup(), _after_ the switch
+soft reset, then?
