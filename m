@@ -2,148 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E32FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:51:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382902AbiEERv5 (ORCPT
+        id S1382519AbiEERyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
+        Thu, 5 May 2022 13:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380815AbiEERvz (ORCPT
+        with ESMTP id S237406AbiEERyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:51:55 -0400
-X-Greylist: delayed 564 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 10:48:14 PDT
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FEF4C404
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:48:14 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout01.posteo.de (Postfix) with ESMTPS id 62FF824002A
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 19:38:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1651772328; bh=KHnBAH4NavijbLBgpxqUDpbWR0IBU0dr4uSK4a3Nlk4=;
-        h=From:To:Cc:Subject:Date:Autocrypt:OpenPGP:From;
-        b=nxZea6oDnG8bIvjpguQzu/InPhhAzG4Hx9WGjP7rvkb+/Rk1zXDdn0t2aPfnPoGwu
-         36OZk9uyICDRizYUkAPZjYlSji0svdTHEMkBqekT/r4M6xI8uCRLb/J4mVvrRih8L+
-         wcLHoAqapR5osDKiTYIkmkgBT6fAorfef2lJbTNP4tguAPI+L1vjEEHjAOYaj2mKyI
-         o2OAN9tkTE1/vk/xbJWZkbdm+emfGsbrjDKtUJLKmMmvReYdVjVvvEyusTiMuCGdsX
-         A3TFM5WASxJAhDHbnK71n5UqntJXUYM/LoVFwza0B/fnooqlSgC2B2mOwtC/kQX1O+
-         xyFh7UdXWz8Vg==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4KvLXP6rDbz9rxV;
-        Thu,  5 May 2022 19:38:45 +0200 (CEST)
-From:   Manuel Ullmann <manuel.ullmann@posteo.de>
-To:     Jordan Leppert <jordanleppert@protonmail.com>
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
-        Manuel Ullmann <labre@posteo.de>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, regressions@lists.linux.dev,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        Holger =?utf-8?Q?Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>, koo5 <kolman.jindrich@gmail.com>,
-        Dmitry Bezrukov <dbezrukov@marvell.com>
-Subject: Re: [EXT] [PATCH] net: atlantic: always deep reset on pm op, fixing
- null deref regression
-References: <87czgt2bsb.fsf@posteo.de>
-        <1f4b595a-1553-f015-c7a0-6d3075bdbcda@marvell.com>
-        <99KGBavpdWUsYAzz1AIlqoFSVt9JXUAmj3Sbso-671ku1gnhokcfi3D9bbh_2xYS_wWYRQOhGxgUsZKsgqkyIivlelLor9zNvpOLC0I3nxA=@protonmail.com>
-Date:   Thu, 05 May 2022 17:39:02 +0000
-In-Reply-To: <99KGBavpdWUsYAzz1AIlqoFSVt9JXUAmj3Sbso-671ku1gnhokcfi3D9bbh_2xYS_wWYRQOhGxgUsZKsgqkyIivlelLor9zNvpOLC0I3nxA=@protonmail.com>
-        (Jordan Leppert's message of "Thu, 05 May 2022 10:24:49 +0000")
-Message-ID: <87ee17nakp.fsf@posteo.de>
+        Thu, 5 May 2022 13:54:50 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E052D28E33;
+        Thu,  5 May 2022 10:51:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651773059;
+        bh=r9fBrr7FwH7W9LRmDQgfqli9/FO04mumkS5KUN+Fqio=;
+        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
+         CC:From;
+        b=gk/gSaTLSzaEoiFc2mPGZ4K1Rcys0i28Eu+WHzlAwTPXZPcF4UZ0vaKG2hp9tVV55
+         66ffgtdUSYkY+u17Fs8qY7qKrrQHoDl8FmX7AKi4UoNrZOL2AFWtfHYJGirGT/RDb1
+         qr1qDpOBp/meL4FauWeqbtlI0O0nj602bgj15t7Y=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from frank-s9 ([217.61.145.208]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N2mBQ-1nwnV92Sy4-0132QR; Thu, 05
+ May 2022 19:50:59 +0200
+Date:   Thu, 05 May 2022 19:50:56 +0200
+User-Agent: K-9 Mail for Android
+In-Reply-To: <YnLEwEIOqnLGxFjJ@kroah.com>
+References: <20220504174823.156709-1-linux@fw-web.de> <YnLEwEIOqnLGxFjJ@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Autocrypt: addr=manuel.ullmann@posteo.de; prefer-encrypt=mutual; keydata=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
-OpenPGP: url=https://posteo.de/keys/manuel.ullmann@posteo.de.asc; preference=encrypt
+Subject: Re: [RFC v1] opp: add config option for debug
+Reply-to: frank-w@public-files.de
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Frank Wunderlich <linux@fw-web.de>
+CC:     linux-pm@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org
+From:   Frank Wunderlich <frank-w@public-files.de>
+Message-ID: <E08A9747-2F96-42A7-A427-0E00D4075CF0@public-files.de>
+X-Provags-ID: V03:K1:+1AIM9qLsiUaMHn1Nne6xcZJg75ywWG9yhRsl+x8MvbEGOmmlfp
+ qZpIE8jgusQpzDhDiY4rw7YkuilHUSmy2ZOHuRr55RyLCxjcAVlNurRUd6zfAxNweovbANH
+ i/GlkpQ9M/bYyE0Ni277f0DEpE9LcCv8G/jEq31y7gc4xfMvsxP5Jk0tuLBqkzbdHglQZCV
+ f35GRXSnaYNmzVvNlqIkg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2kcDMSfUhf8=:AbmWbmcTdR0wPNlPXIiz4g
+ oeB1RaYHEq+d2O81QmMN0uGRAE6vHKJh+WhgUqfaP5HucWNFZ2NKvDfE+NRF5NciJgH2UT404
+ ptybWn+0c8XHuGQ3lyoFWgxC6eP6vz17WzafeTYv1iZYtM+JeyU6w+BpbJRb84qmTaOxTkhuL
+ vGdjwh1pYDRkb1Di0T4HEKKhoGK5ueG+Hx+GZgnhQc6THLbHoR4pivPuH9KwW3GE/fvZ08OZs
+ utCsXFhOiDzEY5nqVXUNMQi2bB8RVpuCRitIXX+opA3Y6x4nyqW3XLn2DBAqs/Nm5WiV2PnQi
+ XUGBIi1qnafm7v6aUB9OYdQ/twl9zeXk065KukswR5lchPJnk8moO6dEgSgk1GBa7Yz1G39Z2
+ /HgmUpECfU9G/sJwdf92/yHoUFUctGX84fZAxkJ+Y6ZzoF/dY/3kJvJPEzQ6jqvmrjIAXslCD
+ Vlfit+G+COaO+JIcKYE1kYeTJrAAJf9M/AYqLlicvA37aIKjo3P6QCu0eSJuLmpt86tXgjN8I
+ kaAiifZ6IXv70zsViKX1fnQ64Gw+mIO0UeNXg2Av/nqTcYGhtxxDC0prV2dG63rpJSqDq7h5y
+ CvxNXw5A+ECzYYKaaqXZg11lniHmRCaJNB6feYDz73lOyx5jPc7/TzE55X6V1gdZuB9KFIBwI
+ 7wqlaJEa6RytvkstCIhniRGIpE8RKpeG6Z30RC2WuePEM8RlkRUEOWh8zRepT/jueOu2Lp5CY
+ 8gCk0hKUBDG0UVOCd9PmHtfqFfmS1i3wiTqxOqGfigq1CXstH/MPnDfWhCKAFUjw7mo3LaJCR
+ TwQC8s17vuRdEwjGHBv5tAref4irinYqZ2yVRGbAtfvbdarQ3JxpK2oU1XP0TXQoRhoA3iOYv
+ sQBHlaNIOwCKKWKoFc5g+kLsT/FIYxTw46Xm4Prauk1JztZfMkVhJ6rAsqbt9SAC4zaMFPeOc
+ megI8Bz2IEW0LjiaCC/JJjhQoh7gBARKNEPw2pT1l0w2UJBNa/PNsr7TxsVW8LShovDayH1fY
+ v60872N04dtQguPn3OM5c/TPLVNObhfzgoLyh7AkCZyugELIM23neSrZ/bhkTtHqycJpM/0Jr
+ ZQHR07KcNiI3ig=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>
->>
->> > The impact of this regression is the same for resume that I saw on
->> > thaw: the kernel hangs and nothing except SysRq rebooting can be done.
->> >
->> > The null deref occurs at the same position as on thaw.
->> > BUG: kernel NULL pointer dereference
->> > RIP: aq_ring_rx_fill+0xcf/0x210 [atlantic]
->> >
->> > Fixes regression in cbe6c3a8f8f4 ("net: atlantic: invert deep par in
->> > pm functions, preventing null derefs"), where I disabled deep pm
->> > resets in suspend and resume, trying to make sense of the
->> > atl_resume_common deep parameter in the first place.
->> >
->> > It turns out, that atlantic always has to deep reset on pm operations
->> > and the parameter is useless. Even though I expected that and tested
->> > resume, I screwed up by kexec-rebooting into an unpatched kernel, thus
->> > missing the breakage.
->> >
->> > This fixup obsoletes the deep parameter of atl_resume_common, but I
->> > leave the cleanup for the maintainers to post to mainline.
->> >
->> > PS: I'm very sorry for this regression.
->>
->>
->> Hi Manuel,
->>
->> Unfortunately I've missed to review and comment on previous patch - it w=
-as too quickly accepted.
->>
->> I'm still in doubt on your fixes, even after rereading the original prob=
-lem.
->> Is it possible for you to test this with all the possible combinations?
->> suspend/resume with device up/down,
->> hibernate/restore with device up/down?
+Hi,
 
-I confirm that suspend/resume/hibernation/thaw keeps working in all
-cases. Thaw would work without the original patch, if the device is down
-before hibernation. I also originally described this behaviour on
-bugzilla at
-
-https://bugzilla.kernel.org/show_bug.cgi?id=3D215798
-
-See also Jordan=E2=80=99s confirmation below.
-
-I think, the main reason, why this could break, is, that the deep
-parameter had no real impact until the breaking commit. So it was
-practically untested, when the allocation/free functions were split.
-
-Another thing, that I tested, was guarding all null pointer references
-with null checks, which failed at first, because GCC optimized them
-out. I think I have the atlantic tree for this (bad) fix attempt
-floating around. I can try to rebase and create a patch from this and
-post it to the Github issue, if you are interested.
-https://github.com/Aquantia/AQtion/issues/32
-
-Don=E2=80=99t have time for this before the weekend though.
-
->> I'll try to do the same on our side, but we don't have much resources fo=
-r that now unfortunately..
->>
->> > Fixes: cbe6c3a8f8f4315b96e46e1a1c70393c06d95a4c
->>
->>
->> That tag format is incorrect I think..
-
-Thanks for pointing that out. Also, are those stable Cc tags correct?
-Because I figured, that the x in the documentation could be also the
-branch name and not a placeholder. Should I resend the patch, fixing the
-tags? Won=E2=80=99t get to it before tomorrow, though.
-
->> Igor
-
-> With the proposed patch (deep parameter is always true), I've managed to =
-test:
-> 1. Hibernate/restore (with device down/up)
-> 2. Suspend/resume (with device down/up)
+Am 4=2E Mai 2022 20:24:00 MESZ schrieb Greg Kroah-Hartman <gregkh@linuxfou=
+ndation=2Eorg>:
+>On Wed, May 04, 2022 at 07:48:23PM +0200, Frank Wunderlich wrote:
+>> From: Frank Wunderlich <frank-w@public-files=2Ede>
+>>=20
+>> Currently OPP debug is enabled by DEBUG_DRIVER option=2E This is
+>generic
+>> driver debug and opp floods serial console=2E This is annoying if opp
+>is
+>> not needed so give it an additional config-key=2E
+>>=20
+>> Signed-off-by: Frank Wunderlich <frank-w@public-files=2Ede>
+>> ---
+>>  drivers/base/Kconfig | 1 +
+>>  drivers/opp/Kconfig  | 7 +++++++
+>>  drivers/opp/Makefile | 2 +-
+>>  3 files changed, 9 insertions(+), 1 deletion(-)
+>>=20
+>> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+>> index 6f04b831a5c0=2E=2E8ae826c95d5f 100644
+>> --- a/drivers/base/Kconfig
+>> +++ b/drivers/base/Kconfig
+>> @@ -130,6 +130,7 @@ config DEV_COREDUMP
+>>  config DEBUG_DRIVER
+>>  	bool "Driver Core verbose debug messages"
+>>  	depends on DEBUG_KERNEL
+>> +	imply DEBUG_OPP
 >
-> I put the device down with the command:
-> sudo ip link set <connection> down
+>This should not be needed, otherwise we would have to do that for all
+>random driver subsystem in the kernel=2E
+
+Have added this to have same behaviour if anyone sets DEBUG_DRIVER via def=
+config=2E Else this is disabled by default=2E
+
+>>  	help
+>>  	  Say Y here if you want the Driver core to produce a bunch of
+>>  	  debug messages to the system log=2E Select this if you are having a
+>> diff --git a/drivers/opp/Kconfig b/drivers/opp/Kconfig
+>> index e8ce47b32735=2E=2E6a2d2c6c1143 100644
+>> --- a/drivers/opp/Kconfig
+>> +++ b/drivers/opp/Kconfig
+>> @@ -12,3 +12,10 @@ config PM_OPP
+>>  	  representing individual voltage domains and provides SOC
+>>  	  implementations a ready to use framework to manage OPPs=2E
+>>  	  For more information, read <file:Documentation/power/opp=2Erst>
+>> +
+>> +menu "Operating Performance Points (OPP)"
+>> +config DEBUG_OPP
+>> +	bool "Debug Operating Performance Points"
+>> +	help
+>> +	  enable opp debugging
+>> +endmenu
+>> diff --git a/drivers/opp/Makefile b/drivers/opp/Makefile
+>> index f65ed5985bb4=2E=2E2589915eef95 100644
+>> --- a/drivers/opp/Makefile
+>> +++ b/drivers/opp/Makefile
+>> @@ -1,5 +1,5 @@
+>>  # SPDX-License-Identifier: GPL-2=2E0-only
+>> -ccflags-$(CONFIG_DEBUG_DRIVER)	:=3D -DDEBUG
+>> +ccflags-$(CONFIG_DEBUG_OPP)	:=3D -DDEBUG
 >
-> I hope that's correct, if not please let me know correct command.
+>This feels wrong, you shouldn't need a -DDEBUG for anything if all is
+>going correctly=2E  Why is opp so odd this way?  Just use the normal
+>dev_dbg() macros and all will be fine, nothing special should be needed
+>at all=2E
 
-This should be the correct.
+I have looked more into it,just wanted to get driver debug (probing/bindin=
+g) and dev_dbg messages without the opp spam (floods serial console)=2E
 
-Manuel
+>And don't use a config option for it either, no one will turn it on, it
+>needs to "just work" for all systems=2E
+
+Config option is to enable if needed and not via driver-debug=2E
+
+>thanks,
+>
+>greg k-h
+
+
+regards Frank
