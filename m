@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355933AbiEEKgf (ORCPT
+        id S1355934AbiEEKgl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 06:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
+        Thu, 5 May 2022 06:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355849AbiEEKg2 (ORCPT
+        with ESMTP id S1355881AbiEEKg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 06:36:28 -0400
 Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1D61F61B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C754BFF2
         for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 03:32:47 -0700 (PDT)
 Received: from localhost.localdomain (unknown [80.240.223.29])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 6816A40755F6;
-        Thu,  5 May 2022 10:32:44 +0000 (UTC)
+        by mail.ispras.ru (Postfix) with ESMTPSA id 8015C40755D3;
+        Thu,  5 May 2022 10:32:43 +0000 (UTC)
 From:   Baskov Evgeniy <baskov@ispras.ru>
 To:     Borislav Petkov <bp@alien8.de>
 Cc:     Baskov Evgeniy <baskov@ispras.ru>,
@@ -26,76 +26,48 @@ Cc:     Baskov Evgeniy <baskov@ispras.ru>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] x86: Parse CONFIG_CMDLINE in compressed kernel
-Date:   Thu,  5 May 2022 13:32:24 +0300
-Message-Id: <20220505103224.21667-3-baskov@ispras.ru>
+Subject: [PATCH v3 0/2] x86: Parse CONFIG_CMDLINE in compressed kernel
+Date:   Thu,  5 May 2022 13:32:22 +0300
+Message-Id: <20220505103224.21667-1-baskov@ispras.ru>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220505103224.21667-1-baskov@ispras.ru>
-References: <20220505103224.21667-1-baskov@ispras.ru>
+In-Reply-To: <YnJAYOHBjipBfdm3@zn.tnic>
+References: 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CONFIG_CMDLINE, CONFIG_CMDLINE_BOOL, and CONFIG_CMDLINE_OVERRIDE were
-ignored during options lookup in compressed kernel.
+CONFIG_CMDLINE_BOOL and CONFIG_CMDLINE_OVERRIDE was ignored during
+options lookup in compressed kernel, including earlyprintk option,
+so it was impossible to get earlyprintk messages from that stage
+of boot process via command line provided at compile time.
+Being able to enable earlyprintk via compile-time option might
+be desirable for booting on systems with broken UEFI command line
+arguments via EFISTUB.
 
-Parse CONFIG_CMDLINE-related options correctly in compressed kernel
-code.
+v2 changes:
 
-cmd_line_ptr_init is explicitly placed in .data section since it is
-used and expected to be equal to zero before .bss section is cleared.
+As Borislav Petkov stated, we can do the work just once and then
+return correct command line pointer. Doing it this way require
+us to perform string manipulations, so the first patch adds missing
+strlcat() to compressed kernel, since this function simplifies
+the code a lot.
 
-Signed-off-by: Baskov Evgeniy <baskov@ispras.ru>
+If we need to concatenate strings, static buffer of fixed length
+is used. The maximum command line length is set to the same value
+as the one in the kernel setup code.
 
-diff --git a/arch/x86/boot/compressed/cmdline.c b/arch/x86/boot/compressed/cmdline.c
-index f1add5d85da9..261f53ad395a 100644
---- a/arch/x86/boot/compressed/cmdline.c
-+++ b/arch/x86/boot/compressed/cmdline.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- #include "misc.h"
- 
-+#define COMMAND_LINE_SIZE 2048
-+
- static unsigned long fs;
- static inline void set_fs(unsigned long seg)
- {
-@@ -12,12 +14,32 @@ static inline char rdfs8(addr_t addr)
- 	return *((char *)(fs + addr));
- }
- #include "../cmdline.c"
-+
-+#ifdef CONFIG_CMDLINE_BOOL
-+static char builtin_cmdline[COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
-+static bool builtin_cmdline_init __section(".data");
-+#endif
-+
- unsigned long get_cmd_line_ptr(void)
- {
- 	unsigned long cmd_line_ptr = boot_params->hdr.cmd_line_ptr;
--
- 	cmd_line_ptr |= (u64)boot_params->ext_cmd_line_ptr << 32;
- 
-+#ifdef CONFIG_CMDLINE_BOOL
-+	if (!builtin_cmdline_init) {
-+		if (!IS_ENABLED(CONFIG_CMDLINE_OVERRIDE)) {
-+			strlcat(builtin_cmdline, " ", COMMAND_LINE_SIZE);
-+			strlcat(builtin_cmdline,
-+				(char *)cmd_line_ptr,
-+				COMMAND_LINE_SIZE);
-+		}
-+
-+		builtin_cmdline_init = 1;
-+	}
-+
-+	cmd_line_ptr = (unsigned long)builtin_cmdline;
-+#endif
-+
- 	return cmd_line_ptr;
- }
- int cmdline_find_option(const char *option, char *buffer, int bufsize)
--- 
-2.36.0
+v3 changes:
 
+v2 had a bug: cmd_line_ptr was set to a pointer to a buffer inside
+a kernel before kernel relocation, that makes this pointer invalid.
+It was fixed by replacing the pointer by a boolean variable.
+
+Baskov Evgeniy (2):
+         x86: Add strlcat() to compressed kernel
+         x86: Parse CONFIG_CMDLINE in compressed kernel
+
+ arch/x86/boot/compressed/cmdline.c | 24 +++++++++++++++++++++++-
+ arch/x86/boot/compressed/string.c  | 15 +++++++++++++++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
