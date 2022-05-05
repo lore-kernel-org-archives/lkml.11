@@ -2,79 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E93C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 21:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A41FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 21:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385973AbiEEVkX (ORCPT
+        id S1381028AbiEEVlh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 17:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        Thu, 5 May 2022 17:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386049AbiEEVj5 (ORCPT
+        with ESMTP id S233533AbiEEVle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 17:39:57 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34855EDC4
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 14:36:08 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id k14so4627655pga.0
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 14:36:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wRB5bL8icZm+YVyooxijkF4zchYu/RyBrWDypUzci9Q=;
-        b=QKrTY3PcA5F3VU1HRw/IqYBX6gJ7uwyWaQo5ieX5o0BlPOg5hTFyHZx2euDOdzLisX
-         oIcEiQjP0CipSqVmfRCUhL5Ar/mmhl5u5/YlbkTVCucInFodjXUbtu5cIbevhvoxsoMB
-         DcSh+zao0zwEE704FZ+nWj8jZVJ9wcimvTiQ0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wRB5bL8icZm+YVyooxijkF4zchYu/RyBrWDypUzci9Q=;
-        b=i8yDerKmnnnnAzaqvGszqFaRkk9R/5kebmkVMepNKN8gLgEzXkNpI+3Jucw3bJBRK0
-         +5aakpXju0AzYlb/w9SaUTmU4I8j2RzqJAMrE7yzOAhQOQ88HU4prXhx9kM4TXopEW7j
-         m2h/rlF96A+2WMze41XIQSXb4wj+l+4F7ZmiRfsz+BBoi0rqSDPHi5XGFfPw2m/Z8wdu
-         q1G7cDs3LeRG/fxPcbn3M3MyOi4CMFHBGOtk2Pe5zlUKXcfMLQCItdYFYUuZEhNh9xSD
-         KJRGcVNSVdBFlF5N4ROuIkMMMMvubBoEcB9HMRwL7RJIUcrb1J631lIzsIykK2xUdfvo
-         SdsA==
-X-Gm-Message-State: AOAM5324xj/RoXrUK4HaFgpXt+RA1Rkgcw2lI874aAUzlzbvCxjBtwz3
-        eFF+riF8XpSLdrzEGGs8rh2TBw==
-X-Google-Smtp-Source: ABdhPJy5CzOiaGgutckbvVaywfwyJH3/07K4eo92vqjJZpBart4yVcdETqLq2VC+AeIwBxZ15NvgQA==
-X-Received: by 2002:a05:6a00:10cc:b0:4fe:3f1c:2d1 with SMTP id d12-20020a056a0010cc00b004fe3f1c02d1mr399118pfu.0.1651786568296;
-        Thu, 05 May 2022 14:36:08 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:827b:7f14:bb7e:2898])
-        by smtp.gmail.com with UTF8SMTPSA id s66-20020a637745000000b003c25a7581d9sm1781656pgc.52.2022.05.05.14.36.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 14:36:07 -0700 (PDT)
-Date:   Thu, 5 May 2022 14:36:06 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>, g@google.com
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v14 3/4] arm64: dts: qcom: sc7280: add lpass lpi pin
- controller node
-Message-ID: <YnRDRu6uCAi392oO@google.com>
-References: <1651763004-32533-1-git-send-email-quic_srivasam@quicinc.com>
- <1651763004-32533-4-git-send-email-quic_srivasam@quicinc.com>
+        Thu, 5 May 2022 17:41:34 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5069C13D74;
+        Thu,  5 May 2022 14:37:52 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KvRrG0jqzz4x7Y;
+        Fri,  6 May 2022 07:37:50 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651786670;
+        bh=n86/8gYxEzhlOHGFJmxvxteK50CUVJlT53soZq0ISz0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pCPdGBf86azeityq2xd+PvMPv7ZGkN161d9IGCD2RUskEF5Tc23qjql1w8Y8554Xy
+         1USCQrDPohRpsTRK/He8lQYx/uUmU1Nrgrd9bW8xKwuATljhl32Drx1yfDyDYAY8Sb
+         fY5iLhnAnLHFhw1/bb2qDrvPFLBGTMa4Pp7UnPUkapkgZGT+FVkpgQGYG12aDueGrk
+         zgvvv0mc09UJqOJUknDE48wc1wqaszF5gBRV2AoFS4WVMY4lSvJoHll5oigmGGUCRO
+         t+XasvV4LyB069rhJqFJhY9sj2yKJHe8/n/n2mrf3MizWT9h8AuM4pz8XywhAm0r4V
+         BEHnReBEoERRw==
+Date:   Fri, 6 May 2022 07:37:49 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the mm tree
+Message-ID: <20220506073749.73215f1d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1651763004-32533-4-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: multipart/signed; boundary="Sig_/ooJ7YSPsEE=6riEtJyTjeKO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 08:33:23PM +0530, Srinivasa Rao Mandadapu wrote:
-> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
-> based platforms.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+--Sig_/ooJ7YSPsEE=6riEtJyTjeKO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Hi all,
+
+After merging the mm tree, today's linux-next build (i386 allmodconfig
+clang14) failed like this:
+
+mm/shmem.c:2337:8: error: variable 'page' is uninitialized when used here [=
+-Werror,-Wuninitialized]
+
+Introduced by commit
+
+  b0bb08b2d5f3 ("mm/shmem: turn shmem_alloc_page() into shmem_alloc_folio()=
+")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/ooJ7YSPsEE=6riEtJyTjeKO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ0Q60ACgkQAVBC80lX
+0GzX1Qf8DnRxCSIR4kwcm29Maar1xyboUM1ov3P1q0baFAdULzKYBInQdWCJc+ZU
+ddnNT6BJjdBEf0/ayMtbt7nrXHSdKEakAMMt/viqjcbF78QjA0K1U58jd+vWDcW5
+1dteuDNzdPwzenK2+6GRBBeIYUYOwbj5UdCrcbuDm28vwL/GAsp7vBAjiCMQIqUH
+UGjag1o2snEm1HuxUyjlGFAG24SaTdF4YBCp/zFhSzuRIySIcH1t3nfvlqIqiZDp
+N+TLtJjSojxAvNbZcx7w/mJpF3O0/ctBpvYB4rVudn3645oFmkvJ1pjN4XkJ88pj
+tN8AH9KxAkP5CS+JiOlzvHv74uLY/A==
+=qfuW
+-----END PGP SIGNATURE-----
+
+--Sig_/ooJ7YSPsEE=6riEtJyTjeKO--
