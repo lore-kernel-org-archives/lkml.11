@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E328C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380923AbiEEPCN (ORCPT
+        id S1380935AbiEEPDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        Thu, 5 May 2022 11:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236360AbiEEPCK (ORCPT
+        with ESMTP id S233400AbiEEPDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:02:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2122F384;
-        Thu,  5 May 2022 07:58:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93DDEB82D7B;
-        Thu,  5 May 2022 14:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86188C385A8;
-        Thu,  5 May 2022 14:58:27 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="O34exH6/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651762706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KpInDdEYbSbY47RBsSFy57ts9NQcl1oXkKpbt5QwMwo=;
-        b=O34exH6/JYvayiHMbbkp9j06B54KTUgRhn4BkyxmGuq6kASQ+pTAsEYwruvN8hg/FCmrqY
-        SH7IPkWNsEJ8o0fxsA+26OBcg4WX5UCA6u5/nORvcQYJBwbKFbJGPY6BGVy2VhYbLYIh0+
-        qiDSWoKpSa2Co7zl/iUD5bJuw2P55J0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 88f7219e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 5 May 2022 14:58:25 +0000 (UTC)
-Date:   Thu, 5 May 2022 16:58:22 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-acpi@vger.kernel.org, stable@vger.kernel.org,
-        rafael@kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: cache_from_obj: Wrong slab cache. Acpi-Namespace but object is
- from kmalloc-64
-Message-ID: <YnPmDlf3KD9ckpM1@zx2c4.com>
-References: <YnPkFkZ/S87cHUnP@zx2c4.com>
+        Thu, 5 May 2022 11:03:09 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A9C5A15F;
+        Thu,  5 May 2022 07:59:29 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id A7CF21F458A2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651762768;
+        bh=Sf7k/0OhMAAsnIEczTQGZSW4QzFAgs4S4sdWB28tCLI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=JAYFAOPLuOcHT2NGoHGyAtRuK2Sg0/UD1HLKA8CEtiAdnyt2Ev+IbRuSbTWb4zhOh
+         a/VJysDId5WYcUfYdr7HmbAnVOw/pTJkLkhWZwB4aUXqxZiDY4brtTOtc/fTimUePy
+         8NN9vpeqgkcSR1ISUt56zn0dJW0w8ItJAfhsyL4VCXXlcSgA9M9Fp/eFSksxnRaxun
+         K65YRx+zSa5wyp3B6pXw1toIV7w6tQTmNbzKPriedDekfHmJjM4LPZA80X1PUZHApt
+         0/3J96n3qWRD/ncurNnqgwjqdy4hwIWbE+VeX2URuD5M00+lF9375ZRIcysbhCW5vO
+         CrTuwLvX8hGKg==
+Message-ID: <eb0cd3f6-6248-0494-9a5d-297c2247a4c4@collabora.com>
+Date:   Thu, 5 May 2022 16:59:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YnPkFkZ/S87cHUnP@zx2c4.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RESEND v2] dt-bindings: gce: add the GCE header file for MT8186
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, jassisinghbrar@gmail.com,
+        robh+dt@kernel.org
+Cc:     jaswinder.singh@linaro.org, matthias.bgg@gmail.com,
+        yongqiang.niu@mediatek.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220505034820.12759-1-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220505034820.12759-1-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey again,
-
-On Thu, May 05, 2022 at 04:50:16PM +0200, Jason A. Donenfeld wrote:
-> Hi Rafael,
+Il 05/05/22 05:48, Rex-BC Chen ha scritto:
+> From: Yongqiang Niu <yongqiang.niu@mediatek.com>
 > 
-> I'm seeing the following boot time splat on 5.4.191:
+> Add the GCE header file to define GCE subsys ids, hardware event ids
+> and constants for MT8186.
+> 
+> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Figured it out. 25928deeb1e4 ("ACPICA: Always create namespace nodes
-using acpi_ns_create_node()") needs to be backported to stable.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Jason
