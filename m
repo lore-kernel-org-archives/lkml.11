@@ -2,88 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3730AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87CA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381565AbiEEQFF (ORCPT
+        id S1356920AbiEEQGu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
+        Thu, 5 May 2022 12:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237837AbiEEQEz (ORCPT
+        with ESMTP id S231164AbiEEQGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 12:04:55 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ED6205CF
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:01:16 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2f7c57ee6feso53738397b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 09:01:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DcrivyRXvs78RFPsaHX0wtRuc37eGonVpkZc+fBUUp4=;
-        b=SWulOcJxmVeZWRUP1r6ihWVnsx4vTmwi4LLMgKz74yg3+KJ+ewPEUGHzph6ZBsR7QZ
-         haxC8UhbOAPhatpgkvmR/Z0HRRx55tsMFnC7gxS2LGQXN7HnykS4CwtaRiK942O3wUKs
-         qq7RDt1iU7ye3njrHkDpfcGYzJOBhIvjlCrLcHN2SxElDLdjKCX5+N9AQDaeLr+h6/Hf
-         TF8MWUYRetgCTAH5kOeSGpj1SY3scjUUziOdTuetbjph81XA+lyZc07zWmOfjgZ8vZFf
-         waw0UDrA/7G20XsiZcN9b6KVrkqZAiOyy6KeEVEWmIIe3q5I8FjCPuxlZkcbx449hoV+
-         +rPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DcrivyRXvs78RFPsaHX0wtRuc37eGonVpkZc+fBUUp4=;
-        b=fmJG15FWWL21rmu2psxT72McOguVdnYMl7YRACIEQhywH5a3G9vJfUBmlez+cM8pIV
-         OhUB+T6ectifylyAcC63aep3O4260FbOgOHf1/SpvnC/vlIeIVYlIkKI0rb27NoaxoV6
-         +UYmawhvy4gQzlpOdEgcyhjK522zUi000swkjORFAf1ezj3xKy2bdK+QucrBh3tINmXo
-         JFmeTRygarhfoiif2hO+auq72NxqsscfzCKim1MXGtSZDeYc178M69HIGal8esEjq6Go
-         4HsylgfWlAEXJEBFuGyv/o+ik/zFQy8wlpHi3jBAXNcmHeYrM02nhXt04i739AhcIQ7g
-         GvhQ==
-X-Gm-Message-State: AOAM531uPzVHv0e7Evy2WSMCCM2tPiN2heKx/en1rAkyEkjeP98C9HR7
-        ORhVux0N+FT97Pk/6jYBymF9f49YPRilSTGeO/u4jw==
-X-Google-Smtp-Source: ABdhPJyeRJ1A9AX0DmoDqRxo1/DLQHUcof5m2XXSj8lNypY3bHNmQWOqrUEnbss0WuBMSpwMGU3MP94Rte1iYZrYks8=
-X-Received: by 2002:a81:8d02:0:b0:2f8:c9f7:4041 with SMTP id
- d2-20020a818d02000000b002f8c9f74041mr24674320ywg.117.1651766475264; Thu, 05
- May 2022 09:01:15 -0700 (PDT)
+        Thu, 5 May 2022 12:06:48 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7F32DE5;
+        Thu,  5 May 2022 09:03:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651766588; x=1683302588;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zlTpNAuOWVsLMZxKenOm6Jo9aWTy0OBhL/05VXpK+aU=;
+  b=EVhNcVEZkmrXQTUB+q24buU9l4oPOunAfEopPJU33di8leg7EaWXRuOX
+   uhvDB8JUsGXOCE+pck8Rv8TVqMkso22X0z3ziZ3Fojr5iHngHqIp9O2yi
+   ZbdCdFaPZLhGFIXhB8T+BEDLrurIDEfOFjGF0Et71d53tvMmGyMI+z1hV
+   OoFijJ2gT5yiZ5ZkVFeZ7qAk3+kEKDqXxO/7puxZfdfQhXX/JN8I6wbnR
+   K/IJrUR64RC36f8n6Ji0phpwnAeophrdttAbXTqSjER1MiqubHSOIKtPi
+   hg0ERLErcma8SiFT/1wXgjkTBDeG6HPVzEhdzpK5AD8B7zx5cL8vd3KPk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="354594634"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="354594634"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 08:54:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="891389408"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 05 May 2022 08:54:40 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmdoO-000CWs-2M;
+        Thu, 05 May 2022 15:54:40 +0000
+Date:   Thu, 5 May 2022 23:54:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Satya Priya <quic_c_skakit@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     kbuild-all@lists.01.org, Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: Re: [PATCH V11 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
+Message-ID: <202205052333.90qqQnWQ-lkp@intel.com>
+References: <1651742739-12338-7-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <YnKnLyyXPJl5Llc0@FVFF77S0Q05N> <CABCJKudT9r=r0an4BwNp0-E1wC94wLWiHvUX4_vA8tDkQ=uHKQ@mail.gmail.com>
- <CABCJKuc-6daZd8N6hQV6i_TtCtVpfzxJ2UW6xwxC2vxTmJ2deg@mail.gmail.com> <YnPEzeab/R270gAZ@FVFF77S0Q05N.cambridge.arm.com>
-In-Reply-To: <YnPEzeab/R270gAZ@FVFF77S0Q05N.cambridge.arm.com>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Thu, 5 May 2022 09:00:39 -0700
-Message-ID: <CABCJKuced3-MoZoBdpL+=h1PC32C-5C12HZH96+dfEp43dJwaQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/21] KCFI support
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651742739-12338-7-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 5, 2022 at 5:36 AM Mark Rutland <mark.rutland@arm.com> wrote:
-> FWIW, a `-DLLVM_ENABLE_ASSERTIONS=ON` build also seems to work for me when
-> building a kernel with CONFIG_CFI_CLANG=y. It's much slower than a regular
-> Release build, so I'm still waiting for that to finish building a kernel, but
-> it has gotten much further through the build without issues.
+Hi Satya,
 
-Thanks for confirming. This issue should be fixed here if you want to
-give it another try:
+Thank you for the patch! Perhaps something to improve:
 
-https://github.com/samitolvanen/llvm-project/commits/kcfi
+[auto build test WARNING on lee-mfd/for-mfd-next]
+[also build test WARNING on robh/for-next broonie-regulator/for-next v5.18-rc5 next-20220505]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Sami
+url:    https://github.com/intel-lab-lkp/linux/commits/Satya-Priya/Add-Qualcomm-Technologies-Inc-PM8008-regulator-driver/20220505-173045
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
+config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220505/202205052333.90qqQnWQ-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/28e91eacf6442c72c4f1ca25e5ad90fedc73ab73
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Satya-Priya/Add-Qualcomm-Technologies-Inc-PM8008-regulator-driver/20220505-173045
+        git checkout 28e91eacf6442c72c4f1ca25e5ad90fedc73ab73
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/mfd/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/mfd/qcom-pm8008.c:154:16: warning: no previous prototype for 'pm8008_get_regmap' [-Wmissing-prototypes]
+     154 | struct regmap *pm8008_get_regmap(struct pm8008_data *chip)
+         |                ^~~~~~~~~~~~~~~~~
+
+
+vim +/pm8008_get_regmap +154 drivers/mfd/qcom-pm8008.c
+
+   153	
+ > 154	struct regmap *pm8008_get_regmap(struct pm8008_data *chip)
+   155	{
+   156		return chip->regulators_regmap;
+   157	}
+   158	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
