@@ -2,379 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A43C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 22:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA78FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 22:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386323AbiEEWgx (ORCPT
+        id S1386334AbiEEWg5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 18:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
+        Thu, 5 May 2022 18:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386314AbiEEWgt (ORCPT
+        with ESMTP id S1386316AbiEEWgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 18:36:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADAC53727
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 15:33:07 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3352453A47
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 15:33:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95D29B830E6
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECFA5B8306F
         for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 22:33:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C08BC385A4;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1BBC385AE;
         Thu,  5 May 2022 22:33:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651789985;
-        bh=MaHdE8LQ+7KwTUrg0nIeawEp1kmAQn/vOtH5ihVko3Q=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651789985;
+        bh=IwLNVdmXkWJlJv1H8DWp3R3tO+S7/oJXphfMgwAIYX0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PipJedFDNNhLNUR2uhPQJC+uIKCE0+BEj929ZdpNpCK5JkYRHIn7ZjmI2/v5oYP4w
-         fwwqTU1+7bOBPDa5reIPv2DUSGwTvv4jwdqyznkdLNw2ECGNZpVUw6nN9SDXtrS35V
-         pbZd+AYVdrx8jK3awzcJSm4kO2JUANHJnRnIKUnY=
-Date:   Thu, 5 May 2022 21:20:38 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>
-Cc:     linux-kernel@vger.kernel.org, will@kernel.org, axboe@kernel.dk,
-        mb@lightnvm.io, ckeepax@opensource.cirrus.com, mst@redhat.com,
-        javier@javigon.com, mikelley@microsoft.com, jasowang@redhat.com,
-        sunilmut@microsoft.com, bjorn.andersson@linaro.org,
-        rvmanjumce@gmail.com, ashish.deshpande@nxp.com
-Subject: Re: [PATCH v3] [PATCH v3] uwb: nxp: sr1xx: UWB driver support for
- sr1xx series chip
-Message-ID: <YnQjhoVsaI6IteIe@kroah.com>
-References: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
+        b=qKyg1DejWTFAApJVOCIcjdgkYAfj42ZnoJqTr6/Qiqb/9HcOUG0IMxlQ/mKLX1qce
+         u0e/CrnAjZc3WRX9AQbSlUlhzqucLUXIFZGkDfyp9z00pKR/qwqRnwAKeuPh0mFEtY
+         D6E6gxIgfy4xf6gKYwWVkZbYMuncSQWVuNgANsVkJtnlF8DRKQIFTRafRFx6b5dqIj
+         +faqz+HBw7hpnUZnJ4Zf3RQFul4vF10NDE2dz0OyBqEqYbyb9pZDgUl9MxloFNXBp2
+         RDrkPsNlE+BWmFpZkOqtujVxyLfXAyMHHzXGU4nsdUCwWq8TLvQ72kCSWDCw5zZHJ6
+         NltmTW3w6AmXA==
+Received: by pali.im (Postfix)
+        id 56A46945; Fri,  6 May 2022 00:33:02 +0200 (CEST)
+Date:   Fri, 6 May 2022 00:33:02 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Tyrel Datwyler <tyreld@linux.ibm.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH] powerpc/pci: Add config option for using OF 'reg' for
+ PCI domain
+Message-ID: <20220505223302.2ydcssvdgoyqv7e5@pali>
+References: <20220504175718.29011-1-pali@kernel.org>
+ <8ffa0287-de5e-4308-07d8-204ac2e7f63a@csgroup.eu>
+ <20220505093132.45ehu6pdfzmvt2xw@pali>
+ <2cfb2cd8-3bad-3c66-b8ee-918d615f7719@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2cfb2cd8-3bad-3c66-b8ee-918d615f7719@linux.ibm.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 10:43:37PM +0530, Manjunatha Venkatesh wrote:
-> Ultra-wideband (UWB) is a short-range wireless communication protocol
+On Thursday 05 May 2022 15:10:01 Tyrel Datwyler wrote:
+> On 5/5/22 02:31, Pali Rohár wrote:
+> > Hello!
+> > 
+> > On Thursday 05 May 2022 07:16:40 Christophe Leroy wrote:
+> >> Le 04/05/2022 à 19:57, Pali Rohár a écrit :
+> >>> Since commit 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on
+> >>> device-tree properties"), powerpc kernel always fallback to PCI domain
+> >>> assignment from OF / Device Tree 'reg' property of the PCI controller.
+> >>>
+> >>> PCI code for other Linux architectures use increasing assignment of the PCI
+> >>> domain for individual controllers (assign the first free number), like it
+> >>> was also for powerpc prior mentioned commit.
+> >>>
+> >>> Upgrading powerpc kernels from LTS 4.4 version (which does not contain
+> >>> mentioned commit) to new LTS versions brings a regression in domain
+> >>> assignment.
+> >>
+> >> Can you elaborate why it is a regression ?
+> >>63a72284b159
+> >> That commit says 'no functionnal changes', I'm having hard time 
+> >> understanding how a nochange can be a regression.
+> > 
+> > It is not 'no functional change'. That commit completely changed PCI
+> > domain assignment in a way that is incompatible with other architectures
+> > and also incompatible with the way how it was done prior that commit.
 > 
-> sr1xx is a new driver that supports the integrated UWB for
-> Nxp SoCs, especially the sr1xx series and depends on the SPI module.
+> I agree that the "no functional change" statement is incorrect. However, for
+> most powerpc platforms it ended up being simply a cosmetic behavior change. As
+> far as I can tell there is nothing requiring domain ids to increase montonically
+> from zero or that each architecture is required to use the same domain numbering
+> scheme.
+
+That is truth. But it looks really suspicious why domains are not
+assigned monotonically. Some scripts / applications are using PCI
+location (domain:bus:dev:func) for remembering PCI device and domain
+change can cause issue for config files. And some (older) applications
+expects existence of domain zero. In systems without hot plug support
+with small number of domains (e.g. 3) it means that there are always
+domains 0, 1 and 2.
+
+> Its hard to call this a true regression unless it actually broke
+> something. The commit in question has been in the kernel since 4.8 which was
+> released over 5 1/2 years ago.
+
+I agree, it really depends on how you look at it.
+
+The important is that lot of people are using LTS versions and are doing
+upgrades when LTS support is dropped. Which for 4.4 now happened. So not
+all smaller or "cosmetic" changes could be detected until longer LTS
+period pass.
+
+> With all that said looking closer at the code in question I think it is fair to
+> assume that the author only intended this change for powernv and pseries
+> platforms and not every powerpc platform. That change was done to make
+> persistent naming easier to manage in userspace.
+
+I agree that this behavior change may be useful in some situations and I
+do not object this need.
+
+> Your change defaults back to
+> the old behavior which will now break both powernv and pseries platforms with
+> regard to hotplugging and persistent naming.
+
+I was aware of it, that change could cause issues. And that is why I
+added config option for choosing behavior. So users would be able to
+choose what they need.
+
+> We could properly limit it to powernv and pseries by using ibm,fw-phb-id instead
+> of reg property in the look up that follows a failed ibm,opal-phbid lookup. I
+> think this is acceptable as long as no other powerpc platforms have started
+> using this behavior for persistent naming.
+
+And what about setting that new config option to enabled by default for
+those series?
+
+Or is there issue with introduction of the new config option?
+
+One of the point is that it is really a good idea to have similar/same
+behavior for all linux platforms. And if it cannot be enabled by default
+(for backward compatibility) add at least some option, so new platforms
+can start using it or users can decide to switch behavior.
+
+> -Tyrel
 > 
-> sr1xx driver works with Nxp UWB Subsystem(UWBS) which is FiRa Complaint.
-
-What is the Nxp UWBS and where can it be found?  You have custom ioctls
-here with no public user so we really can't take them, right?
-
-> Corresponding UCI details available in Fira Consortuim website.
-
-Have a link for this?
-
-> sr1xx is flash less device  and it requires firmware download on every
-> device boot.
-
-Too many spaces in that sentence?
-
-Lots of devices need firmware, that's not a big deal if you are using
-the firmware api, right?  Wait, you are not using that api, so how is
-the firwmare being downloaded?
-
-> Internally driver will handle two modes of operation.
-> 1.HBCI mode (sr1xx BootROM Code Interface)
->   Firmware download uses HBCI ptotocol packet structure which is
->   Nxp proprietary,Firmware File(.bin) stored in user space context
->   and during device init sequence pick the firmware packet in chunk
->   and send it to the driver with write() api call.
-
-That's not ok, use the standard in-kernel firmware download api please.
-
->   Firmware acknowledge for every chunk packet sent and same thing
->   is monitored,in user space code(HAL layer).
-
-What does a HAL layer have to do with anything here?
-
->   If any error Firmware download sequence will fail and reset the device.
->   If firmware download packet sent successfully at the end device will
->   send device status notification and its indication of device entered
->   UCI mode.Here after any command/response/notification will follow
->   UCI packet structure.
-
-Again, just use the normal fiwmare download logic and you will not need
-to worry about any of the above.  For obvious reasons you don't want us
-to take a custom firmware api for every individual device that Linux
-supports as that would be crazy :)
-
-> 2.UCI mode (UWB Command interface)
->   Once Firmware download finishes sr1xx will switch to UCI mode packet
->   structure.Here this driver exchange command/response between user space
->   and sr1xx device.
-
-Please have someone proof read this changelog before you resend.
-
->   Any response or notification received from sr1xx through SPI line
->   will convey to user space.User space(UCI lib) will take care of
->   UCI parsing logic.
-
-As I said when we met to talk about this driver, why do you have a
-custom api/interface at all?  Why can you not just use the normal
-user/kernel api for SPI devices?
-
-You should not need any read/write/ioctl api for this driver at all,
-it's just a simple spi driver from what I can tell.  This should not be
-complex to implement at all.
-
->   Its IRQ based driver and sr1xx specific irq handshake mechanism logic
->   implemented to avoid any race condition between write and read
->   during ranging sequence.
-
-I do not understand this sentence at all, sorry.
-
->   UCI mode Write is same as HBCI mode sequence whatever command received
->   from user space will send to the sr1xx via SPI line.
->   In UCI mode read api called first and waiting on the IRQ line status
->   in order to avoid missing of interrupts after write sequence.
+> > For example, prior that commit on P2020 RDB board were PCI domains 0, 1 and 2.
+> > 
+> > $ lspci
+> > 0000:00:00.0 PCI bridge: Freescale Semiconductor Inc P2020E (rev 21)
+> > 0000:01:00.0 USB controller: Texas Instruments TUSB73x0 SuperSpeed USB 3.0 xHCI Host Controller (rev 02)
+> > 0001:02:00.0 PCI bridge: Freescale Semiconductor Inc P2020E (rev 21)
+> > 0001:03:00.0 Network controller: Qualcomm Atheros AR93xx Wireless Network Adapter (rev 01)
+> > 0002:04:00.0 PCI bridge: Freescale Semiconductor Inc P2020E (rev 21)
+> > 0002:05:00.0 Network controller: Qualcomm Atheros QCA986x/988x 802.11ac Wireless Network Adapter
+> > 
+> > After that commit on P2020 RDB board are PCI domains 0x8000, 0x9000 and 0xa000.
+> > 
+> > $ lspci
+> > 8000:00:00.0 PCI bridge: Freescale Semiconductor Inc P2020E (rev 21)
+> > 8000:01:00.0 USB controller: Texas Instruments TUSB73x0 SuperSpeed USB 3.0 xHCI Host Controller (rev 02)
+> > 9000:02:00.0 PCI bridge: Freescale Semiconductor Inc P2020E (rev 21)
+> > 9000:03:00.0 Network controller: Qualcomm Atheros AR93xx Wireless Network Adapter (rev 01)
+> > a000:04:00.0 PCI bridge: Freescale Semiconductor Inc P2020E (rev 21)
+> > a000:05:00.0 Network controller: Qualcomm Atheros QCA986x/988x 802.11ac Wireless Network Adapter
+> > 
+> > It is somehow strange that PCI domains are not indexed one by one and
+> > also that there is no domain 0
+> > 
+> > With my patch when CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG is not set, then
+> > previous behavior used and PCI domains are again 0, 1 and 2.
+> > 
+> >> Usually we don't commit regressions to mainline ...
+> >>
+> >>
+> >>>
+> >>> Fix this issue by introducing a new option CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG
+> >>> When this options is disabled then powerpc kernel would assign PCI domains
+> >>> in the similar way like it is doing kernel for other architectures and also
+> >>> how it was done prior that commit.
+> >>
+> >> You don't define CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG on by default, it 
+> >> means this commit will change the behaviour. Is that expected ?
+> >>
+> >> Is that really worth a user selectable option ? Is the user able to 
+> >> decide what he needs ?
+> > 
+> > Well, I hope that maintainers of that code answer to these questions.
+> > 
+> > In any case, I think that it could be a user selectable option as in
+> > that commit is explained that in some situation is makes sense to do
+> > PCI domain numbering based on DT reg.
+> > 
+> > But as I pointed above, upgrading from 4.4 TLS kernel to some new TLS
+> > kernel brings above regression, so I think that there should be a way to
+> > disable this behavior.
+> > 
+> > In my opinion, for people who are upgrading from 4.4 TLS kernel, this
+> > option should be turned off by default (= do not change behavior). For
+> > people who want same behaviour on powerpc as on other platforms, also it
+> > should be turned off by default.
+> > 
+> >>>
+> >>> Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
+> >>
+> >> Is that really a fix ? What is the problem really ?
+> > 
+> > Problem is that PCI domains were changed in a way that is not compatible
+> > neither with version prior that commit and neither with how other linux
+> > platforms assign PCI domains for controllers.
+> > 
+> >>> Signed-off-by: Pali Rohár <pali@kernel.org>
+> >>> ---
+> >>>   arch/powerpc/Kconfig             | 10 ++++++++++
+> >>>   arch/powerpc/kernel/pci-common.c |  4 ++--
+> >>>   2 files changed, 12 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> >>> index 174edabb74fa..4dd3e3acddda 100644
+> >>> --- a/arch/powerpc/Kconfig
+> >>> +++ b/arch/powerpc/Kconfig
+> >>> @@ -375,6 +375,16 @@ config PPC_OF_PLATFORM_PCI
+> >>>   	depends on PCI
+> >>>   	depends on PPC64 # not supported on 32 bits yet
+> >>>   
+> >>> +config PPC_PCI_DOMAIN_FROM_OF_REG
+> >>> +	bool "Use OF reg property for PCI domain"
+> >>> +	depends on PCI
+> >>
+> >> Should it depend on PPC_OF_PLATFORM_PCI instead ?
+> > 
+> > No, PPC_OF_PLATFORM_PCI has line "depends on PPC64 # not supported on 32
+> > bits yet". But it is already used also for e.g. P2020 which is 32-bit
+> > platform.
+> > 
+> >>> +	help
+> >>> +	  By default PCI domain for host bridge during its registration is
+> >>> +	  chosen as the lowest unused PCI domain number.
+> >>> +
+> >>> +	  When this option is enabled then PCI domain is determined from
+> >>> +	  the OF / Device Tree 'reg' property.
+> >>> +
+> >>>   config ARCH_SUPPORTS_UPROBES
+> >>>   	def_bool y
+> >>>   
+> >>> diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+> >>> index 8bc9cf62cd93..8cb6fc5302ae 100644
+> >>> --- a/arch/powerpc/kernel/pci-common.c
+> >>> +++ b/arch/powerpc/kernel/pci-common.c
+> >>> @@ -74,7 +74,6 @@ void __init set_pci_dma_ops(const struct dma_map_ops *dma_ops)
+> >>>   static int get_phb_number(struct device_node *dn)
+> >>>   {
+> >>>   	int ret, phb_id = -1;
+> >>> -	u32 prop_32;
+> >>>   	u64 prop;
+> >>>   
+> >>>   	/*
+> >>> @@ -83,7 +82,8 @@ static int get_phb_number(struct device_node *dn)
+> >>>   	 * reading "ibm,opal-phbid", only present in OPAL environment.
+> >>>   	 */
+> >>>   	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
+> >>
+> >> This looks like very specific, it is not reflected in the commit log.
+> > 
+> > I have not changed nor touched this "ibm,opal-phbid" setting. And it was
+> > not also touched in that mentioned patch. I see that no DTS file in
+> > kernel use this option (so probably only DTS files supplied by
+> > bootloader use it). So I thought that there is not reason to mention in
+> > commit message.
+> > 
+> > But if you think so, I can add some info to commit message about it.
+> > 
+> >>> -	if (ret) {
+> >>> +	if (ret && IS_ENABLED(CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG)) {
+> >>> +		u32 prop_32;
+> >>>   		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
+> >>>   		prop = prop_32;
+> >>>   	}
 > 
->   This driver needs dts config update as per the sr1xx data sheet.
->   Corresponding document will be added in
->   Documentation/devicetree/bindings/uwb
-
-We can not take drivers with dts requirements without the dts updates as
-well, as you know.  Please make that the first patch in the series and
-properly cc: the needed DT maintainers.  For that reason alone I
-couldn't take this patch if I wanted to.
-
-> Link: https://lore.kernel.org/r/20220315105205.2381997-1-manjunatha.venkatesh@nxp.com
-
-What is this a link to?
-
-> Signed-off-by: Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>
-> ---
-
-You forgot to list what changed from previous versions below the ---
-line like the documentation asks you to do.  Please fix that for the
-next submission.  My patch bot normally would just reject the change for
-that reason alone, documentation matters :)
-
-
->  MAINTAINERS               |   6 +
->  drivers/misc/Kconfig      |  15 +
->  drivers/misc/Makefile     |   1 +
->  drivers/misc/sr1xx.c      | 784 ++++++++++++++++++++++++++++++++++++++
->  include/uapi/misc/sr1xx.h |  79 ++++
->  5 files changed, 885 insertions(+)
->  create mode 100644 drivers/misc/sr1xx.c
->  create mode 100644 include/uapi/misc/sr1xx.h
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index edc96cdb85e8..2896d401dbc4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -21888,3 +21888,9 @@ S:	Buried alive in reporters
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->  F:	*
->  F:	*/
-> +
-> +UWB
-
-Note, this is NOT generic UWB.  This is a single spi device driver,
-right?
-
-> +M:	manjunatha.venkatesh@nxp.com
-
-No real name?
-
-> +S:	Maintained
-> +F:	drivers/misc/sr1xx.c
-> +F:	include/uapi/misc/sr1xx.h
-
-Please read the top of this file for how to correctly find where to
-place your new entry.
-
-> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> index 41d2bb0ae23a..1ca97d168f26 100644
-> --- a/drivers/misc/Kconfig
-> +++ b/drivers/misc/Kconfig
-> @@ -483,6 +483,21 @@ config OPEN_DICE
->  
->  	  If unsure, say N.
->  
-> +config NXP_UWB
-> +        tristate "Nxp UCI(Uwb Command Interface) protocol driver support"
-> +        depends on SPI
-> +        help
-> +        This option enables the UWB driver for Nxp sr1xx
-> +        device. Such device supports UCI packet structure,
-> +        FiRa complaint.
-> +
-> +
-> +
-> +        Say Y here to compile support for sr1xx into the kernel or
-> +        say M to compile it as a module. The module will be called
-> +        sr1xx.ko
-> +
-> +
-
-Why all the extra blank lines?
-
-And are you sure you indented the help properly?  Why no tabs like the
-rest of this file?  Did you run checkpatch.pl on your patch first?
-
-
->  source "drivers/misc/c2port/Kconfig"
->  source "drivers/misc/eeprom/Kconfig"
->  source "drivers/misc/cb710/Kconfig"
-> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-> index 70e800e9127f..bbd4dd17cabc 100644
-> --- a/drivers/misc/Makefile
-> +++ b/drivers/misc/Makefile
-> @@ -60,3 +60,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
->  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
->  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
->  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
-> +obj-$(CONFIG_NXP_UWB) 		+= sr1xx.o
-> diff --git a/drivers/misc/sr1xx.c b/drivers/misc/sr1xx.c
-> new file mode 100644
-> index 000000000000..100c36031fd2
-> --- /dev/null
-> +++ b/drivers/misc/sr1xx.c
-> @@ -0,0 +1,784 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * SPI driver for UWB SR1xx
-> + * Copyright (C) 2018-2022 NXP.
-> + *
-> + * Author: Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>
-> + */
-> +#include <linux/kernel.h>
-> +#include <linux/miscdevice.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/delay.h>
-> +#include <linux/fs.h>
-> +#include <linux/gpio.h>
-> +#include <linux/init.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/irq.h>
-> +#include <linux/jiffies.h>
-> +#include <linux/list.h>
-> +#include <linux/of_gpio.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/device.h>
-> +#include <linux/poll.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/sched.h>
-> +#include <linux/slab.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/uaccess.h>
-> +#include <uapi/misc/sr1xx.h>
-
-Do you really need all of these?  If so, great, but I think that's way
-too many for a simple driver like this.
-
-
-> +
-> +static int sr1xx_dev_open(struct inode *inode, struct file *filp)
-> +{
-> +	struct sr1xx_dev *sr1xx_dev = container_of(
-> +		filp->private_data, struct sr1xx_dev, sr1xx_device);
-
-Odd line break, please run checkpatch.pl.
-
-I'm not going to review the driver contents based on my above comments
-as this needs lots of reworking and most of the code here can go away.
-
-One meta-comment though, your uapi .h file:
-
-> --- /dev/null
-> +++ b/include/uapi/misc/sr1xx.h
-> @@ -0,0 +1,79 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only
-> + *
-> + * Header file for UWB sr1xx device
-> + * Copyright (C) 2018-2022 NXP.
-> + *
-> + * Author: Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>
-> + */
-> +
-> +#include <linux/types.h>
-> +
-> +#define SR1XX_MAGIC 0xEA
-> +#define SR1XX_SET_PWR _IOW(SR1XX_MAGIC, 0x01, long)
-> +#define SR1XX_SET_FWD _IOW(SR1XX_MAGIC, 0x02, long)
-> +
-> +#define UCI_HEADER_LEN 4
-> +#define HBCI_HEADER_LEN 4
-> +#define UCI_PAYLOAD_LEN_OFFSET 3
-> +
-> +#define UCI_EXT_PAYLOAD_LEN_IND_OFFSET 1
-> +#define UCI_EXT_PAYLOAD_LEN_IND_OFFSET_MASK 0x80
-> +#define UCI_EXT_PAYLOAD_LEN_OFFSET 2
-> +
-> +#define SR1XX_TXBUF_SIZE 4200
-> +#define SR1XX_RXBUF_SIZE 4200
-> +#define SR1XX_MAX_TX_BUF_SIZE 4200
-> +
-> +#define MAX_RETRY_COUNT_FOR_IRQ_CHECK 100
-> +#define MAX_RETRY_COUNT_FOR_HANDSHAKE 1000
-> +
-> +/* Macro to define SPI clock frequency */
-> +#define SR1XX_SPI_CLOCK 16000000L
-> +#define WAKEUP_SRC_TIMEOUT (2000)
-> +
-> +/* Maximum UCI packet size supported from the driver */
-> +#define MAX_UCI_PKT_SIZE 4200
-> +
-> +struct sr1xx_spi_platform_data {
-> +	unsigned int irq_gpio; /* SR1XX will interrupt host for any ntf */
-> +	unsigned int ce_gpio; /* SW reset gpio */
-> +	unsigned int spi_handshake_gpio; /* Host ready to read data */
-> +};
-> +
-> +/* Device specific macro and structure */
-> +struct sr1xx_dev {
-> +	wait_queue_head_t read_wq; /* Wait queue for read interrupt */
-> +	struct spi_device *spi; /* Spi device structure */
-> +	struct miscdevice sr1xx_device; /* Char device as misc driver */
-> +	unsigned int ce_gpio; /* SW reset gpio */
-> +	unsigned int irq_gpio; /* SR1XX will interrupt host for any ntf */
-> +	unsigned int spi_handshake_gpio; /* Host ready to read data */
-> +	bool irq_enabled; /* Flag to indicate disable/enable irq sequence */
-> +	bool irq_received; /* Flag to indicate that irq is received */
-> +	spinlock_t irq_enabled_lock; /* Spin lock for read irq */
-> +	unsigned char *tx_buffer; /* Transmit buffer */
-> +	unsigned char *rx_buffer; /* Receive buffer */
-> +	unsigned int write_count; /* Holds nubers of byte written */
-> +	unsigned int read_count; /* Hold nubers of byte read */
-> +	struct mutex
-> +		sr1xx_access_lock; /* Lock used to synchronize read and write */
-> +	size_t total_bytes_to_read; /* Total bytes read from the device */
-> +	bool is_extended_len_bit_set; /* Variable to check ext payload Len */
-> +	bool read_abort_requested; /* Used to indicate read abort request */
-> +	bool is_fw_dwnld_enabled; /* Used to indicate fw download mode */
-> +	int mode; /* Indicate write or read mode */
-> +	long timeout_in_ms; /* Wait event interrupt timeout in ms */
-> +};
-> +
-> +/* Power enable/disable and read abort ioctl arguments */
-> +enum { PWR_DISABLE = 0, PWR_ENABLE, ABORT_READ_PENDING };
-> +
-> +enum spi_status_codes {
-> +	TRANSCEIVE_SUCCESS,
-> +	TRANSCEIVE_FAIL,
-> +	IRQ_WAIT_REQUEST,
-> +	IRQ_WAIT_TIMEOUT
-> +};
-> +
-> +/* Spi write/read operation mode */
-> +enum spi_operation_modes { SR1XX_WRITE_MODE, SR1XX_READ_MODE };
-
-
-You have loads of things in here that should NOT be exposed to userspace
-at all (your structure?)
-
-Does this even build properly if you have the header check build option
-enabled?  I would be amazed if it did.
-
-Anyway, you do not need a uapi .h file from what I can tell, so it
-shouldn't be needed for your next version.
-
-thanks,
-
-greg k-h
