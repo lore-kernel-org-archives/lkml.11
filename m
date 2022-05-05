@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383396AbiEESU7 (ORCPT
+        id S1383401AbiEESVF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
+        Thu, 5 May 2022 14:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383087AbiEEST2 (ORCPT
+        with ESMTP id S240591AbiEEST3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:28 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2DA140F8;
-        Thu,  5 May 2022 11:15:44 -0700 (PDT)
+        Thu, 5 May 2022 14:19:29 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7603E15818;
+        Thu,  5 May 2022 11:15:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774544; x=1683310544;
+  t=1651774545; x=1683310545;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GrRrgKMz4riAK/ebZ/sI81D2KhEbTTaxZ+pXBobqoJ4=;
-  b=JjVkR0rW+eVV7UK5ktNuoTohlxjmRuB/Sg6Bbw8bV2sTHClDw9NONjcR
-   aJszWGrsiERoWVBSPdMwkxNP/uHH0lc5rHNmPwKtUH47J04YueZh35EVv
-   WccbS1eIk9e8TAvHMCler+aYtaQ7O1ya6KdKex7RzDzR/DzO7R6TCNFsp
-   CkVSFA+bHhTVMVbxSO7jnEcE2kisMeX7WDDxHvGxvQGllysOqTHupO4I1
-   nWEmJHiYllm7f1TmxVaGUtOuqjaI8m4lQKJLA9QMs1bTFdZGRZRqHxtal
-   NYVEXt3DOx6kLHSmrK/XYPPtG1YzAMBuL1ilxjHfwoFetPUz2QoavWFnT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113868"
+  bh=tHxWnEnWzHxtFAH14IxIaOvVTgyVwNRXnQcU80k0WQQ=;
+  b=K7o5EvYtD08hf0KnMJAlBecNaNw1B5IeZpjkL6dY9fy3Ns5ZCigym+UX
+   pRvA0qMp8xY1KjspSTOQJHNhcPK3ddQoolRLG6BNuVMeCrd0q7qUK4elk
+   YerkDxqXmcz/NnHhfPVaKSxXoTSi3kICd9PdU9Wh3qLINYH47XFGUxm7i
+   bkE7mYJoMIfiQtlJVpt3aeSDDcye1PAKDiIphphf1DNsY4a2QJCIVRsLG
+   MBz/R965NFE2kHzLLhT93v6ozmSQT5jzqbSCtxK0yzB3slpSW21+1Litz
+   5PmgL+ZE9YBs0oGqb5Ry7SLrNLlRn1Qc2UsslFJtN/kmGzCzZ7RQiU2tH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="255683947"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248113868"
+   d="scan'208";a="255683947"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:44 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:44 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083241"
+   d="scan'208";a="665083234"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:44 -0700
 From:   isaku.yamahata@intel.com
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 032/104] [MARKER] The start of TDX KVM patch series: KVM MMU GPA shared bits
-Date:   Thu,  5 May 2022 11:14:26 -0700
-Message-Id: <0003cf30319cfbe25dff1654558b3d6664cb5754.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 030/104] KVM: TDX: allocate/free TDX vcpu structure
+Date:   Thu,  5 May 2022 11:14:24 -0700
+Message-Id: <47649c754bf6115246c0b6bd6a65fcdca76202dc.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,42 +58,104 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This empty commit is to mark the start of patch series of KVM MMU GPA
-shared bits.
+The next step of TDX guest creation is to create vcpu.  Allocate TDX vcpu
+structures, initialize it.  Allocate pages of TDX vcpu for the TDX module.
+
+In the case of the conventional case, cpuid is empty at the initialization.
+and cpuid is configured after the vcpu initialization.  Because TDX
+supports only X2APIC mode, cpuid is forcibly initialized to support X2APIC
+on the vcpu initialization.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- Documentation/virt/kvm/intel-tdx-layer-status.rst | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/main.c    | 40 ++++++++++++++++++++++++++++++++++----
+ arch/x86/kvm/vmx/x86_ops.h |  8 ++++++++
+ 2 files changed, 44 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-index 3e8efde3e3f3..6e3f71ab6b59 100644
---- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
-+++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-@@ -10,6 +10,7 @@ What qemu can do
- ----------------
- - TDX VM TYPE is exposed to Qemu.
- - Qemu can create/destroy guest of TDX vm type.
-+- Qemu can create/destroy vcpu of TDX vm type.
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index 067f5de56c53..4f4ed4ad65a7 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -73,6 +73,38 @@ static void vt_vm_free(struct kvm *kvm)
+ 		return tdx_vm_free(kvm);
+ }
  
- Patch Layer status
- ------------------
-@@ -17,13 +18,13 @@ Patch Layer status
- * TDX, VMX coexistence:                 Applied
- * TDX architectural definitions:        Applied
- * TD VM creation/destruction:           Applied
--* TD vcpu creation/destruction:         Applying
-+* TD vcpu creation/destruction:         Applied
- * TDX EPT violation:                    Not yet
- * TD finalization:                      Not yet
- * TD vcpu enter/exit:                   Not yet
- * TD vcpu interrupts/exit/hypercall:    Not yet
++static int vt_vcpu_precreate(struct kvm *kvm)
++{
++	if (is_td(kvm))
++		return 0;
++
++	return vmx_vcpu_precreate(kvm);
++}
++
++static int vt_vcpu_create(struct kvm_vcpu *vcpu)
++{
++	if (is_td_vcpu(vcpu))
++		return tdx_vcpu_create(vcpu);
++
++	return vmx_vcpu_create(vcpu);
++}
++
++static void vt_vcpu_free(struct kvm_vcpu *vcpu)
++{
++	if (is_td_vcpu(vcpu))
++		return tdx_vcpu_free(vcpu);
++
++	return vmx_vcpu_free(vcpu);
++}
++
++static void vt_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
++{
++	if (is_td_vcpu(vcpu))
++		return tdx_vcpu_reset(vcpu, init_event);
++
++	return vmx_vcpu_reset(vcpu, init_event);
++}
++
+ static int vt_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
+ {
+ 	if (!is_td(kvm))
+@@ -98,10 +130,10 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.vm_destroy = vt_vm_destroy,
+ 	.vm_free = vt_vm_free,
  
--* KVM MMU GPA shared bits:              Not yet
-+* KVM MMU GPA shared bits:              Applying
- * KVM TDP refactoring for TDX:          Not yet
- * KVM TDP MMU hooks:                    Not yet
- * KVM TDP MMU MapGPA:                   Not yet
+-	.vcpu_precreate = vmx_vcpu_precreate,
+-	.vcpu_create = vmx_vcpu_create,
+-	.vcpu_free = vmx_vcpu_free,
+-	.vcpu_reset = vmx_vcpu_reset,
++	.vcpu_precreate = vt_vcpu_precreate,
++	.vcpu_create = vt_vcpu_create,
++	.vcpu_free = vt_vcpu_free,
++	.vcpu_reset = vt_vcpu_reset,
+ 
+ 	.prepare_switch_to_guest = vmx_prepare_switch_to_guest,
+ 	.vcpu_load = vmx_vcpu_load,
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 1ff555cc6c17..74bab1ba2edf 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -138,6 +138,10 @@ int tdx_vm_init(struct kvm *kvm);
+ void tdx_mmu_release_hkid(struct kvm *kvm);
+ void tdx_vm_free(struct kvm *kvm);
+ 
++int tdx_vcpu_create(struct kvm_vcpu *vcpu);
++void tdx_vcpu_free(struct kvm_vcpu *vcpu);
++void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event);
++
+ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+ #else
+ static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { return 0; }
+@@ -150,6 +154,10 @@ static inline void tdx_mmu_release_hkid(struct kvm *kvm) {}
+ static inline void tdx_flush_shadow_all_private(struct kvm *kvm) {}
+ static inline void tdx_vm_free(struct kvm *kvm) {}
+ 
++static inline int tdx_vcpu_create(struct kvm_vcpu *vcpu) { return -EOPNOTSUPP; }
++static inline void tdx_vcpu_free(struct kvm_vcpu *vcpu) {}
++static inline void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event) {}
++
+ static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
+ #endif
+ 
 -- 
 2.25.1
 
