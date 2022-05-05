@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245703AbiEFADN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
+        id S1357309AbiEFADV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 20:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385624AbiEFACO (ORCPT
+        with ESMTP id S1387128AbiEFABs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:02:14 -0400
+        Thu, 5 May 2022 20:01:48 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B61D612BD
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A8B60DAE
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651795076; x=1683331076;
+  t=1651795074; x=1683331074;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=L3Ao7/ADM/27W4au5Ct5JCZDRw2G77dHHek57JRUTvg=;
-  b=E2NtPqViFWrn2atGGZYkTXkyMPghh01m6m/aaUYnjDRPlyrpGbPSNngE
-   UROZnMTxsZlxcj7P/G7WP/mXQ10bKYo30mllB8ulfdqkHLjhX83LgEufs
-   cYp96O3Pdsfq+TMstygsrenDXUP9CCJWAvpzyPjOeG563AXruixSxvQw4
-   NhrbxMk0w93hYcc3t95G3vFREDWZplKDti8NYIp2uO4H2QqwxqpQ9Cs4z
-   Wgbb8RiovDg1QIvouwOL74ff5B9ZVvMHxtVmWIanP5RZXqXX8lbG7tqnY
-   FgsBUd101imyK2fRhEvDcFrX3O2R+qP8BKDqnHHt+uUBw9FVFVZvrSVnW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283651"
+  bh=t1y1ryZh2p05ZGgOOcX19YcqK36Xcxw5j/JRqkc11No=;
+  b=H14gOds5Pn6jcoTi5IAwEoiWHMhOMcjOzXjS3Wkw93u5Yrlhazx5bUSX
+   c/Zr3HcGO8G8aFtznMWPA6GqGNCF7+OoeTVbbkspF4Yh80zz0uu0eC+Nr
+   hU6eT6zcVLY46UqcRZBwfniqBiyQ629G3uHNd3Pa7mIgjw3iau6Mn1JPG
+   axPwiBnZ/7yA14LIjBnP/D0Dh22N0uYRehyOmmnBHDYpK0agZ/Fgk8t70
+   g6vWQmUB9j+3uG67+RWsgo0z/AWD5UTE2y6gbnW3wuQqmHN+5CRqkcL4L
+   3hG51FjBCyzfXUlZ0d0YaelKH3absuVcZIblxuT4q06tmlWf0o7/l7PIz
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283645"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283651"
+   d="scan'208";a="250283645"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:53 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914422"
+   d="scan'208";a="694914391"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:53 -0700
+  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:51 -0700
 From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
@@ -53,9 +54,9 @@ Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
         iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org,
         Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 21/29] x86/nmi: Add an NMI_WATCHDOG NMI handler category
-Date:   Thu,  5 May 2022 17:00:00 -0700
-Message-Id: <20220506000008.30892-22-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 18/29] watchdog/hardlockup: Define a generic function to detect hardlockups
+Date:   Thu,  5 May 2022 16:59:57 -0700
+Message-Id: <20220506000008.30892-19-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -63,20 +64,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a NMI_WATCHDOG as a new category of NMI handler. This new category
-is to be used with the HPET-based hardlockup detector. This detector
-does not have a direct way of checking if the HPET timer is the source of
-the NMI. Instead, it indirectly estimates it using the time-stamp counter.
+The procedure to detect hardlockups is independent of the underlying
+mechanism that generates the non-maskable interrupt used to drive the
+detector. Thus, it can be put in a separate, generic function. In this
+manner, it can be invoked by various implementations of the NMI watchdog.
 
-Therefore, we may have false-positives in case another NMI occurs within
-the estimated time window. For this reason, we want the handler of the
-detector to be called after all the NMI_LOCAL handlers. A simple way
-of achieving this with a new NMI handler category.
+For this purpose, move the bulk of watchdog_overflow_callback() to the
+new function inspect_for_hardlockups(). This function can then be called
+from the applicable NMI handlers. No functional changes.
 
 Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Nicholas Piggin <npiggin@gmail.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: Stephane Eranian <eranian@google.com>
+Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: x86@kernel.org
@@ -84,8 +85,7 @@ Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
 Changes since v5:
- * Updated to call instrumentation_end() as per f051f6979550 ("x86/nmi:
-   Protect NMI entry against instrumentation")
+ * None
 
 Changes since v4:
  * None
@@ -94,62 +94,64 @@ Changes since v3:
  * None
 
 Changes since v2:
- * Introduced this patch.
+ * None
 
 Changes since v1:
- * N/A
+ * None
 ---
- arch/x86/include/asm/nmi.h |  1 +
- arch/x86/kernel/nmi.c      | 10 ++++++++++
- 2 files changed, 11 insertions(+)
+ include/linux/nmi.h   |  1 +
+ kernel/watchdog_hld.c | 18 +++++++++++-------
+ 2 files changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/include/asm/nmi.h b/arch/x86/include/asm/nmi.h
-index 1cb9c17a4cb4..4a0d5b562c91 100644
---- a/arch/x86/include/asm/nmi.h
-+++ b/arch/x86/include/asm/nmi.h
-@@ -28,6 +28,7 @@ enum {
- 	NMI_UNKNOWN,
- 	NMI_SERR,
- 	NMI_IO_CHECK,
-+	NMI_WATCHDOG,
- 	NMI_MAX
+diff --git a/include/linux/nmi.h b/include/linux/nmi.h
+index 750c7f395ca9..1b68f48ad440 100644
+--- a/include/linux/nmi.h
++++ b/include/linux/nmi.h
+@@ -207,6 +207,7 @@ int proc_nmi_watchdog(struct ctl_table *, int , void *, size_t *, loff_t *);
+ int proc_soft_watchdog(struct ctl_table *, int , void *, size_t *, loff_t *);
+ int proc_watchdog_thresh(struct ctl_table *, int , void *, size_t *, loff_t *);
+ int proc_watchdog_cpumask(struct ctl_table *, int, void *, size_t *, loff_t *);
++void inspect_for_hardlockups(struct pt_regs *regs);
+ 
+ #ifdef CONFIG_HAVE_ACPI_APEI_NMI
+ #include <asm/nmi.h>
+diff --git a/kernel/watchdog_hld.c b/kernel/watchdog_hld.c
+index 247bf0b1582c..b352e507b17f 100644
+--- a/kernel/watchdog_hld.c
++++ b/kernel/watchdog_hld.c
+@@ -106,14 +106,8 @@ static struct perf_event_attr wd_hw_attr = {
+ 	.disabled	= 1,
  };
  
-diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
-index e73f7df362f5..fde387e0812a 100644
---- a/arch/x86/kernel/nmi.c
-+++ b/arch/x86/kernel/nmi.c
-@@ -61,6 +61,10 @@ static struct nmi_desc nmi_desc[NMI_MAX] =
- 		.lock = __RAW_SPIN_LOCK_UNLOCKED(&nmi_desc[3].lock),
- 		.head = LIST_HEAD_INIT(nmi_desc[3].head),
- 	},
-+	{
-+		.lock = __RAW_SPIN_LOCK_UNLOCKED(&nmi_desc[4].lock),
-+		.head = LIST_HEAD_INIT(nmi_desc[4].head),
-+	},
+-/* Callback function for perf event subsystem */
+-static void watchdog_overflow_callback(struct perf_event *event,
+-				       struct perf_sample_data *data,
+-				       struct pt_regs *regs)
++void inspect_for_hardlockups(struct pt_regs *regs)
+ {
+-	/* Ensure the watchdog never gets throttled */
+-	event->hw.interrupts = 0;
+-
+ 	if (__this_cpu_read(watchdog_nmi_touch) == true) {
+ 		__this_cpu_write(watchdog_nmi_touch, false);
+ 		return;
+@@ -163,6 +157,16 @@ static void watchdog_overflow_callback(struct perf_event *event,
+ 	return;
+ }
  
- };
- 
-@@ -168,6 +172,8 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
- 	 */
- 	WARN_ON_ONCE(type == NMI_SERR && !list_empty(&desc->head));
- 	WARN_ON_ONCE(type == NMI_IO_CHECK && !list_empty(&desc->head));
-+	WARN_ON_ONCE(type == NMI_WATCHDOG && !list_empty(&desc->head));
++/* Callback function for perf event subsystem */
++static void watchdog_overflow_callback(struct perf_event *event,
++				       struct perf_sample_data *data,
++				       struct pt_regs *regs)
++{
++	/* Ensure the watchdog never gets throttled */
++	event->hw.interrupts = 0;
++	inspect_for_hardlockups(regs);
++}
 +
- 
- 	/*
- 	 * some handlers need to be executed first otherwise a fake
-@@ -379,6 +385,10 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
- 	}
- 	raw_spin_unlock(&nmi_reason_lock);
- 
-+	handled = nmi_handle(NMI_WATCHDOG, regs);
-+	if (handled == NMI_HANDLED)
-+		goto out;
-+
- 	/*
- 	 * Only one NMI can be latched at a time.  To handle
- 	 * this we may process multiple nmi handlers at once to
+ static int hardlockup_detector_event_create(void)
+ {
+ 	unsigned int cpu = smp_processor_id();
 -- 
 2.17.1
 
