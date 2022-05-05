@@ -2,131 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D44C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386687AbiEEXXB (ORCPT
+        id S1386683AbiEEXXI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 19:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
+        Thu, 5 May 2022 19:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386657AbiEEXWu (ORCPT
+        with ESMTP id S1386686AbiEEXXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 19:22:50 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E0260064
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:19:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651792749; x=1683328749;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=P7Fx3eeBlpNLpzJeJ1UahMEOZ23iw3mOPDMvylQpeNY=;
-  b=gz82vfepxaq3RaLhTTN6U7fO7Ldz1sx7oBkW+RKhRbgQOqcds0umyBA4
-   yNT090B7kYrqDGXeKQv/bjiYJtUOCqg+H77biuEVsBcyigR+AYVsRs2/T
-   M/yA+TPxa6NayC6Ol+HRCagKUp4f45BmFTautBckY/tUBY/FbzmlH0jRh
-   dPcq4N+L4KUeSaTFLoUyNScCjrErj82IUU87/aMYq6vbW2Q6gGF5AEtar
-   YinBIggLj15Ly8Jq04X7DMqksFwRAEbctZ2E/BJdcIZDWEBS9ErQDArOG
-   8YKfw/4z/ASkLbcvrdtKHbnI7Z7P6cw9Qp9YCYMf42uOdX8zYO8ou7Scf
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="265875376"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="265875376"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:19:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="735223528"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 05 May 2022 16:19:08 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmkkV-000CpE-FV;
-        Thu, 05 May 2022 23:19:07 +0000
-Date:   Fri, 6 May 2022 07:18:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, build@wireguard.com,
-        linux-kernel@vger.kernel.org
-Subject: [zx2c4-wireguard:devel 1/1] lib/crypto/poly1305-selftest.c:1043:13:
- warning: no previous prototype for 'poly1305_selftest'
-Message-ID: <202205060716.oQVkOKUQ-lkp@intel.com>
+        Thu, 5 May 2022 19:23:00 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A844606E5
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:19:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651792755;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ItiPDp2je/Kp/U+WrNcavPKDbIiJIWhg9WRpKTS0IW0=;
+        b=ByOWqq9/lUTKl32JtxPshFoXfI3ATyxzMzM6CJPrZhqIwOPL+GgtjCnvx3LCmwxNl49CKu
+        twKhCY/a4Vj2Z2kfHrZAq8IJee+4KBGmcS49wR1XRgJ9gbqWgF5xDwPjwFuBQ+TXpMKHKK
+        jbYRCm7I86mwPJZp/fTTQ2R/wflBIak=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-167-6goZ4s7XN1uYhsB4BTmkZA-1; Thu, 05 May 2022 19:19:12 -0400
+X-MC-Unique: 6goZ4s7XN1uYhsB4BTmkZA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5006B811E75;
+        Thu,  5 May 2022 23:19:12 +0000 (UTC)
+Received: from localhost (ovpn-12-55.pek2.redhat.com [10.72.12.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 782D4400DFA2;
+        Thu,  5 May 2022 23:19:11 +0000 (UTC)
+Date:   Fri, 6 May 2022 07:19:07 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     lizhe <sensor1010@163.com>
+Cc:     vgoyal@redhat.com, dyoung@redhat.com, prudo@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kernel/crash_core.c : Remove redundant checks for
+ ck_cmdline is NULL
+Message-ID: <20220505231907.GB2331@MiWiFi-R3L-srv>
+References: <20220504123623.36852-1-sensor1010@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220504123623.36852-1-sensor1010@163.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git devel
-head:   f9be522dcc12fe0f759dc5cf175be4d67e278589
-commit: f9be522dcc12fe0f759dc5cf175be4d67e278589 [1/1] crypto: poly1305 - add library selftests
-config: openrisc-randconfig-r032-20220505 (https://download.01.org/0day-ci/archive/20220506/202205060716.oQVkOKUQ-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git/commit/?id=f9be522dcc12fe0f759dc5cf175be4d67e278589
-        git remote add zx2c4-wireguard https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git
-        git fetch --no-tags zx2c4-wireguard devel
-        git checkout f9be522dcc12fe0f759dc5cf175be4d67e278589
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash lib/crypto/
+On 05/04/22 at 05:36am, lizhe wrote:
+> When ck_cmdline is NULL. The last three lines of
+> this function(get_last_crashkernel()) are equivalent to :
+> 	if (!NULL)
+> 		return NULL;
+> 
+> 	return NULL;
+> This is obviously a redundant check
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Now the patch log correctly reflects the code change, even though the
+log is a little redundant. While it's far far better than a wrong log
+which will definitely confuse, even mislead people. I would go with:
 
-All warnings (new ones prefixed by >>):
+======
+kernel/crash_core.c : remove redundant check of ck_cmdline
 
->> lib/crypto/poly1305-selftest.c:1043:13: warning: no previous prototype for 'poly1305_selftest' [-Wmissing-prototypes]
-    1043 | bool __init poly1305_selftest(void)
-         |             ^~~~~~~~~~~~~~~~~
+At the end of get_last_crashkernel(), the judgement of ck_cmdline is
+obviously unnecessary and causes redundance, let's clean it up.
+======
 
+And the patch version is missing. If you agree on the above log
+rephrasing, please post v4 with the updated log, and can add my ack:
 
-vim +/poly1305_selftest +1043 lib/crypto/poly1305-selftest.c
+Acked-by: Baoquan He <bhe@redhat.com>
 
-  1042	
-> 1043	bool __init poly1305_selftest(void)
-  1044	{
-  1045		bool success = true;
-  1046		size_t i, j;
-  1047	
-  1048		for (i = 0; i < ARRAY_SIZE(poly1305_testvecs); ++i) {
-  1049			struct poly1305_desc_ctx poly1305;
-  1050			u8 out[POLY1305_DIGEST_SIZE];
-  1051	
-  1052			memset(out, 0, sizeof(out));
-  1053			memset(&poly1305, 0, sizeof(poly1305));
-  1054			poly1305_init(&poly1305, poly1305_testvecs[i].key);
-  1055			poly1305_update(&poly1305, poly1305_testvecs[i].input,
-  1056					poly1305_testvecs[i].ilen);
-  1057			poly1305_final(&poly1305, out);
-  1058			if (memcmp(out, poly1305_testvecs[i].output,
-  1059				   POLY1305_DIGEST_SIZE)) {
-  1060				pr_err("poly1305 self-test %zu: FAIL\n", i + 1);
-  1061				success = false;
-  1062			}
-  1063	
-  1064			if (poly1305_testvecs[i].ilen <= 1)
-  1065				continue;
-  1066	
-  1067			for (j = 1; j < poly1305_testvecs[i].ilen - 1; ++j) {
-  1068				memset(out, 0, sizeof(out));
-  1069				memset(&poly1305, 0, sizeof(poly1305));
-  1070				poly1305_init(&poly1305, poly1305_testvecs[i].key);
-  1071				poly1305_update(&poly1305, poly1305_testvecs[i].input, j);
-  1072				poly1305_update(&poly1305,
-  1073						poly1305_testvecs[i].input + j,
-  1074						poly1305_testvecs[i].ilen - j);
-  1075				poly1305_final(&poly1305, out);
-  1076				if (memcmp(out, poly1305_testvecs[i].output,
-  1077					   POLY1305_DIGEST_SIZE)) {
-  1078					pr_err("poly1305 self-test %zu (split %zu): FAIL\n",
-  1079					       i + 1, j);
-  1080					success = false;
-  1081				}
-  1082	
+Thanks
+Baoquan
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> Signed-off-by: lizhe <sensor1010@163.com>
+> ---
+>  kernel/crash_core.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> index 256cf6db573c..c232f01a2c54 100644
+> --- a/kernel/crash_core.c
+> +++ b/kernel/crash_core.c
+> @@ -222,9 +222,6 @@ static __init char *get_last_crashkernel(char *cmdline,
+>  		p = strstr(p+1, name);
+>  	}
+>  
+> -	if (!ck_cmdline)
+> -		return NULL;
+> -
+>  	return ck_cmdline;
+>  }
+>  
+> -- 
+> 2.25.1
+> 
+
