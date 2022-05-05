@@ -2,133 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEA1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E63FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382951AbiEESBZ (ORCPT
+        id S1382941AbiEESFv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
+        Thu, 5 May 2022 14:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382941AbiEESBW (ORCPT
+        with ESMTP id S230386AbiEESFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:01:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E7611C36;
-        Thu,  5 May 2022 10:57:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 416F7CE2F54;
-        Thu,  5 May 2022 17:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39AD6C385A8;
-        Thu,  5 May 2022 17:57:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651773458;
-        bh=CXgvnZVu0rwEM0ACvUhkHVFy8LvlpA+vkKO1Hu87/OY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kqo51bgwhbaxDJ2jGEqRneRMCLEY6acJI2GErjjdVUF9aBaJxGCug2WFcGraBKuei
-         Hsdr2h9XW580LBQ80eUepJUXEexRuaPRWiRbOqyHd9iZavkcQgnqfjSz52uIVmg11t
-         rLJ7JVRCuXahgxMzyFsq8Pz9b/LZAoEvZGuZyVRs=
-Date:   Thu, 5 May 2022 19:57:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Frank Wunderlich <linux@fw-web.de>, linux-pm@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC v1] opp: add config option for debug
-Message-ID: <YnQQEZ7eoa/ZbmEj@kroah.com>
-References: <20220504174823.156709-1-linux@fw-web.de>
- <YnLEwEIOqnLGxFjJ@kroah.com>
- <E08A9747-2F96-42A7-A427-0E00D4075CF0@public-files.de>
+        Thu, 5 May 2022 14:05:40 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAED4BFFC;
+        Thu,  5 May 2022 11:02:00 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id be20so6073782edb.12;
+        Thu, 05 May 2022 11:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9t4LNeKMgDm4bsG6VjPLo2oZxRoaM8DUvvm+HYE+R1M=;
+        b=iJoOmgsIjvyuFihyonY0t0eMJ1r4WRq2au65ubOWz4svZ7uNke1xkh5TMl5Uk1C4ar
+         UIY/BEIb559kc/8GA6AN2jZbtK3HJUgDyFcf8WYibLMc4HUxfjX6QN0xwUZxTH3bch5f
+         TpiHeFKPDqdrDDweoPDKVkKe0H69aGPfNEBD0lxurv4GAGtssFoph6Z3LIYL2wxFRX8W
+         l3guDXZ+n306XJnPKwzETB0ujHwqeVXGp3xpkZe1ZSLKJGvydMrE5OiDGzIL3LGVfVNK
+         m9QhBxtqSxYy18lmWGr2EAHMM9HquaSsC1yXL1dJ2GxYlyf3YhgL6KBvi44ez6Sum4DJ
+         JZ5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9t4LNeKMgDm4bsG6VjPLo2oZxRoaM8DUvvm+HYE+R1M=;
+        b=wQgah8rVFW4z64LJm6bBhPN3qY1qM3VtVv095jFvGPIcvZXmScdWzXyHIZgW0B/Ou+
+         NFN9DzdYoEpXf+O8gPn3ePaLYEW4oxc/TLOqz4ZtQvvLdQ3nk4M6h+sb+ubb2LO59oM6
+         m6lNsoBN6ZZam0pII34pso21Ro5pM6mWuS2J1795gG3YnOD/pOm6utahn239IT+/46V0
+         O81rNKg0bBiPWfhu933RI93UCf0pzVVNzWRpxyKaef91/WfzOnoRa5HS6vevJ0jsCnRa
+         kCclYCb6HXxqJJ27FwE7BwPxlqWhmhtIVtgIEj/uCCGOVGrFDQJ8wy23XUTqAsWAIXvh
+         N/uw==
+X-Gm-Message-State: AOAM531ky5YN6yM6NKCIxFxLP4u5mJgj51dSVx5WXww+1h9mHl9i/BT/
+        vSbeireKuqg6uloUKKv89N9twhJjx8ot1QX3eo0=
+X-Google-Smtp-Source: ABdhPJwS8lSH9jpq6E2YTDJsT+UUIAttq51sN8ZOaVxn+s/4vminCmuIhkjtgAfiFHBrFFujkBJeOKFSZV9VWi3/Zok=
+X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
+ m16-20020aa7d350000000b00425e029da56mr31711234edr.296.1651773718814; Thu, 05
+ May 2022 11:01:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E08A9747-2F96-42A7-A427-0E00D4075CF0@public-files.de>
+References: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn>
+ <20220504133612.604304-4-Qing-wu.Li@leica-geosystems.com.cn>
+ <CAHp75VeseZ2ChtbafmbgVavS4KvCvrQ4+XSRkeiJSyqr8__dSw@mail.gmail.com>
+ <AM9PR06MB7844E8FE0EDF712C769271DAD7C39@AM9PR06MB7844.eurprd06.prod.outlook.com>
+ <CAHp75VfEK_TXXA3NdGgjis7duHgoDo4aSOZntdO0wEGLw0sQ7g@mail.gmail.com> <AM9PR06MB7844C01CA580F046FA570B43D7C29@AM9PR06MB7844.eurprd06.prod.outlook.com>
+In-Reply-To: <AM9PR06MB7844C01CA580F046FA570B43D7C29@AM9PR06MB7844.eurprd06.prod.outlook.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 5 May 2022 20:01:22 +0200
+Message-ID: <CAHp75VcD-UpG=ppuE2Du2SsQK66MYdrwhXvjHksN5=gqcppYqA@mail.gmail.com>
+Subject: Re: [PATCH V3 3/5] iio: accel: sca3300: modified to support multi chips
+To:     LI Qingwu <qing-wu.li@leica-geosystems.com.cn>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 07:50:56PM +0200, Frank Wunderlich wrote:
-> Hi,
-> 
-> Am 4. Mai 2022 20:24:00 MESZ schrieb Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> >On Wed, May 04, 2022 at 07:48:23PM +0200, Frank Wunderlich wrote:
-> >> From: Frank Wunderlich <frank-w@public-files.de>
-> >> 
-> >> Currently OPP debug is enabled by DEBUG_DRIVER option. This is
-> >generic
-> >> driver debug and opp floods serial console. This is annoying if opp
-> >is
-> >> not needed so give it an additional config-key.
-> >> 
-> >> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> >> ---
-> >>  drivers/base/Kconfig | 1 +
-> >>  drivers/opp/Kconfig  | 7 +++++++
-> >>  drivers/opp/Makefile | 2 +-
-> >>  3 files changed, 9 insertions(+), 1 deletion(-)
-> >> 
-> >> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
-> >> index 6f04b831a5c0..8ae826c95d5f 100644
-> >> --- a/drivers/base/Kconfig
-> >> +++ b/drivers/base/Kconfig
-> >> @@ -130,6 +130,7 @@ config DEV_COREDUMP
-> >>  config DEBUG_DRIVER
-> >>  	bool "Driver Core verbose debug messages"
-> >>  	depends on DEBUG_KERNEL
-> >> +	imply DEBUG_OPP
+On Thu, May 5, 2022 at 4:12 PM LI Qingwu
+<qing-wu.li@leica-geosystems.com.cn> wrote:
+> > -----Original Message-----
+> > From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Sent: Wednesday, May 4, 2022 10:39 PM
+> > On Wed, May 4, 2022 at 4:35 PM LI Qingwu
+> > <qing-wu.li@leica-geosystems.com.cn> wrote:
+> > > > From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > > Sent: Wednesday, May 4, 2022 10:20 PM On Wed, May 4, 2022 at 3:36 P=
+M
+> > > > LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
+
+...
+
+> > > > > +struct sca3300_chip_info {
+> > > > > +       const struct iio_chan_spec *channels;
+> > > > > +       const int (*accel_scale_table)[2];
+> > > > > +       const int *accel_scale_modes_map;
+> > > > > +       const unsigned long *scan_masks;
+> > > > > +       const int *avail_modes_table;
+> > > > > +       const int *freq_modes_map;
+> > > > > +       const int *freq_table;
+> > > > > +       const u8 num_accel_scales;
+> > > > > +       const u8 num_avail_modes;
+> > > > > +       const u8 num_channels;
+> > > > > +       const u8 num_freqs;
+> > > > > +       const u8 chip_id;
+> > > >
+> > > > Why do you have const qualifier on all members?  The last one is
+> > > > understandable, but the rest, esp. pointers should be justified.
+> > > Because I thought it was static and has fix value for each chip, unac=
+ceptable
+> > for you?
 > >
-> >This should not be needed, otherwise we would have to do that for all
-> >random driver subsystem in the kernel.
-> 
-> Have added this to have same behaviour if anyone sets DEBUG_DRIVER via defconfig. Else this is disabled by default.
-> 
-> >>  	help
-> >>  	  Say Y here if you want the Driver core to produce a bunch of
-> >>  	  debug messages to the system log. Select this if you are having a
-> >> diff --git a/drivers/opp/Kconfig b/drivers/opp/Kconfig
-> >> index e8ce47b32735..6a2d2c6c1143 100644
-> >> --- a/drivers/opp/Kconfig
-> >> +++ b/drivers/opp/Kconfig
-> >> @@ -12,3 +12,10 @@ config PM_OPP
-> >>  	  representing individual voltage domains and provides SOC
-> >>  	  implementations a ready to use framework to manage OPPs.
-> >>  	  For more information, read <file:Documentation/power/opp.rst>
-> >> +
-> >> +menu "Operating Performance Points (OPP)"
-> >> +config DEBUG_OPP
-> >> +	bool "Debug Operating Performance Points"
-> >> +	help
-> >> +	  enable opp debugging
-> >> +endmenu
-> >> diff --git a/drivers/opp/Makefile b/drivers/opp/Makefile
-> >> index f65ed5985bb4..2589915eef95 100644
-> >> --- a/drivers/opp/Makefile
-> >> +++ b/drivers/opp/Makefile
-> >> @@ -1,5 +1,5 @@
-> >>  # SPDX-License-Identifier: GPL-2.0-only
-> >> -ccflags-$(CONFIG_DEBUG_DRIVER)	:= -DDEBUG
-> >> +ccflags-$(CONFIG_DEBUG_OPP)	:= -DDEBUG
+> > But why const qualifier? What is the point of it for example for u8 mem=
+bers if
+> > the entire object is qualified as const below in the same patch?
 > >
-> >This feels wrong, you shouldn't need a -DDEBUG for anything if all is
-> >going correctly.  Why is opp so odd this way?  Just use the normal
-> >dev_dbg() macros and all will be fine, nothing special should be needed
-> >at all.
-> 
-> I have looked more into it,just wanted to get driver debug (probing/binding) and dev_dbg messages without the opp spam (floods serial console).
-> 
-> >And don't use a config option for it either, no one will turn it on, it
-> >needs to "just work" for all systems.
-> 
-> Config option is to enable if needed and not via driver-debug.
+> > On top of that, please explain what in your opinion the "const ...
+> > *foo" gives us, and what we will lose if we remove the "const" part out=
+ of them.
+>
+> Ah, you are right, those const are unnecessary for nonpointer members.
+> for the pointers, the contexts that the pointer points to are still writa=
+ble.
+> what about if I remove all the const from nonpointer and keep it for the =
+pointers?
+> Like=EF=BC=9A
+> const struct iio_chan_spec *channels;
+> const int (*accel_scale_table)[2];
+> const int (*incli_scale_table)[2];
+> const int *accel_scale_modes_map;
+> const int *incli_scale_modes_map;
+> const unsigned long *scan_masks;
+> const int *avail_modes_table;
+> const int *freq_modes_map;
+> const int *freq_table;
+> const char *name;
+> u8 num_accel_scales;
+> u8 num_incli_scales;
+> u8 num_avail_modes;
+> u8 num_channels;
+> u8 num_freqs;
+> u8 chip_id;
+> bool angle;
 
-Please do not do that, you should never need subsystem/driver Kconfig
-options like this.  Distros will never enable them and you can't ask a
-user to rebuild their kernel easily.  Just rely on the same
-infrastructure like all other subsystems do please.
+It's better, but you still need to justify the rest with explanation
+in the commit message.
+And I leave this to maintainers to say if the const:s are needed or not.
 
-thanks,
+> > > > > +       const char *name;
+> > > > > +};
 
-greg k-h
+--=20
+With Best Regards,
+Andy Shevchenko
