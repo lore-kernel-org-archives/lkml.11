@@ -2,216 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6504C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379717AbiEENep (ORCPT
+        id S1379694AbiEENeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        Thu, 5 May 2022 09:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379561AbiEENeS (ORCPT
+        with ESMTP id S1379529AbiEENeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 09:34:18 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61881277A;
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F59B7D9;
         Thu,  5 May 2022 06:30:38 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id n8so4417931plh.1;
+Received: by mail-ed1-x52e.google.com with SMTP id a21so5234038edb.1;
         Thu, 05 May 2022 06:30:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=51mDZ0cyY489Y5og5yHEw5jaChmCSfiAiqAL0DmhUXw=;
-        b=W5gfZdBHv3/QtOTMCzdHXm3MH44sEXegpd+TJRM1MCjGjtp6ZnfaKYlOEhrqk8pwvf
-         FjbrczsdeLWAvlf6JDJO4c8bKmMy7HgfOby54F70XX4sla/eF6XAextoZB/jSYPndNUk
-         hMHqHy5ZC0WsFc46XVZli/1pnbpdVY2704avm7L6snqzVKL6as9s4sfVqDHslZBsdJ8j
-         hfYLpthx6qEijc9AX+eKJbuuzcd6BUFkutGLU7K4N0WhUX7zKIIx1U0iqoeQJZIE/l8J
-         +jaB7Xfaio4i2Tqw763L5PHGcE6TrIaw+iuRk4RA5mMKk3Pc55mdiy8BwdmCzXP4L45j
-         LvLA==
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LEyhSb4KLLHDvo9x+lHGafva3P7wuUyOsl0RpBl3TYY=;
+        b=erloLqL3L1Z5rKgWGi4x265WiJi7qZEJLqO8bCzSE2d4j++qzExi65405a1CWA8eOF
+         /tuO4stZhJCz4LgMWaweViYv4mbdAhIA9TVAfY9EvDuTb+QABNmIP9dS2da456z1ikc/
+         vI/QBWiPprwIxazaUWrFJLU8MpQ4vTlDlJK2bsf2jjZ4B7DSFFjagZ56gTH7g06akm07
+         Yo8ZPTDQ3ZSw856iCNFu9yd3y9sIDJY3DtGvj5TmOKIxtGTdl23i9LIGGzlG7TroyxLJ
+         eoR+jrykBs7MqoK6pTyjsmHb1VRdDJrFWCuOj7nov6KTYsXw7PAk+darzy5Lz3OPe5wi
+         hWqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=51mDZ0cyY489Y5og5yHEw5jaChmCSfiAiqAL0DmhUXw=;
-        b=NuBzHRi2TmMCK2mS7y1594MCpioAJc3FqIsHuh94ZgU7ha9rNLQ5f/X/tu2KZ96EBR
-         HicF/f6jp913nCFR4ACENpyDLZ2beq36FBgDHDkX+r9jrHE2A3PE/iVm+MAAgptK1CWv
-         irwG2UNyaFisYUTngEBOgr5Fy/afSWUAuK9IsZJqsOWcBPSgapvU5Jpt055bcXEjJzEf
-         eb3VnSSIqDaPvh4EGPEi/kJvC7sJeecN2C/EAD9lEXbKde6yc81QX8WbFMST5YVBjnlH
-         kATurGHLb4e18U1BKg6zKEW50yMW0pUIcEatQU9nU54IrUWIeNa2t2tnkA0/TqPGuy3j
-         q7PA==
-X-Gm-Message-State: AOAM532f8T4U1uvCGI0O68S3HIHj9JXO/GNjHfDar1Dp6Yo7IfGJnpWn
-        dNlsKziiCEaS4oMu46fV434=
-X-Google-Smtp-Source: ABdhPJwSacmVgbxtXPGN4e7Dr103aA7fH/UYZnnVDm5WfNUn6YR8wN/EeVUgfnGA3MWO3PSiWCuxiw==
-X-Received: by 2002:a17:902:a502:b0:15e:c251:b769 with SMTP id s2-20020a170902a50200b0015ec251b769mr9830558plq.115.1651757438087;
-        Thu, 05 May 2022 06:30:38 -0700 (PDT)
-Received: from localhost.localdomain ([115.99.184.228])
-        by smtp.gmail.com with ESMTPSA id c64-20020a624e43000000b0050dc7628135sm1420120pfb.15.2022.05.05.06.30.35
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LEyhSb4KLLHDvo9x+lHGafva3P7wuUyOsl0RpBl3TYY=;
+        b=EvPJj2H8KxmPHIbZM3R6K3X1tPcUwqLz0vHaQJQyoin3bYQSH0EmxIx/zCocnCWbDZ
+         ahB/WmAjQ+huOxH3eUyxVPp/r0umnAtFWU8DsDPF2I0/1Pk/ln4Chd7+QDY1NV0PLqee
+         9oDEKUpzp+1z9FzHa/v8Tgdiz8c6zPTeAuiB9vKemQnEUnQ6YUYQbgc9/IiHzgEYEg9q
+         0U2vOwUdAgnsSUahERpSP1IdsIynrVT53PyAGwP2ilV9HhwjFBtWcaxTtV4iJXR2PF+0
+         vW0M4oPuEyBvufFFveuWqIWePocaiqrLqkVlleOPq3jitIzlb74hkmMTnzraKadP87A0
+         BUmQ==
+X-Gm-Message-State: AOAM531zONSQDU/ELrU1/DvaEL+RanGifX49TDOY2mZq5oBzTCVNzewP
+        TDi6a/Kz/iyth/dumvTgWGI=
+X-Google-Smtp-Source: ABdhPJzLBZeGQSoC4QxkDn6W8OqQ2KRQfFIE+hPKggNvQz9ecywyyuj4wg8kdTVlJk79vAMxJ2B0QA==
+X-Received: by 2002:a50:ce14:0:b0:425:cb75:5322 with SMTP id y20-20020a50ce14000000b00425cb755322mr30882298edi.386.1651757433754;
+        Thu, 05 May 2022 06:30:33 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id qz24-20020a170907681800b006f4cb79d9a8sm766846ejc.75.2022.05.05.06.30.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:30:37 -0700 (PDT)
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     dan@dlrobertson.com, jic23@kernel.org, andy.shevchenko@gmail.com
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 05/10] iio: accel: bma400: Add separate channel for step counter
-Date:   Thu,  5 May 2022 19:00:16 +0530
-Message-Id: <20220505133021.22362-6-jagathjog1996@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220505133021.22362-1-jagathjog1996@gmail.com>
-References: <20220505133021.22362-1-jagathjog1996@gmail.com>
+        Thu, 05 May 2022 06:30:33 -0700 (PDT)
+Message-ID: <6273d179.1c69fb81.7c36a.435b@mx.google.com>
+X-Google-Original-Message-ID: <YnPRd5865LV21/Bw@Ansuel-xps.>
+Date:   Thu, 5 May 2022 15:30:31 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 09/11] leds: trigger: netdev: add additional
+ hardware only triggers
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-10-ansuelsmth@gmail.com>
+ <YnModmKCG3BD5nvd@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnModmKCG3BD5nvd@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added channel for step counter which can be enable or disable
-through the sysfs interface.
+On Thu, May 05, 2022 at 03:29:26AM +0200, Andrew Lunn wrote:
+> On Tue, May 03, 2022 at 05:16:31PM +0200, Ansuel Smith wrote:
+> > Add additional hardware only triggers commonly supported by switch LEDs.
+> > 
+> > Additional modes:
+> > link_10: LED on with link up AND speed 10mbps
+> > link_100: LED on with link up AND speed 100mbps
+> > link_1000: LED on with link up AND speed 1000mbps
+> > half_duplex: LED on with link up AND half_duplex mode
+> > full_duplex: LED on with link up AND full duplex mode
+> > 
+> > Additional blink interval modes:
+> > blink_2hz: LED blink on any even at 2Hz (250ms)
+> > blink_4hz: LED blink on any even at 4Hz (125ms)
+> > blink_8hz: LED blink on any even at 8Hz (62ms)
+> 
+> I would suggest separating blink intervals into a patch of their own,
+> because they are orthogonal to the other modes. Most PHYs are not
+> going to support them, or they have to be the same across all LEDs, or
+> don't for example make sense with duplex etc. We need to first
+> concentrate on the basics, get that correct. Then we can add nice to
+> have features like this.
+> 
+>      Andrew
 
-Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
----
- drivers/iio/accel/bma400.h      |  2 +
- drivers/iio/accel/bma400_core.c | 69 +++++++++++++++++++++++++++++++--
- 2 files changed, 67 insertions(+), 4 deletions(-)
+Okok will just drop this. I agree that adds additional complexity to the
+code and would make this even harder to merge.
 
-diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-index 907e1a6c0a38..32c08f8b0b98 100644
---- a/drivers/iio/accel/bma400.h
-+++ b/drivers/iio/accel/bma400.h
-@@ -53,6 +53,8 @@
- #define BMA400_STEP_CNT1_REG        0x16
- #define BMA400_STEP_CNT3_REG        0x17
- #define BMA400_STEP_STAT_REG        0x18
-+#define BMA400_STEP_INT_MSK         BIT(0)
-+#define BMA400_STEP_RAW_LEN         0x03
- 
- /*
-  * Read-write configuration registers
-diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index 67e102c097bc..fdb7e8bd7b27 100644
---- a/drivers/iio/accel/bma400_core.c
-+++ b/drivers/iio/accel/bma400_core.c
-@@ -19,6 +19,9 @@
- #include <linux/mutex.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/slab.h>
-+
-+#include <asm/unaligned.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-@@ -74,6 +77,7 @@ struct bma400_data {
- 	int oversampling_ratio;
- 	int scale;
- 	struct iio_trigger *trig;
-+	int steps_enabled;
- 	/* Correct time stamp alignment */
- 	struct {
- 		__le16 buff[3];
-@@ -209,6 +213,12 @@ static const struct iio_chan_spec bma400_channels[] = {
- 			.endianness = IIO_LE,
- 		},
- 	},
-+	{
-+		.type = IIO_STEPS,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_ENABLE),
-+		.scan_index = -1, /* No buffer support */
-+	},
- 	IIO_CHAN_SOFT_TIMESTAMP(4),
- };
- 
-@@ -577,6 +587,40 @@ static int bma400_set_power_mode(struct bma400_data *data,
- 	return 0;
- }
- 
-+static int bma400_enable_steps(struct bma400_data *data, int val)
-+{
-+	int ret;
-+
-+	if (data->steps_enabled == val)
-+		return 0;
-+
-+	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG,
-+				 BMA400_STEP_INT_MSK,
-+				 FIELD_PREP(BMA400_STEP_INT_MSK, !!val));
-+	if (ret)
-+		return ret;
-+	data->steps_enabled = val;
-+	return ret;
-+}
-+
-+static int bma400_get_steps_reg(struct bma400_data *data, int *val)
-+{
-+	u8 *steps_raw;
-+	int ret;
-+
-+	steps_raw = kmalloc(BMA400_STEP_RAW_LEN, GFP_KERNEL);
-+	if (!steps_raw)
-+		return -ENOMEM;
-+
-+	ret = regmap_bulk_read(data->regmap, BMA400_STEP_CNT0_REG,
-+			       steps_raw, BMA400_STEP_RAW_LEN);
-+	if (ret)
-+		return ret;
-+	*val = get_unaligned_le24(steps_raw);
-+	kfree(steps_raw);
-+	return IIO_VAL_INT;
-+}
-+
- static void bma400_init_tables(void)
- {
- 	int raw;
-@@ -716,10 +760,17 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
--		mutex_lock(&data->mutex);
--		ret = bma400_get_temp_reg(data, val, val2);
--		mutex_unlock(&data->mutex);
--		return ret;
-+		switch (chan->type) {
-+		case IIO_TEMP:
-+			mutex_lock(&data->mutex);
-+			ret = bma400_get_temp_reg(data, val, val2);
-+			mutex_unlock(&data->mutex);
-+			return ret;
-+		case IIO_STEPS:
-+			return bma400_get_steps_reg(data, val);
-+		default:
-+			return -EINVAL;
-+		}
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&data->mutex);
- 		ret = bma400_get_accel_reg(data, chan, val);
-@@ -760,6 +811,9 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
- 
- 		*val = data->oversampling_ratio;
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_ENABLE:
-+		*val = data->steps_enabled;
-+		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -825,6 +879,11 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
- 		ret = bma400_set_accel_oversampling_ratio(data, val);
- 		mutex_unlock(&data->mutex);
- 		return ret;
-+	case IIO_CHAN_INFO_ENABLE:
-+		mutex_lock(&data->mutex);
-+		ret = bma400_enable_steps(data, val);
-+		mutex_unlock(&data->mutex);
-+		return ret;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -841,6 +900,8 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_ENABLE:
-+		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
- 	}
 -- 
-2.17.1
-
+	Ansuel
