@@ -2,160 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379051AbiEENTS (ORCPT
+        id S1378995AbiEENUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
+        Thu, 5 May 2022 09:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378934AbiEENS6 (ORCPT
+        with ESMTP id S1354075AbiEENUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:18:58 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACBD11A3C;
-        Thu,  5 May 2022 06:15:19 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id i17so4343897pla.10;
-        Thu, 05 May 2022 06:15:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y5qHL54m6D9fE++caCE9K5xKuvT/9ExUGmvS2M/SVMQ=;
-        b=OIp3OXfi5KU+YOePA4S28OTtk0RXmD7fHyjtIsUBY9FuP0oCyDYSC87ijoSOtkygbL
-         NW9nDnxZpobRCNR2pkYZn8irTUqNUDfYr1B2CbQVcqkCYaFSJfZzKVm0S08i/v1r9+zO
-         7rEzz2DJV7cUnoQepNbB1ZlaqBmtCADJsryZjF76Yk0TVZPj0S3nKL7Getdfa7d1sCpg
-         U5s5G97In4+v52ZT6/xYc1IWrG+eUOdQ6o1AHEkogeqWp0hrc0nYdgQD8uyhq9aNq2ii
-         mOKPNzTNUFqvnIwBY56ayeWxzP8nr0A5pjnE2BY+nthH2PIPlmpNkh2HGXuIXH0OpEQQ
-         utoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y5qHL54m6D9fE++caCE9K5xKuvT/9ExUGmvS2M/SVMQ=;
-        b=4TLCPYG3tQEc48ngFnHj859mPcwKVzy7J9ou/4OGOiHT2702WunX5tw9XhRm8akiom
-         5H1apJMib/CAtMtpNePMRQ8F2GIsuY3P4IJwy64p2V166Ohjr+9nySEU6xZtd6B/13BX
-         NMXkliZhCYoO/Ne2wCAzPrWbTxVNoflxvbxOxiR2vfZ9qYTT89y2zglCOJ/7UHrXOKx/
-         pfP27iPCNbf80+Tz+TlRK0aUM0LivKHQbVkbub3RIzEB8KTGmcgZMS70Jyxwq77/sjy+
-         ITeQY5gwQiYhEnILN1lYu0kU/znH7mZ59BwY/BBEbwrmO6aPV5h0hZAw5w8TVQILAbkP
-         YQMA==
-X-Gm-Message-State: AOAM533hyvRXXJBsjfZGH3LhTB40HKvWRrtcbgYxlUqJSviQ/4QLDmfV
-        6JGjqcwCbeqjvPbLLNLUzI4=
-X-Google-Smtp-Source: ABdhPJxzK7gmlPfAA1wCyoNDgEUdtqPdnPGzx7Qd+9QuRj1y4702x3RdBAO72OtkQri1p6R0hxOJYA==
-X-Received: by 2002:a17:90b:4ac9:b0:1dc:ca21:30e4 with SMTP id mh9-20020a17090b4ac900b001dcca2130e4mr1003179pjb.170.1651756518965;
-        Thu, 05 May 2022 06:15:18 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:38:a7e8:659:5c6e:9219])
-        by smtp.gmail.com with ESMTPSA id p21-20020a170903249500b0015e8d4eb2b4sm1474282plw.254.2022.05.05.06.15.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:15:18 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, brijesh.singh@amd.com,
-        venu.busireddy@oracle.com, michael.roth@amd.com,
-        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com, jroedel@suse.de,
-        michael.h.kelley@microsoft.com
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vkuznets@redhat.com, parri.andrea@gmail.com
-Subject: [PATCH] x86/Hyper-V: Add SEV negotiate protocol support in Isolation VM
-Date:   Thu,  5 May 2022 09:15:02 -0400
-Message-Id: <20220505131502.402259-1-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 5 May 2022 09:20:41 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E4B18E18;
+        Thu,  5 May 2022 06:17:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651756622; x=1683292622;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+6MCbEQSUwrgaPZw/EyhSqJQGKL9MpyVEdD0/n5EPeI=;
+  b=NidSsoJSQWI7Xil2Da5FncYmC4RR9xPSXdoS0FD3sT+aCpqFaMydh0jR
+   zTZYYVArzsQ22RV7a2W8ipjYbtZJxEEEgTmJHHbmjR5mx9PqHVidT6mz7
+   CbwMiqbM7zp8ZJx1xJzfYTbSmtwT6tv/+pJQjgxRWaWRXCkYzQao5cbdY
+   CUMFjfjAPphXSC22xGGUKV1jtcWZ+LckTt+h9Zhc6ZXYVuo7FpF9eASsY
+   LP5uAPQvvxNJyDRV18g8K7q95evwEIK9nYhYwsORjzNjVMV95YwKVEEZr
+   PG4QZN2+LAKlCsHZE+5JrJ/bAN9gTRPyN3/BBoD4ztn59bY2EdyEDiL5z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="331090656"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="331090656"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:17:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="563235590"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 05 May 2022 06:16:58 -0700
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 245DGuYS009371;
+        Thu, 5 May 2022 14:16:56 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH bpf-next v2] bpftool: Use sysfs vmlinux when dumping BTF by ID
+Date:   Thu,  5 May 2022 15:05:08 +0200
+Message-Id: <20220505130507.130670-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Currently, dumping almost all BTFs specified by id requires
+using the -B option to pass the base BTF. For kernel module
+BTFs the vmlinux BTF sysfs path should work.
 
-Hyper-V Isolation VM code uses sev_es_ghcb_hv_call() to read/write MSR
-via GHCB page. The SEV-ES guest should negotiate GHCB version before
-reading/writing MSR via GHCB page. Expose sev_es_negotiate_protocol()
-and sev_es_terminate() from AMD SEV code and negotiate GHCB version in
-hyperv_init_ghcb() fro Hyper-V Isolation VM.
+This patch simplifies dumping by ID usage by attempting to
+use vmlinux BTF from sysfs, if the first try of loading BTF by ID
+fails with certain conditions and the ID corresponds to a kernel
+module BTF.
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- arch/x86/hyperv/hv_init.c    | 8 ++++++++
- arch/x86/include/asm/sev.h   | 6 ++++++
- arch/x86/kernel/sev-shared.c | 4 ++--
- 3 files changed, 16 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/btf.c | 67 +++++++++++++++++++++++++++++++++++------
+ 1 file changed, 58 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index 8b392b6b7b93..56e2c34e7d64 100644
---- a/arch/x86/hyperv/hv_init.c
-+++ b/arch/x86/hyperv/hv_init.c
-@@ -29,6 +29,7 @@
- #include <clocksource/hyperv_timer.h>
- #include <linux/highmem.h>
- #include <linux/swiotlb.h>
-+#include <asm/sev.h>
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index a2c665beda87..070e0c1595d7 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -459,6 +459,56 @@ static int dump_btf_c(const struct btf *btf,
+ 	return err;
+ }
  
- int hyperv_init_cpuhp;
- u64 hv_current_partition_id = ~0ull;
-@@ -70,6 +71,13 @@ static int hyperv_init_ghcb(void)
- 	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
- 	*ghcb_base = ghcb_va;
- 
-+	/* Negotiate GHCB Version. */
-+	if (!sev_es_negotiate_protocol())
-+		sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_PROT_UNSUPPORTED);
++static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
 +
-+	/* Write ghcb page back after negotiating protocol. */
-+	wrmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
-+	VMGEXIT();
- 	return 0;
- }
- 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 19514524f0f8..ad69c1dc081b 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -161,6 +161,9 @@ extern enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
- 					  struct es_em_ctxt *ctxt,
- 					  u64 exit_code, u64 exit_info_1,
- 					  u64 exit_info_2);
-+extern bool sev_es_negotiate_protocol(void);
-+extern void sev_es_terminate(unsigned int set, unsigned int reason);
++static struct btf *get_vmlinux_btf_from_sysfs(void)
++{
++	struct btf *base;
 +
- static inline int rmpadjust(unsigned long vaddr, bool rmp_psize, unsigned long attrs)
- {
- 	int rc;
-@@ -226,6 +229,9 @@ static inline int snp_issue_guest_request(u64 exit_code, struct snp_req_data *in
- {
- 	return -ENOTTY;
- }
++	base = btf__parse(sysfs_vmlinux, NULL);
++	if (libbpf_get_error(base)) {
++		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
++		      sysfs_vmlinux, libbpf_get_error(base));
++		base = NULL;
++	}
 +
-+static bool sev_es_negotiate_protocol(void) { return false; }
-+static void sev_es_terminate(unsigned int set, unsigned int reason) { }
- #endif
- 
- #endif
-diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-index 2b4270d5559e..bffc38f0d5ed 100644
---- a/arch/x86/kernel/sev-shared.c
-+++ b/arch/x86/kernel/sev-shared.c
-@@ -86,7 +86,7 @@ static bool __init sev_es_check_cpu_features(void)
- 	return true;
- }
- 
--static void __noreturn sev_es_terminate(unsigned int set, unsigned int reason)
-+void __noreturn sev_es_terminate(unsigned int set, unsigned int reason)
++	return base;
++}
++
++static struct btf *btf_try_load_with_vmlinux(__u32 btf_id, struct btf **base)
++{
++	struct bpf_btf_info btf_info = {};
++	unsigned int len;
++	int btf_fd;
++	int err;
++
++	btf_fd = bpf_btf_get_fd_by_id(btf_id);
++	if (btf_fd < 0) {
++		p_err("can't get BTF object by id (%u): %s",
++		      btf_id, strerror(errno));
++		return ERR_PTR(btf_fd);
++	}
++
++	len = sizeof(btf_info);
++	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
++	close(btf_fd);
++
++	if (err) {
++		p_err("can't get BTF (ID %u) object info: %s",
++		      btf_id, strerror(errno));
++		return ERR_PTR(err);
++	}
++
++	if (!btf_info.kernel_btf) {
++		p_err("BTF with ID %u is not a kernel module BTF, cannot use vmlinux as base",
++		      btf_id);
++		return ERR_PTR(-EINVAL);
++	}
++
++	*base = get_vmlinux_btf_from_sysfs();
++	return btf__load_from_kernel_by_id_split(btf_id, *base);
++}
++
+ static int do_dump(int argc, char **argv)
  {
- 	u64 val = GHCB_MSR_TERM_REQ;
+ 	struct btf *btf = NULL, *base = NULL;
+@@ -536,18 +586,11 @@ static int do_dump(int argc, char **argv)
+ 		NEXT_ARG();
+ 	} else if (is_prefix(src, "file")) {
+ 		const char sysfs_prefix[] = "/sys/kernel/btf/";
+-		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
  
-@@ -137,7 +137,7 @@ static void snp_register_ghcb_early(unsigned long paddr)
- 		sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_REGISTER);
- }
+ 		if (!base_btf &&
+ 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
+-		    strcmp(*argv, sysfs_vmlinux) != 0) {
+-			base = btf__parse(sysfs_vmlinux, NULL);
+-			if (libbpf_get_error(base)) {
+-				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+-				      sysfs_vmlinux, libbpf_get_error(base));
+-				base = NULL;
+-			}
+-		}
++		    strcmp(*argv, sysfs_vmlinux))
++			base = get_vmlinux_btf_from_sysfs();
  
--static bool sev_es_negotiate_protocol(void)
-+bool sev_es_negotiate_protocol(void)
- {
- 	u64 val;
- 
+ 		btf = btf__parse_split(*argv, base ?: base_btf);
+ 		err = libbpf_get_error(btf);
+@@ -593,6 +636,12 @@ static int do_dump(int argc, char **argv)
+ 	if (!btf) {
+ 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
+ 		err = libbpf_get_error(btf);
++		if (err == -EINVAL && !base_btf) {
++			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
++			btf = btf_try_load_with_vmlinux(btf_id, &base);
++			err = libbpf_get_error(btf);
++		}
++
+ 		if (err) {
+ 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
+ 			goto done;
 -- 
-2.25.1
+2.35.1
 
