@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8556DC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A16BC41535
 	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384805AbiEES37 (ORCPT
+        id S1384947AbiEESaD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
+        Thu, 5 May 2022 14:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383115AbiEEST3 (ORCPT
+        with ESMTP id S1383378AbiEESTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:29 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5B0186F1;
-        Thu,  5 May 2022 11:15:48 -0700 (PDT)
+        Thu, 5 May 2022 14:19:53 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4064393D5;
+        Thu,  5 May 2022 11:16:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774548; x=1683310548;
+  t=1651774568; x=1683310568;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=n0Cp++5LoPFGP8ehZslxep34XcZ0liOLwOyDKsAMJS4=;
-  b=fQWAqhTYAWDStsjAIeYYqIB+YnmfO/h2AoEApCCAdU4qbOL0/FYVFyBh
-   HjTexJrl0lPFZtIUI7WnigDFFgMjlTYuhuRhdeNCEQskdO49Zd7xx/BlA
-   8PBWaS3p2T79AGEdmbil7zQuS4IDVDGAgkxwJHpMRtut7JBtdY1dWMNIC
-   1pfdqh/mrcXe+h6TbUi3camLPDW6YJJby7ADkStNTtwz8UrDC03gixgqO
-   laoibi2JkpdoWEX44mSaNkckRmZwdIy/YIHaA6c0+oxzG1mVqGUkM3D+u
-   oUzSPSaLfn/XqKiNksZqLaRmXRypuEYeu2B6+mAnVSBRdI+MfYqGe8Ta5
+  bh=vQdc+7bMp85r+RLxtRflm+8G7MwPp5BRnYdgKX7piSg=;
+  b=ihtcdYxJjLJLDjYNIoIYDsHVArbnCA+hoyDvulDoQPCIuJHfdOfaBiWY
+   aO20QgT7l+9UmOQtnB+6h3t5iZn82Z2aSnS5V5AfxX6ORQgJU4YykdV5Q
+   cWtXofLlgGfwymtXlml5nknYNpXytUtvK0sKiI+enJyopiw09wXfN1mYL
+   3Czc2m4IpH7CPQPr2ioXLQczxMDZfUdkj6Bxl/G+qYsVQvDXJTgBebhgM
+   5GufE4IGfxp3dU1DbFmmxrTzxPSvyBafolz/hNRSY1PEsyM2zH1rUU9db
+   uNOrv+mVXyhSmdLFP6hwOeE6RQ3swSJe6fJsxQL9SbHlih7eYBgS2WWna
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293409459"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354864"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="293409459"
+   d="scan'208";a="268354864"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:48 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:50 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083325"
+   d="scan'208";a="665083384"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:47 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:50 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 052/104] KVM: VMX: Move setting of EPT MMU masks to common VT-x code
-Date:   Thu,  5 May 2022 11:14:46 -0700
-Message-Id: <ca26d73d9f6c5755aacbfd95ba4cf708f1fa90cc.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 067/104] KVM: TDX: restore host xsave state when exit from the guest TD
+Date:   Thu,  5 May 2022 11:15:01 -0700
+Message-Id: <547fe194bc6eccfe7ddb23e68065b36a58d64758.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -56,57 +56,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-EPT MMU masks are used commonly for VMX and TDX.  The value needs to be
-initialized in common code before both VMX/TDX-specific initialization
-code.
+On exiting from the guest TD, xsave state is clobbered.  Restore xsave
+state on TD exit.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/main.c | 5 +++++
- arch/x86/kvm/vmx/vmx.c  | 4 ----
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ arch/x86/kvm/vmx/tdx.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index ce12cc8276ef..9f4c3a0bcc12 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -4,6 +4,7 @@
- #include "x86_ops.h"
- #include "vmx.h"
- #include "nested.h"
-+#include "mmu.h"
- #include "pmu.h"
- #include "tdx.h"
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 1aa52a093764..a54ee22b6c64 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -2,6 +2,7 @@
+ #include <linux/cpu.h>
+ #include <linux/mmu_context.h>
  
-@@ -26,6 +27,10 @@ static __init int vt_hardware_setup(void)
++#include <asm/fpu/xcr.h>
+ #include <asm/tdx.h>
  
- 	enable_tdx = enable_tdx && !tdx_hardware_setup(&vt_x86_ops);
- 
-+	if (enable_ept)
-+		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
-+				      cpu_has_vmx_ept_execute_only());
-+
- 	return 0;
+ #include "capabilities.h"
+@@ -590,6 +591,22 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	vcpu->kvm->vm_bugged = true;
  }
  
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 1a2e8d195891..df78e2220fec 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -8021,10 +8021,6 @@ __init int vmx_hardware_setup(void)
++static void tdx_restore_host_xsave_state(struct kvm_vcpu *vcpu)
++{
++	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
++
++	if (static_cpu_has(X86_FEATURE_XSAVE) &&
++	    host_xcr0 != (kvm_tdx->xfam & supported_xcr0))
++		xsetbv(XCR_XFEATURE_ENABLED_MASK, host_xcr0);
++	if (static_cpu_has(X86_FEATURE_XSAVES) &&
++	    /* PT can be exposed to TD guest regardless of KVM's XSS support */
++	    host_xss != (kvm_tdx->xfam & (supported_xss | XFEATURE_MASK_PT)))
++		wrmsrl(MSR_IA32_XSS, host_xss);
++	if (static_cpu_has(X86_FEATURE_PKU) &&
++	    (kvm_tdx->xfam & XFEATURE_MASK_PKRU))
++		write_pkru(vcpu->arch.host_pkru);
++}
++
+ u64 __tdx_vcpu_run(hpa_t tdvpr, void *regs, u32 regs_mask);
  
- 	set_bit(0, vmx_vpid_bitmap); /* 0 is reserved for host */
+ static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+@@ -613,6 +630,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
  
--	if (enable_ept)
--		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
--				      cpu_has_vmx_ept_execute_only());
--
- 	/*
- 	 * Setup shadow_me_value/shadow_me_mask to include MKTME KeyID
- 	 * bits to shadow_zero_check.
+ 	tdx_vcpu_enter_exit(vcpu, tdx);
+ 
++	tdx_restore_host_xsave_state(vcpu);
+ 	tdx->host_state_need_restore = true;
+ 
+ 	vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
 -- 
 2.25.1
 
