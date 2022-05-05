@@ -2,79 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8965EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD05DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245180AbiEEJ3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39338 "EHLO
+        id S1352699AbiEEJ3e (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 05:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352602AbiEEJ26 (ORCPT
+        with ESMTP id S1353176AbiEEJ3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:28:58 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C4EC52;
-        Thu,  5 May 2022 02:25:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=cFrv4fRAJbgjPhZjb23GzjlcKUZmkXNQsUuXMiPf8LE=; b=Lam/QAhfsOqG0Qp4Ar+FOMCPO0
-        H+yJ3j/I31yMJ4CTIckx41H8TxJNd30/k4663TU4OMwVNQYmgD282sQpriumTjdKpko4tmu02S4gA
-        +Q1scgiIuRbiie9JL2BhWjmyypxSSMFLuv6fAPM048VL6bML7dXCslpKKvtJj3dQ0BbHgyxO9dUoA
-        XWtLmgTu6Zu0oDj8J/+0+pmq/4fnwxyHLp7noOVE799YtHgh4kXC/xiC6sWmjzm+if62KlSOvzZ8c
-        mMsBFU+v2CKqFJXkNg6zzA6TdpFPPvqy+zeHaQ6RemBuxtecOqTphDe7LUPh4GBGoHUyGGiRDeHOR
-        WiFUs7Aw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nmXj8-00BKsp-6E; Thu, 05 May 2022 09:24:50 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 487A4980FA2; Thu,  5 May 2022 11:24:48 +0200 (CEST)
-Date:   Thu, 5 May 2022 11:24:48 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arch@vger.kernel.org, jthierry@redhat.com,
-        catalin.marinas@arm.com, will@kernel.org, masahiroy@kernel.org,
-        jpoimboe@redhat.com, ycote@redhat.com, herbert@gondor.apana.org.au,
-        mark.rutland@arm.com, davem@davemloft.net, ardb@kernel.org,
-        maz@kernel.org, tglx@linutronix.de, luc.vanoostenryck@gmail.com
-Subject: Re: [RFC PATCH v4 22/37] arm64: kernel: Skip validation of kuser32.o
-Message-ID: <20220505092448.GE2501@worktop.programming.kicks-ass.net>
-References: <20220429094355.122389-1-chenzhongjin@huawei.com>
- <20220429094355.122389-23-chenzhongjin@huawei.com>
- <YmvGja62yWdPHPOW@hirez.programming.kicks-ass.net>
- <a57f7d73-6e01-8f41-9be3-8e90807ec08f@huawei.com>
+        Thu, 5 May 2022 05:29:21 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD08C1AF1B;
+        Thu,  5 May 2022 02:25:41 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kv7b201PbzfYv7;
+        Thu,  5 May 2022 17:25:18 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 17:25:37 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 17:25:36 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>
+CC:     <digetx@gmail.com>, <jonathanh@nvidia.com>, <treding@nvidia.com>
+Subject: [PATCH] soc/tegra: fuse: fix possible null-ptr-deref in tegra_fuse_probe()
+Date:   Thu, 5 May 2022 17:37:20 +0800
+Message-ID: <20220505093720.1283942-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a57f7d73-6e01-8f41-9be3-8e90807ec08f@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 11:36:12AM +0800, Chen Zhongjin wrote:
-> Hi Peter,
-> 
-> IIRC now the blacklist mechanisms all run on check stage, which after
-> decoding, but the problem of kuser32.S happens in decoding stage. Other
-> than that the assembly symbols in kuser32 is STT_NOTYPE and
-> STACK_FRAME_NON_STANDARD will throw an error for this.
-> 
-> OBJECT_FILES_NON_STANDARD works for the single file but as you said
-> after LTO it's invalid. However STACK_FRAME_NON_STANDARD doesn't work
-> for kuser32 case at all.
-> 
-> Now my strategy for undecodable instructions is: show an error message
-> and mark insn->ignore = true, but do not stop anything so decoding work
-> can going on.
-> 
-> To totally solve this my idea is that applying blacklist before decode.
-> However for this part objtool doesn't have any insn or func info, so we
-> should add a new blacklist just for this case...
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-OK, so Mark explained that this is 32bit userspace (VDSO) code.
+Fixes: 55a042b3f68f ("soc/tegra: fuse: Fix reading registers using DMA on Tegra20")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/soc/tegra/fuse/fuse-tegra.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-And as such there's really no point in running objtool on it. Does all
-that live in it's own section? Should it?
+diff --git a/drivers/soc/tegra/fuse/fuse-tegra.c b/drivers/soc/tegra/fuse/fuse-tegra.c
+index aa94fda282f4..e85a78a80c48 100644
+--- a/drivers/soc/tegra/fuse/fuse-tegra.c
++++ b/drivers/soc/tegra/fuse/fuse-tegra.c
+@@ -218,13 +218,12 @@ static int tegra_fuse_probe(struct platform_device *pdev)
+ 		return err;
+ 
+ 	/* take over the memory region from the early initialization */
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	fuse->phys = res->start;
+-	fuse->base = devm_ioremap_resource(&pdev->dev, res);
++	fuse->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(fuse->base)) {
+ 		err = PTR_ERR(fuse->base);
+ 		return err;
+ 	}
++	fuse->phys = res->start;
+ 
+ 	fuse->clk = devm_clk_get(&pdev->dev, "fuse");
+ 	if (IS_ERR(fuse->clk)) {
+-- 
+2.25.1
 
