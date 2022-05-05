@@ -2,130 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71108C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347313AbiEEIWk (ORCPT
+        id S1347566AbiEEIWq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
+        Thu, 5 May 2022 04:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347352AbiEEIU3 (ORCPT
+        with ESMTP id S244938AbiEEIUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:20:29 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC3F49926;
-        Thu,  5 May 2022 01:16:49 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 946131F8A3;
-        Thu,  5 May 2022 08:16:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651738608; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0MG5If+wT1PFlFjSpPM4l/2JLJ70ISQLhBhO24AmiRY=;
-        b=jySglPOM/qmId9veILCMfWbXmbLP+gNn4u7XEfWwcN1T4/oJO4hATS7eTV+0YsaVudLyFb
-        aYaRxPRl6knBSXtSBo/g/lmKCyGWWV5cbs786fWksp1RjeOLzvSNCVsHa/oH4L1QHJObdw
-        88zVG8kaKeockHaPdWQ38AjKWsWoiqY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5A8A413B11;
-        Thu,  5 May 2022 08:16:48 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id IM5DFPCHc2K1BwAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 05 May 2022 08:16:48 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH v3 18/21] xen/scsifront: use xenbus_setup_ring() and xenbus_teardown_ring()
-Date:   Thu,  5 May 2022 10:16:37 +0200
-Message-Id: <20220505081640.17425-19-jgross@suse.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220505081640.17425-1-jgross@suse.com>
-References: <20220505081640.17425-1-jgross@suse.com>
+        Thu, 5 May 2022 04:20:43 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A71A49C8E;
+        Thu,  5 May 2022 01:17:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 7C2B51F40639
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651738622;
+        bh=DltpyffxGCnMttOdjwga03qATyZuSIFzMUFN/jjVMRY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=nThj+bzMWjxKwTmt2qlJ/+Owd47RE6aBL+lcRlbqO+6Q8laog1VGiax1adHrqQ2UG
+         ohHy7GxJ8lXqaDdtBfTaqIqdsx6gB0RdnwitY+sB9EFsJU5X0Zyk0tOwGcUzWJB7fN
+         XFVA7pWnLXDFWtciW5JvD0XcOl5V0j/8NMr1W2rHcd9GXUEZQ+Fyu4wcnYygDSfLJU
+         LD9XrPpU9hR8B6C163mWihj7O0ccB7v4shL4Ind7r0/KHeMVe8r78+wImo4V0RZDWO
+         ykRhYsU/zneisYpPwb0aW3aEbDMh0A53YS2tYscUvh0135amNgGhlI0qmQSaPfJqf+
+         BzmEvbz+JNBqA==
+Message-ID: <0b77cc7d-0595-504c-ab35-2850840dbdaf@collabora.com>
+Date:   Thu, 5 May 2022 10:16:59 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] arm64: dts: mt8192: Follow binding order for SCP
+ registers
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     kernel@collabora.com, Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+References: <20220504214516.2957504-1-nfraprado@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220504214516.2957504-1-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify scsifront's ring creation and removal via xenbus_setup_ring()
-and xenbus_teardown_ring().
+Il 04/05/22 23:45, Nícolas F. R. A. Prado ha scritto:
+> The dt-binding for SCP documents the reg-names order as sram, cfg,
+> l1tcm. Update the SCP node on the mt8192 devicetree to follow that
+> order, which gets rid of a dtbs_check warning. This doesn't change any
+> behavior since the SCP driver accesses the memory regions through the
+> names anyway.
+> 
+> Fixes: c63556ec6bfe ("arm64: dts: mt8192: Add SCP node")
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
- drivers/scsi/xen-scsifront.c | 28 +++++++---------------------
- 1 file changed, 7 insertions(+), 21 deletions(-)
+Now, that's perfect! Thanks!
 
-diff --git a/drivers/scsi/xen-scsifront.c b/drivers/scsi/xen-scsifront.c
-index 4c55e479fc36..51afc66e839d 100644
---- a/drivers/scsi/xen-scsifront.c
-+++ b/drivers/scsi/xen-scsifront.c
-@@ -798,27 +798,15 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
- {
- 	struct xenbus_device *dev = info->dev;
- 	struct vscsiif_sring *sring;
--	grant_ref_t gref;
--	int err = -ENOMEM;
-+	int err;
- 
- 	/***** Frontend to Backend ring start *****/
--	sring = (struct vscsiif_sring *)__get_free_page(GFP_KERNEL);
--	if (!sring) {
--		xenbus_dev_fatal(dev, err,
--			"fail to allocate shared ring (Front to Back)");
-+	err = xenbus_setup_ring(dev, GFP_KERNEL, (void **)&sring, 1,
-+				&info->ring_ref);
-+	if (err)
- 		return err;
--	}
--	SHARED_RING_INIT(sring);
--	FRONT_RING_INIT(&info->ring, sring, PAGE_SIZE);
- 
--	err = xenbus_grant_ring(dev, sring, 1, &gref);
--	if (err < 0) {
--		free_page((unsigned long)sring);
--		xenbus_dev_fatal(dev, err,
--			"fail to grant shared ring (Front to Back)");
--		return err;
--	}
--	info->ring_ref = gref;
-+	XEN_FRONT_RING_INIT(&info->ring, sring, PAGE_SIZE);
- 
- 	err = xenbus_alloc_evtchn(dev, &info->evtchn);
- 	if (err) {
-@@ -847,8 +835,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
- free_irq:
- 	unbind_from_irqhandler(info->irq, info);
- free_gnttab:
--	gnttab_end_foreign_access(info->ring_ref,
--				  (unsigned long)info->ring.sring);
-+	xenbus_teardown_ring((void **)&sring, 1, &info->ring_ref);
- 
- 	return err;
- }
-@@ -856,8 +843,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
- static void scsifront_free_ring(struct vscsifrnt_info *info)
- {
- 	unbind_from_irqhandler(info->irq, info);
--	gnttab_end_foreign_access(info->ring_ref,
--				  (unsigned long)info->ring.sring);
-+	xenbus_teardown_ring((void **)&info->ring.sring, 1, &info->ring_ref);
- }
- 
- static int scsifront_init_ring(struct vscsifrnt_info *info)
--- 
-2.35.3
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
