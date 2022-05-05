@@ -2,134 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC45DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7D2C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:27:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239094AbiEEIbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40170 "EHLO
+        id S1348481AbiEEIb3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 04:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348503AbiEEIat (ORCPT
+        with ESMTP id S1347885AbiEEIbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:30:49 -0400
-X-Greylist: delayed 722 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 01:26:38 PDT
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D055F47542
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:26:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651739197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=D4khpquWbWDinwLydzdoBq7iTp7d5c7LdROC1DapmkY=;
-        b=F7ANKeZhYTFCn9vuCPs77UnGMV15X8TkF2PTCP9iY+y6FwAMHdVbeT5mNfeJ6Io3QWZDhK
-        YAA12uqWFCio7HlVHdfdAIy3FpZEnQQUC72x4x1EDLuxsdNCpE+DI+jFDu6UMx7NyZUqCE
-        84jYpU1gKwcBc9SSP3X6z4Q1tHtljiA=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-478-_bHDs07cNI6MaAzHxBQHJA-1; Thu, 05 May 2022 04:26:36 -0400
-X-MC-Unique: _bHDs07cNI6MaAzHxBQHJA-1
-Received: by mail-lj1-f197.google.com with SMTP id l26-20020a2e99da000000b0024f02d881cdso1166635ljj.6
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:26:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D4khpquWbWDinwLydzdoBq7iTp7d5c7LdROC1DapmkY=;
-        b=2dxeIdzqWC4EIDNnsxDP21TAHv81D4ZAcJkFLQKpmcac7ui6JWKVaAqCuwBeiSZgQU
-         hhnVwCTKRcUPNPIROMrC4nUYlxiv/BHgWBpbNM24R1AfKPRdytCmC8xo1r+zndQbXlLs
-         LtNJW+kOWulNhzhQDiHNFPK68W2Y1HRuf31a9HelLp10q/JcleaPm/0KtMk08AH4IDRi
-         Cg5CA5JwGTONxgn9Vwgy0J4VJKdkDNgTvZM4UZUv8UNnJZfauwASjLZP8NxLm26ELa3X
-         hqx5urx2T1dUkECyTOQKOtnaT49MzZwAEDijF5KR/ksxxaGM+2FMNKV+1jKl+MCKN4ec
-         mdCw==
-X-Gm-Message-State: AOAM530sfn0Zc10NJduHJQqY0fz5HFq4I0L9EvMpybrc3+N1pzJUQ5J/
-        2BsbFBYFDN5GtnyExbS3Wdpty8dyGggC8NxP6n3dzO+aLcArI7IWD77heYwYVseSDjPQx5pu6CP
-        13vME3ZTz+ja1cuChc/lKiS7ymQjluPFilsP48jFY
-X-Received: by 2002:a05:651c:89:b0:250:87c9:d4e6 with SMTP id 9-20020a05651c008900b0025087c9d4e6mr3555621ljq.315.1651739195209;
-        Thu, 05 May 2022 01:26:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy7HKKTnzyyxPinHgFaLyss8uhrt+DE2y5rFIlDdSpVp6DDy/oL0ZdnSp0p5EW5xDRCrqgMH0ZIGECCwSKK7Qc=
-X-Received: by 2002:a05:651c:89:b0:250:87c9:d4e6 with SMTP id
- 9-20020a05651c008900b0025087c9d4e6mr3555612ljq.315.1651739195003; Thu, 05 May
- 2022 01:26:35 -0700 (PDT)
+        Thu, 5 May 2022 04:31:22 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540622D1EB;
+        Thu,  5 May 2022 01:27:43 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 72C5A1F44D84
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651739262;
+        bh=mFMc9Q2nDIQR0sOpjH1myPXm3e8CImboII/qXcWq5JU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=GMIp6mRlSS7KAQ8A9IVcFvFyA43EZx2MPS9THZM+iZp6wpQiki8+SaO1lrUujJzUm
+         XFpVDRI7ZuxDVrblKkw9SzZ95TX7oitciWHideclbO2hu+2iPvKcv4hMOcQH9b2N+J
+         d6erKHQJefc2MvAkjyyOIFrIuQ30TUY/10s7wUGPryG3A/8KmfGrgsWSHgsPLvv7Oe
+         O1OQPK0t5Hv36s59X6fG1lbTmXe6VwCjL6iOiRFw/1+xhqqtegNSkEstE71eZCJBLK
+         xv8Lx4XPlRt3ycvFmuvQ0IYO+VFDxQn4fDCysKSIwFF/UTu5OCkPMJDmA+PG/K3Ub1
+         gn/ZBPqYeHCtQ==
+Message-ID: <2d50b30d-ed3a-29db-266e-9e395e9e4c6a@collabora.com>
+Date:   Thu, 5 May 2022 10:27:39 +0200
 MIME-Version: 1.0
-References: <20220428151242.213824-1-sgarzare@redhat.com> <CACGkMEv=0VWh_NxhvM+6_TRHEx0f2RGRWbR1n5RhKfq0a7xJUw@mail.gmail.com>
- <20220429071449.pycbkk2dvvxmtvay@sgarzare-redhat>
-In-Reply-To: <20220429071449.pycbkk2dvvxmtvay@sgarzare-redhat>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 5 May 2022 16:26:24 +0800
-Message-ID: <CACGkMEtRwRb_jUdCcdrx77=O4bnRGssQ5z_81KJi1hEKdbMcCQ@mail.gmail.com>
-Subject: Re: [PATCH] vdpa_sim_blk: add support for VIRTIO_BLK_T_FLUSH
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] PCI: mediatek-gen3: Change driver name to
+ mtk-pcie-gen3
+Content-Language: en-US
+To:     Felix Fietkau <nbd@nbd.name>, Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220504172128.27489-1-nbd@nbd.name>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220504172128.27489-1-nbd@nbd.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 3:14 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> On Fri, Apr 29, 2022 at 10:46:40AM +0800, Jason Wang wrote:
-> >On Thu, Apr 28, 2022 at 11:13 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> >>
-> >> The simulator behaves like a ramdisk, so we don't have to do
-> >> anything when a VIRTIO_BLK_T_FLUSH request is received, but it
-> >> could be useful to test driver behavior.
-> >>
-> >> Let's expose the VIRTIO_BLK_F_FLUSH feature to inform the driver
-> >> that we support the flush command.
-> >>
-> >> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> >> ---
-> >>  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 12 ++++++++++++
-> >>  1 file changed, 12 insertions(+)
-> >>
-> >> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-> >> index 42d401d43911..a6dd1233797c 100644
-> >> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-> >> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-> >> @@ -25,6 +25,7 @@
-> >>  #define DRV_LICENSE  "GPL v2"
-> >>
-> >>  #define VDPASIM_BLK_FEATURES   (VDPASIM_FEATURES | \
-> >> +                                (1ULL << VIRTIO_BLK_F_FLUSH)    | \
-> >>                                  (1ULL << VIRTIO_BLK_F_SIZE_MAX) | \
-> >>                                  (1ULL << VIRTIO_BLK_F_SEG_MAX)  | \
-> >>                                  (1ULL << VIRTIO_BLK_F_BLK_SIZE) | \
-> >> @@ -166,6 +167,17 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
-> >>                 pushed += bytes;
-> >>                 break;
-> >>
-> >> +       case VIRTIO_BLK_T_FLUSH:
-> >> +               if (sector != 0) {
-> >> +                       dev_err(&vdpasim->vdpa.dev,
-> >> +                               "A driver MUST set sector to 0 for a VIRTIO_BLK_T_FLUSH request - sector: 0x%llx\n",
-> >> +                               sector);
-> >
-> >If this is something that could be triggered by userspace/guest, then
-> >we should avoid this.
->
-> It can only be triggered by an erratic driver.
+Il 04/05/22 19:21, Felix Fietkau ha scritto:
+> driver_register() will refuse to register another driver with the same name.
+> This change allows pcie-mediatek-gen3 to coexist with pcie-mediatek built into
+> the kernel.
+> 
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> ---
+>   drivers/pci/controller/pcie-mediatek-gen3.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+> index 3e8d70bfabc6..2e665cd7e735 100644
+> --- a/drivers/pci/controller/pcie-mediatek-gen3.c
+> +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+> @@ -1021,7 +1021,7 @@ static struct platform_driver mtk_pcie_driver = {
+>   	.probe = mtk_pcie_probe,
+>   	.remove = mtk_pcie_remove,
+>   	.driver = {
+> -		.name = "mtk-pcie",
+> +		.name = "mtk-pcie-gen3",
+>   		.of_match_table = mtk_pcie_of_match,
+>   		.pm = &mtk_pcie_pm_ops,
+>   	},
+> 
 
-Right, so guest can try to DOS the host via this.
+Hello Felix,
 
->
-> I was using the simulator to test a virtio-blk driver that I'm writing
-> in userspace and I forgot to set `sector` to zero, so I thought it would
-> be useful.
->
-> Do you mean to remove the error message?
+this is a good fix - and being it a fix, this requires a Fixes: tag - which also
+gets this scheduled for backporting, which is important to solve this issue on
+all of the affected kernels.
 
-Some like dev_warn_once() might be better here.
+I'll make it easy for you as I've already checked the commit hash:
 
-Thanks
+Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
 
->
-> Thanks,
-> Stefano
->
 
+After adding that:
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+Cheers,
+Angelo
