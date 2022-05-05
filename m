@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB8DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:21:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2558FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384014AbiEESZR (ORCPT
+        id S1384100AbiEESZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        Thu, 5 May 2022 14:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383256AbiEESTn (ORCPT
+        with ESMTP id S1383262AbiEESTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:43 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3575DA60;
-        Thu,  5 May 2022 11:15:56 -0700 (PDT)
+        Thu, 5 May 2022 14:19:44 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE571A3A4;
+        Thu,  5 May 2022 11:15:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774556; x=1683310556;
+  t=1651774557; x=1683310557;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LfcaBSODx5xGiL6ffnm4yo/A3+EvKO6v548CR1+chy8=;
-  b=LougT3VrKrqTmUXHHcNJYIloFWDMQPynWCmYu+zxypLP0yfXeJBFEmgU
-   wgbucdjYzdLjM7A7WdAbAr/K9gvGeaSV05m3wQKrqz8quljrAguWXYdEb
-   RfXjrXvdyiwoYgAJ+cz5UcMmGU66ftlCgfiYWjexgMckYYLFUbXZSJiyS
-   qnk5obkcNh8QJCyOFQ6rSzS+6mxGr7oOxaT4Zr3Pt/Eybd6K33rgxifdJ
-   3fdum6zGsi7YJU9rse9GLNAzJiUO5u9ntYZcUXFptxDbs5jxZy4D2Ca/5
-   Njgq6+WDhgE2yJksnwnBWAu0F00F2kRUMOsK49En4VyLexqfQokrjzDdN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113921"
+  bh=4lquZTTZV+C6DaVeZCPZttfWMjtz7WKuO5kSC5oLrCc=;
+  b=ncbbpo+iOMr9fnU4Pttlw7Kb3dZaXtZ7I6tJP1TnSvZvCSmxmLmDqjQC
+   yoiKAPKx2LTWiYoHP/GNO/kc4A3lTjRpsmKLdmfOs066B6Y+0HMQXZ8iP
+   8yamuRLJEpqBmlZRGYQEWp+SpD+6KF75lvmI2WvBLy86HfKfXJMa8ojP9
+   zs8hSk0voyeit+kuWp16CHTlypGV629Nnbjt+3FauDrKK11U/5HbEEfDY
+   jkl/am5mzZ7SH3UqyFRGG2VOVDluMFvhxoKqLLa/JJpDwNZVGn6n5jEkB
+   rYXNDDjNvorvcc8WS1yAa1x4vRRDVu/8+idGQGeGPEDe4x+FBUfZrU5la
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248742025"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248113921"
+   d="scan'208";a="248742025"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:52 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:45 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083429"
+   d="scan'208";a="665083275"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:52 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:45 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 080/104] KVM: TDX: Implement methods to inject NMI
-Date:   Thu,  5 May 2022 11:15:14 -0700
-Message-Id: <286f84d0bd8dae3e4ffecf2bdc73daf76e9413dc.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 040/104] KVM: x86/mmu: Allow per-VM override of the TDP max page level
+Date:   Thu,  5 May 2022 11:14:34 -0700
+Message-Id: <83e129bcd111c4dec472c377c43926f338b80ac1.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -56,142 +56,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-TDX vcpu control structure defines one bit for pending NMI for VMM to
-inject NMI by setting the bit without knowing TDX vcpu NMI states.  Because
-the vcpu state is protected, VMM can't know about NMI states of TDX vcpu.
-The TDX module handles actual injection and NMI states transition.
+TODO: This is a transient workaround patch until the large page support for
+TDX is implemented.  Support large page for TDX and remove this patch.
 
-Add methods for NMI and treat NMI can be injected always.
+At this point, large page for TDX isn't supported, and need to allow guest
+TD to work only with 4K pages.  On the other hand, conventional VMX VMs
+should continue to work with large page.  Allow per-VM override of the TDP
+max page level.
 
+In the existing x86 KVM MMU code, there is already max_level member in
+struct kvm_page_fault with KVM_MAX_HUGEPAGE_LEVEL initial value.  The KVM
+page fault handler denies page size larger than max_level.
+
+Add per-VM member to indicate the allowed maximum page size with
+KVM_MAX_HUGEPAGE_LEVEL as default value and initialize max_level in struct
+kvm_page_fault with it.  For the guest TD, the set per-VM value for allows
+maximum page size to 4K page size.  Then only allowed page size is 4K.  It
+means large page is disabled.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/main.c    | 62 +++++++++++++++++++++++++++++++++++---
- arch/x86/kvm/vmx/tdx.c     |  5 +++
- arch/x86/kvm/vmx/x86_ops.h |  2 ++
- 3 files changed, 64 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/mmu.h              | 2 +-
+ arch/x86/kvm/mmu/mmu.c          | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 2c07e195cb8b..74ca538edf46 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -247,6 +247,58 @@ static void vt_flush_tlb_guest(struct kvm_vcpu *vcpu)
- 	vmx_flush_tlb_guest(vcpu);
- }
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index c9c113316fd3..60223c21f16a 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1063,6 +1063,7 @@ struct kvm_arch {
+ 	unsigned long n_requested_mmu_pages;
+ 	unsigned long n_max_mmu_pages;
+ 	unsigned int indirect_shadow_pages;
++	int tdp_max_page_level;
+ 	u8 mmu_valid_gen;
+ 	struct hlist_head mmu_page_hash[KVM_NUM_MMU_PAGES];
+ 	struct list_head active_mmu_pages;
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index eecb5e27b6a5..a37b2efec4a8 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -239,7 +239,7 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 		.is_tdp = likely(vcpu->arch.mmu->page_fault == kvm_tdp_page_fault),
+ 		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(),
  
-+static void vt_inject_nmi(struct kvm_vcpu *vcpu)
-+{
-+	if (is_td_vcpu(vcpu))
-+		return tdx_inject_nmi(vcpu);
-+
-+	vmx_inject_nmi(vcpu);
-+}
-+
-+static int vt_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
-+{
-+	/*
-+	 * The TDX module manages NMI windows and NMI reinjection, and hides NMI
-+	 * blocking, all KVM can do is throw an NMI over the wall.
-+	 */
-+	if (is_td_vcpu(vcpu))
-+		return true;
-+
-+	return vmx_nmi_allowed(vcpu, for_injection);
-+}
-+
-+static bool vt_get_nmi_mask(struct kvm_vcpu *vcpu)
-+{
-+	/*
-+	 * Assume NMIs are always unmasked.  KVM could query PEND_NMI and treat
-+	 * NMIs as masked if a previous NMI is still pending, but SEAMCALLs are
-+	 * expensive and the end result is unchanged as the only relevant usage
-+	 * of get_nmi_mask() is to limit the number of pending NMIs, i.e. it
-+	 * only changes whether KVM or the TDX module drops an NMI.
-+	 */
-+	if (is_td_vcpu(vcpu))
-+		return false;
-+
-+	return vmx_get_nmi_mask(vcpu);
-+}
-+
-+static void vt_set_nmi_mask(struct kvm_vcpu *vcpu, bool masked)
-+{
-+	if (is_td_vcpu(vcpu))
-+		return;
-+
-+	vmx_set_nmi_mask(vcpu, masked);
-+}
-+
-+static void vt_enable_nmi_window(struct kvm_vcpu *vcpu)
-+{
-+	/* Refer the comment in vt_get_nmi_mask(). */
-+	if (is_td_vcpu(vcpu))
-+		return;
-+
-+	vmx_enable_nmi_window(vcpu);
-+}
-+
- static void vt_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa,
- 			int pgd_level)
- {
-@@ -399,14 +451,14 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.get_interrupt_shadow = vt_get_interrupt_shadow,
- 	.patch_hypercall = vmx_patch_hypercall,
- 	.inject_irq = vt_inject_irq,
--	.inject_nmi = vmx_inject_nmi,
-+	.inject_nmi = vt_inject_nmi,
- 	.queue_exception = vmx_queue_exception,
- 	.cancel_injection = vt_cancel_injection,
- 	.interrupt_allowed = vt_interrupt_allowed,
--	.nmi_allowed = vmx_nmi_allowed,
--	.get_nmi_mask = vmx_get_nmi_mask,
--	.set_nmi_mask = vmx_set_nmi_mask,
--	.enable_nmi_window = vmx_enable_nmi_window,
-+	.nmi_allowed = vt_nmi_allowed,
-+	.get_nmi_mask = vt_get_nmi_mask,
-+	.set_nmi_mask = vt_set_nmi_mask,
-+	.enable_nmi_window = vt_enable_nmi_window,
- 	.enable_irq_window = vt_enable_irq_window,
- 	.update_cr8_intercept = vmx_update_cr8_intercept,
- 	.set_virtual_apic_mode = vmx_set_virtual_apic_mode,
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 55acf6f1b1a3..39220f63a005 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -814,6 +814,11 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
- 	return EXIT_FASTPATH_NONE;
- }
- 
-+void tdx_inject_nmi(struct kvm_vcpu *vcpu)
-+{
-+	td_management_write8(to_tdx(vcpu), TD_VCPU_PEND_NMI, 1);
-+}
-+
- void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
- {
- 	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
-diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 3eeb35dee8cf..0ef1e94d4196 100644
---- a/arch/x86/kvm/vmx/x86_ops.h
-+++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -150,6 +150,7 @@ bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu);
- 
- void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
- 			   int trig_mode, int vector);
-+void tdx_inject_nmi(struct kvm_vcpu *vcpu);
- 
- int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
- int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
-@@ -180,6 +181,7 @@ static inline bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu) { ret
- 
- static inline void tdx_deliver_interrupt(
- 	struct kvm_lapic *apic, int delivery_mode, int trig_mode, int vector) {}
-+static inline void tdx_inject_nmi(struct kvm_vcpu *vcpu) {}
- 
- static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
- static inline int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp) { return -EOPNOTSUPP; }
+-		.max_level = KVM_MAX_HUGEPAGE_LEVEL,
++		.max_level = vcpu->kvm->arch.tdp_max_page_level,
+ 		.req_level = PG_LEVEL_4K,
+ 		.goal_level = PG_LEVEL_4K,
+ 	};
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 8b26729cb9c4..8a684a7b1883 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5865,6 +5865,7 @@ int kvm_mmu_init_vm(struct kvm *kvm)
+ 	node->track_write = kvm_mmu_pte_write;
+ 	node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
+ 	kvm_page_track_register_notifier(kvm, node);
++	kvm->arch.tdp_max_page_level = KVM_MAX_HUGEPAGE_LEVEL;
+ 	kvm_mmu_set_mmio_spte_mask(kvm, shadow_default_mmio_mask,
+ 				   shadow_default_mmio_mask,
+ 				   ACC_WRITE_MASK | ACC_USER_MASK);
 -- 
 2.25.1
 
