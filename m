@@ -2,104 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D43C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C46AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377594AbiEEMob (ORCPT
+        id S1377577AbiEEMqE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
+        Thu, 5 May 2022 08:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377632AbiEEMnz (ORCPT
+        with ESMTP id S1358748AbiEEMp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:43:55 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B743BDE;
-        Thu,  5 May 2022 05:40:14 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 245Bg3Xw015706;
-        Thu, 5 May 2022 12:40:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=Ks6pYfzwIPhTp1sognpwdkSoA5PQDLGHHd0QN8T6+hY=;
- b=mVjoeuaqKck8rz1dceuTdo6jKSdO5d8lqRGQJVI/qb9PUB8REgS339i+PXIgUasdGNTJ
- evkpPUh8eEcXyC1uFI8cZ0UzVmz9y/03tQqPlCuOXHL2v9o44h1r+aONlviMdvpqNa6K
- F8WZXt/mL4m0gNa6pkoaiVBJ77+ys7txi34cn2b3rFtW2W0jz8h22hhMRzJ6daoCDwXK
- BE5Qzr7I1CBepXHUg7k/o83+tcV7XxMqpSjWq7bjyweV1LmjqtYzf/Y094tXr6ZS6Pi+
- zLGXAXzom8k2aBWve21sh+s1YC2lxVePMen+qGKhkw7VdoU0FBEaIt+4jjvXlSp4nMs7 Tw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fvdxbs4vj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 12:40:06 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 245CHevX023064;
-        Thu, 5 May 2022 12:40:06 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fvdxbs4ty-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 12:40:06 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 245CcfxP017432;
-        Thu, 5 May 2022 12:40:03 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3frvr8y729-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 12:40:03 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 245Cdui534669024
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 5 May 2022 12:39:56 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 649CD52051;
-        Thu,  5 May 2022 12:40:01 +0000 (GMT)
-Received: from sig-9-65-81-94.ibm.com (unknown [9.65.81.94])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 7164152050;
-        Thu,  5 May 2022 12:40:00 +0000 (GMT)
-Message-ID: <f7d8ebad78e184dd391b920f72ed7a49d3e14aa3.camel@linux.ibm.com>
-Subject: Re: [PATCH v3 1/1] ima: remove the IMA_TEMPLATE Kconfig option
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     "Guozihua (Scott)" <guozihua@huawei.com>,
-        linux-integrity@vger.kernel.org
-Cc:     dmitry.kasatkin@gmail.com, roberto.sassu@huawei.com,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 05 May 2022 08:39:59 -0400
-In-Reply-To: <1f40a55b-7489-5e87-3584-73e2b1948615@huawei.com>
-References: <20220407021619.146410-1-guozihua@huawei.com>
-         <20220407021619.146410-2-guozihua@huawei.com>
-         <fbc9cda8eacc0a701d7b336bf45ecb6dfd450be9.camel@linux.ibm.com>
-         <1f40a55b-7489-5e87-3584-73e2b1948615@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 9cQlf0iSe6D5WwgOw4f-6EzQQyitWHPU
-X-Proofpoint-GUID: 3jzMLRszO8yu8gk7R7IleO0E1xufR-fE
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 5 May 2022 08:45:58 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2B055364
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:42:19 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id a21so5071622edb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:42:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nToHf9Yxrt+r3K1vMdQKligyD+NhWuMXaR0L1laGIcQ=;
+        b=MIGeaU48Hxcr0gAk/0JUERKudMJ+2VgGvtXQOyQR2FUEQeC8eFnEf5W06jJVA9iQfU
+         +IG5oyZaIHvk1wNlDTpmYhOH8uLeDZPV4etYWxHGMqd7p28h9+iY0E03t+Z58hHrTiHZ
+         Gqvid7MFQkRM2KTWd8vs1lxMo6aVE3S83f3+qzfkkL2LzrOwKU/YoJgs49dHnyOt6n2j
+         piYz00xlNGfUgi78mOiyQ31sAwWJuqxkjm+KxvB42oQSXZPiFZfrtXhS68YI2hANPBQ9
+         cMhT6NwUeHuY62ICFtRx9YBHEpchMriV7lpMAkoiUuZrCsFFtmbFFfH9rVp5pH5VwyeZ
+         wWRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nToHf9Yxrt+r3K1vMdQKligyD+NhWuMXaR0L1laGIcQ=;
+        b=1uoXaOJnlIQTquvvDXdg2g423UExtzyABvNIKAWjzhvJ2pRGJXz5xSIx5L/3HGn0hk
+         g9ICnjNvi/e6prvPa81q4OFkiQc3q6Ink44UicCPCpYnPUdfJMoU8QOhEyktG0x7lnO+
+         EH6wep/72N3qfS5OpOKQRbGPFt3swo1e0mo9uYqbLL+ZrkcZMg/x35i/COOqNUAjoWRC
+         stAgO/clcIXslBo6Eld1oCm3UpursLF0T0WehpBBQ0/AwQSso7zbH9As/uzT1BO1b2wR
+         NeI9ZehnGCxCP16HHulWRU6xuykdx1Lp9eXWLeLwbMAzu8UZDPXJzuj/Bgs5+T2E4sit
+         txLQ==
+X-Gm-Message-State: AOAM5332QN9jyamKxZJp/atbEHN3Z1R6qwjNj2moQ8TlyoqiCuq/iwUE
+        7vdyrmFI+jOEv6AuvBFhRwvebb86MZiaQTdE35/saA==
+X-Google-Smtp-Source: ABdhPJy+UBUQ27FMN0Soniwr9i5FVjEAqUBJaKMZp7kF/Zi2oKeANJCiph04E/neh8RBlyNRknfzqdKMu9O4zIR2y1s=
+X-Received: by 2002:a05:6402:d4c:b0:410:a415:fd95 with SMTP id
+ ec12-20020a0564020d4c00b00410a415fd95mr29329998edb.288.1651754537667; Thu, 05
+ May 2022 05:42:17 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-05_05,2022-05-05_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- phishscore=0 priorityscore=1501 clxscore=1011 bulkscore=0 impostorscore=0
- mlxscore=0 adultscore=0 mlxlogscore=790 spamscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205050091
+References: <20220504144406.36744-1-jonathanh@nvidia.com>
+In-Reply-To: <20220504144406.36744-1-jonathanh@nvidia.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Thu, 5 May 2022 14:42:07 +0200
+Message-ID: <CAMRc=MeXUN6P8kWxB75GsXdKD7Owz9mX5HpgfQoMGeJh-z3=Rw@mail.gmail.com>
+Subject: Re: [PATCH V2] gpio: max77620: Make the irqchip immutable
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-05 at 09:35 +0800, Guozihua (Scott) wrote:
-> Hi,
-> 
-> Is this patch picked?
+On Wed, May 4, 2022 at 4:44 PM Jon Hunter <jonathanh@nvidia.com> wrote:
+>
+> Commit 6c846d026d49 ("gpio: Don't fiddle with irqchips marked as
+> immutable") added a warning to indicate if the gpiolib is altering the
+> internals of irqchips. Following this change the following warning is
+> now observed for the max77620 gpio driver ...
+>
+>  WARNING KERN gpio gpiochip0: (max77620-gpio): not an immutable chip,
+>         please consider fixing it!
+>
+> Fix the above warning by making the max77620 gpio driver immutable.
+>
+> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+> ---
 
-Yes, the patch is queued in next-integrity, which feeds into linux-
-next.  For the future, you can check 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git.
+Queued for fixes, thanks!
 
--- 
-thanks,
-
-Mimi
-
+Bart
