@@ -2,102 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10BD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353617AbiEEJgd (ORCPT
+        id S1353837AbiEEJhA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
+        Thu, 5 May 2022 05:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353861AbiEEJgU (ORCPT
+        with ESMTP id S1344308AbiEEJg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:36:20 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34496C0E
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:32:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651743159; x=1683279159;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=JX2aXgs0DY5hqhZ8ebKIttwLrY/s9wjmlu8j1YvvEw4=;
-  b=OE4m6P10CViW9yauNZAbD79ucHUmW9tfaeC5ZtakkDtUnCEIR862HVXh
-   jQMMTVOE4aRiSrPGwYBkK39a1P5WFml7GYGPj4xOi2Yv89CaG9inhJVQB
-   sIDElApz9IcEi51o0Bd7XmLr7Y0EJNE4HHQprLGBJuWUg8xkkJDnP2wDw
-   kqzOoGBliM3BnAwmMMnPDLfJ+wsFwI/8xLRrvwkWCpOmlQQLllQbCm3B0
-   CB5/uXNaV16N8+0jv+1lEcIstmkvnnglDATP4BtVx35obcbehBwV6FGis
-   7Fw1wipAI3+Vn4dimExuKRwqxjxp19JDsZWAqy1kjycYkNTRkoCwv1SFZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="331043052"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="331043052"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 02:32:38 -0700
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="585235218"
-Received: from mstepka-mobl1.ger.corp.intel.com (HELO localhost) ([10.249.134.211])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 02:32:34 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     cgel.zte@gmail.com
-Cc:     joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        tvrtko.ursulin@linux.intel.com, airlied@linux.ie,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] drm/i915: simplify the return expression of
- i915_driver_open()
-In-Reply-To: <20220505021625.54146-1-chi.minghao@zte.com.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220505021625.54146-1-chi.minghao@zte.com.cn>
-Date:   Thu, 05 May 2022 12:32:30 +0300
-Message-ID: <87zgjwl3yp.fsf@intel.com>
+        Thu, 5 May 2022 05:36:56 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5B711160
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:33:17 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id i24so3206017pfa.7
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:33:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LAABk+Hqn/ed3olCk7cLLnxGOLs8GPCl8qPvqmsVMMM=;
+        b=ErbXNtFsbGBEns+3J2+rqVHArDPQgCAH5aInArNTr5Ytkh/2HnvkfZXsi+I8K9/fKL
+         FOod075XSxK4u/V8rbUwYiTnw6NXlPrvknjrKk02/PKJgkljGMJxHnB+e1xcGiYhZC4J
+         CVcjLuK/RXUvnMfbnldwLtRd3sIqwBcG5uKkEbX8yd+vyFbQZRSah9nEtuLOhACyZ3ya
+         XaDrcJdsyj6SllWgRfR3/AOf2W1IRrw9wkJdWRgoV9vASSILU2/qzvlVf0Zxqb1gMZYI
+         oIKjAQgqB18wWrdMBJP2VgJ1s0eE++rcSs3OtLqAt5iMcVjZMs3QZ4wqnKyLSuxZIqFR
+         WDmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LAABk+Hqn/ed3olCk7cLLnxGOLs8GPCl8qPvqmsVMMM=;
+        b=tkS5nbd1br1tQiCN7se3B1FcRfVZITX1YtqciDT0qhPTAZOXsggiVtysZvN4QXY7Nz
+         UX7JNMOMtdCPZ/RutSe/7HIyFx+sRrubHxfVEe9Wj/XIWTJDa0PgeprSvKDNxxQUoPtB
+         RdMVhk0r/E49EwKqrUt0s6XuuL6ahQQxre4NrP15Vr9iC8h4QCWLga310ZBF5KpdMv/j
+         2J3FCtA1F6U1NE4887pMh11+YbVAytr5auLETHYy7YdaoeJhmWiAr2ri6II+PBT8q20q
+         JMTA464TX9dxn4NyAoVb4OxINxKNGLdW63B1UPiq0Xjx30T8CUi6KOWF8wMjen5VpddU
+         Cjzw==
+X-Gm-Message-State: AOAM532L0uGCUYK+uUPdNWywD8tOMo2v/ZFbAW0q6LHVqZKK4qou/3Vc
+        rouYQjiJuMb3luL+mlCS2oLSQA==
+X-Google-Smtp-Source: ABdhPJwaIsuvBtKuAQv+SmYbKWs22EAjLiyHSuubS0HBGDuWiWajxYniwE9CGElZZX7/xwqc39QOow==
+X-Received: by 2002:a65:5b81:0:b0:3aa:1671:c6a7 with SMTP id i1-20020a655b81000000b003aa1671c6a7mr21224552pgr.169.1651743197230;
+        Thu, 05 May 2022 02:33:17 -0700 (PDT)
+Received: from [10.255.89.252] ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id mu6-20020a17090b388600b001d960eaed66sm1054035pjb.42.2022.05.05.02.33.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 02:33:16 -0700 (PDT)
+Message-ID: <ea42cb6e-cd1d-e0be-ab9f-382b75c070e8@bytedance.com>
+Date:   Thu, 5 May 2022 17:29:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: Re: PING: [PATCH v4 0/5] virtio-crypto: Improve performance
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Gonglei (Arei)" <arei.gonglei@huawei.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+References: <20220424104140.44841-1-pizhenwei@bytedance.com>
+ <cc9eb4aa-2e40-490f-f5a0-beee3a57313b@bytedance.com>
+ <7f7ab8ae46174ed6b0888b5fbeb5849b@huawei.com>
+ <20220505005607-mutt-send-email-mst@kernel.org>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <20220505005607-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 05 May 2022, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
->
-> Simplify the return expression.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-No, I don't want this. Please stop sending these return expression
-"simplifications". The cocci script to do this was removed in commit
-b784c7707502 ("coccinnelle: Remove ptr_ret script") specifically to stop
-these changes. Please read the commit message for that.
+On 5/5/22 12:57, Michael S. Tsirkin wrote:
+> On Thu, May 05, 2022 at 03:14:40AM +0000, Gonglei (Arei) wrote:
+>>
+>>
+>>> -----Original Message-----
+>>> From: zhenwei pi [mailto:pizhenwei@bytedance.com]
+>>> Sent: Thursday, May 5, 2022 10:35 AM
+>>> To: Gonglei (Arei) <arei.gonglei@huawei.com>; mst@redhat.com;
+>>> jasowang@redhat.com
+>>> Cc: herbert@gondor.apana.org.au; linux-kernel@vger.kernel.org;
+>>> virtualization@lists.linux-foundation.org; linux-crypto@vger.kernel.org;
+>>> helei.sig11@bytedance.com; davem@davemloft.net
+>>> Subject: PING: [PATCH v4 0/5] virtio-crypto: Improve performance
+>>>
+>>> Hi, Lei
+>>>
+>>> Jason replied in another patch:
+>>> Still hundreds of lines of changes, I'd leave this change to other maintainers to
+>>> decide.
+>>>
+>>> Quite frankly, the virtio crypto driver changed only a few in the past, and the
+>>> performance of control queue is not good enough. I am in doubt about that this
+>>> driver is not used widely. So I'd like to rework a lot, it would be best to complete
+>>> this work in 5.18 window.
+>>>
+>>> This gets different point with Jason. I would appreciate it if you could give me
+>>> any hint.
+>>>
+>>
+>> This is already in my todo list.
+>>
+>> Regards,
+>> -Gonglei
+> 
+> It's been out a month though, not really acceptable latency for review.
+> So I would apply this for next,  but you need to address Dan Captenter's
+> comment, and look for simular patterns elesewhere in your patch.
+> 
 
-BR,
-Jani.
-
-
-> ---
->  drivers/gpu/drm/i915/i915_driver.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/i915_driver.c b/drivers/gpu/drm/i915/i915_driver.c
-> index 09de45d3e274..d11a7445909a 100644
-> --- a/drivers/gpu/drm/i915/i915_driver.c
-> +++ b/drivers/gpu/drm/i915/i915_driver.c
-> @@ -977,13 +977,8 @@ static void i915_driver_release(struct drm_device *dev)
->  static int i915_driver_open(struct drm_device *dev, struct drm_file *file)
->  {
->  	struct drm_i915_private *i915 = to_i915(dev);
-> -	int ret;
->  
-> -	ret = i915_gem_open(i915, file);
-> -	if (ret)
-> -		return ret;
-> -
-> -	return 0;
-> +	return i915_gem_open(i915, file);
->  }
->  
->  /**
+I fixed this in the v5 series. Thanks!
 
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+zhenwei pi
