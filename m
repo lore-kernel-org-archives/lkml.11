@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2442C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30672C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387126AbiEFAC3 (ORCPT
+        id S1387241AbiEFACh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
+        Thu, 5 May 2022 20:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387107AbiEFABm (ORCPT
+        with ESMTP id S1387106AbiEFABm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 20:01:42 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FA7612A1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B3D60DAA
         for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651795073; x=1683331073;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=xjphrR/fdJYxZybC1OeOpVaKdDVRMW9p0gc6LYNcZJo=;
-  b=URLFvnE4ct6dF+OEekMBR4GhFlwSu2/Hxk9ClCVf2+A3qv+DEQguIvDe
-   J5598G22iJk9/WHZKyl9NjXOkB0ua4Szci85NHZbFVPwy1yDuke6ZgsGH
-   B3mA3aeGm/w6QdlreD5CLycPFS+9aoHczb5Cbc3l1CRflqolmpmHS6pju
-   w4bVaJrP7jgncroa6doHL4ideimHNPu3zg45HdFoZR0JBbs73lf0qa4GB
-   FPV2r20Elqx+xrxGVvVIoJdGp6TmZBI9TZprQOAfHCAJ5zQckHnjSkz1m
-   Ya5TH0g+bR7E4dTHh4gnX8y6c1OC0zCgHZly3HMYy27oJjS5mrGDqicE4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283638"
+  bh=yu43tYTm3rL820NWGTlU5e3BSTdrJeh1cVn1o9Y1twQ=;
+  b=XZulpZrOMMMKJxovH7naHeH3WcgDbT7/GBMVfNzwn4gIMqU3IpJ2Xfo9
+   LNTvFHm0tHHKR0dr/brMB7FC1utQB27pmtGUa/OeBBB1aqR761CvgCbuz
+   QZTOETcWtvH31IqGcJvw1/t7EPq4G+57GqqTy6TwAQ6tiQdz79YxxkPg1
+   N97MX4odfxHaibHWYwbNU9wojq/S65Yy0h/7XnFHXJH+nV5qq7XTxW5SX
+   8hRinGyNVFw4FLetuyE96LxV4LppYtlKAZbPI+VcXpv4TPgSiM9RG1th5
+   RZz0N1SdLsNECXGUmigyNreqvPycb0HBsZMcgC9sao9LkU7gxmmKwe93H
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283641"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283638"
+   d="scan'208";a="250283641"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:50 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914376"
+   d="scan'208";a="694914383"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
   by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:50 -0700
 From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
@@ -54,9 +54,9 @@ Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
         iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org,
         Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 14/29] x86/hpet: Expose hpet_writel() in header
-Date:   Thu,  5 May 2022 16:59:53 -0700
-Message-Id: <20220506000008.30892-15-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 16/29] x86/hpet: Prepare IRQ assignments to use the X86_ALLOC_AS_NMI flag
+Date:   Thu,  5 May 2022 16:59:55 -0700
+Message-Id: <20220506000008.30892-17-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -64,62 +64,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to allow hpet_writel() to be used by other components (e.g.,
-the HPET-based hardlockup detector), expose it in the HPET header file.
+The flag X86_ALLOC_AS_NMI indicates that the IRQs to be allocated in an
+IRQ domain need to be configured as NMIs.  Add an as_nmi argument to
+hpet_assign_irq(). Even though the HPET clock events do not need NMI
+IRQs, the HPET hardlockup detector does. A subsequent changeset will
+implement the reservation of a channel for it.
 
 Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Stephane Eranian <eranian@google.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+Cc: Stephane Eranian <eranian@google.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: x86@kernel.org
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
 Changes since v5:
- * None
+ * Introduced this patch.
 
 Changes since v4:
- * Dropped exposing hpet_readq() as it is not needed.
+ * N/A
 
 Changes since v3:
- * None
+ * N/A
 
 Changes since v2:
- * None
+ * N/A
 
 Changes since v1:
- * None
+ * N/A
 ---
- arch/x86/include/asm/hpet.h | 1 +
- arch/x86/kernel/hpet.c      | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kernel/hpet.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index ab9f3dd87c80..be9848f0883f 100644
---- a/arch/x86/include/asm/hpet.h
-+++ b/arch/x86/include/asm/hpet.h
-@@ -72,6 +72,7 @@ extern int is_hpet_enabled(void);
- extern int hpet_enable(void);
- extern void hpet_disable(void);
- extern unsigned int hpet_readl(unsigned int a);
-+extern void hpet_writel(unsigned int d, unsigned int a);
- extern void force_hpet_resume(void);
- 
- #ifdef CONFIG_HPET_EMULATE_RTC
 diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 71f336425e58..47678e7927ff 100644
+index 2c6713b40921..02d25e00e93f 100644
 --- a/arch/x86/kernel/hpet.c
 +++ b/arch/x86/kernel/hpet.c
-@@ -79,7 +79,7 @@ inline unsigned int hpet_readl(unsigned int a)
- 	return readl(hpet_virt_address + a);
+@@ -618,7 +618,7 @@ static inline int hpet_dev_id(struct irq_domain *domain)
  }
  
--static inline void hpet_writel(unsigned int d, unsigned int a)
-+inline void hpet_writel(unsigned int d, unsigned int a)
+ static int hpet_assign_irq(struct irq_domain *domain, struct hpet_channel *hc,
+-			   int dev_num)
++			   int dev_num, bool as_nmi)
  {
- 	writel(d, hpet_virt_address + a);
+ 	struct irq_alloc_info info;
+ 
+@@ -627,6 +627,8 @@ static int hpet_assign_irq(struct irq_domain *domain, struct hpet_channel *hc,
+ 	info.data = hc;
+ 	info.devid = hpet_dev_id(domain);
+ 	info.hwirq = dev_num;
++	if (as_nmi)
++		info.flags |= X86_IRQ_ALLOC_AS_NMI;
+ 
+ 	return irq_domain_alloc_irqs(domain, 1, NUMA_NO_NODE, &info);
  }
+@@ -755,7 +757,7 @@ static void __init hpet_select_clockevents(void)
+ 
+ 		sprintf(hc->name, "hpet%d", i);
+ 
+-		irq = hpet_assign_irq(hpet_domain, hc, hc->num);
++		irq = hpet_assign_irq(hpet_domain, hc, hc->num, false);
+ 		if (irq <= 0)
+ 			continue;
+ 
 -- 
 2.17.1
 
