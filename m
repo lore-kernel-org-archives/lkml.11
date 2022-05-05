@@ -2,206 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B461C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A260FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354260AbiEEJvG (ORCPT
+        id S1354347AbiEEJvP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
+        Thu, 5 May 2022 05:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354147AbiEEJvB (ORCPT
+        with ESMTP id S1354302AbiEEJvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:51:01 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58674F458
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:47:22 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id y13-20020a056602164d00b0065a9dec1ef2so2506146iow.23
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:47:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=eV38iSYAFGjXt9JWlkIOLhHqsRAqY/eXwKHu9dO4WfM=;
-        b=WxDrIt5FiEEiyVShDlSDfpT9c5Dh2rZ4X7kKdeFXgnakKQClnNC4DQfnPkoOByb1QR
-         TmdWpqjjox8Yvv4Edx0/tQumJBVQJpPJafo+yFiRqj7zSleOWGF9xLKyWld/DS5WNYkb
-         uaZnyOG8kqnUCCSM53XfqojP6PVZ8mLxL3/fg7eHesWBOGG4+kXE6K1G80qfTOSKTRaO
-         b1nNXr04ZleRvBnQtLXK9ihSXpd0YyiGMPJBJiNc8Ap6VEOzr/13HurH4RTfcV3rbssP
-         jt2KsPMRVYpBCYTiZv82ylb/jSZUYIDMpPkTFX6XQOsetsaO3Bcui8Y0xOrK1/prR/N8
-         JHbA==
-X-Gm-Message-State: AOAM532lYM8UpX8FzRbTgQ+2LiohF2rWZsX7NCWC+H4ioP/Od1xyNvkj
-        lWpzOEW/aFL5Z4oux9IoNUmQwPQWtrbuB3Vwe2abfsIWOXiF
-X-Google-Smtp-Source: ABdhPJxL5XoOFhIWkIgGimlGzxLGs+KghxbThlHH0A4u3iFDaS4+GhJKngtIFRIFACuIz4GSRic/MRITFWOHKXmjlxt7C123rDYQ
-MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2e07:b0:65a:5818:2b3d with SMTP id
- o7-20020a0566022e0700b0065a58182b3dmr8054370iow.128.1651744041879; Thu, 05
- May 2022 02:47:21 -0700 (PDT)
-Date:   Thu, 05 May 2022 02:47:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e04c5605de40a0dc@google.com>
-Subject: [syzbot] inconsistent lock state in rxrpc_put_call
-From:   syzbot <syzbot+7ff43f67d38f2d8e07ef@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+        Thu, 5 May 2022 05:51:00 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D2E4F9DB;
+        Thu,  5 May 2022 02:47:20 -0700 (PDT)
+X-UUID: 793874e842b54637a2b77ddf5a0cec4d-20220505
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:73cb7cf4-0bff-4b06-b0bf-bd17bb849a93,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:43e04e16-2e53-443e-b81a-655c13977218,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 793874e842b54637a2b77ddf5a0cec4d-20220505
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 742936293; Thu, 05 May 2022 17:47:14 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 5 May 2022 17:47:13 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 5 May 2022 17:47:13 +0800
+Message-ID: <9bddb8595ab7a8a9ca598aa7a90eb52c75916499.camel@mediatek.com>
+Subject: Re: [PATCH v5 0/9] cpufreq: mediatek: Cleanup and support MT8183
+ and MT8186
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
+        <roger.lu@mediatek.com>, <hsinyi@google.com>,
+        <khilman@baylibre.com>, <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 5 May 2022 17:47:13 +0800
+In-Reply-To: <20220505085358.nmohfx3akk7to46r@vireshk-i7>
+References: <20220504130540.5902-1-rex-bc.chen@mediatek.com>
+         <20220505085358.nmohfx3akk7to46r@vireshk-i7>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Thu, 2022-05-05 at 14:23 +0530, Viresh Kumar wrote:
+> On 04-05-22, 21:05, Rex-BC Chen wrote:
+> >   arm64: dts: mediatek: Add opp table and clock property for MT8183
+> >     cpufreq
+> >   arm64: dts: mediatek: Add MediaTek CCI node for MT8183
+> >   arm64: dts: mediatek: Add mediatek,cci property for MT8183
+> > cpufreq
+> 
+> I guess these would also go through my tree? Please get them acked by
+> SoC maintainers.
+> 
+> I would also need an Ack from Rob for the binding patch.
+> 
 
-syzbot found the following issue on:
+Hello Viresh,
 
-HEAD commit:    48cec73a891c net: lan966x: Fix compilation error
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=135956d8f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4f67580b287bc88d
-dashboard link: https://syzkaller.appspot.com/bug?extid=7ff43f67d38f2d8e07ef
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+I also mail to Matthias who is mediatek soc maintainer.
+As for binding, I think we need to wait for the review from Rob or
+Krzysztof.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+BRs,
+Rex
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7ff43f67d38f2d8e07ef@syzkaller.appspotmail.com
-
-================================
-WARNING: inconsistent lock state
-5.18.0-rc4-syzkaller-00910-g48cec73a891c #0 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-swapper/0/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
-ffff88805a1a4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x175/0x300 net/rxrpc/call_object.c:634
-{SOFTIRQ-ON-W} state was registered at:
-  lock_acquire kernel/locking/lockdep.c:5641 [inline]
-  lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
-  __raw_write_lock include/linux/rwlock_api_smp.h:209 [inline]
-  _raw_write_lock+0x2a/0x40 kernel/locking/spinlock.c:300
-  rxrpc_service_prealloc_one+0xacf/0x1440 net/rxrpc/call_accept.c:143
-  rxrpc_kernel_charge_accept+0xd4/0x120 net/rxrpc/call_accept.c:487
-  afs_charge_preallocation+0xba/0x310 fs/afs/rxrpc.c:733
-  afs_open_socket+0x294/0x360 fs/afs/rxrpc.c:92
-  afs_net_init+0xa75/0xec0 fs/afs/main.c:126
-  ops_init+0xaf/0x470 net/core/net_namespace.c:134
-  __register_pernet_operations net/core/net_namespace.c:1146 [inline]
-  register_pernet_operations+0x35a/0x850 net/core/net_namespace.c:1215
-  register_pernet_device+0x26/0x70 net/core/net_namespace.c:1302
-  afs_init+0xe6/0x218 fs/afs/main.c:189
-  do_one_initcall+0x103/0x650 init/main.c:1298
-  do_initcall_level init/main.c:1371 [inline]
-  do_initcalls init/main.c:1387 [inline]
-  do_basic_setup init/main.c:1406 [inline]
-  kernel_init_freeable+0x6b1/0x73a init/main.c:1613
-  kernel_init+0x1a/0x1d0 init/main.c:1502
-  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
-irq event stamp: 474002
-hardirqs last  enabled at (474002): [<ffffffff89800c02>] asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
-hardirqs last disabled at (474001): [<ffffffff896a855b>] sysvec_apic_timer_interrupt+0xb/0xc0 arch/x86/kernel/apic/apic.c:1097
-softirqs last  enabled at (473854): [<ffffffff8147bb73>] invoke_softirq kernel/softirq.c:432 [inline]
-softirqs last  enabled at (473854): [<ffffffff8147bb73>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
-softirqs last disabled at (473975): [<ffffffff8147bb73>] invoke_softirq kernel/softirq.c:432 [inline]
-softirqs last disabled at (473975): [<ffffffff8147bb73>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&rxnet->call_lock);
-  <Interrupt>
-    lock(&rxnet->call_lock);
-
- *** DEADLOCK ***
-
-1 lock held by swapper/0/0:
- #0: ffffc90000007d70 ((&call->timer)){+.-.}-{0:0}, at: lockdep_copy_map include/linux/lockdep.h:35 [inline]
- #0: ffffc90000007d70 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0xd5/0x6b0 kernel/time/timer.c:1411
-
-stack backtrace:
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.18.0-rc4-syzkaller-00910-g48cec73a891c #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_usage_bug kernel/locking/lockdep.c:3935 [inline]
- valid_state kernel/locking/lockdep.c:3947 [inline]
- mark_lock_irq kernel/locking/lockdep.c:4150 [inline]
- mark_lock.part.0.cold+0x18/0xd8 kernel/locking/lockdep.c:4607
- mark_lock kernel/locking/lockdep.c:4571 [inline]
- mark_usage kernel/locking/lockdep.c:4502 [inline]
- __lock_acquire+0x11e7/0x56c0 kernel/locking/lockdep.c:4983
- lock_acquire kernel/locking/lockdep.c:5641 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
- __raw_write_lock include/linux/rwlock_api_smp.h:209 [inline]
- _raw_write_lock+0x2a/0x40 kernel/locking/spinlock.c:300
- rxrpc_put_call+0x175/0x300 net/rxrpc/call_object.c:634
- rxrpc_call_timer_expired+0xa1/0xc0 net/rxrpc/call_object.c:58
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers.part.0+0x679/0xa80 kernel/time/timer.c:1737
- __run_timers kernel/time/timer.c:1715 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1750
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
-RIP: 0010:native_save_fl arch/x86/include/asm/irqflags.h:29 [inline]
-RIP: 0010:arch_local_save_flags arch/x86/include/asm/irqflags.h:70 [inline]
-RIP: 0010:arch_irqs_disabled arch/x86/include/asm/irqflags.h:130 [inline]
-RIP: 0010:acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
-RIP: 0010:acpi_idle_do_entry+0x1c6/0x250 drivers/acpi/processor_idle.c:551
-Code: 89 de e8 ad a6 0b f8 84 db 75 ac e8 c4 a2 0b f8 e8 2f eb 11 f8 eb 0c e8 b8 a2 0b f8 0f 00 2d d1 4b c5 00 e8 ac a2 0b f8 fb f4 <9c> 5b 81 e3 00 02 00 00 fa 31 ff 48 89 de e8 27 a5 0b f8 48 85 db
-RSP: 0018:ffffffff8ba07d60 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffffffff8babc700 RSI: ffffffff896d8694 RDI: 0000000000000000
-RBP: ffff88801639f864 R08: 0000000000000001 R09: 0000000000000001
-R10: ffffffff817f71e8 R11: 0000000000000000 R12: 0000000000000001
-R13: ffff88801639f800 R14: ffff88801639f864 R15: ffff888019952004
- acpi_idle_enter+0x361/0x500 drivers/acpi/processor_idle.c:686
- cpuidle_enter_state+0x1b1/0xc80 drivers/cpuidle/cpuidle.c:237
- cpuidle_enter+0x4a/0xa0 drivers/cpuidle/cpuidle.c:351
- call_cpuidle kernel/sched/idle.c:155 [inline]
- cpuidle_idle_call kernel/sched/idle.c:236 [inline]
- do_idle+0x3e8/0x590 kernel/sched/idle.c:303
- cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:400
- start_kernel+0x47f/0x4a0 init/main.c:1140
- secondary_startup_64_no_verify+0xc3/0xcb
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	89 de                	mov    %ebx,%esi
-   2:	e8 ad a6 0b f8       	callq  0xf80ba6b4
-   7:	84 db                	test   %bl,%bl
-   9:	75 ac                	jne    0xffffffb7
-   b:	e8 c4 a2 0b f8       	callq  0xf80ba2d4
-  10:	e8 2f eb 11 f8       	callq  0xf811eb44
-  15:	eb 0c                	jmp    0x23
-  17:	e8 b8 a2 0b f8       	callq  0xf80ba2d4
-  1c:	0f 00 2d d1 4b c5 00 	verw   0xc54bd1(%rip)        # 0xc54bf4
-  23:	e8 ac a2 0b f8       	callq  0xf80ba2d4
-  28:	fb                   	sti
-  29:	f4                   	hlt
-* 2a:	9c                   	pushfq <-- trapping instruction
-  2b:	5b                   	pop    %rbx
-  2c:	81 e3 00 02 00 00    	and    $0x200,%ebx
-  32:	fa                   	cli
-  33:	31 ff                	xor    %edi,%edi
-  35:	48 89 de             	mov    %rbx,%rsi
-  38:	e8 27 a5 0b f8       	callq  0xf80ba564
-  3d:	48 85 db             	test   %rbx,%rbx
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
