@@ -2,253 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381416AbiEEPsr (ORCPT
+        id S1381418AbiEEPu5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
+        Thu, 5 May 2022 11:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381396AbiEEPso (ORCPT
+        with ESMTP id S1348488AbiEEPuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:48:44 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B146532E2;
-        Thu,  5 May 2022 08:45:03 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B9535106F;
-        Thu,  5 May 2022 08:45:02 -0700 (PDT)
-Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.38.147])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F0413F85F;
-        Thu,  5 May 2022 08:45:00 -0700 (PDT)
-Date:   Thu, 5 May 2022 16:44:57 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 09/21] arm64: Add CFI error handling
-Message-ID: <YnPw+SiY9Ij/b7Yg@FVFF77S0Q05N.cambridge.arm.com>
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <20220429203644.2868448-10-samitolvanen@google.com>
+        Thu, 5 May 2022 11:50:55 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E19377F5;
+        Thu,  5 May 2022 08:47:15 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 73ECF1F8D3;
+        Thu,  5 May 2022 15:47:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651765634; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3usa/BDzW7WrqfKTRJ3nV/Kk3MUaQaV93qIHyXp35Eg=;
+        b=uFWAKVFg9D41wufM/KqDn5o59I/849cM0YEy44QfjVzGFE89im5cYXhmfguWPc0Xp0ZixJ
+        nP5rIs5XgaT1n4aqtUeZjjmK1iynF4Z3AN7C6tN2mk6bVNua1wiT9QIvwOmMI7qSrR2bfW
+        hMxBaDd2aV8bdk5GDKGCAlbZUGrFIQw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651765634;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3usa/BDzW7WrqfKTRJ3nV/Kk3MUaQaV93qIHyXp35Eg=;
+        b=pMjKdhp/bN+0IjyGtt/qVPCcaEiROezTmA+Uyan0JGmnXeaqOBc2BoyyviAHOw3mqAouA8
+        dDIKClmWCpBxA8Cw==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 510702C142;
+        Thu,  5 May 2022 15:47:14 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id EE5DBA0627; Thu,  5 May 2022 17:47:13 +0200 (CEST)
+Date:   Thu, 5 May 2022 17:47:13 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Ye Bin <yebin10@huawei.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jack@suse.cz, lczerner@redhat.com
+Subject: Re: [PATCH -next] ext4: fix bug_on in ext4_writepages
+Message-ID: <20220505154713.nig6rj76p2gl5mm7@quack3.lan>
+References: <20220505135708.2629657-1-yebin10@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220429203644.2868448-10-samitolvanen@google.com>
+In-Reply-To: <20220505135708.2629657-1-yebin10@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sami,
-
-On Fri, Apr 29, 2022 at 01:36:32PM -0700, Sami Tolvanen wrote:
-> With -fsanitize=kcfi, CFI always traps. Add arm64 support for handling
-> CFI failures and determining the target address.
+On Thu 05-05-22 21:57:08, Ye Bin wrote:
+> we got issue as follows:
+> EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
+> ------------[ cut here ]------------
+> kernel BUG at fs/ext4/inode.c:2708!
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+> CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
+> RIP: 0010:ext4_writepages+0x1977/0x1c10
+> RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
+> RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
+> RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
+> RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
+> R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
+> R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
+> FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  do_writepages+0x130/0x3a0
+>  filemap_fdatawrite_wbc+0x83/0xa0
+>  filemap_flush+0xab/0xe0
+>  ext4_alloc_da_blocks+0x51/0x120
+>  __ext4_ioctl+0x1534/0x3210
+>  __x64_sys_ioctl+0x12c/0x170
+>  do_syscall_64+0x3b/0x90
 > 
-> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+> It may happen as follows:
+> 1. write inline_data inode
+> vfs_write
+>   new_sync_write
+>     ext4_file_write_iter
+>       ext4_buffered_write_iter
+>         generic_perform_write
+> 	  ext4_da_write_begin
+> 	    ext4_da_write_inline_data_begin -> If inline data size too
+> 	    small will allocate block to write, then mapping will has
+> 	    dirty page
+> 	    	ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
+> 2. fallocate
+> do_vfs_ioctl
+>   ioctl_preallocate
+>     vfs_fallocate
+>       ext4_fallocate
+>         ext4_convert_inline_data
+> 	  ext4_convert_inline_data_nolock
+> 	    ext4_map_blocks -> fail will goto restore data
+> 	    ext4_restore_inline_data
+> 	      ext4_create_inline_data
+> 	      ext4_write_inline_data
+> 	      ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
+> 3. writepages
+> __ext4_ioctl
+>   ext4_alloc_da_blocks
+>     filemap_flush
+>       filemap_fdatawrite_wbc
+>         do_writepages
+> 	  ext4_writepages
+> 	    if (ext4_has_inline_data(inode))
+> 	      BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
+> 
+> To solved this issue, record origin 'EXT4_STATE_MAY_INLINE_DATA' flag, then pass
+> value to 'ext4_restore_inline_data', 'ext4_restore_inline_data' will
+> decide to if recovery 'EXT4_STATE_MAY_INLINE_DATA' flag according to parameter.
+> 
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
+
+I think this will get also fixed by a patch from your colleague I've
+reviewed here [1], won't it?
+
+[1] https://lore.kernel.org/all/20220428165725.mvjh6mx7gr5vekqe@quack3.lan
+
+								Honza
+
 > ---
->  arch/arm64/include/asm/brk-imm.h |  2 ++
->  arch/arm64/include/asm/insn.h    |  1 +
->  arch/arm64/kernel/traps.c        | 57 ++++++++++++++++++++++++++++++++
->  3 files changed, 60 insertions(+)
+>  fs/ext4/inline.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/arm64/include/asm/brk-imm.h b/arch/arm64/include/asm/brk-imm.h
-> index ec7720dbe2c8..3a50b70b4404 100644
-> --- a/arch/arm64/include/asm/brk-imm.h
-> +++ b/arch/arm64/include/asm/brk-imm.h
-> @@ -16,6 +16,7 @@
->   * 0x400: for dynamic BRK instruction
->   * 0x401: for compile time BRK instruction
->   * 0x800: kernel-mode BUG() and WARN() traps
-> + * 0x801: Control-Flow Integrity traps
->   * 0x9xx: tag-based KASAN trap (allowed values 0x900 - 0x9ff)
-
-As a high-level thing, it would be good if we could agree on some paritioning
-of the BRK immediate space between compiler usage and kernel usage (or have
-some way to ask the compiler to use specific values), so that we can allocate
-values without clashing.
-
->   */
->  #define KPROBES_BRK_IMM			0x004
-> @@ -25,6 +26,7 @@
->  #define KGDB_DYN_DBG_BRK_IMM		0x400
->  #define KGDB_COMPILED_DBG_BRK_IMM	0x401
->  #define BUG_BRK_IMM			0x800
-> +#define CFI_BRK_IMM			0x801
->  #define KASAN_BRK_IMM			0x900
->  #define KASAN_BRK_MASK			0x0ff
->  
-> diff --git a/arch/arm64/include/asm/insn.h b/arch/arm64/include/asm/insn.h
-> index 1e5760d567ae..12225bdfa776 100644
-> --- a/arch/arm64/include/asm/insn.h
-> +++ b/arch/arm64/include/asm/insn.h
-> @@ -334,6 +334,7 @@ __AARCH64_INSN_FUNCS(store_pre,	0x3FE00C00, 0x38000C00)
->  __AARCH64_INSN_FUNCS(load_pre,	0x3FE00C00, 0x38400C00)
->  __AARCH64_INSN_FUNCS(store_post,	0x3FE00C00, 0x38000400)
->  __AARCH64_INSN_FUNCS(load_post,	0x3FE00C00, 0x38400400)
-> +__AARCH64_INSN_FUNCS(ldur,	0x3FE00C00, 0x38400000)
->  __AARCH64_INSN_FUNCS(str_reg,	0x3FE0EC00, 0x38206800)
->  __AARCH64_INSN_FUNCS(ldadd,	0x3F20FC00, 0x38200000)
->  __AARCH64_INSN_FUNCS(ldclr,	0x3F20FC00, 0x38201000)
-> diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
-> index 0529fd57567e..b524411ba663 100644
-> --- a/arch/arm64/kernel/traps.c
-> +++ b/arch/arm64/kernel/traps.c
-> @@ -26,6 +26,7 @@
->  #include <linux/syscalls.h>
->  #include <linux/mm_types.h>
->  #include <linux/kasan.h>
-> +#include <linux/cfi.h>
->  
->  #include <asm/atomic.h>
->  #include <asm/bug.h>
-> @@ -990,6 +991,55 @@ static struct break_hook bug_break_hook = {
->  	.imm = BUG_BRK_IMM,
->  };
->  
-> +#ifdef CONFIG_CFI_CLANG
-> +void *arch_get_cfi_target(unsigned long addr, struct pt_regs *regs)
-> +{
-> +	/* The expected CFI check instruction sequence:
-> +	 *   ldur    wA, [xN, #-4]
-> +	 *   movk    wB, #nnnnn
-> +	 *   movk    wB, #nnnnn, lsl #16
-> +	 *   cmp     wA, wB
-> +	 *   b.eq    .Ltmp1
-> +	 *   brk     #0x801		; <- addr
-> +	 *   .Ltmp1:
-> +	 *
-> +	 * Therefore, the target address is in the xN register, which we can
-> +	 * decode from the ldur instruction.
-> +	 */
-> +	u32 insn, rn;
-> +	void *p = (void *)(addr - 5 * AARCH64_INSN_SIZE);
-
-It would be a bit nicer if we could encode the register index into the BRK
-immediate, i.e. allocate a range of 32 immediates (or 31 given BLR XZR is
-nonsensical), and have:
-
-	BRK #CFI_BRK_IMM + n
-
-... where `n` is the Xn index.
-
-That way the kernel doesn't need to know the specific code sequence and
-wouldn't have to decode the instruction to find the relevant register -- we
-could determine that from the ESR alone. That would also avoid tying the
-compiler into a specific code sequence, and would allow that to change.
-
-Since the BRK immediate is 16 bits, we have enough space to also encode the
-index of the wB register, which would allow the kernel's BRK handler to recover
-and log the expected type value and the the value at the target of the branch
-(that latter we can recover from xN, so we don't need wA to be encoded into the
-immediate).
-
-With that, the handler can be something like:
-
-| #define CFI_BRK_IMM_TARGET	GENMASK(4,0)
-| #define CFI_BRK_IMM_TYPE	GENMASK(9,5)
-| 
-| #define CFI_BRK_IMM_BASE	0x8000
-| #define CFI_BRK_IMM_MASK	(CFI_BRK_IMM_TARGET | CFI_BRK_IMM_TYPE)
-| 
-| static int cfi_handler(struct pt_regs *regs, unsigned long esr)
-| {
-| 	int reg_target, reg_type;
-| 	unsigned long target, type;
-| 
-| 	reg_target = FIELD_GET(esr, BRK_CFI_IMM_TARGET);
-| 	target = pt_regs_read(regs, reg_target);
-| 	
-| 	reg_type = FIELD_GET(esr, BRK_CFI_IMM_TYPE);
-| 	type = pt_regs_read(regs, reg_type);
-| 
-| 	report_cfi_failure(regs,		// regs
-| 			   regs->pc,		// BRK address
-| 			   target,		// branch target
-| 			   type);		// expected type
-| 
-| 	// TODO: switch over the return value of report_cfi_failure()
-| }
-| 
-| struct break_hook cfi_break_hook = {
-| 	.fn = cfi_handler,
-| 	.imm = CFI_BRK_IMM_BASE,
-| 	.mask = CFI_BRK_IMM_MASK,
-| };
-
-... does the compiler side of that sound possible?
-
-Thanks,
-Mark.
-
->
-> +
-> +	if (aarch64_insn_read(p, &insn) || !aarch64_insn_is_ldur(insn))
-> +		return NULL;
-> +
-> +	rn = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RN, insn);
-> +	return (void *)regs->regs[rn];
-> +}
-> +
-> +static int cfi_handler(struct pt_regs *regs, unsigned int esr)
-> +{
-> +	switch (report_cfi(regs->pc, regs)) {
-> +	case BUG_TRAP_TYPE_BUG:
-> +		die("Oops - CFI", regs, 0);
-> +		break;
-> +
-> +	case BUG_TRAP_TYPE_WARN:
-> +		break;
-> +
-> +	default:
-> +		return DBG_HOOK_ERROR;
-> +	}
-> +
-> +	arm64_skip_faulting_instruction(regs, AARCH64_INSN_SIZE);
-> +	return DBG_HOOK_HANDLED;
-> +}
-> +
-> +static struct break_hook cfi_break_hook = {
-> +	.fn = cfi_handler,
-> +	.imm = CFI_BRK_IMM,
-> +};
-> +#endif /* CONFIG_CFI_CLANG */
-> +
->  static int reserved_fault_handler(struct pt_regs *regs, unsigned int esr)
->  {
->  	pr_err("%s generated an invalid instruction at %pS!\n",
-> @@ -1063,6 +1113,10 @@ int __init early_brk64(unsigned long addr, unsigned int esr,
->  
->  	if ((comment & ~KASAN_BRK_MASK) == KASAN_BRK_IMM)
->  		return kasan_handler(regs, esr) != DBG_HOOK_HANDLED;
-> +#endif
-> +#ifdef CONFIG_CFI_CLANG
-> +	if ((esr & ESR_ELx_BRK64_ISS_COMMENT_MASK) == CFI_BRK_IMM)
-> +		return cfi_handler(regs, esr) != DBG_HOOK_HANDLED;
->  #endif
->  	return bug_handler(regs, esr) != DBG_HOOK_HANDLED;
+> diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+> index 9c076262770d..407061c79adc 100644
+> --- a/fs/ext4/inline.c
+> +++ b/fs/ext4/inline.c
+> @@ -1125,8 +1125,8 @@ static int ext4_update_inline_dir(handle_t *handle, struct inode *dir,
 >  }
-> @@ -1070,6 +1124,9 @@ int __init early_brk64(unsigned long addr, unsigned int esr,
->  void __init trap_init(void)
+>  
+>  static void ext4_restore_inline_data(handle_t *handle, struct inode *inode,
+> -				     struct ext4_iloc *iloc,
+> -				     void *buf, int inline_size)
+> +				     struct ext4_iloc *iloc, void *buf,
+> +				     int inline_size, bool has_data)
 >  {
->  	register_kernel_break_hook(&bug_break_hook);
-> +#ifdef CONFIG_CFI_CLANG
-> +	register_kernel_break_hook(&cfi_break_hook);
-> +#endif
->  	register_kernel_break_hook(&fault_break_hook);
->  #ifdef CONFIG_KASAN_SW_TAGS
->  	register_kernel_break_hook(&kasan_break_hook);
+>  	int ret;
+>  
+> @@ -1138,7 +1138,8 @@ static void ext4_restore_inline_data(handle_t *handle, struct inode *inode,
+>  		return;
+>  	}
+>  	ext4_write_inline_data(inode, iloc, buf, 0, inline_size);
+> -	ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+> +	if (has_data)
+> +		ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+>  }
+>  
+>  static int ext4_finish_convert_inline_dir(handle_t *handle,
+> @@ -1194,6 +1195,7 @@ static int ext4_convert_inline_data_nolock(handle_t *handle,
+>  	struct buffer_head *data_bh = NULL;
+>  	struct ext4_map_blocks map;
+>  	int inline_size;
+> +	bool has_data;
+>  
+>  	inline_size = ext4_get_inline_size(inode);
+>  	buf = kmalloc(inline_size, GFP_NOFS);
+> @@ -1222,6 +1224,8 @@ static int ext4_convert_inline_data_nolock(handle_t *handle,
+>  	if (error)
+>  		goto out;
+>  
+> +	has_data = !!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+> +
+>  	map.m_lblk = 0;
+>  	map.m_len = 1;
+>  	map.m_flags = 0;
+> @@ -1262,7 +1266,8 @@ static int ext4_convert_inline_data_nolock(handle_t *handle,
+>  	unlock_buffer(data_bh);
+>  out_restore:
+>  	if (error)
+> -		ext4_restore_inline_data(handle, inode, iloc, buf, inline_size);
+> +		ext4_restore_inline_data(handle, inode, iloc, buf,
+> +					 inline_size, has_data);
+>  
+>  out:
+>  	brelse(data_bh);
 > -- 
-> 2.36.0.464.gb9c8b46e94-goog
+> 2.31.1
 > 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
