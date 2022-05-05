@@ -2,76 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D10FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 971BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:07:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346452AbiEEIKl (ORCPT
+        id S1346472AbiEEIKr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        Thu, 5 May 2022 04:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346334AbiEEIKj (ORCPT
+        with ESMTP id S1346444AbiEEIKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:10:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3877633E89;
-        Thu,  5 May 2022 01:07:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E182EB82BC9;
-        Thu,  5 May 2022 08:06:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BE0C385A4;
-        Thu,  5 May 2022 08:06:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651738018;
-        bh=UNwgFxzOyBVqYbS3oWBRtI1/gUf7FweC/XLn5kiiO0k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=P2ISyc72rtdI5UOj6t6FmX205voGerlKmzkyqq70JcvMTgEa0gdjjQeBa0hMHFxwE
-         HoAsJ+fe8olWrJxMDTZDP6ZOgi1C4bWzFeCTe/hIqH2vr1rGtgrVR1HtdK8IZIBwL8
-         xcyBBTvASnpvIfdjDxVc7QL7WEP0/+EJVHpuIfWpVVoJviYjf72LubQ4DQa3r16HS0
-         P/YLPz5qr1uJpFEcwcGQWxXNTH4MRHr473h82ZeJMpkenvEOy3zYwSSr2MpXooAbco
-         ZRTri52R5cdVTWdKmrjnYsz6T1Jow+lgveg+YqNlCX6SEhXYM/40YqiOZafpvhNmgJ
-         OgFoj/Qwrs1wg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1nmWVl-0003Dh-Qb; Thu, 05 May 2022 10:06:58 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] leds: qcom-lpg: add missing PWM dependency
-Date:   Thu,  5 May 2022 10:03:58 +0200
-Message-Id: <20220505080358.12288-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 5 May 2022 04:10:44 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E2337012
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:07:05 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id s30so6328190ybi.8
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/lcDjUXmqCC8++TChfQPb2y1ThOaTsMZ60wPCLJmwfA=;
+        b=PfkiLCiCuWYhfERRM7OhNV/KVoCSisP9NR0V9RCRfCMS0JYexbisjTUOLMO/xzc/Up
+         JN/dm0Q628PUIMyjze7Sbgf0Sn/keQULXJuLVA/0IbO8EIw7pmbAD+p2PS7Mjz32TQmA
+         IP6sOxIhRdgFhfGWxuZEjuASayWOlwztM2Eh290YZXnhXVbtDTLE8UCaDGsyMw9B7irZ
+         AzCgZTm/kzKsXvp/OPvSMg0Mmu60mtKJdNTq5B3fSrVOSNV3aa12XYW+9eHOb0HBSBmS
+         rWlnIBPHDv/ArvC/F+AeO4JEDnaKHow7rdfxYnQ+WIxlYUhSgNfHScUlaqktszkcpgub
+         b9qQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/lcDjUXmqCC8++TChfQPb2y1ThOaTsMZ60wPCLJmwfA=;
+        b=TW8qgTbJde4pxsTy5wNfdfDCq2n61HTaPlFzSvIVgL+z+2NGzpKoohYimXXWdQGjwh
+         F6CrGr9c+t/6JO7VXGBIdbIdvpeBo4jR0UQ74ORT6EoRrlgio99WeS2f8M96fFgsPpn/
+         a+mSj57jE3vdvv8jdVsYZqEkrAJxTiKdlPBVJdEC9T+6LoyZq7C78zB3eIaEq8QpUzY6
+         yQrMKthv3o/5gMTVfjyMbTOgp9hIfSPE5SMmH3jzdyIh0t/0KRSVtikcVkH/8VBbRBwj
+         KNUj1un/nBtZxe32kiyrdEsTDD++1T5wU2oxtaoFyuJmNJNjIKHjx1p8jo5Y7DSU5ISJ
+         aquw==
+X-Gm-Message-State: AOAM532vZzUy5kdcnrSNaIL8tAY8hDSUIkD9cP97yxQF23rRtlllXEWg
+        pQHMQA4Hvqbs1To/VUHlUeAwwM5+p7B6UUnYWUJjTw==
+X-Google-Smtp-Source: ABdhPJynvain3ZWlz4aA94WoEPTunkw2wiG3XQs99AhMQwYBKyshzz8EzX7dNVM3DYp4uTxzYm9Kdya3nbQHc43rVrs=
+X-Received: by 2002:a25:c64b:0:b0:649:11d:9db1 with SMTP id
+ k72-20020a25c64b000000b00649011d9db1mr20279333ybf.128.1651738024465; Thu, 05
+ May 2022 01:07:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 5 May 2022 13:36:51 +0530
+Message-ID: <CA+G9fYsKrM1EJULYU=te5k7i11yijpF29PWPgB6qNaxssF09cA@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/177] 5.15.38-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm LPG driver fails to probe unless PWM support is enabled so
-add the missing Kconfig dependency.
+On Wed, 4 May 2022 at 22:22, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.38 release.
+> There are 177 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 06 May 2022 15:25:19 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.38-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Fixes: 24e2d05d1b68 ("leds: Add driver for Qualcomm LPG")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/leds/rgb/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/drivers/leds/rgb/Kconfig b/drivers/leds/rgb/Kconfig
-index 5dd27ad80856..1e35433d061a 100644
---- a/drivers/leds/rgb/Kconfig
-+++ b/drivers/leds/rgb/Kconfig
-@@ -5,6 +5,7 @@ if LEDS_CLASS_MULTICOLOR
- config LEDS_QCOM_LPG
- 	tristate "LED support for Qualcomm LPG"
- 	depends on OF
-+	depends on PWM
- 	depends on SPMI
- 	help
- 	  This option enables support for the Light Pulse Generator found in a
--- 
-2.35.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.15.38-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.15.y
+* git commit: c8851235b4b74c00f49cc1cf05ab6f4a483e978e
+* git describe: v5.15.37-178-gc8851235b4b7
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.37-178-gc8851235b4b7
+
+## Test Regressions (compared to v5.15.37)
+No test regressions found.
+
+## Metric Regressions (compared to v5.15.37)
+No metric regressions found.
+
+## Test Fixes (compared to v5.15.37)
+No test fixes found.
+
+## Metric Fixes (compared to v5.15.37)
+No metric fixes found.
+
+## Test result summary
+total: 106754, pass: 90235, fail: 665, skip: 14702, xfail: 1152
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* i386: 39 total, 39 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
