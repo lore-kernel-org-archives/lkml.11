@@ -2,241 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC22C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382977AbiEESJJ (ORCPT
+        id S1382987AbiEESKA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
+        Thu, 5 May 2022 14:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382978AbiEESJC (ORCPT
+        with ESMTP id S1347541AbiEESJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:09:02 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195A326E1
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:05:22 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id s30so8975869ybi.8
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:05:22 -0700 (PDT)
+        Thu, 5 May 2022 14:09:58 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CC03A714
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:06:18 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id r9so4880576pjo.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:06:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lfs9ILt8sxsLN7d0CVj7IGkIjZk0ddULlJ98hbLjdl0=;
-        b=Ndgpe6IFiFofWceJK8I/DTEcQWT+/sHZsEWM1fYblnv9x81eSyj1R7FuXA8ILnq7mL
-         MirG8+CssXftrYGqNJ4vf1ERQtOm6a4Nq9IPOlrkw8GYT4MTbR51+m8zuOlLdoGmwuqT
-         LCH7motTy7WzByAkTNq0edQigKWkmNqayX293USnIaJr7BJOSxH8GmifZMRZNAE+kkk2
-         zWArlAg0ixMHNJJTifGAlU5k07E2zrU6JttPU9X300dt1NgXtfBycBtCfouCZIPcZCWE
-         LiBSab1rlgeKcaxikFZxkwfIaXNH19dfTS2sMDmjcRpqtla1OP0W8r34tKP8eXHD/c2L
-         VqsA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=csa5Mj5E+ZKvHVZb+3IE/GuCgzkqVA+V6IRZnVKxYjQ=;
+        b=BDoPQjE5lYzOYbFxxPfMObdUUb96/hnlzMC2QQ3J9l8h+pnj7Akud0FVhawwEah6R2
+         NtYhsKmxx7l2g8bQrYlZ2iHixqIqRhvXrDqjQAAaDtErX4k1eQ2ccAFSuEa+2jVL7RR8
+         fDbSJ76yzER0JwcZVw7fzLN5KkV/V3hRa2RFgmuDBXgj9zdge/MdYmLaFFET1+dfTglS
+         I6T8gyYdDI58sHz0V9F6duONXsoeCNJy5+5CYd+vu++4guK+roeUCnxPyTOHRf32oq5w
+         NGT+/AXzUaKPKT5atnwbCpk19p5KUrGrn9vT6xwMtAX7ZJN21ZKSproidUMh93/oQg6o
+         Cxlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lfs9ILt8sxsLN7d0CVj7IGkIjZk0ddULlJ98hbLjdl0=;
-        b=hv/pfQzi/uc06m6BBwfRCeBe+95kiboHGv1dybE5vTeP0tdCkqiC5HpePZWHpeBoz9
-         sCGuBhyn3KKqRAKOQPEwXxU0RtF/+o74jdQZy6iqIYdh90Q7UxZSJYXTgbbdao+11RrI
-         YUqDlRYDXz/54BS2K/mjxmY87SZc8yFLGIgIEoMQBCV7Bdnisgn7E/2JMiITzeKk+QFW
-         7XmL8ScHlQrU5S4ZDka9GOP3Q2mqx5cyeQP0Yi26SsTNKwYTGV/VelPvy93OJibhK/TO
-         zMQz2ej4w33Jo7uwWHBd1QgoeDZAZxpUBHtpXIbAcx1nfaGTaOhwhIY721IJMe/rHUuA
-         OhIw==
-X-Gm-Message-State: AOAM530NUS4Epa0puwyI0jHj/X6YpXYrGW4yB3E21FKTDIjqQXwIlzWd
-        YKpRw8DuG94rAGxy2bAJi0qBFaPq94QlRtIZIgeg/A==
-X-Google-Smtp-Source: ABdhPJxOGddy4d0Gcmj8AKq4eH0h4RCWeNm0um7E0xiCZcOB55dahtuyVvi1XSbZU3Ov8nWjJGuOmIU9Rx3UziGE6Uk=
-X-Received: by 2002:a25:aa62:0:b0:648:590f:5a53 with SMTP id
- s89-20020a25aa62000000b00648590f5a53mr23847856ybi.5.1651773921071; Thu, 05
- May 2022 11:05:21 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=csa5Mj5E+ZKvHVZb+3IE/GuCgzkqVA+V6IRZnVKxYjQ=;
+        b=mtdksHsk21aSHelm0xuM9hgVvqlzKhlaDrUaHl6+LL2AaRFEwt2dhPDbEkvKQxxv5V
+         0HO0DySO/HMe/10Cs0Dv4cLeWGbGiU56tg3Q3Z3wMUQJFLr44MQKTpui3qLfx16+NveD
+         MMwAuaL4gOB7RhY6gU2Y+A7qMmh9G905eH2Jm3KCAyNzotzhJEj4qpEUJaScOVSrgrxw
+         Nr3naISi6i+2TbJ9taQuLZT4YRJHegCfNIw6ObBFPx/bgTrI+0XNE+8FmDBgeHsPIdEZ
+         mVPYQTlj2TdhJEBt6/qonHxdm+QWDkj+eGRA32J0VGrEmhCZTY1Hremo/uJvokILU33F
+         +TFw==
+X-Gm-Message-State: AOAM5319clPs3P5VhiD8eJjm6wQG6ytQnM5G+WRqU4yuLxjZTtN2bvcu
+        XvkGZkdi3oRVTQ8aUhIXNgNLGw==
+X-Google-Smtp-Source: ABdhPJwNktaPZjslvuxXyp8B21Tg5wZCqPH78HxSFnAeo0EZwJhjpESx7WUTNVNgOEdA6HqZWY1BZg==
+X-Received: by 2002:a17:90b:4a4e:b0:1dc:55ca:6f33 with SMTP id lb14-20020a17090b4a4e00b001dc55ca6f33mr7653761pjb.4.1651773978039;
+        Thu, 05 May 2022 11:06:18 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id d133-20020a621d8b000000b0050dc7628196sm1671225pfd.112.2022.05.05.11.06.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 11:06:17 -0700 (PDT)
+Date:   Thu, 5 May 2022 18:06:14 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH v7 05/11] KVM: selftests: Read binary stat data in lib
+Message-ID: <YnQSFmNArNUMs9/U@google.com>
+References: <20220503183045.978509-1-bgardon@google.com>
+ <20220503183045.978509-6-bgardon@google.com>
 MIME-Version: 1.0
-References: <20220426164315.625149-1-glider@google.com> <20220426164315.625149-29-glider@google.com>
- <87a6c6y7mg.ffs@tglx> <CAG_fn=U7PPBmmkgxFcWFQUCqZitzMizr1e69D9f26sGGzeitLQ@mail.gmail.com>
- <87y1zjlhmj.ffs@tglx>
-In-Reply-To: <87y1zjlhmj.ffs@tglx>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Thu, 5 May 2022 20:04:44 +0200
-Message-ID: <CAG_fn=XxAhBEBP2KJvahinbaxLAd1xvqTfRJdAu1Tk5r8=01jw@mail.gmail.com>
-Subject: Re: [PATCH v3 28/46] kmsan: entry: handle register passing from
- uninstrumented code
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503183045.978509-6-bgardon@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 3, 2022 at 12:00 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> Alexander,
+On Tue, May 03, 2022, Ben Gardon wrote:
+> Move the code to read the binary stats data to the KVM selftests
+> library. It will be re-used by other tests to check KVM behavior.
+> 
+> Reviewed-by: David Matlack <dmatlack@google.com>
+> Reviewed-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Ben Gardon <bgardon@google.com>
+> ---
+>  .../selftests/kvm/include/kvm_util_base.h     |  3 ++
+>  .../selftests/kvm/kvm_binary_stats_test.c     |  7 ++--
+>  tools/testing/selftests/kvm/lib/kvm_util.c    | 36 +++++++++++++++++++
+>  3 files changed, 41 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+> index fabe46ddc1b2..2a3a4d9ed8e3 100644
+> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
+> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+> @@ -403,6 +403,9 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
+>  void read_stats_header(int stats_fd, struct kvm_stats_header *header);
+>  struct kvm_stats_desc *read_stats_desc(int stats_fd,
+>  				       struct kvm_stats_header *header);
+> +int read_stat_data(int stats_fd, struct kvm_stats_header *header,
+> +		   struct kvm_stats_desc *desc, uint64_t *data,
+> +		   ssize_t max_elements);
+>  
+>  uint32_t guest_get_vcpuid(void);
+>  
+> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+> index 8b31f8fc7e08..59677fae26e5 100644
+> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+> @@ -160,11 +160,8 @@ static void stats_test(int stats_fd)
+>  	size_data = 0;
+>  	for (i = 0; i < header.num_desc; ++i) {
+>  		pdesc = (void *)stats_desc + i * size_desc;
+> -		ret = pread(stats_fd, stats_data,
+> -				pdesc->size * sizeof(*stats_data),
+> -				header.data_offset + size_data);
+> -		TEST_ASSERT(ret == pdesc->size * sizeof(*stats_data),
+> -				"Read data of KVM stats: %s", pdesc->name);
+> +		read_stat_data(stats_fd, &header, pdesc, stats_data,
+> +			       pdesc->size);
+>  		size_data += pdesc->size * sizeof(*stats_data);
 
-First of all, thanks a lot for the comments, those are greatly appreciated!
-I tried to revert this patch and the previous one ("kmsan:
-instrumentation.h: add instrumentation_begin_with_regs()") and
-reimplement unpoisoning pt_regs without breaking into
-instrumentation_begin(), see below.
+Not your code, but updating size_data is pointless and confusing.  It's especially
+confusing as of this patch because it ignores the return read_stat_data().  I vote
+to opportunistically delete this code.
 
-> >
-> > Regarding the regs, you are right. It should be enough to unpoison the
-> > regs at idtentry prologue instead.
-> > I tried that initially, but IIRC it required patching each of the
-> > DEFINE_IDTENTRY_XXX macros, which already use instrumentation_begin().
->
-> Exactly 4 instances :)
->
+>  	}
+>  
+> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+> index 12fa8cc88043..ea4ab64e5997 100644
+> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
+> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+> @@ -2615,3 +2615,39 @@ struct kvm_stats_desc *read_stats_desc(int stats_fd,
+>  
+>  	return stats_desc;
+>  }
+> +
+> +/*
+> + * Read stat data for a particular stat
+> + *
+> + * Input Args:
+> + *   stats_fd - the file descriptor for the binary stats file from which to read
+> + *   header - the binary stats metadata header corresponding to the given FD
+> + *   desc - the binary stat metadata for the particular stat to be read
+> + *   max_elements - the maximum number of 8-byte values to read into data
+> + *
+> + * Output Args:
+> + *   data - the buffer into which stat data should be read
+> + *
+> + * Return:
+> + *   The number of data elements read into data or -ERRNO on error.
 
-Not really, I had to add a call to `kmsan_unpoison_memory(regs,
-sizeof(*regs));` to the following places in
-arch/x86/include/asm/idtentry.h:
-- DEFINE_IDTENTRY()
-- DEFINE_IDTENTRY_ERRORCODE()
-- DEFINE_IDTENTRY_RAW()
-- DEFINE_IDTENTRY_RAW_ERRORCODE()
-- DEFINE_IDTENTRY_IRQ()
-- DEFINE_IDTENTRY_SYSVEC()
-- DEFINE_IDTENTRY_SYSVEC_SIMPLE()
-- DEFINE_IDTENTRY_DF()
+This is a lie, it can never return -ERRNO.  Well, unless the caller is mean and
+passes in -EINVAL for max_elements I guess.
 
-, but even that wasn't enough. For some reason I also had to unpoison
-pt_regs directly in
-DEFINE_IDTENTRY_SYSVEC(sysvec_apic_timer_interrupt) and
-DEFINE_IDTENTRY_IRQ(common_interrupt).
-In the latter case, this could have been caused by
-asm_common_interrupt being entered from irq_entries_start(), but I am
-not sure what is so special about sysvec_apic_timer_interrupt().
+> + *
+> + * Read the data values of a specified stat from the binary stats interface.
+> + */
+> +int read_stat_data(int stats_fd, struct kvm_stats_header *header,
+> +		   struct kvm_stats_desc *desc, uint64_t *data,
+> +		   ssize_t max_elements)
 
-Ideally, it would be great to find that single point where pt_regs are
-set up before being passed to all IDT entries.
-I used to do that by inserting calls to kmsan_unpoison_memory right
-into arch/x86/entry/entry_64.S
-(https://github.com/google/kmsan/commit/3b0583f45f74f3a09f4c7e0e0588169cef9=
-18026),
-but that required storing/restoring all GP registers. Maybe there's a
-better way?
+Uber nit, @max_elements should be unsigned size_t, only the return from pread()
+is signed, the input is unsigned.
 
+> +{
+> +	ssize_t size = min_t(ssize_t, desc->size, max_elements);
 
->
-> then
->
->      instrumentation_begin();
->      foo(fargs...);
->      bar(bargs...);
->      instrumentation_end();
->
-> is a source of potential false positives because the state is not
-> guaranteed to be correct, neither for foo() nor for bar(), even if you
-> wipe the state in instrumentation_begin(), right?
+Not your fault (I blame struct kvm_stats_desc), but "nr_elements" would be far
+more appropriate than "size".  And that frees up "size" to be the actual size,
+which eliminates the division.
 
-Yes, this is right.
+> +	ssize_t ret;
+> +
+> +	ret = pread(stats_fd, data, size * sizeof(*data),
+> +		    header->data_offset + desc->offset);
+> +
+> +	/* ret from pread is in bytes. */
+> +	ret = ret / sizeof(*data);
+> +
+> +	TEST_ASSERT(ret == size,
+> +		    "Read data of KVM stats: %s", desc->name);
 
-> This approximation approach smells fishy and it's inevitably going to be
-> a constant source of 'add yet another kmsan annotation/fixup' patches,
-> which I'm not interested in at all.
->
-> As this needs compiler support anyway, then why not doing the obvious:
->
-> #define noinstr                                 \
->         .... __kmsan_conditional
->
-> #define instrumentation_begin()                 \
->         ..... __kmsan_cond_begin
->
-> #define instrumentation_end()                   \
->         __kmsan_cond_end .......
->
-> and let the compiler stick whatever is required into that code section
-> between instrumentation_begin() and instrumentation_end()?
+It'd be very helpful to print the expected vs. actual.
 
-We define noinstr as
-__attribute__((disable_sanitizer_instrumentation))
-(https://llvm.org/docs/LangRef.html#:~:text=3Ddisable_sanitizer_instrumenta=
-tion),
-which means no instrumentation will be applied to the annotated
-function.
-Changing that behavior by adding subregions that can be instrumented
-sounds questionable.
-C also doesn't have good syntactic means to define these subregions -
-perhaps some __xxx_begin()/__xxx_end() intrinsics would work, but they
-would require both compile-time and run-time validation.
+> +
+> +	return ret;
 
-Fortunately, I don't think we need to insert extra instrumentation
-into instrumentation_begin()/instrumentation_end() regions.
+Eww.  I really, really hate code that asserts on a value and then returns that
+same value.  E.g. looking at just the declaration of read_stat_data() and the
+change in stats_test(), I genuinely thought this patch dropped the assert.  The
+assert in vm_get_stat() also added to the confusion (I was reviewing that patch,
+not this one).
 
-What I have in mind is adding a bool flag to kmsan_context_state, that
-the instrumentation sets to true before the function call.
-When entering an instrumented function, KMSAN would check that flag
-and set it to false, so that the context state can be only used once.
-If a function is called from another instrumented function, the
-context state is properly set up, and there is nothing to worry about.
-If it is called from non-instrumented code (either noinstr or the
-skipped files that have KMSAN_SANITIZE:=3Dn), KMSAN would detect that
-and wipe the context state before use.
+Rather than return the number of entries read, just assert that the number of
+elements to be read is non-zero, then vm_get_stat() doesn't need to assert because
+it'll be impossible to read anything but one entry without asserting.
 
-By the way, I've noticed that at least for now (with pt_regs
-unpoisoning performed in IDT entries) the problem with false positives
-in noinstr code is entirely gone, so maybe we don't even have to
-bother.
+void read_stat_data(int stats_fd, struct kvm_stats_header *header,
+		    struct kvm_stats_desc *desc, uint64_t *data,
+		    size_t max_elements)
+{
+	size_t nr_elements = min_t(size_t, desc->size, max_elements);
+	size_t size = nr_elements * sizeof(*data);
+	ssize_t ret;
 
-> Yes, it's more work on the tooling side, but the tooling side is mostly
-> a one time effort while chasing the false positives is a long term
-> nightmare.
+	TEST_ASSERT(size, "No elements in stat '%s'", desc->name);
 
-Well said.
+	ret = pread(stats_fd, data, size, header->data_offset + desc->offset);
 
-> Thanks,
->
->         tglx
+	TEST_ASSERT(ret == size,
+		    "pread() failed on stat '%s', wanted %lu bytes, got %ld",
+		    desc->name, size, ret);
+}
 
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
-
-Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
-erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
-weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
-mich
-bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
-
-
-This e-mail is confidential. If you received this communication by
-mistake, please don't forward it to anyone else, please erase all
-copies and attachments, and please let me know that it has gone to the
-wrong person.
