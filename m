@@ -2,129 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4412C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A51F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345883AbiEEHtm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
+        id S234890AbiEEHts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 03:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234066AbiEEHtl (ORCPT
+        with ESMTP id S242799AbiEEHtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 03:49:41 -0400
-X-Greylist: delayed 341 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 00:46:02 PDT
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6C131D311
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:46:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651736761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NhRL0x5JxNjh9559awUlQzavmJp0VQ+2PFdUhFoZcIo=;
-        b=YE+E/wMfI2VAHzwS4wt9hBWFmSJMW6bOb5ymBor3H2Eh+YanaxSYowGJ86DyBQOJhbUGDJ
-        s5WBtXI7TmrIkg4YHRS4Me57SqZW+zdzySknhArvP3TWC4PguZqXQQH63bekkxr+BcARWS
-        CKWsRUbPYqCzAh0CZ7/v03NKWVbnqtc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-496-0JGUhcPYOGeqyfqyywo4kA-1; Thu, 05 May 2022 03:38:52 -0400
-X-MC-Unique: 0JGUhcPYOGeqyfqyywo4kA-1
-Received: by mail-wm1-f69.google.com with SMTP id o24-20020a05600c379800b003943412e81dso1418207wmr.6
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 00:38:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NhRL0x5JxNjh9559awUlQzavmJp0VQ+2PFdUhFoZcIo=;
-        b=qyxLnIAB3MTsJQzhp8zKUeNVK6kAmD6ChZv7zM6oqywB0vLi/ElFdhoqXKG0vgwYtf
-         uK8Aj2eQ+yAZlkFGCZgkF1d+Pf2Ak5agjHIA7hKGaYUw4T3XrK3al7z5J841mkCQMX+g
-         N3koTyBh+gQcCgbEKq0tkiEIQV+lj+jmDC9ghDWpRmP+D4I/TnPaGXm4/dIo6hwUhSfY
-         xdfVb1hUY1JlyJjLrpuxNsdSqccVBSk/zN6Qgs+GpSzaQvh0AqwRYwKzgkje2fA/2Qg+
-         OM0eIG+9HFdvK1TrLDTib9Np5mbP/vngBpbRFOoG6sOqS4NbaZ5/XKHiROGyG0kp4qJN
-         eIig==
-X-Gm-Message-State: AOAM530YshU6Tj/63bjdx0L1RI0tJWDapPvODPlf5LH+RuPkP+qDbBfQ
-        e5N+LyYDEZqbgdAK2DmKVA0M2ovak2JQxEe3/Ac2j4GG7IPP/pH6LpXyihz1TNLoLynlnlIVSjV
-        mQ57K+o53BpGhWxvmZLcyIMRV
-X-Received: by 2002:a5d:4585:0:b0:20a:da03:7131 with SMTP id p5-20020a5d4585000000b0020ada037131mr19047527wrq.693.1651736331459;
-        Thu, 05 May 2022 00:38:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwOiVrqfx6icK3c6hK4kQWSA8M7R4dWtYNn2w4VZryyBpTxL+R3XPp9/Z57KoRlU/8Sy+vNog==
-X-Received: by 2002:a5d:4585:0:b0:20a:da03:7131 with SMTP id p5-20020a5d4585000000b0020ada037131mr19047508wrq.693.1651736331173;
-        Thu, 05 May 2022 00:38:51 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id x8-20020a7bc768000000b003942a244f2fsm5546131wmk.8.2022.05.05.00.38.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 00:38:50 -0700 (PDT)
-Message-ID: <d9a5cb30-2d9b-50b5-d287-0ead0fe252f3@redhat.com>
-Date:   Thu, 5 May 2022 09:38:49 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 2/3] fbdev/simplefb: Cleanup fb_info in .fb_destroy rather
- than .remove
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-        Hans de Goede <hdegoede@redhat.com>
-References: <20220504215151.55082-1-javierm@redhat.com>
- <20220504215722.56970-1-javierm@redhat.com>
- <974f4d00-89bc-a2da-6d65-ca4207300794@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <974f4d00-89bc-a2da-6d65-ca4207300794@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D891D33C
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:46:00 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6FC4F200216;
+        Thu,  5 May 2022 09:45:59 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 385A1200215;
+        Thu,  5 May 2022 09:45:59 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AA0BB180031A;
+        Thu,  5 May 2022 15:45:57 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, s.hauer@pengutronix.de,
+        alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_micfil: fix the naming style for mask definition
+Date:   Thu,  5 May 2022 15:34:07 +0800
+Message-Id: <1651736047-28809-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Thomas,
+Remove the _SHIFT for the mask definition.
 
-On 5/5/22 09:29, Thomas Zimmermann wrote:
+Fixes: 17f2142bae4b ("ASoC: fsl_micfil: use GENMASK to define register bit fields")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_micfil.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-[snip]
-
->>   static void simplefb_destroy(struct fb_info *info)
->>   {
->>   	struct simplefb_par *par = info->par;
->> @@ -94,6 +98,8 @@ static void simplefb_destroy(struct fb_info *info)
->>   	if (info->screen_base)
->>   		iounmap(info->screen_base);
->>   
->> +	framebuffer_release(info);
->> +
->>   	if (mem)
->>   		release_mem_region(mem->start, resource_size(mem));
-> 
-> The original problem with fbdev hot-unplug was that vmwgfx needed the 
-> framebuffer region to be released. If we release it only after userspace 
-> closed it's final file descriptor, vmwgfx could have already failed.
-> 
-> I still don't fully get why this code apparently works or at least 
-> doesn't blow up occasionally. Any ideas?
->
-
-I believe that vmwgfx doesn't fail to probe (or any other DRM driver)
-only when there are not user-space processes with a fbdev node opened
-since otherwise as you said the memory wouldn't be released yet.
-
-unregister_framebuffer() is called from the driver's .remove handler
-and that decrement the fb_info refcount, so if reaches zero it will
-call to the fb fops .destroy() handler and release the I/O memory.
-
-In other words, in most cases (i.e: only fbcon bound to the fbdev)
-the driver's removal/ device unbind and the memory release will be
-at the same time.
-
+diff --git a/sound/soc/fsl/fsl_micfil.h b/sound/soc/fsl/fsl_micfil.h
+index 08901827047d..053caba3caf3 100644
+--- a/sound/soc/fsl/fsl_micfil.h
++++ b/sound/soc/fsl/fsl_micfil.h
+@@ -74,9 +74,9 @@
+ #define MICFIL_FIFO_STAT_FIFOX_UNDER(ch)	BIT((ch) + 8)
+ 
+ /* MICFIL HWVAD0 Control 1 Register -- REG_MICFIL_VAD0_CTRL1*/
+-#define MICFIL_VAD0_CTRL1_CHSEL_SHIFT	GENMASK(26, 24)
+-#define MICFIL_VAD0_CTRL1_CICOSR_SHIFT	GENMASK(19, 16)
+-#define MICFIL_VAD0_CTRL1_INITT_SHIFT	GENMASK(12, 8)
++#define MICFIL_VAD0_CTRL1_CHSEL		GENMASK(26, 24)
++#define MICFIL_VAD0_CTRL1_CICOSR	GENMASK(19, 16)
++#define MICFIL_VAD0_CTRL1_INITT		GENMASK(12, 8)
+ #define MICFIL_VAD0_CTRL1_ST10		BIT(4)
+ #define MICFIL_VAD0_CTRL1_ERIE		BIT(3)
+ #define MICFIL_VAD0_CTRL1_IE		BIT(2)
+@@ -106,7 +106,7 @@
+ 
+ /* MICFIL HWVAD0 Zero-Crossing Detector - REG_MICFIL_VAD0_ZCD */
+ #define MICFIL_VAD0_ZCD_ZCDTH		GENMASK(25, 16)
+-#define MICFIL_VAD0_ZCD_ZCDADJ_SHIFT	GENMASK(11, 8)
++#define MICFIL_VAD0_ZCD_ZCDADJ		GENMASK(11, 8)
+ #define MICFIL_VAD0_ZCD_ZCDAND		BIT(4)
+ #define MICFIL_VAD0_ZCD_ZCDAUT		BIT(2)
+ #define MICFIL_VAD0_ZCD_ZCDEN		BIT(0)
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.17.1
 
