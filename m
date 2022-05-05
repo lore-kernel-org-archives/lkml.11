@@ -2,92 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D35EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F17F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353533AbiEERGf (ORCPT
+        id S1382280AbiEERIV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
+        Thu, 5 May 2022 13:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238942AbiEERG2 (ORCPT
+        with ESMTP id S240110AbiEERIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:06:28 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB8B2AE;
-        Thu,  5 May 2022 10:02:48 -0700 (PDT)
+        Thu, 5 May 2022 13:08:18 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19ECF101C5
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:04:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651770168; x=1683306168;
-  h=from:to:cc:subject:date:message-id;
-  bh=iBIx4dif3zA1MnfTXgjhJYQX6/T/BHqzgCVF3qHd3U0=;
-  b=McnK0390HTkmOd2oeek/w5OFZspBIB6fjt0RaccWiAP9C/SOXT+8W4+l
-   o+CKlkKsXma5Ed0ge/vkabPbb6pCjnVRAwJt272MLDVi+DeFITv3EC+7o
-   58gSCr5EJ4Wa0Kwo8xCMR4Jfzl2ByxkcBryLyQ3msmJvynOdPDLR5INLe
-   79X62nxoUzg2QUHygZpqtN1P/g/3g/C2FU6EuJHvFzEL8df49kCjJKN3l
-   Xov7PgEVWV17JvaLRiBxx5tjOfPyNYGDlctuOTvs8x0Y5dwAmCjSQO82g
-   XZ2/tzAfuqtBqzdagWDjxDgW3E7LRl5LPFEhKp8NkgufZ72hPjxSdscHr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="354620448"
+  t=1651770279; x=1683306279;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ppnTDlnUiSAwVHOZZyIHx8ErJ3z/pXNJDcAfk/v+Bes=;
+  b=OHIlLlBBpXHmaGOyin5ENaP2MbcXy8jUjDe5CGbP7kMpDgMjh+wK/3O9
+   qgzOa6HWrXCGdS0Pre5kfWcRJA3XIDGNvkOju36+9w6AXB3lutplj8hzy
+   AkHvmBGjtsnHbBnAqiacIkbr7ATWXVK96jkvTVA8zcHUDv2JjmaDxUEka
+   milkU1/eQYwPRGGb6AnL1uw0T/cewNKxsVHD8apU1uk3EZ/4dhLLHZaXB
+   Ji3K0Qn3oS9GdG0Wt9jNR4DdVgG825m+L+in819QJ2UmdktWXlxruf9DD
+   dOrWvlBXQQWC6I2tuIDQ3dBgoCTw1xXheyni6R7xWN7DyFlG2Rup3xjiz
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248720967"
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="354620448"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:02:41 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="248720967"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:04:38 -0700
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="585442467"
-Received: from srpawnik.iind.intel.com ([10.99.123.68])
-  by orsmga008.jf.intel.com with ESMTP; 05 May 2022 10:02:39 -0700
-From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-To:     rafael@kernel.org, lenb@kernel.org,
-        srinivas.pandruvada@linux.intel.com, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     sumeet.r.pawnikar@intel.com
-Subject: [PATCH v2] ACPI: DPTF: Add support for high frequency impedance notification
-Date:   Thu,  5 May 2022 22:30:19 +0530
-Message-Id: <20220505170019.26047-1-sumeet.r.pawnikar@intel.com>
-X-Mailer: git-send-email 2.17.1
+   d="scan'208";a="694753447"
+Received: from evegaag-mobl1.amr.corp.intel.com (HELO [10.209.187.127]) ([10.209.187.127])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:04:35 -0700
+Message-ID: <0b501f18-a6b8-1d9b-e72a-ea6cb33720a2@intel.com>
+Date:   Thu, 5 May 2022 10:04:55 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 2/3] x86: Remove vendor checks from
+ prefer_mwait_c1_over_halt
+Content-Language: en-US
+To:     Wyes Karny <wyes.karny@amd.com>, linux-kernel@vger.kernel.org
+Cc:     Lewis.Carroll@amd.com, Mario.Limonciello@amd.com,
+        gautham.shenoy@amd.com, Ananth.Narayan@amd.com, bharata@amd.com,
+        len.brown@intel.com, x86@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, peterz@infradead.org, chang.seok.bae@intel.com,
+        keescook@chromium.org, metze@samba.org, zhengqi.arch@bytedance.com,
+        mark.rutland@arm.com, puwen@hygon.cn, rafael.j.wysocki@intel.com,
+        andrew.cooper3@citrix.com, jing2.liu@intel.com,
+        jmattson@google.com, pawan.kumar.gupta@linux.intel.com
+References: <20220505104856.452311-1-wyes.karny@amd.com>
+ <20220505110140.453184-1-wyes.karny@amd.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220505110140.453184-1-wyes.karny@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add high frequency impedance notification support under DPTF.
-This returns high frequency impedance value that can be obtained
-from battery fuel gauge whenever there is change over a threshold.
-Also, corrected the typo from IMPEDANCED_CHNGED to IMPEDANCE_CHANGED.
+On 5/5/22 04:01, Wyes Karny wrote:
+> -	if (c->x86_vendor != X86_VENDOR_INTEL)
+> +	/* MWAIT is not supported on this platform. Fallback to HALT */
+> +	if (!cpu_has(c, X86_FEATURE_MWAIT))
+> +		return 0;
+> +
+> +	/* Monitor has a bug. Fallback to HALT */
+> +	if (boot_cpu_has_bug(X86_BUG_MONITOR))
+>  		return 0;
+>  
+> -	if (!cpu_has(c, X86_FEATURE_MWAIT) || boot_cpu_has_bug(X86_BUG_MONITOR))
+> +	if (c->cpuid_level < CPUID_MWAIT_LEAF)
+>  		return 0;
 
-Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
----
-v1-->v2 : Addressed review comment recevied from Srinivas Pandruvada to add
-          corrected the spelling from IMPEDANCED_CHNGED to IMPEDANCE_CHANGED
-          under commit message. 
----
- drivers/acpi/dptf/dptf_power.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+First of all, thanks for all the detail in this new version of the patches!
 
-diff --git a/drivers/acpi/dptf/dptf_power.c b/drivers/acpi/dptf/dptf_power.c
-index dc1f52a5b3f4..2ef53ca88714 100644
---- a/drivers/acpi/dptf/dptf_power.c
-+++ b/drivers/acpi/dptf/dptf_power.c
-@@ -117,7 +117,7 @@ static const struct attribute_group dptf_battery_attribute_group = {
- #define POWER_STATE_CHANGED		0x81
- #define STEADY_STATE_POWER_CHANGED	0x83
- #define POWER_PROP_CHANGE_EVENT	0x84
--#define IMPEDANCED_CHNGED		0x85
-+#define IMPEDANCE_CHANGED		0x85
- #define VOLTAGE_CURRENT_CHANGED	0x86
- 
- static long long dptf_participant_type(acpi_handle handle)
-@@ -150,6 +150,9 @@ static void dptf_power_notify(acpi_handle handle, u32 event, void *data)
- 	case STEADY_STATE_POWER_CHANGED:
- 		attr = "max_steady_state_power_mw";
- 		break;
-+	case IMPEDANCE_CHANGED:
-+		attr = "high_freq_impedance_mohm";
-+		break;
- 	case VOLTAGE_CURRENT_CHANGED:
- 		attr = "no_load_voltage_mv";
- 		break;
--- 
-2.17.1
+In arch/x86/kernel/cpu/common.c, we have:
+
+cpuid_dependent_features[] = {
+        { X86_FEATURE_MWAIT,            0x00000005 },
+	...
+
+Shouldn't that clear X86_FEATURE_MWAIT on all systems without
+CPUID_MWAIT_LEAF?  That would make the c->cpuid_level check above
+unnecessary.
+
+> +	/*
+> +	 * If ECX doesn't have extended info about MWAIT,
+> +	 * don't need to check substates.
+> +	 */
+> +	if (!(ecx & CPUID5_ECX_EXTENSIONS_SUPPORTED))
+> +		return 1;
+
+Could you explain a bit more about this?  I don't know this CPUID leaf
+off the top of my head and the line after this is checking EDX.  It's
+not apparent from this comment why "!ECX_EXTENSIONS_SUPPORTED" means
+that MWAIT should be preferred.
+
+> +	/* Check, whether at least 1 MWAIT C1 substate is present */
+> +	return (edx & MWAIT_C1_SUBSTATE_MASK);
 
