@@ -2,230 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382039AbiEEQvo (ORCPT
+        id S1382063AbiEEQwq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
+        Thu, 5 May 2022 12:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiEEQvm (ORCPT
+        with ESMTP id S244049AbiEEQwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 12:51:42 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A4B443E0
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:48:00 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KvKPp01sFz9sSn;
-        Thu,  5 May 2022 18:47:58 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id cyhOmyycsWZl; Thu,  5 May 2022 18:47:57 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KvKPn66Xmz9sSk;
-        Thu,  5 May 2022 18:47:57 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C1D138B78C;
-        Thu,  5 May 2022 18:47:57 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id ZjXLIez351Rx; Thu,  5 May 2022 18:47:57 +0200 (CEST)
-Received: from [192.168.202.58] (unknown [192.168.202.58])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id F35A98B763;
-        Thu,  5 May 2022 18:47:56 +0200 (CEST)
-Message-ID: <c10a1d91-bf3e-a0d9-dd2b-05174eae6750@csgroup.eu>
-Date:   Thu, 5 May 2022 18:47:56 +0200
+        Thu, 5 May 2022 12:52:43 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D939157B14;
+        Thu,  5 May 2022 09:49:03 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:41442)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmeey-006uoh-6M; Thu, 05 May 2022 10:49:00 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37064 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmeex-0031MX-9y; Thu, 05 May 2022 10:48:59 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <20220504224058.476193-9-ebiederm@xmission.com>
+        <YnPIF9DvM9L0k+0U@linutronix.de>
+Date:   Thu, 05 May 2022 11:48:34 -0500
+In-Reply-To: <YnPIF9DvM9L0k+0U@linutronix.de> (Sebastian Andrzej Siewior's
+        message of "Thu, 5 May 2022 14:50:31 +0200")
+Message-ID: <87ee189b8d.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1 13/22] powerpc/ftrace: Use PPC_RAW_xxx() macros instead
- of opencoding.
-Content-Language: fr-FR
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <cover.1648131740.git.christophe.leroy@csgroup.eu>
- <bf3b854ca8f6f5abd29a7b2d9f74a7724fe35e33.1648131740.git.christophe.leroy@csgroup.eu>
- <1650267275.b63dsc56ds.naveen@linux.ibm.com>
- <4d338e24-7801-d17c-04a4-9afd2d7f9fd8@csgroup.eu>
-In-Reply-To: <4d338e24-7801-d17c-04a4-9afd2d7f9fd8@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nmeex-0031MX-9y;;;mid=<87ee189b8d.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1++Z+axhusfo6JndgThNVMSOQtg9/DxfAc=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v3 09/11] ptrace: Don't change __state
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
 
+> On 2022-05-04 17:40:56 [-0500], Eric W. Biederman wrote:
+>> Stop playing with tsk->__state to remove TASK_WAKEKILL while a ptrace
+>> command is executing.
+>> 
+>> Instead remove TASK_WAKEKILL from the definition of TASK_TRACED, and
+>> implemention a new jobctl flag TASK_PTRACE_FROZEN.  This new flag is
+> implement ?
 
-Le 04/05/2022 à 14:39, Christophe Leroy a écrit :
-> 
-> 
-> Le 18/04/2022 à 09:38, Naveen N. Rao a écrit :
->> Christophe Leroy wrote:
->>> PPC_RAW_xxx() macros are self explanatory and less error prone
->>> than open coding.
->>>
->>> Use them in ftrace.c
->>>
->>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
->>> ---
->>>   arch/powerpc/include/asm/ppc-opcode.h |  3 +++
->>>   arch/powerpc/kernel/trace/ftrace.c    | 32 +++++++++------------------
->>>   2 files changed, 14 insertions(+), 21 deletions(-)
->>>
->>> diff --git a/arch/powerpc/include/asm/ppc-opcode.h
->>> b/arch/powerpc/include/asm/ppc-opcode.h
->>> index 82f1f0041c6f..281754aca0a3 100644
->>> --- a/arch/powerpc/include/asm/ppc-opcode.h
->>> +++ b/arch/powerpc/include/asm/ppc-opcode.h
->>> @@ -294,6 +294,8 @@
->>>   #define PPC_INST_BL            0x48000001
->>>   #define PPC_INST_BRANCH_COND        0x40800000
->>>
->>> +#define PPC_INST_OFFSET24_MASK        0x03fffffc
->>
->> This corresponds to the LI field, per the ISA. See section 8.1.2/1.7:
->> 'Instruction Fields'. Would it be better to name it PPC_INST_LI_MASK?
-> 
-> Isn't there a risk of confusing with the 'li' instruction ? Like we
-> could have PPC_INST_LI just like we have PPC_INST_ADD ?
+Yes.  Thank you.
 
-I called it PPC_LI() and PPC_LI_MASK, similar to PPC_LO, PPC_HI etc ...
-
-> 
-> 
-> 
->>
->>> +
->>>   /* Prefixes */
->>>   #define PPC_INST_LFS            0xc0000000
->>>   #define PPC_INST_STFS            0xd0000000
->>> @@ -572,6 +574,7 @@
->>>   #define PPC_RAW_EIEIO()            (0x7c0006ac)
->>>
->>>   #define PPC_RAW_BRANCH(addr)        (PPC_INST_BRANCH | ((addr) &
->>> 0x03fffffc))
->>> +#define PPC_RAW_BL(offset)        (0x48000001 | ((offset) &
->>> PPC_INST_OFFSET24_MASK))
->>>
->>>   /* Deal with instructions that older assemblers aren't aware of */
->>>   #define    PPC_BCCTR_FLUSH        stringify_in_c(.long
->>> PPC_INST_BCCTR_FLUSH)
->>> diff --git a/arch/powerpc/kernel/trace/ftrace.c
->>> b/arch/powerpc/kernel/trace/ftrace.c
->>> index fdc0412c1d8a..afb1d12838c9 100644
->>> --- a/arch/powerpc/kernel/trace/ftrace.c
->>> +++ b/arch/powerpc/kernel/trace/ftrace.c
->>> @@ -90,19 +90,19 @@ static int test_24bit_addr(unsigned long ip,
->>> unsigned long addr)
->>>
->>>   static int is_bl_op(ppc_inst_t op)
->>>   {
->>> -    return (ppc_inst_val(op) & 0xfc000003) == 0x48000001;
->>> +    return (ppc_inst_val(op) & ~PPC_INST_OFFSET24_MASK) ==
->>> PPC_RAW_BL(0);
->>>   }
->>>
->>>   static int is_b_op(ppc_inst_t op)
->>>   {
->>> -    return (ppc_inst_val(op) & 0xfc000003) == 0x48000000;
->>> +    return (ppc_inst_val(op) & ~PPC_INST_OFFSET24_MASK) ==
->>> PPC_RAW_BRANCH(0);
->>>   }
->>>
->>>   static unsigned long find_bl_target(unsigned long ip, ppc_inst_t op)
->>>   {
->>>       int offset;
->>>
->>> -    offset = (ppc_inst_val(op) & 0x03fffffc);
->>> +    offset = (ppc_inst_val(op) & PPC_INST_OFFSET24_MASK);
->>>       /* make it signed */
->>>       if (offset & 0x02000000)
->>>           offset |= 0xfe000000;
->>> @@ -182,7 +182,7 @@ __ftrace_make_nop(struct module *mod,
->>>        * Use a b +8 to jump over the load.
->>>        */
->>>
->>> -    pop = ppc_inst(PPC_INST_BRANCH | 8);    /* b +8 */
->>> +    pop = ppc_inst(PPC_RAW_BRANCH(8));    /* b +8 */
->>>
->>>       /*
->>>        * Check what is in the next instruction. We can see ld
->>> r2,40(r1), but
->>> @@ -394,17 +394,8 @@ int ftrace_make_nop(struct module *mod,
->>>   static int
->>>   expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
->>>   {
->>> -    /*
->>> -     * We expect to see:
->>> -     *
->>> -     * b +8
->>> -     * ld r2,XX(r1)
->>> -     *
->>> -     * The load offset is different depending on the ABI. For simplicity
->>> -     * just mask it out when doing the compare.
->>> -     */
->>> -    if (!ppc_inst_equal(op0, ppc_inst(0x48000008)) ||
->>> -        (ppc_inst_val(op1) & 0xffff0000) != 0xe8410000)
->>> +    if (!ppc_inst_equal(op0, ppc_inst(PPC_RAW_BRANCH(8))) ||
->>> +        !ppc_inst_equal(op1, ppc_inst(PPC_INST_LD_TOC)))
->>
->> It would be good to move PPC_INST_LD_TOC to ppc-opcode.h
-> 
-> It's not really just an instruction, it's closely linked to the ABI, so
-> does it really belong to ppc-opcode.h ? Maybe it could be better to have
-> it in ppc_asm.h instead, which already contains ABI related definitions ?
-> 
-> If we move it into ppc-opcode.h, then we also have to move
-> R2_STACK_OFFSET. Or should we use STK_GOT defined in ppc_asm.h and drop
-> R2_STACK_OFFSET ?
-
-Looked at it in more details, looks like STK_GOT is an assembly only 
-symbol, and ppc_asm.h is dedicated to ASM allthough it has recently 
-leaked a bit into C.
-
-So I propose to leave it as is and do the change in a followup patch.
-
-
-> 
->>
->>>           return 0;
->>>       return 1;
->>>   }
->>> @@ -412,7 +403,6 @@ expected_nop_sequence(void *ip, ppc_inst_t op0,
->>> ppc_inst_t op1)
->>>   static int
->>>   expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
->>>   {
->>> -    /* look for patched "NOP" on ppc64 with -mprofile-kernel or ppc32 */
->>>       if (!ppc_inst_equal(op0, ppc_inst(PPC_RAW_NOP())))
->>>           return 0;
->>>       return 1;
->>> @@ -738,11 +728,11 @@ int __init ftrace_dyn_arch_init(void)
->>>       int i;
->>>       unsigned int *tramp[] = { ftrace_tramp_text, ftrace_tramp_init };
->>>       u32 stub_insns[] = {
->>> -        0xe98d0000 | PACATOC,    /* ld      r12,PACATOC(r13)    */
->>> -        0x3d8c0000,        /* addis   r12,r12,<high>    */
->>> -        0x398c0000,        /* addi    r12,r12,<low>    */
->>> -        0x7d8903a6,        /* mtctr   r12            */
->>> -        0x4e800420,        /* bctr                */
->>> +        PPC_RAW_LD(_R12, _R13, PACATOC),
->>> +        PPC_RAW_ADDIS(_R12, _R12, 0),
->>> +        PPC_RAW_ADDIS(_R12, _R12, 0),
->>
->> This should be PPC_RAW_ADDI.
->>
-> 
-> Oops.
-> 
-> Christophe
+Eric
