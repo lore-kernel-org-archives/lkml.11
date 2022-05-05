@@ -2,157 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88579C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0124BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350431AbiEEIvw (ORCPT
+        id S1350439AbiEEIw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
+        Thu, 5 May 2022 04:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350420AbiEEIvt (ORCPT
+        with ESMTP id S1350432AbiEEIwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:51:49 -0400
-X-Greylist: delayed 366 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 01:48:07 PDT
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BCEB34AE23
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:48:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651740423;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=W7LO8hebdbIw0WAuomKQFjBNareExAhRiWx3BsvsTNQ=;
-        b=PrGwLm8f98OJnzwfgH3DM5fOY+9onMk0PnH3r0G+rjUgwlblqwPKrPOq68varrYwAFZSyd
-        HSeXzmevRTf8ZQalUT4ND5faJ3HcvoCnrhV24sGKNatr7ZbpjJpJfiTWtZyojh5KPSeEBs
-        XW/9Srn66uurIeMispk/EoXQnnxsK6o=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-MNBhRzQAN7WcTtLfG-yMSg-1; Thu, 05 May 2022 04:40:51 -0400
-X-MC-Unique: MNBhRzQAN7WcTtLfG-yMSg-1
-Received: by mail-wm1-f72.google.com with SMTP id g14-20020a1c4e0e000000b0039425ef54d6so1473126wmh.9
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:40:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W7LO8hebdbIw0WAuomKQFjBNareExAhRiWx3BsvsTNQ=;
-        b=r+Sqhl6WqPO2jhZ9pc9A6TBFlDrJRs2ddKNPKkrniaa9kebCFw1kYZ/u+OhXVVwGbW
-         tLnA/xPDLnwY8nkanCOgp0nUH+c39C2XPtahbD63IWOC7EEhOrxAj8Ct3dd11WEX9VDG
-         USYo7zLM4MgV3liWqaR7s5gGePJPsGhxPLR6FXJa6+Sr0OdQ9snK5n/mcKoHClCP9uQt
-         nxkTYm6TnyVyArDm9cN5lzmJ1zlASWS/ArnJsuCVQ9K3WiEK5/sVMlzzFS336B61OpyV
-         Gf32Auz4HVNuLijOcsVDbjzcCqgKloPYmTQISEUQeDrqZ6eA7w1LiwgPrvFUZPR65fOP
-         KjkA==
-X-Gm-Message-State: AOAM532mLHmJpmuLI0rpK3kKUi8mtXA382MfLAeK3ZqSO7ZyyQ1/GRnc
-        yjjK03JpV9tm9o/Rykp1ChHFm/wNfq7hU/IyPXWvkNklqcGv+7Pm1ttpAa49Vu0RoPJu0reMznl
-        7YiO3AIF+AwvTz/nkpu1r5/EX
-X-Received: by 2002:a05:600c:19d2:b0:393:efff:7c26 with SMTP id u18-20020a05600c19d200b00393efff7c26mr3623073wmq.9.1651740050374;
-        Thu, 05 May 2022 01:40:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzcbG871wt8Ul5pXQZdb/CfKU/UNSFjxHuQCDKeSp3PMM+Po2SZi2INJ/W6uVagnsqlJsEQqA==
-X-Received: by 2002:a05:600c:19d2:b0:393:efff:7c26 with SMTP id u18-20020a05600c19d200b00393efff7c26mr3623056wmq.9.1651740050085;
-        Thu, 05 May 2022 01:40:50 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-85.retail.telecomitalia.it. [82.57.51.85])
-        by smtp.gmail.com with ESMTPSA id p20-20020a7bcc94000000b003942a244f38sm5584441wma.17.2022.05.05.01.40.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 01:40:49 -0700 (PDT)
-Date:   Thu, 5 May 2022 10:40:45 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: Re: [PATCH] vdpa_sim_blk: add support for VIRTIO_BLK_T_FLUSH
-Message-ID: <20220505084045.xdh3xwgfr2spp3fj@sgarzare-redhat>
-References: <20220428151242.213824-1-sgarzare@redhat.com>
- <CACGkMEv=0VWh_NxhvM+6_TRHEx0f2RGRWbR1n5RhKfq0a7xJUw@mail.gmail.com>
- <20220429071449.pycbkk2dvvxmtvay@sgarzare-redhat>
- <CACGkMEtRwRb_jUdCcdrx77=O4bnRGssQ5z_81KJi1hEKdbMcCQ@mail.gmail.com>
+        Thu, 5 May 2022 04:52:24 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F754AE2D;
+        Thu,  5 May 2022 01:48:40 -0700 (PDT)
+X-UUID: b6a27cbdd49b4151970748d245fa15a2-20220505
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:b0e02674-ab0d-40a7-ad44-6868b5f9cd64,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:6a14acb2-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: b6a27cbdd49b4151970748d245fa15a2-20220505
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1325095859; Thu, 05 May 2022 16:48:33 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 5 May 2022 16:48:32 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 5 May 2022 16:48:31 +0800
+Message-ID: <cbf2fcbae25408b95875278eb37e829bf4671430.camel@mediatek.com>
+Subject: Re: [PATCH 1/3] ASoC: dt-bindings: mediatek: mt8192: Add i2s-share
+ properties
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>,
+        "Mark Brown" <broonie@kernel.org>
+CC:     <kernel@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shane Chien <shane.chien@mediatek.com>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Thu, 5 May 2022 16:48:31 +0800
+In-Reply-To: <4826c824-40ce-5726-ed95-5be069233ca7@collabora.com>
+References: <20220429203039.2207848-1-nfraprado@collabora.com>
+         <20220429203039.2207848-2-nfraprado@collabora.com>
+         <4826c824-40ce-5726-ed95-5be069233ca7@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CACGkMEtRwRb_jUdCcdrx77=O4bnRGssQ5z_81KJi1hEKdbMcCQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 04:26:24PM +0800, Jason Wang wrote:
->On Fri, Apr 29, 2022 at 3:14 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>
->> On Fri, Apr 29, 2022 at 10:46:40AM +0800, Jason Wang wrote:
->> >On Thu, Apr 28, 2022 at 11:13 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->> >>
->> >> The simulator behaves like a ramdisk, so we don't have to do
->> >> anything when a VIRTIO_BLK_T_FLUSH request is received, but it
->> >> could be useful to test driver behavior.
->> >>
->> >> Let's expose the VIRTIO_BLK_F_FLUSH feature to inform the driver
->> >> that we support the flush command.
->> >>
->> >> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> >> ---
->> >>  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 12 ++++++++++++
->> >>  1 file changed, 12 insertions(+)
->> >>
->> >> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
->> >> index 42d401d43911..a6dd1233797c 100644
->> >> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
->> >> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
->> >> @@ -25,6 +25,7 @@
->> >>  #define DRV_LICENSE  "GPL v2"
->> >>
->> >>  #define VDPASIM_BLK_FEATURES   (VDPASIM_FEATURES | \
->> >> +                                (1ULL << VIRTIO_BLK_F_FLUSH)    | \
->> >>                                  (1ULL << VIRTIO_BLK_F_SIZE_MAX) | \
->> >>                                  (1ULL << VIRTIO_BLK_F_SEG_MAX)  | \
->> >>                                  (1ULL << VIRTIO_BLK_F_BLK_SIZE) | \
->> >> @@ -166,6 +167,17 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
->> >>                 pushed += bytes;
->> >>                 break;
->> >>
->> >> +       case VIRTIO_BLK_T_FLUSH:
->> >> +               if (sector != 0) {
->> >> +                       dev_err(&vdpasim->vdpa.dev,
->> >> +                               "A driver MUST set sector to 0 for a VIRTIO_BLK_T_FLUSH request - sector: 0x%llx\n",
->> >> +                               sector);
->> >
->> >If this is something that could be triggered by userspace/guest, then
->> >we should avoid this.
->>
->> It can only be triggered by an erratic driver.
->
->Right, so guest can try to DOS the host via this.
+On Thu, 2022-05-05 at 10:08 +0200, AngeloGioacchino Del Regno wrote:
+> Il 29/04/22 22:30, Nícolas F. R. A. Prado ha scritto:
+> > The Mediatek AFE PCM controller for MT8192 allows sharing of an I2S
+> > bus
+> > between two busses. Add a pattern for these properties in the
+> > dt-binding.
+> > 
+> > Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> > ---
+> > 
+> >   Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml | 5
+> > +++++
+> >   1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/sound/mt8192-afe-
+> > pcm.yaml b/Documentation/devicetree/bindings/sound/mt8192-afe-
+> > pcm.yaml
+> > index 7a25bc9b8060..5b03c8dbf318 100644
+> > --- a/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
+> > +++ b/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
+> > @@ -54,6 +54,11 @@ properties:
+> >         - const: aud_infra_clk
+> >         - const: aud_infra_26m_clk
+> >   
+> > +patternProperties:
+> > +  "^i2s[0-35-9]-share$":
+> > +    description: Name of the I2S bus that is shared with this bus
+> > +    pattern: "^I2S[0-35-9]$"
+> > +
+> >   required:
+> >     - compatible
+> >     - interrupts
+> > 
+> 
+> The only other way of doing this would be to complicate this in the
+> driver
+> so that we can do something like
+> 
+> "i2s-share = <0 2>";  instead of  i2s0-share = "I2S2";
+> 
+> ...and I don't think that this would be any more straightforward than
+> the
+> provided way.
+> 
+> There's an improvement that we can do to that pattern description
+> though,
+> which would be explaining that declaring 'i2s0-share = "I2S2"' means
+> that
+> I2S2's data pin will be used as DATA-OUT, while i2s0 is DATA-IN.
+> 
+> Another thing that comes to mind here is that this is a MediaTek
+> specific
+> property and *not* a generic one, which means that both the driver
+> and
+> this binding should be fixed to get a "mediatek," prefix, so, this
+> property
+> should - in reality - be "mediatek,i2s[0-35-9]-share" instead.
+> 
+> I think that everyone agrees about that, but let's see what the
+> others say.
+> 
+> Cheers,
+> Angelo
 
-Yes, but I don't expect the simulator to be used in the real world, but 
-only for testing and development, so the user should have full control 
-of the guest.
+Hi Angelo,
 
->
->>
->> I was using the simulator to test a virtio-blk driver that I'm writing
->> in userspace and I forgot to set `sector` to zero, so I thought it would
->> be useful.
->>
->> Do you mean to remove the error message?
->
->Some like dev_warn_once() might be better here.
+'i2s0-share = "I2S2"' means that if we want use I2S0, there need open
+I2S2 to provide clock. Conversely, if we want to use I2S2, we don't
+need to open I2S0. However, MediaTek I2S0 and I2S2 hardware are
+generally designed as input. So usually we use 'i2s0-share = "I2S1"'.
+Even numbers represent input, odd numbers represent output.
 
-We also have other checks we do for each request (in and out header 
-length, etc.) where we use dev_err(), should we change those too?
+Yes, I think adding the "mediatek," prefix is the right way to define a
+non-generic property.
 
-I don't know, from a developer's point of view I'd prefer to have them 
-all printed, but actually if we have a totally wrong driver in the 
-guest, we risk to hang our host to print an infinite number of messages.
-
-Maybe we should change all the errors in the data path to 
-dev_warn_once() and keep returning VIRTIO_BLK_S_IOERR to the guest which 
-will surely get angry and print something.
-
-If you agree, I'll send a patch to change all the printing and then 
-repost this with your suggestion as well.
-
-Thanks,
-Stefano
+Best Regards,
+Jiaxin Yu
 
