@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbiEEJY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34232 "EHLO
+        id S235552AbiEEJZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 05:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352820AbiEEJX4 (ORCPT
+        with ESMTP id S1352795AbiEEJXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:23:56 -0400
+        Thu, 5 May 2022 05:23:51 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688684E396;
-        Thu,  5 May 2022 02:20:12 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kv7Sj2Zj8zfYxw;
-        Thu,  5 May 2022 17:19:49 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB47D4DF79;
+        Thu,  5 May 2022 02:20:10 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kv7Rr34BCzfbG9;
+        Thu,  5 May 2022 17:19:04 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 17:20:11 +0800
+ 15.1.2375.24; Thu, 5 May 2022 17:20:09 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 17:20:10 +0800
+ 15.1.2375.24; Thu, 5 May 2022 17:20:07 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -48,9 +48,9 @@ CC:     Zhen Lei <thunder.leizhen@huawei.com>,
         Chen Zhou <dingguo.cz@antgroup.com>,
         "John Donnelly" <John.p.donnelly@oracle.com>,
         Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH v23 3/6] arm64: kdump: Reimplement crashkernel=X
-Date:   Thu, 5 May 2022 17:18:42 +0800
-Message-ID: <20220505091845.167-4-thunder.leizhen@huawei.com>
+Subject: [PATCH v23 1/6] kdump: return -ENOENT if required cmdline option does not exist
+Date:   Thu, 5 May 2022 17:18:40 +0800
+Message-ID: <20220505091845.167-2-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220505091845.167-1-thunder.leizhen@huawei.com>
 References: <20220505091845.167-1-thunder.leizhen@huawei.com>
@@ -65,180 +65,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhou <chenzhou10@huawei.com>
+According to the current crashkernel=Y,low support in other ARCHes, it's
+an optional command-line option. When it doesn't exist, kernel will try
+to allocate minimum required memory below 4G automatically.
 
-There are following issues in arm64 kdump:
-1. We use crashkernel=X to reserve crashkernel in DMA zone, which
-will fail when there is not enough low memory.
-2. If reserving crashkernel above DMA zone, in this case, crash dump
-kernel will fail to boot because there is no low memory available
-for allocation.
+However, __parse_crashkernel() returns '-EINVAL' for all error cases. It
+can't distinguish the nonexistent option from invalid option.
 
-To solve these issues, introduce crashkernel=X,[high,low].
-The "crashkernel=X,high" is used to select a region above DMA zone, and
-the "crashkernel=Y,low" is used to allocate specified size low memory.
+Change __parse_crashkernel() to return '-ENOENT' for the nonexistent option
+case. With this change, crashkernel,low memory will take the default
+value if crashkernel=,low is not specified; while crashkernel reservation
+will fail and bail out if an invalid option is specified.
 
-Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-Co-developed-by: Zhen Lei <thunder.leizhen@huawei.com>
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Acked-by: Baoquan He <bhe@redhat.com>
 ---
- arch/arm64/kernel/machine_kexec.c      |  9 +++-
- arch/arm64/kernel/machine_kexec_file.c | 12 ++++-
- arch/arm64/mm/init.c                   | 62 +++++++++++++++++++++++---
- 3 files changed, 72 insertions(+), 11 deletions(-)
+ kernel/crash_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm64/kernel/machine_kexec.c b/arch/arm64/kernel/machine_kexec.c
-index e16b248699d5c3c..19c2d487cb08feb 100644
---- a/arch/arm64/kernel/machine_kexec.c
-+++ b/arch/arm64/kernel/machine_kexec.c
-@@ -329,8 +329,13 @@ bool crash_is_nosave(unsigned long pfn)
+diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+index 256cf6db573cd09..4d57c03714f4e13 100644
+--- a/kernel/crash_core.c
++++ b/kernel/crash_core.c
+@@ -243,9 +243,8 @@ static int __init __parse_crashkernel(char *cmdline,
+ 	*crash_base = 0;
  
- 	/* in reserved memory? */
- 	addr = __pfn_to_phys(pfn);
--	if ((addr < crashk_res.start) || (crashk_res.end < addr))
--		return false;
-+	if ((addr < crashk_res.start) || (crashk_res.end < addr)) {
-+		if (!crashk_low_res.end)
-+			return false;
-+
-+		if ((addr < crashk_low_res.start) || (crashk_low_res.end < addr))
-+			return false;
-+	}
+ 	ck_cmdline = get_last_crashkernel(cmdline, name, suffix);
+-
+ 	if (!ck_cmdline)
+-		return -EINVAL;
++		return -ENOENT;
  
- 	if (!kexec_crash_image)
- 		return true;
-diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
-index 59c648d51848886..889951291cc0f9c 100644
---- a/arch/arm64/kernel/machine_kexec_file.c
-+++ b/arch/arm64/kernel/machine_kexec_file.c
-@@ -65,10 +65,18 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+ 	ck_cmdline += strlen(name);
  
- 	/* Exclude crashkernel region */
- 	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
-+	if (ret)
-+		goto out;
-+
-+	if (crashk_low_res.end) {
-+		ret = crash_exclude_mem_range(cmem, crashk_low_res.start, crashk_low_res.end);
-+		if (ret)
-+			goto out;
-+	}
- 
--	if (!ret)
--		ret =  crash_prepare_elf64_headers(cmem, true, addr, sz);
-+	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
- 
-+out:
- 	kfree(cmem);
- 	return ret;
- }
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 51863f1448c6989..11406f3e1443168 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -90,6 +90,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
- phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- #endif
- 
-+/* Current arm64 boot protocol requires 2MB alignment */
-+#define CRASH_ALIGN			SZ_2M
-+
-+#define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
-+#define CRASH_ADDR_HIGH_MAX		memblock.current_limit
-+
-+static int __init reserve_crashkernel_low(unsigned long long low_size)
-+{
-+	unsigned long long low_base;
-+
-+	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
-+	if (!low_base) {
-+		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
-+		return -ENOMEM;
-+	}
-+
-+	pr_info("crashkernel low memory reserved: 0x%08llx - 0x%08llx (%lld MB)\n",
-+		low_base, low_base + low_size, low_size >> 20);
-+
-+	crashk_low_res.start = low_base;
-+	crashk_low_res.end   = low_base + low_size - 1;
-+	insert_resource(&iomem_resource, &crashk_low_res);
-+
-+	return 0;
-+}
-+
- /*
-  * reserve_crashkernel() - reserves memory for crash kernel
-  *
-@@ -100,17 +126,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- static void __init reserve_crashkernel(void)
- {
- 	unsigned long long crash_base, crash_size;
--	unsigned long long crash_max = arm64_dma_phys_limit;
-+	unsigned long long crash_low_size = 0;
-+	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
-+	char *cmdline = boot_command_line;
- 	int ret;
- 
- 	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
- 		return;
- 
--	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
-+	/* crashkernel=X[@offset] */
-+	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
- 				&crash_size, &crash_base);
--	/* no crashkernel= or invalid value specified */
--	if (ret || !crash_size)
--		return;
-+	if (ret || !crash_size) {
-+		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
-+		if (ret || !crash_size)
-+			return;
-+
-+		/*
-+		 * crashkernel=Y,low can be specified or not, but invalid value
-+		 * is not allowed.
-+		 */
-+		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
-+		if (ret && (ret != -ENOENT))
-+			return;
-+
-+		crash_max = CRASH_ADDR_HIGH_MAX;
-+	}
- 
- 	crash_size = PAGE_ALIGN(crash_size);
- 
-@@ -118,8 +159,7 @@ static void __init reserve_crashkernel(void)
- 	if (crash_base)
- 		crash_max = crash_base + crash_size;
- 
--	/* Current arm64 boot protocol requires 2MB alignment */
--	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
-+	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
- 					       crash_base, crash_max);
- 	if (!crash_base) {
- 		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
-@@ -127,6 +167,11 @@ static void __init reserve_crashkernel(void)
- 		return;
- 	}
- 
-+	if (crash_low_size && reserve_crashkernel_low(crash_low_size)) {
-+		memblock_phys_free(crash_base, crash_size);
-+		return;
-+	}
-+
- 	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
- 		crash_base, crash_base + crash_size, crash_size >> 20);
- 
-@@ -135,6 +180,9 @@ static void __init reserve_crashkernel(void)
- 	 * map. Inform kmemleak so that it won't try to access it.
- 	 */
- 	kmemleak_ignore_phys(crash_base);
-+	if (crashk_low_res.end)
-+		kmemleak_ignore_phys(crashk_low_res.start);
-+
- 	crashk_res.start = crash_base;
- 	crashk_res.end = crash_base + crash_size - 1;
- 	insert_resource(&iomem_resource, &crashk_res);
 -- 
 2.25.1
 
