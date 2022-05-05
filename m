@@ -2,151 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF548C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355833AbiEEM4g (ORCPT
+        id S1377812AbiEEM5I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        Thu, 5 May 2022 08:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236445AbiEEM4e (ORCPT
+        with ESMTP id S230176AbiEEM5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:56:34 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF7256216
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:52:51 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id bv19so8538882ejb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:52:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dMhPbH8YYksNDQWsYUNKHz6CMEzpio+MpfpxpHsuHBY=;
-        b=Q+F4YMFKbmp2KsE3LUay5GdA+juEREvkYz6rogZdVlySBdtrsWZokkOwvR/UIRqOuf
-         yWO64v1ha0Z1AqNjZsZtdxtJOE2l/Oz7sraJ1HMqAcocYPuyupTzDLhXt4k31YAymA9X
-         8rofUAYUyJM7LOh9REyEUWZxt9/v8D8wr/XDM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=dMhPbH8YYksNDQWsYUNKHz6CMEzpio+MpfpxpHsuHBY=;
-        b=V9bT9ARZpOcNy56TBb2CqinmFD1lGkixE4Nhu9fYw9wGXZfyshAAg4GvSvNFozAZ3D
-         cD7kg/fylea7xXTmwgqYyEdjKo0TRI91s4yLtAE5//cdxwT1wLbJG4N8u6zbWTs8DbEf
-         ZsFgZL8NEcb6+HL08HsqqIkGbOadsEfXU02/FfSP1+Cuu6JmRy8h4mzZX5XkRg2zhN6z
-         TB/WJuGcnMpOTqc4tGVli6UIuPQcPrtwa6G4cw2/Tvp2IKyyvhoSh7td/RGY3p/cCSj6
-         Wx9koQBdIePemRUoE4vRMX271SJt6CSJQlAwE3ou2RDn8WEihJO/yffQdAbcrz/FF4x6
-         k+Lg==
-X-Gm-Message-State: AOAM5301NgtmKNCT4iga9RPguI8EIBF3SxsYCBr4o5mvl5WZzoy1NurW
-        Hmicm3lyPd+XVzxhuOqoRpjE1g==
-X-Google-Smtp-Source: ABdhPJwn4NiXRceP/yXAlHkWOcazdmg0trdBH+p11tn6Cs2WzVeV2J0TUG+/2PB6a2r4UskM+PDLhw==
-X-Received: by 2002:a17:907:94c5:b0:6f4:6de1:399c with SMTP id dn5-20020a17090794c500b006f46de1399cmr16128031ejc.336.1651755169715;
-        Thu, 05 May 2022 05:52:49 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id l15-20020a17090612cf00b006f3ef214df9sm722670ejb.95.2022.05.05.05.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 05:52:48 -0700 (PDT)
-Date:   Thu, 5 May 2022 14:52:46 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH 2/3] fbdev/simplefb: Cleanup fb_info in .fb_destroy
- rather than .remove
-Message-ID: <YnPInuayAYQa1jmz@phenom.ffwll.local>
-Mail-Followup-To: Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Hans de Goede <hdegoede@redhat.com>
-References: <20220504215151.55082-1-javierm@redhat.com>
- <20220504215722.56970-1-javierm@redhat.com>
+        Thu, 5 May 2022 08:57:06 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4EEC527C5;
+        Thu,  5 May 2022 05:53:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A2D8F106F;
+        Thu,  5 May 2022 05:53:26 -0700 (PDT)
+Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.29.132])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 027A53F885;
+        Thu,  5 May 2022 05:53:24 -0700 (PDT)
+Date:   Thu, 5 May 2022 13:53:22 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        will Deacon <will@kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: Re: Should arm64 have a custom crash shutdown handler?
+Message-ID: <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
+References: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
+ <874k24igjf.wl-maz@kernel.org>
+ <92645c41-96fd-2755-552f-133675721a24@igalia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504215722.56970-1-javierm@redhat.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+In-Reply-To: <92645c41-96fd-2755-552f-133675721a24@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 11:57:22PM +0200, Javier Martinez Canillas wrote:
-> The driver is calling framebuffer_release() in its .remove callback, but
-> this will cause the struct fb_info to be freed too early. Since it could
-> be that a reference is still hold to it if user-space opened the fbdev.
+On Thu, May 05, 2022 at 09:44:25AM -0300, Guilherme G. Piccoli wrote:
+> On 05/05/2022 04:29, Marc Zyngier wrote:
+> > [...]
+> > Not having any 'machine_ops' indirection was a conscious decision on
+> > arm64, if only to avoid the nightmare that 32bit was at a time with
+> > every single platform doing their own stuff. Introducing them would
+> > not be an improvement, but simply the admission that hypervisors are
+> > simply too broken for words. And I don't buy the "but x86 has it!"
+> > argument. x86 is a nightmare of PV mess that we can happily ignore,
+> > because we don't do PV for core operations at all.
+> > 
+> > If something has to be done to quiesce the system, it probably is
+> > related to the system topology, and must be linked to it. We already
+> > have these requirements in order to correctly stop ongoing DMA, shut
+> > down IOMMUs, and other similar stuff. What other requirements does
+> > your favourite hypervisor have?
+> > 
 > 
-> This would lead to a use-after-free error if the framebuffer device was
-> unregistered but later a user-space process tries to close the fbdev fd.
+> Thanks Marc and Mark for the details. I agree with most part of it, and
+> in fact panic notifiers was the trigger for this discussion (and they
+> are in fact used for this purpose to some extent in Hyper-V).
 > 
-> The correct thing to do is to only unregister the framebuffer in the
-> driver's .remove callback, but do any cleanup in the fb_ops.fb_destroy.
+> The idea of having this custom handler from kexec comes from Hyper-V
+> discussion - I feel it's better to show the code, so please take a look
+> at functions: hv_machine_crash_shutdown()
+> [arch/x86/kernel/cpu/mshyperv.c] and the one called from there,
+> hv_crash_handler() [drivers/hv/vmbus_drv.c].
 > 
-> Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> These routines perform last minute clean-ups, right before kdump/kexec
+> happens, but *after* the panic notifiers. It seems there is no way to
+> accomplish that without architecture involvement or core kexec code
+> pollution heh
 
-I think this should have a Fixes: line for the patch from Thomas which
-changed the remove_conflicting_fb code:
+Looking at those, the cleanup work is all arch-specific. What exactly would we
+need to do on arm64, and why does it need to happen at that point specifically?
+On arm64 we don't expect as much paravirtualization as on x86, so it's not
+clear to me whether we need anything at all.
 
-27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
+> Anyway, the idea here was to gather a feedback on how "receptive" arm64
+> community would be to allow such customization, appreciated your feedback =)
 
-I think we should also mention that strictly speaking the code flow is now
-wrong, because hw cleanup (like iounmap) should be done from ->remove
-while sw cleanup (like calling framebuffer_release()) is the only thing
-that should be done from ->fb_destroy. But the current code matches what
-was happening before 27599aacbaef so more minimal "fix"
+... and are you trying to do this for Hyper-V or just using that as an example?
 
-With those details added Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+I think we're not going to be very receptive without a more concrete example of
+what you want.
 
-Same for the next patch.
--Daniel
+What exactly do *you* need, and *why*? Is that for Hyper-V or another hypervisor?
 
-> ---
-> 
->  drivers/video/fbdev/simplefb.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-> index 94fc9c6d0411..2c198561c338 100644
-> --- a/drivers/video/fbdev/simplefb.c
-> +++ b/drivers/video/fbdev/simplefb.c
-> @@ -84,6 +84,10 @@ struct simplefb_par {
->  static void simplefb_clocks_destroy(struct simplefb_par *par);
->  static void simplefb_regulators_destroy(struct simplefb_par *par);
->  
-> +/*
-> + * fb_ops.fb_destroy is called by the last put_fb_info() call at the end
-> + * of unregister_framebuffer() or fb_release(). Do any cleanup here.
-> + */
->  static void simplefb_destroy(struct fb_info *info)
->  {
->  	struct simplefb_par *par = info->par;
-> @@ -94,6 +98,8 @@ static void simplefb_destroy(struct fb_info *info)
->  	if (info->screen_base)
->  		iounmap(info->screen_base);
->  
-> +	framebuffer_release(info);
-> +
->  	if (mem)
->  		release_mem_region(mem->start, resource_size(mem));
->  }
-> @@ -545,8 +551,8 @@ static int simplefb_remove(struct platform_device *pdev)
->  {
->  	struct fb_info *info = platform_get_drvdata(pdev);
->  
-> +	/* simplefb_destroy takes care of info cleanup */
->  	unregister_framebuffer(info);
-> -	framebuffer_release(info);
->  
->  	return 0;
->  }
-> -- 
-> 2.35.1
-> 
-
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Thanks
+Mark.
