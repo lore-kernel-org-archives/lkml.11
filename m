@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 638FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377751AbiEEMv3 (ORCPT
+        id S1377763AbiEEMvu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
+        Thu, 5 May 2022 08:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377714AbiEEMv0 (ORCPT
+        with ESMTP id S1377741AbiEEMvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:51:26 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F78036E1A
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:47:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651754865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cuDyUYDu6BZPnXeqmhM9u+aCmDXHwJi7/poygMUZqow=;
-        b=UM019BJp6l/ffqt3f9CwyMqyjWt4dTOqCyQt0fkBe8HFe5iS5q8/FBYiDprjxTbC2rZcZL
-        UfVeXWUUkmLT4DOkcDiEMcuPult5hFdQ2W8CLo71IDrNXB7ZmQ3NiuU3hmFW994ca30vTC
-        Tags9r6mlr3X50Pj4qlliBNp6av/12M=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-96-HF2sks_wP4-jYUaY-7P1Cw-1; Thu, 05 May 2022 08:45:40 -0400
-X-MC-Unique: HF2sks_wP4-jYUaY-7P1Cw-1
-Received: by mail-wm1-f72.google.com with SMTP id p24-20020a1c5458000000b003945d2ffc6eso1662646wmi.5
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:45:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cuDyUYDu6BZPnXeqmhM9u+aCmDXHwJi7/poygMUZqow=;
-        b=6mwr7gUUTTqjgMS332Hgf4NJHbwLm8S6No9coFpdxopWzjiLWK3uMizwGuEUeLK1oE
-         8c8yp5mOdQwpfT6Y3914pit2LXo37E9BTRHeTVWgIXf2dM+Gvq7Zn+pMP5yg3F8AiaZQ
-         ZrUE0Qa5YLUiC1BS/t5OSxXvxd2XK8R7VjXLwMWbluin3uk6dnZ/FLqSIgjhI683YzVn
-         kq55UWRghpJZFJKFwzyxlJq7YjzrU0Ypgw5kSR8BeF1Pob5iMZEyr62P0Krt00b+txWt
-         a10HnbUBHLJUCRMpLnGpdHoOgOU21xMDb2aX+B5gSY8MOAfs/b+7m4dugzpScqhm1fJ4
-         I5lA==
-X-Gm-Message-State: AOAM532w+Z/0//B7zndT2MDnProfZ0pyNdqS73i31OfGZkWohfTnAlzk
-        TgLSYmwLxMzM33FhGRmiftMu7GJnyvZwJ8rgtoAQaw7dPKp4htNxRIAEvu/1iXgQsRcqAwoSLfA
-        LGTxUVBrdSbab4XpMp8++PxGqEMYW8iAPnh5zbGfThc/HnFhwvO5sA4BgHw9KhM1Fx9Lq/ARgi0
-        Y=
-X-Received: by 2002:a05:6000:1a88:b0:20c:6811:3176 with SMTP id f8-20020a0560001a8800b0020c68113176mr13613479wry.85.1651754729614;
-        Thu, 05 May 2022 05:45:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyyvRu5J1/J+IjfMUf7y1AXH1mXJgSjbJfnuViykTVSo8bNb5YhQEJEs4GMNdg8VZpzTMvG9w==
-X-Received: by 2002:a05:6000:1a88:b0:20c:6811:3176 with SMTP id f8-20020a0560001a8800b0020c68113176mr13613450wry.85.1651754729239;
-        Thu, 05 May 2022 05:45:29 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id g6-20020a056000118600b0020c5253d8d6sm1163859wrx.34.2022.05.05.05.45.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 05:45:28 -0700 (PDT)
-Message-ID: <47d3a7f6-24f9-7d54-48bf-09ab9e40e2de@redhat.com>
-Date:   Thu, 5 May 2022 14:45:27 +0200
+        Thu, 5 May 2022 08:51:40 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D3C5548D;
+        Thu,  5 May 2022 05:48:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=fbetl70oZ0vZnWSXLoFnWrsoXubOKY3J/3Z8Hk4eMTc=; b=Pi
+        jLlDfq5PMT7+/FemaIfSg0gNilq1mWd+aLdGJ+2W5IIhseYTdzr772Xw7+TE+SuiAfkmvoE6twUJS
+        7Dqx5T+iK7Dcb6VDabOQb+remyjJxUqyNQc+4bhwjfLyMo7GrIil1wYzTKtS5H580z4UGBnXJ3TCY
+        KnmhyMF4Cpj/+U4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmatb-001M5R-8O; Thu, 05 May 2022 14:47:51 +0200
+Date:   Thu, 5 May 2022 14:47:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiabing Wan <wanjiabing@vivo.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: Remove unnecessary comparison in
+ lan8814_handle_interrupt
+Message-ID: <YnPHdzegs33G4JJ8@lunn.ch>
+References: <20220505030217.1651422-1-wanjiabing@vivo.com>
+ <YnO/VGKVHfFJG7/7@lunn.ch>
+ <2ec61428-d9af-7712-b008-cf6b7e445aaa@vivo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 3/3] drm: Allow simpledrm to setup its emulated FB as
- firmware provided
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org
-References: <20220503071540.471667-1-javierm@redhat.com>
- <20220503071540.471667-4-javierm@redhat.com>
- <YnJcaaDcIsJKhSwQ@phenom.ffwll.local>
- <bfb03d40-a023-12a9-9554-1b6e6c474134@redhat.com>
- <YnO+8hZ0ozPaZUEj@phenom.ffwll.local>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YnO+8hZ0ozPaZUEj@phenom.ffwll.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2ec61428-d9af-7712-b008-cf6b7e445aaa@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Daniel,
-
-On 5/5/22 14:11, Daniel Vetter wrote:
-
-[snip]
-
->>
->> And while I agree with you that these midlayer flags are horrible, that is
->> what any other fbdev that makes use of a firmware-provided framebuffer set,
->> so simpledrm emulated fbdev shouldn't be the exception IMO.
+> Yes, I actually check the lanphy_read_page_reg and I notice 'data' is
+> declared
+> as a 'u32' variable. So I think the comparison is meaningless. But the
+> return type is int.
 > 
-> So we discussed this a pile more on irc, and at least my take is that
-> people who run simpledrm but want to combine that with fbdev drivers and
-> expect it to all work nicely we can probably ignore. At least until all
-> this sysfb stuff is nicely unified, and at that point we shouldn't need
-> special flags anymore.
+> 1960  static int lanphy_read_page_reg(struct phy_device *phydev, int page,
+> u32 addr)
+> 1961  {
+> 1962      u32 data;
+> 1963
+> 1964      phy_lock_mdio_bus(phydev);
+> 1965      __phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
+> 1966      __phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+> 1967      __phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
+> 1968              (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
+> 1969      data = __phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
+> 1970      phy_unlock_mdio_bus(phydev);
+> 1971
+> 1972      return data;
+> 1973  }
+> > 
+> > So the real problem here is, tsu_irq_status is defined as u16, when in
+> > fact it should be an int.
+> 
+> Should the 'data' in lanphy_read_page_reg be declared by 'int'?
 
-I'm OK with this take and happy to just drop this patch-set then. My worry
-was just that someone could complain that we broke their uncommon setup [0].
+Yes.
 
-[0]: https://xkcd.com/1172/.
+Another one of those learning over time. If you find a bug, look
+around and you will probably find the same bug in other places nearby.
 
--- 
-Best regards,
+This is actually a pretty common issue we have with Ethernet PHY
+drivers, the sign bit getting thrown away. Developers look at the
+datasheet and see 16 bit registers, and so use u16, and forget about
+the error code. Maybe somebody can write a coccicheck script looking
+for calls to and of the phy_read() variants and the result value is
+assigned to an unsigned int?
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+> Finally, I also find other variable, for example, 'u16 addr' in
+> lan8814_probe.
+> I think they all should be declared by 'int'.
 
+addr should never be used as a return type, so can never carry an
+error code. Also, PHYs only have 32 registers, so address is never
+greater than 0x1f. So this is O.K.
+
+	Andrew
