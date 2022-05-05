@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 054A1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25580C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384351AbiEES3N (ORCPT
+        id S1384367AbiEES3S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36398 "EHLO
+        Thu, 5 May 2022 14:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383176AbiEESTl (ORCPT
+        with ESMTP id S1383173AbiEESTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BDA15734;
-        Thu,  5 May 2022 11:15:50 -0700 (PDT)
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D682819C33;
+        Thu,  5 May 2022 11:15:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774551; x=1683310551;
+  t=1651774549; x=1683310549;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+4NUmFZ8LyOytDGfSFdAHw6TxIUqH8yTed5boLRoo/E=;
-  b=VM5gwPga+tnFGOfUBPsGK820V90Sy0MjuX/M3JaLZO265aE9O5LXfHnQ
-   G3/BYYYAkUZLcCanSCrVn62m+WHD1Y2rnZd35pbkXwPNpdRtpk19tYhpp
-   QxyktSGR0ngw7UXW55RBNA4iRqOvUvqHIiXe9Lt2kj+hf5mT1cQYfyOly
-   C0dMIwKqnQl4za3UOyHxhU/m3C6HW2GnwlUM+Fopi/1Q3cTxqYWz7Pr+4
-   7FX+IHymuJFLdsaMEa3C8G5V8PzeU1+nMMBhI6l3uno1uScjqvG6aJD9a
-   VfQkZ3be7d952MajL+nt7y+G9zEyWhppI813VABw0o6lDgHUO4qS2DTWD
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248741980"
+  bh=ApxzvG9f2c2buqwxf9g/IY+QsPLdO7qoBpdMaSG3x0c=;
+  b=kJYkWjbPjcQRcjLVIyMVwjS5dmLk3KGahqqYodr1btfC6P/0zZcHW3uL
+   Zkmup/WEH72NC9lSGJ45/B57m7+fTV0XRvZS98iB8Km3y4MLlZVzOXn/L
+   Q508/lo6/EBR1PeR2yLa7KMH3m5ZEvH61KkNU0IgABCmf3LGor6JGDI89
+   CJqqfBy1ufAVdLiaGn5q6jPxEeim0pVviZPVCQjXRwFZCBAplGYJ9LKHp
+   3b4y0/Yd8VRZTBWLHe9WhW92EsSr1PrZH7Crrwf6wVEiSb/MwbjpcD2mt
+   Qb0aDO9CLeLf8DCvdxmn+KeyxrnfHteuzIjM0Q4xghcwCmzdMFxt9IIjv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746251"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248741980"
+   d="scan'208";a="328746251"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:40 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083141"
+   d="scan'208";a="665083197"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:39 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 005/104] x86/virt/vmx/tdx: export platform_has_tdx
-Date:   Thu,  5 May 2022 11:13:59 -0700
-Message-Id: <78d9874f2c6b6006fd9ba4250ead6df064b6b82b.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 021/104] x86/cpu: Add helper functions to allocate/free TDX private host key id
+Date:   Thu,  5 May 2022 11:14:15 -0700
+Message-Id: <37cbab674de44e0563f81cbe147216a9031a1704.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,24 +58,99 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX KVM uses platform_has_tdx() via vmx_hardware_setup() to check if the
-platform supports TDX, concretely CPU SEAM mode, irrespective of TDX module
-is loaded or initialized.
+TDX private host key id is assigned to guest TD.  The memory controller
+encrypts guest TD memory with the assigned TDX private host key id (HIKD).
+Add helper functions to allocate/free TDX private host key id so that TDX
+KVM manage it.
+
+Also export the global TDX private host key id that is used to encrypt TDX
+module, its memory and some dynamic data (TDR).  When VMM releasing
+encrypted page to reuse it, the page needs to be flushed with the used host
+key id.  VMM needs the global TDX private host key id to flush such pages
+TDX module accesses with the global TDX private host key id.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/virt/vmx/tdx/tdx.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/include/asm/tdx.h  |  7 +++++++
+ arch/x86/virt/vmx/tdx/tdx.c | 33 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 39 insertions(+), 1 deletion(-)
 
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 3a4fb2844f66..7da43ed0e216 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -149,6 +149,10 @@ int tdx_detect(void);
+ int tdx_init(void);
+ bool platform_has_tdx(void);
+ const struct tdsysinfo_struct *tdx_get_sysinfo(void);
++u32 tdx_get_global_keyid(void);
++int tdx_keyid_alloc(void);
++void tdx_keyid_free(int keyid);
++
+ u64 __seamcall(u64 op, u64 rcx, u64 rdx, u64 r8, u64 r9,
+ 	       struct tdx_module_output *out);
+ #else
+@@ -159,6 +163,9 @@ static inline int tdx_init(void) { return -ENODEV; }
+ static inline bool platform_has_tdx(void) { return false; }
+ struct tdsysinfo_struct;
+ static inline const struct tdsysinfo_struct *tdx_get_sysinfo(void) { return NULL; }
++static inline u32 tdx_get_global_keyid(void) { return 0; };
++static inline int tdx_keyid_alloc(void) { return -EOPNOTSUPP; }
++static inline void tdx_keyid_free(int keyid) { }
+ #endif /* CONFIG_INTEL_TDX_HOST */
+ 
+ #endif /* !__ASSEMBLY__ */
 diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 8c49ca40b6ad..b6c82e64ad54 100644
+index 1ef22c445126..799a26e56f11 100644
 --- a/arch/x86/virt/vmx/tdx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -1715,3 +1715,4 @@ bool platform_has_tdx(void)
- {
- 	return seamrr_enabled() && tdx_keyid_sufficient();
+@@ -114,7 +114,13 @@ static int tdx_cmr_num;
+ static struct tdsysinfo_struct tdx_sysinfo;
+ 
+ /* TDX global KeyID to protect TDX metadata */
+-static u32 tdx_global_keyid;
++static u32 __read_mostly tdx_global_keyid;
++
++u32 tdx_get_global_keyid(void)
++{
++	return tdx_global_keyid;
++}
++EXPORT_SYMBOL_GPL(tdx_get_global_keyid);
+ 
+ static bool enable_tdx_host;
+ 
+@@ -191,6 +197,31 @@ static void detect_seam(struct cpuinfo_x86 *c)
+ 		detect_seam_ap(c);
  }
-+EXPORT_SYMBOL_GPL(platform_has_tdx);
+ 
++/* TDX KeyID pool */
++static DEFINE_IDA(tdx_keyid_pool);
++
++int tdx_keyid_alloc(void)
++{
++	if (WARN_ON_ONCE(!tdx_keyid_start || !tdx_keyid_num))
++		return -EINVAL;
++
++	/* The first keyID is reserved for the global key. */
++	return ida_alloc_range(&tdx_keyid_pool, tdx_keyid_start + 1,
++			       tdx_keyid_start + tdx_keyid_num - 1,
++			       GFP_KERNEL);
++}
++EXPORT_SYMBOL_GPL(tdx_keyid_alloc);
++
++void tdx_keyid_free(int keyid)
++{
++	/* keyid = 0 is reserved. */
++	if (!keyid || keyid <= 0)
++		return;
++
++	ida_free(&tdx_keyid_pool, keyid);
++}
++EXPORT_SYMBOL_GPL(tdx_keyid_free);
++
+ static void detect_tdx_keyids_bsp(struct cpuinfo_x86 *c)
+ {
+ 	u64 keyid_part;
 -- 
 2.25.1
 
