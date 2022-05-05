@@ -2,102 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E35FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A082AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbiEEBjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 21:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S235753AbiEEBlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 21:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiEEBjV (ORCPT
+        with ESMTP id S230176AbiEEBlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 21:39:21 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082696175;
-        Wed,  4 May 2022 18:35:43 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ktx8l599GzhYFq;
-        Thu,  5 May 2022 09:35:19 +0800 (CST)
-Received: from [10.67.110.173] (10.67.110.173) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+        Wed, 4 May 2022 21:41:18 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07269252BC
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 18:37:41 -0700 (PDT)
+Received: from kwepemi100026.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ktx8H5k8QzGp46;
+        Thu,  5 May 2022 09:34:55 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100026.china.huawei.com (7.221.188.60) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 09:35:41 +0800
-Message-ID: <1f40a55b-7489-5e87-3584-73e2b1948615@huawei.com>
-Date:   Thu, 5 May 2022 09:35:40 +0800
+ 15.1.2375.24; Thu, 5 May 2022 09:37:38 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 09:37:38 +0800
+Subject: Re: [PATCH V6 0/2] drivers/perf: hisi: Add driver for HNS3 PMU
+To:     <john.garry@huawei.com>, <will@kernel.org>, <mark.rutland@arm.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <f.fangjian@huawei.com>, <lipeng321@huawei.com>,
+        <shenjian15@huawei.com>
+References: <20220427121000.56026-1-huangguangbin2@huawei.com>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <e05b4ccc-f926-44f6-5c18-a78befdacef5@huawei.com>
+Date:   Thu, 5 May 2022 09:37:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 1/1] ima: remove the IMA_TEMPLATE Kconfig option
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, <linux-integrity@vger.kernel.org>
-CC:     <dmitry.kasatkin@gmail.com>, <roberto.sassu@huawei.com>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220407021619.146410-1-guozihua@huawei.com>
- <20220407021619.146410-2-guozihua@huawei.com>
- <fbc9cda8eacc0a701d7b336bf45ecb6dfd450be9.camel@linux.ibm.com>
-From:   "Guozihua (Scott)" <guozihua@huawei.com>
-In-Reply-To: <fbc9cda8eacc0a701d7b336bf45ecb6dfd450be9.camel@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <20220427121000.56026-1-huangguangbin2@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.173]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500024.china.huawei.com (7.185.36.203)
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/7 22:43, Mimi Zohar wrote:
-> On Thu, 2022-04-07 at 10:16 +0800, GUO Zihua wrote:
->> The original 'ima' measurement list template contains a hash, defined
->> as 20 bytes, and a null terminated pathname, limited to 255
->> characters.  Other measurement list templates permit both larger hashes
->> and longer pathnames.  When the "ima" template is configured as the
->> default, a new measurement list template (ima_template=) must be
->> specified before specifying a larger hash algorithm (ima_hash=) on the
->> boot command line.
->>
->> To avoid this boot command line ordering issue, remove the legacy "ima"
->> template configuration option, allowing it to still be specified on the
->> boot command line.
->>
->> The root cause of this issue is that during the processing of ima_hash,
->> we would try to check whether the hash algorithm is compatible with the
->> template. If the template is not set at the moment we do the check, we
->> check the algorithm against the configured default template. If the
->> default template is "ima", then we reject any hash algorithm other than
->> sha1 and md5.
->>
->> For example, if the compiled default template is "ima", and the default
->> algorithm is sha1 (which is the current default). In the cmdline, we put
->> in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
->> that ima starts with ima-ng as the template and sha256 as the hash
->> algorithm. However, during the processing of "ima_hash=",
->> "ima_template=" has not been processed yet, and hash_setup would check
->> the configured hash algorithm against the compiled default: ima, and
->> reject sha256. So at the end, the hash algorithm that is actually used
->> will be sha1.
->>
->> With template "ima" removed from the configured default, we ensure that
->> the default tempalte would at least be "ima-ng" which allows for
->> basically any hash algorithm.
->>
->> This change would not break the algorithm compatibility checks for IMA.
->>
->> Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
->> Signed-off-by: GUO Zihua <guozihua@huawei.com>
-> 
-> thanks,
-> 
-> Mimi
-> 
-> 
-> .
-
-Hi,
-
-Is this patch picked?
-
-Thanks
-GUO Zihua
+Gentle ping. Any comment or suggestion is appreciated. Thanks!
