@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9AF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345764AbiEEHqa (ORCPT
+        id S1345798AbiEEHrI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
+        Thu, 5 May 2022 03:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232294AbiEEHq2 (ORCPT
+        with ESMTP id S232294AbiEEHrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:46:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E975488A0;
-        Thu,  5 May 2022 00:42:49 -0700 (PDT)
+        Thu, 5 May 2022 03:47:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F678488A0;
+        Thu,  5 May 2022 00:43:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B62D5B80CF6;
-        Thu,  5 May 2022 07:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9576C385A4;
-        Thu,  5 May 2022 07:42:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C85B861D27;
+        Thu,  5 May 2022 07:43:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A510C385A8;
+        Thu,  5 May 2022 07:43:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651736566;
-        bh=6hUW2QEhlICqnm63mEBed3O8GGy+qF3cx5dBJWFHR7s=;
+        s=k20201202; t=1651736606;
+        bh=65e0k0/tBnHDd217HaOOR58aHTSWAo7J+jduc+rHQoo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bnuWyL1n3Vn+LWGSkAaHn6FG41/jM+MOL2th9LNpIdwZaDbwCXHda7Bu9Ku0lRGVs
-         Z4lIgY2B2MrY9d0KnCaJf1FGVN2buFnzeAnZxjjorjJbBzlaZPjMtXX4p5nRcTtkwh
-         K5yB5e0nrwoEmM1W3tYg9JXntv6ZNWuFRHFxbundTKHqSREN+hncomqjiDRB/GYnUA
-         qHHxpxcFJRQ3ZByjPCfY5YKO/r5zfjBPEKfQOEJz70eBe29eHoytu7kksGv1SXySJe
-         NjM4UoMAkE6k9XdChZa2GqNUCmGX3kWErP1YrI/knDK1whZzFq3Aqi/t2slxyTC/Cq
-         Bpg+mLNvTNd5w==
-Date:   Thu, 5 May 2022 15:42:40 +0800
+        b=jhcRkZwp05PMIzkZixYnWXPHiJiF6dkvHvGP9sGpL7uABgoSnVNITpSHTzgfwyuUM
+         eKgpmKhu/bL186tS6GUa1S0RmEwAZ9EZxmInesSlT/vsx+nOmrOYCtJySam58sthjK
+         uwcAP9VMq/1+JZd35WtxI3f6ulb5Ta6hrqTnMTLZf31XyCp80ezoIV5ojpX+h5qiCb
+         nZ9XoOseqGpdRzHoWQzYDoufwe2TkFgDWSW8IfSTTSoTavzo32FbMZoIzKTK2XGc3G
+         /P1a+iBIu8KTLYI4H8TNUy8mKPpFJmsuzzZehdnA/c9NqYKB3vdRnIbHOcE4vbqq6P
+         g64VuuKaE8sFA==
+Date:   Thu, 5 May 2022 15:43:13 +0800
 From:   Shawn Guo <shawnguo@kernel.org>
 To:     Tim Harvey <tharvey@gateworks.com>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -41,19 +41,22 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH] arm64: dts: imx8mm-venice-gw7902: add vdd_5p0 ADC channel
-Message-ID: <20220505074240.GB14615@dragon>
-References: <20220429161944.9403-1-tharvey@gateworks.com>
+Subject: Re: [PATCH] arm64: dts: imx8mm-venice-gw7901: remove unnecessary cpu
+ temp override
+Message-ID: <20220505074313.GC14615@dragon>
+References: <20220429162030.9636-1-tharvey@gateworks.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220429161944.9403-1-tharvey@gateworks.com>
+In-Reply-To: <20220429162030.9636-1-tharvey@gateworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 09:19:44AM -0700, Tim Harvey wrote:
-> Add missing vdd_5p0 ADC channel for the GW7902 boards.
+On Fri, Apr 29, 2022 at 09:20:30AM -0700, Tim Harvey wrote:
+> Remove the unnecessary cpu_alert0 and cpu_crit0 TMU node overrides as
+> these are added dynamically by boot firmware based on CPU temperature
+> grade.
 > 
 > Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 
