@@ -2,103 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD56C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381940AbiEEQ1r (ORCPT
+        id S1381950AbiEEQ3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 12:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49106 "EHLO
+        Thu, 5 May 2022 12:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234298AbiEEQ1p (ORCPT
+        with ESMTP id S234298AbiEEQ3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 12:27:45 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3CF5BE50
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:24:04 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2f7bb893309so54185887b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 09:24:04 -0700 (PDT)
+        Thu, 5 May 2022 12:29:20 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE1913D41
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:25:40 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id r9so4638195pjo.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 09:25:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=smRiEfnbDo26TwlBRyyocGS+bQqlFH9vecfF+kAEs0s=;
-        b=Qchh5LkpHNgVC4oS9Z3uWgrF0tIOlBwLOSM/ue3hd7CJxr3Xz29EiGWTzgXTX2LwGK
-         4uq7mH3isrmT1EXJizLeJvJFDf9LhlUWCoaapbPnape0t+PH8AJj+InrnhX20me7M3HY
-         0B22flgiAh5eU+2rzqiChpz1dG3nkkfcoA5K4izNjU7LnZI5qiNJ1bES9xbfWS0aiMLn
-         FMtUx1jWRGAWdwCFESrmwS5Fc8W+htfQnqj9NZBWJhEW4YYXh4B6Plfp1rs4wwS80kCy
-         61wjIvrcCLt+vJmaIMIapWofk3R5LsYlU1VYyQHWZBjyEYCrwX1AeAxL3OazAT1j/diq
-         aQ8g==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AMszwqVGUUkRlqT3bH9KZgvoJEDUJqYcdmFvwR43CTQ=;
+        b=nqkUAGbObnsBEq0E+RdFzEBv9xuAOfg+/oONK+DfcjkFJ+Lqbk1Lxsyuf4E2dI9W0p
+         wL4xpitBmfFa56MgN1186scmSSm3YB/7qrUEctUAW/Fk6aTk2AAkifz9WkeNpn+XaQUH
+         SdP5hM0JRdmsjkaCO7o5uz9TiBKRdlWD+/Djg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=smRiEfnbDo26TwlBRyyocGS+bQqlFH9vecfF+kAEs0s=;
-        b=SMY927Gml8Qj8hxc3or4gT0P09VqsrFrnEsOlUXv/by9ihlRcs8J6KeAMg9A4eqRV/
-         A4RXQ8xI5q1SxxwjUQgjygTaSkC4xAzpnH1OFremowY4gLUJYVisum29MhNlYf1yRMJ9
-         TLNrvYVWxIS2IjLWJAkTFV5rljEeWfvKPXC2vWdtZFZ3a3ePOpLxH++D1utYC57wEHzf
-         xnKtAdnEJXMd36yF6f1Hbq7NUdz91rYxV6NPwy4lijq/Aj1EMrNWXL6FMx2gr/jhmNV9
-         E6aPU07tmmcbrT5ir18ee8yvbMqzDWtlXtcP3osr/lcNUSrxvbc0G0cLLytnP473qo9p
-         LD+g==
-X-Gm-Message-State: AOAM531fh3ExLz65GQjdguZZ+0hVCVIPvq3Ra3FzGbHecxtARtwsOBHY
-        w4aX7Megp8Tf4X9ZpfRlFEEOrm9x4ZjUoNpk6ERstQ==
-X-Google-Smtp-Source: ABdhPJwBW6nLJQllaWjle33ZcjdAaJs8arGj4v4LRwbmOZTByqaTFnO79d1yMOwsSb1JbpmCL3d16OL6yDeASvHtlUs=
-X-Received: by 2002:a81:a93:0:b0:2f4:d65a:d44e with SMTP id
- 141-20020a810a93000000b002f4d65ad44emr23725228ywk.243.1651767843390; Thu, 05
- May 2022 09:24:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <20220429203644.2868448-10-samitolvanen@google.com> <YnPw+SiY9Ij/b7Yg@FVFF77S0Q05N.cambridge.arm.com>
-In-Reply-To: <YnPw+SiY9Ij/b7Yg@FVFF77S0Q05N.cambridge.arm.com>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Thu, 5 May 2022 09:23:27 -0700
-Message-ID: <CABCJKufjVAbSCcoQZzkemvkmMmwb6DoRYNPu3ADHGoRL_zFPtg@mail.gmail.com>
-Subject: Re: [RFC PATCH 09/21] arm64: Add CFI error handling
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AMszwqVGUUkRlqT3bH9KZgvoJEDUJqYcdmFvwR43CTQ=;
+        b=l+8kk/3jbUYdOEKWWAefkcTGkw9FJYlKPJ5iQi4NWpm2g2eqOT9d2uJKKv4TGWy6q7
+         vP+LS2RGXORQGlfc23M+zccJW7Vcfo+Y/PGNe+XVhtpjbW3OcAQQ7I+mHiA64+Why0SJ
+         7Ul5+CAC/p2tq+IQyOWrosk8BkjFKwHR2G9qSCebwwmmcf02jreltSKufePcxVuMJVCN
+         hU0gacJvb2dzqLfoCi3B+K40CeMXPjzOLV6tHFihvJ9y4ERewXY04KOFzfzTdNB3ttx0
+         gSM+cQ0BKY1Duo9WiBXyBT8sZj3TTzzmnp/ybXjS4P4W6fTkC4n4prXWJVI3HtxYFAs+
+         B7Tg==
+X-Gm-Message-State: AOAM532btAZMPl3LrDQ1Yn7WSLAigEYDxOajBa46TbBi/XRrs+EO6R/G
+        3tpU4iCYbQrKgtaI9zEMsK+0dw==
+X-Google-Smtp-Source: ABdhPJx6wPVrYHxsa68KRgQKpBYm+86c0ZSHTSAAubzPSZ9HEe2FvIzxPyT8mlJ1clOyQ1w2FcrXkQ==
+X-Received: by 2002:a17:903:2312:b0:15e:a6c8:a313 with SMTP id d18-20020a170903231200b0015ea6c8a313mr20672636plh.122.1651767940456;
+        Thu, 05 May 2022 09:25:40 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c23-20020a170902849700b0015e8d4eb287sm1749040plo.209.2022.05.05.09.25.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 09:25:40 -0700 (PDT)
+Date:   Thu, 5 May 2022 09:25:39 -0700
+From:   Kees Cook <keescook@chromium.org>
 To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: [kees:for-next/kspp 21/25] drivers/misc/lkdtm/stackleak.c:17:39:
+ error: call to undeclared function 'stackleak_task_low_bound'; ISO C99 and
+ later do not support implicit function declarations
+Message-ID: <202205050924.7D219E774@keescook>
+References: <202205050943.HDgeO9iV-lkp@intel.com>
+ <YnPG8dGulGqxMHt6@FVFF77S0Q05N.cambridge.arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnPG8dGulGqxMHt6@FVFF77S0Q05N.cambridge.arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 5, 2022 at 8:45 AM Mark Rutland <mark.rutland@arm.com> wrote:
-> It would be a bit nicer if we could encode the register index into the BRK
-> immediate, i.e. allocate a range of 32 immediates (or 31 given BLR XZR is
-> nonsensical), and have:
->
->         BRK #CFI_BRK_IMM + n
->
-> ... where `n` is the Xn index.
->
-> That way the kernel doesn't need to know the specific code sequence and
-> wouldn't have to decode the instruction to find the relevant register -- we
-> could determine that from the ESR alone. That would also avoid tying the
-> compiler into a specific code sequence, and would allow that to change.
->
-> Since the BRK immediate is 16 bits, we have enough space to also encode the
-> index of the wB register, which would allow the kernel's BRK handler to recover
-> and log the expected type value and the the value at the target of the branch
-> (that latter we can recover from xN, so we don't need wA to be encoded into the
-> immediate).
+On Thu, May 05, 2022 at 01:45:37PM +0100, Mark Rutland wrote:
+> Hi Kees,
+> 
+> I hadn't realised the LKDTM STACKLEAK test could be built with
+> CONFIG_STACKLEAK=n, and my rework of that depends upon helpers that only exist
+> when CONFIG_STACKLEAK=y.
+> 
+> IMO the test is nonsensical for CONFIG_STACKLEAK=n, and I reckon we should
+> either:
+> 
+> a) Not build the stackleak test at all when CONFIG_STACKLEAK=n
+> 
+> b) Have a small stub that just logs that CONFIG_STACKLEAK=n and the test is
+>    being skipped.
+> 
+> Do you have any preference between the two?
 
-Sure, sounds like a good idea.
+Since it's looking for a specific poison, it doesn't make sense to look
+for this property as magically appearing (where as this kind of thing
+sometimes exists for other tests: did the hypervisor block it instead of
+the kernel, etc)
 
-> ... does the compiler side of that sound possible?
+So, yeah, I'd wrap it in an ifdef with an else: XFAIL.
 
-Yes, this should be doable. I'll take a look and change this in the
-next version.
-
-Sami
+-- 
+Kees Cook
