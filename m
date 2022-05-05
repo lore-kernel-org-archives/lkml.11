@@ -2,137 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 01:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235112AbiEEBVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 21:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
+        id S235267AbiEEBYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 21:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiEEBVq (ORCPT
+        with ESMTP id S230176AbiEEBYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 21:21:46 -0400
-X-Greylist: delayed 306 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 18:18:08 PDT
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3ABD254F8C
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 18:18:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651713483;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hjXZjoXRwWi27O+yncPytNpTaOYs3QPDkObrlrwm7sg=;
-        b=afyM6DfHula07uikirOgZfUYYWoovBX3OZ3TV7UqgMZr1KjIMrYYkZVQLTLRedQKqv9apT
-        FVL9ZFkVSEAzQtQxGkkRVk1NdZycEStHP0YzvqSetuS4RBTj2hfHw2c8hnyoByzB0BGoDA
-        UTjitouSiriuiDJrsfx0muIfUSCahOo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-79-u3D2452pOgiHzviR_wT0RQ-1; Wed, 04 May 2022 21:11:50 -0400
-X-MC-Unique: u3D2452pOgiHzviR_wT0RQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 14EF485A5BC;
-        Thu,  5 May 2022 01:11:50 +0000 (UTC)
-Received: from [10.22.16.87] (unknown [10.22.16.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B7D5743E779;
-        Thu,  5 May 2022 01:11:49 +0000 (UTC)
-Message-ID: <cc3a8d8b-50fa-1058-554e-113eb96fba70@redhat.com>
-Date:   Wed, 4 May 2022 21:11:49 -0400
+        Wed, 4 May 2022 21:24:52 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653C1506DB
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 18:21:14 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KtwnK3MHbzGpTN;
+        Thu,  5 May 2022 09:18:29 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 09:21:12 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 09:21:11 +0800
+Message-ID: <83e5bbe7-0880-3534-897a-156a4d2b4451@huawei.com>
+Date:   Thu, 5 May 2022 09:21:11 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: Wait for mutex to become unlocked
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH -next v4 1/7] x86, powerpc: fix function define in
+ copy_mc_to_user
 Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+To:     Tong Tiangen <tongtiangen@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "James Morse" <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        linux-kernel@vger.kernel.org
-References: <YnLzrGlBNCmCPLmS@casper.infradead.org>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <YnLzrGlBNCmCPLmS@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>
+CC:     Xie XiuQi <xiexiuqi@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Guohanjun <guohanjun@huawei.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220420030418.3189040-1-tongtiangen@huawei.com>
+ <20220420030418.3189040-2-tongtiangen@huawei.com>
+ <91011a66-b125-b445-1486-bada8e06b994@csgroup.eu>
+ <48f2779d-bc62-c7f5-c40e-7238a16b90fb@huawei.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <48f2779d-bc62-c7f5-c40e-7238a16b90fb@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/4/22 17:44, Matthew Wilcox wrote:
-> Paul, Liam and I were talking about some code we intend to write soon
-> and realised there's a missing function in the mutex & rwsem API.
-> We're intending to use it for an rwsem, but I think it applies equally
-> to mutexes.
->
-> The customer has a low priority task which wants to read /proc/pid/smaps
-> of a higher priority task.  Today, everything is awful; smaps acquires
-> mmap_sem read-only, is preempted, then the high-pri task calls mmap()
-> and the down_write(mmap_sem) blocks on the low-pri task.  Then all the
-> other threads in the high-pri task block on the mmap_sem as they take
-> page faults because we don't want writers to starve.
->
-> The approach we're looking at is to allow RCU lookup of VMAs, and then
-> take a per-VMA rwsem for read.  Because we're under RCU protection,
-> that looks a bit like this:
->
-> 	rcu_read_lock();
-> 	vma = vma_lookup();
-> 	if (down_read_trylock(&vma->sem)) {
-> 		rcu_read_unlock();
-> 	} else {
-> 		rcu_read_unlock();
-> 		down_read(&mm->mmap_sem);
-> 		vma = vma_lookup();
-> 		down_read(&vma->sem);
-> 		up_read(&mm->mmap_sem);
-> 	}
->
-> (for clarity, I've skipped the !vma checks; don't take this too literally)
->
-> So this is Good.  For the vast majority of cases, we avoid taking the
-> mmap read lock and the problem will appear much less often.  But we can
-> do Better with a new API.  You see, for this case, we don't actually
-> want to acquire the mmap_sem; we're happy to spin a bit, but there's no
-> point in spinning waiting for the writer to finish when we can sleep.
-> I'd like to write this code:
->
-> again:
-> 	rcu_read_lock();
-> 	vma = vma_lookup();
-> 	if (down_read_trylock(&vma->sem)) {
-> 		rcu_read_unlock();
-> 	} else {
-> 		rcu_read_unlock();
-> 		rwsem_wait_read(&mm->mmap_sem);
-> 		goto again;
-> 	}
->
-> That is, rwsem_wait_read() puts the thread on the rwsem's wait queue,
-> and wakes it up without giving it the lock.  Now this thread will never
-> be able to block any thread that tries to acquire mmap_sem for write.
 
-I suppose that a writer that needs to take a write lock on vma->sem will 
-have to take a write lock on mmap_sem first, then it makes sense to me 
-that you want to wait for all the vma->sem writers to finish by waiting 
-on the wait queue of mmap_sem. By the time the waiting task is being 
-woken up, there is no active write lock on the vma->sem and hopefully by 
-the time the waiting process wakes up and do a down_read_trylock(), it 
-will succeed. However, the time gap in the wakeup process may have 
-another writer coming in taking the vma->sem write lock. It improves the 
-chance of a successful trylock but it is not guaranteed. So you will 
-need a retry count and revert back to a direct down_read() when there 
-are too many retries.
+On 2022/5/3 9:06, Tong Tiangen wrote:
+>
+>
+> 在 2022/5/2 22:24, Christophe Leroy 写道:
+>>
+>>
+>> Le 20/04/2022 à 05:04, Tong Tiangen a écrit :
+>>> x86/powerpc has it's implementation of copy_mc_to_user but not use 
+>>> #define
+>>> to declare.
+>>>
+>>> This may cause problems, for example, if other architectures open
+>>> CONFIG_ARCH_HAS_COPY_MC, but want to use copy_mc_to_user() outside the
+>>> architecture, the code add to include/linux/uaddess.h is as follows:
+>>>
+>>>       #ifndef copy_mc_to_user
+>>>       static inline unsigned long __must_check
+>>>       copy_mc_to_user(void *dst, const void *src, size_t cnt)
+>>>       {
+>>>         ...
+>>>       }
+>>>       #endif
+>>>
+>>> Then this definition will conflict with the implementation of 
+>>> x86/powerpc
+>>> and cause compilation errors as follow:
+>>>
+>>> Fixes: ec6347bb4339 ("x86, powerpc: Rename memcpy_mcsafe() to 
+>>> copy_mc_to_{user, kernel}()")
+>>
+>> I don't understand, what does it fix really ? What was the
+>> (existing/real) bug introduced by that patch and that your are fixing ?
+>>
+>> If those defined had been expected and missing, we would have had a
+>> build failure. If you have one, can you describe it ?
+>
+It could prevent future problems when patch3 is introduced， and yes，for 
+now，
 
-Since the waiting process isn't taking any lock, the name 
-rwsem_wait_read() may be somewhat misleading. I think a better name may 
-be rwsem_flush_waiters(). So do you want to flush the waiters at the 
-point this API is called or you want to wait until the wait queue is empty?
+this patch won't fix any issue，we could drop the fix tag, and update the 
+changelog.
 
-Cheers,
-Longman
 
+> There will be build failure after patch 3 is added, there is a little
+> confusing for a reader of this commit in isolation.
+> In the next version, I will put this patch after patch 3.
+This is an alternative.
+>
+> Thanks,
+> Tong.
+> .
