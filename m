@@ -2,137 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46830C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF41C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386933AbiEEXwP (ORCPT
+        id S1347153AbiEEX6X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 19:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56400 "EHLO
+        Thu, 5 May 2022 19:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353377AbiEEXwN (ORCPT
+        with ESMTP id S238237AbiEEX6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 19:52:13 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B1E606FA
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:48:31 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id v11so4895744pff.6
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 16:48:31 -0700 (PDT)
+        Thu, 5 May 2022 19:58:20 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5862F60AA5
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:54:39 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id u205so5705213vsu.6
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 16:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LrHk44z4rhr+J8P+Rl2yRgTdAt0a5Ds6zMRJmsPQsTg=;
-        b=lQJ3Otq3nhLCj2W3ISX1HqEVDcuEnYnmPTO2Pgahhtp8IXa34EJPxmIYEqq3XrYBy2
-         YWir2n7uRXVITSB/iPQkhoCc8FBMwguoEEmXqXJH+I4z01cOaXd3ou1YYRykm5ixBmnj
-         h6CfFExsGoX5saQ2m8W196HLuEvfUG7vH9ykc=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tDDyzRVab5pN0l0Oc9TAGru6/qJIRko7NAIbkOiJF8A=;
+        b=r1hLylWIOOOhaGFz+p6F3AydVEizM2PBMopIl7xCwgCpXpdj2SokxxV2SHoaI7PsS5
+         O5XPHbELH3T7ucpExD9G9kVlFRitPY7R7wqnjKFPFLIxiMf35ksgPBUGvOAa8J2qSLnA
+         QyTdGasRks2Hu/SE+misUqRIisf3JSGLfx/+ngOcXh4xDTDaEcERE/5fhgMDAaNmg9eE
+         XxGq2KReyZ+PuXCPEUzSvCQVdKgX+qxpRhgSMBPttinWyGCEIuhX/kpStjsbylnebD2X
+         vAkIk10ud0IVJn1anD+35kseqge1JuMc50aIHwAcrX8491ZfphZk/mlv0nA3ZBCz5Afe
+         GC5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LrHk44z4rhr+J8P+Rl2yRgTdAt0a5Ds6zMRJmsPQsTg=;
-        b=MsPjE47OV7KtRG0GJSvH5HRx+P5sBDKbkOgHAQBpIsWMychp/tUzdJr0IzIB26a29T
-         2EF1kl8lRFnzepIevVKMtFYF8rLE3DL9ZC4OajeghxQoeRuBB9KwXswL+b/hsc7PpxcO
-         Rvq1gujPb+oqjIMlE954bpizqmpMxv5GfQMWxFZ1xgDS2sb54Re/MG881TXhPNhy65Ri
-         HefH2X0TZOs7FL/xZnlpBOcJiSle8gER+EufmKGbwiE5DnLUAXfN5ewAGc7Rv00H3I1x
-         P5XgG4lR78XP7/TD0GKorTlqaTsJVtHtUSLVEQjO38l+TLpJG5cmRcfcaiIoXk7MWieH
-         ZVaA==
-X-Gm-Message-State: AOAM533eOQ5rKqWmerorJ2PMUzBnHecZw/BB4eHP2aWScrXKvwwiNSZ7
-        tJ3rjv9jRl6/uYX5EeSAMBm9ig==
-X-Google-Smtp-Source: ABdhPJwZzdK0aRzo196BP9xtL6rZgazn73Kt6i9jFhMZ+TkZuwzvzHY0agoDbi6KbW7R7hmyS02nWQ==
-X-Received: by 2002:a62:d415:0:b0:50d:baaf:4156 with SMTP id a21-20020a62d415000000b0050dbaaf4156mr804485pfh.28.1651794511222;
-        Thu, 05 May 2022 16:48:31 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id a6-20020a636606000000b003c60b1f0dbasm1903053pgc.35.2022.05.05.16.48.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 16:48:30 -0700 (PDT)
-Date:   Thu, 5 May 2022 16:48:29 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Helge Deller <deller@gmx.de>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Changbin Du <changbin.du@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, rust-for-linux@vger.kernel.org,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>
-Subject: Re: [PATCH v1 3/3] kallsyms: increase maximum kernel symbol length
- to 512
-Message-ID: <202205051647.184C8B2@keescook>
-References: <20220505191704.22812-1-ojeda@kernel.org>
- <20220505191704.22812-4-ojeda@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tDDyzRVab5pN0l0Oc9TAGru6/qJIRko7NAIbkOiJF8A=;
+        b=KxCzbV0KkL6jvq7zK1XUSy8Ja2CwB8/xjPrT4vGOosHG6wYSNeWzScNaW+rchHfB1V
+         s9YsoMUrfv9wY5YkCxPjssj2W/Iqf0zOt9iA2oYASs8soqLoGf/cVMvcaen3v2FyPt7z
+         N1W+zvxZw0M9qsbCpkSK/TTgTKLdDwmcbwvie5kfGINeiCkYqK+/iqVPjMSSH0nf6/XR
+         dzBj5rBNepNOK6xpC+MzH3b8XBV8Fs7MetCs7U4uYfAKQH6WmXbbjMRuMSwpRwx4JdO4
+         GyuECbOxUeaFD2XCSo5GvyUudBvZ8zEhTUPqZJ1qYVvH4xe5inl23O+x+giDFr5SO0LA
+         Dn3A==
+X-Gm-Message-State: AOAM531wjlzD/kRNeytDPzSO+jrGDjmLAkLH+WC4gb2aX+0xOdnDe1E7
+        w/UolI0IXQK3HroqONCa3CFwxc5wsbCcmu7Y5kxK6A==
+X-Google-Smtp-Source: ABdhPJxopamlFqZOgSKVhG7nIetrG2PG7cgpRoI22LRBUGNQCpa8b8bZVtse6QuNZy6mGp6tZHSNhz6wiA/JWjuxyp0=
+X-Received: by 2002:a05:6102:c13:b0:32d:518f:feaf with SMTP id
+ x19-20020a0561020c1300b0032d518ffeafmr174918vss.84.1651794878401; Thu, 05 May
+ 2022 16:54:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505191704.22812-4-ojeda@kernel.org>
+References: <20220427160016.144237-1-hannes@cmpxchg.org> <20220427160016.144237-5-hannes@cmpxchg.org>
+ <Ymmnrkn0mSWcuvmH@google.com> <YmmznQ8AO5RLxicA@cmpxchg.org>
+ <Ymm3WpvJWby4gaD/@cmpxchg.org> <CALvZod5LBi5V6q1uHUTSNnLz64HbD499a+OZvdYsUcmcWSt8Jg@mail.gmail.com>
+ <YmqmWPrIagEEceN1@cmpxchg.org> <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
+ <CAHbLzkqOUkaud4hQZeAbnO3T6VJpku4aKn1EYv9RunB+Kmu9Sg@mail.gmail.com>
+ <CALvZod5CReJZeGxkX9i6k7+R+3kF5dikXx9akbiP_L0j4Qu=6A@mail.gmail.com> <CABCjUKAoTmqvyBbFH7A188s8Hwi1XbLgfb6znzgFOuRWBMBxig@mail.gmail.com>
+In-Reply-To: <CABCjUKAoTmqvyBbFH7A188s8Hwi1XbLgfb6znzgFOuRWBMBxig@mail.gmail.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Thu, 5 May 2022 16:54:02 -0700
+Message-ID: <CAOUHufbnc3Q2qNd5f=SUgmzdSG6_c_ddZgDFEcxNajdSz=Ty3g@mail.gmail.com>
+Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
+To:     Suleiman Souhlal <suleiman@google.com>,
+        Yang Shi <shy828301@gmail.com>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 09:16:45PM +0200, Miguel Ojeda wrote:
-> Rust symbols can become quite long due to namespacing introduced
-> by modules, types, traits, generics, etc. For instance,
-> the following code:
-> 
->     pub mod my_module {
->         pub struct MyType;
->         pub struct MyGenericType<T>(T);
-> 
->         pub trait MyTrait {
->             fn my_method() -> u32;
->         }
-> 
->         impl MyTrait for MyGenericType<MyType> {
->             fn my_method() -> u32 {
->                 42
->             }
->         }
->     }
-> 
-> generates a symbol of length 96 when using the upcoming v0 mangling scheme:
-> 
->     _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
-> 
-> At the moment, Rust symbols may reach up to 300 in length.
-> Setting 512 as the maximum seems like a reasonable choice to
-> keep some headroom.
-> 
-> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Co-developed-by: Gary Guo <gary@garyguo.net>
-> Signed-off-by: Gary Guo <gary@garyguo.net>
-> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
-> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+On Thu, May 5, 2022 at 3:25 PM Suleiman Souhlal <suleiman@google.com> wrote:
+>
+> On Fri, May 6, 2022 at 4:33 AM Shakeel Butt <shakeelb@google.com> wrote:
+> >
+> > On Thu, Apr 28, 2022 at 9:54 AM Yang Shi <shy828301@gmail.com> wrote:
+> > >
+> > [...]
+> > > > Yes, we have some modifications to zswap to make it work without any
+> > > > backing real swap. Though there is a future plan to move to zram
+> > > > eventually.
+> > >
+> > > Interesting, if so why not just simply use zram?
+> > >
+> >
+> > Historical reasons. When we started trying out the zswap, I think zram
+> > was still in staging or not stable enough (Suleiman can give a better
+> > answer).
+>
+> One of the reasons we chose zswap instead of zram is that zswap can
+> reject pages.
+> Also, we wanted to have per-memcg pools, which zswap made much easier to do.
 
-I look forward to aiming my demangler at /proc/kallsyms. ;)
+Yes, it was a design choice. zswap was cache-like (tiering) and zram
+was storage-like (endpoint). Though nowadays the distinction is
+blurry.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
--- 
-Kees Cook
+It had nothing to do with zram being in staging -- when we took zswap,
+it was out of the tree.
