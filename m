@@ -2,116 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA970C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65760C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382735AbiEERiJ (ORCPT
+        id S1382753AbiEERie (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        Thu, 5 May 2022 13:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382709AbiEERiC (ORCPT
+        with ESMTP id S1382756AbiEERi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:38:02 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977F055212
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:34:21 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nmfMT-0002m8-KI; Thu, 05 May 2022 19:33:57 +0200
-Message-ID: <09e2552c-7392-e1da-926b-53c7db0b118d@pengutronix.de>
-Date:   Thu, 5 May 2022 19:33:45 +0200
+        Thu, 5 May 2022 13:38:27 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609325D5F6;
+        Thu,  5 May 2022 10:34:44 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id p18so6025543edr.7;
+        Thu, 05 May 2022 10:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J36psD3rFKW5Ka1G3ZnsSWZIunr7YdwdE2cf/mL9osk=;
+        b=Gg2LXPVobwp4o5mG9uKglG3BHaRDZIpvfVQeotr8r2wGV8xJdunSEbXkxMuyiSp2iX
+         3VawHmVZDLBxsGEZtc5IpMRU6QxVktJ13EKeH7DNy0XdSzT37nLrXluGkP5iD6LpIPyn
+         ElJTabd9OIdllU21SBxy4LANhKIQEsXI4QUPRMw0ToOvkTHl5ruIM0vJFQ1AVe8vVSih
+         xdi8qXRwDCZF8sUAa8SCUgNdAIlrnJhyql7rSoL/NgWYCma9BYPRjeA9CqmyZnsbVGZT
+         tlqPO5xgwD+rM2qBhghryfPw4DPRRyED5N3MGHSOViaYGBPbReY8OXi+3cVvfsVkZTLE
+         jAIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J36psD3rFKW5Ka1G3ZnsSWZIunr7YdwdE2cf/mL9osk=;
+        b=Tqv+6iwIoH7Jrlwdah5Rpm7UhxZ07uIHg+ZFhRcIxBMu8uDilr28MOLZC5uymJWNjt
+         bffmyvnYuaVYSmflXghDfvadNkcx9t4BCdkgdZIPzUhZU2VpGhTjLq8xl1H2ZRQoSmNY
+         VC4PfcmFgMsJl6OMbTxTCp9xPIVoKO4rkIHpR55/J51Sw6nIssShu81PQpFN4FiFjObq
+         +e7bANQoQDsv8oi3fMu7CcBVGAAA2bycjsFZt8ax+LK80egIQB53Tp2S6vPLs4f8fwdl
+         us+Yh7qW27ET0+bW8Obkfgrck9dUFuWAF//fTz78PriM5/75HjyTznCxDZqao28XF65/
+         LvcQ==
+X-Gm-Message-State: AOAM530D6VRUsUfrjahLbMDrXfjblFV9K/ILzIvbsy5cVzNIZlLzk7Hl
+        dWseIdRW3Y2duRojtJAsfgQjdGniygsCtpMluDU=
+X-Google-Smtp-Source: ABdhPJzHFa4/201KxKWvXvIzAle09vJstgG8ZVqW0xdZ3Xd4qabmhd7jnoJgV/HYyztLG08q1inSAhpKX0wJqtjSlo0=
+X-Received: by 2002:a05:6402:54:b0:419:9b58:e305 with SMTP id
+ f20-20020a056402005400b004199b58e305mr31028257edu.158.1651772082896; Thu, 05
+ May 2022 10:34:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v8 0/6] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Content-Language: en-US
-To:     John Ernberg <john.ernberg@actia.se>
-Cc:     "andreas@rammhold.de" <andreas@rammhold.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "david@sigma-star.at" <david@sigma-star.at>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "ebiggers@kernel.org" <ebiggers@kernel.org>,
-        "franck.lenormand@nxp.com" <franck.lenormand@nxp.com>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "horia.geanta@nxp.com" <horia.geanta@nxp.com>,
-        "j.luebbe@pengutronix.de" <j.luebbe@pengutronix.de>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "matthias.schiffer@ew.tq-group.com" 
-        <matthias.schiffer@ew.tq-group.com>,
-        "pankaj.gupta@nxp.com" <pankaj.gupta@nxp.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "s.trumtrar@pengutronix.de" <s.trumtrar@pengutronix.de>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "sumit.garg@linaro.org" <sumit.garg@linaro.org>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>
-References: <20220428140145.870527-1-a.fatoum@pengutronix.de>
- <20220505145756.2492566-1-john.ernberg@actia.se>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <20220505145756.2492566-1-john.ernberg@actia.se>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20220505152521.71019-1-markuss.broks@gmail.com>
+ <20220505152521.71019-2-markuss.broks@gmail.com> <CAHp75VfUA3qnZnkPQB3TRpPDwe+F+Q6rv9dQmq2xLfw9PmJ8LA@mail.gmail.com>
+In-Reply-To: <CAHp75VfUA3qnZnkPQB3TRpPDwe+F+Q6rv9dQmq2xLfw9PmJ8LA@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 5 May 2022 19:34:07 +0200
+Message-ID: <CAHp75VeVN_Ri2wbQ1ATJg6+R=K6ekQbqGKKNXPdti0rpDptzZA@mail.gmail.com>
+Subject: Re: [PATCH v8 1/3] leds: ktd2692: Avoid duplicate error messages on
+ probe deferral
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     pavel@ucw.cz, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello John,
+On Thu, May 5, 2022 at 7:29 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Thu, May 5, 2022 at 5:25 PM Markuss Broks <markuss.broks@gmail.com> wrote:
 
-On 05.05.22 16:58, John Ernberg wrote:
-> Gave this a go on iMX8QXP with Linux 5.17.5 and I can't quite get it working.
-> 
-> I get -ENODEV from add_key() via keyctl. When I traced it in dmesg I couldn't
-> get an as clear picture as I would like but CAAM (and thus possibly JRs?)
-> initialzing after trusted_key.
-> 
-> dmesg snips:
-> [    1.296772] trusted_key: Job Ring Device allocation for transform failed
-> ...
-> [    1.799768] caam 31400000.crypto: device ID = 0x0a16040000000100 (Era 9)
-> [    1.807142] caam 31400000.crypto: job rings = 2, qi = 0
-> [    1.822667] caam algorithms registered in /proc/crypto
-> [    1.830541] caam 31400000.crypto: caam pkc algorithms registered in /proc/crypto
-> [    1.841807] caam 31400000.crypto: registering rng-caam
-> 
-> I didn't quite have the time to get a better trace than that.
+...
 
-I don't see a crypto@31400000 node upstream. Where can I see your device tree?
-Initcall ordering does the right thing, but if CAAM device probe is deferred beyond
-late_initcall, then it won't help.
+> 1) adding a Fixes tag, so it can be backported to stable kernels;
 
-This is a general limitation with trusted keys at the moment. Anything that's
-not there by the time of the late_initcall won't be tried again. You can work
-around it by having trusted keys as a module. We might be able to do something
-with fw_devlinks in the future and a look into your device tree would help here,
-but I think that should be separate from this patch series.
+To avoid additional versions in case you don't know how Fixes tag
+should look like:
 
-Please let me know if the module build improves the situation for you.
+Fixes: b7da8c5c725c ("leds: Add ktd2692 flash LED driver")
 
-Cheers,
-Ahmad
-
->
-> Best regards // John Ernberg
-
+Just add this before other tags, like SoB or Reviewed-by (no blank
+lines in the tag block).
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+With Best Regards,
+Andy Shevchenko
