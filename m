@@ -2,137 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C6CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345237AbiEEHiD (ORCPT
+        id S1345306AbiEEHiI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
+        Thu, 5 May 2022 03:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235142AbiEEHh7 (ORCPT
+        with ESMTP id S235142AbiEEHiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:37:59 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87609488AA;
-        Thu,  5 May 2022 00:34:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id z2so5483456ejj.3;
-        Thu, 05 May 2022 00:34:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3J1208WPQ4jno3J/uykQTL89a7eLGDMeF5YveJlEzDs=;
-        b=S78SIfXfk2AKH1/DmhfhwODqbNeadxZX0FAVXnAnkEm6si5fxgcBYmwi4u0eOSalAu
-         3/BurbYRXdysgUV9NhwhO4OR+B6/u6w3kaetOVLGz0jDZOm6/p6tv8VCrd5y0dx+0D4O
-         qD2i6qkY1F14UHRMvTlAF8mpAx3q6gbCr7mNWPHF5MbYbIkt0by+93IEmz3f+AvH065R
-         hMPgvsSSbkpkcZ30GGY9mmyEO8kr5OlnZ720U6dMfxYQ7uZV3Pqu+LDdKwQfhUcrJHZ+
-         SyE/DH1xarFajb7IiT42GvtIbqtm6FSmn/5OD15oVKaE0aN3pecsdzMoL+iJgEB+lBqo
-         wFqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3J1208WPQ4jno3J/uykQTL89a7eLGDMeF5YveJlEzDs=;
-        b=k8LaBVfb0mCxdzMYxUPoOTENgOWpsaqu9B6pqqpzoN5EPK08FaDbjhKUsGuiBSFbxK
-         5oYCIaOtZMQjRcQJyEmW75V8gzGVBlA6SToI0GSRrHmthcBl/vlt5Q3t04kOkoMCBZT3
-         oD5himFFMOQo00DC1Q+Uhzd7yWdgsruhEt18dBrEMPKlIk+bj3m+dEKTtxSSPke4x+Lm
-         fZbtR9FrdxtMiovLzCKpaih4XJzFJTnehHvjpsMvvmaNc7Rysgte7Yjl7Y9WLKzInQs+
-         yD+xygOl8Wxvh5p9rKpd+SxrhFj0xJBkw5y6vBIXItf4n4aBUs6pMw99ul/qX3vhkkZQ
-         86kg==
-X-Gm-Message-State: AOAM532wJmFhKdfmuhkU5o9D8NIAV0plhlypTTns9MObNwAMZoZuOrsZ
-        FG4jHVYPO6TkhPGpdO+9qAI=
-X-Google-Smtp-Source: ABdhPJw025Btub/yVDtZYX9TuyPMCGQ444n5wDrt1oQXpxmbeOFzK9MviShruWUWDTtZ2kzd89eCqA==
-X-Received: by 2002:a17:906:eb82:b0:6f3:9044:5fba with SMTP id mh2-20020a170906eb8200b006f390445fbamr24240010ejb.715.1651736058913;
-        Thu, 05 May 2022 00:34:18 -0700 (PDT)
-Received: from tiger.museclub.art (p200300cf9f27690001ea8a0258c36e97.dip0.t-ipconnect.de. [2003:cf:9f27:6900:1ea:8a02:58c3:6e97])
-        by smtp.googlemail.com with ESMTPSA id og21-20020a1709071dd500b006f3ef214df8sm297592ejc.94.2022.05.05.00.34.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 00:34:18 -0700 (PDT)
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-To:     eugene.shalygin@gmail.com
-Cc:     Debabrata Banerjee <dbavatar@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] hwmon: (asus-ec-sensors) add ROG STRIX X570-E GAMING WIFI II
-Date:   Thu,  5 May 2022 09:33:51 +0200
-Message-Id: <20220505073351.123753-1-eugene.shalygin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 5 May 2022 03:38:05 -0400
+X-Greylist: delayed 1366 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 00:34:26 PDT
+Received: from qproxy4-pub.mail.unifiedlayer.com (qproxy4-pub.mail.unifiedlayer.com [66.147.248.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF79488AA
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:34:26 -0700 (PDT)
+Received: from gproxy3-pub.mail.unifiedlayer.com (gproxy3-pub.mail.unifiedlayer.com [69.89.30.42])
+        by qproxy4.mail.unifiedlayer.com (Postfix) with ESMTP id 0577D80350EF
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 07:11:40 +0000 (UTC)
+Received: from cmgw12.mail.unifiedlayer.com (unknown [10.0.90.127])
+        by progateway5.mail.pro1.eigbox.com (Postfix) with ESMTP id 71AC81004922C
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 07:11:39 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id mVeEns0eQb2WGmVeFn99bu; Thu, 05 May 2022 07:11:39 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=SqtVVNC0 c=1 sm=1 tr=0 ts=627378ab
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oZkIemNP1mAA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Rnp1Z4ceA851sqUsnqf/+O+E2OsD56cGNcmbg4fWT78=; b=2+qjfzpdB7vT7K6ujKXdS0WD3l
+        M8yQsAUgvCC+tqEhMz2VYUq55QCk0YokU3hVZ3f1KuvRjB1D31gwnodPp3GJ5u1Jgm6UXdDv8Jffa
+        l04izXhXXrBQVYnPKIU7v91RhF/bp06qKbL30/vQzsYDG4ZSJFZelcglaxwRv4/BtJqherkUQMkJO
+        EuoPB+hP6iMNo8qHhUkTA51RFWNlHnQSGYjvfxsFSgBuBxWh7xNCJhtu+A0i75JGlZFLLYlAm4zmI
+        aJyzlCmWGSLhpZqh6hiDDwMRcA68AKuE1XYpwgQxnhLYcYgy/Gf2srBNbLkvK0k7Efdmye5IRsBH0
+        eCVFZpyw==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:49802 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nmVeD-002Bcs-W4; Thu, 05 May 2022 01:11:38 -0600
+Subject: Re: [PATCH 5.15 000/177] 5.15.38-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220504153053.873100034@linuxfoundation.org>
+In-Reply-To: <20220504153053.873100034@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <80e8a4e9-3219-9fd3-944a-b44b9c259398@w6rz.net>
+Date:   Thu, 5 May 2022 00:11:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nmVeD-002Bcs-W4
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:49802
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Debabrata Banerjee <dbavatar@gmail.com>
+On 5/4/22 9:43 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.38 release.
+> There are 177 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 06 May 2022 15:25:19 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.38-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Adds support for the ROG STRIX X570-E GAMING WIFI II board and
-simplifies formatting for the list of supported models.
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Signed-off-by: Debabrata Banerjee <dbavatar@gmail.com>
-Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
----
- Documentation/hwmon/asus_ec_sensors.rst | 23 ++++++++++++-----------
- drivers/hwmon/asus-ec-sensors.c         |  8 ++++++++
- 2 files changed, 20 insertions(+), 11 deletions(-)
-
-diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
-index 1700fe619597..78ca69eda877 100644
---- a/Documentation/hwmon/asus_ec_sensors.rst
-+++ b/Documentation/hwmon/asus_ec_sensors.rst
-@@ -4,19 +4,20 @@ Kernel driver asus_ec_sensors
- =================================
- 
- Supported boards:
-- * PRIME X470-PRO,
-- * PRIME X570-PRO,
-- * Pro WS X570-ACE,
-+ * PRIME X470-PRO
-+ * PRIME X570-PRO
-+ * Pro WS X570-ACE
-  * ProArt X570-CREATOR WIFI
-- * ROG CROSSHAIR VIII DARK HERO,
-+ * ROG CROSSHAIR VIII DARK HERO
-  * ROG CROSSHAIR VIII HERO (WI-FI)
-- * ROG CROSSHAIR VIII FORMULA,
-- * ROG CROSSHAIR VIII HERO,
-- * ROG CROSSHAIR VIII IMPACT,
-- * ROG STRIX B550-E GAMING,
-- * ROG STRIX B550-I GAMING,
-- * ROG STRIX X570-E GAMING,
-- * ROG STRIX X570-F GAMING,
-+ * ROG CROSSHAIR VIII FORMULA
-+ * ROG CROSSHAIR VIII HERO
-+ * ROG CROSSHAIR VIII IMPACT
-+ * ROG STRIX B550-E GAMING
-+ * ROG STRIX B550-I GAMING
-+ * ROG STRIX X570-E GAMING
-+ * ROG STRIX X570-E GAMING WIFI II
-+ * ROG STRIX X570-F GAMING
-  * ROG STRIX X570-I GAMING
- 
- Authors:
-diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
-index 998d49d6b799..611e897429b1 100644
---- a/drivers/hwmon/asus-ec-sensors.c
-+++ b/drivers/hwmon/asus-ec-sensors.c
-@@ -315,6 +315,14 @@ static const struct ec_board_info board_info[] = {
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
- 		.family = family_amd_500_series,
- 	},
-+	{
-+		.board_names = {"ROG STRIX X570-E GAMING WIFI II"},
-+		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-+			SENSOR_TEMP_T_SENSOR | SENSOR_CURR_CPU |
-+			SENSOR_IN_CPU_CORE,
-+		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
-+	},
- 	{
- 		.board_names = {"ROG STRIX X570-F GAMING"},
- 		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
--- 
-2.35.1
+Tested-by: Ron Economos <re@w6rz.net>
 
