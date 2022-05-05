@@ -2,110 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6504C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379694AbiEENeu (ORCPT
+        id S1379706AbiEENey (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
+        Thu, 5 May 2022 09:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379529AbiEENeS (ORCPT
+        with ESMTP id S1379637AbiEENeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:34:18 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F59B7D9;
-        Thu,  5 May 2022 06:30:38 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id a21so5234038edb.1;
-        Thu, 05 May 2022 06:30:38 -0700 (PDT)
+        Thu, 5 May 2022 09:34:23 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99BC1277A;
+        Thu,  5 May 2022 06:30:43 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id o69so4212964pjo.3;
+        Thu, 05 May 2022 06:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LEyhSb4KLLHDvo9x+lHGafva3P7wuUyOsl0RpBl3TYY=;
-        b=erloLqL3L1Z5rKgWGi4x265WiJi7qZEJLqO8bCzSE2d4j++qzExi65405a1CWA8eOF
-         /tuO4stZhJCz4LgMWaweViYv4mbdAhIA9TVAfY9EvDuTb+QABNmIP9dS2da456z1ikc/
-         vI/QBWiPprwIxazaUWrFJLU8MpQ4vTlDlJK2bsf2jjZ4B7DSFFjagZ56gTH7g06akm07
-         Yo8ZPTDQ3ZSw856iCNFu9yd3y9sIDJY3DtGvj5TmOKIxtGTdl23i9LIGGzlG7TroyxLJ
-         eoR+jrykBs7MqoK6pTyjsmHb1VRdDJrFWCuOj7nov6KTYsXw7PAk+darzy5Lz3OPe5wi
-         hWqA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=H3CkS7Q8uU7MubL4PY7f/qf/85uW9+5JcXDuS6dbHMY=;
+        b=JdYhrJb7mX4+734N1IXgMszUeEgx+WAZ2dR/lmjVqsOUxKkXoaW4Iy20gkxFEhmK8a
+         Y2mTRea2gb7hXAIbVnXKYhy2ubYDAORsCIAiStuy1ctHsn/Ni2RB4nwlnqW37tphhdR3
+         v6TUqoUpG/CMbJK0S7PqYfNe6Zu7+WZaxzuzUIHu1ZxW/2gjxZTdMqR0pI7Xt8IuONey
+         oRhKBWejpMxipqyuZduPqYKs8ZzlKpl42w0PiT5bFY4HUWUAOCLpZEHEUv8od5DCkapa
+         2EKRk5gd6zB9Tw++E9Rh0+afGFYAJPFNa2uyp+EqZYAuZYDGKrGCafFNtJBRHLSERztr
+         0I/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LEyhSb4KLLHDvo9x+lHGafva3P7wuUyOsl0RpBl3TYY=;
-        b=EvPJj2H8KxmPHIbZM3R6K3X1tPcUwqLz0vHaQJQyoin3bYQSH0EmxIx/zCocnCWbDZ
-         ahB/WmAjQ+huOxH3eUyxVPp/r0umnAtFWU8DsDPF2I0/1Pk/ln4Chd7+QDY1NV0PLqee
-         9oDEKUpzp+1z9FzHa/v8Tgdiz8c6zPTeAuiB9vKemQnEUnQ6YUYQbgc9/IiHzgEYEg9q
-         0U2vOwUdAgnsSUahERpSP1IdsIynrVT53PyAGwP2ilV9HhwjFBtWcaxTtV4iJXR2PF+0
-         vW0M4oPuEyBvufFFveuWqIWePocaiqrLqkVlleOPq3jitIzlb74hkmMTnzraKadP87A0
-         BUmQ==
-X-Gm-Message-State: AOAM531zONSQDU/ELrU1/DvaEL+RanGifX49TDOY2mZq5oBzTCVNzewP
-        TDi6a/Kz/iyth/dumvTgWGI=
-X-Google-Smtp-Source: ABdhPJzLBZeGQSoC4QxkDn6W8OqQ2KRQfFIE+hPKggNvQz9ecywyyuj4wg8kdTVlJk79vAMxJ2B0QA==
-X-Received: by 2002:a50:ce14:0:b0:425:cb75:5322 with SMTP id y20-20020a50ce14000000b00425cb755322mr30882298edi.386.1651757433754;
-        Thu, 05 May 2022 06:30:33 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id qz24-20020a170907681800b006f4cb79d9a8sm766846ejc.75.2022.05.05.06.30.32
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=H3CkS7Q8uU7MubL4PY7f/qf/85uW9+5JcXDuS6dbHMY=;
+        b=QDSZdbADsTyFu2OBAV1ifB/Hag09nHOP5ZloAQAivflrDVYyVmAzb4bbGJg0ztncH9
+         Q3XnYqw8IKbpUJ/cZHNQwTlfAD/Cxv5CCPFy76xpmv2PBJSKfZJs+eyVUjBM/zvE5SLs
+         Un+nVyq6MIgnc69yD3yjTu5HZ+0CtyDTlp9DmuYAopNHC6tUka5f58diCRYTxE6VYH7k
+         QB/FawL1+JZYtCpxCvUsVmVUx9UP/9AYi4EP545LR2O72QDVuCWT0FTt/Vyv4ch2bcpI
+         Hx3zkaGX908AfBfryopKK+rLE11t+l8q/Rz2hSBqUeLrmZuOX0FaZEJuRYEpF0R13gp/
+         KRzw==
+X-Gm-Message-State: AOAM532f9bLUFmKS2YiqLfWUFXhoEXLRTFYb+qi803D8cv/XwZqEkE5h
+        DTSZkfsJ49JYFNlwlhAI57M=
+X-Google-Smtp-Source: ABdhPJwT2CcSIvf96nOivNSJyRdg9I1448OecKUqWeJk+vGTypo1FQfJDjUL8VIZwDuHM/qkW0y8og==
+X-Received: by 2002:a17:90a:a393:b0:1d0:e448:811d with SMTP id x19-20020a17090aa39300b001d0e448811dmr6274218pjp.97.1651757443035;
+        Thu, 05 May 2022 06:30:43 -0700 (PDT)
+Received: from localhost.localdomain ([115.99.184.228])
+        by smtp.gmail.com with ESMTPSA id c64-20020a624e43000000b0050dc7628135sm1420120pfb.15.2022.05.05.06.30.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:30:33 -0700 (PDT)
-Message-ID: <6273d179.1c69fb81.7c36a.435b@mx.google.com>
-X-Google-Original-Message-ID: <YnPRd5865LV21/Bw@Ansuel-xps.>
-Date:   Thu, 5 May 2022 15:30:31 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [RFC PATCH v6 09/11] leds: trigger: netdev: add additional
- hardware only triggers
-References: <20220503151633.18760-1-ansuelsmth@gmail.com>
- <20220503151633.18760-10-ansuelsmth@gmail.com>
- <YnModmKCG3BD5nvd@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnModmKCG3BD5nvd@lunn.ch>
+        Thu, 05 May 2022 06:30:42 -0700 (PDT)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     dan@dlrobertson.com, jic23@kernel.org, andy.shevchenko@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 07/10] iio: accel: bma400: Add activity recognition support
+Date:   Thu,  5 May 2022 19:00:18 +0530
+Message-Id: <20220505133021.22362-8-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220505133021.22362-1-jagathjog1996@gmail.com>
+References: <20220505133021.22362-1-jagathjog1996@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 03:29:26AM +0200, Andrew Lunn wrote:
-> On Tue, May 03, 2022 at 05:16:31PM +0200, Ansuel Smith wrote:
-> > Add additional hardware only triggers commonly supported by switch LEDs.
-> > 
-> > Additional modes:
-> > link_10: LED on with link up AND speed 10mbps
-> > link_100: LED on with link up AND speed 100mbps
-> > link_1000: LED on with link up AND speed 1000mbps
-> > half_duplex: LED on with link up AND half_duplex mode
-> > full_duplex: LED on with link up AND full duplex mode
-> > 
-> > Additional blink interval modes:
-> > blink_2hz: LED blink on any even at 2Hz (250ms)
-> > blink_4hz: LED blink on any even at 4Hz (125ms)
-> > blink_8hz: LED blink on any even at 8Hz (62ms)
-> 
-> I would suggest separating blink intervals into a patch of their own,
-> because they are orthogonal to the other modes. Most PHYs are not
-> going to support them, or they have to be the same across all LEDs, or
-> don't for example make sense with duplex etc. We need to first
-> concentrate on the basics, get that correct. Then we can add nice to
-> have features like this.
-> 
->      Andrew
+Add support for activity recognition like STILL, WALKING, RUNNING
+and these events are pushed to the userspace whenever the STEP
+interrupt occurs.
 
-Okok will just drop this. I agree that adds additional complexity to the
-code and would make this even harder to merge.
+Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+---
+ drivers/iio/accel/bma400_core.c | 85 +++++++++++++++++++++++++++++++++
+ 1 file changed, 85 insertions(+)
 
+diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+index 50932fc1c854..1e4923064b63 100644
+--- a/drivers/iio/accel/bma400_core.c
++++ b/drivers/iio/accel/bma400_core.c
+@@ -67,6 +67,12 @@ struct bma400_sample_freq {
+ 	int uhz;
+ };
+ 
++enum bma400_activity {
++	BMA400_STILL,
++	BMA400_WALKING,
++	BMA400_RUNNING,
++};
++
+ struct bma400_data {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+@@ -80,6 +86,7 @@ struct bma400_data {
+ 	struct iio_trigger *trig;
+ 	int steps_enabled;
+ 	bool step_event_en;
++	bool activity_event_en;
+ 	/* Correct time stamp alignment */
+ 	struct {
+ 		__le16 buff[3];
+@@ -184,6 +191,12 @@ static const struct iio_event_spec bma400_step_detect_event = {
+ 	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+ };
+ 
++static const struct iio_event_spec bma400_activity_event = {
++	.type = IIO_EV_TYPE_CHANGE,
++	.dir = IIO_EV_DIR_NONE,
++	.mask_shared_by_type = BIT(IIO_EV_INFO_ENABLE),
++};
++
+ #define BMA400_ACC_CHANNEL(_index, _axis) { \
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+@@ -205,6 +218,16 @@ static const struct iio_event_spec bma400_step_detect_event = {
+ 	},				\
+ }
+ 
++#define BMA400_ACTIVITY_CHANNEL(_chan2) {	\
++	.type = IIO_ACTIVITY,			\
++	.modified = 1,				\
++	.channel2 = _chan2,			\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
++	.scan_index = -1, /* No buffer support */		\
++	.event_spec = &bma400_activity_event,			\
++	.num_event_specs = 1,					\
++}
++
+ static const struct iio_chan_spec bma400_channels[] = {
+ 	BMA400_ACC_CHANNEL(0, X),
+ 	BMA400_ACC_CHANNEL(1, Y),
+@@ -229,6 +252,9 @@ static const struct iio_chan_spec bma400_channels[] = {
+ 		.event_spec = &bma400_step_detect_event,
+ 		.num_event_specs = 1,
+ 	},
++	BMA400_ACTIVITY_CHANNEL(IIO_MOD_STILL),
++	BMA400_ACTIVITY_CHANNEL(IIO_MOD_WALKING),
++	BMA400_ACTIVITY_CHANNEL(IIO_MOD_RUNNING),
+ 	IIO_CHAN_SOFT_TIMESTAMP(4),
+ };
+ 
+@@ -669,6 +695,20 @@ static void bma400_power_disable(void *data_ptr)
+ 			 ERR_PTR(ret));
+ }
+ 
++static enum iio_modifier bma400_act_to_mod(enum bma400_activity activity)
++{
++	switch (activity) {
++	case BMA400_STILL:
++		return IIO_MOD_STILL;
++	case BMA400_WALKING:
++		return IIO_MOD_WALKING;
++	case BMA400_RUNNING:
++		return IIO_MOD_RUNNING;
++	default:
++		return IIO_NO_MOD;
++	}
++}
++
+ static int bma400_init(struct bma400_data *data)
+ {
+ 	unsigned int val;
+@@ -766,6 +806,7 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+ 			   int *val2, long mask)
+ {
+ 	struct bma400_data *data = iio_priv(indio_dev);
++	unsigned int activity;
+ 	int ret;
+ 
+ 	switch (mask) {
+@@ -778,6 +819,21 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+ 			return ret;
+ 		case IIO_STEPS:
+ 			return bma400_get_steps_reg(data, val);
++		case IIO_ACTIVITY:
++			ret = regmap_read(data->regmap, BMA400_STEP_STAT_REG,
++					  &activity);
++			if (ret)
++				return ret;
++			/*
++			 * The device does not support confidence value levels,
++			 * so we will always have 100% for current activity and
++			 * 0% for the others.
++			 */
++			if (chan->channel2 == bma400_act_to_mod(activity))
++				*val = 100;
++			else
++				*val = 0;
++			return IIO_VAL_INT;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -927,6 +983,8 @@ static int bma400_read_event_config(struct iio_dev *indio_dev,
+ 	switch (chan->type) {
+ 	case IIO_STEPS:
+ 		return data->step_event_en;
++	case IIO_ACTIVITY:
++		return data->activity_event_en;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -964,6 +1022,18 @@ static int bma400_write_event_config(struct iio_dev *indio_dev,
+ 		ret = bma400_steps_event_enable(data, state);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
++	case IIO_ACTIVITY:
++		mutex_lock(&data->mutex);
++		if (!data->step_event_en) {
++			ret = bma400_steps_event_enable(data, true);
++			if (ret) {
++				mutex_unlock(&data->mutex);
++				return ret;
++			}
++		}
++		data->activity_event_en = state;
++		mutex_unlock(&data->mutex);
++		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1049,6 +1119,7 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ 	struct iio_dev *indio_dev = private;
+ 	struct bma400_data *data = iio_priv(indio_dev);
+ 	s64 timestamp = iio_get_time_ns(indio_dev);
++	unsigned int act;
+ 	int ret;
+ 
+ 	/* Lock to protect the data->status */
+@@ -1069,6 +1140,20 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ 						  IIO_EV_TYPE_CHANGE,
+ 						  IIO_EV_DIR_NONE),
+ 			       timestamp);
++
++		if (data->activity_event_en) {
++			ret = regmap_read(data->regmap, BMA400_STEP_STAT_REG,
++					  &act);
++			if (ret)
++				goto unlock_err;
++
++			iio_push_event(indio_dev,
++				       IIO_MOD_EVENT_CODE(IIO_ACTIVITY, 0,
++							  bma400_act_to_mod(act),
++							  IIO_EV_TYPE_CHANGE,
++							  IIO_EV_DIR_NONE),
++				       timestamp);
++		}
+ 	}
+ 
+ 	if (FIELD_GET(BMA400_INT_DRDY_MSK, le16_to_cpu(data->status))) {
 -- 
-	Ansuel
+2.17.1
+
