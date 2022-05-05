@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC136C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380517AbiEETgL (ORCPT
+        id S1385133AbiEETgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
+        Thu, 5 May 2022 15:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385112AbiEETf6 (ORCPT
+        with ESMTP id S1385172AbiEETgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:35:58 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 357735B3DD;
-        Thu,  5 May 2022 12:32:16 -0700 (PDT)
+        Thu, 5 May 2022 15:36:12 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FAC65D194;
+        Thu,  5 May 2022 12:32:24 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.91,203,1647270000"; 
-   d="scan'208";a="118803611"
+   d="scan'208";a="120034550"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 06 May 2022 04:32:15 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 06 May 2022 04:32:24 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id E850D40E166D;
-        Fri,  6 May 2022 04:32:11 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id A078440E166D;
+        Fri,  6 May 2022 04:32:20 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -35,9 +35,9 @@ Cc:     linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Phil Edworthy <phil.edworthy@renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [RFC PATCH 2/4] clk: renesas: rzg2l-cpg: Add support to stack the resets instead of indexing
-Date:   Thu,  5 May 2022 20:31:41 +0100
-Message-Id: <20220505193143.31826-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [RFC PATCH 4/4] clk: renesas: r9a07g043: Add support for RZ/Five SoC
+Date:   Thu,  5 May 2022 20:31:43 +0100
+Message-Id: <20220505193143.31826-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220505193143.31826-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20220505193143.31826-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -45,162 +45,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of indexing the resets, stack them and instead create an id member
-in struct rzg2l_reset to store the index. With this approach for every id
-we will have to loop through the resets array to match the id.
-
-This in preparation to add support for Renesas RZ/Five CPG in
-r9a07g043-cpg.c file where the resets array will be split up into three
-i.e. common and two SoC specific.
+Add minimal clock and resets entries required to boot RZ/Five SoC.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- drivers/clk/renesas/rzg2l-cpg.c | 76 ++++++++++++++++++++++++++-------
- drivers/clk/renesas/rzg2l-cpg.h |  4 +-
- 2 files changed, 63 insertions(+), 17 deletions(-)
+ drivers/clk/renesas/r9a07g043-cpg.c | 30 +++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
-index 1ce35f65682b..94fe307ec4c5 100644
---- a/drivers/clk/renesas/rzg2l-cpg.c
-+++ b/drivers/clk/renesas/rzg2l-cpg.c
-@@ -681,14 +681,37 @@ rzg2l_cpg_register_mod_clk(const struct rzg2l_mod_clk *mod,
- 
- #define rcdev_to_priv(x)	container_of(x, struct rzg2l_cpg_priv, rcdev)
- 
-+static const struct rzg2l_reset
-+*rzg2l_get_reset_ptr(struct rzg2l_cpg_priv *priv,
-+		     unsigned long id)
-+
-+{
-+	const struct rzg2l_cpg_info *info = priv->info;
-+	unsigned int i;
-+
-+	for (i = 0; i < priv->num_resets; i++) {
-+		if (info->resets[i].id == id)
-+			return &info->resets[i];
-+	}
-+
-+	return NULL;
-+}
-+
- static int rzg2l_cpg_reset(struct reset_controller_dev *rcdev,
- 			   unsigned long id)
- {
- 	struct rzg2l_cpg_priv *priv = rcdev_to_priv(rcdev);
--	const struct rzg2l_cpg_info *info = priv->info;
--	unsigned int reg = info->resets[id].off;
--	u32 dis = BIT(info->resets[id].bit);
--	u32 we = dis << 16;
-+	const struct rzg2l_reset *reset;
-+	unsigned int reg;
-+	u32 dis, we;
-+
-+	reset = rzg2l_get_reset_ptr(priv, id);
-+	if (!reset)
-+		return -EINVAL;
-+
-+	reg = reset->off;
-+	dis = BIT(reset->bit);
-+	we = dis << 16;
- 
- 	dev_dbg(rcdev->dev, "reset id:%ld offset:0x%x\n", id, CLK_RST_R(reg));
- 
-@@ -708,9 +731,16 @@ static int rzg2l_cpg_assert(struct reset_controller_dev *rcdev,
- 			    unsigned long id)
- {
- 	struct rzg2l_cpg_priv *priv = rcdev_to_priv(rcdev);
--	const struct rzg2l_cpg_info *info = priv->info;
--	unsigned int reg = info->resets[id].off;
--	u32 value = BIT(info->resets[id].bit) << 16;
-+	const struct rzg2l_reset *reset;
-+	unsigned int reg;
-+	u32 value;
-+
-+	reset = rzg2l_get_reset_ptr(priv, id);
-+	if (!reset)
-+		return -EINVAL;
-+
-+	reg = reset->off;
-+	value = BIT(reset->bit) << 16;
- 
- 	dev_dbg(rcdev->dev, "assert id:%ld offset:0x%x\n", id, CLK_RST_R(reg));
- 
-@@ -722,11 +752,17 @@ static int rzg2l_cpg_deassert(struct reset_controller_dev *rcdev,
- 			      unsigned long id)
- {
- 	struct rzg2l_cpg_priv *priv = rcdev_to_priv(rcdev);
--	const struct rzg2l_cpg_info *info = priv->info;
--	unsigned int reg = info->resets[id].off;
--	u32 dis = BIT(info->resets[id].bit);
--	u32 value = (dis << 16) | dis;
-+	const struct rzg2l_reset *reset;
-+	unsigned int reg;
-+	u32 dis, value;
-+
-+	reset = rzg2l_get_reset_ptr(priv, id);
-+	if (!reset)
-+		return -EINVAL;
- 
-+	reg = reset->off;
-+	dis = BIT(reset->bit);
-+	value = (dis << 16) | dis;
- 	dev_dbg(rcdev->dev, "deassert id:%ld offset:0x%x\n", id,
- 		CLK_RST_R(reg));
- 
-@@ -738,9 +774,16 @@ static int rzg2l_cpg_status(struct reset_controller_dev *rcdev,
- 			    unsigned long id)
- {
- 	struct rzg2l_cpg_priv *priv = rcdev_to_priv(rcdev);
--	const struct rzg2l_cpg_info *info = priv->info;
--	unsigned int reg = info->resets[id].off;
--	u32 bitmask = BIT(info->resets[id].bit);
-+	const struct rzg2l_reset *reset;
-+	unsigned int reg;
-+	u32 bitmask;
-+
-+	reset = rzg2l_get_reset_ptr(priv, id);
-+	if (!reset)
-+		return -EINVAL;
-+
-+	reg = reset->off;
-+	bitmask = BIT(reset->bit);
- 
- 	return !(readl(priv->base + CLK_MRST_R(reg)) & bitmask);
- }
-@@ -756,10 +799,11 @@ static int rzg2l_cpg_reset_xlate(struct reset_controller_dev *rcdev,
- 				 const struct of_phandle_args *reset_spec)
- {
- 	struct rzg2l_cpg_priv *priv = rcdev_to_priv(rcdev);
--	const struct rzg2l_cpg_info *info = priv->info;
- 	unsigned int id = reset_spec->args[0];
-+	const struct rzg2l_reset *reset;
- 
--	if (id >= rcdev->nr_resets || !info->resets[id].off) {
-+	reset = rzg2l_get_reset_ptr(priv, id);
-+	if (!reset) {
- 		dev_err(rcdev->dev, "Invalid reset index %u\n", id);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/clk/renesas/rzg2l-cpg.h b/drivers/clk/renesas/rzg2l-cpg.h
-index 92c88f42ca7f..a99f2ba7868f 100644
---- a/drivers/clk/renesas/rzg2l-cpg.h
-+++ b/drivers/clk/renesas/rzg2l-cpg.h
-@@ -152,12 +152,14 @@ struct rzg2l_mod_clk {
-  * @bit: reset bit
-  */
- struct rzg2l_reset {
-+	unsigned int id;
- 	u16 off;
- 	u8 bit;
+diff --git a/drivers/clk/renesas/r9a07g043-cpg.c b/drivers/clk/renesas/r9a07g043-cpg.c
+index 27b47ecfe4d8..95ea639490ef 100644
+--- a/drivers/clk/renesas/r9a07g043-cpg.c
++++ b/drivers/clk/renesas/r9a07g043-cpg.c
+@@ -151,7 +151,7 @@ static const struct {
+ static const struct {
+ 	struct rzg2l_mod_clk common[54];
+ #ifdef CONFIG_RISCV
+-	struct rzg2l_mod_clk rzfive[0];
++	struct rzg2l_mod_clk rzfive[2];
+ #else
+ 	struct rzg2l_mod_clk rzg2ul[3];
+ #endif
+@@ -268,6 +268,10 @@ static const struct {
+ 	},
+ #ifdef CONFIG_RISCV
+ 	.rzfive = {
++		DEF_MOD("iax45_pclk",	R9A07G043_IAX45_PCLK, R9A07G043_CLK_P2,
++					0x518, 0),
++		DEF_MOD("iax45_clk",	R9A07G043_IAX45_CLK, R9A07G043_CLK_P1,
++					0x518, 1),
+ 	},
+ #else
+ 	.rzg2ul = {
+@@ -284,7 +288,7 @@ static const struct {
+ static const struct {
+ 	struct rzg2l_reset common[42];
+ #ifdef CONFIG_RISCV
+-	struct rzg2l_reset rzfive[0];
++	struct rzg2l_reset rzfive[1];
+ #else
+ 	struct rzg2l_reset rzg2ul[3];
+ #endif
+@@ -335,6 +339,7 @@ static const struct {
+ 	},
+ #ifdef CONFIG_RISCV
+ 	.rzfive = {
++		DEF_RST(R9A07G043_IAX45_RESETN, 0x818, 0),
+ 	},
+ #else
+ 	.rzg2ul = {
+@@ -345,16 +350,27 @@ static const struct {
+ #endif
  };
  
- #define DEF_RST(_id, _off, _bit)	\
--	[_id] = { \
-+	{ \
-+		.id = (_id), \
- 		.off = (_off), \
- 		.bit = (_bit) \
- 	}
++#ifdef CONFIG_RISCV
++static const unsigned int r9a07g043_crit_mod_clks[] __initconst = {
++	MOD_CLK_BASE + R9A07G043_IAX45_CLK,
++	MOD_CLK_BASE + R9A07G043_DMAC_ACLK,
++};
++#else
+ static const unsigned int r9a07g043_crit_mod_clks[] __initconst = {
+ 	MOD_CLK_BASE + R9A07G043_GIC600_GICCLK,
+ 	MOD_CLK_BASE + R9A07G043_IA55_CLK,
+ 	MOD_CLK_BASE + R9A07G043_DMAC_ACLK,
+ };
++#endif
+ 
+ const struct rzg2l_cpg_info r9a07g043_cpg_info = {
+ 	/* Core Clocks */
+ 	.core_clks = core_clks.common,
++#ifdef CONFIG_RISCV
++	.num_core_clks = ARRAY_SIZE(core_clks.common),
++#else
+ 	.num_core_clks = ARRAY_SIZE(core_clks.common) + ARRAY_SIZE(core_clks.rzg2ul),
++#endif
+ 	.last_dt_core_clk = LAST_DT_CORE_CLK,
+ 	.num_total_core_clks = MOD_CLK_BASE,
+ 
+@@ -364,10 +380,20 @@ const struct rzg2l_cpg_info r9a07g043_cpg_info = {
+ 
+ 	/* Module Clocks */
+ 	.mod_clks = mod_clks.common,
++#ifdef CONFIG_RISCV
++	.num_mod_clks = ARRAY_SIZE(mod_clks.common) + ARRAY_SIZE(mod_clks.rzfive),
++	.num_hw_mod_clks = R9A07G043_IAX45_PCLK + 1,
++#else
++
+ 	.num_mod_clks = ARRAY_SIZE(mod_clks.common) + ARRAY_SIZE(mod_clks.rzg2ul),
+ 	.num_hw_mod_clks = R9A07G043_TSU_PCLK + 1,
++#endif
+ 
+ 	/* Resets */
+ 	.resets = resets.common,
++#ifdef CONFIG_RISCV
++	.num_resets = ARRAY_SIZE(resets.common) + ARRAY_SIZE(resets.rzfive),
++#else
+ 	ARRAY_SIZE(resets.common) + ARRAY_SIZE(resets.rzg2ul),
++#endif
+ };
 -- 
 2.25.1
 
