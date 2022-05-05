@@ -2,88 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F26C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4412C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345873AbiEEHs2 (ORCPT
+        id S1345883AbiEEHtm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
+        Thu, 5 May 2022 03:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345862AbiEEHsZ (ORCPT
+        with ESMTP id S234066AbiEEHtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:48:25 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B39A48E7B
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:44:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651736686; x=1683272686;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=5QZH20R4CRpJrDQqN3b7LZQ9qf0vHi0fRJF3GqUhTtc=;
-  b=BxyEnwxruS1W5OHXPNOisvnSyIM/YvAs2jYXlgUy/o0sCOvnnlR3LHN3
-   35rcOjdeR416FjVzizkOA9tRpIzQfd6v6LCMkdYJ85dE/gv4teWf4Eqol
-   RdmSj2xvRwidm495XYqN/ck+Z0O+dozckeISUcLmJ3AjTN9NM61RYFjWF
-   lrCaJuIUaR1prJwVCMaSEozOhX/CHbP7dODxsHyaBfoEs2hTQsQ8zVz//
-   hEstX+V9b6JU/YA/XXjL99rnQwIbJHurBgESml00fRE5egxw48yu58wjN
-   uP+YTW+BUCyXxocB8PKHtQozZUHRwqJSjBE76dnv/KTos7VvtOx8fsqV7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267628614"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="267628614"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 00:44:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="694551362"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 00:44:45 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmWAG-000CC3-Hk;
-        Thu, 05 May 2022 07:44:44 +0000
-Date:   Thu, 5 May 2022 15:44:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: sh4-linux-gcc: error: unrecognized command-line option
- '-Wout-of-line-declaration'; did you mean '-Wold-style-declaration'?
-Message-ID: <202205051555.tsDPbiZY-lkp@intel.com>
+        Thu, 5 May 2022 03:49:41 -0400
+X-Greylist: delayed 341 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 00:46:02 PDT
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6C131D311
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651736761;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NhRL0x5JxNjh9559awUlQzavmJp0VQ+2PFdUhFoZcIo=;
+        b=YE+E/wMfI2VAHzwS4wt9hBWFmSJMW6bOb5ymBor3H2Eh+YanaxSYowGJ86DyBQOJhbUGDJ
+        s5WBtXI7TmrIkg4YHRS4Me57SqZW+zdzySknhArvP3TWC4PguZqXQQH63bekkxr+BcARWS
+        CKWsRUbPYqCzAh0CZ7/v03NKWVbnqtc=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-496-0JGUhcPYOGeqyfqyywo4kA-1; Thu, 05 May 2022 03:38:52 -0400
+X-MC-Unique: 0JGUhcPYOGeqyfqyywo4kA-1
+Received: by mail-wm1-f69.google.com with SMTP id o24-20020a05600c379800b003943412e81dso1418207wmr.6
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 00:38:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NhRL0x5JxNjh9559awUlQzavmJp0VQ+2PFdUhFoZcIo=;
+        b=qyxLnIAB3MTsJQzhp8zKUeNVK6kAmD6ChZv7zM6oqywB0vLi/ElFdhoqXKG0vgwYtf
+         uK8Aj2eQ+yAZlkFGCZgkF1d+Pf2Ak5agjHIA7hKGaYUw4T3XrK3al7z5J841mkCQMX+g
+         N3koTyBh+gQcCgbEKq0tkiEIQV+lj+jmDC9ghDWpRmP+D4I/TnPaGXm4/dIo6hwUhSfY
+         xdfVb1hUY1JlyJjLrpuxNsdSqccVBSk/zN6Qgs+GpSzaQvh0AqwRYwKzgkje2fA/2Qg+
+         OM0eIG+9HFdvK1TrLDTib9Np5mbP/vngBpbRFOoG6sOqS4NbaZ5/XKHiROGyG0kp4qJN
+         eIig==
+X-Gm-Message-State: AOAM530YshU6Tj/63bjdx0L1RI0tJWDapPvODPlf5LH+RuPkP+qDbBfQ
+        e5N+LyYDEZqbgdAK2DmKVA0M2ovak2JQxEe3/Ac2j4GG7IPP/pH6LpXyihz1TNLoLynlnlIVSjV
+        mQ57K+o53BpGhWxvmZLcyIMRV
+X-Received: by 2002:a5d:4585:0:b0:20a:da03:7131 with SMTP id p5-20020a5d4585000000b0020ada037131mr19047527wrq.693.1651736331459;
+        Thu, 05 May 2022 00:38:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwOiVrqfx6icK3c6hK4kQWSA8M7R4dWtYNn2w4VZryyBpTxL+R3XPp9/Z57KoRlU/8Sy+vNog==
+X-Received: by 2002:a5d:4585:0:b0:20a:da03:7131 with SMTP id p5-20020a5d4585000000b0020ada037131mr19047508wrq.693.1651736331173;
+        Thu, 05 May 2022 00:38:51 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id x8-20020a7bc768000000b003942a244f2fsm5546131wmk.8.2022.05.05.00.38.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 00:38:50 -0700 (PDT)
+Message-ID: <d9a5cb30-2d9b-50b5-d287-0ead0fe252f3@redhat.com>
+Date:   Thu, 5 May 2022 09:38:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 2/3] fbdev/simplefb: Cleanup fb_info in .fb_destroy rather
+ than .remove
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+        Hans de Goede <hdegoede@redhat.com>
+References: <20220504215151.55082-1-javierm@redhat.com>
+ <20220504215722.56970-1-javierm@redhat.com>
+ <974f4d00-89bc-a2da-6d65-ca4207300794@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <974f4d00-89bc-a2da-6d65-ca4207300794@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Konstantin,
+Hello Thomas,
 
-FYI, the error/warning still remains.
+On 5/5/22 09:29, Thomas Zimmermann wrote:
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   a7391ad3572431a354c927cf8896e86e50d7d0bf
-commit: 6e5be40d32fb1907285277c02e74493ed43d77fe fs/ntfs3: Add NTFS3 in fs/Kconfig and fs/Makefile
-date:   9 months ago
-config: sh-randconfig-r024-20220505 (https://download.01.org/0day-ci/archive/20220505/202205051555.tsDPbiZY-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6e5be40d32fb1907285277c02e74493ed43d77fe
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6e5be40d32fb1907285277c02e74493ed43d77fe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash
+[snip]
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>>   static void simplefb_destroy(struct fb_info *info)
+>>   {
+>>   	struct simplefb_par *par = info->par;
+>> @@ -94,6 +98,8 @@ static void simplefb_destroy(struct fb_info *info)
+>>   	if (info->screen_base)
+>>   		iounmap(info->screen_base);
+>>   
+>> +	framebuffer_release(info);
+>> +
+>>   	if (mem)
+>>   		release_mem_region(mem->start, resource_size(mem));
+> 
+> The original problem with fbdev hot-unplug was that vmwgfx needed the 
+> framebuffer region to be released. If we release it only after userspace 
+> closed it's final file descriptor, vmwgfx could have already failed.
+> 
+> I still don't fully get why this code apparently works or at least 
+> doesn't blow up occasionally. Any ideas?
+>
 
-All errors (new ones prefixed by >>):
+I believe that vmwgfx doesn't fail to probe (or any other DRM driver)
+only when there are not user-space processes with a fbdev node opened
+since otherwise as you said the memory wouldn't be released yet.
 
->> sh4-linux-gcc: error: unrecognized command-line option '-Wout-of-line-declaration'; did you mean '-Wold-style-declaration'?
+unregister_framebuffer() is called from the driver's .remove handler
+and that decrement the fb_info refcount, so if reaches zero it will
+call to the fb fops .destroy() handler and release the I/O memory.
+
+In other words, in most cases (i.e: only fbcon bound to the fbdev)
+the driver's removal/ device unbind and the memory release will be
+at the same time.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
