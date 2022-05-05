@@ -2,82 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242112AbiEEDyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 23:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
+        id S241966AbiEED5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 23:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241966AbiEEDyX (ORCPT
+        with ESMTP id S229556AbiEED5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 23:54:23 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2A14A93C;
-        Wed,  4 May 2022 20:50:37 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d22so3241113plr.9;
-        Wed, 04 May 2022 20:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+4u8FWl27VfHdqfIlbyjTh8gyGwlT371BcWanDHWfzg=;
-        b=eVMlCGQpFdio62IA8ASAXoxSgo40hVH5mlz4vVCs9sZ1TFzgtyDx/ne3Eiy31U9vCQ
-         700l4zXt+1sLgpUkGS3ig3Ro0EgmL0eJln/PShhFnr2Dw/sn11PT44kaVlDkDYh9u4hd
-         N4pH8HFgTMz2ILNJcIGGaxrkjSxweIatbnHFQW1D3iFR0LkneC59jX0xlwbtTeMdcMqp
-         auF8ySIam+wLLADOg+K5XONtfKhSByfFEEA2SO4VL3avrUy43CSHFvMs7sSGVkQ7V2OX
-         f1ve84G6AZvQDFvVWH/yVkg35vI7pab0vAGdNomgR74zMT8wCuAD6Rfam+eD8JGM3jwm
-         5o+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+4u8FWl27VfHdqfIlbyjTh8gyGwlT371BcWanDHWfzg=;
-        b=zHaFBGs8W23YPDzvumBfAWBDIrUUHgdR5LWmRt0Z5H2oqH54UiVhLeebjdEfd4LRjG
-         /31J0U57ZbDKT970PDFvYoQqYYEaDeBm5SCIiyTAMC4V1Erf0sppnZMLm+u7X9xVKrC8
-         bldipLdioNRc065jSackoqjXXaNEVr1wkqq+TqkAw60zkKeaoDeAQbKfPIpfBRIJ78SO
-         m9OO5sqKEvCo4KoJqRkEiLGxjqbJfsrm2m9zaPGwD8iRM2MvM9Z2Y3Xk28VP8RGrNVX3
-         Ra6EZFQyy1OWou/CMQnErmBoIY6qwOtSEONZHIJ7sJYE+Oilw1W93Qozg3nJ1rvpkXNP
-         zi6Q==
-X-Gm-Message-State: AOAM532pBKVnp9Txve1xkrvwevPDRv7qOqkm9ZaSA2HV59ZLRInoSFIJ
-        keypBHd0qi2vqtUKweTyaEhQH7JoNW8=
-X-Google-Smtp-Source: ABdhPJzDXGaIuN/D7gwGrbawKh7VbbPwGKt+VUjIoVCxdVj59/S+osHBuhAsg36BfNr3wzprEFqRaA==
-X-Received: by 2002:a17:902:7109:b0:15c:e11e:efd with SMTP id a9-20020a170902710900b0015ce11e0efdmr25133723pll.110.1651722636638;
-        Wed, 04 May 2022 20:50:36 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id 74-20020a62184d000000b0050dc76281f0sm169902pfy.202.2022.05.04.20.50.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 20:50:36 -0700 (PDT)
-Message-ID: <0a7fd3d9-86bd-e030-7d00-c4f99644bb8b@gmail.com>
-Date:   Wed, 4 May 2022 20:50:34 -0700
+        Wed, 4 May 2022 23:57:06 -0400
+X-Greylist: delayed 29375 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 20:53:27 PDT
+Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657F863A2;
+        Wed,  4 May 2022 20:53:27 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 2453qiRF021346;
+        Thu, 5 May 2022 12:52:45 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 2453qiRF021346
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651722765;
+        bh=Xp/Il9izgFFUGGxMDiJyqVoFfLzqSe5l32yd/T521y4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VY6oS+YVRhjSqtwoy042ugda75ysUAUIojehflDfnYTlp0JXZa0/elFOosRxjN67y
+         JB6wRXlIL+0hEDv6YYMKMHwOFokVvVyV1HCmyvZG2wfz88aw6fNnFR6bHU1cgndSjK
+         FOX57Bxocv6ly6biNS23x+aHpiucHsoBUqjqzKb37LTSf97G4CpZ7nJ+qTF7G4diCO
+         uBEy1qIfBSutBrP70b58TsC5abSyO8ZEM1ZyCLx687ET9MztvtdnA7lDENDmAcQWxV
+         uTJW+1HnxjlmM3hY53g0j96oH3R0NV5dL+q3Btg4qnTiqd7GlYyAr06XqJoG4xGkan
+         QPzClrr4Kkqdg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH v2 1/3] module: do not pass opaque pointer for symbol search
+Date:   Thu,  5 May 2022 12:52:10 +0900
+Message-Id: <20220505035212.1130858-2-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220505035212.1130858-1-masahiroy@kernel.org>
+References: <20220505035212.1130858-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 2/2] dt-bindings: gpio: pca95xx: add entry for pca6408
-Content-Language: en-US
-To:     Justin Chen <justinpopo6@gmail.com>, linus.walleij@linaro.org,
-        brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1651703357-25154-1-git-send-email-justinpopo6@gmail.com>
- <1651703357-25154-3-git-send-email-justinpopo6@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <1651703357-25154-3-git-send-email-justinpopo6@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+There is no need to use an opaque pointer for check_exported_symbol()
+or find_exported_symbol_in_section.
 
+Pass (struct find_symbol_arg *) explicitly.
 
-On 5/4/2022 3:29 PM, Justin Chen wrote:
-> The NXP PCA5608 is the 8-bit version of PCA5616.
-> 
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+ kernel/module/main.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index fe44d46c378b..28ece86d99dc 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -244,11 +244,9 @@ static __maybe_unused void *any_section_objs(const struct load_info *info,
+ #endif
+ 
+ static bool check_exported_symbol(const struct symsearch *syms,
+-				  struct module *owner,
+-				  unsigned int symnum, void *data)
++				  struct module *owner, unsigned int symnum,
++				  struct find_symbol_arg *fsa)
+ {
+-	struct find_symbol_arg *fsa = data;
+-
+ 	if (!fsa->gplok && syms->license == GPL_ONLY)
+ 		return false;
+ 	fsa->owner = owner;
+@@ -285,16 +283,15 @@ int cmp_name(const void *name, const void *sym)
+ 
+ static bool find_exported_symbol_in_section(const struct symsearch *syms,
+ 					    struct module *owner,
+-					    void *data)
++					    struct find_symbol_arg *fsa)
+ {
+-	struct find_symbol_arg *fsa = data;
+ 	struct kernel_symbol *sym;
+ 
+ 	sym = bsearch(fsa->name, syms->start, syms->stop - syms->start,
+ 			sizeof(struct kernel_symbol), cmp_name);
+ 
+ 	if (sym != NULL && check_exported_symbol(syms, owner,
+-						 sym - syms->start, data))
++						 sym - syms->start, fsa))
+ 		return true;
+ 
+ 	return false;
 -- 
-Florian
+2.32.0
+
