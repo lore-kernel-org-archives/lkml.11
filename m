@@ -2,92 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F32EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEC9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380376AbiEEOMD (ORCPT
+        id S1380400AbiEEOMn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
+        Thu, 5 May 2022 10:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379552AbiEEOMB (ORCPT
+        with ESMTP id S1380388AbiEEOMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:12:01 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F41D58E7D;
-        Thu,  5 May 2022 07:08:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=8JT2x37xZIzthLtBDgRsuH3ctJdQtVKBakBAtylmM70=; b=qN2OUQgURSd4atQ9ojy4KcXFfS
-        sWIuQHbJNPSlD2E1P1AYNseX/DMWERL/XxEbWf0Ln92hnX/LfynfNczq+DBV+OfTxTdwclMkS5O6d
-        B5pUIzXuLcTs3oRrMsYvREgCNbi1rr5E3v9eP0PQNFUGlIsbZX30nT8Z7Fpfecrj+UabZnxoHILmC
-        IezNI+AEM6kk7OR9ISOTKj+1sLlzN+Rsx6OlZrdElqLfko1pgXkuoNqmKFgsMlZClu9X31T7ETWdv
-        z9SR8j82Tnr31zFYqSmR5Oiq0X3V605KjIFs9rF6sWuG7ul+kFFzulfPRxRkmmUjPVDw00dreV/2j
-        icYj7m/A==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nmc9I-0005v2-8O; Thu, 05 May 2022 16:08:08 +0200
-Message-ID: <53d516d2-a991-05c2-981d-640b05fc5e29@igalia.com>
-Date:   Thu, 5 May 2022 11:07:47 -0300
+        Thu, 5 May 2022 10:12:39 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BE2258E7D
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 07:09:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651759739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VzI9JvCxja3W1WlPRY5tnznUwEDg18sqNajkevf1Dr8=;
+        b=GrMlOfbM3j+DXsYRHJ37ojBdBwOdgRdU7M/NwP9svuTlrEVjTSgcxOMeoUnS17wYBu28+s
+        4K04WTOtzNtKxQSK4mFp6TSsZ7x1ttJX9M3gLq+JHbA8L6pdEdySIf78TtoTa5bTx/AiIr
+        Me65lvFOsfgJLZQzy0zg03EXF5vUQ18=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-404-rDWmC_dUOHCFpUCVEcXMIg-1; Thu, 05 May 2022 10:08:58 -0400
+X-MC-Unique: rDWmC_dUOHCFpUCVEcXMIg-1
+Received: by mail-wm1-f69.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so1799838wmj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 07:08:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=VzI9JvCxja3W1WlPRY5tnznUwEDg18sqNajkevf1Dr8=;
+        b=F85Ktu5KM9Mbe5OmBhfJALXGJKeNPkxrkpfjuk1zYV2D533pH3zE2A7k4F6DJT8h40
+         1qUW4Bvptf1Irh36P1/Q0Tbv8pvVNbBViVFJl9mPSUCrtT0A1D9u5FidoXL0WlK/xZNK
+         1ZwgKrkLj/Nf0kgMi6A9QcmxF+cfByUVZtjN2/vDpts5So3i1PAvX4gmog9hulUt/khw
+         Vt2ocpbrDD1BKn19mSvSgAVYNK00XLT2/gMURnprNyaYFdgyiswUmSyJtaaXGoP+SmHy
+         ArjKHyMmFg+2MCLbOBhOxQrEZmqQrM3QOYRpp3oKayE9qsOkFIwIXDN5qchWlkHcJhsO
+         OZbQ==
+X-Gm-Message-State: AOAM533WDFtSSAsNw6TVFFmrgnw3EHd+cWXnuYz62FFYOm6PAqMkZhHZ
+        O3RCR430hEWIZt14FoNjuqNhi90IrqK2KORJ8jdhkS9FxuSMsRZh0T/lH1w12XddKmvkUrVK76R
+        3Trb2fwr2JqUgDbekP1DEzkH+
+X-Received: by 2002:adf:cc82:0:b0:20a:cf3b:4624 with SMTP id p2-20020adfcc82000000b0020acf3b4624mr20695805wrj.573.1651759736824;
+        Thu, 05 May 2022 07:08:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJycDSaP/HTRh31DRv1701UdMU8PXjQJEzz5lOf8or8YKiW2KqGjGdEQ8AWqpQqk7+z32NLSWg==
+X-Received: by 2002:adf:cc82:0:b0:20a:cf3b:4624 with SMTP id p2-20020adfcc82000000b0020acf3b4624mr20695779wrj.573.1651759736570;
+        Thu, 05 May 2022 07:08:56 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id b4-20020a05600010c400b0020c5253d8fesm1259871wrx.74.2022.05.05.07.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 07:08:55 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Andrew Jones <drjones@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH 003/128] KVM: selftests: Unconditionally compile KVM
+ selftests with -Werror
+In-Reply-To: <20220504224914.1654036-4-seanjc@google.com>
+References: <20220504224914.1654036-1-seanjc@google.com>
+ <20220504224914.1654036-4-seanjc@google.com>
+Date:   Thu, 05 May 2022 16:08:55 +0200
+Message-ID: <875ymk137s.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Should arm64 have a custom crash shutdown handler?
-Content-Language: en-US
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-References: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
- <874k24igjf.wl-maz@kernel.org>
- <92645c41-96fd-2755-552f-133675721a24@igalia.com>
- <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
- <3bee47db-f771-b502-82a3-d6fac388aa89@igalia.com> <878rrg13zb.fsf@redhat.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <878rrg13zb.fsf@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05/2022 10:52, Vitaly Kuznetsov wrote:
-> [...]
-> For Hyper-V, the situation is similar: hv_crash_handler() intitiates
-> VMbus unload on the crashing CPU only, there's no mechanism to do
-> 'global' unload so other CPUs will likely not be able to connect Vmbus
-> devices in kdump kernel but this should not be necessary.
-> 
-> There's a crash_kexec_post_notifiers mechanism which can be used instead
-> but it's disabled by default so using machine_ops.crash_shutdown is
-> better.
-> 
+Sean Christopherson <seanjc@google.com> writes:
 
-Thanks a bunch Vitaly, for the clarification!
+> Specify -Werror when compiling KVM's selftests, there's zero reason to
+> let warnings sneak into the selftests.
+>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  tools/testing/selftests/kvm/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+> index af582d168621..c8efaaeb0885 100644
+> --- a/tools/testing/selftests/kvm/Makefile
+> +++ b/tools/testing/selftests/kvm/Makefile
+> @@ -153,7 +153,7 @@ LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/x86/include
+>  else
+>  LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/$(ARCH)/include
+>  endif
+> -CFLAGS += -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=gnu99 \
+> +CFLAGS += -Wall -Werror -Wstrict-prototypes -Wuninitialized -O2 -g -std=gnu99 \
+>  	-fno-stack-protector -fno-PIE -I$(LINUX_TOOL_INCLUDE) \
+>  	-I$(LINUX_TOOL_ARCH_INCLUDE) -I$(LINUX_HDR_PATH) -Iinclude \
+>  	-I$(<D) -Iinclude/$(UNAME_M) -I.. $(EXTRA_CFLAGS) $(KHDR_INCLUDES)
 
-Just as a heads-up: there's been a panic notifiers refactor proposed [0]
-in which some notifiers will run before kdump by default, not requiring
-"crash_kexec_post_notifiers" (which BTW is *unfortunately* hardcoded as
-'Y' for hyper-v, since a11589563e96).
+"-Werror" in kvm-unit-tests is a constant source of pain as different
+GCC versions tend to produce different warnings. It's going to be even
+worse for selftests: e.g. bisecting an 'old' kernel on a system with
+somewhat 'newer' compiler and selftests don't even build.
 
-Cheers,
+Personally, I'd prefer "-Werror" to be an acceptance criteria for
+upstream patches (e.g. if something produces warnings on Paolo's
+setup -- the patch doesn't get accepted) but not the hardcoded default
+in Makefile.
 
+-- 
+Vitaly
 
-Guilherme
-
-
-[0]
-https://lore.kernel.org/lkml/20220427224924.592546-1-gpiccoli@igalia.com/
