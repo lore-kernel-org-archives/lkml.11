@@ -2,249 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A46C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353719AbiEEJkx (ORCPT
+        id S1353950AbiEEJoN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
+        Thu, 5 May 2022 05:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240726AbiEEJku (ORCPT
+        with ESMTP id S1353964AbiEEJoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:40:50 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B62B2B1BC;
-        Thu,  5 May 2022 02:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651743431; x=1683279431;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=oKs7tNkFTFZVPHog4Wn90nF1EenyG22rUkEGQUSmnX4=;
-  b=UZGJurWjSQk91CIR2jfyAE9VOrFAHAzgya8vwSEQwSt5aYWw1CZVs7LC
-   Bgk8L6t9sXUN535WOBjyrKqMXxkmA4/dbnaAY8bOS7wVDOgZ/GavljGgj
-   ZH077nuRtbCpKAqRZcTIKSXKNto5lXexf6RLUW717G95FoUK9MbrjTZS5
-   gPaEXeRs7tpukGQ79/6eEA+bn2VaeHkTAzt6035nOi2MBhNM7jCzdEwu8
-   M+YYD3JJV4EUsZts6DKoEk8wWN8OlNIGMKs+KLuo/qJzq/+Zh/nhf2Mgv
-   kDXYsJGs4isQ7/F+AO+ASX/rMa1Rux6/gwJDRjm2JCoIVfAbVT0rWLcaK
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="250041331"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="250041331"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 02:37:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="891257640"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
-  by fmsmga005.fm.intel.com with ESMTP; 05 May 2022 02:37:09 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 5 May 2022 02:37:09 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 5 May 2022 02:37:08 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 5 May 2022 02:37:08 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 5 May 2022 02:37:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NHoxzlc4MqetYZMDhagyTvkld1t1oX6V0ByJG2JYjC5sh4ahp3mtFturMsDRl9lhPryWE+65/pWUnRbTkzMHBQYLNfd3azQncoMuLwR74UMQB8oLPiDciDjRWWZiL/sI8bkOTkNvz3NkcDkUPdvFgprRnZyXEm/2zJTnxCF+fauz+td9eeQrr0twMCenZCJmXeDl+5ic/btc6MQIrgARgXvr0Chgd//01jc6b1rTOEyOKgbEf16aOpdt1AK/z/c02va/XzQ/1Omeb8Britl1OwFFk1JBcP/rDFAuH9+ojneER5MQBM9lHy718Z6T/nFZ6mBhEVWCh/dPuz+MLH6Naw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iw4eS7gdmcshmjZ1NfSTC9yV9RVrBdL7mcx0Vhw9jbg=;
- b=hkeKW8UrGBPkVu9Kg3Oiblrg2Z0CdgZDmluBFBjpoPTCXN76MOtX49Kl+XqueK+EQpMCms67UhNn6kiIcvrfFggTmFY8ZJYc5+Zopiy8H4mz2utVbirQ2kl8fakMozsAQlqC3iNrzn67+naHw3cQU1pCZ9Ug10BZvBL7/VbMSo5sNFEmR0W+1zBnCIKdULR3JCDfx4dwzl3ZHR2z8pNJdJycO+OBh6z/vWoF3KS/xW6kGXoMPwY3YPVI4n80udOeeZTLano72EASg7OD7IOlPIB5BUJe336anwiLlcQfNS+odWG85+YJ6aTWrge/qi4wsANRNZzXPehnI7mkSt7WsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5483.namprd11.prod.outlook.com (2603:10b6:408:104::10)
- by CY4PR11MB1688.namprd11.prod.outlook.com (2603:10b6:903:25::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Thu, 5 May
- 2022 09:37:06 +0000
-Received: from BN9PR11MB5483.namprd11.prod.outlook.com
- ([fe80::c076:6436:db8e:ee22]) by BN9PR11MB5483.namprd11.prod.outlook.com
- ([fe80::c076:6436:db8e:ee22%8]) with mapi id 15.20.5206.025; Thu, 5 May 2022
- 09:37:06 +0000
-From:   "Zhang, Tianfei" <tianfei.zhang@intel.com>
-To:     "Wu, Hao" <hao.wu@intel.com>, "trix@redhat.com" <trix@redhat.com>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "Xu, Yilun" <yilun.xu@intel.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Matthew Gerlach" <matthew.gerlach@linux.intel.com>
-Subject: RE: [PATCH v4] uio: dfl: add HSSI subsystem feature id
-Thread-Topic: [PATCH v4] uio: dfl: add HSSI subsystem feature id
-Thread-Index: AQHYYBXhq0QLvnormUiUUyimXrfATK0P1EuAgAAwaMA=
-Date:   Thu, 5 May 2022 09:37:06 +0000
-Message-ID: <BN9PR11MB54834743BD2A4C41B7385B9EE3C29@BN9PR11MB5483.namprd11.prod.outlook.com>
-References: <20220505001628.681226-1-tianfei.zhang@intel.com>
- <DM6PR11MB38197DBE27837090E0C9165985C29@DM6PR11MB3819.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB38197DBE27837090E0C9165985C29@DM6PR11MB3819.namprd11.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b1381c82-c562-4213-3ab2-08da2e7ad1aa
-x-ms-traffictypediagnostic: CY4PR11MB1688:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <CY4PR11MB1688BADC8BDF27CCF9F44DF4E3C29@CY4PR11MB1688.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NjH6tJIz7FxnxOLC0T6pP/KoVMgOgLd9Ib7XzT+NVZ65OxuHE6I43D2gF93znj25LeRR+657CSnrktyuSt5LL39z7hXlx41fzinA9acjpohg/hZJ0ONIZ+Qd8GnWqInLECmGKkMFG/NJlFxYd37jwtIVggdZYKn7mkuvjjwo9oKP59X9KCHielqyG5f824v3EFhLlRMtPosMWlvinDLB5/X0+8cegJd0AF0WYGIDbfi+es+fwSNTk9Hycatj2qpjrFfGnrDvKNE9pAZe2MUjow5zmSXsaoMSFmH4HVJC6DK4JHilmxPAHz3fZWZIan+RRmL7Fah5P/6E46CLgGyYXyaidPT0mANMqJKNs1LYQBgce8nFb9W3cBfGwfq5dzVwUlIP+gmq2u67dy+TAqqsprRifyGPjJqqzb0oupDubpvk897wZVZnpVgOz1v7YmCSFLcsS4FxuIi39snQNDDmyOe+0HpQH7rcgDFG7MKgHXfWCJs2Qoaow7m518h6AVRlnD8lxo5ecC3UeQAThqlaHRDegbt2J7m/0rAlm8/WMknf08l+ONhOy5gmVpg6zgkCUR+29YzB5shoJVH9i8bKu+JUVCRvTsjcZLHC5C1jL71/shppF2LYs4qsuvPp9DC7EgNeIl2IVLmekBUQhYOvGGbuTld7MIrYYDJjCpbMEuvSDZMrd4+hk6MD/lFGcP96R/nl0Vpgi3Vnw56cvckwWYUgQAKJLF94SHbhvOYcgcFzbYqX5MdT65DXPXQIkhqpF0WVZSg6l+s+IwIkeNJ3KfvIO7Kamaym1w+GlNbxyQ8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5483.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(110136005)(55016003)(508600001)(316002)(4326008)(33656002)(66556008)(66476007)(8676002)(66446008)(64756008)(86362001)(76116006)(82960400001)(122000001)(52536014)(54906003)(71200400001)(38100700002)(66946007)(38070700005)(966005)(5660300002)(6506007)(7696005)(2906002)(53546011)(9686003)(83380400001)(26005)(186003)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+d5hViMF4Qy60WfHdc/67L+cJJ0LSVaYm1DfR6FJV4fpSZwGkI9O7Tipsg20?=
- =?us-ascii?Q?0i7fJ/ImvCYDOpQoRDpj1WHbeAEp2ctBhxkcONLiPHUDNmrpcvxxP1nAOlCb?=
- =?us-ascii?Q?SVjVWa3OigHsnfWRL8v1hJRrGwgAViXJbiZcbJ8pJd/+XLqReu5Dbezsiu4/?=
- =?us-ascii?Q?pXJyz9anJJu7aPDmiNen4UoiHgjZkNwxRShtpQYMrOZbAav1D2D+2fta28eH?=
- =?us-ascii?Q?8RmWHqRcv90nUNzqS30+D2kTWMg5gjsH2bw1VsMexStM1R0gvedoBt5Oev8j?=
- =?us-ascii?Q?PEMVe8bYP6W0UgjtAUFQ6vaRevXA1IalFbiNVen3KTJZsnP9UJqwS9bAeV9t?=
- =?us-ascii?Q?ESOsvt8dLAW4yGdJJr9Ote7bZvLKb9roO/AH7b8AG23T3YT0qz5I7LtdAQvU?=
- =?us-ascii?Q?h28Zeyfc+PasIAcz41Ex1sdzFFfUP74KtAMU2VbojvCdo9W0jwYfRyvGbPQt?=
- =?us-ascii?Q?X/puesS5dA1gIndvkFlDwWDfks92qKtuLxBOkF03uUY//ZQ/RQcq7xt/oxDx?=
- =?us-ascii?Q?MSvBpAS4gMeuD18zBw0HCa/Di8Fhog6RbV2hXyWwgMWC/+5RkuB+dsXe/PfB?=
- =?us-ascii?Q?KCgeeRaYSm4lM0yuuP3PNsCjuQw+mJ4OxnUdFjIoouQJ84HETL7DXXvWsUVV?=
- =?us-ascii?Q?EP6g8gv9uHXaHhvsceHXXH7pvkvXwCZUd/TjCnWLIIAtE2fOTYtQDgfOXjpT?=
- =?us-ascii?Q?KYqi1xe7HU2Ysfh4xZdJa+CAZpT2Fxu3tGE9J3XH4/f8IdXwTnxk5fFxTyQo?=
- =?us-ascii?Q?OzxXVxzymNh0K75FePNj/lUcMjV90pVG0HS/LJCBChpGZUsl44KmBjwlCCSn?=
- =?us-ascii?Q?e1589+fXyVs7jiQ1Izr6T0GnENYMdjImBQO+Ye1Bm0HVxtgmsSZNsJ+N04p7?=
- =?us-ascii?Q?AAgDqMu1J/g/g4J8X+eg6N55pWCVZ68vT2TjfUUV9mqLg0hhMgJIXWvuroK/?=
- =?us-ascii?Q?Qv28IDjUBeo8/UBryex5Uj1Own5Y3yhIEiu6pp3IAk7Eaxbc2sFy4Nr/pWN5?=
- =?us-ascii?Q?lSBaYSwlkZ/PCAg2Kt0ispc2Zx6QeHZQpvLEhz9NL7mLSKedo/rPGHBxVqWL?=
- =?us-ascii?Q?fv22I43A/FlimJsSRuax4ActjYny+AwwhQmcf7REOCGEuqr+L9j0es8ezU33?=
- =?us-ascii?Q?FVILGzKUpuhSVbs9dFrt+9GP1/PSLXp8OBTjUz4RdG5lIE7QZdD6r1i4Wkut?=
- =?us-ascii?Q?Xq5749hfAvOGDKhDEfl0eqNO0t909ASQv+2T41fmR98J/Jeusn58MaE97+Sn?=
- =?us-ascii?Q?livBez3LEngdfCfH7G+tMupIGOnTMD1d3JHd1gxRZ1XAGTEUyncnk/H2Ir8U?=
- =?us-ascii?Q?hxxwewSJbIR9POWyUZQe91ldIQQyiCjg9Pchp1hwqjB9IM9dpvOrkVLNE4lI?=
- =?us-ascii?Q?b82AcEDb4FT2wfJF7U05VZPnymUiMkue8N1ChSnxM9yOkZErSPfFiqt3JFiU?=
- =?us-ascii?Q?gUpTk+3aHjJJdPclyv4BJPAOXb+j5u8HeNlHf2mfWAc/+/wKhH19G3wEDmBJ?=
- =?us-ascii?Q?YLfT7oqyjBLgJbpNZTR3qzo+f70rEfkM5PRFbGmCzSQna38txxjrNm0hgZVo?=
- =?us-ascii?Q?+7oLFsbSqLaGfN1tPv76v+dpX5Ge9CHV2ytzHjzEXWkKkeAaZj6ewewmROcv?=
- =?us-ascii?Q?nNnWjetFv9zfWr03m0plJth30qQCqtsRWkrASlI9kuvx0bK6O5o78XMWhmHM?=
- =?us-ascii?Q?Z8dk8H7yfE6OFgM5pDtmRxN1F5WbSXMCRgUjoWF//pS55daLS2W9NTw9LSJi?=
- =?us-ascii?Q?uBk5EkMNmQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 5 May 2022 05:44:02 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD1A559D
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:40:21 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id m11so3762648oib.11
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:40:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=maqNc6X60AFk82c5W+wK5qE87dDXvqWe3bNnG5yGS3A=;
+        b=cWWuKz++JgE1mA8d4j+xQNByLn8gBMVpHgGuBxoX8NY7UlT2Zy96279STSSDOXcFuC
+         NkHQYWhH18BMkGba2qayHlvSVha0gQGK02vmBzUgF0SUg9MdcGZtj+CpJ1NcYOk7Z2ss
+         lRV5Dv3oNvtn0mrbYd2hWIxDOpbYnwbRPibmgOVERe9VvN25/WPGFuleUoj4QN1TaMLP
+         vrL+tFUmuhRmjXkF6Hz0pwBd6taDYjyYdXufuYNxkqpybjkQbc8rJSQubwqjr/5scSjf
+         vhgXWBVxFlxBewIMEzmT3JBjSzPYLpf1fSn1nZ7tjFplcsRc3QX/09ez8p89lm2b9Pf8
+         SPsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=maqNc6X60AFk82c5W+wK5qE87dDXvqWe3bNnG5yGS3A=;
+        b=Db/1J3BNHL/VzqDu+5aj0gw/Zga8ci4yibVKVzwek0cB6UkmSJvmNFdzZwuZcRuCv6
+         Cx67YlPstAJCOrjh/rVu3kA85oXxGFfb3rlfwRJazj0ji1YgV8qAd7dtK20HlwoPeYkf
+         WIoYupgmwFXeO7dyBwuv4o2+RF08lWKGBF/6VMU+FLMSN9BCyBy10GscvdNpmAeOBbEi
+         Alhr2c5eaDkQGa56z6q6ZAdYVux+H9BWJo2X7MjKNtDoBywqeU9+12WmIFI2NdViAJ+j
+         xooFd/10Kv/YcZ7NgdO0BRi8hElxtdW0kIqZdTJmQVtq2V3BR0uPMkiPKl/z7UTDD+6B
+         FKeg==
+X-Gm-Message-State: AOAM532x4cUX8AP8FPZqomO0788pHc7Lsq3STXdDwBlIVarUpw7mZ59W
+        lZpIFHJRceJRYY4xAr1jMSL3tjN88zNZP4CS8qDPdA==
+X-Google-Smtp-Source: ABdhPJy0XuV7JaPY0mxu7wXL7UTpaUWMS6RJeJeo49dJ5lOJZ/MtDLF8CL4veT/4tofFYwGBrWAkpK494YBfJUVIGs8=
+X-Received: by 2002:a05:6808:1527:b0:326:3427:c2b1 with SMTP id
+ u39-20020a056808152700b003263427c2b1mr1824129oiw.217.1651743620905; Thu, 05
+ May 2022 02:40:20 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5483.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1381c82-c562-4213-3ab2-08da2e7ad1aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2022 09:37:06.4672
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CfSdUJf4YJXaIVA2my+W7adlFDh0kdfU/s2kPa3CMQ595vJYMFUBpK0RnCvxkZDXcweRTRv50KlJ5e8bgHXOpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1688
-X-OriginatorOrg: intel.com
+References: <1698297.NAKyZzlH2u@archbook> <20220504132130.wmmmge6qjc675jw6@bogus>
+ <3764923.NsmnsBrXv5@archbook> <YnOEwuuyO2/h7c1G@e120937-lin>
+In-Reply-To: <YnOEwuuyO2/h7c1G@e120937-lin>
+From:   Etienne Carriere <etienne.carriere@linaro.org>
+Date:   Thu, 5 May 2022 11:40:09 +0200
+Message-ID: <CAN5uoS_MgBiTVZCRSZyYCH4cnUZD_bHj2+mZu661bFV8TKWScw@mail.gmail.com>
+Subject: Re: [BUG] New arm scmi check in linux-next causing rk3568 not to boot
+ due to firmware bug
+To:     Cristian Marussi <cristian.marussi@arm.com>
+Cc:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        Liang Chen <cl@rock-chips.com>, linux-kernel@vger.kernel.org,
+        Kever Yang <kever.yang@rock-chips.com>,
+        Jeffy Chen <jeffy.chen@rock-chips.com>,
+        Peter Geis <pgwipeout@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Nicolas, Cristian,
+
+On Thu, 5 May 2022 at 10:03, Cristian Marussi <cristian.marussi@arm.com> wrote:
+>
+> On Wed, May 04, 2022 at 07:51:45PM +0200, Nicolas Frattaroli wrote:
+> > On Mittwoch, 4. Mai 2022 15:21:30 CEST Sudeep Holla wrote:
+> > > + Cristian
+>
+> +Etieenne
+>
+> Hi Nicolas,
+>
+> > >
+> > > Hi Nicolas,
+> > >
+> > > Thanks for the formal report.
+> > >
+> > > On Wed, May 04, 2022 at 02:49:07PM +0200, Nicolas Frattaroli wrote:
+> > > > Good day,
+> > > >
+> > > > a user on the #linux-rockchip channel on the Libera.chat IRC network
+> > > > reported that their RK3568 was no longer getting a CPU and GPU clock
+> > > > from scmi and consequently not booting when using linux-next. This
+> > > > was bisected down to the following commit:
+> > > >
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/drivers/firmware/arm_scmi/base.c?h=next-20220503&id=3b0041f6e10e5bdbb646d98172be43e88734ed62
+> > > >
+> > > > The error message in the log is as follows:
+> > > >
+> > > > arm-scmi firmware:scmi: Malformed reply - real_sz:8  calc_sz:4, t->rx.len is 12, sizeof(u32) is 4, loop_num_ret is 3
+> > > >
+> > > > The rockchip firmware (bl31) being used was v1.32, from here:
+> > > >
+> > > > https://github.com/JeffyCN/rockchip_mirrors/blob/rkbin/bin/rk35/rk3568_bl31_v1.32.elf
+> > > >
+> > >
+> > > So this platform is not supported in upstream TF-A like its predecessors ?
+> >
+> > Hello,
+> >
+> > it is not yet supported by upstream. Rockchip plans to release the sources
+> > for it at some point if I recall correctly, but I believe their software
+> > team has been very busy due to new hardware releases, so it hasn't happened
+> > yet. I hope we'll see an open source release of the TF-A sources eventually,
+> > so that for bugs like this we can always fix them without the vendor needing
+> > to do it for us.
+> >
+> > >
+> > > > This seems like a non-fatal firmware bug, for which a kernel workaround is
+> > > > certainly possible, but it would be good if rockchip could fix this in their
+> > > > firmware.
+> > > >
+> > >
+> > > Indeed, we added this check finding issue in one of our tests. Luckily
+> > > it helped to unearth the same issue on this platform, but due to the
+> > > nature of its f/w release, it is bit unfortunate that it can't be fixed
+> > > easily and quickly. But I really wish this gets fixed in the firmware.
+> > > Are there any other f/w bugs reported so far ? If so how are they fixed
+> > > as I don't expect all such bugs can be worked around in the kernel though
+> > > this might be. I would like to hear details there if possible.
+> >
+> > I'm not aware of how the rockchip bug report workflow works. They seemingly
+> > did update the firmware multiple times, last in October of 2021.
+> >
+> > The official rockchip repository at [1] hasn't been kept as up to date as
+> > the mirror by a rockchip employee at [2], so most people seem to have been
+> > using the latter. Speaking of which, I'll add the owner of that repo to
+> > the CC of this thread to make sure this doesn't get lost.
+> >
+> > Rockchip lists an e-mail at [3] for reporting issues at, but this seems to
+> > relate to their open-source documentation. The official github repository
+> > of "rkbin" on the "rockchip-linux" organisation does not have issues
+> > enabled, so submitting a bug report through that is unfortunately not
+> > possible.
+>
+> Having a quick look at TF-A SCMI code in charge of this message (at least in
+> the upstream):
+>
+> https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git/tree/drivers/scmi-msg/base.c#n136
+>
+> it seems to me that the bug lies in the fact that the BASE_DISCOVER_PROTOCOLS
+> response message built by the function above is not properly sized: the trailing
+> message payload carrying the list of protocols (after returned_protos field) returns
+> always a fixed arbitrarily sized payload, possibly zeroed if fewer protocols are
+> carried.
+>
+> IOW, even though the answer in this case carries 3 items/protocols, the payload
+> is anyway 8 bytes (with the last 5 bytes zeroed), while by the spec it should have
+> been just 4 bytes.
+>
+> (in fact testing the kernel fix on a JUNO with last SCP fw release did NOT expose
+> any issue...)
+>
+> I think a fix FW side could be something along these lines (UNTESTED NOR
+> BUILT ! ... I Cc'ed Etienne that seems the author of this bit)
+>
+> This basically mirrors the same checks introduced in kernel...if someone
+> is fancy/able to test it....
+
+Indeed the firmware implementation is wrong in TF-A.
+And also in OP-TEE by the way:
+https://github.com/OP-TEE/optee_os/blob/3.17.0/core/drivers/scmi-msg/base.c#L163-L166
+
+@Nicoals, do you want to send a patch to TF-A, or do you want me to do it?
+
+I can fix the optee_os implementation. I'll tell you when I'll have
+created a P-R.
+The fix is the same for TF-A and OP-TEE.
+Proposal from Cristian looks good to me, maybe simplified:
+
+```patch
+         memcpy(outargs, &p2a, sizeof(p2a));
+         memcpy(outargs + sizeof(p2a), list + a2p->skip, count);
+
+-        scmi_write_response(msg, outargs, sizeof(outargs));
++        list_sz = (1 + (count - 1) / sizeof(uint32_t)) * sizeof(uint32_t);
++        scmi_write_response(msg, outargs, sizeof(p2a) + list_sz);
+```
 
 
-> -----Original Message-----
-> From: Wu, Hao <hao.wu@intel.com>
-> Sent: Thursday, May 5, 2022 2:35 PM
-> To: Zhang, Tianfei <tianfei.zhang@intel.com>; trix@redhat.com;
-> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; linux-fpga@vger.kernel.or=
-g;
-> gregkh@linuxfoundation.org
-> Cc: linux-kernel@vger.kernel.org; Matthew Gerlach
-> <matthew.gerlach@linux.intel.com>
-> Subject: RE: [PATCH v4] uio: dfl: add HSSI subsystem feature id
->=20
-> > -----Original Message-----
-> > From: Zhang, Tianfei <tianfei.zhang@intel.com>
-> > Sent: Thursday, May 5, 2022 8:16 AM
-> > To: Wu, Hao <hao.wu@intel.com>; trix@redhat.com; mdf@kernel.org; Xu,
-> > Yilun <yilun.xu@intel.com>; linux-fpga@vger.kernel.org;
-> > gregkh@linuxfoundation.org
-> > Cc: linux-kernel@vger.kernel.org; Matthew Gerlach
-> > <matthew.gerlach@linux.intel.com>; Zhang, Tianfei
-> > <tianfei.zhang@intel.com>
-> > Subject: [PATCH v4] uio: dfl: add HSSI subsystem feature id
+>
+> diff --git a/drivers/scmi-msg/base.c b/drivers/scmi-msg/base.c
+> index 2d7203451..35c99e308 100644
+> --- a/drivers/scmi-msg/base.c
+> +++ b/drivers/scmi-msg/base.c
+> @@ -142,6 +142,7 @@ static void discover_list_protocols(struct scmi_msg *msg)
+>         uint8_t outargs[sizeof(p2a) + MAX_PROTOCOL_IN_LIST] = { 0U };
+>         const uint8_t *list = NULL;
+>         unsigned int count = 0U;
+> +       size_t list_sz = 0U;
+>
+>         if (msg->in_size != sizeof(*a2p)) {
+>                 scmi_status_response(msg, SCMI_PROTOCOL_ERROR);
+> @@ -163,9 +164,12 @@ static void discover_list_protocols(struct scmi_msg *msg)
+>         p2a.num_protocols = count;
+>
+>         memcpy(outargs, &p2a, sizeof(p2a));
+> -       memcpy(outargs + sizeof(p2a), list + a2p->skip, count);
+> -
+> -       scmi_write_response(msg, outargs, sizeof(outargs));
+> +       if (count) {
+> +               memcpy(outargs + sizeof(p2a), list + a2p->skip, count);
+> +               list_sz = (1 + (count - 1) / sizeof(uint32_t)) *
+> +                          sizeof(uint32_t);
+> +       }
+> +       scmi_write_response(msg, outargs, sizeof(p2a) + list_sz);
+>  }
+>
+>
 > >
-> > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > >
+> > > > The user going by "amazingfate" reported that commenting out the
+> > > >   ret = -EPROTO; break;
+> > > > fixes the issue for them.
+> > > >
+> > >
+> > > Sure, or we could relax the check as calc_sz <= real_sz or something so
+> > > that the reverse is still caught and handled as OS might read junk data in
+> > > the later case.
 > >
-> > Add the Device Feature List (DFL) feature id for the High Speed Serial
-> > Interface (HSSI) Subsystem to the table of ids supported by the
-> > uio_dfl driver.
+> > This seems like a good solution, that way we're unlikely to ever run into a
+> > situation where the kernel does the wrong thing here even if we're less
+> > strict about the check. In either case, it should print a dev_err though,
+> > it's still an error even if we can tolerate it in some cases.
 > >
-> > The HSSI Subsystem is a configurable set of IP blocks to be used as
-> > part of a Ethernet or PCS/FEC/PMA pipeline.
-> > Like the Ethernet group used by the N3000 card, the HSSI Subsystem
-> > does not fully implement a network device from a Linux netdev
-> > perspective and is controlled and monitored from user space software
-> > via the uio interface.
+> > >
+>
+> Beside fixing the FW, adding a workaround like the one Sudeep mentioned to
+> avoid killing old fw plaform seems reasonable: we can just _err() as long as
+> Kernel is not put into peril (i.e. calc_sz <= real_sz ) without
+> necessarily bail out if an out of spec, but harmless, message is
+> spotted.
+>
+> > > > I'm writing here to get the discussion started on how we can resolve this
+> > > > before the Linux 5.19 release.
+> > > >
+> > >
+> > > Agreed, I just sent by pull request for this literally few hours ago.
+> > >
+> > > > Sudeep Holla has already told me they'll gladly add a workaround before
+> > > > the 5.19 release, but would rather see this fixed in the vendor firmware
+> > > > first. Would rockchip be able and willing to fix it and publish a new
+> > > > bl31 for rk3568?
+> > > >
+> > >
+> > > Indeed and as mentioned above details on how other such f/w bugs are dealt
+> > > in general esp that the firmware is blob release and one can't fix it easily.
+> > > Do we have a bugzilla kind of setup to report and get the bugs fixed ?
 > >
-> > The Feature ID table of DFL can be found:
-> > https://github.com/OPAE/dfl-feature-id
->=20
-> Is it possible to have multiple different HSSI implementations?
-> Will they share the same feature id or not? If yes, why uses a generic na=
-me
-> here?
+> > It's worth mentioning that I think even if we get Rockchip to fix the bug in
+> > the firmware, I believe Linux should still add a workaround, as otherwise
+> > people running older firmware who are upgrading their kernels could suddenly
+> > have unbootable systems and don't know why that happened.
+> >
+>
+> Agree.
 
-The HSSI subsystem is a new design, there will use for a long time.
+Agree also. Sorry for that bug in TF-A/OP-TEE.
 
->=20
-> Is it possible someday this feature id is marked as legacy not used and i=
-ntroduce
-> a new one as the same name?
+BR,
+Etienne
 
-No, this HSSI subsystem is a standard device which  was designed for OFS.=20
-It will extensively use for Intel FPGA PAC card in the feature.
-
->=20
-> >
-> > Reviewed-by: Tom Rix <trix@redhat.com>
-> > Acked-by: Xu Yilun <yilun.xu@intel.com>
-> > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> > Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-> > ---
-> > v4: add Reviewed-by and Acked-by tag and add Feature ID table url in
-> > git message.
-> > v3: change the name of this feature id to HSSI_SUBSYS and rewrite
-> >     the git message.
-> > v2: add HSSI introduction and the git repo of Feature ID table.
-> > ---
-> >  drivers/uio/uio_dfl.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c index
-> > 89c0fc7b0cbc..8f39cc8bb034 100644
-> > --- a/drivers/uio/uio_dfl.c
-> > +++ b/drivers/uio/uio_dfl.c
-> > @@ -45,9 +45,11 @@ static int uio_dfl_probe(struct dfl_device *ddev)
-> > }
-> >
-> >  #define FME_FEATURE_ID_ETH_GROUP	0x10
-> > +#define FME_FEATURE_ID_HSSI_SUBSYS	0x15
-> >
-> >  static const struct dfl_device_id uio_dfl_ids[] =3D {
-> >  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
-> > +	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
-> >  	{ }
-> >  };
-> >  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
-> > --
-> > 2.26.2
-
+>
+> Thanks,
+> Cristian
