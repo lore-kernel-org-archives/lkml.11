@@ -2,81 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7456AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 03:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241916AbiEEDyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 23:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49490 "EHLO
+        id S241960AbiEEDy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 23:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241728AbiEEDxz (ORCPT
+        with ESMTP id S240637AbiEEDyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 23:53:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9982E2BF0;
-        Wed,  4 May 2022 20:50:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0851FCE2C1E;
-        Thu,  5 May 2022 03:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FA95C385AC;
-        Thu,  5 May 2022 03:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651722614;
-        bh=0aS9mq779Q1V92Me9kF1KVjfV4kZ7/eSeroZHOySwIY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iL+IG2SOlztI/pnwob3zhbWACW44WqSHXE3chAsxIeEdfEbSUcLoDWl43BMR9UZ5V
-         f8+jo+pveA4lIRRrf+pYvHToMGeKajFUoimkeimQebRgk5+j/zDLJF9I0DbBoJbsmV
-         ERZdh/5FzmItjmx7LJs3DjqUIxKWBV7mK0tkINVRLuDUYFCze+gUxL8QsgbbZIWPrU
-         fXCXUDLx79593uy9he7wu/0zUFlECVvIyySTRx+3fDxYTayfrJEJIILylXVmznLPMO
-         3UejgE0x7k/YiIWr/ElC8ngY6xuChz5WXbv1AIsxzVJdhIrXkmEtyhENbuM0E5ptpA
-         /3PLwiOo8vLrQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DE4CDF0384A;
-        Thu,  5 May 2022 03:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 4 May 2022 23:54:21 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DEBD4614F;
+        Wed,  4 May 2022 20:50:29 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n8so3277011plh.1;
+        Wed, 04 May 2022 20:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VFz644Io2Z3f1sVIwfPGsEigStI4YD3zKfl46VshVCo=;
+        b=ASFAg6oJ7wa2qu9Qgt+jd6DErwjcmkoKsihWEX4rlMqQNuiG5olsLbv94uV29Hz19I
+         0oSutOudnFw7QB8S4a/g/3sRGgchmMUlkJzub4bJWXtHWqT/mZsbaAbu62tyRDlAkrNw
+         paKRCzMGnbIIPyaQ0ftOLNXhEI+pCso76smeMoqz4xIQwy3IX4vI9AaW53Q/y1vcCVPO
+         LXgV0miUdIfNj6eFIXzfO+0CtJZODKCfsLI4RL3kx4TYOR0bLRPzjLta0Vhmd68q+3GC
+         sC7ARmrv13ZaGi7mbK7JttnHPgOJlEIPYqrWq1Uxy2/dhUvyej29t3DMM2ZBnHv5QiUr
+         Ef0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VFz644Io2Z3f1sVIwfPGsEigStI4YD3zKfl46VshVCo=;
+        b=CLYl063THIclH6SPRmWDyN8SVCKVFqIBBH3wLy5Vt0FCZDXocOJHYf8Qsj5lVPfelL
+         48nUQkti9S5PPGfsqdWFUOmWo38cREMnOg4T55sPGlJQTxBcSGfoRoWIeSWKTd4R8Syi
+         B4Z3bg9YswZquIstOav1sUalLDbDMCkioGFTEHOHEzcu/2CuicvLY44ysGWu5utfnFfD
+         UWBQRZ9gpi0pG4lII2vFntovMiqRlo0saFLNkMwDRklkLypDrmgWFIEWALm7t1mfBZa8
+         ghpeRLa3ty9CCmdFXoKGRnRQ+xfxdPdvl0b6dWsFoHnACQdU44J2VPM9nheQit53mnA7
+         txXw==
+X-Gm-Message-State: AOAM5338zmcRUMhRiUP0iGm6v/mfB/JgwUBCHgr8dFA2KRUdonlV4h0O
+        xFsQrR59OLF8rt54yC+f4dI=
+X-Google-Smtp-Source: ABdhPJwjFZNxx8QHMUzYSKmG0LbcdjYdP173DySlMXG/LsiKBqT4/KdJo/p+G/TlHMoRHwKjxCXzsg==
+X-Received: by 2002:a17:902:7c81:b0:156:30ef:7dec with SMTP id y1-20020a1709027c8100b0015630ef7decmr25255237pll.74.1651722629440;
+        Wed, 04 May 2022 20:50:29 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id d9-20020a170902854900b0015e8d4eb228sm288275plo.114.2022.05.04.20.50.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 20:50:27 -0700 (PDT)
+Message-ID: <99f380f6-170d-99d7-6307-f788d44cec9a@gmail.com>
+Date:   Wed, 4 May 2022 20:50:25 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] dt-bindings: net: lan966x: fix example
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165172261389.3043.395331172475309112.git-patchwork-notify@kernel.org>
-Date:   Thu, 05 May 2022 03:50:13 +0000
-References: <20220503132038.2714128-1-michael@walle.cc>
-In-Reply-To: <20220503132038.2714128-1-michael@walle.cc>
-To:     Michael Walle <michael@walle.cc>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, horatiu.vultur@microchip.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh@kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 1/2] gpio: pca953xx: Add support for pca6408
+Content-Language: en-US
+To:     Justin Chen <justinpopo6@gmail.com>, linus.walleij@linaro.org,
+        brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1651703357-25154-1-git-send-email-justinpopo6@gmail.com>
+ <1651703357-25154-2-git-send-email-justinpopo6@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <1651703357-25154-2-git-send-email-justinpopo6@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  3 May 2022 15:20:38 +0200 you wrote:
-> In commit 4fdabd509df3 ("dt-bindings: net: lan966x: remove PHY reset")
-> the PHY reset was removed, but I failed to remove it from the example.
-> Fix it.
+On 5/4/2022 3:29 PM, Justin Chen wrote:
+> Add support for pca6408 which is the 8-bit version of the pca6416.
 > 
-> Fixes: 4fdabd509df3 ("dt-bindings: net: lan966x: remove PHY reset")
-> Reported-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> https://www.nxp.com/docs/en/data-sheet/PCA6408A.pdf
 > 
-> [...]
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
-Here is the summary with links:
-  - [net-next] dt-bindings: net: lan966x: fix example
-    https://git.kernel.org/netdev/net-next/c/fa728505f3e7
-
-You are awesome, thank you!
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Florian
