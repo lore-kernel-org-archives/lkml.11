@@ -2,184 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30454C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377238AbiEEMhq (ORCPT
+        id S1377144AbiEEMiW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
+        Thu, 5 May 2022 08:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377144AbiEEMhl (ORCPT
+        with ESMTP id S239317AbiEEMiT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:37:41 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1655534C;
-        Thu,  5 May 2022 05:33:58 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A51051BF20F;
-        Thu,  5 May 2022 12:33:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651754037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZFe2ZY9FQx5Ezydgd9Q7wDAdfI7tiNM83wC4+zn6rkM=;
-        b=VHxRxArVfXp+1gB9L33hpO6ioHHOGaKYLY2LvrQwXfuRDadq25vF4Aa8EmZYCfpg+7gOiA
-        lX6lenHGx/G//hUZb2ogqe5fzGIG/n1s9B/rdy7vyWr2A3f1n+6XI0LoVw4dLRkRWdJClp
-        HL/ck3D1Q3M4vvY5U/OSSgl93FVoyv+VK1xCDBJHe/XAqwky23WCX9DMwcbAFM2y5p+Kdl
-        VAAvvoFasV7Ba5vbOZwSElFpEJ+ZnnQB3Zpy3pN5ASMAtkbrxb0Z/Y0zFLO6kP1lFRw5so
-        RmevqV6iqYgh5tIjNYfaBwldSLjDa1NO848GIBBBfnlgRgFfzdlF6mZdhRWO7g==
-Date:   Thu, 5 May 2022 14:32:36 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 04/12] net: pcs: add Renesas MII converter
- driver
-Message-ID: <20220505143236.31fc6b58@fixe.home>
-In-Reply-To: <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
-References: <20220504093000.132579-1-clement.leger@bootlin.com>
-        <20220504093000.132579-5-clement.leger@bootlin.com>
-        <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Thu, 5 May 2022 08:38:19 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05BC5520D;
+        Thu,  5 May 2022 05:34:39 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KvCh50J3ZzHnV3;
+        Thu,  5 May 2022 20:29:57 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 20:34:38 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 20:34:37 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <baruch@tkos.co.il>
+Subject: [PATCH] tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
+Date:   Thu, 5 May 2022 20:46:21 +0800
+Message-ID: <20220505124621.1592697-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Thu, 5 May 2022 09:16:38 +0200,
-Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-> Hi Cl=C3=A9ment,
->=20
-> On Wed, May 4, 2022 at 11:31 AM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
-otlin.com> wrote:
-> > Add a PCS driver for the MII converter that is present on the Renesas
-> > RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> > RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
-> > reuse it in both the switch driver and the stmmac driver. Currently,
-> > this driver only allows the PCS to be used by the dual Cortex-A7
-> > subsystem since the register locking system is not used.
-> >
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =20
->=20
-> Thanks for your patch!
->=20
-> > --- /dev/null
-> > +++ b/drivers/net/pcs/pcs-rzn1-miic.c =20
->=20
-> > +static int miic_probe(struct platform_device *pdev)
-> > +{
-> > +       struct device *dev =3D &pdev->dev;
-> > +       struct miic *miic;
-> > +       u32 mode_cfg;
-> > +       int ret;
-> > +
-> > +       ret =3D miic_parse_dt(dev, &mode_cfg);
-> > +       if (ret < 0)
-> > +               return -EINVAL;
-> > +
-> > +       miic =3D devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
-> > +       if (!miic)
-> > +               return -ENOMEM;
-> > +
-> > +       spin_lock_init(&miic->lock);
-> > +       miic->dev =3D dev;
-> > +       miic->base =3D devm_platform_ioremap_resource(pdev, 0);
-> > +       if (!miic->base)
-> > +               return -EINVAL;
-> > +
-> > +       pm_runtime_enable(dev);
-> > +       ret =3D pm_runtime_resume_and_get(dev);
-> > +       if (ret < 0) =20
->=20
-> Missing pm_runtime_disable(dev).
+Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/tty/serial/digicolor-usart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Maybe using devm_pm_runtime_enable() would be sufficient and avoid such
-calls.
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index 6d70fea76bb3..e37a917b9dbb 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct platform_device *pdev)
+ 	if (IS_ERR(uart_clk))
+ 		return PTR_ERR(uart_clk);
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	dp->port.mapbase = res->start;
+-	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
++	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(dp->port.membase))
+ 		return PTR_ERR(dp->port.membase);
++	dp->port.mapbase = res->start;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
+-- 
+2.25.1
 
->=20
-> > +               return ret;
-> > +
-> > +       ret =3D miic_init_hw(miic, mode_cfg);
-> > +       if (ret)
-> > +               goto disable_runtime_pm;
-> > +
-> > +       /* miic_create() relies on that fact that data are attached to =
-the
-> > +        * platform device to determine if the driver is ready so this =
-needs to
-> > +        * be the last thing to be done after everything is initialized
-> > +        * properly.
-> > +        */
-> > +       platform_set_drvdata(pdev, miic);
-> > +
-> > +       return 0;
-> > +
-> > +disable_runtime_pm:
-> > +       pm_runtime_put(dev); =20
->=20
-> Missing pm_runtime_disable(dev).
->=20
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +static int miic_remove(struct platform_device *pdev)
-> > +{
-> > +       pm_runtime_put(&pdev->dev); =20
->=20
-> Missing pm_runtime_disable(dev).
->=20
-> > +
-> > +       return 0;
-> > +} =20
->=20
-> Gr{oetje,eeting}s,
->=20
->                         Geert
->=20
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
-8k.org
->=20
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
->                                 -- Linus Torvalds
-
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
