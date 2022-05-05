@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D31C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B457AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382184AbiEERAp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
+        id S245690AbiEERAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 13:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382158AbiEERAc (ORCPT
+        with ESMTP id S1382188AbiEERAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:00:32 -0400
+        Thu, 5 May 2022 13:00:36 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133B1580D7
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:56:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6765C84B
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:56:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651769810; x=1683305810;
+  t=1651769816; x=1683305816;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=96NhVcF681Cf6EUdn2T2JGsKemHJ0OT0snZUFHPMbgc=;
-  b=eyF2gEEL+Sa0/PPaq9/RA8A9b04v1Rny/We6SxiJDe8GLb52qX6ksc89
-   /GciW3WD1Bx1gcJpGI3NFHBtbhOPakU4bQGDBNkC9sph9kJ+LEEra8T1J
-   NnzIzAT4QgqtMW8Di5LLiJT6enMmjLCqAr1vfeqFpaTOAjgrB0AHlykhH
-   lHbswMAdFm+/kaxW6pv2kvC4xfDQ7aXimDTHEDVd0fV1aCs/AUMHRMbdz
-   2WsKQAbh8S456qnovSNfbi/XKufC5ny+rGFuDOh/mVDFmUSSCtDVD5l9Y
-   jQFUKKjHpxnJKnUYOAbAYgoHmCRPxlGFdJlxkpkRmJaGOmd7NM7LV6M5C
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248717812"
+  bh=MmgLT3++XhqTWVdBdh5S0YpkjcFM/rxG/d0fFbdGMr8=;
+  b=kXc8ehNJQWg9I47COANY75Ai2RjG9NyfbiHbplZYlhzf2neqsAaQS6BL
+   z3V3GHIXADBsdcwsSLG6y0S6Y6Ex5fL90p+YwVm4Ebz7T+Qarp+4ZZ3Sh
+   mM4vn34qc7MUtnE809PQgynDUl6NcZ2jSpQi4Rclc2l+W7an3x3EywtEx
+   6DnuAzzk0YPw8Qit4Iz9DeOoPmlK7Ov1W4igj1zgeVv+5PTGSI7aQS50H
+   Ypg8M3yAGa8bLGtfeKVRGXYJkc5D+jdveP/s3DfmL7JjYk4kOZ88vkrE+
+   EuuqNqKNwlMousz8LQNmZCTeYtB8QR78xY3Cc+YDklChriPYosmN8MK5I
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248717823"
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="248717812"
+   d="scan'208";a="248717823"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 09:56:50 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 09:56:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="709032762"
+   d="scan'208";a="709032781"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 09:56:47 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 09:56:53 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V1 03/23] perf evlist: Use libperf functions in evlist__enable_event_idx()
-Date:   Thu,  5 May 2022 19:56:19 +0300
-Message-Id: <20220505165639.361733-4-adrian.hunter@intel.com>
+Subject: [PATCH V1 05/23] perf auxtrace: Do not mix up mmap idx
+Date:   Thu,  5 May 2022 19:56:21 +0300
+Message-Id: <20220505165639.361733-6-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220505165639.361733-1-adrian.hunter@intel.com>
 References: <20220505165639.361733-1-adrian.hunter@intel.com>
@@ -58,82 +57,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-evlist__enable_event_idx() is used only for auxtrace events which are never
-system_wide. Simplify by using libperf enable event functions.
+The idx is with respect to evlist not evsel. That hasn't mattered because
+they are the same at present. Prepare for that not being the case, which it
+won't be when sideband tracking events are allowed on all CPUs even when
+auxtrace is limited to selected CPUs.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/util/evlist.c | 44 ++--------------------------------------
- 1 file changed, 2 insertions(+), 42 deletions(-)
+ tools/perf/util/auxtrace.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 52ea004ba01e..9fcecf7daa62 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -334,14 +334,6 @@ int evlist__add_newtp(struct evlist *evlist, const char *sys, const char *name,
- 	return 0;
- }
- 
--static int evlist__nr_threads(struct evlist *evlist, struct evsel *evsel)
--{
--	if (evsel->core.system_wide)
--		return 1;
--	else
--		return perf_thread_map__nr(evlist->core.threads);
--}
--
- struct evlist_cpu_iterator evlist__cpu_begin(struct evlist *evlist, struct affinity *affinity)
- {
- 	struct evlist_cpu_iterator itr = {
-@@ -546,46 +538,14 @@ void evlist__toggle_enable(struct evlist *evlist)
- 	(evlist->enabled ? evlist__disable : evlist__enable)(evlist);
- }
- 
--static int evlist__enable_event_cpu(struct evlist *evlist, struct evsel *evsel, int cpu)
--{
--	int thread;
--	int nr_threads = evlist__nr_threads(evlist, evsel);
--
--	if (!evsel->core.fd)
--		return -EINVAL;
--
--	for (thread = 0; thread < nr_threads; thread++) {
--		int err = ioctl(FD(evsel, cpu, thread), PERF_EVENT_IOC_ENABLE, 0);
--		if (err)
--			return err;
--	}
--	return 0;
--}
--
--static int evlist__enable_event_thread(struct evlist *evlist, struct evsel *evsel, int thread)
--{
--	int cpu;
--	int nr_cpus = perf_cpu_map__nr(evlist->core.user_requested_cpus);
--
--	if (!evsel->core.fd)
--		return -EINVAL;
--
--	for (cpu = 0; cpu < nr_cpus; cpu++) {
--		int err = ioctl(FD(evsel, cpu, thread), PERF_EVENT_IOC_ENABLE, 0);
--		if (err)
--			return err;
--	}
--	return 0;
--}
--
- int evlist__enable_event_idx(struct evlist *evlist, struct evsel *evsel, int idx)
+diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
+index 10936a38031f..b11549ae39df 100644
+--- a/tools/perf/util/auxtrace.c
++++ b/tools/perf/util/auxtrace.c
+@@ -640,8 +640,14 @@ static int evlist__enable_event_idx(struct evlist *evlist, struct evsel *evsel,
  {
  	bool per_cpu_mmaps = !perf_cpu_map__empty(evlist->core.user_requested_cpus);
  
- 	if (per_cpu_mmaps)
--		return evlist__enable_event_cpu(evlist, evsel, idx);
-+		return perf_evsel__enable_cpu(&evsel->core, idx);
+-	if (per_cpu_mmaps)
+-		return perf_evsel__enable_cpu(&evsel->core, idx);
++	if (per_cpu_mmaps) {
++		struct perf_cpu evlist_cpu = perf_cpu_map__cpu(evlist->core.all_cpus, idx);
++		int cpu_map_idx = perf_cpu_map__idx(evsel->core.cpus, evlist_cpu);
++
++		if (cpu_map_idx == -1)
++			return -EINVAL;
++		return perf_evsel__enable_cpu(&evsel->core, cpu_map_idx);
++	}
  
--	return evlist__enable_event_thread(evlist, evsel, idx);
-+	return perf_evsel__enable_thread(&evsel->core, idx);
+ 	return perf_evsel__enable_thread(&evsel->core, idx);
  }
- 
- int evlist__add_pollfd(struct evlist *evlist, int fd)
 -- 
 2.25.1
 
