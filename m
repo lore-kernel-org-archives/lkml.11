@@ -2,105 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377652AbiEEMuM (ORCPT
+        id S1377751AbiEEMv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
+        Thu, 5 May 2022 08:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiEEMuI (ORCPT
+        with ESMTP id S1377714AbiEEMv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:50:08 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2143B2ED61
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:46:29 -0700 (PDT)
+        Thu, 5 May 2022 08:51:26 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F78036E1A
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:47:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651754788;
+        s=mimecast20190719; t=1651754865;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6vaRlr/7ULHx6gWuSvnNnjYCo18hzcHoYJDQoD2144Y=;
-        b=RlXiVtwzIuSSasclZbDEuYYbJDaeiRODIcJXUWITNsO+ELous0ZMX1cm53bmFB87RXvA3P
-        fz7AXq8g1pw9y8+qNLI6exGxrxzz2Ui6PbwRY7l9RZXHzLtVSpx1qeo/i7sARBqUUHr2xi
-        rgCsKxkDow1u3HGAF89M9Lw8UsoooEQ=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=cuDyUYDu6BZPnXeqmhM9u+aCmDXHwJi7/poygMUZqow=;
+        b=UM019BJp6l/ffqt3f9CwyMqyjWt4dTOqCyQt0fkBe8HFe5iS5q8/FBYiDprjxTbC2rZcZL
+        UfVeXWUUkmLT4DOkcDiEMcuPult5hFdQ2W8CLo71IDrNXB7ZmQ3NiuU3hmFW994ca30vTC
+        Tags9r6mlr3X50Pj4qlliBNp6av/12M=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-231-UPzqFBThPDiSu2HIUQ-rPQ-1; Thu, 05 May 2022 08:46:27 -0400
-X-MC-Unique: UPzqFBThPDiSu2HIUQ-rPQ-1
-Received: by mail-ed1-f69.google.com with SMTP id s29-20020a50ab1d000000b00427e495f00cso2251881edc.14
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:46:26 -0700 (PDT)
+ us-mta-96-HF2sks_wP4-jYUaY-7P1Cw-1; Thu, 05 May 2022 08:45:40 -0400
+X-MC-Unique: HF2sks_wP4-jYUaY-7P1Cw-1
+Received: by mail-wm1-f72.google.com with SMTP id p24-20020a1c5458000000b003945d2ffc6eso1662646wmi.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:45:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=6vaRlr/7ULHx6gWuSvnNnjYCo18hzcHoYJDQoD2144Y=;
-        b=Vkzl3asfTo7JOQ5jZsEvwnhfBSOr4UqK4O2LqRUf7Tr6wDwNTMzBijSIV7tg4fmxbE
-         ZAEtaArO5NRJCrrdjmQesFTv+P/vKVGmmGN+TzHhJ0bixSDRie4fUpIwaRoDsQItlwHu
-         EGFHF9FCQqUeHR/vbKfYMq1iPS/7+VdIAYg+fAZgx+c8cQ0pgjVKfqvRAJk0k6c3imxu
-         x3EmDRwGZqqYyCwVqSqKcKhEmbmBjTUk071Vg0U/B92/p7tSmpWXiiEbu3QwWXw3RX58
-         dCUrNKZS3IygtFfZxmx3wcjkjGlZHIsWTBIGKNTJe449q0KXv0ME6oE4Icx7McURAXEQ
-         unZw==
-X-Gm-Message-State: AOAM532r91LWP5/wNBw2oJMgQfaIX/gUmHpf9vDLKa3bTFkqK+CnwvGH
-        ZBPrKImgXLBC/GgkED86ibiNKm/3ReXg6EEFWVoQXsf6Vv4I50SoxaWw6HGW18/aRmPj+k5OvF0
-        0qkhQBbjdA43tVbwI0M3UMZxc
-X-Received: by 2002:a17:907:2d93:b0:6f3:8524:6f92 with SMTP id gt19-20020a1709072d9300b006f385246f92mr26104538ejc.556.1651754785964;
-        Thu, 05 May 2022 05:46:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxh0AuoTLb4NtFUKSzSmvuWG14SE3dq6/K9LQkEcxHXLqwacGXBsP3Jh5c8evy8eiZw9cDE4w==
-X-Received: by 2002:a17:907:2d93:b0:6f3:8524:6f92 with SMTP id gt19-20020a1709072d9300b006f385246f92mr26104509ejc.556.1651754785685;
-        Thu, 05 May 2022 05:46:25 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id c21-20020a056402121500b0042617ba63bdsm776943edw.71.2022.05.05.05.46.23
+        bh=cuDyUYDu6BZPnXeqmhM9u+aCmDXHwJi7/poygMUZqow=;
+        b=6mwr7gUUTTqjgMS332Hgf4NJHbwLm8S6No9coFpdxopWzjiLWK3uMizwGuEUeLK1oE
+         8c8yp5mOdQwpfT6Y3914pit2LXo37E9BTRHeTVWgIXf2dM+Gvq7Zn+pMP5yg3F8AiaZQ
+         ZrUE0Qa5YLUiC1BS/t5OSxXvxd2XK8R7VjXLwMWbluin3uk6dnZ/FLqSIgjhI683YzVn
+         kq55UWRghpJZFJKFwzyxlJq7YjzrU0Ypgw5kSR8BeF1Pob5iMZEyr62P0Krt00b+txWt
+         a10HnbUBHLJUCRMpLnGpdHoOgOU21xMDb2aX+B5gSY8MOAfs/b+7m4dugzpScqhm1fJ4
+         I5lA==
+X-Gm-Message-State: AOAM532w+Z/0//B7zndT2MDnProfZ0pyNdqS73i31OfGZkWohfTnAlzk
+        TgLSYmwLxMzM33FhGRmiftMu7GJnyvZwJ8rgtoAQaw7dPKp4htNxRIAEvu/1iXgQsRcqAwoSLfA
+        LGTxUVBrdSbab4XpMp8++PxGqEMYW8iAPnh5zbGfThc/HnFhwvO5sA4BgHw9KhM1Fx9Lq/ARgi0
+        Y=
+X-Received: by 2002:a05:6000:1a88:b0:20c:6811:3176 with SMTP id f8-20020a0560001a8800b0020c68113176mr13613479wry.85.1651754729614;
+        Thu, 05 May 2022 05:45:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyyvRu5J1/J+IjfMUf7y1AXH1mXJgSjbJfnuViykTVSo8bNb5YhQEJEs4GMNdg8VZpzTMvG9w==
+X-Received: by 2002:a05:6000:1a88:b0:20c:6811:3176 with SMTP id f8-20020a0560001a8800b0020c68113176mr13613450wry.85.1651754729239;
+        Thu, 05 May 2022 05:45:29 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id g6-20020a056000118600b0020c5253d8d6sm1163859wrx.34.2022.05.05.05.45.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 05:46:24 -0700 (PDT)
-Message-ID: <8342100d-a9f6-2f6d-30d0-b3950661d0c6@redhat.com>
-Date:   Thu, 5 May 2022 14:46:22 +0200
+        Thu, 05 May 2022 05:45:28 -0700 (PDT)
+Message-ID: <47d3a7f6-24f9-7d54-48bf-09ab9e40e2de@redhat.com>
+Date:   Thu, 5 May 2022 14:45:27 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/3] drm: Allow simpledrm to setup its emulated FB as
+ firmware provided
 Content-Language: en-US
-To:     Heiko Carstens <hca@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <YnPFjuBYZw/dj01U@osiris>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [GIT PULL] s390 updates for 5.18-rc6
-In-Reply-To: <YnPFjuBYZw/dj01U@osiris>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        dri-devel@lists.freedesktop.org
+References: <20220503071540.471667-1-javierm@redhat.com>
+ <20220503071540.471667-4-javierm@redhat.com>
+ <YnJcaaDcIsJKhSwQ@phenom.ffwll.local>
+ <bfb03d40-a023-12a9-9554-1b6e6c474134@redhat.com>
+ <YnO+8hZ0ozPaZUEj@phenom.ffwll.local>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YnO+8hZ0ozPaZUEj@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/5/22 14:39, Heiko Carstens wrote:
-> Hi Linus,
+Hello Daniel,
+
+On 5/5/22 14:11, Daniel Vetter wrote:
+
+[snip]
+
+>>
+>> And while I agree with you that these midlayer flags are horrible, that is
+>> what any other fbdev that makes use of a firmware-provided framebuffer set,
+>> so simpledrm emulated fbdev shouldn't be the exception IMO.
 > 
-> please pull s390 updates for 5.18-rc6. Please note that this pull
-> request includes two s390 specific kvm commits, which normally would
-> have been routed via the kvm tree.
-> 
-> Due to lack of other patches in the kvm tree Christian Borntraeger
-> asked to get them upstream via the s390 tree:
-> https://lore.kernel.org/linux-s390/249d0100-fa58-bf48-b1d2-f28e94c3a5f2@linux.ibm.com/
+> So we discussed this a pile more on irc, and at least my take is that
+> people who run simpledrm but want to combine that with fbdev drivers and
+> expect it to all work nicely we can probably ignore. At least until all
+> this sysfb stuff is nicely unified, and at that point we shouldn't need
+> special flags anymore.
 
-Needless to say, kvm patches have since materialized and I'll send a 
-pull request later this week.
+I'm OK with this take and happy to just drop this patch-set then. My worry
+was just that someone could complain that we broke their uncommon setup [0].
 
-But anyway s390 is the architecture where I expect zero issues if KVM 
-patches go in through arch maintainers.  Compared to other 
-architectures, there are a lot more points of contact between KVM and 
-the rest of arch/s390; you know the KVM code well; and honestly the 
-whole architecture is mostly Amharic to me when it comes to the 
-privileged interface.
+[0]: https://xkcd.com/1172/.
 
-Thanks,
+-- 
+Best regards,
 
-Paolo
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
