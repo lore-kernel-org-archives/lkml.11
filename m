@@ -2,117 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64563C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:50:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354483AbiEEJxz (ORCPT
+        id S1354560AbiEEJya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
+        Thu, 5 May 2022 05:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbiEEJxs (ORCPT
+        with ESMTP id S231517AbiEEJyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:53:48 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206F14F9F6;
-        Thu,  5 May 2022 02:50:08 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 72BC64000C;
-        Thu,  5 May 2022 09:50:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651744207;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xUjwIJpEfOXdIS7txS+q5utiDVgOIee83y+WNlMxJOM=;
-        b=Z+R6SO9jeWSlxn1vJ7ttjTVjgZr/uE6JODAS49E1voO6KnKAxyiZevbldheyhq2G6csPNL
-        XX57Dw+5SWkX9qU3VfE6ERnfa3rrBv3/2r372uxe4Jx7TgLjYbSwOGze7bhnveo8wNs8EW
-        Xq1eh1nhcfkwj6HZm7FjW90wEADAH6E+GDFOHrO5Er+REgp6DdT3VPN9yo6ZpvVf60mFcM
-        YXaCdLjdxidxKY3pIeXPkdJnG22fldwqzQFELY+XqrSI01D3w40Flf6TuLyAsjtC4NOp0f
-        DqaHZBvK+ThghqYwtfb5ErHuUHJRe0/UVsO3U1MqUADYgwcKhAnV96xZqbol9Q==
-Date:   Thu, 5 May 2022 11:48:46 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 00/12] add support for Renesas RZ/N1
- ethernet subsystem devices
-Message-ID: <20220505114846.67697021@fixe.home>
-In-Reply-To: <CAMuHMdXdGCebeGiDj-4hYH24tBVRVqGsHbPfEqfUGT88GZKZrw@mail.gmail.com>
-References: <20220504093000.132579-1-clement.leger@bootlin.com>
-        <CAMuHMdXdGCebeGiDj-4hYH24tBVRVqGsHbPfEqfUGT88GZKZrw@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        Thu, 5 May 2022 05:54:14 -0400
+Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E419140D7;
+        Thu,  5 May 2022 02:50:29 -0700 (PDT)
+X-Virus-Scanned: Yes
+From:   Sven Schwermer <sven@svenschwermer.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
+        s=mail; t=1651744226;
+        bh=lOGd00ODohYP+KMc0D1h92V6nZo00DPGfkd/bfgkdYw=;
+        h=From:To:Cc:Subject:In-Reply-To:References;
+        b=JZdNtDf77tM4Zs5MwXskT78cfYZLmrk/pLZ54LQmDnU5IHzW2XDNfeRxP2RYcK14+
+         TWyWIASbqtdYiIlRKuyKlWH6/gS0Lt9yJJGM6rHXnX9ff6xbtgprA/jSj3tzRaTxpx
+         nIJUaCWAnni5hEiyvcG1NwBcgfyq/mGnAOgodIFzY2swPU3yTYR/zTGDfLG/PG4n8C
+         6GGjQ0MuaApRj3n6qJUfnxAO5RyxBjkB6/nEGm/XU9JN/sVXht5EIVnnB7lMD8Edhi
+         mVR9Da2au8wKFPYavx2m/35pi7sSlpr5gg61ejBOifKoHtdPwUUOuoQaInDk/JX8hj
+         8+W0RhmXAVdvg==
+To:     linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        schuchmann@schleissheimer.de
+Subject: [PATCH v3 2/2] leds: multicolor: Read default-intensities property
+Date:   Thu,  5 May 2022 11:50:09 +0200
+Message-Id: <9175a8b9fdd23a5b379457e7246ae4364cabc110.1651744128.git.sven.schwermer@disruptive-technologies.com>
+In-Reply-To: <eef2dba9633a860063527628a72f6a4523aaf6cd.1651744128.git.sven.schwermer@disruptive-technologies.com>
+References: <eef2dba9633a860063527628a72f6a4523aaf6cd.1651744128.git.sven.schwermer@disruptive-technologies.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Thu, 5 May 2022 09:29:43 +0200,
-Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-> Hi Cl=C3=A9ment,
->=20
-> On Wed, May 4, 2022 at 11:31 AM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
-otlin.com> wrote:
-> > This series needs commits bcfb459b25b8 and 542d5835e4f6 which are on
-> > the renesas-devel tree in order to enable generic power domain on
-> > RZ/N1. =20
->=20
-> -ENOENT
->=20
-> I assume you mean:
-> 14f11da778ff6421 ("soc: renesas: rzn1: Select PM and
-> PM_GENERIC_DOMAINS configs")
-> ed66b37f916ee23b ("ARM: dts: r9a06g032: Add missing '#power-domain-cells'=
-")
+This allows to assign intensity values taken from the firmware interface
+(if available) to the indivisual sub LEDs (colors) at driver probe time,
+i.e. most commonly at kernel boot time. This is crucial for setting a
+specific color and early in the boot process. While it would be possible
+to set a static color in the bootloader, this mechanism allows setting a
+pattern (e.g. blinking) at a specific color.
 
-Yep totally, did use my cherry-picked sha1 -_-'. Will fix that, sorry.
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+---
 
->=20
-> Gr{oetje,eeting}s,
->=20
->                         Geert
->=20
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
-8k.org
->=20
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
->                                 -- Linus Torvalds
+Notes:
+    V1->V2: Fix mixup
+    V2->V3: Use color-intensity mapping instead of simple intensity array
 
+ drivers/leds/led-class-multicolor.c | 48 +++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
+diff --git a/drivers/leds/led-class-multicolor.c b/drivers/leds/led-class-multicolor.c
+index e317408583df..2900dd02fe41 100644
+--- a/drivers/leds/led-class-multicolor.c
++++ b/drivers/leds/led-class-multicolor.c
+@@ -9,6 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
++#include <linux/property.h>
+ 
+ #include "leds.h"
+ 
+@@ -116,6 +117,50 @@ static struct attribute *led_multicolor_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(led_multicolor);
+ 
++static void multi_load_default_intensities(struct device *parent,
++					   struct led_classdev_mc *mcled_cdev,
++					   struct fwnode_handle *fwnode)
++{
++	u32 intensities[2 * LED_COLOR_ID_MAX];
++	unsigned int j;
++	int len;
++	int ret;
++	int i;
++
++	len = fwnode_property_read_u32_array(fwnode, "default-intensities",
++					     NULL, 0);
++	if (len < 0) {
++		if (len != -ENODATA)
++			dev_warn(parent,
++				 "failed to read default-intensities property length: %d", ret);
++		return;
++	}
++	if (len % 2 != 0) {
++		dev_warn(parent, "default-intensities property has uneven number of values");
++		return;
++	}
++	if (len > ARRAY_SIZE(intensities)) {
++		dev_warn(parent, "default-intensities property has too many values");
++		return;
++	}
++
++	ret = fwnode_property_read_u32_array(fwnode, "default-intensities",
++					     intensities, len);
++	if (ret < 0) {
++		dev_warn(parent, "failed to read default-intensities property values: %d", ret);
++		return;
++	}
++
++	for (i = 0; i < len; i += 2) {
++		for (j = 0; j < mcled_cdev->num_colors; j++) {
++			if (intensities[i] == mcled_cdev->subled_info[j].color_index) {
++				mcled_cdev->subled_info[j].intensity = intensities[i + 1];
++				break;
++			}
++		}
++	}
++}
++
+ int led_classdev_multicolor_register_ext(struct device *parent,
+ 				     struct led_classdev_mc *mcled_cdev,
+ 				     struct led_init_data *init_data)
+@@ -134,6 +179,9 @@ int led_classdev_multicolor_register_ext(struct device *parent,
+ 	led_cdev = &mcled_cdev->led_cdev;
+ 	mcled_cdev->led_cdev.groups = led_multicolor_groups;
+ 
++	if (init_data && init_data->fwnode)
++		multi_load_default_intensities(parent, mcled_cdev, init_data->fwnode);
++
+ 	return led_classdev_register_ext(parent, led_cdev, init_data);
+ }
+ EXPORT_SYMBOL_GPL(led_classdev_multicolor_register_ext);
+-- 
+2.36.0
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
