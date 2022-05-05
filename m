@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0F8C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E8FC47080
 	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385947AbiEESa4 (ORCPT
+        id S1386044AbiEESbB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
+        Thu, 5 May 2022 14:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383414AbiEEST6 (ORCPT
+        with ESMTP id S1385038AbiEESY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:58 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1921D0FB;
-        Thu,  5 May 2022 11:16:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774571; x=1683310571;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sOBwFi6TijFmWxRR2u7LJCs6ZAO9aD248QKXtMkkXSw=;
-  b=kcApizlDGwjCaI/+rwCfs04HIP5M+Jep580Ognvflvymu8K8xRME6FiL
-   iHWfn1rIvQ0SzwVjTbj+TDgQrA3LnTWVEYiUVp21/2g9Cy88e4l+7Ll44
-   Bc0qtj7uh12wgD1Od6RuEUbpkjCsoBrP7r4NUQU0fSmccZgOO0simiZh0
-   EBFdlqEifpe6DyC9Q4tIMdJsP6zHtt0ikZEVr0diecSU+ChbMCiJVDHty
-   4MoD53pjBPnTgqbj3ZFxXt+tn3qEyNhOg79m+iI6qIz9EZTwjo7Kx4Ruz
-   zzu+PUaeEbokeYvc/P+Efuarr0IgivYGFR4oPCOiGbNw405EV1YTlycMZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268097129"
-X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="268097129"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:56 -0700
-X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083517"
-Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:56 -0700
-From:   isaku.yamahata@intel.com
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
-        Sean Christopherson <seanjc@google.com>,
-        Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 104/104] [MARKER] the end of (the first phase of) TDX KVM patch series
-Date:   Thu,  5 May 2022 11:15:38 -0700
-Message-Id: <054442f5c4e7b2ef5da7fb3cdbde3e3cbdd9aeb1.1651774251.git.isaku.yamahata@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
-References: <cover.1651774250.git.isaku.yamahata@intel.com>
+        Thu, 5 May 2022 14:24:56 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E0460A85
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:18:26 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so5005151fac.7
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=1jpEHyGirjaqNUVRP1nz/MiyeczcMtRZCBgdvFueFbg=;
+        b=dNocJH2pm51w2sdCBeubcHoBirqMpP4BeW10hHVrgouUJomu19MuSgDP10MAcJT1nj
+         mBhKXkC5eceOPxd/JNxBGm0skq56M6pzHm1+7vMA6y1XdjmY/oQybSc78dHVxPuR11wK
+         kQeBG67nLfix9PfNYpH8hazatCrGvl2JUyXw4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=1jpEHyGirjaqNUVRP1nz/MiyeczcMtRZCBgdvFueFbg=;
+        b=lZeCKBwBDapktQAXIkkRqatSXI62Cyvkjw7S3pDAubIaMB1nPQWDBSiD9HD74a7zfZ
+         dKT++8ZFSnnCIJt8/0alfRmtMjKoegVUeRL4mG6dq/ahf0cZPp9FLH/Xv4PeaTdrT1t3
+         GveG6bzhZAUJQ8AMOskf60vS+TneCiL4YWAqR8YE6rxo95v8qV4bLH5igFvU1bx88PIG
+         LiiYGI3v7cf7+zuPJ01zItthoyQoPTCPPJMle5PkVfqP6ThrojAvlXzoSYRtE5xElboS
+         BsC9Wbjb0HbvVk29lfxCmZmaNBoHPEW7wgydNBU2FhL++tlQePHSK7qWy0pxw/4RRvGp
+         eSFQ==
+X-Gm-Message-State: AOAM530DhY42HJjZJht6wou6OhSnBcW/iJlcIK/4+nHjenGxAJmD8hkV
+        QdQ0jry3HNIvQsKwWIe4q000TRrUZODOunrtLgExaQ==
+X-Google-Smtp-Source: ABdhPJzMp5CHlTo8w5ux98tGyd6+gy+uiMp3v8K0Hb9IdRobOQWLGqnf7677jht+CONLIgkUYNLz7u6VoaG/olKYp+g=
+X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
+ n14-20020a056870558e00b000e1db7c26aamr2956854oao.63.1651774695213; Thu, 05
+ May 2022 11:18:15 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 5 May 2022 14:18:14 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <MW4PR02MB718610FAA14F966ADE1B1585E1C29@MW4PR02MB7186.namprd02.prod.outlook.com>
+References: <20220425210643.2420919-1-dianders@chromium.org>
+ <20220425140619.1.Ibfde5a26a7182c4b478d570c23d2649823ac2cce@changeid>
+ <CAE-0n51eZpAKprRQ0HqjLciF_BVQHBDN8SMFNVmmOd=B9UBEzg@mail.gmail.com>
+ <CAD=FV=WmVK3wTQf_EAxSi0WPXedSFGCsKdyqRnHsskmMYTHDQA@mail.gmail.com> <MW4PR02MB718610FAA14F966ADE1B1585E1C29@MW4PR02MB7186.namprd02.prod.outlook.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 5 May 2022 14:18:14 -0400
+Message-ID: <CAE-0n51Q=cGwrMec3JEQENqWHV3pAUjLPT6RwZLA5xV080sgxQ@mail.gmail.com>
+Subject: RE: [PATCH 1/2] dt-bindings: msm/dp: List supplies in the bindings
+To:     Doug Anderson <dianders@chromium.org>,
+        Sankeerth Billakanti <sbillaka@qti.qualcomm.com>
+Cc:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Kalyan Thota <quic_kalyant@quicinc.com>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+Quoting Sankeerth Billakanti (2022-05-05 11:02:36)
+> >>
+> >> Quoting Douglas Anderson (2022-04-25 14:06:42)
+> >>
+> >> Having 'a' in 'vdda' typically means 'analog' for 'analog' circuits,
+> >> so I'd expect this to only matter for the phy that contains the analog
+> >> circuitry. It would be great to remove the regulator code from
+> >> drivers/gpu/drm/msm/dp/dp_power.c and move the regulator_set_load()
+> >> call to the phy driver if possible. Hopefully qcom folks can help
+> >> clarify here.
+> >
+> >Interesting. Oddly enough, the sc7280 datasheet doesn't list the "_A".
+> >It calls these "VDD_VREF_0P9" and "VDD_VREF_1P2". However, on the
+> >schematic in front of me someone labeled these pins on the sc7280 with the
+> >"A". ...and the driver looks for a supply with the "a". :-/
+> >
+> >It would be good to get clarification from someone with better information.
+> >
+> >-Doug
+>
+> Our internal power grid documents list the regulators as VDD_A_*_1P2 and VDD_A_*_0P9
+> for all the platforms.
 
-This empty commit is to mark the end of (the first phase of) patch series
-of TDX KVM support.
+Do your internal power grid documents indicate what these supplies are
+powering? The question is if these supplies power any of the logic
+inside the eDP controller or if they only supply power to the analog
+circuits in the eDP phy. If it's the eDP phy only then the regulator
+usage in the eDP driver should be removed. I would suspect this is the
+case because the controller is probably all digital logic and runs at
+the typical 1.8V that the rest of the SoC uses. Similarly, these are
+voltage references which sound like a PLL reference voltage.
 
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
----
- .../virt/kvm/intel-tdx-layer-status.rst       | 33 -------------------
- 1 file changed, 33 deletions(-)
- delete mode 100644 Documentation/virt/kvm/intel-tdx-layer-status.rst
+Please clarify this further.
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-deleted file mode 100644
-index 1cec14213f69..000000000000
---- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
-+++ /dev/null
-@@ -1,33 +0,0 @@
--.. SPDX-License-Identifier: GPL-2.0
--
--===================================
--Intel Trust Dodmain Extensions(TDX)
--===================================
--
--Layer status
--============
--What qemu can do
------------------
--- TDX VM TYPE is exposed to Qemu.
--- Qemu can create/destroy guest of TDX vm type.
--- Qemu can create/destroy vcpu of TDX vm type.
--- Qemu can populate initial guest memory image.
--- Qemu can finalize guest TD.
--- Qemu can start to run vcpu. But vcpu can not make progress yet.
--
--Patch Layer status
--------------------
--  Patch layer                          Status
--* TDX, VMX coexistence:                 Applied
--* TDX architectural definitions:        Applied
--* TD VM creation/destruction:           Applied
--* TD vcpu creation/destruction:         Applied
--* TDX EPT violation:                    Applied
--* TD finalization:                      Applied
--* TD vcpu enter/exit:                   Applied
--* TD vcpu interrupts/exit/hypercall:    Not yet
--
--* KVM MMU GPA shared bits:              Applied
--* KVM TDP refactoring for TDX:          Applied
--* KVM TDP MMU hooks:                    Applied
--* KVM TDP MMU MapGPA:                   Applied
--- 
-2.25.1
-
+>
+> So, as a practice, we put the same name in the DT files. Hence,
+>
+> Reviewed-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+>
