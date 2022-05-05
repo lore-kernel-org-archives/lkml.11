@@ -2,90 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC22C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382965AbiEESG5 (ORCPT
+        id S1382977AbiEESJJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54614 "EHLO
+        Thu, 5 May 2022 14:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382959AbiEESGz (ORCPT
+        with ESMTP id S1382978AbiEESJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:06:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 04B0D53E32;
-        Thu,  5 May 2022 11:03:15 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BDD20106F;
-        Thu,  5 May 2022 11:03:14 -0700 (PDT)
-Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.38.147])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A0C0E3FA31;
-        Thu,  5 May 2022 11:03:12 -0700 (PDT)
-Date:   Thu, 5 May 2022 19:03:08 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 10/21] treewide: Drop function_nocfi
-Message-ID: <YnQRXCqBW/Ggu3pc@FVFF77S0Q05N.cambridge.arm.com>
-References: <20220429203644.2868448-1-samitolvanen@google.com>
- <20220429203644.2868448-11-samitolvanen@google.com>
- <YnP7j+miotxYM6fu@FVFF77S0Q05N.cambridge.arm.com>
- <CABCJKue6c0FMpKXysdoT0Lc+RBqGFhp52iM03tttWwRv7CZr5w@mail.gmail.com>
+        Thu, 5 May 2022 14:09:02 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195A326E1
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:05:22 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id s30so8975869ybi.8
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 11:05:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lfs9ILt8sxsLN7d0CVj7IGkIjZk0ddULlJ98hbLjdl0=;
+        b=Ndgpe6IFiFofWceJK8I/DTEcQWT+/sHZsEWM1fYblnv9x81eSyj1R7FuXA8ILnq7mL
+         MirG8+CssXftrYGqNJ4vf1ERQtOm6a4Nq9IPOlrkw8GYT4MTbR51+m8zuOlLdoGmwuqT
+         LCH7motTy7WzByAkTNq0edQigKWkmNqayX293USnIaJr7BJOSxH8GmifZMRZNAE+kkk2
+         zWArlAg0ixMHNJJTifGAlU5k07E2zrU6JttPU9X300dt1NgXtfBycBtCfouCZIPcZCWE
+         LiBSab1rlgeKcaxikFZxkwfIaXNH19dfTS2sMDmjcRpqtla1OP0W8r34tKP8eXHD/c2L
+         VqsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lfs9ILt8sxsLN7d0CVj7IGkIjZk0ddULlJ98hbLjdl0=;
+        b=hv/pfQzi/uc06m6BBwfRCeBe+95kiboHGv1dybE5vTeP0tdCkqiC5HpePZWHpeBoz9
+         sCGuBhyn3KKqRAKOQPEwXxU0RtF/+o74jdQZy6iqIYdh90Q7UxZSJYXTgbbdao+11RrI
+         YUqDlRYDXz/54BS2K/mjxmY87SZc8yFLGIgIEoMQBCV7Bdnisgn7E/2JMiITzeKk+QFW
+         7XmL8ScHlQrU5S4ZDka9GOP3Q2mqx5cyeQP0Yi26SsTNKwYTGV/VelPvy93OJibhK/TO
+         zMQz2ej4w33Jo7uwWHBd1QgoeDZAZxpUBHtpXIbAcx1nfaGTaOhwhIY721IJMe/rHUuA
+         OhIw==
+X-Gm-Message-State: AOAM530NUS4Epa0puwyI0jHj/X6YpXYrGW4yB3E21FKTDIjqQXwIlzWd
+        YKpRw8DuG94rAGxy2bAJi0qBFaPq94QlRtIZIgeg/A==
+X-Google-Smtp-Source: ABdhPJxOGddy4d0Gcmj8AKq4eH0h4RCWeNm0um7E0xiCZcOB55dahtuyVvi1XSbZU3Ov8nWjJGuOmIU9Rx3UziGE6Uk=
+X-Received: by 2002:a25:aa62:0:b0:648:590f:5a53 with SMTP id
+ s89-20020a25aa62000000b00648590f5a53mr23847856ybi.5.1651773921071; Thu, 05
+ May 2022 11:05:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABCJKue6c0FMpKXysdoT0Lc+RBqGFhp52iM03tttWwRv7CZr5w@mail.gmail.com>
+References: <20220426164315.625149-1-glider@google.com> <20220426164315.625149-29-glider@google.com>
+ <87a6c6y7mg.ffs@tglx> <CAG_fn=U7PPBmmkgxFcWFQUCqZitzMizr1e69D9f26sGGzeitLQ@mail.gmail.com>
+ <87y1zjlhmj.ffs@tglx>
+In-Reply-To: <87y1zjlhmj.ffs@tglx>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Thu, 5 May 2022 20:04:44 +0200
+Message-ID: <CAG_fn=XxAhBEBP2KJvahinbaxLAd1xvqTfRJdAu1Tk5r8=01jw@mail.gmail.com>
+Subject: Re: [PATCH v3 28/46] kmsan: entry: handle register passing from
+ uninstrumented code
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 09:51:39AM -0700, Sami Tolvanen wrote:
-> On Thu, May 5, 2022 at 9:30 AM Mark Rutland <mark.rutland@arm.com> wrote:
-> > I also believe that in most cases we can drop the __nocfi annotation on callers
-> > now that we can mark the called assembly function with SYM_TYPED_FUNC_START().
-> 
-> Good point, thanks for pointing that out. I'll add these to the next
-> version of the series.
+On Tue, May 3, 2022 at 12:00 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> Alexander,
 
-Also, I *think* we can drop __nocfi from __init, and always check calls to
-functions in .init.text. IIUC we made those __nocfi because it leads to section
-mismatches, and dangling entries in the jump tables after we discarded the init
-text, neither of which should be a problem with kCFI.
+First of all, thanks a lot for the comments, those are greatly appreciated!
+I tried to revert this patch and the previous one ("kmsan:
+instrumentation.h: add instrumentation_begin_with_regs()") and
+reimplement unpoisoning pt_regs without breaking into
+instrumentation_begin(), see below.
 
-Unfortuantely, that appears to be masking some existing type mismatches; e.g.
-psci_dt_init() blows up because it uses the wrong type for its callees (a
-mismatched `const`). With that fixed up, arm64 boots fine.
+> >
+> > Regarding the regs, you are right. It should be enough to unpoison the
+> > regs at idtentry prologue instead.
+> > I tried that initially, but IIRC it required patching each of the
+> > DEFINE_IDTENTRY_XXX macros, which already use instrumentation_begin().
+>
+> Exactly 4 instances :)
+>
 
-> > There' a latent bug here with the existing CFI scheme, since
-> > `kpti_install_ng_mappings` isn't marked with __nocfi, and should explode when
-> > calling `idmap_kpti_install_ng_mappings` via the idmap.
-> 
-> The CONFIG_UNMAP_KERNEL_AT_EL0 version of kpti_install_ng_mappings is
-> marked __nocfi
+Not really, I had to add a call to `kmsan_unpoison_memory(regs,
+sizeof(*regs));` to the following places in
+arch/x86/include/asm/idtentry.h:
+- DEFINE_IDTENTRY()
+- DEFINE_IDTENTRY_ERRORCODE()
+- DEFINE_IDTENTRY_RAW()
+- DEFINE_IDTENTRY_RAW_ERRORCODE()
+- DEFINE_IDTENTRY_IRQ()
+- DEFINE_IDTENTRY_SYSVEC()
+- DEFINE_IDTENTRY_SYSVEC_SIMPLE()
+- DEFINE_IDTENTRY_DF()
 
-Ah, so it is. Sorry for the noise!
+, but even that wasn't enough. For some reason I also had to unpoison
+pt_regs directly in
+DEFINE_IDTENTRY_SYSVEC(sysvec_apic_timer_interrupt) and
+DEFINE_IDTENTRY_IRQ(common_interrupt).
+In the latter case, this could have been caused by
+asm_common_interrupt being entered from irq_entries_start(), but I am
+not sure what is so special about sysvec_apic_timer_interrupt().
 
-> > There' a latent bug here with the existing CFI scheme, since
-> > `machine_kexec` isn't marked with __nocfi, and should explode when calling
-> > `cpu_soft_restart` via the idmap.
-> 
-> But it's indeed missing from this one.
+Ideally, it would be great to find that single point where pt_regs are
+set up before being passed to all IDT entries.
+I used to do that by inserting calls to kmsan_unpoison_memory right
+into arch/x86/entry/entry_64.S
+(https://github.com/google/kmsan/commit/3b0583f45f74f3a09f4c7e0e0588169cef9=
+18026),
+but that required storing/restoring all GP registers. Maybe there's a
+better way?
 
-Cool; I'll prep a patch that fixes just this, then.
 
-Thanks,
-Mark.
+>
+> then
+>
+>      instrumentation_begin();
+>      foo(fargs...);
+>      bar(bargs...);
+>      instrumentation_end();
+>
+> is a source of potential false positives because the state is not
+> guaranteed to be correct, neither for foo() nor for bar(), even if you
+> wipe the state in instrumentation_begin(), right?
+
+Yes, this is right.
+
+> This approximation approach smells fishy and it's inevitably going to be
+> a constant source of 'add yet another kmsan annotation/fixup' patches,
+> which I'm not interested in at all.
+>
+> As this needs compiler support anyway, then why not doing the obvious:
+>
+> #define noinstr                                 \
+>         .... __kmsan_conditional
+>
+> #define instrumentation_begin()                 \
+>         ..... __kmsan_cond_begin
+>
+> #define instrumentation_end()                   \
+>         __kmsan_cond_end .......
+>
+> and let the compiler stick whatever is required into that code section
+> between instrumentation_begin() and instrumentation_end()?
+
+We define noinstr as
+__attribute__((disable_sanitizer_instrumentation))
+(https://llvm.org/docs/LangRef.html#:~:text=3Ddisable_sanitizer_instrumenta=
+tion),
+which means no instrumentation will be applied to the annotated
+function.
+Changing that behavior by adding subregions that can be instrumented
+sounds questionable.
+C also doesn't have good syntactic means to define these subregions -
+perhaps some __xxx_begin()/__xxx_end() intrinsics would work, but they
+would require both compile-time and run-time validation.
+
+Fortunately, I don't think we need to insert extra instrumentation
+into instrumentation_begin()/instrumentation_end() regions.
+
+What I have in mind is adding a bool flag to kmsan_context_state, that
+the instrumentation sets to true before the function call.
+When entering an instrumented function, KMSAN would check that flag
+and set it to false, so that the context state can be only used once.
+If a function is called from another instrumented function, the
+context state is properly set up, and there is nothing to worry about.
+If it is called from non-instrumented code (either noinstr or the
+skipped files that have KMSAN_SANITIZE:=3Dn), KMSAN would detect that
+and wipe the context state before use.
+
+By the way, I've noticed that at least for now (with pt_regs
+unpoisoning performed in IDT entries) the problem with false positives
+in noinstr code is entirely gone, so maybe we don't even have to
+bother.
+
+> Yes, it's more work on the tooling side, but the tooling side is mostly
+> a one time effort while chasing the false positives is a long term
+> nightmare.
+
+Well said.
+
+> Thanks,
+>
+>         tglx
+
+
+
+--=20
+Alexander Potapenko
+Software Engineer
+
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
+
+Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
+erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
+weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
+mich
+bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
+
+
+This e-mail is confidential. If you received this communication by
+mistake, please don't forward it to anyone else, please erase all
+copies and attachments, and please let me know that it has gone to the
+wrong person.
