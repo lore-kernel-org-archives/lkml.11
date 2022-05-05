@@ -2,254 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA854C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1859C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380757AbiEEOtS (ORCPT
+        id S1380758AbiEEOuJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
+        Thu, 5 May 2022 10:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbiEEOtN (ORCPT
+        with ESMTP id S1345436AbiEEOuG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:49:13 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1482B15A09
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 07:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651761929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jyfGq7dMfrbIZ4AP54s9Y4BCxr+1pD8LVHEm2Fcyagk=;
-        b=CkVbdKQR8F8E1frVSxe9qgc9iBVz4cmT+aGJijL/8kwNZ999D8G9YUp8oJU5TkDgEdX7iV
-        ZAaJy6A8GfWn32/TlxRZ6r7O+TjtDPM4kXIYk8/DkFXvL1s2taFcug45DQl0S9p6ZbAIDC
-        y4EfdFIe6mdEKQWyRpgttnxbBHM3/mY=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-526-GtORjxlAO0WgK_p9jhgL8A-1; Thu, 05 May 2022 10:45:20 -0400
-X-MC-Unique: GtORjxlAO0WgK_p9jhgL8A-1
-Received: by mail-wr1-f72.google.com with SMTP id k29-20020adfb35d000000b0020adc94662dso1544084wrd.12
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 07:45:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=jyfGq7dMfrbIZ4AP54s9Y4BCxr+1pD8LVHEm2Fcyagk=;
-        b=I2fAy62ab7+SZlNy0DaTn0jMRmeXmsZSXDnI1Nvf7y36uIcX0wlahy2GO//jDuFOkH
-         b7FFMJnoHEVhze7vvC1C/a6oWqQCy0zBVXgsodYirNsCCz/txrRyQ55HtKIRU//nOEFO
-         wfGPoezHuvqvLkL9hqfS+iqleeu27y4VE4K20nofntBWVMN8RDclHhF5yYwEiIfyvWqb
-         ADlG2p5mFOXZ3AQi9MB1ejOw5Jv5Ix0OhGifDp6wIqSP9zyfjZktCOfAjs8RDoi9OuBf
-         vPy02JGiYdOxyFD1XEuA4gtuOtPjVjF2VxuV+lVH6fnHf+FH3xiS7qYYdpdK3VCwbTBW
-         FfNA==
-X-Gm-Message-State: AOAM530mqu1NTypbbKP6otRuuu0pnBXvN8R09QZ72h+3Zkh7vP5Y1lJS
-        PneDkQwWvHvYENUjbEonm6Q+8ih191Lx8OPawsvuB82BevTb2MzRunmvLWsVehB7cqDPKaYCmMZ
-        CCm18UPj763wWTomgtRR53KHG
-X-Received: by 2002:adf:fe84:0:b0:20a:dc0b:4f2d with SMTP id l4-20020adffe84000000b0020adc0b4f2dmr21500155wrr.229.1651761919144;
-        Thu, 05 May 2022 07:45:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzZQq4VH2YS9CYoJkurgdMeySXi6KiIogT8HsYcwxJv74M68UxhhdX5HsfgALsw7hRyBw/cSA==
-X-Received: by 2002:adf:fe84:0:b0:20a:dc0b:4f2d with SMTP id l4-20020adffe84000000b0020adc0b4f2dmr21500139wrr.229.1651761918878;
-        Thu, 05 May 2022 07:45:18 -0700 (PDT)
-Received: from [192.168.8.104] (tmo-082-126.customers.d1-online.com. [80.187.82.126])
-        by smtp.gmail.com with ESMTPSA id l41-20020a05600c1d2900b0039456c00ba7sm6101976wms.1.2022.05.05.07.45.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 07:45:18 -0700 (PDT)
-Message-ID: <08f78cc7-b34e-cdca-72b8-a0f9163f3ca7@redhat.com>
-Date:   Thu, 5 May 2022 16:45:13 +0200
+        Thu, 5 May 2022 10:50:06 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FBD56FA9;
+        Thu,  5 May 2022 07:46:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651761986; x=1683297986;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=4+kd0vjMMPtv/zM2IFvgaogRom6Tf4HdZlD6H0t9CP0=;
+  b=Ng+++amhxRW65S0WX6OwPnkGPAAStAPxP9QzbcUWX3nVZ9Ah7nh/YHgg
+   LriHlkvBX59+vsKlpkxtwwktXhcDj0c8bS9KY7DhVwJVHWtv1gjKTZSPW
+   1nXTyT2rRCe1gzRla6Y1u/Pz1Gd3xDddos05u4IH33dHvdBKrZ4Wtqz7z
+   exTwS8Zlvediw4HLL04KJ4B+R8wTd107+K1V+fP58gQTkS+wsblSoUkOS
+   RjfSo7a4xmLx/dpkVaQxTnPtClbFkGA4C+7mbFuoJsr8fWLW+cpYvdi3e
+   4/SKAECS3pIfFNjhFCab4JzQLkI/r9qi/Byyn9RQpbnjPZi+k5AkBcoWD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="267727466"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="267727466"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 07:46:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="568618280"
+Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.51])
+  by fmsmga007.fm.intel.com with SMTP; 05 May 2022 07:46:20 -0700
+Received: by stinkbox (sSMTP sendmail emulation); Thu, 05 May 2022 17:46:19 +0300
+Date:   Thu, 5 May 2022 17:46:19 +0300
+From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+To:     Lyude Paul <lyude@redhat.com>
+Cc:     Doug Anderson <dianders@chromium.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Imre Deak <imre.deak@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] drm: Document that power requirements for DP AUX
+ transfers
+Message-ID: <YnPjO4kbjezQl5Da@intel.com>
+References: <20220503162033.1.Ia8651894026707e4fa61267da944ff739610d180@changeid>
+ <YnJv3B/85hTz54SC@intel.com>
+ <CAD=FV=WndmKuEB0=OVQP9YuJaSmD0uxkNs5LE0wWsFj7gBvhBA@mail.gmail.com>
+ <1c6c9fde6e85f09cc89ea8dc6e8716fef58f3ee1.camel@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, pasic@linux.ibm.com,
-        david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com, nrb@linux.ibm.com
-References: <20220414080311.1084834-1-imbrenda@linux.ibm.com>
- <20220414080311.1084834-2-imbrenda@linux.ibm.com>
-From:   Thomas Huth <thuth@redhat.com>
-Subject: Re: [PATCH v10 01/19] KVM: s390: pv: leak the topmost page table when
- destroy fails
-In-Reply-To: <20220414080311.1084834-2-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1c6c9fde6e85f09cc89ea8dc6e8716fef58f3ee1.camel@redhat.com>
+X-Patchwork-Hint: comment
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/04/2022 10.02, Claudio Imbrenda wrote:
-> Each secure guest must have a unique ASCE (address space control
-> element); we must avoid that new guests use the same page for their
-> ASCE, to avoid errors.
+On Wed, May 04, 2022 at 02:10:08PM -0400, Lyude Paul wrote:
+> On Wed, 2022-05-04 at 09:04 -0700, Doug Anderson wrote:
+> > Hi,
+> > 
+> > On Wed, May 4, 2022 at 5:21 AM Ville Syrjälä
+> > <ville.syrjala@linux.intel.com> wrote:
+> > > 
+> > > On Tue, May 03, 2022 at 04:21:08PM -0700, Douglas Anderson wrote:
+> > > > When doing DP AUX transfers there are two actors that need to be
+> > > > powered in order for the DP AUX transfer to work: the DP source and
+> > > > the DP sync. Commit bacbab58f09d ("drm: Mention the power state
+> > > > requirement on side-channel operations") added some documentation
+> > > > saying that the DP source is required to power itself up (if needed)
+> > > > to do AUX transfers. However, that commit doesn't talk anything about
+> > > > the DP sink.
+> > > > 
+> > > > For full fledged DP the sink isn't really a problem. It's expected
+> > > > that if an external DP monitor isn't plugged in that attempting to do
+> > > > AUX transfers won't work. It's also expected that if a DP monitor is
+> > > > plugged in (and thus asserting HPD) that it AUX transfers will work.
+> > > > 
+> > > > When we're looking at eDP, however, things are less obvious. Let's add
+> > > > some documentation about expectations. Here's what we'll say:
+> > > > 
+> > > > 1. We don't expect the DP AUX transfer function to power on an eDP
+> > > > panel. If an eDP panel is physically connected but powered off then it
+> > > > makes sense for the transfer to fail.
+> > > 
+> > > I don't agree with this. I think the panel should just get powred up
+> > > for AUX transfers.
+> > 
+> > That's definitely a fair thing to think about and I have at times
+> > thought about trying to make it work that way. It always ends up
+> > hitting a roadblock.
+
+How do you even probe the panel initially if you can't power it on
+without doing some kind of full modeset/etc.?
+
+> > 
+> > The biggest roadblock that I recall is that to make this work then
+> > you'd have to somehow ensure that the bridge chain's pre_enable() call
+> > was made as part of the AUX transfer, right? Since the transfer
+> > function can be called in any context at all, we have to coordinate
+> > this with DRM. If, for instance, DRM is mid way through powering the
+> > panel down then we need to wait for DRM to fully finish powering down,
+> > then we need to power the panel back up. I don't believe that we can
+> > just force the panel to stay on if DRM is turning it off because of
+> > panel power sequencing requirements. At least I know it would have the
+> > potential to break "samsung-atna33xc20.c" which absolutely needs to
+> > see the panel power off after it's been disabled.
+> > 
+> > We also, I believe, need to handle the fact that the bridge chain may
+> > not have even been created yet. We do AUX transfers to read the EDID
+> > and also to setup the backlight in the probe function of panel-edp. At
+> > that point the panel hasn't been linked into the chain. We had _long_
+> > discussions [1] about moving these out of probe and decided that we
+> > could move the EDID read to be later but that it was going to really
+> > ugly to move the AUX backlight later. The backlight would end up
+> > popping up at some point in time later (the first call to panel
+> > prepare() or maybe get_modes()) and that seemed weird.
+> > 
+> > [1]
+> > https://lore.kernel.org/lkml/CAD=FV=U5-sTDLYdkeJWLAOG-0wgxR49VxtwUyUO7z2PuibLGsg@mail.gmail.com/
+> > 
+> > 
+> > > Otherwise you can't trust that eg. the /dev/aux
+> > > stuff is actually usable.
+> > 
+> > Yeah, it's been on my mind to talk more about /dev/aux. I think
+> > /dev/aux has some problems, at least with eDP. Specifically:
+> > 
+> > 1. Even if we somehow figure out how to power the panel on as part of
+> > the aux transfer, we actually _still_ not guaranteed to be able to
+> > talk to it as far as I understand. My colleague reported to me that on
+> > a system he was working with that had PSR (panel self refresh) that
+> > when the panel was powered on but in PSR mode that it wouldn't talk
+> > over AUX. Assuming that this is correct then I guess we'd also have to
+> > do even more coordination with DRM to exit PSR and block future
+> > transitions of PSR. (NOTE: it's always possible that my colleague ran
+> > into some other bug and that panels are _supposed_ to be able to talk
+> > in PSR. If you think this is the case, I can always try to dig more).
 > 
-> Since the ASCE mostly consists of the address of the topmost page table
-> (plus some flags), we must not return that memory to the pool unless
-> the ASCE is no longer in use.
+> TBH - the coordination with drm I don't think would be the difficult part, as
+> we'd just need to add some sort of property (ideally invisible to userspace)
+> that can be used in an atomic commit to disable PSR - similar to how we enable
+> CRC readback from sysfs in the majority of DRM drivers. That being said
+> though, I think we can just leave the work of solving this problem up to
+> whoever ends up needing this to work.
+
+The driver should just disable/prevent PSR when doing AUX if the hardware
+can't guarantee the PSR and AUX won't interfere with each other.
+
+For i915 we have no problems with powering the panel on for AUX, but
+there is still a race with PSR vs. AUX because both use the same hardware
+internally. I've been nagging at people to fix this for i915 but I don't 
+think it still got done :( Originally we were supposed to get a hardware
+mutex for this but that plan got scrapped for some reason.
+
 > 
-> Only a successful Destroy Secure Configuration UVC will make the ASCE
-> reusable again.
+> > 
+> > 2. I'm not totally convinced that it's a great idea, at least for eDP,
+> > for userspace to be mucking with /dev/aux. For DP's case I guess
+> > /dev/aux is essentially enabling userspace drivers to do things like
+> > update firmware on DP monitors or play with the backlight. I guess we
+> > decided that we didn't want to add drivers in the kernel to handle
+> > this type of stuff so we left it for userspace? For eDP, though, there
 > 
-> If the Destroy Configuration UVC fails, the ASCE cannot be reused for a
-> secure guest (either for the ASCE or for other memory areas). To avoid
-> a collision, it must not be used again. This is a permanent error and
-> the page becomes in practice unusable, so we set it aside and leak it.
-> On failure we already leak other memory that belongs to the ultravisor
-> (i.e. the variable and base storage for a guest) and not leaking the
-> topmost page table was an oversight.
-> 
-> This error (and thus the leakage) should not happen unless the hardware
-> is broken or KVM has some unknown serious bug.
-> 
-> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> Fixes: 29b40f105ec8d55 ("KVM: s390: protvirt: Add initial vm and cpu lifecycle handling")
-> ---
->   arch/s390/include/asm/gmap.h |  2 +
->   arch/s390/kvm/pv.c           |  9 ++--
->   arch/s390/mm/gmap.c          | 80 ++++++++++++++++++++++++++++++++++++
->   3 files changed, 88 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/s390/include/asm/gmap.h b/arch/s390/include/asm/gmap.h
-> index 40264f60b0da..746e18bf8984 100644
-> --- a/arch/s390/include/asm/gmap.h
-> +++ b/arch/s390/include/asm/gmap.h
-> @@ -148,4 +148,6 @@ void gmap_sync_dirty_log_pmd(struct gmap *gmap, unsigned long dirty_bitmap[4],
->   			     unsigned long gaddr, unsigned long vmaddr);
->   int gmap_mark_unmergeable(void);
->   void s390_reset_acc(struct mm_struct *mm);
-> +void s390_remove_old_asce(struct gmap *gmap);
-> +int s390_replace_asce(struct gmap *gmap);
->   #endif /* _ASM_S390_GMAP_H */
-> diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-> index 7f7c0d6af2ce..3c59ef763dde 100644
-> --- a/arch/s390/kvm/pv.c
-> +++ b/arch/s390/kvm/pv.c
-> @@ -166,10 +166,13 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
->   	atomic_set(&kvm->mm->context.is_protected, 0);
->   	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM: rc %x rrc %x", *rc, *rrc);
->   	WARN_ONCE(cc, "protvirt destroy vm failed rc %x rrc %x", *rc, *rrc);
-> -	/* Inteded memory leak on "impossible" error */
-> -	if (!cc)
-> +	/* Intended memory leak on "impossible" error */
-> +	if (!cc) {
->   		kvm_s390_pv_dealloc_vm(kvm);
-> -	return cc ? -EIO : 0;
-> +		return 0;
-> +	}
-> +	s390_replace_asce(kvm->arch.gmap);
-> +	return -EIO;
->   }
->   
->   int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
-> diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-> index af03cacf34ec..e8904cb9dc38 100644
-> --- a/arch/s390/mm/gmap.c
-> +++ b/arch/s390/mm/gmap.c
-> @@ -2714,3 +2714,83 @@ void s390_reset_acc(struct mm_struct *mm)
->   	mmput(mm);
->   }
->   EXPORT_SYMBOL_GPL(s390_reset_acc);
-> +
-> +/**
-> + * s390_remove_old_asce - Remove the topmost level of page tables from the
-> + * list of page tables of the gmap.
-> + * @gmap the gmap whose table is to be removed
-> + *
-> + * This means that it will not be freed when the VM is torn down, and needs
-> + * to be handled separately by the caller, unless an intentional leak is
-> + * intended. Notice that this function will only remove the page from the
+> The main reason DP AUX got exposed to userspace in the first place was for
+> usecases like fwupd,
 
-"intentional leak is intended" ... sounds redundant. Scratch the first 
-"intentional" ?
+My memory says the original reason was debugging. Or at least I had
+no idea fwupd had started to use this until I saw some weird looking
+DPCD addresses in some debug log.
 
-> + * list, the page will still be used as a top level page table (and ASCE).
-> + */
-> +void s390_remove_old_asce(struct gmap *gmap)
-> +{
-> +	struct page *old;
-> +
-> +	old = virt_to_page(gmap->table);
-> +	spin_lock(&gmap->guest_table_lock);
-> +	list_del(&old->lru);
-> +	/*
-> +	 * In case the ASCE needs to be "removed" multiple times, for example
-> +	 * if the VM is rebooted into secure mode several times
-> +	 * concurrently, or if s390_replace_asce fails after calling
-> +	 * s390_remove_old_asce and is attempted again later. In that case
+But I suppose it's possible there were already plans for firmware
+updates and whatnot and it just wasn't being discussed when this was
+being developed.
 
-"In case the ASCE ... . In that case" - this should be either one big 
-sentence, or better, scratch the first "In case" and use "Sometimes" or 
-something similar to start the first sentence.
-
-> +	 * the old asce has been removed from the list, and therefore it
-> +	 * will not be freed when the VM terminates, but the ASCE is still
-> +	 * in use and still pointed to.
-> +	 * A subsequent call to replace_asce will follow the pointer and try
-> +	 * to remove the same page from the list again.
-> +	 * Therefore it's necessary that the page of the ASCE has valid
-> +	 * pointers, so list_del can work (and do nothing) without
-> +	 * dereferencing stale or invalid pointers.
-> +	 */
-> +	INIT_LIST_HEAD(&old->lru);
-> +	spin_unlock(&gmap->guest_table_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(s390_remove_old_asce);
-> +
-> +/**
-> + * s390_replace_asce - Try to replace the current ASCE of a gmap with
-> + * another equivalent one.
-> + * @gmap the gmap
-
-"the gmap" is not a very helpful description for a parmeter that is already 
-called gmap. Write at least "the guest map that should be replaced" ?
-
-> + *
-> + * If the allocation of the new top level page table fails, the ASCE is not
-> + * replaced.
-> + * In any case, the old ASCE is always removed from the list. Therefore the
-> + * caller has to make sure to save a pointer to it beforehands, unless an
-
-s/beforehands/beforehand/
-
-> + * intentional leak is intended.
-
-scratch "intentional".
-
-> + */
-> +int s390_replace_asce(struct gmap *gmap)
-> +{
-> +	unsigned long asce;
-> +	struct page *page;
-> +	void *table;
-> +
-> +	s390_remove_old_asce(gmap);
-> +
-> +	page = alloc_pages(GFP_KERNEL_ACCOUNT, CRST_ALLOC_ORDER);
-> +	if (!page)
-> +		return -ENOMEM;
-> +	table = page_to_virt(page);
-> +	memcpy(table, gmap->table, 1UL << (CRST_ALLOC_ORDER + PAGE_SHIFT));
-> +
-> +	/*
-> +	 * The caller has to deal with the old ASCE, but here we make sure
-> +	 * the new one is properly added to the list of page tables, so that
-> +	 * it will be freed when the VM is torn down.
-> +	 */
-> +	spin_lock(&gmap->guest_table_lock);
-> +	list_add(&page->lru, &gmap->crst_list);
-> +	spin_unlock(&gmap->guest_table_lock);
-> +
-> +	/* Set new table origin while preserving existing ASCE control bits */
-> +	asce = (gmap->asce & ~_ASCE_ORIGIN) | __pa(table);
-> +	WRITE_ONCE(gmap->asce, asce);
-> +	WRITE_ONCE(gmap->mm->context.gmap_asce, asce);
-> +	WRITE_ONCE(gmap->table, table);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(s390_replace_asce);
-
-  Thomas
-
+-- 
+Ville Syrjälä
+Intel
