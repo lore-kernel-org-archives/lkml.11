@@ -2,147 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2207C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E3E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233212AbiEEPTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
+        id S1381202AbiEEPUN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 11:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242784AbiEEPSw (ORCPT
+        with ESMTP id S242784AbiEEPUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:18:52 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F294F47054;
-        Thu,  5 May 2022 08:15:12 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y3so9301562ejo.12;
-        Thu, 05 May 2022 08:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P9U8VtHTMpxS3daOmFxvM8CiEOLd4g2YjivTRqBj1gg=;
-        b=pylu+FcH16PRiwGxvsJ4Lvm8VVlU35vFQHYuCBoWRDRpESWBGDwGuKu0dR9BNAcbqc
-         cKx/JvbNE+O1OdTPQl6gHPG84lxarUomOauCC5h+37/TVx6QZovXxu0XTMAu09utWHin
-         B/eI9jpxuzn/9GpIC0QSQx88YVt0w5HNWJVybF52KdYjdZjezHNF3nZKTU9MuzUAzgvl
-         2E+gls8B87ahmQK74ZKRCUuaVIBgyVu1fyuwjwDFDVDcd/CxOz8RsmsRtJc7X9Gnzb6D
-         VDPU8wCLdF5sluzx4F1K3U6m00TU/VoR2kCAedh8Qq955i57wWN5IVEaQf0zTaNKqaTM
-         0kGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P9U8VtHTMpxS3daOmFxvM8CiEOLd4g2YjivTRqBj1gg=;
-        b=Lao8he9CrL6bv3MSTmtyEmYok3GQv3hALya7AXShs8VChg19TrovSr4koYOJv7ukZG
-         CtWvetLGm+3JNP7JViVbW0PNpegHoparhK8jOFDlszjp02TK/3gXygi+WXJFUq15u9ne
-         6YAOoVb6MhKkUEZbKbQBy/0LhH16WA4uR+4WvQbfgM8SF4olev/e2gtgZRcY5KB621Vh
-         klutoSfk2ITQ2GsogK55setrm7cpAmyuKwKmIJcnvghG/diUOUT65WQaJIlsoR/cAQXA
-         rYveVoWsFZQFRkJbMtoN1CC+6qf09KJugKLQ2gc/zYSjoIAx2WvoR0ZLVq0OBSDszA0O
-         w1vA==
-X-Gm-Message-State: AOAM531nRd1/OicxJIRZBE6AgFigUmUbgckayVCQbwBWUU/CKEDOECBa
-        cC8VW7UUbMvoYcA86JsN1bU=
-X-Google-Smtp-Source: ABdhPJxbaNdvNnwR7fqSaGdLSEy4BrGkyc6cPNhTM1hE34Dag/JoDOsa5U4KH+iru1hh2yxHWfyfyg==
-X-Received: by 2002:a17:907:1c87:b0:6f0:29ea:cc01 with SMTP id nb7-20020a1709071c8700b006f029eacc01mr26942736ejc.671.1651763711293;
-        Thu, 05 May 2022 08:15:11 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id b21-20020aa7c915000000b0042617ba6380sm954779edt.10.2022.05.05.08.15.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 08:15:10 -0700 (PDT)
-Date:   Thu, 5 May 2022 18:15:07 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     songliubraving@fb.com, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        robh+dt@kernel.org, andrew@lunn.ch, devicetree@vger.kernel.org,
-        linux@armlinux.org.uk, andrii@kernel.org,
-        UNGLinuxDriver@microchip.com, john.fastabend@gmail.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        kpsingh@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, kafai@fb.com, yhs@fb.com,
-        krzysztof.kozlowski+dt@linaro.org, davem@davemloft.net,
-        Woojung.Huh@microchip.com
-Subject: Re: [Patch net-next v13 07/13] net: dsa: microchip: add LAN937x SPI
- driver
-Message-ID: <20220505151507.5fp3lur74gs4faee@skbuf>
-References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
- <20220504151755.11737-8-arun.ramadoss@microchip.com>
- <20220504200726.pn7y73gt7wc2dpsg@skbuf>
- <52e682a1bcd2aac1097f2b4f1948066fe5bb6924.camel@microchip.com>
+        Thu, 5 May 2022 11:20:10 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCF147054
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 08:16:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651763790; x=1683299790;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+0Kh2oRZukAOyD7AwIkqlv+A+XOIzELZ8enH5qUSGh0=;
+  b=KVddb6plbpHF00OO/nToZXAuzSmhkWgllQIpbhCeknuRyMBWNRV5htPg
+   RrW/f0s5spkrLBg7qrwR62AC/tuwam5Tr8FiOH7huK0zNohW+KSB7AWni
+   1BDc/cPLXUJ6r18iGI2JD0SYMzGU4TftTYXvXMSr7y6i/Z6d1NTs197BG
+   3Fnf7kr5DIiKSHxLiU7RxWQT5dNRJIWwfXMKCvfX13n6DxeIHDcu4taYo
+   JJMnJRpXEVwrrEUFQnV5NZYnrum0PZOejd6aC5d0a32IdNCe2muyjRL5i
+   KsbZIl8LCrNyutgmdTMCnWlYeAQpuMZRSo3K205X+/vygmk11TF0dVGX5
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="94676679"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 May 2022 08:16:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 5 May 2022 08:16:29 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 5 May 2022 08:16:27 -0700
+Message-ID: <a84f9d08-6b08-9968-32a2-dbbd28aadb40@microchip.com>
+Date:   Thu, 5 May 2022 17:16:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <52e682a1bcd2aac1097f2b4f1948066fe5bb6924.camel@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] ARM: at91: Kconfig: implement PIT64B selection
+Content-Language: en-US
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
+        <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220309100802.3610259-1-claudiu.beznea@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220309100802.3610259-1-claudiu.beznea@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 10:32:17AM +0000, Arun.Ramadoss@microchip.com wrote:
-> > >  static int lan937x_switch_init(struct ksz_device *dev)
-> > >  {
-> > > +     int ret;
-> > > +
-> > >       dev->ds->ops = &lan937x_switch_ops;
-> > > 
-> > > +     /* Check device tree */
-> > > +     ret = lan937x_check_device_id(dev);
-> > > +     if (ret < 0)
-> > > +             return ret;
-> > > +
-> > 
-> > Can't this be called from lan937x_spi_probe() directly, why do you
-> > need
-> > to go through lan937x_switch_register() first?
+On 09/03/2022 at 11:08, Claudiu Beznea wrote:
+> Implement PIT64B selection thus it will be available for the necessary
+> targets (at the moment SAM9X60 and SAMA7G5) w/o the necessity to
+> specify it via defconfig. With this the current CONFIG_TIMER_OF
+> dependency of PIT64B driver could be removed. Along with changes
+> on AT91 Kconfig removed CONFIG_MICROCHIP_PIT64B from defconfigs.
 > 
-> lan937x_check_device_id function compares the dev->chip_id with the
-> lan937x_switch_chip array and populate the some of the parameters of
-> struct ksz_dev. The dev->chip_id is populated using the dev->dev_ops-
-> >detect in the ksz_switch_register function. If lan937x_check_device_id
-> needs to be called in spi_probe, then chip_id has to be identified as
-> part of spi_probe function. Since ksz_switch_register handles the
-> identifying the chip_id, checking the device_id is part of switch_init.
->  
->  if (dev->dev_ops->detect(dev))
->              return -EINVAL;
->  
->  ret = dev->dev_ops->init(dev);
->  if (ret)
->             return ret;
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>   arch/arm/configs/at91_dt_defconfig  | 1 -
+>   arch/arm/configs/multi_v7_defconfig | 1 -
+>   arch/arm/configs/sama7_defconfig    | 1 -
+>   arch/arm/mach-at91/Kconfig          | 9 +++++++++
 
-Whatever you do, please use a common pattern for all of ksz9477, ksz8,
-and your lan937x. This includes validation of chip id, placement of the
-chip_data and dev_ops structures, and reuse as much logic as possible.
-The key is to limit the chip-specific information to structured data
-(tables) wherever possible and let common code deal with them.
+Hi Claudiu,
 
-For example there is no reason why struct ksz_chip_data is redefined for
-every switch, why copying from "chip" to "dev" is duplicated for every
-switch, and yet, why every other switch copies from "chip" to "dev" in
-the "switch_init" function yet lan937x does it from "check_device_id".
-So much boilerplate, yet different in subtle ways, makes the code very
-unpleasant to review.
+To match arm-soc flow, this probably would need to be spit in 2 patches: 
+one for the Kconfig changes. Then, when it's integrated, we shall queue 
+the other defconfig changes (having them around even with the Kconfig 
+change doesn't harm).
 
-I'm sure you'll find a straightforward way to code up a probing function.
+I let you do this change. Best regards,
+   Nicolas
 
-> As per the comment, enable_spi_indirect_access function called twice
-> https://lore.kernel.org/netdev/20220408232557.b62l3lksotq5vuvm@skbuf/
-> I have removed the enable_spi_indirect_access in the lan937x_setup
-> function in v13 patch 6. But it actually failed our regression.
-> The SPI indirect is required for accessing the Internal phy registers.
-> We have enabled it in lan937x_init before registering the
-> mdio_register. We need it for reading the phy id.
-> And another place enabled in lan937x_setup after lan937x_switch_reset
-> function. When I removed enabling in setup function, switch_reset
-> disables the spi indirecting addressing. Because of that further phy
-> register r/w fails. In Summary, we need to enable spi indirect access
-> in both the places, one for mdio_register and another after
-> switch_reset. 
+>   4 files changed, 9 insertions(+), 3 deletions(-)
 > 
-> Can I enable it both the places? Kindly suggest. 
+> diff --git a/arch/arm/configs/at91_dt_defconfig b/arch/arm/configs/at91_dt_defconfig
+> index 549d01be0b47..04f71dac9c97 100644
+> --- a/arch/arm/configs/at91_dt_defconfig
+> +++ b/arch/arm/configs/at91_dt_defconfig
+> @@ -195,7 +195,6 @@ CONFIG_RTC_DRV_AT91SAM9=y
+>   CONFIG_DMADEVICES=y
+>   CONFIG_AT_HDMAC=y
+>   CONFIG_AT_XDMAC=y
+> -CONFIG_MICROCHIP_PIT64B=y
+>   # CONFIG_IOMMU_SUPPORT is not set
+>   CONFIG_IIO=y
+>   CONFIG_AT91_ADC=y
+> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+> index 8863fa969ede..bec62d5aa3c6 100644
+> --- a/arch/arm/configs/multi_v7_defconfig
+> +++ b/arch/arm/configs/multi_v7_defconfig
+> @@ -989,7 +989,6 @@ CONFIG_APQ_MMCC_8084=y
+>   CONFIG_MSM_GCC_8660=y
+>   CONFIG_MSM_MMCC_8960=y
+>   CONFIG_MSM_MMCC_8974=y
+> -CONFIG_MICROCHIP_PIT64B=y
+>   CONFIG_BCM2835_MBOX=y
+>   CONFIG_ROCKCHIP_IOMMU=y
+>   CONFIG_TEGRA_IOMMU_GART=y
+> diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
+> index 07b0494ef743..2b0f020a18eb 100644
+> --- a/arch/arm/configs/sama7_defconfig
+> +++ b/arch/arm/configs/sama7_defconfig
+> @@ -182,7 +182,6 @@ CONFIG_RTC_DRV_AT91SAM9=y
+>   CONFIG_DMADEVICES=y
+>   CONFIG_AT_XDMAC=y
+>   CONFIG_STAGING=y
+> -CONFIG_MICROCHIP_PIT64B=y
+>   # CONFIG_IOMMU_SUPPORT is not set
+>   CONFIG_IIO=y
+>   CONFIG_IIO_SW_TRIGGER=y
+> diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
+> index 279810381256..1531b4625c76 100644
+> --- a/arch/arm/mach-at91/Kconfig
+> +++ b/arch/arm/mach-at91/Kconfig
+> @@ -165,6 +165,15 @@ config ATMEL_CLOCKSOURCE_TCB
+>   	  to make a single 32-bit timer.
+>   	  It can also be used as a clock event device supporting oneshot mode.
+>   
+> +config MICROCHIP_CLOCKSOURCE_PIT64B
+> +	bool "64-bit Periodic Interval Timer (PIT64B) support"
+> +	default SOC_SAM9X60 || SOC_SAMA7
+> +	select MICROCHIP_PIT64B
+> +	help
+> +	  Select this to get a high resolution clockevent (SAM9X60) or
+> +	  clocksource and clockevent (SAMA7G5) based on Microchip 64-bit
+> +	  Periodic Interval Timer.
+> +
+>   config HAVE_AT91_UTMI
+>   	bool
+>   
 
-So you call lan937x_reset_switch() as the first thing in ds->ops->setup(),
-and this momentarily breaks the earlier MDIO bus setup done from probe
--> ksz_switch_register() -> dev_ops->init().
 
-So why don't you move the lan937x_enable_spi_indirect_access() and
-lan937x_mdio_register() calls to ds->ops->setup(), _after_ the switch
-soft reset, then?
+-- 
+Nicolas Ferre
