@@ -2,111 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAAAEC43219
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378413AbiEENCo (ORCPT
+        id S1378494AbiEENEP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
+        Thu, 5 May 2022 09:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242976AbiEENCm (ORCPT
+        with ESMTP id S1378648AbiEENEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:02:42 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEF054186
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:59:03 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id be20so5077655edb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:59:03 -0700 (PDT)
+        Thu, 5 May 2022 09:04:06 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D5323174
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:00:25 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id d5so6006194wrb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 06:00:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TdtdiuvZ8kL/hgc8dFK7GV8wDG6uaaKHXPWtyIXxhtg=;
-        b=hXZ/pDovQSXNRx0IAnf+JAJh1h4umCs0GjzgB8qyT2sucQ6vbTH2Q+39inblU4gakn
-         IzvRFdCufYweWPtGblHPsek8a2h/hJTuIlz34KfTJdFe6mtty2eOqXZb6oapAx2/iphd
-         ChywpfpQhtj6kqglK59hJ6BWcHDmZSTO170x4=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=EGukWjN41YXunuHxiJ6v8MoB3BMhKLGHT/yPujsOYE4=;
+        b=Di4KSmN2FEodAD7lFMKM//ME8zqBRzDiFN9JSNNrXpGoZkzZRpwH7FzfEjSRcmbcfx
+         lJtdemxD5INqyiVcGQ3nySkkngToLYeD3EHhvaVkl67QSkcnUwRzZ2kLQ1rycYIpenLE
+         yqOx8R1S1HwvPK+keCmqRnR56l4fnqrndEFj+Sq2FUfNato0sftXAokYLucDAoKtvOxW
+         Gco8rfwH7ieNa8ChBxegXLa4K0QixoM1FpAT0jgyC3slx3yQJ1KlVWNGklmMnWurMhyP
+         KP8GFgQ+TWcoNuG7xShEeeiYVI5rfQrWx2uFNvlEO+rVxXd9E7jqC+9xWGLcvbzoe9L3
+         ilEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=TdtdiuvZ8kL/hgc8dFK7GV8wDG6uaaKHXPWtyIXxhtg=;
-        b=VvV+VnIcu+OE3c0yezpVBvf7O+I/Wwb4dHSLeu92g1jkQ+BDUJSU+MVlcICpgAzEzS
-         B2GMDsBAJwTUN107Kj3Jm4ulj04fUi1PVTLQyX81YK5LjmNrJ9DMkt28wSeCGbLZg+eo
-         klAcUKrbZ035srkQmGhxK1FBSt+wn2dy6NL9YD47i74/SfkgsEivno3W9Cb/fCaXZpGk
-         tgQraTyj+Fut+KzW6Bo/WjNdw2dftYmkuw9ZGntKdc3j/64cBTDBmkv5j2Ets3g8tydQ
-         X+768dPcuJSki/o1JbI3EHRymZudIwkzGvQw2HYvju/mA1aH/7ND83dIedZ5KAWzJUn+
-         em/A==
-X-Gm-Message-State: AOAM531ShGMUXtqaq+71lcle7auTghCwITjkhK/jWIU9t50acTEreehB
-        lmPcvzjw4xWL3axPzbeNj9sZlA==
-X-Google-Smtp-Source: ABdhPJyBYRoJ02j5Poqwbjoj0TCy918qe43XGFiHPEv1dUFaRY/4oF+mvaYj1nSndvSIV9S23+tVog==
-X-Received: by 2002:a05:6402:4396:b0:427:f2dc:b11 with SMTP id o22-20020a056402439600b00427f2dc0b11mr13167491edc.298.1651755542198;
-        Thu, 05 May 2022 05:59:02 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id j1-20020aa7de81000000b0042617ba63b3sm774202edv.61.2022.05.05.05.59.01
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=EGukWjN41YXunuHxiJ6v8MoB3BMhKLGHT/yPujsOYE4=;
+        b=Bu7spJ74vG9v/HJ1yafj1bIShKH0b/T/Kw/19Rnx8jiOcf71Cd6gbNmbzmeBpi3Y2H
+         RAf7SgWktDgBnDPxGb8oH2YtwobLYb8cRVXD0I7cjzg8NMdRQaFHs8rTUhp/44SysirD
+         PUE5/BDwNfoicsc9fHZCHf+oN+DXxo+os3euK67NnZOqqsf/LHCLMq7eGteAm+gfiYWn
+         9ZoXGhBIaLrCFmmfX7BbTcaF8B/rIjFSo+47TvThbcX51p/Ce31eM9jeH+3LGDoYfXys
+         2Ab+c4A6NZmmylHdNVNfaPGA5qJ42+AP+JdffRcJvzaNXKtgWPP7gC5frJf6+BUwK5G+
+         sGWw==
+X-Gm-Message-State: AOAM533tZjam1EL5IPlEoBnAQp5AG/Sulpatciffw24pM45p0koXTpS7
+        zxR6d7cWC755cEtoLS4/iZrEEQ==
+X-Google-Smtp-Source: ABdhPJxjtASToxRPCpk4uJFbbWje3gNccF30PaUNbYTd7HVydvY5Fa4RgqOnAT2p8ElPqwb22oVDAQ==
+X-Received: by 2002:adf:ecc7:0:b0:20a:dba3:a516 with SMTP id s7-20020adfecc7000000b0020adba3a516mr20355168wro.143.1651755624061;
+        Thu, 05 May 2022 06:00:24 -0700 (PDT)
+Received: from elver.google.com ([2a00:79e0:15:13:786b:6d06:626e:af02])
+        by smtp.gmail.com with ESMTPSA id k9-20020adfe3c9000000b0020c5253d8eesm1209895wrm.58.2022.05.05.06.00.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 05:59:01 -0700 (PDT)
-Date:   Thu, 5 May 2022 14:58:59 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v3 3/3] drm: Allow simpledrm to setup its emulated FB as
- firmware provided
-Message-ID: <YnPKE+6DE12IsOj4@phenom.ffwll.local>
-Mail-Followup-To: Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org
-References: <20220503071540.471667-1-javierm@redhat.com>
- <20220503071540.471667-4-javierm@redhat.com>
- <YnJcaaDcIsJKhSwQ@phenom.ffwll.local>
- <bfb03d40-a023-12a9-9554-1b6e6c474134@redhat.com>
- <YnO+8hZ0ozPaZUEj@phenom.ffwll.local>
- <47d3a7f6-24f9-7d54-48bf-09ab9e40e2de@redhat.com>
+        Thu, 05 May 2022 06:00:23 -0700 (PDT)
+Date:   Thu, 5 May 2022 15:00:18 +0200
+From:   Marco Elver <elver@google.com>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] mm/kfence: reset PG_slab and memcg_data before
+ freeing __kfence_pool
+Message-ID: <YnPKYtxgIpIk+pF2@elver.google.com>
+References: <YnPG3pQrqfcgOlVa@hyeyoo>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <47d3a7f6-24f9-7d54-48bf-09ab9e40e2de@redhat.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+In-Reply-To: <YnPG3pQrqfcgOlVa@hyeyoo>
+User-Agent: Mutt/2.1.4 (2021-12-11)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 02:45:27PM +0200, Javier Martinez Canillas wrote:
-> Hello Daniel,
+On Thu, May 05, 2022 at 09:45PM +0900, Hyeonggon Yoo wrote:
+> When kfence fails to initialize kfence pool, it frees the pool.
+> But it does not reset memcg_data and PG_slab flag.
 > 
-> On 5/5/22 14:11, Daniel Vetter wrote:
+> Below is a BUG because of this. Let's fix it by resetting memcg_data
+> and PG_slab flag before free.
 > 
-> [snip]
+> [    0.089149] BUG: Bad page state in process swapper/0  pfn:3d8e06
+> [    0.089149] page:ffffea46cf638180 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d8e06
+> [    0.089150] memcg:ffffffff94a475d1
+> [    0.089150] flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
+> [    0.089151] raw: 0017ffffc0000200 ffffea46cf638188 ffffea46cf638188 0000000000000000
+> [    0.089152] raw: 0000000000000000 0000000000000000 00000000ffffffff ffffffff94a475d1
+> [    0.089152] page dumped because: page still charged to cgroup
+> [    0.089153] Modules linked in:
+> [    0.089153] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B   W         5.18.0-rc1+ #965
+> [    0.089154] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+> [    0.089154] Call Trace:
+> [    0.089155]  <TASK>
+> [    0.089155]  dump_stack_lvl+0x49/0x5f
+> [    0.089157]  dump_stack+0x10/0x12
+> [    0.089158]  bad_page.cold+0x63/0x94
+> [    0.089159]  check_free_page_bad+0x66/0x70
+> [    0.089160]  __free_pages_ok+0x423/0x530
+> [    0.089161]  __free_pages_core+0x8e/0xa0
+> [    0.089162]  memblock_free_pages+0x10/0x12
+> [    0.089164]  memblock_free_late+0x8f/0xb9
+> [    0.089165]  kfence_init+0x68/0x92
+> [    0.089166]  start_kernel+0x789/0x992
+> [    0.089167]  x86_64_start_reservations+0x24/0x26
+> [    0.089168]  x86_64_start_kernel+0xa9/0xaf
+> [    0.089170]  secondary_startup_64_no_verify+0xd5/0xdb
+> [    0.089171]  </TASK>
 > 
-> >>
-> >> And while I agree with you that these midlayer flags are horrible, that is
-> >> what any other fbdev that makes use of a firmware-provided framebuffer set,
-> >> so simpledrm emulated fbdev shouldn't be the exception IMO.
-> > 
-> > So we discussed this a pile more on irc, and at least my take is that
-> > people who run simpledrm but want to combine that with fbdev drivers and
-> > expect it to all work nicely we can probably ignore. At least until all
-> > this sysfb stuff is nicely unified, and at that point we shouldn't need
-> > special flags anymore.
-> 
-> I'm OK with this take and happy to just drop this patch-set then. My worry
-> was just that someone could complain that we broke their uncommon setup [0].
-> 
-> [0]: https://xkcd.com/1172/.
+> Fixes: 0ce20dd84089 ("mm: add Kernel Electric-Fence infrastructure")
+> Fixes: 8f0b36497303 ("mm: kfence: fix objcgs vector allocation")
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-Since you have to explicitly enable simpledrm and that combo never
-worked, we did not actually break anything.
+Reviewed-by: Marco Elver <elver@google.com>
 
-Me, who has over a decade experience legalesing around the "no regression"
-rule :-)
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Thank you both.
+
+> ---
+> 
+> v3 -> v4:
+> 	- Use struct slab instead of folio and reset memcg_data and
+> 	  clear PG_slab only if PG_slab flag is set (virt_to_slab() != NULL).
+> 	  
+> 	  Thanks Muchun. Now it looks much better and still works.
+> 
+> 	- Remove Reviewed-by: tags as the code changed. Please add new
+> 	  one if the patch still looks good to you.
+> 
+>  mm/kfence/core.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> index a203747ad2c0..58dfac1828ce 100644
+> --- a/mm/kfence/core.c
+> +++ b/mm/kfence/core.c
+> @@ -642,6 +642,16 @@ static bool __init kfence_init_pool_early(void)
+>  	 * fails for the first page, and therefore expect addr==__kfence_pool in
+>  	 * most failure cases.
+>  	 */
+> +	for (char *p = (char *)addr; p < __kfence_pool + KFENCE_POOL_SIZE; p += PAGE_SIZE) {
+> +		struct slab *slab = virt_to_slab(p);
+> +
+> +		if (!slab)
+> +			continue;
+> +#ifdef CONFIG_MEMCG
+> +		slab->memcg_data = 0;
+> +#endif
+> +		__folio_clear_slab(slab_folio(slab));
+> +	}
+>  	memblock_free_late(__pa(addr), KFENCE_POOL_SIZE - (addr - (unsigned long)__kfence_pool));
+>  	__kfence_pool = NULL;
+>  	return false;
+> -- 
+> 2.32.0
