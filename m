@@ -2,137 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9192C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F34C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240917AbiEEHAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
+        id S242573AbiEEHE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 03:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236957AbiEEHAe (ORCPT
+        with ESMTP id S231975AbiEEHEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:00:34 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198F7377EF;
-        Wed,  4 May 2022 23:56:54 -0700 (PDT)
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 2456uUBv002675;
-        Thu, 5 May 2022 15:56:31 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 2456uUBv002675
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651733791;
-        bh=i8UVQkDD1UoDas2ND/0n+dx2bVcfUGCIy5PTWE5iI2U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NtasHN6CYnJgzyHeGmjakUgOvG3aQKwjwNspzBvJfa1nSTNKB4VJeRjgFr0h5iWGJ
-         Ed2Et83jp97YZI9+ZUWaVzBXPPX1vZ//SjsMzPahP6YGDI5Rd6UKLEL/MHair6kyzE
-         HPhD5JAqaR9pf4QesMJeU20UDYZQYyN+9Eq9t/5sTApSPPHiolvlKR3iSxpM9YwyXe
-         2SUg+dGMYYWojipEOySJ7oKWhzNz6zcZYI7ZbcxDIqt71lS+B1o/lBT2V8FMZjjC44
-         pAno5SkQ/NzVS7IwoMVpMOfRvBVdrIQlZgTvw4h4vP7BDlaSmNWsGYuPIPixYu9ei/
-         PJTBm3RAS79dg==
-X-Nifty-SrcIP: [209.85.214.173]
-Received: by mail-pl1-f173.google.com with SMTP id c9so2868684plh.2;
-        Wed, 04 May 2022 23:56:31 -0700 (PDT)
-X-Gm-Message-State: AOAM5311GHW8mMR+MGIR17B/xRk2rCgDmGgXiEvAmLV8Y+9CX++l37uF
-        WTAUnh9wisV+08zzPQpBX0G5goKwElr2M4sYZeo=
-X-Google-Smtp-Source: ABdhPJxsF51fbTyL6C4bazzUfCl2jPYlFrYotwR5hNcMGm8bZWKjxRNEqo5gx4CM+pyfrjnfAbsIB5F+gLE6/gs6RWU=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr25314570plp.162.1651733790231; Wed, 04
- May 2022 23:56:30 -0700 (PDT)
+        Thu, 5 May 2022 03:04:21 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567423916C
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:00:42 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id l203so3511426oif.0
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 00:00:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessos.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=GYb2qyeDXFpfHBcs3u1MbmVCzXSjcUG0qu6nWI0aQBY=;
+        b=ltzuFON4sacssZlcAtwXMz5GbnKSvVZaUwUQKVyMl+XFQ9LA6DmMRAMBetiiLTdxz1
+         8mHAXwJg/IdvB+T5t4DPfLLq89MFeMOCiy2yYPxfGy+IoLE2hFmvEofMokeOjIseKA3V
+         aLxHUzAKFr3t23SVRCMonUC9Jj3F+eXaKSmvTQVgx1d4MIOq27kFQahb8KMVyCHFKcH0
+         iSypWWzIy1qRNf2kxYFPoR80Bjzwmy6X9pAuIuT6SRJKSBMZSXB61Zb1oohk8u8OZiXB
+         nUVRX3M7Bqyq9+KQgxAOQJVumzaPpMeoNWopa6p8UhSoNIA0AckGfkc8+zyVSeN3J6mN
+         VXcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=GYb2qyeDXFpfHBcs3u1MbmVCzXSjcUG0qu6nWI0aQBY=;
+        b=1ji+lJyJEtDCaJS9R7GRwAFDfQZGLcqMEgWyzISYyAlVid3JzBOzzadeUPSnoSypI8
+         EPvzPUfrCdlnakVnvMD+NWyCabyvyeSNTBo+bCWfXazrnv2rihLjKrYAAnaDVbU3pJq5
+         bTwHlFObrZEDJGGpxXrB8W4JCNtj9pTt3QSE+cZuhlgQWwx3+zP2kE5rNTebZvtVGacS
+         h3lBydORFUjFx4NV3fdwijQR8LyeYl0t9iuHskGmOYjJNHvlD3HGZN+CJSGhbZKNCXIc
+         /dz3UL0alC34LcaVGeC/A8eutZzSSRUVCx698IgMb+wGZxhdUG/NNUwuUFlxgVZBDTbV
+         SSow==
+X-Gm-Message-State: AOAM5312vwM5K6mlIrt9vDf8+MMpwdiX6Fa8JxRWGICtI+S1112QuffI
+        3U0ocCJov7RPJngDmme9SAgUFFMQX8+baRWdTq2/HQ==
+X-Google-Smtp-Source: ABdhPJzIbrVzcDCPJMBPLSECStk77anISWTIvF2PH1N8TpB4sURyaOKd5cyPadiOr9DrZ+b3WQewur735l/o2y4cm30=
+X-Received: by 2002:a05:6808:180a:b0:322:bcd3:ddaf with SMTP id
+ bh10-20020a056808180a00b00322bcd3ddafmr1623748oib.35.1651734041647; Thu, 05
+ May 2022 00:00:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220501084032.1025918-1-masahiroy@kernel.org>
-In-Reply-To: <20220501084032.1025918-1-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 5 May 2022 15:55:23 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQ3JmpfJRU4xJisuZCzpN7OkK078MP5okBT-PD=N1R9jg@mail.gmail.com>
-Message-ID: <CAK7LNAQ3JmpfJRU4xJisuZCzpN7OkK078MP5okBT-PD=N1R9jg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/26] kbuild: yet another series of cleanups (modpost
- and LTO)
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        clang-built-linux <llvm@lists.linux.dev>
+From:   Jian-Hong Pan <jhp@endlessos.org>
+Date:   Thu, 5 May 2022 14:59:35 +0800
+Message-ID: <CAPpJ_edpzKpLzrwT-+gB2c-6qhVPs_iNHL6=uDOyc9Xr2wGCiQ@mail.gmail.com>
+Subject: [BUG] The UI hangs when system changes CPU frequency on Raspberry Pi 4B
+To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc:     linux-pm@vger.kernel.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        linux@endlessos.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 1, 2022 at 5:42 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
->
-> This is the third batch of cleanups in this development cycle.
->
-> Major changes in v2:
->
->  - V1 did not work with CONFIG_MODULE_REL_CRCS.
->    I fixed this for v2.
->
->  - Reflect some review comments in v1
->
->  - Refactor the code more
->
->  - Avoid too long argument error
->
->
->
-> Masahiro Yamada (26):
->   modpost: use bool type where appropriate
->   modpost: change mod->gpl_compatible to bool type
->   modpost: import include/linux/list.h
->   modpost: traverse modules in order
->   modpost: add sym_add_unresolved() helper
->   modpost: traverse unresolved symbols in order
->   modpost: use doubly linked list for dump_lists
->   modpost: traverse the namespace_list in order
->   modpost: dump Module.symvers in the same order of modules.order
->   modpost: move static EXPORT_SYMBOL check to check_exports()
->   modpost: make multiple export error
->   modpost: make sym_add_exported() always allocate a new symbol
->   modpost: split new_symbol() to symbol allocation and hash table
->     addition
->   modpost: mitigate false-negatives for static EXPORT_SYMBOL checks
->   kbuild: record symbol versions in *.cmd files
->   kbuild: generate a list of objects in vmlinux
->   modpost: extract symbol versions from *.cmd files
->   modpost: generate linker script to collect symbol versions
->   kbuild: embed symbol versions at final link of vmlinux or modules
->   kbuild: stop merging *.symversions
->   genksyms: adjust the output format for .cmd files
->   kbuild: do not create *.prelink.o for Clang LTO or IBT
->   kbuild: make built-in.a rule robust against too long argument error
->   kbuild: make *.mod rule robust against too long argument error
->   modpost: simplify the ->is_static initialization
->   modpost: use hlist for hash table implementation
+Hi,
 
-Applied 01-13 to linux-kbuild
-with Nick's reviewed-by.
+We found the UI hangs totally when system changes CPU frequency on
+Raspberry Pi 4B.  The test kernel is mainline kernel 5.18-rc3.
 
-I will send v3 for the rest.
+According to the oops messages and the stack:
 
->  .gitignore                  |   1 +
->  Makefile                    |   1 +
->  scripts/Kbuild.include      |   4 +
->  scripts/Makefile.build      | 118 +++------
->  scripts/Makefile.lib        |   7 -
->  scripts/Makefile.modfinal   |   6 +-
->  scripts/Makefile.modpost    |  10 +-
->  scripts/genksyms/genksyms.c |  17 +-
->  scripts/link-vmlinux.sh     |  34 +--
->  scripts/mod/file2alias.c    |   2 -
->  scripts/mod/list.h          | 265 +++++++++++++++++++
->  scripts/mod/modpost.c       | 501 ++++++++++++++++++++++--------------
->  scripts/mod/modpost.h       |  24 +-
->  scripts/mod/sumversion.c    |   8 +-
->  14 files changed, 650 insertions(+), 348 deletions(-)
->  create mode 100644 scripts/mod/list.h
->
-> --
-> 2.32.0
->
+[ 1330.166158] INFO: task kworker/0:0:6 blocked for more than 120 seconds.
+[ 1330.172963]       Tainted: G        W   E     5.18.0-rc3 #61
+[ 1330.178767] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+disables this message.
+[ 1330.186742] task:kworker/0:0     state:D stack:    0 pid:    6
+ppid:     2 flags:0x00000008
+[ 1330.186762] Workqueue: events dbs_work_handler
+[ 1330.186779] Call trace:
+[ 1330.186782]  __switch_to+0xf8/0x150
+[ 1330.186793]  __schedule+0x37c/0x141c
+[ 1330.186800]  schedule+0x54/0xc4
+[ 1330.186807]  schedule_timeout+0xa4/0x190
+[ 1330.186813]  __wait_for_common+0xc4/0x224
+[ 1330.186818]  wait_for_completion_timeout+0x2c/0x40
+[ 1330.186822]  mbox_send_message+0xf0/0x1f4
+[ 1330.186828]  rpi_firmware_property_list+0xf8/0x280
+[ 1330.186834]  rpi_firmware_property+0x7c/0xc0
+[ 1330.186839]  raspberrypi_fw_set_rate+0x64/0xe4 [clk_raspberrypi]
+[ 1330.186851]  clk_change_rate+0xe4/0x470
+[ 1330.186859]  clk_core_set_rate_nolock+0x1d0/0x2ec
+[ 1330.186864]  clk_set_rate+0x44/0x190
+[ 1330.186870]  _set_opp+0x3b4/0x70c
+[ 1330.186876]  dev_pm_opp_set_rate+0x11c/0x2d0
+[ 1330.186881]  set_target+0x3c/0x4c
+[ 1330.186887]  __cpufreq_driver_target+0x400/0x7ac
+[ 1330.186893]  od_dbs_update+0xc8/0x1c0
+[ 1330.186898]  dbs_work_handler+0x4c/0x8c
+[ 1330.186903]  process_one_work+0x210/0x480
+[ 1330.186910]  worker_thread+0x180/0x520
+[ 1330.186915]  kthread+0xe4/0xf0
+[ 1330.186920]  ret_from_fork+0x10/0x20
+[ 1330.186928] INFO: task kworker/u8:0:8 blocked for more than 120 seconds.
+[ 1330.193744]       Tainted: G        W   E     5.18.0-rc3 #61
+[ 1330.199509] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
+disables this message.
+[ 1330.207467] task:kworker/u8:0    state:D stack:    0 pid:    8
+ppid:     2 flags:0x00000008
+[ 1330.207485] Workqueue: events_unbound commit_work [drm_kms_helper]
+[ 1330.207555] Call trace:
+[ 1330.207558]  __switch_to+0xf8/0x150
+[ 1330.207572]  __schedule+0x37c/0x141c
+[ 1330.207579]  schedule+0x54/0xc4
+[ 1330.207586]  schedule_preempt_disabled+0x1c/0x2c
+[ 1330.207593]  __mutex_lock.constprop.0+0x160/0x59c
+[ 1330.207598]  __mutex_lock_slowpath+0x40/0x8c
+[ 1330.207602]  mutex_lock+0x68/0x80
+[ 1330.207607]  clk_prepare_lock+0x4c/0xac
+[ 1330.207616]  clk_set_rate_range.part.0+0x3c/0x250
+[ 1330.207622]  clk_set_min_rate+0x3c/0xdc
+[ 1330.207627]  vc4_atomic_commit_tail+0x68c/0x77c [vc4]
+[ 1330.207664]  commit_tail+0xd8/0x210 [drm_kms_helper]
+[ 1330.207707]  commit_work+0x20/0x30 [drm_kms_helper]
+[ 1330.207748]  process_one_work+0x210/0x480
+[ 1330.207755]  worker_thread+0x180/0x520
+[ 1330.207760]  kthread+0xe4/0xf0
+[ 1330.207765]  ret_from_fork+0x10/0x20
 
+Looks like clk_raspberrypi tries to set/change rate by invoking
+raspberrypi_fw_set_rate(), but the transaction with firmware is
+timeout. There might be a lock shared with others, but held by it. For
+example, the second oops message from drm_kms_helper -> vc4 shows
+clk_prepare_lock() is waiting to be scheduled.
 
--- 
-Best Regards
-Masahiro Yamada
+The UI hangs until raspberrypi-firmware gets the failed returned error
+from mbox_send_message().
+
+[ 4887.601985] raspberrypi-firmware soc:firmware: mbox_send_message returned -62
+[ 4887.609269] raspberrypi-clk soc:firmware:clocks: Failed to change
+fw-clk-arm frequency: -62
+
+The serial console is alive when the UI hangs.
+
+I put all of the findings on https://bugzilla.kernel.org/show_bug.cgi?id=215875
+
+Jian-Hong Pan
