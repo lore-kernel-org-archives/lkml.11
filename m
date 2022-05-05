@@ -2,104 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F08C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238720AbiEEC1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 22:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
+        id S238778AbiEEC1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 22:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236673AbiEEC1D (ORCPT
+        with ESMTP id S236673AbiEEC1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 22:27:03 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3314BB9D;
-        Wed,  4 May 2022 19:23:25 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id j14so3128599plx.3;
-        Wed, 04 May 2022 19:23:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lFFrhJmbK0PSipTPxwjwV3fHJdLQ0jjKSAlpMZiepxg=;
-        b=lOTfWI6YdJdZP0livjRoOh3ATgDq1yk1r6M31p8O8yGO5dhXdvm10Kovu/1wVLk7kS
-         IgZh6DaQregbT9u7/PF8eU270rdYjPiPL4RkSPh3gDWyEmp6SV1d0aIJrq2nJ9gTPqod
-         3jtXVmGoJ3Z3RLYlkxhljNXrsUynUKhLARSFsP8NDAsz3Io9PfKn7lBs+USbRoOHL9SS
-         ElVxWnX3NiXyhrfUbYy5QxtSOwQQiomprHe7PGi/ha5GGStO4MaAWOPFpyHAKvDxHKq0
-         nkESBpdq6vefcF25nR6vRmJ1suN0bJBmumVhUddnz1/V9E1d91I73ou+1MqzNuG9LSZ9
-         z4/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lFFrhJmbK0PSipTPxwjwV3fHJdLQ0jjKSAlpMZiepxg=;
-        b=bd0mxsTiX30Vp5MsuOSKmmXqX3xmWotTbNKb0gRh8+cLSz2jn+/453cJdM73nkwzUs
-         1IiGarGYuuTCKyexUmUHrfaPmZR808+bpdX9RAeDn55NzarJ4Fx/pn3ChT9AT28DYYYN
-         5qSSJlPwnal7SC5VUDQS7pbqQPc+qac6zC0EWXegN/xdy8W+MXG75us+w4Kuqt60yFcn
-         TI05QPtoe6wdiroUk4PtcdhXi2VRmGX3mWXHNjw0MozXNpq3MAXhir4abSWun8ME24OY
-         kGwtOwDV68ic7P81NpJCz+zRDhf6M1g6AKNYXwrM/Tb3XAmNs4ChQ0wIdprMzIoUZJrR
-         NS3Q==
-X-Gm-Message-State: AOAM532uIVv2Xmd8YKI1UjblDtvW5hz5Yg7X5Nw5zMRLPIxHFGS7Uc6P
-        tkIHiqrX8Ed34mvcPdIvwhqutm6/Byk=
-X-Google-Smtp-Source: ABdhPJwp3xJ/8ojilBsTldfF7NRGzBixfmWfZad6Y090DItVCi8BI5x2bbzvVourA9sdC1ejrosTzw==
-X-Received: by 2002:a17:90b:1d82:b0:1dc:ba02:52a0 with SMTP id pf2-20020a17090b1d8200b001dcba0252a0mr1211577pjb.246.1651717405280;
-        Wed, 04 May 2022 19:23:25 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f5-20020a170902ce8500b0015e8d4eb1c5sm212496plg.15.2022.05.04.19.23.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 19:23:24 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     a.zummo@towertech.it
-Cc:     alexandre.belloni@bootlin.com, linux-rtc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] rtc: simplify the return expression of rx8025_set_offset()
-Date:   Thu,  5 May 2022 02:23:14 +0000
-Message-Id: <20220505022314.59822-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 4 May 2022 22:27:17 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2504BFD0;
+        Wed,  4 May 2022 19:23:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651717419; x=1683253419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wA6x1/zwYLOPI3LiA5XZehsRzpeivSsd5DiD94s7U7s=;
+  b=P8Nflcl5kfkF6DcrOp4zeVmliUxFYSePJE7SqUgrbDcLtycKOdu3wrOD
+   TgKb6I/JVuG9DQFT+FE0VxbTjsX088zGqKqlVvocgiA8bcyfAvWtG/Syx
+   wV7RGqkm65FijuIvDI+J2JXm6JzU9pz51p5Bc0kL2zEBePuftRGwG/CiT
+   sIzVpHwuY9YetKEceeOI0snAm8QAXEdtcd/cbbFtPOf0PoDabQKA3fJCW
+   B9mOaUshgMyO61yB5PgPxDhJgHFXJkHiOQKdu7iKO5d41Tfxn8E0y4xAs
+   0YS72goyyaNrCeQdDH7Mhzjoi85fDeuON2PbmjHYa8CWII0BTDrka/dhh
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="265556721"
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="265556721"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 19:23:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
+   d="scan'208";a="734683186"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga005.jf.intel.com with ESMTP; 04 May 2022 19:23:37 -0700
+Date:   Thu, 5 May 2022 10:15:45 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Tianfei Zhang <tianfei.zhang@intel.com>
+Cc:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        linux-fpga@vger.kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: Re: [PATCH v4] uio: dfl: add HSSI subsystem feature id
+Message-ID: <20220505021545.GA417720@yilunxu-OptiPlex-7050>
+References: <20220505001628.681226-1-tianfei.zhang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505001628.681226-1-tianfei.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On Wed, May 04, 2022 at 08:16:28PM -0400, Tianfei Zhang wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Add the Device Feature List (DFL) feature id for the
+> High Speed Serial Interface (HSSI) Subsystem to the
+> table of ids supported by the uio_dfl driver.
+> 
+> The HSSI Subsystem is a configurable set of IP blocks
+> to be used as part of a Ethernet or PCS/FEC/PMA pipeline.
+> Like the Ethernet group used by the N3000 card, the HSSI
+> Subsystem does not fully implement a network device from
+> a Linux netdev perspective and is controlled and monitored
+> from user space software via the uio interface.
+> 
+> The Feature ID table of DFL can be found:
+> https://github.com/OPAE/dfl-feature-id
+> 
+> Reviewed-by: Tom Rix <trix@redhat.com>
+> Acked-by: Xu Yilun <yilun.xu@intel.com>
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
 
-Simplify the return expression.
+Please re-order the tags. The earliest at the top and the latest at the
+bottom.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/rtc/rtc-rx8025.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+"SoB chains should reflect the **real** route a patch took
+as it was propagated to the maintainers and ultimately to Linus, with
+the first SoB entry signalling primary authorship of a single author."
 
-diff --git a/drivers/rtc/rtc-rx8025.c b/drivers/rtc/rtc-rx8025.c
-index 5bfdd34a72ff..b32117ccd74b 100644
---- a/drivers/rtc/rtc-rx8025.c
-+++ b/drivers/rtc/rtc-rx8025.c
-@@ -436,7 +436,6 @@ static int rx8025_set_offset(struct device *dev, long offset)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
- 	u8 digoff;
--	int err;
- 
- 	offset /= RX8025_ADJ_RESOLUTION;
- 	if (offset > RX8025_ADJ_DATA_MAX)
-@@ -449,11 +448,7 @@ static int rx8025_set_offset(struct device *dev, long offset)
- 		offset += 128;
- 	digoff = offset;
- 
--	err = rx8025_write_reg(client, RX8025_REG_DIGOFF, digoff);
--	if (err)
--		return err;
--
--	return 0;
-+	return rx8025_write_reg(client, RX8025_REG_DIGOFF, digoff);
- }
- 
- static const struct rtc_class_ops rx8025_rtc_ops = {
--- 
-2.25.1
+For more details, please refer to Documentation/process/submitting-patches.rst
 
 
+For you case, I assume:
+
+  Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+  Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+  Reviewed-by: Tom Rix <trix@redhat.com>
+  Acked-by: Xu Yilun <yilun.xu@intel.com>
+
+is it?
+
+Thanks,
+Yilun
+
+
+> ---
+> v4: add Reviewed-by and Acked-by tag and add Feature ID table url in git message.
+> v3: change the name of this feature id to HSSI_SUBSYS and rewrite
+>     the git message.
+> v2: add HSSI introduction and the git repo of Feature ID table.
+> ---
+>  drivers/uio/uio_dfl.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
+> index 89c0fc7b0cbc..8f39cc8bb034 100644
+> --- a/drivers/uio/uio_dfl.c
+> +++ b/drivers/uio/uio_dfl.c
+> @@ -45,9 +45,11 @@ static int uio_dfl_probe(struct dfl_device *ddev)
+>  }
+>  
+>  #define FME_FEATURE_ID_ETH_GROUP	0x10
+> +#define FME_FEATURE_ID_HSSI_SUBSYS	0x15
+>  
+>  static const struct dfl_device_id uio_dfl_ids[] = {
+>  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
+> +	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
+> -- 
+> 2.26.2
