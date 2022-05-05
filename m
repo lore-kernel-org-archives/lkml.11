@@ -2,109 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380428AbiEEONP (ORCPT
+        id S1380426AbiEEOPX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
+        Thu, 5 May 2022 10:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347604AbiEEONH (ORCPT
+        with ESMTP id S1344310AbiEEOPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:13:07 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D513F5A0B4;
-        Thu,  5 May 2022 07:09:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=6Lmbk4iO3bAEj7owhMXQsEqPqr87gMH5In94FkOVBfw=; b=Aoqc9T79xRfKYVs3id4satwXyq
-        zthalTtBJQEWrhGGjEiZ8LID9PItEJ8UPFI23dYGREnp3kQPPQXWx4ETJs0RgVlduyzoFsiwc4qcZ
-        Dxt0BWtweS8zIeRBXEg0wRIywxyO7O+OvPIQ+bn5qfr+KxPsC0U00cUesUHbVIXlKQLk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nmcAE-001N3s-Tm; Thu, 05 May 2022 16:09:06 +0200
-Date:   Thu, 5 May 2022 16:09:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiabing Wan <jiabing.wan@foxmail.com>
-Cc:     Jiabing Wan <wanjiabing@vivo.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: micrel: Remove unnecessary comparison in
- lan8814_handle_interrupt
-Message-ID: <YnPagtJIZSt8oPJu@lunn.ch>
-References: <20220505030217.1651422-1-wanjiabing@vivo.com>
- <YnO/VGKVHfFJG7/7@lunn.ch>
- <2ec61428-d9af-7712-b008-cf6b7e445aaa@vivo.com>
- <YnPHdzegs33G4JJ8@lunn.ch>
- <tencent_3A7D58D1E919ED045A0C40D4CE489320080A@qq.com>
+        Thu, 5 May 2022 10:15:20 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CC55715B;
+        Thu,  5 May 2022 07:11:40 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 1CC101F45775
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651759899;
+        bh=ohZ8s4Sd0+enIRLuka7M6eDqtjDg40errnz28w6Y6ro=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hMvxJdrbFacJ4zap3HqiVHXH2QG96fsoEwFKUM/OSwavLEIB/gSLowcCo2L/c6PcA
+         hxiPEmCs719r1ZyXHS6N7kqB8ALISw8+NXso9NqlZgbmEuiaZzQcPhOgiIRQyd96oT
+         jcXVTDLvPO92diXEjhu2yzoVbWF7kEmMm6Y5iEgQoMQKBq5LUc5bktRl5RXDyOOUHC
+         eD8DlF9lTnKgsWRPfIRU/VwB9IQurHwCyem/b3SKPjaq76ZntH4dfmoPnJKZ5If/y5
+         Sbs4/P+d0KYxNJO/e1GkWfK6uRCuzjFKqKjRNadwfnfFwrf30nS3HECDtc1ZhvNFcB
+         ThFk5j4sSZcrA==
+Received: by mercury (Postfix, from userid 1000)
+        id 6A6561060437; Thu,  5 May 2022 16:11:36 +0200 (CEST)
+Date:   Thu, 5 May 2022 16:11:36 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
+        Jianqun Xu <jay.xu@rock-chips.com>, kernel@collabora.com
+Subject: Re: [PATCHv2 13/21] pinctrl/rockchip: add rk3588 support
+Message-ID: <20220505141136.yglo7ggm3styrtfo@mercury.elektranox.org>
+References: <20220504213251.264819-1-sebastian.reichel@collabora.com>
+ <20220504213251.264819-14-sebastian.reichel@collabora.com>
+ <1792093.MYTQk1Oth5@archbook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zebz5ifrjpsgyo5o"
 Content-Disposition: inline
-In-Reply-To: <tencent_3A7D58D1E919ED045A0C40D4CE489320080A@qq.com>
+In-Reply-To: <1792093.MYTQk1Oth5@archbook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> I write the coccicheck and find these reports:
 
-Nice!
+--zebz5ifrjpsgyo5o
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> For directly call __phy_read():
-> 
-> ./drivers/net/phy/micrel.c:1969:59-60: WARNING: __phy_read() assigned to an
-> unsigned int 'data'
+Hi,
 
-This one we know about.
+On Thu, May 05, 2022 at 03:51:25PM +0200, Nicolas Frattaroli wrote:
+> On Mittwoch, 4. Mai 2022 23:32:43 CEST Sebastian Reichel wrote:
+> > From: Jianqun Xu <jay.xu@rock-chips.com>
+> >=20
+> > Add pinctrl support for RK3588.
+> >=20
+> > Signed-off-by: Jianqun Xu <jay.xu@rock-chips.com>
+> > [merged in downstream fixes, simplified register lookup logic for better
+> > maintanence at the cost of a bit more static const memory and fixed some
+> > incorrect registers]
+> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+>=20
+> Hi,
+>=20
+> a heads up to the maintainer: this was already merged. The cover letter
+> states
+>=20
+> >  * Dropped pinctrl and mmc binding patch (applied)
+>=20
+> so I think this was included by accident.
 
-> ./drivers/net/phy/mscc/mscc_macsec.c:49:50-51: WARNING: __phy_read()
-> assigned to an unsigned int 'val'
-> ./drivers/net/phy/mscc/mscc_macsec.c:52:51-52: WARNING: __phy_read()
-> assigned to an unsigned int 'val_l'
-> ./drivers/net/phy/mscc/mscc_macsec.c:53:51-52: WARNING: __phy_read()
-> assigned to an unsigned int 'val_h'
-> ./drivers/net/phy/mscc/mscc_macsec.c:89:50-51: WARNING: __phy_read()
-> assigned to an unsigned int 'val'
+I missed that the driver patch also has been merged (cover letter
+was just about the binding patches). Apparently I also accidently
+forgot to skip the first two patches, so they are not dropped but
+just moved to the beginning :(
 
-These are all in the same function. Looking at the first check, it has
-been decided that if something goes wrong, return 0. Not the best
-solution, but better than returning something random. So the do/while
-loop can goto failed: val_l and val_h are a bit more messy, but a
-check would be nice, return 0 on error.
+-- Sebastian
 
-Actually returning an error code is not going to be easy. The rest of
-the code assumes vsc8584_macsec_phy_read() never fails :-(
+--zebz5ifrjpsgyo5o
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> ./drivers/net/phy/mscc/mscc_main.c:1511:50-51: WARNING: __phy_read()
-> assigned to an unsigned int 'addr'
-> ./drivers/net/phy/mscc/mscc_main.c:1514:47-48: WARNING: __phy_read()
-> assigned to an unsigned int 'val'
+-----BEGIN PGP SIGNATURE-----
 
-More code which assumes a read can never fail. vsc8514_probe() calls
-this, so it should be reasonable easy to catch the error, return it,
-and make the probe fail.
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmJz2wwACgkQ2O7X88g7
++prF7hAAiSvKyrnjIzT6oufYFiLf7wuR2gohA4ENOVnLvm/9VfBwGHLgbrlFQBXc
+veEG+uDocd6gDzI/tFNV8FV85OMalLfil31nr9Gwc4hwK6aMqBeBOTZukXKXzCOV
+29ASi/JaGKhxcoP5aMVKdyqcoNb3oRhW/Kw0YT0rSScJRYCe6CzKmet5kN4EnNQN
+7sqxAmwZWWa2RhurrzjvfCZ8CBAXVzsZ7l+tqnNHccdvowHKNB/DAPnTzo3oQ/sy
+1RfNviR28t/f4t1OunQYIt8lcBW/rkjl1NDnNcIYlhmpCkGYJ8R5QYt0ncuK9ldP
+jDCNuC+hrHEP8jC278/IzVtvHCaEs4A3ICflu24vO6NI1HzsxlO+kcbMDRgSSL9T
+6NSedvgYOwYVYZtJso9z61rS7fmha09JUTrkr0EElIaxu8A66aHNXqMgvtcMNRom
+4LhQAFy7Kstq2q6z9G2j7qcDt6L+w17me90r6XH24DvMw4cssLo/j6qQLHaVRPPS
+ZcR1Wd8Z8+Aid971oW96yXOS/rZgbWqKi+8Vv21cG45xgJVTc6HUCSxJNupnmrwI
+lFZtctVp12zHo/ex7monZSC4/7AcIvE8wJmS/qd60xyfmDsQqAxAQUOAvxPTbirs
+KAB+xkO1VpBgoBLtqTZRxQX2kSfr245V3WY2VSmLLumrSkPYh9E=
+=ksr3
+-----END PGP SIGNATURE-----
 
-> ./drivers/net/phy/mscc/mscc_main.c:366:54-55: WARNING: __phy_read() assigned
-> to an unsigned int 'reg_val'
-> ./drivers/net/phy/mscc/mscc_main.c:370:55-56: WARNING: __phy_read() assigned
-> to an unsigned int 'pwd [ 0 ]'
-> ./drivers/net/phy/mscc/mscc_main.c:371:53-54: WARNING: __phy_read() assigned
-> to an unsigned int 'pwd [ 1 ]'
-> ./drivers/net/phy/mscc/mscc_main.c:372:55-56: WARNING: __phy_read() assigned
-> to an unsigned int 'pwd [ 2 ]'
-> ./drivers/net/phy/mscc/mscc_main.c:317:54-55: WARNING: __phy_read() assigned
-> to an unsigned int 'reg_val'
-
-Another void function which assumes it cannot fail. Error checks would
-be nice, don't return random data in the wol structure.
-
-Thanks
-	Andrew
+--zebz5ifrjpsgyo5o--
