@@ -2,136 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61770C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05226C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356319AbiEELCe (ORCPT
+        id S1356373AbiEELF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 07:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
+        Thu, 5 May 2022 07:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356687AbiEELC1 (ORCPT
+        with ESMTP id S1356362AbiEELFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 07:02:27 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B064C53E34
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 03:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651748301; x=1683284301;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KT3yvpmhOyvkbJzjKsPlMjHAaN9ntkeKdCV6ZerT2h4=;
-  b=HE9VwrNB2BUaA8beFfDka4VxN8yUlq8nY/qJK1cpBAMimpwj/Y+zT3WZ
-   gbp1IN+VxfKB7e6G/5+fLaLirUNmdmoa5gljvcoTJSb5FoqopOfRvFE6E
-   TK/4WSX5JVjm+iao81IwNtSYhiqaKddit4i5gqZP7QDdD+wdZ1MjfzreE
-   RWz0MfHj+xhRoGu7Y96g2biYD6g3Nw4s2fpZakO1OJm98hx4p/kWDMbZK
-   invGJ0Y01tt9V731cEsknBMgf7i2vmy0AeWCSDFXihBD9epptq46+1gOd
-   p72clt2VxslFtYiMIXxP7RGZW6CVmh3S6oJRrfeqvudCxLk1bpd0drZ1Y
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="268223553"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="268223553"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:58:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="708893373"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 03:58:19 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmZBb-000CJm-1N;
-        Thu, 05 May 2022 10:58:19 +0000
-Date:   Thu, 5 May 2022 18:57:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: Re: [PATCH] mm/kfence: reset PG_slab and memcg_data before freeing
- __kfence_pool
-Message-ID: <202205051852.M26PcwNj-lkp@intel.com>
-References: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
+        Thu, 5 May 2022 07:05:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963BB47AE8;
+        Thu,  5 May 2022 04:02:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0354861BEC;
+        Thu,  5 May 2022 11:02:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B4FDC385A4;
+        Thu,  5 May 2022 11:02:10 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="h0bSE84+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1651748528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w66ItAgT5NMOeGXzvBnEtBD/csHTCnRqMMsL/3iYAvg=;
+        b=h0bSE84+8RVin308iX0H/iKq7dL+Ojk7E0WxeIaCEP9cgvRp3m8DB5hW1yV8y9bmnSkJZm
+        jqpKlAUFo4zoTq7tZP8c49SeiRja2UPqgTmoNAtUG03if4gx9PDIlYUqSpaubMWB0ZbY3q
+        cyFYpz2TzHCZsQxDFyfKMbmJVrd+VUc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4aea3e4b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 5 May 2022 11:02:08 +0000 (UTC)
+Date:   Thu, 5 May 2022 13:02:02 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        Filipe Manana <fdmanana@suse.com>, linux-crypto@vger.kernel.org
+Subject: Re: [patch 3/3] x86/fpu: Make FPU protection more robust
+Message-ID: <YnOuqh4YZT8ww96W@zx2c4.com>
+References: <YnDwjjdiSQ5Yml6E@hirez.programming.kicks-ass.net>
+ <87fslpjomx.ffs@tglx>
+ <YnKh96isoB7jiFrv@zx2c4.com>
+ <87czgtjlfq.ffs@tglx>
+ <YnLOXZp6WgH7ULVU@zx2c4.com>
+ <87wnf1huwj.ffs@tglx>
+ <YnMRwPFfvB0RlBow@zx2c4.com>
+ <87mtfwiyqp.ffs@tglx>
+ <YnMkRLcxczMxdE5z@zx2c4.com>
+ <87h764ixjs.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
+In-Reply-To: <87h764ixjs.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hyeonggon,
+Hey again,
 
-Thank you for the patch! Yet something to improve:
+On Thu, May 05, 2022 at 03:21:43AM +0200, Thomas Gleixner wrote:
+> > Thanks, I'll give it a shot in the morning (3am) when trying to do a
+> > more realistic benchmark. But just as a synthetic thing, I ran the
+> > numbers in kBench900 and am getting:
+> >
+> >      generic:    430 cycles per call
+> >        ssse3:    315 cycles per call
+> >       avx512:    277 cycles per call
+> >
+> > for a single call to the compression function, which is the most any of
+> > those mix_pool_bytes() calls do from add_{input,disk}_randomness(), on
+> > Tiger Lake, using RDPMC from kernel space.
+> 
+> I'm well aware of the difference between synthetic benchmarks and real
+> world scenarios and with the more in depth instrumentation of these
+> things I'm even more concerned that the difference is underestimated.
+> 
+> > This _doesn't_ take into account the price of calling kernel_fpu_begin().
+> > That's a little hard to bench synthetically by running it in a loop and
+> > taking medians because of the lazy restoration. But that's an indication
+> > anyway that I should be looking at the cost of the actual function as
+> > its running in random.c, rather than the synthetic test. Will keep this
+> > thread updated.
+> 
+> Appreciated.
 
-[auto build test ERROR on hnaz-mm/master]
+Interestingly, disabling the simd paths makes things around 283 cycles
+slower on my Tiger Lake laptop, just doing ordinary things. I'm actually
+slightly surprised, so I'll probably keep playing with this. My patch
+for this is attached. Let me know if you have a different methodology in
+mind...
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hyeonggon-Yoo/mm-kfence-reset-PG_slab-and-memcg_data-before-freeing-__kfence_pool/20220505-150237
-base:   https://github.com/hnaz/linux-mm master
-config: s390-randconfig-r044-20220505 (https://download.01.org/0day-ci/archive/20220505/202205051852.M26PcwNj-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ad166fcbcd464ea0251165580e1ea0152531fe56
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hyeonggon-Yoo/mm-kfence-reset-PG_slab-and-memcg_data-before-freeing-__kfence_pool/20220505-150237
-        git checkout ad166fcbcd464ea0251165580e1ea0152531fe56
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash mm/kfence/
+Jason
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index bd292927654c..7a70a186c26b 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -53,6 +53,7 @@
+ #include <linux/uuid.h>
+ #include <linux/uaccess.h>
+ #include <linux/suspend.h>
++#include <linux/sort.h>
+ #include <crypto/chacha.h>
+ #include <crypto/blake2s.h>
+ #include <asm/processor.h>
+@@ -755,9 +756,48 @@ static struct {
+ 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
+ };
 
-All errors (new ones prefixed by >>):
++struct {
++	u32 durations[1 << 20];
++	u32 pos, len;
++} irqbench;
++
+ static void _mix_pool_bytes(const void *in, size_t nbytes)
+ {
++	u32 ctr = input_pool.hash.t[0];
++	cycles_t end, start = get_cycles();
+ 	blake2s_update(&input_pool.hash, in, nbytes);
++	end = get_cycles();
++
++	if (ctr == input_pool.hash.t[0] || !in_hardirq())
++		return;
++
++	irqbench.durations[irqbench.pos++ % ARRAY_SIZE(irqbench.durations)] = end - start;
++	irqbench.len = min_t(u32, irqbench.len + 1, ARRAY_SIZE(irqbench.durations));
++}
++
++static int cmp_u32(const void *a, const void *b)
++{
++	return *(const u32 *)a - *(const u32 *)b;
++}
++
++static int proc_do_irqbench_median(struct ctl_table *table, int write, void *buffer,
++				   size_t *lenp, loff_t *ppos)
++{
++	u32 len = READ_ONCE(irqbench.len), median, *sorted;
++	struct ctl_table fake_table = {
++		.data = &median,
++		.maxlen = sizeof(median)
++	};
++	if (!len)
++		return -ENODATA;
++	sorted = kmalloc_array(len, sizeof(*sorted), GFP_KERNEL);
++	if (!sorted)
++		return -ENOMEM;
++	memcpy(sorted, irqbench.durations, len * sizeof(*sorted));
++	sort(sorted, len, sizeof(*sorted), cmp_u32, NULL);
++	median = sorted[len / 2];
++	kfree(sorted);
++	return write ? 0 : proc_douintvec(&fake_table, 0, buffer, lenp, ppos);
+ }
 
-   mm/kfence/core.c: In function 'kfence_init_pool_early':
->> mm/kfence/core.c:634:21: error: 'struct page' has no member named 'memcg_data'
-     634 |                 page->memcg_data = 0;
-         |                     ^~
+ /*
+@@ -1709,6 +1749,18 @@ static struct ctl_table random_table[] = {
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_do_uuid,
+ 	},
++	{
++		.procname	= "irqbench_median",
++		.mode		= 0444,
++		.proc_handler	= proc_do_irqbench_median,
++	},
++	{
++		.procname	= "irqbench_count",
++		.data		= &irqbench.len,
++		.maxlen		= sizeof(irqbench.len),
++		.mode		= 0444,
++		.proc_handler	= proc_douintvec,
++	},
+ 	{ }
+ };
 
 
-vim +634 mm/kfence/core.c
-
-   610	
-   611	static bool __init kfence_init_pool_early(void)
-   612	{
-   613		unsigned long addr;
-   614	
-   615		if (!__kfence_pool)
-   616			return false;
-   617	
-   618		addr = kfence_init_pool();
-   619	
-   620		if (!addr)
-   621			return true;
-   622	
-   623		/*
-   624		 * Only release unprotected pages, and do not try to go back and change
-   625		 * page attributes due to risk of failing to do so as well. If changing
-   626		 * page attributes for some pages fails, it is very likely that it also
-   627		 * fails for the first page, and therefore expect addr==__kfence_pool in
-   628		 * most failure cases.
-   629		 */
-   630		for (char *p = (char *)addr; p < __kfence_pool + KFENCE_POOL_SIZE; p += PAGE_SIZE) {
-   631			struct page *page;
-   632	
-   633			page = virt_to_page(p);
- > 634			page->memcg_data = 0;
-   635			__ClearPageSlab(page);
-   636		}
-   637		memblock_free_late(__pa(addr), KFENCE_POOL_SIZE - (addr - (unsigned long)__kfence_pool));
-   638		__kfence_pool = NULL;
-   639		return false;
-   640	}
-   641	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
