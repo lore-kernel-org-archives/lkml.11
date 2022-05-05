@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC85C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C581BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384440AbiEESiG (ORCPT
+        id S1384451AbiEESiP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
+        Thu, 5 May 2022 14:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384213AbiEEShG (ORCPT
+        with ESMTP id S1384368AbiEEShG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:37:06 -0400
 Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F795DBED;
-        Thu,  5 May 2022 11:27:30 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:59548)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468285E764;
+        Thu,  5 May 2022 11:27:34 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:59586)
         by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <ebiederm@xmission.com>)
-        id 1nmgCI-00GUuH-0o; Thu, 05 May 2022 12:27:30 -0600
+        id 1nmgCL-00GUvI-6a; Thu, 05 May 2022 12:27:33 -0600
 Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37118 helo=localhost.localdomain)
         by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <ebiederm@xmission.com>)
-        id 1nmgCG-002BtP-5H; Thu, 05 May 2022 12:27:29 -0600
+        id 1nmgCK-002BtP-2F; Thu, 05 May 2022 12:27:32 -0600
 From:   "Eric W. Biederman" <ebiederm@xmission.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
@@ -41,59 +41,88 @@ Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
         Max Filippov <jcmvbkbc@gmail.com>,
         linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
         Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Thu,  5 May 2022 13:26:39 -0500
-Message-Id: <20220505182645.497868-6-ebiederm@xmission.com>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>
+Date:   Thu,  5 May 2022 13:26:40 -0500
+Message-Id: <20220505182645.497868-7-ebiederm@xmission.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
 References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nmgCG-002BtP-5H;;;mid=<20220505182645.497868-6-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+xBxycjJYYOeyHTOMyFYs6QPKTTdJxq/c=
+X-XM-SPF: eid=1nmgCK-002BtP-2F;;;mid=<20220505182645.497868-7-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19NRZcRcR23auMiCzqsQtGurcA8snLDuqU=
 X-SA-Exim-Connect-IP: 68.227.174.4
 X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH v4 06/12] signal: Use lockdep_assert_held instead of assert_spin_locked
+Subject: [PATCH v4 07/12] ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
 X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
 X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The distinction is that assert_spin_locked() checks if the lock is
-held *by*anyone* whereas lockdep_assert_held() asserts the current
-context holds the lock.  Also, the check goes away if you build
-without lockdep.
+The current implementation of PTRACE_KILL is buggy and has been for
+many years as it assumes it's target has stopped in ptrace_stop.  At a
+quick skim it looks like this assumption has existed since ptrace
+support was added in linux v1.0.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/Ympr/+PX4XgT/UKU@hirez.programming.kicks-ass.net
+While PTRACE_KILL has been deprecated we can not remove it as
+a quick search with google code search reveals many existing
+programs calling it.
+
+When the ptracee is not stopped at ptrace_stop some fields would be
+set that are ignored except in ptrace_stop.  Making the userspace
+visible behavior of PTRACE_KILL a noop in those case.
+
+As the usual rules are not obeyed it is not clear what the
+consequences are of calling PTRACE_KILL on a running process.
+Presumably userspace does not do this as it achieves nothing.
+
+Replace the implementation of PTRACE_KILL with a simple
+send_sig_info(SIGKILL) followed by a return 0.  This changes the
+observable user space behavior only in that PTRACE_KILL on a process
+not stopped in ptrace_stop will also kill it.  As that has always
+been the intent of the code this seems like a reasonable change.
+
+Cc: stable@vger.kernel.org
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- kernel/signal.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kernel/step.c | 3 +--
+ kernel/ptrace.c        | 5 ++---
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 72d96614effc..3fd2ce133387 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -884,7 +884,7 @@ static int check_kill_permission(int sig, struct kernel_siginfo *info,
- static void ptrace_trap_notify(struct task_struct *t)
- {
- 	WARN_ON_ONCE(!(t->ptrace & PT_SEIZED));
--	assert_spin_locked(&t->sighand->siglock);
-+	lockdep_assert_held(&t->sighand->siglock);
+diff --git a/arch/x86/kernel/step.c b/arch/x86/kernel/step.c
+index 0f3c307b37b3..8e2b2552b5ee 100644
+--- a/arch/x86/kernel/step.c
++++ b/arch/x86/kernel/step.c
+@@ -180,8 +180,7 @@ void set_task_blockstep(struct task_struct *task, bool on)
+ 	 *
+ 	 * NOTE: this means that set/clear TIF_BLOCKSTEP is only safe if
+ 	 * task is current or it can't be running, otherwise we can race
+-	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced() but
+-	 * PTRACE_KILL is not safe.
++	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced().
+ 	 */
+ 	local_irq_disable();
+ 	debugctl = get_debugctlmsr();
+diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+index da30dcd477a0..7105821595bc 100644
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -1236,9 +1236,8 @@ int ptrace_request(struct task_struct *child, long request,
+ 		return ptrace_resume(child, request, data);
  
- 	task_set_jobctl_pending(t, JOBCTL_TRAP_NOTIFY);
- 	ptrace_signal_wake_up(t, t->jobctl & JOBCTL_LISTENING);
-@@ -1079,7 +1079,7 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
- 	int override_rlimit;
- 	int ret = 0, result;
+ 	case PTRACE_KILL:
+-		if (child->exit_state)	/* already dead */
+-			return 0;
+-		return ptrace_resume(child, request, SIGKILL);
++		send_sig_info(SIGKILL, SEND_SIG_NOINFO, child);
++		return 0;
  
--	assert_spin_locked(&t->sighand->siglock);
-+	lockdep_assert_held(&t->sighand->siglock);
- 
- 	result = TRACE_SIGNAL_IGNORED;
- 	if (!prepare_signal(sig, t, force))
+ #ifdef CONFIG_HAVE_ARCH_TRACEHOOK
+ 	case PTRACE_GETREGSET:
 -- 
 2.35.3
 
