@@ -2,132 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 20:00:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD211C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 20:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385551AbiEEUEF (ORCPT
+        id S1384559AbiEEUFg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 16:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50840 "EHLO
+        Thu, 5 May 2022 16:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385539AbiEEUEE (ORCPT
+        with ESMTP id S244961AbiEEUFf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 16:04:04 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECD6E0A;
-        Thu,  5 May 2022 13:00:15 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.98.182]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N3Kc8-1nwE5E2FiE-010Ok2; Thu, 05 May 2022 21:58:54 +0200
-Received: by leknes.fjasle.eu (Postfix, from userid 1000)
-        id D902E3C088; Thu,  5 May 2022 21:58:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
-        t=1651780732; bh=vYIqL3eaKPYTYqh4k5jXwkhNTTztM7wW6tSG2tFIoVU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H4igcJXNQ6jjMIy7+cvVTEgWda4gX4BGzFgc7p/3G/PPrXH5KnPaO9BbsMe0pF8/U
-         rHYW+CseTNlFByUDSrQsRm0SzcsCVT+gdo9n/LMYX1w7wqci7S3Dg5ro7RlvAgeR65
-         G4lesugCBZB2rNVh7mesgZQWRu4Ba9MtFG7WTFzc=
-Date:   Thu, 5 May 2022 21:58:52 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-um@lists.infradead.org,
-        linux-s390@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v3 03/15] modpost: merge
- add_{intree_flag,retpoline,staging_flag} to add_header
-Message-ID: <YnQsfA8kHDDpnBcU@fjasle.eu>
-References: <20220505072244.1155033-1-masahiroy@kernel.org>
- <20220505072244.1155033-4-masahiroy@kernel.org>
+        Thu, 5 May 2022 16:05:35 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832085EDF0
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 13:01:54 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id fv2so5138003pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 13:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pgblE3j4iKhz7YnaakiOSpHlbjQP4SAyavbRgdtpp8I=;
+        b=Fpczt1Rmo9bey40PtYJ41u9aQTEn4i74wmc8/xVaITuombJTgbBwdwhuoo8Da5pw/Z
+         8erpU+uD0pDZ0o01228ZgmGm0cgCuGbgwdGB6JwmoWNdO5HkSq94CrZZhvxzzoY/CMLE
+         VDgwPcqO66XU8yGHYqVJR6Pl+x10LQkTz7W89lTrnzVOP2xCQeWsvTCCOaI+LJ346+gn
+         jEgpseOVNtomk93eXvWarsB52hyROlIyAwsFaEM/sD+ZkQwV5d47sK7oHOBFVEsZFX8v
+         +ZDg+PHi2e5K1y1ZhQbObIX1gZ/xS0307712RoViSArPBFAWzxVSIeksKwyj+3AwPt//
+         JnjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=pgblE3j4iKhz7YnaakiOSpHlbjQP4SAyavbRgdtpp8I=;
+        b=GAClRsbQAMdyglMSfXcwktFFSltiaSYEagL29l93SaGIcmcAIkWnZE3+/IUbf/31r2
+         nG6HESFTMPEYOmSt4WUltyCeZFZ3pUmIil4l3qjQuDWOhqEsiqdFzp5dfaewLK7OHnbo
+         DA+hBYZl7A3XLKRy67HNoPBB69t+2/DyGFRp05gqhMwdowx7l/1plzOqjIlddPL/QUbB
+         64/sAxPqGHi2b70GU/FXiwAzB2Y+M7Y+GC65lR7gGUQF4+MQEsc3+jsV9dm/Hpf7YhLb
+         jKgrjXTGlaFx/hyUQEcGBTnfkSI3mjv69a7xwdSfU/R4KU0hX/CBPSmRRVoRrwLA1bDu
+         IFfA==
+X-Gm-Message-State: AOAM530KiTZvEMd7B3j7e/nAAMcoCVJDeBGhBuJ08DqZeWJmuFIAr5jk
+        psPxHvGoGBlRtzVITuaxvaK0JyMeBEs=
+X-Google-Smtp-Source: ABdhPJz3KAefvYlFE9BMykoe7YrxFjSJmSecI5KPAZIy2k3yzWGkd2x7eYYZKZMXiHO2cKu/E96BIg==
+X-Received: by 2002:a17:902:8608:b0:158:b827:7721 with SMTP id f8-20020a170902860800b00158b8277721mr28760064plo.149.1651780913900;
+        Thu, 05 May 2022 13:01:53 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:29a5])
+        by smtp.gmail.com with ESMTPSA id s66-20020a625e45000000b0050dc76281dbsm1737123pfb.181.2022.05.05.13.01.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 13:01:53 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 5 May 2022 10:01:51 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] kernfs: make ->attr.open RCU protected.
+Message-ID: <YnQtL7+GYHwpo4n2@slm.duckdns.org>
+References: <20220428055431.3826852-1-imran.f.khan@oracle.com>
+ <20220428055431.3826852-3-imran.f.khan@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505072244.1155033-4-masahiroy@kernel.org>
-X-Provags-ID: V03:K1:9IUa2J8sJMvk7749DgPeiJiaBu6FL73EwQpRS6B0dgVLx4t442T
- osDTAH9JsajKHG1lcsCY/9daT/X0HMjejOOquvET7hizcj77zh+VoRDgizFgA6ppO3DNYhC
- ZFQG9l9TC1kFRKPb2hox/iIdOgwzdJ8ls3hX24wQeR4DTg1vK/y+O+Ik6M0XZfmHcX9omoG
- nqm6EIfPIJk6jK9uV1jbg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lbwNODae88U=:tAHOR6f0wimj/5peX0H7sJ
- qOXoXweEAyAP3gkzUjCzGoXNLVAif4i5vu22l0XQ4vlCrU99K1sleCBKtx+KfX4bR/9KPzp3h
- wabj/Rt1H64uxoelOJfoHkUEOH2DarMgVRYSv2I/uCbE277VYeXbayYjeOA+YWQ2V7WFkp0be
- fjAtMDa+OWWLkFVc6ObvTIsbeCxCnzaBrpAgIKisgHvnkui2BxKXUSU/2+g8bbX/FUwZBYKIa
- e/s9cgQ6Qdi6i0lpSBUgCBeEGObMuTaoodpnfhBDHMBR2vuqopL+Cul/MCehEy8w3X2llmwcA
- b5zKFLYOrKFlVTZ9yDpYdgbLSNo0ppMB+mHS6Ibx5XJUpo0fA/RU7Jp3OWXNvW//lDanmXHBZ
- SDZ5FjebLti6UbTjb7RKLPdY3om845p009yO0DElLqxY1dq9Shp4oZlVLTCwnqIt6d1p+FNso
- OE2qPMJYSjP6rQr1mS36P+G4xFYdV98rMVzUh0PBNRQlbuqRcATTW3MOBM7HWfiQCBNGyCxpN
- x5oElC04i/ztleBl7z5zL7lzA3kJ5GlPNg3v2nAhTJKcw+90CNxzJYb1TCnHDUPf6bXxNv+jB
- rjKr64REmHqXVO0Fy1gurXWgrHNONJMtFpF1/a29zOprou70jcQEzp8Xy7rF1U1D8not7PUx3
- yRmAEErm1dQbZkB1yBg4kDVsHIFCkJ9W+IQ4GkKsx6PCHfFX96kTuzBXWxEXp05qkHIY=
+In-Reply-To: <20220428055431.3826852-3-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 04:22:32PM +0900 Masahiro Yamada wrote:
-> add_intree_flag(), add_retpoline(), and add_staging_flag() are small
-> enough to be merged into add_header().
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
-> Changes in v3:
->   - New patch
-> 
->  scripts/mod/modpost.c | 25 +++++++------------------
->  1 file changed, 7 insertions(+), 18 deletions(-)
-> 
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index ebd80c77fa03..ae8e4a4dcfd2 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -2200,25 +2200,17 @@ static void add_header(struct buffer *b, struct module *mod)
->  			      "#endif\n");
->  	buf_printf(b, "\t.arch = MODULE_ARCH_INIT,\n");
->  	buf_printf(b, "};\n");
-> -}
->  
-> -static void add_intree_flag(struct buffer *b, int is_intree)
-> -{
-> -	if (is_intree)
-> +	if (!external_module)
->  		buf_printf(b, "\nMODULE_INFO(intree, \"Y\");\n");
-> -}
->  
-> -/* Cannot check for assembler */
-> -static void add_retpoline(struct buffer *b)
-> -{
-> -	buf_printf(b, "\n#ifdef CONFIG_RETPOLINE\n");
-> -	buf_printf(b, "MODULE_INFO(retpoline, \"Y\");\n");
-> -	buf_printf(b, "#endif\n");
-> -}
-> +	buf_printf(b,
-> +		   "\n"
-> +		   "#ifdef CONFIG_RETPOLINE\n"
-> +		   "MODULE_INFO(retpoline, \"Y\");\n"
-> +		   "#endif\n");
->  
-> -static void add_staging_flag(struct buffer *b, const char *name)
-> -{
-> -	if (strstarts(name, "drivers/staging"))
-> +	if (strstarts(mod->name, "drivers/staging"))
->  		buf_printf(b, "\nMODULE_INFO(staging, \"Y\");\n");
->  }
->  
-> @@ -2544,9 +2536,6 @@ int main(int argc, char **argv)
->  		check_exports(mod);
->  
->  		add_header(&buf, mod);
-> -		add_intree_flag(&buf, !external_module);
-> -		add_retpoline(&buf);
-> -		add_staging_flag(&buf, mod->name);
->  		add_versions(&buf, mod);
->  		add_depends(&buf, mod);
->  		add_moddevtable(&buf, mod);
-> -- 
-> 2.32.0
+On Thu, Apr 28, 2022 at 03:54:28PM +1000, Imran Khan wrote:
+> +static struct kernfs_open_node *kernfs_deref_on_raw(struct kernfs_node *kn)
+> +{
+> +	return rcu_dereference_raw(kn->attr.open);
+> +}
 
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+Wrapping the above probably isn't helping anything.
+
+> +/*
+> + * Check ->attr.open corresponding to @kn while holding kernfs_open_file_mutex.
+> + * ->attr.open is modified under kernfs_open_file_mutex. So it can be safely
+> + * accessed outside RCU read-side critical section, while holding the mutex.
+> + */
+> +static struct kernfs_open_node *kernfs_check_on_protected(struct kernfs_node *kn)
+> +{
+> +	return rcu_dereference_check(kn->attr.open,
+> +				      lockdep_is_held(&kernfs_open_file_mutex));
+> +}
+
+Maybe name this just kernfs_deref_on()?
+
+> @@ -156,8 +188,9 @@ static void kernfs_seq_stop(struct seq_file *sf, void *v)
+>  static int kernfs_seq_show(struct seq_file *sf, void *v)
+>  {
+>  	struct kernfs_open_file *of = sf->private;
+> +	struct kernfs_open_node *on = kernfs_deref_on_raw(of->kn);
+
+I suppose this is protected by the fact that @of is on @on? If so, just add
+the condition to the checked version. The condition doesn't have to be
+perfect - e.g. you can just say that neither @on's and @of's list_head isn't
+empty. While not comprehensive, it'd still provide meaningful protection
+against mistakes and be easier to understand if the deref accessor clearly
+explains the expectations.
+
+> @@ -201,7 +235,8 @@ static ssize_t kernfs_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+>  		goto out_free;
+>  	}
+>  
+> -	of->event = atomic_read(&of->kn->attr.open->event);
+> +	on = kernfs_deref_on_raw(of->kn);
+> +	of->event = atomic_read(&unrcu_pointer(on)->event);
+
+Ditto here.
+
+> @@ -815,7 +843,7 @@ void kernfs_drain_open_files(struct kernfs_node *kn)
+>  __poll_t kernfs_generic_poll(struct kernfs_open_file *of, poll_table *wait)
+>  {
+>  	struct kernfs_node *kn = kernfs_dentry_node(of->file->f_path.dentry);
+> -	struct kernfs_open_node *on = kn->attr.open;
+> +	struct kernfs_open_node *on = kernfs_deref_on_raw(kn);
+
+and here.
+
+> @@ -922,13 +950,13 @@ void kernfs_notify(struct kernfs_node *kn)
+>  		return;
+>  
+>  	/* kick poll immediately */
+> -	spin_lock_irqsave(&kernfs_open_node_lock, flags);
+> -	on = kn->attr.open;
+> +	rcu_read_lock();
+> +	on = rcu_dereference(kn->attr.open);
+
+Shouldn't this be kernfs_deref_on() too?
+
+Thanks.
+
+-- 
+tejun
