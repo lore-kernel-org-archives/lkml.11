@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56914C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356593AbiEES1d (ORCPT
+        id S1384033AbiEES1h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
+        Thu, 5 May 2022 14:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383196AbiEESTl (ORCPT
+        with ESMTP id S1383218AbiEESTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D5338DA9;
-        Thu,  5 May 2022 11:15:52 -0700 (PDT)
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BFF49684;
+        Thu,  5 May 2022 11:15:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774552; x=1683310552;
+  t=1651774554; x=1683310554;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=h813y3dEF676rU6qIUTQNIYMn233TjmsldMLS/ofG4A=;
-  b=NhjCzpdOuT8ommU+JsCv0cUJBr4IbzsiAuYbKrjNaOKa9nuoi0XKtyeO
-   HZLY3K/aY/9WdBIFf9vCgRHxseu5ChMqZvg3xw68Mcbt9LZY4ytoXwh2Z
-   4drzjvM0R5evYp6Cvc0JvGyJDmklnDYdaS7/CqFD6B41E0rbY4mdQZ8iY
-   jM6GnybT7FfMaixizDSXTOnO1kxxCjYKsbCaRGNsoRKqfG3jvq4KpDzMN
-   5ZpPWJxInorBbk/hl2RnrTR3horq4eXjMEcTPSao6evHEdZR8/oUS+Rr3
-   6SSNigObRkV+eiOFGvk9aCMvqwWFAk1Cu+RRAsIsGGLmABsEC0/aJRpI/
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248742015"
+  bh=pVoiIWs/KT0rFFHvpPmgf/2kpDklS0hKSk3efqDHWmY=;
+  b=nlFjGtGZMRAjNvI9XnOrWmjdsOFz4O6UL4lFCgryqCUwA6Dh+r4H5A0p
+   rN4DdKBGUs46m0FC0QYMTV333s7di+FkcXVlpI3vBs/f75thpJgGPPwxA
+   ZHZUA4h2TtF6pBikliccu8jm0oOio4Y+Q23tJOxv2TmrPcnyUxUg8bDZH
+   tOEXszZJyhkM4/LuYttXZIbN4MNPubPoE//yuChPHB2A9phcOETQWYUPP
+   XLVZdo6KggMJACAxbejtQm7W3YcoAdb2bG5WgHHQ4S3qGnYYsRw1lLx0f
+   R8Q7sYXRZV+hg4Aj7X24PzBE2HvOXOv6qSz2X9VIYsv4GiCQMUoMGAMRy
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746282"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248742015"
+   d="scan'208";a="328746282"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:45 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:46 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083250"
+   d="scan'208";a="665083298"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:44 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:46 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 034/104] KVM: x86/mmu: Add address conversion functions for TDX shared bits
-Date:   Thu,  5 May 2022 11:14:28 -0700
-Message-Id: <38c30f2c5ad6f9ca018c3e990f244c9b67ef10cb.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 046/104] KVM: x86/tdp_mmu: refactor kvm_tdp_mmu_map()
+Date:   Thu,  5 May 2022 11:14:40 -0700
+Message-Id: <4744ed20a4d9db95b515559e7525623781261b0c.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -56,107 +56,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rick Edgecombe <rick.p.edgecombe@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX repurposes one GPA bits (51 bit or 47 bit based on configuration) to
-indicate the GPA is private(if cleared) or shared (if set) with VMM.  If
-GPA.shared is set, GPA is converted existing conventional EPT pointed by
-EPTP.  If GPA.shared bit is cleared, GPA is converted by Secure-EPT(S-EPT)
-TDX module manages.  VMM has to issue SEAM call to TDX module to operate on
-S-EPT.  e.g. populating/zapping guest page or shadow page by TDH.PAGE.{ADD,
-REMOVE} for guest page, TDH.PAGE.SEPT.{ADD, REMOVE} S-EPT etc.
-
-Several hooks needs to be added to KVM MMU to support TDX.  Add a function
-to check if KVM MMU is running for TDX and several functions for address
-conversation between private-GPA and shared-GPA.
+Factor out non-leaf SPTE population logic from kvm_tdp_mmu_map().  MapGPA
+hypercall needs to populate non-leaf SPTE to record which GPA, private or
+shared, is allowed in the leaf EPT entry.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/mmu.h              | 32 ++++++++++++++++++++++++++++++++
- arch/x86/kvm/mmu/mmu.c          |  6 ++++--
- 3 files changed, 38 insertions(+), 2 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 60a97ae55972..88fd3fd3e1a0 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1251,7 +1251,9 @@ struct kvm_arch {
- 	 */
- 	u32 max_vcpu_ids;
- 
-+#ifdef CONFIG_KVM_MMU_PRIVATE
- 	gfn_t gfn_shared_mask;
-+#endif
- };
- 
- struct kvm_vm_stat {
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 7e258cc94152..3647035a147e 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -373,4 +373,36 @@ static inline gpa_t kvm_translate_gpa(struct kvm_vcpu *vcpu,
- 		return gpa;
- 	return translate_nested_gpa(vcpu, gpa, access, exception);
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index b7e13061e57d..9e015b3e0578 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1149,6 +1149,24 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
+ 	return 0;
  }
-+
-+static inline gfn_t kvm_gfn_shared_mask(const struct kvm *kvm)
+ 
++static int tdp_mmu_populate_nonleaf(
++	struct kvm_vcpu *vcpu, struct tdp_iter *iter, bool account_nx)
 +{
-+#ifdef CONFIG_KVM_MMU_PRIVATE
-+	return kvm->arch.gfn_shared_mask;
-+#else
-+	return 0;
-+#endif
++	struct kvm_mmu_page *sp;
++	int ret;
++
++	WARN_ON(is_shadow_present_pte(iter->old_spte));
++	WARN_ON(is_removed_spte(iter->old_spte));
++
++	sp = tdp_mmu_alloc_sp(vcpu);
++	tdp_mmu_init_child_sp(sp, iter);
++
++	ret = tdp_mmu_link_sp(vcpu->kvm, iter, sp, account_nx, true);
++	if (ret)
++		tdp_mmu_free_sp(sp);
++	return ret;
 +}
 +
-+static inline gfn_t kvm_gfn_shared(const struct kvm *kvm, gfn_t gfn)
-+{
-+	return gfn | kvm_gfn_shared_mask(kvm);
-+}
-+
-+static inline gfn_t kvm_gfn_private(const struct kvm *kvm, gfn_t gfn)
-+{
-+	return gfn & ~kvm_gfn_shared_mask(kvm);
-+}
-+
-+static inline gpa_t kvm_gpa_private(const struct kvm *kvm, gpa_t gpa)
-+{
-+	return gpa & ~gfn_to_gpa(kvm_gfn_shared_mask(kvm));
-+}
-+
-+static inline bool kvm_is_private_gpa(const struct kvm *kvm, gpa_t gpa)
-+{
-+	gfn_t mask = kvm_gfn_shared_mask(kvm);
-+
-+	return mask && !(gpa_to_gfn(gpa) & mask);
-+}
-+
- #endif
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 909372762363..d1c37295bb6e 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -264,8 +264,10 @@ static void kvm_flush_remote_tlbs_with_range(struct kvm *kvm,
+ /*
+  * Handle a TDP page fault (NPT/EPT violation/misconfiguration) by installing
+  * page tables and SPTEs to translate the faulting guest physical address.
+@@ -1157,7 +1175,6 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
  {
- 	int ret = -ENOTSUPP;
+ 	struct kvm_mmu *mmu = vcpu->arch.mmu;
+ 	struct tdp_iter iter;
+-	struct kvm_mmu_page *sp;
+ 	int ret;
  
--	if (range && kvm_x86_ops.tlb_remote_flush_with_range)
-+	if (range && kvm_available_flush_tlb_with_range()) {
-+		/* Callback should flush both private GFN and shared GFN. */
- 		ret = static_call(kvm_x86_tlb_remote_flush_with_range)(kvm, range);
-+	}
+ 	kvm_mmu_hugepage_adjust(vcpu, fault);
+@@ -1203,13 +1220,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 			if (is_removed_spte(iter.old_spte))
+ 				break;
  
- 	if (ret)
- 		kvm_flush_remote_tlbs(kvm);
-@@ -4048,7 +4050,7 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
- 	unsigned long mmu_seq;
- 	int r;
+-			sp = tdp_mmu_alloc_sp(vcpu);
+-			tdp_mmu_init_child_sp(sp, &iter);
+-
+-			if (tdp_mmu_link_sp(vcpu->kvm, &iter, sp, account_nx, true)) {
+-				tdp_mmu_free_sp(sp);
++			if (tdp_mmu_populate_nonleaf(vcpu, &iter, account_nx))
+ 				break;
+-			}
+ 		}
+ 	}
  
--	fault->gfn = fault->addr >> PAGE_SHIFT;
-+	fault->gfn = gpa_to_gfn(fault->addr) & ~kvm_gfn_shared_mask(vcpu->kvm);
- 	fault->slot = kvm_vcpu_gfn_to_memslot(vcpu, fault->gfn);
- 
- 	if (page_fault_handle_page_track(vcpu, fault))
 -- 
 2.25.1
 
