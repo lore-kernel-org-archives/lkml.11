@@ -2,88 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 987B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B5DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385418AbiEETuu (ORCPT
+        id S1385498AbiEETu4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:50:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
+        Thu, 5 May 2022 15:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385403AbiEETuc (ORCPT
+        with ESMTP id S1385416AbiEETuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:50:32 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37FD5EBC3
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 12:46:48 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso4991668pjb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 12:46:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mlYdaZj1ZllD0dqZ9JILFLLCIzKibd0Th5kenPcu9aU=;
-        b=aLnCuVnkP07jOSRDPM+S773YWsrmKkKkSF2qL4GIA3sDV7OGXqW9QWr//JB/9x8hFw
-         Us2MPLD00hj9Cga3n6gCUvuC/36r1HblFssD+8Gk9mQOx9srm7it2ep4f6NBtCJRI4Oo
-         1ViRyd2gY/a019BGDDJ6YJRq6yoKRm7FKzw5aNj0Hwl07v57/RywR/gL5i6wYKAyYdKQ
-         l2oSNqqrO8koCOOHCnvptPNc7cV88ElC3j2OEZ3ATqtiCDgVtzWjo4oW0250khQOen9/
-         nspVZIPhhi7ZaUBwrjeHDGRjRkO6M8zZLbvEgXU4HJDfruoXyPKsYbuFmcWUCJkXrA9o
-         l4vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=mlYdaZj1ZllD0dqZ9JILFLLCIzKibd0Th5kenPcu9aU=;
-        b=I/L3QXUmTYAbKHpJuYenkkpY02VpMp4ijtVoIJGBf/48aNkxzLxl/dihwsaE6EoKvi
-         vdXdRH6BY2Iy/IgtY9d8gODVNpuFmsFh4DeWj9mNrvPZc8mxG7Z8iLo94NwqS4xWeqAX
-         r5ne7R3IrAjZ81FqtW+nlcnaa5b3vc1DCfup/qCPhNNnH9ZGhrPai6c0iv71jbVSGffc
-         jgb6XzC8Xa/h6Ye49+iAM1mtJES2TMMhrVj06xOhMyMEvHKUjZM6F98IMTZ+OoGWo25q
-         0Y4o7875ESOFQrR3YI+VTcrsA8nlpHS0b32NXKLjFNCrNRCRsjZ5TVIXoo/yJIIUQuuc
-         mgkA==
-X-Gm-Message-State: AOAM531ESO7SFyeF/kXy8t+UVCVKvuSDU+7B3j4QEDfLQbOgtsyWGGcT
-        8Zx49AbBvCZgiv9LXgMns449xecRoHE=
-X-Google-Smtp-Source: ABdhPJzI+UTWpFSWw2hr1h7hkYuPh/HbO7KcewTcu3rOSNtuFHoe+YLrW/XGHZyTYnEOvE3lVb8TTA==
-X-Received: by 2002:a17:903:22cb:b0:15e:d715:1bd8 with SMTP id y11-20020a17090322cb00b0015ed7151bd8mr5766669plg.159.1651780008231;
-        Thu, 05 May 2022 12:46:48 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:29a5])
-        by smtp.gmail.com with ESMTPSA id z12-20020a63330c000000b003c14af50629sm1652742pgz.65.2022.05.05.12.46.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 12:46:47 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 5 May 2022 09:46:46 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] kernfs: Remove reference counting for
- kernfs_open_node.
-Message-ID: <YnQpplXhbUUB4wXl@slm.duckdns.org>
-References: <20220428055431.3826852-1-imran.f.khan@oracle.com>
- <20220428055431.3826852-2-imran.f.khan@oracle.com>
+        Thu, 5 May 2022 15:50:35 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF545EBD1;
+        Thu,  5 May 2022 12:46:50 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id AC83F1F45CD2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651780009;
+        bh=8TvoEhGQU6t2qg9uM8iphoK/DuIcgX6ObTBGTPSxnTk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XSsfXvMh/3UvAYBBO5gWbz63asC1SxSMIAZvqX3j4MDRYYwGfClwFV3ak8VXdWV18
+         bqv0Bh+GBInZgOfD2LHapuhjie9qOp1OdtpVe4r5OREjgzG7zvI1lK4ulqRe2u9/Oi
+         BGB/xUNuCMopwMrJnmU27zEjybmvzVd0qfrgolUngTt7beTEIafEG19kQzBpz/Wym+
+         eBGunoEKPuB4GDZfZEdeI7Gpaa+dPb3d8J4WgKx4zEvvUrvNPfepXdEoaVvolV/bAt
+         pk4eKgKw+iuLd2pDB9EOAIWEwz09nXqgR2icBMdLX3MoaH6MHYFwYK+OT93OnNZn03
+         kg6aDjWuS0D1Q==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 12/16] arm64: dts: mediatek: spherion: Add keyboard backlight
+Date:   Thu,  5 May 2022 15:45:46 -0400
+Message-Id: <20220505194550.3094656-13-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220505194550.3094656-1-nfraprado@collabora.com>
+References: <20220505194550.3094656-1-nfraprado@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428055431.3826852-2-imran.f.khan@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 03:54:27PM +1000, Imran Khan wrote:
-> The decision to free kernfs_open_node object in kernfs_put_open_node can
-> be taken based on whether kernfs_open_node->files list is empty or not. As
-> far as kernfs_drain_open_files is concerned it can't overlap with
-> kernfs_fops_open and hence can check for ->attr.open optimistically
-> (if ->attr.open is NULL) or under kernfs_open_file_mutex (if it needs to
-> traverse the ->files list.) Thus kernfs_drain_open_files can work w/o ref
-> counting involved kernfs_open_node as well.
-> So remove ->refcnt and modify the above mentioned users accordingly.
-> 
-> Suggested by: Al Viro <viro@zeniv.linux.org.uk>
-> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
+The Spherion board has keyboard backlight controlled by the PWM signal
+generated by the ChromeOS EC.
 
-Acked-by: Tejun Heo <tj@kernel.org>
+Enable PWM output for ChromeOS EC and add a PWM controlled LED node for
+the keyboard backlight.
 
-Thanks.
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
 
+(no changes since v1)
+
+ .../dts/mediatek/mt8192-asurada-spherion-r0.dts  | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts b/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
+index 35d9c5294fe0..7f9cf7ee1437 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada-spherion-r0.dts
+@@ -4,12 +4,28 @@
+  */
+ /dts-v1/;
+ #include "mt8192-asurada.dtsi"
++#include <dt-bindings/leds/common.h>
+ 
+ / {
+ 	model = "Google Spherion (rev0 - 3)";
+ 	compatible = "google,spherion-rev3", "google,spherion-rev2",
+ 		     "google,spherion-rev1", "google,spherion-rev0",
+ 		     "google,spherion", "mediatek,mt8192";
++
++	pwmleds {
++		compatible = "pwm-leds";
++
++		led {
++			function = LED_FUNCTION_KBD_BACKLIGHT;
++			color = <LED_COLOR_ID_WHITE>;
++			pwms = <&cros_ec_pwm 0>;
++			max-brightness = <1023>;
++		};
++	};
++};
++
++&cros_ec_pwm {
++	status = "okay";
+ };
+ 
+ &touchscreen {
 -- 
-tejun
+2.36.0
+
