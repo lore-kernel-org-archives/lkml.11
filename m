@@ -2,90 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F172C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A48BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244297AbiEEG3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 02:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S244352AbiEEGdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 02:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235313AbiEEG3v (ORCPT
+        with ESMTP id S233342AbiEEGdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 02:29:51 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF4F1A049
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 23:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651731973; x=1683267973;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XCojLW+9ezVCq192dbkCy99WssFI1eBwqcSpomU98EU=;
-  b=ZZx/90lBDjVSJiDDpwk8wCIgoayK/P0pjtwjtC3sXh8nDpbtcAxCTMqS
-   aGCaBNDr3tfAsW8dmOcXLoBewd/1BUraEdLC9+2vRKfnmpbtSQ14l9IRK
-   Li1wsQtX5d1fiuBZSQWTRNydmsO2FDIVkBRFcQYrXSIOmBLCCn+jDBvUA
-   8NlhE2G+JC8sIKBTVqzHsufkB2aNH0FdIvs5pHe+5jpjLoPW0oRhXeLHp
-   JevYMhUtkH5M32nHn9Yea7v3O2JKj5KZ76lw7pUujRsloIEKEb8vHsjTi
-   z9qumrTOGrym4XzZsmDBPERLjrSb3P1vPUSdb/iX8fB9U2nzlMxHjjfT7
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="331001055"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="331001055"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 23:25:49 -0700
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="563092452"
-Received: from minhaowa-mobl.ccr.corp.intel.com (HELO [10.255.30.75]) ([10.255.30.75])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 23:25:45 -0700
-Message-ID: <ab40853f-3a44-6bb8-21d4-c1f5464b030e@linux.intel.com>
-Date:   Thu, 5 May 2022 14:25:43 +0800
+        Thu, 5 May 2022 02:33:42 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D271A05D;
+        Wed,  4 May 2022 23:30:04 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2ef5380669cso38052897b3.9;
+        Wed, 04 May 2022 23:30:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=hPg/kHUDyxMY3LkVNBXDy7g4FaARqDwC2Ys4u38uvGI=;
+        b=Nm4Zz5nhKZ3HXeTj7BdPL1xu3o52ow/5uQwZaFOhdAcUzK/zag7Aj8mm1vQli0o6Iz
+         Hz7QCpbrWBxWo7rRBSwjU+ykaehOWrLsjSWvwuds/xNLnzNXGJItRFHFduf70lsHimoZ
+         khIrK/kIUZYwyRVDqVxtSYPVimSvCKKfA+YLSSn544yh/JR5TdSPCrxcathQbiwK3/hY
+         DFbRmkUQGoV78dXRWs7ca+EtE0UW20+ThPogonlP/WVlAORWPAzV7E4DmVeAtxtcKAOj
+         BiJ9kCIa4ltjnjRd+80t/lByJTNM68wldIpF9Y+Dcg8VC4TPC+cOsK3E6bz6hzRbwg7l
+         2iqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=hPg/kHUDyxMY3LkVNBXDy7g4FaARqDwC2Ys4u38uvGI=;
+        b=Ez0hxVixKiHuXRrT4UTEOysPzSUkp+QB43Qi84t6ktgrGBn6dX9pZvndeCKxBY492/
+         1HLvAjBuisQ6ILTImZDSaG9vwNaKsWhKrNXc71eDdCvdduhU6HYlkXCsNZ9HkJKCoj1W
+         jQKIUYmcbfWstaFD64mqfdJ0fncoGdrougIq4dc5RdCbqFoAV6tnHoiLrDFmdOb4CLkK
+         PKRpCzvlSyvVcx9lX+uwkX/dxOLD4iqcmZ+ISB3AlrAPvRkvx5ENdzMBiMOXkeVZ+z9t
+         htqBhy0CD6ZvTL1hUU73t43WXJz9HbHiG+ioCwiNBFl0xXPKrzgZZLuuwC0e40K8sX9f
+         mljw==
+X-Gm-Message-State: AOAM531vlDWGAkXyhBVPlmHBCFPo12Q7UHFwd3mmy6MEDTlL34XFRFpj
+        KYG0CRVi0nMeXQDPLrc/iEMo5Imz++5kSecu/Q4=
+X-Google-Smtp-Source: ABdhPJzfiMmMi8049ryLbdTumFiEB2azt22RyodOw27TSrh1paFQRoNHRdA9rucfDC/0WVdKgBLZtWA8bqBV8pDTstE=
+X-Received: by 2002:a81:2143:0:b0:2fb:1274:247e with SMTP id
+ h64-20020a812143000000b002fb1274247emr5212506ywh.384.1651732203173; Wed, 04
+ May 2022 23:30:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 02/12] iommu: Add pasid_bits field in struct dev_iommu
-Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
- <20220502014842.991097-3-baolu.lu@linux.intel.com> <YnFuLsvWcjjKBWNy@myrica>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YnFuLsvWcjjKBWNy@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   Gonsolo <gonsolo@gmail.com>
+Date:   Thu, 5 May 2022 08:29:52 +0200
+Message-ID: <CANL0fFQRBZiVcEM0OOxkLqiAKf=rFssGetrwN6vWj5SsxX__mA@mail.gmail.com>
+Subject: Suspend/resume error with AWUS036ACM
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/4 02:02, Jean-Philippe Brucker wrote:
-> On Mon, May 02, 2022 at 09:48:32AM +0800, Lu Baolu wrote:
->> Use this field to save the pasid/ssid bits that a device is able to
->> support with its IOMMU hardware. It is a generic attribute of a device
->> and lifting it into the per-device dev_iommu struct makes it possible
->> to allocate a PASID for device without calls into the IOMMU drivers.
->> Any iommu driver which suports PASID related features should set this
->> field before features are enabled on the devices.
->>
->> For initialization of this field in the VT-d driver, the
->> info->pasid_supported is only set for PCI devices. So the status is
->> that non-PCI SVA hasn't been supported yet. Setting this field only for
->> PCI devices has no functional change.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> Reviewed-by: Jean-Philippe Brucker<jean-philippe@linaro.org>
+Hi all.
 
-Thank you! Very appreciated for reviewing my patches.
+After a resume I get the following error:
 
-Best regards,
-baolu
+ +0,000007] UBSAN: invalid-load in
+/build/linux-lowlatency-fSdu7c/linux-lowlatency-5.15.0/net/mac80211/status.c:1164:21
+[  +0,000004] load of value 255 is not a valid value for type '_Bool'
+[  +0,000004] CPU: 22 PID: 387 Comm: kworker/u256:5 Tainted: P
+  OE     5.15.0-27-lowlatency #28-Ubuntu
+[  +0,000004] Hardware name: To Be Filled By O.E.M. To Be Filled By
+O.E.M./X399 Phantom Gaming 6, BIOS P1.31 01/14/2021
+[  +0,000003] Workqueue: phy0 mt76x02_mac_work [mt76x02_lib]
+[  +0,000014] Call Trace:
+[  +0,000003]  <TASK>
+[  +0,000003]  show_stack+0x52/0x58
+[  +0,000006]  dump_stack_lvl+0x4a/0x5f
+[  +0,000007]  dump_stack+0x10/0x12
+[  +0,000003]  ubsan_epilogue+0x9/0x45
+[  +0,000002]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
+[  +0,000004]  ieee80211_tx_status_ext.cold+0x4e/0x5f [mac80211]
+[  +0,000068]  mt76_tx_status_unlock+0x111/0x160 [mt76]
+[  +0,000010]  mt76_tx_status_check+0x68/0x90 [mt76]
+[  +0,000009]  mt76x02_mac_work+0x14b/0x240 [mt76x02_lib]
+[  +0,000008]  process_one_work+0x222/0x3f0
+[  +0,000006]  worker_thread+0x50/0x3f0
+[  +0,000004]  ? process_one_work+0x3f0/0x3f0
+[  +0,000004]  kthread+0x13b/0x160
+[  +0,000003]  ? set_kthread_struct+0x50/0x50
+[  +0,000004]  ret_from_fork+0x22/0x30
+[  +0,000006]  </TASK>
+[  +0,000001] ================================================================================
 
+This is a stock Ubuntu Jammy lowlatency kernel (with Nvidia drivers).
+
+I would be happy to provide all the needed information to resolve this.
+
+I also want to note that the device is running quite unstable (lots of
+deauthenticating, network lost, etc...).
+
+Regards,
+g
