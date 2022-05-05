@@ -2,299 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC698C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E61EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359554AbiEEM5p (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S245541AbiEEM5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 08:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234636AbiEEM5j (ORCPT
+        with ESMTP id S1378259AbiEEM5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:57:39 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1DF56216;
-        Thu,  5 May 2022 05:53:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651755239; x=1683291239;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HwR97P478iK45CdIdkPRinoYCx69pi/2Zftw98mI8mM=;
-  b=imP2wIuGUHJ3ctlzZ5BXmOGMs7TBlx69JUuLW3II3Nc+oYRhOH0YO2xY
-   JFkeeB6auDCCbCj4a7GTN2HYedaX4nCKsmsYJI2aEioxqM23lrJQ4Lr/d
-   U2QgjGHwGqGSzD/7tGPkMoFelepVCv7eC1wFi+Ca5vb6R+E78ArGtfXpF
-   A=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 May 2022 05:53:58 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 05:53:57 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 5 May 2022 05:53:57 -0700
-Received: from [10.79.142.210] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 5 May 2022
- 05:53:53 -0700
-Message-ID: <0997f2bc-e8ce-24cc-da90-0ecd3201350c@quicinc.com>
-Date:   Thu, 5 May 2022 18:23:20 +0530
+        Thu, 5 May 2022 08:57:45 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B35A562E7
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:54:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651755245;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7ALHOS/AhHZTnqkgAgjy6knXJ+TYy7w9Te//L0PuVbc=;
+        b=FjvTu8RglBpB0JjQOKrF5b4ur6XMXUmhS91xiNOwWIa5whubccGZKrdurSv61K7rxP0zCg
+        8fd8OhEU4QwUBhSdHtnJSrAECQZ0fBrRUIpNSJs5oAm9GIVa4mu1CaQfVMV7g1qhION7rF
+        3x3Oo0iSmduqJwfSFeJgUsxOL03oyqI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-467-9INGEXHyM9CVrc7QbKjBww-1; Thu, 05 May 2022 08:54:02 -0400
+X-MC-Unique: 9INGEXHyM9CVrc7QbKjBww-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 99F913C02B7C;
+        Thu,  5 May 2022 12:54:01 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.32.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A5F6552AB1;
+        Thu,  5 May 2022 12:54:01 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id 4D000220463; Thu,  5 May 2022 08:54:01 -0400 (EDT)
+Date:   Thu, 5 May 2022 08:54:01 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Dharmendra Hans <dharamhans87@gmail.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-fsdevel@vger.kernel.org,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org, Bernd Schubert <bschubert@ddn.com>
+Subject: Re: [PATCH v4 0/3] FUSE: Implement atomic lookup + open/create
+Message-ID: <YnPI6f2fRZUXbCFP@redhat.com>
+References: <20220502102521.22875-1-dharamhans87@gmail.com>
+ <YnLRnR3Xqu0cYPdb@redhat.com>
+ <CACUYsyEsRph+iFC_fj3F6Ceqhq7NCTuFPH3up8R6C+_bGHktZg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH V7 2/7] soc: qcom: dcc:Add driver support for Data Capture
- and Compare unit(DCC)
-Content-Language: en-CA
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        "Alex Elder" <elder@ieee.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        Rajendra Nayak <quic_rjendra@codeaurora.org>,
-        <vkoul@kernel.org>
-References: <cover.1646285069.git.quic_schowdhu@quicinc.com>
- <bc8504bdaf24d98762e2dbad7d084ca247380f06.1646285069.git.quic_schowdhu@quicinc.com>
- <YnFuXYEXxLQkak24@builder.lan>
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-In-Reply-To: <YnFuXYEXxLQkak24@builder.lan>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACUYsyEsRph+iFC_fj3F6Ceqhq7NCTuFPH3up8R6C+_bGHktZg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 05, 2022 at 11:42:51AM +0530, Dharmendra Hans wrote:
+> On Thu, May 5, 2022 at 12:48 AM Vivek Goyal <vgoyal@redhat.com> wrote:
+> >
+> > On Mon, May 02, 2022 at 03:55:18PM +0530, Dharmendra Singh wrote:
+> > > In FUSE, as of now, uncached lookups are expensive over the wire.
+> > > E.g additional latencies and stressing (meta data) servers from
+> > > thousands of clients. These lookup calls possibly can be avoided
+> > > in some cases. Incoming three patches address this issue.
+> >
+> > BTW, these patches are designed to improve performance by cutting down
+> > on number of fuse commands sent. Are there any performance numbers
+> > which demonstrate what kind of improvement you are seeing.
+> >
+> > Say, If I do kernel build, is the performance improvement observable?
+> 
+> Here are the numbers I took last time. These were taken on tmpfs to
+> actually see the effect of reduced calls. On local file systems it
+> might not be that much visible. But we have observed that on systems
+> where we have thousands of clients hammering the metadata servers, it
+> helps a lot (We did not take numbers yet as  we are required to change
+> a lot of our client code but would be doing it later on).
+> 
+> Note that for a change in performance number due to the new version of
+> these patches, we have just refactored the code and functionality has
+> remained the same since then.
+> 
+> here is the link to the performance numbers
+> https://lore.kernel.org/linux-fsdevel/20220322121212.5087-1-dharamhans87@gmail.com/
 
-On 5/3/2022 11:33 PM, Bjorn Andersson wrote:
-> On Thu 03 Mar 00:27 CST 2022, Souradeep Chowdhury wrote:
->
->> The DCC is a DMA Engine designed to capture and store data
->> during system crash or software triggers. The DCC operates
->> based on user inputs via the sysfs interface. The user gives
->> addresses as inputs and these addresses are stored in the
->> dcc sram. In case of a system crash or a manual software
->> trigger by the user through the debugfs interface,
->> the dcc captures and stores the values at these addresses.
->> This patch contains the driver which has all the methods
->> pertaining to the debugfs interface, auxiliary functions to
->> support all the four fundamental operations of dcc namely
->> read, write, read/modify/write and loop. The probe method
->> here instantiates all the resources necessary for dcc to
->> operate mainly the dedicated dcc sram where it stores the
->> values. The DCC driver can be used for debugging purposes
->> without going for a reboot since it can perform software
->> triggers as well based on user inputs.
->>
->> Also added the documentation for debugfs entries and explained
->> the functionalities of each debugfs file that has been created
->> for dcc.
->>
->> The following is the justification of using debugfs interface
->> over the other alternatives like sysfs/ioctls
->>
->> i) As can be seen from the debugfs attribute descriptions,
->> some of the debugfs attribute files here contains multiple
->> arguments which needs to be accepted from the user. This goes
->> against the design style of sysfs.
->>
->> ii) The user input patterns have been made simple and convenient
->> in this case with the use of debugfs interface as user doesn't
->> need to shuffle between different files to execute one instruction
->> as was the case on using other alternatives.
->>
->> Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> ---
->>   Documentation/ABI/testing/debugfs-driver-dcc |  124 +++
->>   drivers/soc/qcom/Kconfig                     |    8 +
->>   drivers/soc/qcom/Makefile                    |    1 +
->>   drivers/soc/qcom/dcc.c                       | 1465 ++++++++++++++++++++++++++
->>   4 files changed, 1598 insertions(+)
->>   create mode 100644 Documentation/ABI/testing/debugfs-driver-dcc
->>   create mode 100644 drivers/soc/qcom/dcc.c
->>
->> diff --git a/Documentation/ABI/testing/debugfs-driver-dcc b/Documentation/ABI/testing/debugfs-driver-dcc
->> new file mode 100644
->> index 0000000..70029ab
->> --- /dev/null
->> +++ b/Documentation/ABI/testing/debugfs-driver-dcc
->> @@ -0,0 +1,124 @@
->> +What:          /sys/kernel/debug/dcc/.../trigger
->> +Date:          March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This is the debugfs interface for manual software
->> +		triggers. The user can simply enter a 1 against
->> +		the debugfs file and enable a manual trigger.
->> +		Example:
->> +		echo  1 > /sys/kernel/debug/dcc/.../trigger
->> +
->> +What:          /sys/kernel/debug/dcc/.../enable
->> +Date:          March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This debugfs interface is used for enabling the
->> +		the dcc hardware. On enabling the dcc, all the
->> +		addresses entered by the user is written into
->> +		dcc sram which is read by the dcc hardware on
->> +		manual or crash induced triggers.
->> +		Example:
->> +		echo  0 > /sys/bus/platform/devices/.../enable
->> +		(disable dcc)
->> +		echo  1 > /sys/bus/platform/devices/.../enable
->> +		(enable dcc)
->> +
->> +What:          /sys/kernel/debug/dcc/.../config_read
-> As mentioned last time, I don't like this interface of having 6 files
-> that the user can write to in order to append items in the currently
-> selected linked list.
->
-> Why can't this be a single "config" which takes a multiline string of
-> operations? (Bonus point for supporting appending to the list).
->
->
-> This would also serve as a natural place to dump the linked list back to
-> the user for inspection.
+There is a lot going in that table. Trying to understand it. 
 
-Following is the justification of having multiple files in debugfs
+- Why care about No-Flush. I mean that's independent of these changes,
+  right?  I am assuming this means that upon file close do not send
+  a flush to fuse server. Not sure how bringing No-Flush into the
+  mix is helpful here.
 
-1-> Since there are fundamentally 4 instructions for DCC, 
-Read,Write,Read and then Write and Loop,having separate debugfs files 
-for the same makes it
+- What is "Patched Libfuse"? I am assuming that these are changes
+  needed in libfuse to support atomic create + atomic open. Similarly
+  assuming "Patched FuseK" means patched kernel with your changes.
 
-        convenient for the user to use this tool and also to 
-document.This also is consistent with the design principles of debugfs 
-as it supports logical segregation
+  If this is correct, I would probably only be interested in 
+  looking at "Patched Libfuse + Patched FuseK" numbers to figure out
+  what's the effect of your changes w.r.t vanilla kernel + libfuse.
+  Am I understanding it right?
 
-        of Debugfs files based on the user instructions.
+- I am wondering why do we measure "Sequential" and "Random" patterns. 
+  These optimizations are primarily for file creation + file opening
+  and I/O pattern should not matter. 
 
-2-> We are maintaining a common linkedlist inside the driver and it can 
-be viewed by the user through the "config_read" debugfs file. Will be 
-adding this to the
+- Also wondering why performance of Read/s improves. Assuming once
+  file has been opened, I think your optimizations get out of the
+  way (no create, no open) and we are just going through data path of
+  reading file data and no lookups happening. If that's the case, why
+  do Read/s numbers show an improvement.
 
-        documentation as well.
+- Why do we measure "Patched Libfuse". It shows performance regression
+  of 4-5% in table 0B, Sequential workoad. That sounds bad. So without
+  any optimization kicking in, it has a performance cost.
 
-Let me know your thoughts regarding the above.
+Thanks
+Vivek
 
->> +Date:          March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This stores the addresses of the registers which
->> +		needs to be read in case of a hardware crash or
->> +		manual software triggers. The address entered here
->> +		are considered under read type instruction.
->> +		Example:
->> +		echo <1> <2> <3> >/sys/kernel/debug/dcc/../config_read
->> +		1->Address to be considered for reading the value.
->> +		2->The word count of the addresses, read n words
->> +		   starting from address <1>.
->> +		3->Can be a 1 or 0 which indicates if it is apb or ahb
->> +		bus respectively.
->> +
->> +What:          /sys/kernel/debug/dcc/.../config_write
->> +Date:          March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This file allows user to write a value to the register
->> +		address given as argument. The reason for this feature
->> +		of dcc is that for accessing certain registers it is
->> +		necessary to set some bits of some other register.
->> +		Example:
->> +		echo <1> <2> <3> > /sys/bus/platform/devices/.../config_write
->> +		1->Address to be considered for writing the value.
->> +		2->The value that needs to be written at the location.
->> +		3->Can be a 1 or 0 which indicates if it is apb or ahb
->> +		bus respectively.
->> +
->> +What:          /sys/kernel/debug/dcc/.../config_reset
->> +Date:          March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This file is used to reset the configuration of
->> +		a dcc driver to the default configuration. This
->> +		means that all the previous addresses stored in
->> +		the driver gets removed and user needs to enter
->> +		the address values from the start.
->> +		Example:
->> +		echo  1 > /sys/bus/platform/devices/.../config_reset
->> +
->> +What:          /sys/kernel/debug/dcc/.../config_loop
->> +Date:		March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This file is used to enter the loop type addresses for
->> +		dcc. DCC hardware provides feature to loop among multiple
->> +		addresses. For debugging purposes register values need to
->> +		be captured repeatedly in a loop. On giving the loop count
->> +		as n, the value at address will be captured n times in a
->> +		loop. At most 8 loop addresses can be configured at once.
->> +		Example:
->> +		echo <1> <2> <3> > /sys/kernel/debug/dcc/../config_loop
->> +		1->The loop count, the number of times the value of the
->> +		   addresses will be captured.
->> +		2->The address count, total number of addresses to be
->> +		   entered in this instruction.
->> +		3->The series of addresses to be entered separated by a
->> +		   space like <addr1> <addr2>... and so on.
->> +
->> +What:          /sys/kernel/debug/dcc/.../config_read_write
->> +Date:          March 2022
->> +Contact:       Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This file is used to read the value of the register
->> +		and then write the value given as an argument to the
->> +		register address. The address argument should be given
->> +		of the form <addr> <mask> <value>.For debugging purposes
->> +		sometimes we need to first read from a register and then
->> +		set some values to the register.
->> +		Example:
->> +		echo <1> <2> <3> > /sys/kernel/debug/dcc/.../config_read_write
->> +		1->The address which needs to be considered for read then write.
->> +		2->The value that needs to be written on the address.
->> +		3->The mask of the value to be written.
->> +
->> +What:		/sys/kernel/debug/dcc/.../ready
->> +Date:		March 2022
->> +Contact	Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This file is used to check the status of the dcc
->> +		hardware if it's ready to take the inputs. A 0
->> +		here indicates dcc is in a ready condition.
->> +		Example:
->> +		cat /sys/kernel/debug/dcc/.../ready
->> +
->> +What:		/sys/kernel/debug/dcc/.../curr_list
-> I still don't like the idea of having a single set of files to interface
-> with all N lists. I think you should discover how many lists you have
-> and create N directories of files, each on operating on a given list.
-
-As explained before there cannot be different files based on lists as 
-the number of lists to be used
-
-varies across platforms where DCC is used. Also we are giving the user 
-the flexibility to configure
-
-multiple lists at one go whereas the dumps are collected in the form of 
-separate lists that are
-
-configured by the user.
-
->
->> +Date:		March 2022
->> +Contact:	Souradeep Chowdhury <quic_schowdhu@quicinc.com>
->> +Description:
->> +		This attribute is used to enter the linklist to be
->> +		used while appending addresses. The range of values
->> +		for this is advertised either by a register or is
->> +		predefined. Max value for this can be till 8.
->> +		Example:
->> +		echo 0 > /sys/kernel/debug/dcc/...curr_list
->> +
-> Regards,
-> Bjorn
