@@ -2,108 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8965EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352675AbiEEJ0S (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
+        id S245180AbiEEJ3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 05:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352667AbiEEJ0C (ORCPT
+        with ESMTP id S1352602AbiEEJ26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:26:02 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499734E390
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:22:23 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id i5so5241571wrc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:22:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YZkhX8VdSbRZKmQIOzgkSfpmToAIJcyGhKGvONZeKPM=;
-        b=wgm3Tdzap7kkOBihTP6T0IhnT9G6Oc8Ge/5nUNlrSnTPInQoGJ98CKanFTwb6sMccZ
-         9d4KCxdg9LCYphRKvE9rvwU1++xkoof4loKmHyCYfxAY0gBFhMA3oPXw7NTjEqqxyHfC
-         cNwAxA8oRijMoUjff4ROoa9YilWt5ieCB4F7ZaDx7bZ5NBlRq1XEjDizZ9ItDHbBrDJw
-         rdCoDCQ1En6Y5bGPfqpHlZRcg2m4vS6Y/g4KRAX51Favpx55TneHi7u6O0EF4FPDa2B0
-         NZ6FEyOLhsL2fcnruWZj5H0x5LOeT1KGIGqo+XJU4paF90d6jjbgSv1wgUCBUHYfU45r
-         HmpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YZkhX8VdSbRZKmQIOzgkSfpmToAIJcyGhKGvONZeKPM=;
-        b=WqOlfamrJULRFJpbdhZ9Uh45xTL/+k45ibr0AUXWPdG6n8sftwDr8gabKmZvcVzgjS
-         C4NKozVTRrElm8IUUZy0IwiChzqzqcNvsAgUMe7YgEIorszOV6dsNjcN3sabfwJNs5sf
-         x3cDMomQwhP6r2Y810EHGLMruOpf6ImV/64iQ2N8bcqKUeyPFcGB6Ochy6i4JBFUTTwG
-         DoztMuEefGogrAtBI1fO5FM2e6uOgoEMBXQf3C+8BFwQXcRxuP//v/Phj8WguMUwb8G6
-         AMxmR2X5MRg8LIYwSe9elLAFSbxj3BNdyojuESheR1SPcYDqXG9PTzbOFWDRjohla/rr
-         Bzpg==
-X-Gm-Message-State: AOAM533eVOOg+nNCxrqdeaAurs8wVt8ELdF5FZEUv9MfWsnGFe3n4uJD
-        WT9jZ1EpDpA27MeHRM+1ZS9J3g==
-X-Google-Smtp-Source: ABdhPJwfam1b9VUuK2KiSROtjJ68KFyfCyHnaJU4kSRx96x9vSh8DG8UHpeSy1pcGwoX3pIR2XLwyg==
-X-Received: by 2002:a05:6000:1110:b0:20a:e113:8221 with SMTP id z16-20020a056000111000b0020ae1138221mr19276809wrw.271.1651742541836;
-        Thu, 05 May 2022 02:22:21 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id o9-20020a5d4089000000b0020c5253d8d2sm779379wrp.30.2022.05.05.02.22.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 02:22:21 -0700 (PDT)
-Message-ID: <e9e03c19-cf65-28b8-a81a-10995b1f262f@linaro.org>
-Date:   Thu, 5 May 2022 11:22:20 +0200
+        Thu, 5 May 2022 05:28:58 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C4EC52;
+        Thu,  5 May 2022 02:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=cFrv4fRAJbgjPhZjb23GzjlcKUZmkXNQsUuXMiPf8LE=; b=Lam/QAhfsOqG0Qp4Ar+FOMCPO0
+        H+yJ3j/I31yMJ4CTIckx41H8TxJNd30/k4663TU4OMwVNQYmgD282sQpriumTjdKpko4tmu02S4gA
+        +Q1scgiIuRbiie9JL2BhWjmyypxSSMFLuv6fAPM048VL6bML7dXCslpKKvtJj3dQ0BbHgyxO9dUoA
+        XWtLmgTu6Zu0oDj8J/+0+pmq/4fnwxyHLp7noOVE799YtHgh4kXC/xiC6sWmjzm+if62KlSOvzZ8c
+        mMsBFU+v2CKqFJXkNg6zzA6TdpFPPvqy+zeHaQ6RemBuxtecOqTphDe7LUPh4GBGoHUyGGiRDeHOR
+        WiFUs7Aw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nmXj8-00BKsp-6E; Thu, 05 May 2022 09:24:50 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 487A4980FA2; Thu,  5 May 2022 11:24:48 +0200 (CEST)
+Date:   Thu, 5 May 2022 11:24:48 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arch@vger.kernel.org, jthierry@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org, masahiroy@kernel.org,
+        jpoimboe@redhat.com, ycote@redhat.com, herbert@gondor.apana.org.au,
+        mark.rutland@arm.com, davem@davemloft.net, ardb@kernel.org,
+        maz@kernel.org, tglx@linutronix.de, luc.vanoostenryck@gmail.com
+Subject: Re: [RFC PATCH v4 22/37] arm64: kernel: Skip validation of kuser32.o
+Message-ID: <20220505092448.GE2501@worktop.programming.kicks-ass.net>
+References: <20220429094355.122389-1-chenzhongjin@huawei.com>
+ <20220429094355.122389-23-chenzhongjin@huawei.com>
+ <YmvGja62yWdPHPOW@hirez.programming.kicks-ass.net>
+ <a57f7d73-6e01-8f41-9be3-8e90807ec08f@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC v2 4/4] arm64: dts: rockchip: Add mt7531 dsa node to
- BPI-R2-Pro board
-Content-Language: en-US
-To:     frank-w@public-files.de, Vladimir Oltean <olteanv@gmail.com>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220430130347.15190-1-linux@fw-web.de>
- <20220430130347.15190-5-linux@fw-web.de>
- <20220504152450.cs2afa4hwkqp5b5m@skbuf>
- <trinity-9f557027-8e00-4a4a-bc19-bc576e163f7b-1651678399970@3c-app-gmx-bs42>
- <20220504154720.62cwrz7frjkjbb7u@skbuf>
- <313a5b2e-c571-a13f-3447-b1cd7200f4c9@linaro.org>
- <D201CE50-280C-4089-BB9F-053FEA28FE9A@public-files.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <D201CE50-280C-4089-BB9F-053FEA28FE9A@public-files.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a57f7d73-6e01-8f41-9be3-8e90807ec08f@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05/2022 11:06, Frank Wunderlich wrote:
->> You can make it "(ethernet-)?ports" as well. My comment was purely to
->> make it simpler, for bindings (goes into properties, not
->> patternProperties) and for us. If you prefer to keep it like DSA core,
->> also fine.
+On Thu, May 05, 2022 at 11:36:12AM +0800, Chen Zhongjin wrote:
+> Hi Peter,
 > 
-> Ok, i'm also thinking, the dsa-definition will be the right way (pattern-properties with optional "ethernet-") in binding.
+> IIRC now the blacklist mechanisms all run on check stage, which after
+> decoding, but the problem of kuser32.S happens in decoding stage. Other
+> than that the assembly symbols in kuser32 is STT_NOTYPE and
+> STACK_FRAME_NON_STANDARD will throw an error for this.
 > 
-> Should i use "ethernet-ports" instead of "ports" here? Current dts with mt7530/mt7531 switches using "ports" so i would use it here too. If dsa prefer ethernet-ports now it should be changed in other files too.
+> OBJECT_FILES_NON_STANDARD works for the single file but as you said
+> after LTO it's invalid. However STACK_FRAME_NON_STANDARD doesn't work
+> for kuser32 case at all.
+> 
+> Now my strategy for undecodable instructions is: show an error message
+> and mark insn->ignore = true, but do not stop anything so decoding work
+> can going on.
+> 
+> To totally solve this my idea is that applying blacklist before decode.
+> However for this part objtool doesn't have any insn or func info, so we
+> should add a new blacklist just for this case...
 
-I think bindings allow both, so choose something consistent with
-existing DTS sources.
+OK, so Mark explained that this is 32bit userspace (VDSO) code.
 
-Best regards,
-Krzysztof
+And as such there's really no point in running objtool on it. Does all
+that live in it's own section? Should it?
+
