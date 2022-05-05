@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3998C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9460C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384088AbiEES1k (ORCPT
+        id S1384104AbiEES1p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
+        Thu, 5 May 2022 14:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383202AbiEESTl (ORCPT
+        with ESMTP id S1383195AbiEESTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:41 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3B943AC8;
-        Thu,  5 May 2022 11:15:53 -0700 (PDT)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFADB15709;
+        Thu,  5 May 2022 11:15:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774553; x=1683310553;
+  t=1651774552; x=1683310552;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=9+zynqxUnbt7L2tmrykvNHmz+Wt/xr8Fj4lA+9l+hKk=;
-  b=O4tzeEeEFQSc0IdtyqEH2eQcb88aOCfXrqxPisk+bO9ndK70aWSkoNiB
-   CyP3KKY6sFovYopKHrzKmhCnq9oDZxtHYdrWNql8PokWjN9J/sudF1GSK
-   Yjl9jtI26/Y25Mxed/cazkBN+ryQPt5q2eoLAOMdS65iBJtWq44lpNRXI
-   s9uEFaQLk5zrQ15VvRdXa/jiw8xTkjIRzfNCYz/g60fMfIge+WwzEv9Mf
-   ENFqagJxEU5kCnTWJ4mkoSvaOcRCxqcclwA9yQTSp7IH8TRfjj86lgk66
-   eMxfqytcrozM42XjAkNLujES++750fOoRGyKiOnanSxXkLcyWgmQPlt8j
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746279"
+  bh=aYynseuNWmbGl2UAUJ0UpxmY6xn9k2cN25ehM7pMsG8=;
+  b=HCxY5ZCX8RL01CMxw4nlf2i5l58naQKmHT1HTkKuhJMrtkfEYWMk32+9
+   lLWRN1Fe/SW5wjWSfjlNQNpaJoI9bfrPgUkh/1K9PKpa/Gi1u1xep+RJs
+   oipXrSkVpPzTdVjW3FZo5xF5BHUMXH2j3qSVCUja8br9DWg5v2Pg6Tdsd
+   syyHmgggCdHd/kQLXtsySmY/jfojfeCWJEs0cS8FfblKrveK6a8Ar7uDQ
+   ORbB9OML6cZ1l4wNqs2V5Hz4rXa3lmjCh/6K5uF1k6TIXFN8a6qra7cui
+   2Y8FgHLpNpshkxoe+sFhIMR3LfnX4K/wXPLCKxNeOsqkc8oVb4igrl3Nb
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354846"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="328746279"
+   d="scan'208";a="268354846"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:46 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:48 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083287"
+   d="scan'208";a="665083348"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:46 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:48 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 043/104] [MARKER] The start of TDX KVM patch series: KVM TDP MMU hooks
-Date:   Thu,  5 May 2022 11:14:37 -0700
-Message-Id: <166203215d2227e1bf5b903535f283ae8d02d710.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 057/104] KVM: x86/mmu: steal software usable git to record if GFN is for shared or not
+Date:   Thu,  5 May 2022 11:14:51 -0700
+Message-Id: <d0a89a95fce3f7cfdd3089c80988e1f54008620d.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,27 +58,224 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This empty commit is to mark the start of patch series of KVM TDP MMU
-hooks.
+With TDX, all GFNs are private at guest boot time.  At run time guest TD
+can explicitly change it to shared from private or vice-versa by MapGPA
+hypercall.  If it's specified, the given GFN can't be used as otherwise.
+That's is, if a guest tells KVM that the GFN is shared, it can't be used
+as private.  or vice-versa.
+
+Steal software usable bit, SPTE_SHARED_MASK, for it from MMIO counter to
+record it.  Use the bit SPTE_SHARED_MASK in shared or private EPT to
+determine which mapping, shared or private, is allowed.  If requested
+mapping isn't allowed, return RET_PF_RETRY to wait for other vcpu to change
+it.  The bit is recorded in both shared and private shadow page to avoid
+traverse one more shadow page when resolving KVM page fault.
+
+The bit needs to be kept over zapping the EPT entry.  Currently the EPT
+entry is initialized SHADOW_NONPRESENT_VALUE unconditionally to clear
+SPTE_SHARED_MASK bit.  To carry SPTE_SHARED_MASK bit, introduce a helper
+function to get initial value for zapped entry with SPTE_SHARED_MASK bit.
+Replace SHADOW_NONPRESENT_VALUE with it.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/mmu/spte.h    | 17 +++++++---
+ arch/x86/kvm/mmu/tdp_mmu.c | 65 ++++++++++++++++++++++++++++++++------
+ 2 files changed, 68 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-index df003d2ed89e..d5cace00c433 100644
---- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
-+++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-@@ -25,6 +25,6 @@ Patch Layer status
- * TD vcpu interrupts/exit/hypercall:    Not yet
+diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+index 1ac2a7a91166..d97ffe440536 100644
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -14,6 +14,9 @@
+  */
+ #define SPTE_MMU_PRESENT_MASK		BIT_ULL(11)
  
- * KVM MMU GPA shared bits:              Applied
--* KVM TDP refactoring for TDX:          Applying
--* KVM TDP MMU hooks:                    Not yet
-+* KVM TDP refactoring for TDX:          Applied
-+* KVM TDP MMU hooks:                    Applying
- * KVM TDP MMU MapGPA:                   Not yet
++/* Masks that used to track for shared GPA **/
++#define SPTE_SHARED_MASK		BIT_ULL(62)
++
+ /*
+  * TDP SPTES (more specifically, EPT SPTEs) may not have A/D bits, and may also
+  * be restricted to using write-protection (for L2 when CPU dirty logging, i.e.
+@@ -104,7 +107,7 @@ static_assert(!(EPT_SPTE_MMU_WRITABLE & SHADOW_ACC_TRACK_SAVED_MASK));
+  * the memslots generation and is derived as follows:
+  *
+  * Bits 0-7 of the MMIO generation are propagated to spte bits 3-10
+- * Bits 8-18 of the MMIO generation are propagated to spte bits 52-62
++ * Bits 8-18 of the MMIO generation are propagated to spte bits 52-61
+  *
+  * The KVM_MEMSLOT_GEN_UPDATE_IN_PROGRESS flag is intentionally not included in
+  * the MMIO generation number, as doing so would require stealing a bit from
+@@ -118,7 +121,7 @@ static_assert(!(EPT_SPTE_MMU_WRITABLE & SHADOW_ACC_TRACK_SAVED_MASK));
+ #define MMIO_SPTE_GEN_LOW_END		10
+ 
+ #define MMIO_SPTE_GEN_HIGH_START	52
+-#define MMIO_SPTE_GEN_HIGH_END		62
++#define MMIO_SPTE_GEN_HIGH_END		61
+ 
+ #define MMIO_SPTE_GEN_LOW_MASK		GENMASK_ULL(MMIO_SPTE_GEN_LOW_END, \
+ 						    MMIO_SPTE_GEN_LOW_START)
+@@ -131,7 +134,7 @@ static_assert(!(SPTE_MMU_PRESENT_MASK &
+ #define MMIO_SPTE_GEN_HIGH_BITS		(MMIO_SPTE_GEN_HIGH_END - MMIO_SPTE_GEN_HIGH_START + 1)
+ 
+ /* remember to adjust the comment above as well if you change these */
+-static_assert(MMIO_SPTE_GEN_LOW_BITS == 8 && MMIO_SPTE_GEN_HIGH_BITS == 11);
++static_assert(MMIO_SPTE_GEN_LOW_BITS == 8 && MMIO_SPTE_GEN_HIGH_BITS == 10);
+ 
+ #define MMIO_SPTE_GEN_LOW_SHIFT		(MMIO_SPTE_GEN_LOW_START - 0)
+ #define MMIO_SPTE_GEN_HIGH_SHIFT	(MMIO_SPTE_GEN_HIGH_START - MMIO_SPTE_GEN_LOW_BITS)
+@@ -208,6 +211,7 @@ extern u64 __read_mostly shadow_nonpresent_or_rsvd_mask;
+ /* Removed SPTEs must not be misconstrued as shadow present PTEs. */
+ static_assert(!(__REMOVED_SPTE & SPTE_MMU_PRESENT_MASK));
+ static_assert(!(__REMOVED_SPTE & SHADOW_NONPRESENT_VALUE));
++static_assert(!(__REMOVED_SPTE & SPTE_SHARED_MASK));
+ 
+ /*
+  * See above comment around __REMOVED_SPTE.  REMOVED_SPTE is the actual
+@@ -217,7 +221,12 @@ static_assert(!(__REMOVED_SPTE & SHADOW_NONPRESENT_VALUE));
+ 
+ static inline bool is_removed_spte(u64 spte)
+ {
+-	return spte == REMOVED_SPTE;
++	return (spte & ~SPTE_SHARED_MASK) == REMOVED_SPTE;
++}
++
++static inline u64 spte_shared_mask(u64 spte)
++{
++	return spte & SPTE_SHARED_MASK;
+ }
+ 
+ /*
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index 2aa2cb8a9b05..1d7642a0acc9 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -736,6 +736,11 @@ static inline int tdp_mmu_set_spte_atomic(struct kvm *kvm,
+ 	return 0;
+ }
+ 
++static u64 shadow_nonpresent_spte(u64 old_spte)
++{
++	return SHADOW_NONPRESENT_VALUE | spte_shared_mask(old_spte);
++}
++
+ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
+ 					  struct tdp_iter *iter)
+ {
+@@ -770,7 +775,8 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
+ 	 * SHADOW_NONPRESENT_VALUE (which sets "suppress #VE" bit) so it
+ 	 * can be set when EPT table entries are zapped.
+ 	 */
+-	kvm_tdp_mmu_write_spte(iter->sptep, SHADOW_NONPRESENT_VALUE);
++	kvm_tdp_mmu_write_spte(iter->sptep,
++			       shadow_nonpresent_spte(iter->old_spte));
+ 
+ 	return 0;
+ }
+@@ -948,8 +954,11 @@ static void __tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+ 			continue;
+ 
+ 		if (!shared)
+-			tdp_mmu_set_spte(kvm, &iter, SHADOW_NONPRESENT_VALUE);
+-		else if (tdp_mmu_set_spte_atomic(kvm, &iter, SHADOW_NONPRESENT_VALUE))
++			tdp_mmu_set_spte(kvm, &iter,
++					 shadow_nonpresent_spte(iter.old_spte));
++		else if (tdp_mmu_set_spte_atomic(
++				 kvm, &iter,
++				 shadow_nonpresent_spte(iter.old_spte)))
+ 			goto retry;
+ 	}
+ }
+@@ -1006,7 +1015,8 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+ 		return false;
+ 
+ 	__tdp_mmu_set_spte(kvm, kvm_mmu_page_as_id(sp), sp->ptep, old_spte,
+-			   SHADOW_NONPRESENT_VALUE, sp->gfn, sp->role.level + 1,
++			   shadow_nonpresent_spte(old_spte),
++			   sp->gfn, sp->role.level + 1,
+ 			   true, true, is_private_sp(sp));
+ 
+ 	return true;
+@@ -1048,11 +1058,20 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+ 			continue;
+ 		}
+ 
++		/*
++		 * SPTE_SHARED_MASK is stored as 4K granularity.  The
++		 * information is lost if we delete upper level SPTE page.
++		 * TODO: support large page.
++		 */
++		if (kvm_gfn_shared_mask(kvm) && iter.level > PG_LEVEL_4K)
++			continue;
++
+ 		if (!is_shadow_present_pte(iter.old_spte) ||
+ 		    !is_last_spte(iter.old_spte, iter.level))
+ 			continue;
+ 
+-		tdp_mmu_set_spte(kvm, &iter, SHADOW_NONPRESENT_VALUE);
++		tdp_mmu_set_spte(kvm, &iter,
++				 shadow_nonpresent_spte(iter.old_spte));
+ 		flush = true;
+ 	}
+ 
+@@ -1168,18 +1187,44 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
+ 	gfn_t gfn_unalias = iter->gfn & ~kvm_gfn_shared_mask(vcpu->kvm);
+ 
+ 	WARN_ON(sp->role.level != fault->goal_level);
++	WARN_ON(is_private_sptep(iter->sptep) != fault->is_private);
+ 
+-	/* TDX shared GPAs are no executable, enforce this for the SDV. */
+-	if (kvm_gfn_shared_mask(vcpu->kvm) && !fault->is_private)
+-		pte_access &= ~ACC_EXEC_MASK;
++	if (kvm_gfn_shared_mask(vcpu->kvm)) {
++		if (fault->is_private) {
++			/*
++			 * SPTE allows only RWX mapping. PFN can't be mapped it
++			 * as READONLY in GPA.
++			 */
++			if (fault->slot && !fault->map_writable)
++				return RET_PF_RETRY;
++			/*
++			 * This GPA is not allowed to map as private.  Let
++			 * vcpu loop in page fault until other vcpu change it
++			 * by MapGPA hypercall.
++			 */
++			if (fault->slot &&
++				spte_shared_mask(iter->old_spte))
++				return RET_PF_RETRY;
++		} else {
++			/* This GPA is not allowed to map as shared. */
++			if (fault->slot &&
++				!spte_shared_mask(iter->old_spte))
++				return RET_PF_RETRY;
++			/* TDX shared GPAs are no executable, enforce this. */
++			pte_access &= ~ACC_EXEC_MASK;
++		}
++	}
+ 
+ 	if (unlikely(!fault->slot))
+ 		new_spte = make_mmio_spte(vcpu, gfn_unalias, pte_access);
+-	else
++	else {
+ 		wrprot = make_spte(vcpu, sp, fault->slot, pte_access,
+ 				   gfn_unalias, fault->pfn, iter->old_spte,
+ 				   fault->prefetch, true, fault->map_writable,
+ 				   &new_spte);
++		if (spte_shared_mask(iter->old_spte))
++			new_spte |= SPTE_SHARED_MASK;
++	}
+ 
+ 	if (new_spte == iter->old_spte)
+ 		ret = RET_PF_SPURIOUS;
+@@ -1488,7 +1533,7 @@ static bool set_spte_gfn(struct kvm *kvm, struct tdp_iter *iter,
+ 	 * invariant that the PFN of a present * leaf SPTE can never change.
+ 	 * See __handle_changed_spte().
+ 	 */
+-	tdp_mmu_set_spte(kvm, iter, SHADOW_NONPRESENT_VALUE);
++	tdp_mmu_set_spte(kvm, iter, shadow_nonpresent_spte(iter->old_spte));
+ 
+ 	if (!pte_write(range->pte)) {
+ 		new_spte = kvm_mmu_changed_pte_notifier_make_spte(iter->old_spte,
 -- 
 2.25.1
 
