@@ -2,94 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0222C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D51EC43219
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378668AbiEEOli (ORCPT
+        id S1380725AbiEEOnT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
+        Thu, 5 May 2022 10:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232677AbiEEOlf (ORCPT
+        with ESMTP id S232677AbiEEOnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:41:35 -0400
-Received: from mail.tkos.co.il (golan.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC19853A43;
-        Thu,  5 May 2022 07:37:55 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.2])
+        Thu, 5 May 2022 10:43:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AEB53A43;
+        Thu,  5 May 2022 07:39:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id 4E558440F39;
-        Thu,  5 May 2022 17:36:58 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1651761418;
-        bh=YKpQePxu2a+ZeS7IXYXOK7QZI9aPzC1QorvRu4TfF58=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=nPsokUTenIiWaJ4S8OJO9pB/xvlgAdOVqNlCq5iThlZqza+uc/Ra2IUiG8gdjC0Sa
-         I9BDG250OJq5Lauf8STOlphUvMZ15ZIsU/hR7H3FoLufpOFeaTtK+ZbSqcO8YEWdg7
-         DaF0tVIaihHhnL9YAYJl41CdakzPctGTYM/19F9BF4YQqyQSbNuGdw/JaGR2EubwDh
-         KsEAiDnSLaJL75WaVxcsxMb8QR+452URXbM/+eE3MbhjFHiagxrsg6pVQw8lzn5zQg
-         rgQ/BV2IxzCjoON5Ohvx3odPBAU6bLP/ed5DO41bMyin7kbEM29ymK0trVxCo5k/iv
-         RA1Of6ec9AmuQ==
-References: <20220505124621.1592697-1-yangyingliang@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Subject: Re: [PATCH] tty/serial: digicolor: fix possible null-ptr-deref in
- digicolor_uart_probe()
-Date:   Thu, 05 May 2022 17:36:36 +0300
-In-reply-to: <20220505124621.1592697-1-yangyingliang@huawei.com>
-Message-ID: <87h764hwow.fsf@tarshish>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81728B82DAC;
+        Thu,  5 May 2022 14:39:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CCC8C385A4;
+        Thu,  5 May 2022 14:39:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651761575;
+        bh=g1QQljRmgGmXNfn7Y2eEY8r+LEwnNx4UeO2ISPOT2Do=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L0vPd9KPowSZpVQBjF8sXiij5yDMPUr5RFtZooPJOYwEr7f6V9sJ5RjdYt4+teXw4
+         HX+3Lsvh/tUnu66swbaUJEf3iEzikdlXlrH/m21+aBGkI74L4jL0vHXMlDW2xju7TQ
+         qSgqS/SB6NAeJ6q+4V1081PhxiZSp+u2jJAGBT16clcxiZwyFhsilN3AcPaFw3uQOl
+         /U3Lqtt3KoGY9ElusVTjM9Ji1vjNy9BzO+uo7E5TbFnGSS0gc/3PaPsgM4L70/AnXp
+         acSYOAdCd/x5HGwT2qAZRb1IU7d68EXwD6NGQwfP8HuCcvQadOu/ksUTWE8VfWWXKG
+         AY97ayhF9stoQ==
+Date:   Thu, 5 May 2022 15:39:25 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Philipp Zabel <philipp.zabel@gmail.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Paul Parsons <lost.distance@yahoo.com>,
+        Tomas Cech <sleep_walker@suse.com>,
+        Sergey Lapin <slapin@ossfans.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Helge Deller <deller@gmx.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        IDE-ML <linux-ide@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-rtc@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Subject: Re: [PATCH 18/48] ARM: pxa: hx4700: use gpio descriptors for audio
+Message-ID: <YnPhna5h1+kQGFLa@sirena.org.uk>
+References: <20220419163810.2118169-1-arnd@kernel.org>
+ <20220419163810.2118169-19-arnd@kernel.org>
+ <CACRpkdac8dGKSEmc-HpgooJefrDtiKK+_A1Mv7AJM8yQV9UY-w@mail.gmail.com>
+ <CAK8P3a0w3gFzZoBzyRsi1Ta4prESf8Fp0=quAPSKMnaXvbXNTQ@mail.gmail.com>
+ <CACRpkdZNryYkidvdKuT57RM3fz6_X+3oOzF5xaOZd+TyScfUsw@mail.gmail.com>
+ <CAK8P3a0y0tVZODpp+GSf0EkMPWbbvMqA-4kNf0NJMc0M2=2WHw@mail.gmail.com>
+ <CACRpkdaNRX0RDYJd_uaGo5jtiXu_qGHmEDGniaCmR=TZvcHH8A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cOFcvF3tCFvqoEy/"
+Content-Disposition: inline
+In-Reply-To: <CACRpkdaNRX0RDYJd_uaGo5jtiXu_qGHmEDGniaCmR=TZvcHH8A@mail.gmail.com>
+X-Cookie: Real programs don't eat cache.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yang,
 
-On Thu, May 05 2022, Yang Yingliang wrote:
-> It will cause null-ptr-deref when using 'res', if platform_get_resource()
-> returns NULL, so move using 'res' after devm_ioremap_resource() that
-> will check it to avoid null-ptr-deref.
-> And use devm_platform_get_and_ioremap_resource() to simplify code.
->
-> Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+--cOFcvF3tCFvqoEy/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Reviewed-by: Baruch Siach <baruch@tkos.co.il>
+On Thu, May 05, 2022 at 04:33:06PM +0200, Linus Walleij wrote:
+> On Thu, May 5, 2022 at 8:04 AM Arnd Bergmann <arnd@kernel.org> wrote:
 
-Thanks,
-baruch
+> > /* Headphones jack detection DAPM pin */
+> > static struct snd_soc_jack_pin hs_jack_pin[] = {
+> >         {
+> >                 .pin    = "Headphone Jack",
+> >                 .mask   = SND_JACK_HEADPHONE,
+> >         },
+> >         {
+> >                 .pin    = "Speaker",
+> >                 /* disable speaker when hp jack is inserted */
+> >                 .mask   = SND_JACK_HEADPHONE,
+> >                 .invert = 1,
+> >         },
 
-> ---
->  drivers/tty/serial/digicolor-usart.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-> index 6d70fea76bb3..e37a917b9dbb 100644
-> --- a/drivers/tty/serial/digicolor-usart.c
-> +++ b/drivers/tty/serial/digicolor-usart.c
-> @@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct platform_device *pdev)
->  	if (IS_ERR(uart_clk))
->  		return PTR_ERR(uart_clk);
->  
-> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	dp->port.mapbase = res->start;
-> -	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
-> +	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
->  	if (IS_ERR(dp->port.membase))
->  		return PTR_ERR(dp->port.membase);
-> +	dp->port.mapbase = res->start;
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0)
+> Hm some ASoC thingie. No idea what that is, but I suppose another
+> place where a subsystem for legacy reasons try to do the gpiolib
+> inversion on it's own accord. That one isn't flagged as active low in the
+> descriptor so it's fine I guess.
 
+It's saying that when the headphone is inserted the headphone output
+should be enabled and the speaker output should be disabled, and vice
+versa.
 
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+> Possible this should be fixed in ASoC to rely on gpiolib but we can't
+> fix the entire world.
+
+I don't think so.
+
+--cOFcvF3tCFvqoEy/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJz4ZwACgkQJNaLcl1U
+h9DWzgf+L3LZ6AC+cLFicMlKK60/cMgGMGUBo/mfgAk+G01MppBCzVUBD0sq8yoB
+9txZAIQeRSHcBJAs2/cp0Tpn6boCF1wwEkW/cP1ENkWFbTpUHpJPKzOmHOfhghTa
+W6pokDB6BExE10l8bgrjirSCGKpy9eLTzWkqpq1cb3h9AnaGWqnCakvf0Y33LB8E
+xodrQYiRtjGx7sN+iSb0DKzd1aX8MYFAdWN6MIJ/aengJTm1bHbRANMavfvPerE/
+REKky9u/NLWP2TXqYfbQaQNkefLK91ezapwt6UYh1K9FxtBd8UNRkkYnbauU+0qP
+XzqnZicyIPtB3pQ7IofAi3yQRgjPew==
+=dH+z
+-----END PGP SIGNATURE-----
+
+--cOFcvF3tCFvqoEy/--
