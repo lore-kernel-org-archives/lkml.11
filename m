@@ -2,105 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 063A2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241868AbiEEMyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
+        id S1377908AbiEEMyX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 08:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236913AbiEEMxx (ORCPT
+        with ESMTP id S1358784AbiEEMyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:53:53 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2D6187;
-        Thu,  5 May 2022 05:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651755013; x=1683291013;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=A9PXcXkJKXOiPlbiJL9+S1g3O2eDE4FkjAv8/9Dq67g=;
-  b=m7jai3T36OY75WFYibDaVdjr0qQkh5wOl6MtJyrjDpy0GNGycZEsFOar
-   /dBOLGgUexM0hUngYQfl9cz6/ws1xamE+ETcMHaZdDaU7XeuFVbi385in
-   GcLS5oPlMaUrh/BeQZ0jHL6aiLfuWPorXuJsTCB+B1/M3SVRCzv6DeIPY
-   gD4rOcg+eS7Oryj9kn7ZA36g2KNTCCJvbHw2OL40aA5fZMJH0F2D27VIt
-   9agn6HqRXoc5OSFpNwv3shpzmtS5Zsc8HUEKscCfi/s5SQFA4Fr+iwTeH
-   qErsDc1w0/Gh/74GnZiDhgPforyovwM4+dW2/lzhprO/K6mWKiT7AzhZk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267693568"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="267693568"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 05:50:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="585302810"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 05 May 2022 05:50:08 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmavn-000CPo-Ur;
-        Thu, 05 May 2022 12:50:07 +0000
-Date:   Thu, 5 May 2022 20:49:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        willy@infradead.org, shy828301@gmail.com
-Cc:     kbuild-all@lists.01.org, mhocko@kernel.org,
-        roman.gushchin@linux.dev, shakeelb@google.com,
-        linmiaohe@huawei.com, william.kucharski@oracle.com,
-        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
-        songmuchun@bytedance.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-Message-ID: <202205052006.qFYTjcyt-lkp@intel.com>
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+        Thu, 5 May 2022 08:54:10 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CF843EE9;
+        Thu,  5 May 2022 05:50:30 -0700 (PDT)
+Received: from kwepemi500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KvD6X1MQHz1JBnP;
+        Thu,  5 May 2022 20:49:24 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500005.china.huawei.com (7.221.188.179) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 20:50:28 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 20:50:28 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net-next 2/5] net: hns3: remove the affinity settings of vector0
+Date:   Thu, 5 May 2022 20:44:41 +0800
+Message-ID: <20220505124444.2233-3-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220505124444.2233-1-huangguangbin2@huawei.com>
+References: <20220505124444.2233-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Yufeng Mo <moyufeng@huawei.com>
 
-Thank you for the patch! Yet something to improve:
+Vector0 is used for common interrupt control events and is
+irrelevant to performance. Currently, the driver sets the
+default affinity of vector0 to NUMA nodes, which is unnecessary.
+Therefore, the default setting is removed, and the driver does
+not set the affinity for vector0.
 
-[auto build test ERROR on linux/master]
-[also build test ERROR on linus/master v5.18-rc5 next-20220505]
-[cannot apply to hnaz-mm/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 27 +------------------
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  2 --
+ 2 files changed, 1 insertion(+), 28 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/cgel-zte-gmail-com/mm-memcg-support-control-THP-behaviour-in-cgroup/20220505-114028
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 107c948d1d3e61d10aee9d0f7c3d81bbee9842af
-config: mips-decstation_64_defconfig (https://download.01.org/0day-ci/archive/20220505/202205052006.qFYTjcyt-lkp@intel.com/config)
-compiler: mips64el-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f08a35b9798572693a91c6a3d823ed9ae54ef688
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/mm-memcg-support-control-THP-behaviour-in-cgroup/20220505-114028
-        git checkout f08a35b9798572693a91c6a3d823ed9ae54ef688
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   mips64el-linux-ld: mm/memory.o: in function `__handle_mm_fault':
-   memory.c:(.text+0x60a8): undefined reference to `__transparent_hugepage_enabled'
->> mips64el-linux-ld: memory.c:(.text+0x6108): undefined reference to `__transparent_hugepage_enabled'
-   mips64el-linux-ld: mm/huge_memory.o: in function `transparent_hugepage_active':
-   huge_memory.c:(.text+0x21e4): undefined reference to `__transparent_hugepage_enabled'
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index a5dd2c8c244a..1ebad0e50e6a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -1546,9 +1546,8 @@ static void hclge_init_tc_config(struct hclge_dev *hdev)
+ static int hclge_configure(struct hclge_dev *hdev)
+ {
+ 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
+-	const struct cpumask *cpumask = cpu_online_mask;
+ 	struct hclge_cfg cfg;
+-	int node, ret;
++	int ret;
+ 
+ 	ret = hclge_get_cfg(hdev, &cfg);
+ 	if (ret)
+@@ -1594,13 +1593,6 @@ static int hclge_configure(struct hclge_dev *hdev)
+ 	hclge_init_tc_config(hdev);
+ 	hclge_init_kdump_kernel_config(hdev);
+ 
+-	/* Set the affinity based on numa node */
+-	node = dev_to_node(&hdev->pdev->dev);
+-	if (node != NUMA_NO_NODE)
+-		cpumask = cpumask_of_node(node);
+-
+-	cpumask_copy(&hdev->affinity_mask, cpumask);
+-
+ 	return ret;
+ }
+ 
+@@ -3564,17 +3556,6 @@ static void hclge_get_misc_vector(struct hclge_dev *hdev)
+ 	hdev->num_msi_used += 1;
+ }
+ 
+-static void hclge_misc_affinity_setup(struct hclge_dev *hdev)
+-{
+-	irq_set_affinity_hint(hdev->misc_vector.vector_irq,
+-			      &hdev->affinity_mask);
+-}
+-
+-static void hclge_misc_affinity_teardown(struct hclge_dev *hdev)
+-{
+-	irq_set_affinity_hint(hdev->misc_vector.vector_irq, NULL);
+-}
+-
+ static int hclge_misc_irq_init(struct hclge_dev *hdev)
+ {
+ 	int ret;
+@@ -11457,11 +11438,6 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	timer_setup(&hdev->reset_timer, hclge_reset_timer, 0);
+ 	INIT_DELAYED_WORK(&hdev->service_task, hclge_service_task);
+ 
+-	/* Setup affinity after service timer setup because add_timer_on
+-	 * is called in affinity notify.
+-	 */
+-	hclge_misc_affinity_setup(hdev);
+-
+ 	hclge_clear_all_event_cause(hdev);
+ 	hclge_clear_resetting_state(hdev);
+ 
+@@ -11879,7 +11855,6 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 
+ 	hclge_reset_vf_rate(hdev);
+ 	hclge_clear_vf_vlan(hdev);
+-	hclge_misc_affinity_teardown(hdev);
+ 	hclge_state_uninit(hdev);
+ 	hclge_ptp_uninit(hdev);
+ 	hclge_uninit_rxd_adv_layout(hdev);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index c70239758bb2..ab5c37848a7b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -938,8 +938,6 @@ struct hclge_dev {
+ 	DECLARE_KFIFO(mac_tnl_log, struct hclge_mac_tnl_stats,
+ 		      HCLGE_MAC_TNL_LOG_SIZE);
+ 
+-	/* affinity mask and notify for misc interrupt */
+-	cpumask_t affinity_mask;
+ 	struct hclge_ptp *ptp;
+ 	struct devlink *devlink;
+ 	struct hclge_comm_rss_cfg rss_cfg;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.33.0
+
