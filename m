@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B427DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6111C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383859AbiEESWy (ORCPT
+        id S1383715AbiEESW5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
+        Thu, 5 May 2022 14:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383184AbiEESTl (ORCPT
+        with ESMTP id S1383237AbiEESTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8942D1D5;
-        Thu,  5 May 2022 11:15:51 -0700 (PDT)
+        Thu, 5 May 2022 14:19:42 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BE65DA12;
+        Thu,  5 May 2022 11:15:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774552; x=1683310552;
+  t=1651774555; x=1683310555;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7cTG/wgSucNiB6hMNj+y4rrPyFsAdfnJRxHUvG7loWQ=;
-  b=n2NHlNfXvqrEubPLljjSuxJ/dRkYE5vHmWx1LD54QU3emJTt1pocF5Yr
-   4ISIGvzxpj4JYlraFnVm45LVitpKaaQ9Jnhvrt5YQcXrYF7A+7jB+dNA9
-   h7dc/CAXVVrxFA/VyHu5K0eEiOEk5nkh65RG/tnSnEyCjovbSHDsSGo1B
-   OzD5YoDut3FgbTmfKilCbuhP2f0vq+y3cH0W8pBGmIe/DNsbhkvseM+mE
-   kv7xE4ahQBmGKJgAQhQNheTbU9BY5dnxj6pizWtbJbzvduDpgkkdDZ77d
-   gaj6ocWnc1kH/6noU2CJ+zmqveZRhkIyvUIMj4UtEvLLoWk7UmoLKk0nE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248741982"
+  bh=zguXL40awg9Gey1LF1OZWsmZLz0iZkRMLy45v2YTEQs=;
+  b=YfkLjXnqUW6lavStKcCrb2Znqhmggpeh87XUyqQwHtr4f2q4R+YiL5AB
+   +ve4AfZq5G064bYnhJ7NgnecXVuTryTaUU97tabTJE0IDZKtGwJU/D6TL
+   c/9O/9qWMeWtUfPak8/WSLz8oKbMfu974U6biZC30AKJ1Wm7eZBmsYYhF
+   t/OzyXMsSuPifcnRpp3J3vnEOir0plXkBZhuxL3MhxNuV504YOUIAyPbU
+   vDxJJ4bm1tzZngdxmb7yq6GTRyp5czOlyjwbM9ZvimbdUDvsVczxytpD/
+   9eoWPl692mGhpQtscCwRHkzAMurXkokn0eZYa/ssG6qUhbDMXYABoYQ5S
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113910"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248741982"
+   d="scan'208";a="248113910"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:40 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:52 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083148"
+   d="scan'208";a="665083415"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:40 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:52 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 007/104] KVM: Enable hardware before doing arch VM initialization
-Date:   Thu,  5 May 2022 11:14:01 -0700
-Message-Id: <e97911f54055ca0e4728f9f010da8e4bb4785191.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 077/104] KVM: TDX: remove use of struct vcpu_vmx from posted_interrupt.c
+Date:   Thu,  5 May 2022 11:15:11 -0700
+Message-Id: <9e5418d1de1c924e3d99bd3b3705e59cf8945085.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -56,65 +56,221 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Swap the order of hardware_enable_all() and kvm_arch_init_vm() to
-accommodate Intel's TDX, which needs VMX to be enabled during VM init in
-order to make SEAMCALLs.
+As TDX will use posted_interrupt.c, the use of struct vcpu_vmx is a blocker.
+Because the members of struct pi_desc pi_desc and struct list_head
+pi_wakeup_list are only used in posted_interrupt.c, introduce common
+structure, struct vcpu_pi, make vcpu_vmx and vcpu_tdx has same layout
+in the top of structure.
 
-This also provides consistent ordering between kvm_create_vm() and
-kvm_destroy_vm() with respect to calling kvm_arch_destroy_vm() and
-hardware_disable_all().
+To minimize the diff size, avoid code conversion like,
+vmx->pi_desc => vmx->common->pi_desc.  Instead add compile time check
+if the layout is expected.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- virt/kvm/kvm_main.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/posted_intr.c | 41 ++++++++++++++++++++++++++--------
+ arch/x86/kvm/vmx/posted_intr.h | 11 +++++++++
+ arch/x86/kvm/vmx/tdx.c         |  1 +
+ arch/x86/kvm/vmx/tdx.h         |  8 +++++++
+ arch/x86/kvm/vmx/vmx.h         | 14 +++++++-----
+ 5 files changed, 60 insertions(+), 15 deletions(-)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 0ff03889aa5d..6b9dbc55af9e 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1129,19 +1129,19 @@ static struct kvm *kvm_create_vm(unsigned long type)
- 		rcu_assign_pointer(kvm->buses[i],
- 			kzalloc(sizeof(struct kvm_io_bus), GFP_KERNEL_ACCOUNT));
- 		if (!kvm->buses[i])
--			goto out_err_no_arch_destroy_vm;
-+			goto out_err_no_disable;
+diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+index 160653925f38..0bc7a848b319 100644
+--- a/arch/x86/kvm/vmx/posted_intr.c
++++ b/arch/x86/kvm/vmx/posted_intr.c
+@@ -9,6 +9,7 @@
+ #include "posted_intr.h"
+ #include "trace.h"
+ #include "vmx.h"
++#include "tdx.h"
+ 
+ /*
+  * Maintain a per-CPU list of vCPUs that need to be awakened by wakeup_handler()
+@@ -29,9 +30,29 @@ static DEFINE_PER_CPU(struct list_head, wakeup_vcpus_on_cpu);
+  */
+ static DEFINE_PER_CPU(raw_spinlock_t, wakeup_vcpus_on_cpu_lock);
+ 
++/*
++ * The layout of the head of struct vcpu_vmx and struct vcpu_tdx must match with
++ * struct vcpu_pi.
++ */
++static_assert(offsetof(struct vcpu_pi, pi_desc) ==
++	      offsetof(struct vcpu_vmx, pi_desc));
++static_assert(offsetof(struct vcpu_pi, pi_wakeup_list) ==
++	      offsetof(struct vcpu_vmx, pi_wakeup_list));
++#ifdef CONFIG_INTEL_TDX_HOST
++static_assert(offsetof(struct vcpu_pi, pi_desc) ==
++	      offsetof(struct vcpu_tdx, pi_desc));
++static_assert(offsetof(struct vcpu_pi, pi_wakeup_list) ==
++	      offsetof(struct vcpu_tdx, pi_wakeup_list));
++#endif
++
++static inline struct vcpu_pi *vcpu_to_pi(struct kvm_vcpu *vcpu)
++{
++	return (struct vcpu_pi*)vcpu;
++}
++
+ static inline struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
+ {
+-	return &(to_vmx(vcpu)->pi_desc);
++	return &vcpu_to_pi(vcpu)->pi_desc;
+ }
+ 
+ static int pi_try_set_control(struct pi_desc *pi_desc, u64 old, u64 new)
+@@ -50,8 +71,8 @@ static int pi_try_set_control(struct pi_desc *pi_desc, u64 old, u64 new)
+ 
+ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
+ {
+-	struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+-	struct vcpu_vmx *vmx = to_vmx(vcpu);
++	struct vcpu_pi *vcpu_pi = vcpu_to_pi(vcpu);
++	struct pi_desc *pi_desc = &vcpu_pi->pi_desc;
+ 	struct pi_desc old, new;
+ 	unsigned long flags;
+ 	unsigned int dest;
+@@ -88,7 +109,7 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
+ 	 */
+ 	if (pi_desc->nv == POSTED_INTR_WAKEUP_VECTOR) {
+ 		raw_spin_lock(&per_cpu(wakeup_vcpus_on_cpu_lock, vcpu->cpu));
+-		list_del(&vmx->pi_wakeup_list);
++		list_del(&vcpu_pi->pi_wakeup_list);
+ 		raw_spin_unlock(&per_cpu(wakeup_vcpus_on_cpu_lock, vcpu->cpu));
  	}
  
- 	kvm->max_halt_poll_ns = halt_poll_ns;
+@@ -142,15 +163,15 @@ static bool vmx_can_use_vtd_pi(struct kvm *kvm)
+  */
+ static void pi_enable_wakeup_handler(struct kvm_vcpu *vcpu)
+ {
+-	struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+-	struct vcpu_vmx *vmx = to_vmx(vcpu);
++	struct vcpu_pi *vcpu_pi = vcpu_to_pi(vcpu);
++	struct pi_desc *pi_desc = &vcpu_pi->pi_desc;
+ 	struct pi_desc old, new;
+ 	unsigned long flags;
  
--	r = kvm_arch_init_vm(kvm, type);
--	if (r)
--		goto out_err_no_arch_destroy_vm;
--
- 	r = hardware_enable_all();
- 	if (r)
- 		goto out_err_no_disable;
+ 	local_irq_save(flags);
  
-+	r = kvm_arch_init_vm(kvm, type);
-+	if (r)
-+		goto out_err_no_arch_destroy_vm;
+ 	raw_spin_lock(&per_cpu(wakeup_vcpus_on_cpu_lock, vcpu->cpu));
+-	list_add_tail(&vmx->pi_wakeup_list,
++	list_add_tail(&vcpu_pi->pi_wakeup_list,
+ 		      &per_cpu(wakeup_vcpus_on_cpu, vcpu->cpu));
+ 	raw_spin_unlock(&per_cpu(wakeup_vcpus_on_cpu_lock, vcpu->cpu));
+ 
+@@ -187,7 +208,8 @@ static bool vmx_needs_pi_wakeup(struct kvm_vcpu *vcpu)
+ 	 * notification vector is switched to the one that calls
+ 	 * back to the pi_wakeup_handler() function.
+ 	 */
+-	return vmx_can_use_ipiv(vcpu) || vmx_can_use_vtd_pi(vcpu->kvm);
++	return (vmx_can_use_ipiv(vcpu) && !is_td_vcpu(vcpu)) ||
++		vmx_can_use_vtd_pi(vcpu->kvm);
+ }
+ 
+ void vmx_vcpu_pi_put(struct kvm_vcpu *vcpu)
+@@ -197,7 +219,8 @@ void vmx_vcpu_pi_put(struct kvm_vcpu *vcpu)
+ 	if (!vmx_needs_pi_wakeup(vcpu))
+ 		return;
+ 
+-	if (kvm_vcpu_is_blocking(vcpu) && !vmx_interrupt_blocked(vcpu))
++	if (kvm_vcpu_is_blocking(vcpu) &&
++	    (is_td_vcpu(vcpu) || !vmx_interrupt_blocked(vcpu)))
+ 		pi_enable_wakeup_handler(vcpu);
+ 
+ 	/*
+diff --git a/arch/x86/kvm/vmx/posted_intr.h b/arch/x86/kvm/vmx/posted_intr.h
+index 26992076552e..2fe8222308b2 100644
+--- a/arch/x86/kvm/vmx/posted_intr.h
++++ b/arch/x86/kvm/vmx/posted_intr.h
+@@ -94,6 +94,17 @@ static inline bool pi_test_sn(struct pi_desc *pi_desc)
+ 			(unsigned long *)&pi_desc->control);
+ }
+ 
++struct vcpu_pi {
++	struct kvm_vcpu	vcpu;
 +
- #ifdef CONFIG_HAVE_KVM_IRQFD
- 	INIT_HLIST_HEAD(&kvm->irq_ack_notifier_list);
- #endif
-@@ -1179,10 +1179,10 @@ static struct kvm *kvm_create_vm(unsigned long type)
- 		mmu_notifier_unregister(&kvm->mmu_notifier, current->mm);
- #endif
- out_err_no_mmu_notifier:
--	hardware_disable_all();
--out_err_no_disable:
- 	kvm_arch_destroy_vm(kvm);
- out_err_no_arch_destroy_vm:
-+	hardware_disable_all();
-+out_err_no_disable:
- 	WARN_ON_ONCE(!refcount_dec_and_test(&kvm->users_count));
- 	for (i = 0; i < KVM_NR_BUSES; i++)
- 		kfree(kvm_get_bus(kvm, i));
++	/* Posted interrupt descriptor */
++	struct pi_desc pi_desc;
++
++	/* Used if this vCPU is waiting for PI notification wakeup. */
++	struct list_head pi_wakeup_list;
++	/* Until here common layout betwwn vcpu_vmx and vcpu_tdx. */
++};
++
+ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu);
+ void vmx_vcpu_pi_put(struct kvm_vcpu *vcpu);
+ void pi_wakeup_handler(void);
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 98e0a907dc68..758af6ec3507 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -526,6 +526,7 @@ int tdx_vcpu_create(struct kvm_vcpu *vcpu)
+ 		return -EINVAL;
+ 
+ 	vcpu->arch.apic->guest_apic_protected = true;
++	INIT_LIST_HEAD(&tdx->pi_wakeup_list);
+ 
+ 	ret = tdx_alloc_td_page(&tdx->tdvpr);
+ 	if (ret)
+diff --git a/arch/x86/kvm/vmx/tdx.h b/arch/x86/kvm/vmx/tdx.h
+index 32e05efa70f9..1268a49fdf18 100644
+--- a/arch/x86/kvm/vmx/tdx.h
++++ b/arch/x86/kvm/vmx/tdx.h
+@@ -4,6 +4,7 @@
+ 
+ #ifdef CONFIG_INTEL_TDX_HOST
+ 
++#include "posted_intr.h"
+ #include "pmu_intel.h"
+ #include "tdx_ops.h"
+ 
+@@ -82,6 +83,13 @@ union tdx_exit_reason {
+ struct vcpu_tdx {
+ 	struct kvm_vcpu	vcpu;
+ 
++	/* Posted interrupt descriptor */
++	struct pi_desc pi_desc;
++
++	/* Used if this vCPU is waiting for PI notification wakeup. */
++	struct list_head pi_wakeup_list;
++	/* Until here same layout to struct vcpu_pi. */
++
+ 	struct tdx_td_page tdvpr;
+ 	struct tdx_td_page *tdvpx;
+ 
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index f49be71290bd..4b2e610df657 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -224,6 +224,14 @@ struct nested_vmx {
+ 
+ struct vcpu_vmx {
+ 	struct kvm_vcpu       vcpu;
++
++	/* Posted interrupt descriptor */
++	struct pi_desc pi_desc;
++
++	/* Used if this vCPU is waiting for PI notification wakeup. */
++	struct list_head pi_wakeup_list;
++	/* Until here same layout to struct vcpu_pi. */
++
+ 	u8                    fail;
+ 	u8		      x2apic_msr_bitmap_mode;
+ 
+@@ -293,12 +301,6 @@ struct vcpu_vmx {
+ 
+ 	union vmx_exit_reason exit_reason;
+ 
+-	/* Posted interrupt descriptor */
+-	struct pi_desc pi_desc;
+-
+-	/* Used if this vCPU is waiting for PI notification wakeup. */
+-	struct list_head pi_wakeup_list;
+-
+ 	/* Support for a guest hypervisor (nested VMX) */
+ 	struct nested_vmx nested;
+ 
 -- 
 2.25.1
 
