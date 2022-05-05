@@ -2,324 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E76C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:18:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E20C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383773AbiEESWS (ORCPT
+        id S1383637AbiEESWX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
+        Thu, 5 May 2022 14:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383128AbiEESTa (ORCPT
+        with ESMTP id S1383180AbiEESTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:30 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE9A193C0;
-        Thu,  5 May 2022 11:15:49 -0700 (PDT)
+        Thu, 5 May 2022 14:19:41 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA3714081;
+        Thu,  5 May 2022 11:15:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774549; x=1683310549;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ICdyXlGWUaPiTBFifdHs0bvEuAB66uhdFIq/Jx1XrPY=;
-  b=FPvcfx7V8W0S+y5UL9tX4kjwnnjnoNYhxDeV5VG81XLjPqQug6WgCh4x
-   X+oeNgRGrNlYRMCUXd7Kx0fN19k8y+rAOjL45ptTymyhCL78PRER9ecwc
-   yMXyaqrsgEtoO+FVK/CEYUNIeb6U3fTvUENJFJwRvIEdmBc5k0v2hPUAl
-   qU7GU3FDDnjOW+hqLJKVc6iYU/ftHP8KRIQQ+TmkbdbSdcUBY8rK94JqI
-   HjxD0grU4gqotsc/boK5pihzRfdr+7VymzSAT0hrkHf7yAdg7cjKqQ+Ve
-   BffNZDED2OJPOroTWfBAy2HLjqMui9oKrNGd1r17Q0FWH4X73OzBCjwpt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248741976"
+  t=1651774550; x=1683310550;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=AEtYNjpEBkvZ7J/qWgVfVOw8rhuGAkNWQTcLQNB3yK8=;
+  b=E1InvdU2B3oF8H8D1BdYV9RdTl0cMIn29FQnO7RtKWwUGmuvutwEiLPl
+   SomfntS/vOVEYRPfJDy7itbN4POoD+SHiQ8i4xhGnkrCXL0XFMF2Zk3ez
+   SxxLYfxo2UIgqlebFaZpLbOXJr98hT/EXtp0od9nKI034UbVuRO6guZ5z
+   1pEDJsLgMCCu5X9YpXBB7JqczjAFgZ4s6dKTkDTZ1cykAq9/YSrDZTrVR
+   tiSb3Vv5wXKhl9ahSlis0bC8th84nS21N4/j6kvJf3I7RkkJZHqCy0Nk1
+   DTQpow4o27rd4ntww+FsSLTS9+Yf/AXVCfiaO+DRPz87Riu78qtfoBy17
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746255"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248741976"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:39 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="328746255"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:43 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="654338679"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 May 2022 11:15:38 -0700
-Received: from [10.252.209.228] (kliang2-MOBL.ccr.corp.intel.com [10.252.209.228])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 645D45806C8;
-        Thu,  5 May 2022 11:15:35 -0700 (PDT)
-Message-ID: <12c03e85-cb48-d264-5f04-e9bf9faaf739@linux.intel.com>
-Date:   Thu, 5 May 2022 14:15:33 -0400
+   d="scan'208";a="665083204"
+Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:42 -0700
+From:   isaku.yamahata@intel.com
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
+        Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Subject: [RFC PATCH v6 023/104] KVM: TDX: x86: Add ioctl to get TDX systemwide parameters
+Date:   Thu,  5 May 2022 11:14:17 -0700
+Message-Id: <f23861c45001c1b746a0195dcc4706c7d11a1fc2.1651774250.git.isaku.yamahata@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] perf evlist: Keep topdown counters in weak group
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>
-Cc:     Caleb Biggers <caleb.biggers@intel.com>,
-        Perry Taylor <perry.taylor@intel.com>,
-        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Haowen Bai <baihaowen@meizu.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>
-References: <20220505043846.3165303-1-irogers@google.com>
- <87b89e2c-da5c-52c3-40dc-448e874cb5d8@linux.intel.com>
- <CAP-5=fVHhWu1uJHnTfFYWvM02_F-bFBZaaOYo8zPRiA=ODRxGQ@mail.gmail.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <CAP-5=fVHhWu1uJHnTfFYWvM02_F-bFBZaaOYo8zPRiA=ODRxGQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
+Implement a system-scoped ioctl to get system-wide parameters for TDX.
 
-On 5/5/2022 11:18 AM, Ian Rogers wrote:
-> On Thu, May 5, 2022 at 4:56 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->>
->> Hi Ian,
->>
->> Thanks for the patches.
->>
->> On 5/5/2022 12:38 AM, Ian Rogers wrote:
->>> On Intel Icelake, topdown events must always be grouped with a slots
->>> event as leader. When a metric is parsed a weak group is formed and
->>> retried if perf_event_open fails. The retried events aren't grouped
->>> breaking the slots leader requirement. This change modifies the weak
->>> group "reset" behavior so that topdown events aren't broken from the
->>> group for the retry.
->>>
->>> $ perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,baclears.any,ARITH.DIVIDER_ACTIVE}:W' -a sleep 1
->>>
->>>    Performance counter stats for 'system wide':
->>>
->>>       47,867,188,483      slots                                                         (92.27%)
->>>      <not supported>      topdown-bad-spec
->>>      <not supported>      topdown-be-bound
->>>      <not supported>      topdown-fe-bound
->>>      <not supported>      topdown-retiring
->>>        2,173,346,937      branch-instructions                                           (92.27%)
->>>           10,540,253      branch-misses             #    0.48% of all branches          (92.29%)
->>>           96,291,140      bus-cycles                                                    (92.29%)
->>>            6,214,202      cache-misses              #   20.120 % of all cache refs      (92.29%)
->>>           30,886,082      cache-references                                              (76.91%)
->>>       11,773,726,641      cpu-cycles                                                    (84.62%)
->>>       11,807,585,307      instructions              #    1.00  insn per cycle           (92.31%)
->>>                    0      mem-loads                                                     (92.32%)
->>>        2,212,928,573      mem-stores                                                    (84.69%)
->>>       10,024,403,118      ref-cycles                                                    (92.35%)
->>>           16,232,978      baclears.any                                                  (92.35%)
->>>           23,832,633      ARITH.DIVIDER_ACTIVE                                          (84.59%)
->>>
->>>          0.981070734 seconds time elapsed
->>>
->>> After:
->>>
->>> $ perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,baclears.any,ARITH.DIVIDER_ACTIVE}:W' -a sleep 1
->>>
->>>    Performance counter stats for 'system wide':
->>>
->>>          31040189283      slots                                                         (92.27%)
->>>           8997514811      topdown-bad-spec          #     28.2% bad speculation         (92.27%)
->>>          10997536028      topdown-be-bound          #     34.5% backend bound           (92.27%)
->>>           4778060526      topdown-fe-bound          #     15.0% frontend bound          (92.27%)
->>>           7086628768      topdown-retiring          #     22.2% retiring                (92.27%)
->>>           1417611942      branch-instructions                                           (92.26%)
->>>              5285529      branch-misses             #    0.37% of all branches          (92.28%)
->>>             62922469      bus-cycles                                                    (92.29%)
->>>              1440708      cache-misses              #    8.292 % of all cache refs      (92.30%)
->>>             17374098      cache-references                                              (76.94%)
->>>           8040889520      cpu-cycles                                                    (84.63%)
->>>           7709992319      instructions              #    0.96  insn per cycle           (92.32%)
->>>                    0      mem-loads                                                     (92.32%)
->>>           1515669558      mem-stores                                                    (84.68%)
->>>           6542411177      ref-cycles                                                    (92.35%)
->>>              4154149      baclears.any                                                  (92.35%)
->>>             20556152      ARITH.DIVIDER_ACTIVE                                          (84.59%)
->>>
->>>          1.010799593 seconds time elapsed
->>>
->>> Signed-off-by: Ian Rogers <irogers@google.com>
->>> ---
->>>    tools/perf/arch/x86/util/evsel.c | 12 ++++++++++++
->>>    tools/perf/util/evlist.c         | 16 ++++++++++++++--
->>>    tools/perf/util/evsel.c          | 10 ++++++++++
->>>    tools/perf/util/evsel.h          |  3 +++
->>>    4 files changed, 39 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
->>> index ac2899a25b7a..40b171de2086 100644
->>> --- a/tools/perf/arch/x86/util/evsel.c
->>> +++ b/tools/perf/arch/x86/util/evsel.c
->>> @@ -3,6 +3,7 @@
->>>    #include <stdlib.h>
->>>    #include "util/evsel.h"
->>>    #include "util/env.h"
->>> +#include "util/pmu.h"
->>>    #include "linux/string.h"
->>>
->>>    void arch_evsel__set_sample_weight(struct evsel *evsel)
->>> @@ -29,3 +30,14 @@ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr)
->>>
->>>        free(env.cpuid);
->>>    }
->>> +
->>> +bool arch_evsel__must_be_in_group(const struct evsel *evsel)
->>> +{
->>> +     if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
->>> +         !pmu_have_event("cpu", "slots"))
->>> +             return false;
->>> +
->>
->> The big core of ADL also supports Perf_metrics. At least, we should
->> check both "cpu" and "cpu_core" here.
->>
->> Thanks,
->> Kan
-> 
-> Thanks Kan, we have the same problem for
-> arch_evlist__add_default_attrs and arch_evlist__leader:
-> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/arch/x86/util/evlist.c?h=perf/core
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+---
+ arch/x86/include/asm/kvm-x86-ops.h    |  1 +
+ arch/x86/include/asm/kvm_host.h       |  1 +
+ arch/x86/include/uapi/asm/kvm.h       | 48 +++++++++++++++++++++++++++
+ arch/x86/kvm/vmx/main.c               |  2 ++
+ arch/x86/kvm/vmx/tdx.c                | 46 +++++++++++++++++++++++++
+ arch/x86/kvm/vmx/x86_ops.h            |  2 ++
+ arch/x86/kvm/x86.c                    |  6 ++++
+ tools/arch/x86/include/uapi/asm/kvm.h | 48 +++++++++++++++++++++++++++
+ 8 files changed, 154 insertions(+)
 
-These are known issues. Zhengjun already have some patches to fix them, 
-but hasn't posted yet.
-
-The arch_evlist__add_default_attrs impacts the perf stat default. On the 
-ADL, perf stat default doesn't display the topdown events.
-
-The arch_evlist__leader impacts the sampling read of the topdown events. 
-Sampling read the topdown events should always fail with the current 
-perf tool on ADL.
-
-We already have many backlogs on ADL. I think it's better not to 
-introduce more issues.
-
-> So I think fixing all of these should be a follow up. I am working to
-> get access to an Alderlake system, could we land this first?
-> 
-
-I think we can use pmu_name to replace the "cpu" to fix the issue for 
-the hybrid platform. For a hybrid platform, the pmu_name is either 
-cpu_atom or cpu_core.
-
-Besides, the topdown events may have a PMU prefix, e.g., 
-cpu_core/topdown-be-bound/. The strcasecmp may not work well for this case.
-
-How about the below patch?
-If it's OK for you, could you please merge it into your V2 patch set?
-I can do the test on a ADL system.
-
-diff --git a/tools/perf/arch/x86/util/evsel.c 
-b/tools/perf/arch/x86/util/evsel.c
-index 40b171de2086..551ae2bab70e 100644
---- a/tools/perf/arch/x86/util/evsel.c
-+++ b/tools/perf/arch/x86/util/evsel.c
-@@ -33,11 +33,12 @@ void arch_evsel__fixup_new_cycles(struct 
-perf_event_attr *attr)
-
-  bool arch_evsel__must_be_in_group(const struct evsel *evsel)
-  {
--	if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
--	    !pmu_have_event("cpu", "slots"))
-+	const char *pmu_name = evsel->pmu_name ? evsel->pmu_name : "cpu";
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index fbb2c6746066..3677a5015a4f 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -117,6 +117,7 @@ KVM_X86_OP(smi_allowed)
+ KVM_X86_OP(enter_smm)
+ KVM_X86_OP(leave_smm)
+ KVM_X86_OP(enable_smi_window)
++KVM_X86_OP_OPTIONAL(dev_mem_enc_ioctl)
+ KVM_X86_OP_OPTIONAL(mem_enc_ioctl)
+ KVM_X86_OP_OPTIONAL(mem_enc_register_region)
+ KVM_X86_OP_OPTIONAL(mem_enc_unregister_region)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index a6a5518ce0ca..e6f6f8c8619f 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1495,6 +1495,7 @@ struct kvm_x86_ops {
+ 	int (*leave_smm)(struct kvm_vcpu *vcpu, const char *smstate);
+ 	void (*enable_smi_window)(struct kvm_vcpu *vcpu);
+ 
++	int (*dev_mem_enc_ioctl)(void __user *argp);
+ 	int (*mem_enc_ioctl)(struct kvm *kvm, void __user *argp);
+ 	int (*mem_enc_register_region)(struct kvm *kvm, struct kvm_enc_region *argp);
+ 	int (*mem_enc_unregister_region)(struct kvm *kvm, struct kvm_enc_region *argp);
+diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+index 1c3b97f403f4..ca85a070ac19 100644
+--- a/arch/x86/include/uapi/asm/kvm.h
++++ b/arch/x86/include/uapi/asm/kvm.h
+@@ -529,4 +529,52 @@ struct kvm_pmu_event_filter {
+ #define KVM_X86_DEFAULT_VM	0
+ #define KVM_X86_TDX_VM		1
+ 
++/* Trust Domain eXtension sub-ioctl() commands. */
++enum kvm_tdx_cmd_id {
++	KVM_TDX_CAPABILITIES = 0,
 +
-+	if (!pmu_have_event(pmu_name, "slots"))
-  		return false;
++	KVM_TDX_CMD_NR_MAX,
++};
++
++struct kvm_tdx_cmd {
++	/* enum kvm_tdx_cmd_id */
++	__u32 id;
++	/* flags for sub-commend. If sub-command doesn't use this, set zero. */
++	__u32 flags;
++	/*
++	 * data for each sub-command. An immediate or a pointer to the actual
++	 * data in process virtual address.  If sub-command doesn't use it,
++	 * set zero.
++	 */
++	__u64 data;
++	/*
++	 * Auxiliary error code.  The sub-command may return TDX SEAMCALL
++	 * status code in addition to -Exxx.
++	 * Defined for consistency with struct kvm_sev_cmd.
++	 */
++	__u64 error;
++	/* Reserved: Defined for consistency with struct kvm_sev_cmd. */
++	__u64 unused;
++};
++
++struct kvm_tdx_cpuid_config {
++	__u32 leaf;
++	__u32 sub_leaf;
++	__u32 eax;
++	__u32 ebx;
++	__u32 ecx;
++	__u32 edx;
++};
++
++struct kvm_tdx_capabilities {
++	__u64 attrs_fixed0;
++	__u64 attrs_fixed1;
++	__u64 xfam_fixed0;
++	__u64 xfam_fixed1;
++
++	__u32 nr_cpuid_configs;
++	__u32 padding;
++	struct kvm_tdx_cpuid_config cpuid_configs[0];
++};
++
+ #endif /* _ASM_X86_KVM_H */
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index 6a93b19a8b06..7b497ed1f21c 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -212,6 +212,8 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.complete_emulated_msr = kvm_complete_insn_gp,
+ 
+ 	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
++
++	.dev_mem_enc_ioctl = tdx_dev_ioctl,
+ };
+ 
+ struct kvm_x86_init_ops vt_init_ops __initdata = {
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index ba0671cbf0a7..07b69ffbe55b 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -392,6 +392,52 @@ int tdx_vm_init(struct kvm *kvm)
+ 	return ret;
+ }
+ 
++int tdx_dev_ioctl(void __user *argp)
++{
++	struct kvm_tdx_capabilities __user *user_caps;
++	struct kvm_tdx_capabilities caps;
++	struct kvm_tdx_cmd cmd;
++
++	BUILD_BUG_ON(sizeof(struct kvm_tdx_cpuid_config) !=
++		     sizeof(struct tdx_cpuid_config));
++
++	if (copy_from_user(&cmd, argp, sizeof(cmd)))
++		return -EFAULT;
++	if (cmd.flags || cmd.error || cmd.unused)
++		return -EINVAL;
++	/*
++	 * Currently only KVM_TDX_CAPABILITIES is defined for system-scoped
++	 * mem_enc_ioctl().
++	 */
++	if (cmd.id != KVM_TDX_CAPABILITIES)
++		return -EINVAL;
++
++	user_caps = (void __user *)cmd.data;
++	if (copy_from_user(&caps, user_caps, sizeof(caps)))
++		return -EFAULT;
++
++	if (caps.nr_cpuid_configs < tdx_caps.nr_cpuid_configs)
++		return -E2BIG;
++
++	caps = (struct kvm_tdx_capabilities) {
++		.attrs_fixed0 = tdx_caps.attrs_fixed0,
++		.attrs_fixed1 = tdx_caps.attrs_fixed1,
++		.xfam_fixed0 = tdx_caps.xfam_fixed0,
++		.xfam_fixed1 = tdx_caps.xfam_fixed1,
++		.nr_cpuid_configs = tdx_caps.nr_cpuid_configs,
++		.padding = 0,
++	};
++
++	if (copy_to_user(user_caps, &caps, sizeof(caps)))
++		return -EFAULT;
++	if (copy_to_user(user_caps->cpuid_configs, &tdx_caps.cpuid_configs,
++			 tdx_caps.nr_cpuid_configs *
++			 sizeof(struct tdx_cpuid_config)))
++		return -EFAULT;
++
++	return 0;
++}
++
+ int __init tdx_module_setup(void)
+ {
+ 	const struct tdsysinfo_struct *tdsysinfo;
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 468f00d0633e..75e6cdcb06f5 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -132,6 +132,7 @@ void vmx_setup_mce(struct kvm_vcpu *vcpu);
+ int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops);
+ bool tdx_is_vm_type_supported(unsigned long type);
+ void tdx_hardware_unsetup(void);
++int tdx_dev_ioctl(void __user *argp);
+ 
+ int tdx_vm_init(struct kvm *kvm);
+ void tdx_mmu_release_hkid(struct kvm *kvm);
+@@ -140,6 +141,7 @@ void tdx_vm_free(struct kvm *kvm);
+ static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { return 0; }
+ static inline bool tdx_is_vm_type_supported(unsigned long type) { return false; }
+ static inline void tdx_hardware_unsetup(void) {}
++static inline int tdx_dev_ioctl(void __user *argp) { return -EOPNOTSUPP; };
+ 
+ static inline int tdx_vm_init(struct kvm *kvm) { return -EOPNOTSUPP; }
+ static inline void tdx_mmu_release_hkid(struct kvm *kvm) {}
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index af280db31777..77e83e20180a 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4546,6 +4546,12 @@ long kvm_arch_dev_ioctl(struct file *filp,
+ 			break;
+ 		r = kvm_x86_dev_has_attr(&attr);
+ 		break;
++		case KVM_MEMORY_ENCRYPT_OP:
++			r = -EINVAL;
++			if (!kvm_x86_ops.dev_mem_enc_ioctl)
++				goto out;
++			r = static_call(kvm_x86_dev_mem_enc_ioctl)(argp);
++			break;
+ 	}
+ 	default:
+ 		r = -EINVAL;
+diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
+index 71a5851475e7..a9ea3573be1b 100644
+--- a/tools/arch/x86/include/uapi/asm/kvm.h
++++ b/tools/arch/x86/include/uapi/asm/kvm.h
+@@ -528,4 +528,52 @@ struct kvm_pmu_event_filter {
+ #define KVM_X86_DEFAULT_VM	0
+ #define KVM_X86_TDX_VM		1
+ 
++/* Trust Domain eXtension sub-ioctl() commands. */
++enum kvm_tdx_cmd_id {
++	KVM_TDX_CAPABILITIES = 0,
++
++	KVM_TDX_CMD_NR_MAX,
++};
++
++struct kvm_tdx_cmd {
++	/* enum kvm_tdx_cmd_id */
++	__u32 id;
++	/* flags for sub-commend. If sub-command doesn't use this, set zero. */
++	__u32 flags;
++	/*
++	 * data for each sub-command. An immediate or a pointer to the actual
++	 * data in process virtual address.  If sub-command doesn't use it,
++	 * set zero.
++	 */
++	__u64 data;
++	/*
++	 * Auxiliary error code.  The sub-command may return TDX SEAMCALL
++	 * status code in addition to -Exxx.
++	 * Defined for consistency with struct kvm_sev_cmd.
++	 */
++	__u64 error;
++	/* Reserved: Defined for consistency with struct kvm_sev_cmd. */
++	__u64 unused;
++};
++
++struct kvm_tdx_cpuid_config {
++	__u32 leaf;
++	__u32 sub_leaf;
++	__u32 eax;
++	__u32 ebx;
++	__u32 ecx;
++	__u32 edx;
++};
++
++struct kvm_tdx_capabilities {
++	__u64 attrs_fixed0;
++	__u64 attrs_fixed1;
++	__u64 xfam_fixed0;
++	__u64 xfam_fixed1;
++
++	__u32 nr_cpuid_configs;
++	__u32 padding;
++	struct kvm_tdx_cpuid_config cpuid_configs[0];
++};
++
+ #endif /* _ASM_X86_KVM_H */
+-- 
+2.25.1
 
-  	return evsel->name &&
--		(!strcasecmp(evsel->name, "slots") ||
--		 !strncasecmp(evsel->name, "topdown", 7));
-+		(strcasestr(evsel->name, "slots") ||
-+		 strcasestr(evsel->name, "topdown"));
-  }
-
-
-
-Thanks,
-Kan
-
-> Thanks,
-> Ian
-> 
->>> +     return evsel->name &&
->>> +             (!strcasecmp(evsel->name, "slots") ||
->>> +              !strncasecmp(evsel->name, "topdown", 7));
->>> +}
->>> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
->>> index 52ea004ba01e..dfa65a383502 100644
->>> --- a/tools/perf/util/evlist.c
->>> +++ b/tools/perf/util/evlist.c
->>> @@ -1790,8 +1790,17 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
->>>                if (evsel__has_leader(c2, leader)) {
->>>                        if (is_open && close)
->>>                                perf_evsel__close(&c2->core);
->>> -                     evsel__set_leader(c2, c2);
->>> -                     c2->core.nr_members = 0;
->>> +                     /*
->>> +                      * We want to close all members of the group and reopen
->>> +                      * them. Some events, like Intel topdown, require being
->>> +                      * in a group and so keep these in the group.
->>> +                      */
->>> +                     if (!evsel__must_be_in_group(c2) && c2 != leader) {
->>> +                             evsel__set_leader(c2, c2);
->>> +                             c2->core.nr_members = 0;
->>> +                             leader->core.nr_members--;
->>> +                     }
->>> +
->>>                        /*
->>>                         * Set this for all former members of the group
->>>                         * to indicate they get reopened.
->>> @@ -1799,6 +1808,9 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
->>>                        c2->reset_group = true;
->>>                }
->>>        }
->>> +     /* Reset the leader count if all entries were removed. */
->>> +     if (leader->core.nr_members)
->>> +             leader->core.nr_members = 0;
->>>        return leader;
->>>    }
->>>
->>> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
->>> index d38722560e80..b7c0c9775673 100644
->>> --- a/tools/perf/util/evsel.c
->>> +++ b/tools/perf/util/evsel.c
->>> @@ -3082,3 +3082,13 @@ int evsel__source_count(const struct evsel *evsel)
->>>        }
->>>        return count;
->>>    }
->>> +
->>> +bool __weak arch_evsel__must_be_in_group(const struct evsel *evsel __maybe_unused)
->>> +{
->>> +     return false;
->>> +}
->>> +
->>> +bool evsel__must_be_in_group(const struct evsel *evsel)
->>> +{
->>> +     return arch_evsel__must_be_in_group(evsel);
->>> +}
->>> diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
->>> index 45d674812239..0ed2850b7ebb 100644
->>> --- a/tools/perf/util/evsel.h
->>> +++ b/tools/perf/util/evsel.h
->>> @@ -488,6 +488,9 @@ bool evsel__has_leader(struct evsel *evsel, struct evsel *leader);
->>>    bool evsel__is_leader(struct evsel *evsel);
->>>    void evsel__set_leader(struct evsel *evsel, struct evsel *leader);
->>>    int evsel__source_count(const struct evsel *evsel);
->>> +bool evsel__must_be_in_group(const struct evsel *evsel);
->>> +
->>> +bool arch_evsel__must_be_in_group(const struct evsel *evsel);
->>>
->>>    /*
->>>     * Macro to swap the bit-field postition and size.
