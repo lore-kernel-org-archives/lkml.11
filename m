@@ -2,179 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D8CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378995AbiEENUo (ORCPT
+        id S1379015AbiEENVH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        Thu, 5 May 2022 09:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354075AbiEENUl (ORCPT
+        with ESMTP id S1379004AbiEENVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:20:41 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E4B18E18;
-        Thu,  5 May 2022 06:17:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651756622; x=1683292622;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+6MCbEQSUwrgaPZw/EyhSqJQGKL9MpyVEdD0/n5EPeI=;
-  b=NidSsoJSQWI7Xil2Da5FncYmC4RR9xPSXdoS0FD3sT+aCpqFaMydh0jR
-   zTZYYVArzsQ22RV7a2W8ipjYbtZJxEEEgTmJHHbmjR5mx9PqHVidT6mz7
-   CbwMiqbM7zp8ZJx1xJzfYTbSmtwT6tv/+pJQjgxRWaWRXCkYzQao5cbdY
-   CUMFjfjAPphXSC22xGGUKV1jtcWZ+LckTt+h9Zhc6ZXYVuo7FpF9eASsY
-   LP5uAPQvvxNJyDRV18g8K7q95evwEIK9nYhYwsORjzNjVMV95YwKVEEZr
-   PG4QZN2+LAKlCsHZE+5JrJ/bAN9gTRPyN3/BBoD4ztn59bY2EdyEDiL5z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="331090656"
+        Thu, 5 May 2022 09:21:04 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB0232ED5;
+        Thu,  5 May 2022 06:17:25 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248013547"
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="331090656"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:17:01 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="248013547"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:17:08 -0700
 X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="563235590"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 05 May 2022 06:16:58 -0700
-Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 245DGuYS009371;
-        Thu, 5 May 2022 14:16:56 +0100
-From:   Larysa Zaremba <larysa.zaremba@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH bpf-next v2] bpftool: Use sysfs vmlinux when dumping BTF by ID
-Date:   Thu,  5 May 2022 15:05:08 +0200
-Message-Id: <20220505130507.130670-1-larysa.zaremba@intel.com>
-X-Mailer: git-send-email 2.35.1
+   d="scan'208";a="654216218"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:17:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1nmbLp-00CI1C-TO;
+        Thu, 05 May 2022 16:17:01 +0300
+Date:   Thu, 5 May 2022 16:17:01 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v5 1/6] gpiolib: Introduce a helper to get first GPIO
+ controller node
+Message-ID: <YnPOTTRhzM5O7OlD@smile.fi.intel.com>
+References: <20220414190242.22178-1-andriy.shevchenko@linux.intel.com>
+ <20220414190242.22178-2-andriy.shevchenko@linux.intel.com>
+ <CAMRc=MfE0othcfwETf13_K3sOLKmUGwCnjapzVjLMk1cD+ihVQ@mail.gmail.com>
+ <CAHp75VcpZPB12Y4FVN4h9RdkvYQfELtbRnd08FfPpG1cJG-99g@mail.gmail.com>
+ <CAMRc=Mef77ejvzx2Pg1P_xzozxb1VjxGtArfvFdS=Cgq-8Mbwg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMRc=Mef77ejvzx2Pg1P_xzozxb1VjxGtArfvFdS=Cgq-8Mbwg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, dumping almost all BTFs specified by id requires
-using the -B option to pass the base BTF. For kernel module
-BTFs the vmlinux BTF sysfs path should work.
+On Thu, May 05, 2022 at 03:05:52PM +0200, Bartosz Golaszewski wrote:
+> On Tue, Apr 26, 2022 at 12:29 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Apr 26, 2022 at 12:27 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> > > On Thu, Apr 14, 2022 at 9:02 PM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
 
-This patch simplifies dumping by ID usage by attempting to
-use vmlinux BTF from sysfs, if the first try of loading BTF by ID
-fails with certain conditions and the ID corresponds to a kernel
-module BTF.
+...
 
-Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- tools/bpf/bpftool/btf.c | 67 +++++++++++++++++++++++++++++++++++------
- 1 file changed, 58 insertions(+), 9 deletions(-)
+> > > Any chance you could name it get_first_gpiochip_node()? It's static so
+> > > we don't have to worry about the prefix and it would make the purpose
+> > > more clear.
+> >
+> > There are two things why I prefer it as is:
+> > 1) it's static inline, so it's part of (internal) but still exported API;
+> > 2) it's already in my for-next branch which I would like not to
+> > rebase, until it's a really serious issue.
+> >
+> > That said, if you still insist I can rename it.
+> 
+> No that's fine and I also pulled that into my tree.
 
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index a2c665beda87..070e0c1595d7 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -459,6 +459,56 @@ static int dump_btf_c(const struct btf *btf,
- 	return err;
- }
- 
-+static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
-+
-+static struct btf *get_vmlinux_btf_from_sysfs(void)
-+{
-+	struct btf *base;
-+
-+	base = btf__parse(sysfs_vmlinux, NULL);
-+	if (libbpf_get_error(base)) {
-+		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
-+		      sysfs_vmlinux, libbpf_get_error(base));
-+		base = NULL;
-+	}
-+
-+	return base;
-+}
-+
-+static struct btf *btf_try_load_with_vmlinux(__u32 btf_id, struct btf **base)
-+{
-+	struct bpf_btf_info btf_info = {};
-+	unsigned int len;
-+	int btf_fd;
-+	int err;
-+
-+	btf_fd = bpf_btf_get_fd_by_id(btf_id);
-+	if (btf_fd < 0) {
-+		p_err("can't get BTF object by id (%u): %s",
-+		      btf_id, strerror(errno));
-+		return ERR_PTR(btf_fd);
-+	}
-+
-+	len = sizeof(btf_info);
-+	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
-+	close(btf_fd);
-+
-+	if (err) {
-+		p_err("can't get BTF (ID %u) object info: %s",
-+		      btf_id, strerror(errno));
-+		return ERR_PTR(err);
-+	}
-+
-+	if (!btf_info.kernel_btf) {
-+		p_err("BTF with ID %u is not a kernel module BTF, cannot use vmlinux as base",
-+		      btf_id);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	*base = get_vmlinux_btf_from_sysfs();
-+	return btf__load_from_kernel_by_id_split(btf_id, *base);
-+}
-+
- static int do_dump(int argc, char **argv)
- {
- 	struct btf *btf = NULL, *base = NULL;
-@@ -536,18 +586,11 @@ static int do_dump(int argc, char **argv)
- 		NEXT_ARG();
- 	} else if (is_prefix(src, "file")) {
- 		const char sysfs_prefix[] = "/sys/kernel/btf/";
--		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
- 
- 		if (!base_btf &&
- 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
--		    strcmp(*argv, sysfs_vmlinux) != 0) {
--			base = btf__parse(sysfs_vmlinux, NULL);
--			if (libbpf_get_error(base)) {
--				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
--				      sysfs_vmlinux, libbpf_get_error(base));
--				base = NULL;
--			}
--		}
-+		    strcmp(*argv, sysfs_vmlinux))
-+			base = get_vmlinux_btf_from_sysfs();
- 
- 		btf = btf__parse_split(*argv, base ?: base_btf);
- 		err = libbpf_get_error(btf);
-@@ -593,6 +636,12 @@ static int do_dump(int argc, char **argv)
- 	if (!btf) {
- 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
- 		err = libbpf_get_error(btf);
-+		if (err == -EINVAL && !base_btf) {
-+			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
-+			btf = btf_try_load_with_vmlinux(btf_id, &base);
-+			err = libbpf_get_error(btf);
-+		}
-+
- 		if (err) {
- 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
- 			goto done;
+Thank you!
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
