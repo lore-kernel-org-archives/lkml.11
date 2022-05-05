@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE21C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11653C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 23:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387069AbiEFABr (ORCPT
+        id S1387096AbiEFABv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35042 "EHLO
+        Thu, 5 May 2022 20:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387048AbiEFAB2 (ORCPT
+        with ESMTP id S1387046AbiEFAB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:01:28 -0400
+        Thu, 5 May 2022 20:01:29 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307B360DB7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC32860DBA
         for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:57:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651795067; x=1683331067;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=Jz5/GbztoMpO5f33w54Dy1VgumudmsMpWQzH5+E5s4I=;
-  b=XlZwEYI6/M/Oti/oKGwvzBgRy98haQGOy0pNl1ocMfxAxNWuh77VXoX8
-   mfn6j2B80IABNcm2f1O78T7HrFLtCiJjKHo2hMNbw33/X8Dk8y0kdMWqC
-   fGxZUMJgnuGpV9lnIBA2YtHsP6CCcbNoT5mwYUJ6VnlikYVSe3tqS9whK
-   m9aetlD8Dq2cnW1PFOzKRx4vf+D5jdptOJLtEXxoVv9mMX80y2xpfGVkZ
-   KP7dGaAydb0qbZhBi8RzIxrREpIw/4dKxnXCCs4oaDFPX5YI5CArhld5c
-   xKH4yHo0pWLiBnxXl+l//kY9iRCajNzs1b+Cc/OKRDspSQxpa1V1+6FF8
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283617"
+  bh=eY8ASsd7/aj+9aYNbmEq9GanUaeYVEui2oMFa5HCVds=;
+  b=YMXxjxb13scJhai/c9kcuT3e1y9qaoy8f8nlPRARxffbHqPCprnB4xfO
+   hXwBos4I70Mr0AyRixDeh0aN79ZtIDaIG1Dz8PuAeI+PvSgy8G8bpns7S
+   cxeaF1gkEOeTa+Fx4vLn+VMg4qS7lHeWQd0g987MT5o2HktG/NKS+w+Sm
+   bhqDCKkDSeA+aROvxoKiHyhVomN3jeiXj8uFyD4cz01pGe7b6on/BNeAu
+   R7fjAvc1VUbT9L0kftyrHRrs9H2YY2tZabw9xYbnOtugI/6zp3kkuUdOd
+   ZdEun7Ym253F4N6UesRlY0S74D2prZjSJBNM4rOBQ4824LeMQ6MBAr7Yt
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283621"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283617"
+   d="scan'208";a="250283621"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:45 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:46 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914335"
+   d="scan'208";a="694914342"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:45 -0700
+  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:46 -0700
 From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
@@ -54,9 +54,9 @@ Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
         iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org,
         Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 04/29] x86/apic: Add the X86_IRQ_ALLOC_AS_NMI irq allocation flag
-Date:   Thu,  5 May 2022 16:59:43 -0700
-Message-Id: <20220506000008.30892-5-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 06/29] x86/apic/vector: Implement support for NMI delivery mode
+Date:   Thu,  5 May 2022 16:59:45 -0700
+Message-Id: <20220506000008.30892-7-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -64,9 +64,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are cases in which it is necessary to set the delivery mode of an
-interrupt as NMI. Add a new flag that callers can specify when allocating
-an IRQ.
+The flag X86_IRQ_ALLOC_AS_NMI indicates to the interrupt controller that
+it should configure the delivery mode of an IRQ as NMI. Implement such
+request. This causes irq_domain children in the hierarchy to configure
+their irq_chips accordingly. When no specific delivery mode is requested,
+continue using the delivery mode of the APIC driver in use.
 
 Cc: Andi Kleen <ak@linux.intel.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
@@ -93,21 +95,40 @@ Changes since v2:
 Changes since v1:
  * N/A
 ---
- arch/x86/include/asm/irqdomain.h | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/apic/vector.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/x86/include/asm/irqdomain.h b/arch/x86/include/asm/irqdomain.h
-index 125c23b7bad3..de1cf2e80443 100644
---- a/arch/x86/include/asm/irqdomain.h
-+++ b/arch/x86/include/asm/irqdomain.h
-@@ -10,6 +10,7 @@ enum {
- 	/* Allocate contiguous CPU vectors */
- 	X86_IRQ_ALLOC_CONTIGUOUS_VECTORS		= 0x1,
- 	X86_IRQ_ALLOC_LEGACY				= 0x2,
-+	X86_IRQ_ALLOC_AS_NMI				= 0x4,
- };
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 11f881f45cec..df4d7b9f6e27 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -570,6 +570,10 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
+ 	if ((info->flags & X86_IRQ_ALLOC_CONTIGUOUS_VECTORS) && nr_irqs > 1)
+ 		return -ENOSYS;
  
- extern int x86_fwspec_is_ioapic(struct irq_fwspec *fwspec);
++	/* Only one IRQ per NMI */
++	if ((info->flags & X86_IRQ_ALLOC_AS_NMI) && nr_irqs != 1)
++		return -EINVAL;
++
+ 	/*
+ 	 * Catch any attempt to touch the cascade interrupt on a PIC
+ 	 * equipped system.
+@@ -610,7 +614,15 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
+ 		 * default delivery mode of the APIC. Children irq domains
+ 		 * may take the delivery mode from the individual irq
+ 		 * configuration rather than from the APIC driver.
++		 *
++		 * Vectors are meaningless if the delivery mode is NMI. Since
++		 * nr_irqs is 1, we can return.
+ 		 */
++		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
++			apicd->hw_irq_cfg.delivery_mode = APIC_DELIVERY_MODE_NMI;
++			return 0;
++		}
++
+ 		apicd->hw_irq_cfg.delivery_mode = apic->delivery_mode;
+ 
+ 		/*
 -- 
 2.17.1
 
