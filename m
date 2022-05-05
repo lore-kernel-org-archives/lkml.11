@@ -2,185 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16461C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5327EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346825AbiEEIQk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        id S243620AbiEEISb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 04:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346700AbiEEIQe (ORCPT
+        with ESMTP id S238526AbiEEIS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:16:34 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C1D47AD2
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:12:54 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id m20so7212913ejj.10
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:12:54 -0700 (PDT)
+        Thu, 5 May 2022 04:18:26 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF45B39813
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:14:46 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id i27so7221872ejd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:14:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=HGg12g7rqV6st3fX8w/ctnDqBvDsC80/xO++kQycD7o=;
-        b=W6QD2uraJIvioMM9fyC+0Oiy7cWSHGHMC5pGskeQFPUekBSjtiKm3A70QIEWNq7Sh5
-         VHhAw8hpfYagzTcrcMnO/hTb04SOcTe5+Mfj4gD6ifM0bAYMuh0fCSo7taWQKTU+4m31
-         dnKZxrmpJh8nR6mgozp6BQibK09vKIbIrpwKg=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3z6nvLeGGyPc5qCTPHfhB8pduImZmC8hApcWr/wC4ME=;
+        b=Ez6EKS038QDuBSzEPaiuvG0DME44/f/+B5p+cIr2OQN54aWnmJwADBM6CnjWbNO6oO
+         oKdGjd1uGzuBJfzuNLdX/Kql8T4qpWWTB0WX7t6XR0M8TvaROApcwB9KSZzytAiN2Ip6
+         /QbuvdAb3S1eoEHUPWiUm1/NB8+mjuuL/8FYW834X+RsnAXYTin1Cixx+2gN/5gJSSKm
+         87wJ7E8RHkoM+Z7FkUpO5I5giqubTEifieXTcEOJJhhoBzIpMqVgrVsD8GGvPUmI7g2q
+         BT7sD++Io48aV/TrJTk7tMcoXpV2rE1MBANj5k5Ein7yrb8/t2hZSggyCGG4B+hPqm9Y
+         ctUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=HGg12g7rqV6st3fX8w/ctnDqBvDsC80/xO++kQycD7o=;
-        b=zCgseNqgaxyfpm4/2Q+IuLJC7fyqSuauhqjwALnsscZDFLdz6TSPSW+IUBqfog1GW+
-         rRYUdf6U0RMAgOtrHUxLuGOQVHdDYGuCMfhJguS2fHLPaRGujDWd8aQtcXxA8fIGBNi/
-         WpUs08cYcG8O7gusUIJHZXJ2bYmkTsnGQDfT4Wg8DoFuTdhtOA9oPb5LY2v0Rpe9qGiI
-         XfbODvAcyF3fEKzrsrzEntWHDR1D3PrSaTKJsBMCD0zpYsLS/TOZFbUxakEbfTb0KXOw
-         yZTeWZh5QDmQBCWluyzCPkXB13l9F/Dm+47kSYMoEcdv+ZUsc4Lg3TqubZN4UDKUiK82
-         Zjbw==
-X-Gm-Message-State: AOAM5322o03lxz/zt2j8tOprBPgn9bbTGXqjh8Kl+kZS13HtA/q28Brj
-        redAZSVH3HmCrFAEEPpZoYsvGQ==
-X-Google-Smtp-Source: ABdhPJy/OlYDHV4abt2gnWtLXTtgDhEwCbc9MHayNWwoiurjDqvY2ogAsYMRzgyNYsm6uejfvxCNrQ==
-X-Received: by 2002:a17:907:2cc6:b0:6f0:2de3:9446 with SMTP id hg6-20020a1709072cc600b006f02de39446mr24511672ejc.690.1651738373298;
-        Thu, 05 May 2022 01:12:53 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id gz14-20020a170907a04e00b006f3ef214e62sm447457ejc.200.2022.05.05.01.12.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 01:12:52 -0700 (PDT)
-Date:   Thu, 5 May 2022 10:12:50 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     Daniel Stone <daniel@fooishbar.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v4 10/15] drm/shmem-helper: Take reservation lock instead
- of drm_gem_shmem locks
-Message-ID: <YnOHAh9I1ds4+1J+@phenom.ffwll.local>
-Mail-Followup-To: Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>, Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dmitry Osipenko <digetx@gmail.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-References: <20220417223707.157113-1-dmitry.osipenko@collabora.com>
- <20220417223707.157113-11-dmitry.osipenko@collabora.com>
- <248083d2-b8f2-a4d7-099d-70a7e7859c11@suse.de>
- <d9e7bec1-fffb-e0c4-8659-ef3ce2c31280@collabora.com>
- <YmlYHNlcmNMfOeyy@phenom.ffwll.local>
- <8f932ab0-bb72-8fea-4078-dc59e9164bd4@collabora.com>
- <YnI3lE0TxLfZaQjE@phenom.ffwll.local>
- <01506516-ab2f-cb6e-7507-f2a3295efb59@collabora.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3z6nvLeGGyPc5qCTPHfhB8pduImZmC8hApcWr/wC4ME=;
+        b=V667uN1jgo+7QCOCYIwwu+DpMK0mWsoM6T50uZW82u+ffAxEe14+kIsFXNvLpDu7U7
+         t9tm8JPC/4M8WKohJR64n2K2HVf0+Ajg6+y2wjqAMP9IhLbEs0+M5orAxkn6oE7dhUPj
+         Sg2BH0j1wytbXMvV7zUiarVHuQlDIINyPxwJeJz0bZ/K9kDVypSFhj1bDAPSgx/6b788
+         rvzYLkbffHU9R25Os63NSN5Q4G9oNd60tm4fdzS7WgMm2ZnCDRm2svkjV9iIFi/jWQ1o
+         SQQC5mKVphkLWwSa6xhtharQ+tujne5WdeJ+XTEN9MDMII8Ve1kQNRuv5hl0LwE4UR3U
+         IeKA==
+X-Gm-Message-State: AOAM5310YunqT7wpsKqUIZ316RsDCKDMbCkDVPTPldC8oYpPKGseR/hJ
+        22H7uuIJ6ObfBE7eDqrrUzw6Ng==
+X-Google-Smtp-Source: ABdhPJx7GHIOru35sjPTls7HrrQOKJCX2U6B97Yb9PjvYl1AO0ggI+LLZhpfcLpEXN58JtiAngJjzw==
+X-Received: by 2002:a17:906:dc8f:b0:6f4:e6df:a48d with SMTP id cs15-20020a170906dc8f00b006f4e6dfa48dmr3489746ejc.206.1651738485458;
+        Thu, 05 May 2022 01:14:45 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jy16-20020a170907763000b006f3ef214e53sm448547ejc.185.2022.05.05.01.14.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 01:14:45 -0700 (PDT)
+Message-ID: <0ba5b88b-527a-9818-f85d-83a716a0d30a@linaro.org>
+Date:   Thu, 5 May 2022 10:14:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <01506516-ab2f-cb6e-7507-f2a3295efb59@collabora.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 2/2] dt-bindings: gpio: pca95xx: add entry for pca6408
+Content-Language: en-US
+To:     Justin Chen <justinpopo6@gmail.com>, linus.walleij@linaro.org,
+        brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, f.fainelli@gmail.com
+References: <1651703357-25154-1-git-send-email-justinpopo6@gmail.com>
+ <1651703357-25154-3-git-send-email-justinpopo6@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1651703357-25154-3-git-send-email-justinpopo6@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 06:56:09PM +0300, Dmitry Osipenko wrote:
-> On 5/4/22 11:21, Daniel Vetter wrote:
-> ...
-> >>> - Maybe also do what you suggest and keep a separate lock for this, but
-> >>>   the fundamental issue is that this doesn't really work - if you share
-> >>>   buffers both ways with two drivers using shmem helpers, then the
-> >>>   ordering of this vmap_count_mutex vs dma_resv_lock is inconsistent and
-> >>>   you can get some nice deadlocks. So not a great approach (and also the
-> >>>   reason why we really need to get everyone to move towards dma_resv_lock
-> >>>   as _the_ buffer object lock, since otherwise we'll never get a
-> >>>   consistent lock nesting hierarchy).
-> >>
-> >> The separate locks should work okay because it will be always the
-> >> exporter that takes the dma_resv_lock. But I agree that it's less ideal
-> >> than defining the new rules for dma-bufs since sometime you will take
-> >> the resv lock and sometime not, potentially hiding bugs related to lockings.
-> > 
-> > That's the issue, some importers need to take the dma_resv_lock for
-> > dma_buf_vmap too (e.g. to first nail the buffer in place when it's a
-> > dynamic memory manager). In practice it'll work as well as what we have
-> > currently, which is similarly inconsistent, except with per-driver locks
-> > instead of shared locks from shmem helpers or dma-buf, so less obvious
-> > that things are inconsistent.
-> > 
-> > So yeah if it's too messy maybe the approach is to have a separate lock
-> > for vmap for now, land things, and then fix up dma_buf_vmap in a follow up
-> > series.
+On 05/05/2022 00:29, Justin Chen wrote:
+> The NXP PCA5608 is the 8-bit version of PCA5616.
 > 
-> The amdgpu driver was the fist who introduced the concept of movable
-> memory for dma-bufs. Now we want to support it for DRM SHMEM too. For
-> both amdgpu ttm and shmem drivers we will want to hold the reservation
-> lock when we're touching moveable buffers. The current way of denoting
-> that dma-buf is movable is to implement the pin/unpin callbacks of the
-> dma-buf ops, should be doable for shmem.
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
-Hm that sounds like a bridge too far? I don't think we want to start
-adding moveable dma-bufs for shmem, thus far at least no one asked for
-that. Goal here is just to streamline the locking a bit and align across
-all the different ways of doing buffers in drm.
 
-Or do you mean something else and I'm just completely lost?
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> A day ago I found that mapping of imported dma-bufs is broken at least
-> for the Tegra DRM driver (and likely for others too) because driver
-> doesn't assume that anyone will try to mmap imported buffer and just
-> doesn't handle this case at all, so we're getting a hard lockup on
-> touching mapped memory because we're mapping something else than the
-> dma-buf.
 
-Huh that sounds bad, how does this happen? Pretty much all pieces of
-dma-buf (cpu vmap, userspace mmap, heck even dma_buf_attach) are optional
-or at least can fail for various reasons. So exporters not providing mmap
-support is fine, but importers then dying is not.
-
-> My plan is to move the dma-buf management code to the level of DRM core
-> and make it aware of the reservation locks for the dynamic dma-bufs.
-> This way we will get the proper locking for dma-bufs and fix mapping of
-> imported dma-bufs for Tegra and other drivers.
-
-So maybe we're completely talking past each another, or coffee is not
-working here on my end, but I've no idea what you mean.
-
-We do have some helpers for taking care of the dma_resv_lock dance, and
-Christian König has an rfc patch set to maybe unify this further. But that
-should be fairly orthogonal to reworking shmem (it might help a bit with
-reworking shmem though).
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Best regards,
+Krzysztof
