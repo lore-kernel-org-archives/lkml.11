@@ -2,92 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380683AbiEEPbc (ORCPT
+        id S1381360AbiEEPcB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
+        Thu, 5 May 2022 11:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234496AbiEEPba (ORCPT
+        with ESMTP id S234496AbiEEPb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:31:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C039B50B1E;
-        Thu,  5 May 2022 08:27:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 5 May 2022 11:31:57 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D11015BE7B
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 08:28:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651764496;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z8QO9rJ6Ts0Rv2clyS7GURk3RsnaSaH+6/9cSSyBhyU=;
+        b=FFjXZF5MP++woieIEOoJ6d9SrfLRk06r3a2mE0FeaxbmQS5VPt3ZfK6Jh4Ql/ABBvSAehi
+        XynA/4XeLi6OOfczCsFNX2Qxe8bZjal7fzaeXIzW9apfBGzzZH4zwd7dTwUKVlTS8grJob
+        XZxGhe+gcR1te3o0I4dQn6MxGGbqzlI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-561-xGvgZpQGM86kqzNUweA2yQ-1; Thu, 05 May 2022 11:28:13 -0400
+X-MC-Unique: xGvgZpQGM86kqzNUweA2yQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A68761D0F;
-        Thu,  5 May 2022 15:27:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE8EC385A8;
-        Thu,  5 May 2022 15:27:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651764469;
-        bh=mVIRt4yoiSxRUkECE7FwEEKVUQMrty6/i5Bfy9avcZw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IqTfK1DOBA9q7un4+7ST/1fhCQ5C0Fsqk1K9f4pSfp36DSjneyNQDm9bDfyD0H8rs
-         UMIOn/Bl9GUzZ4Ust3lh4XKsbaCwlPB8CKP+d+Gi7p/hUMyVNucjoV/WIUnRULQlMA
-         9m2Pv2LlbxiruPNjFUNKcuN+MyYSaqnLbqBoczTRDgTmFCkiWusCOek8yWtPRuEjE8
-         w4zruAgWJAoq9nWgvDdXMZqpi3givElrdGT4+BwtSzalG8poEXzELnuSpqs8/+Z6gh
-         g6uE6D5pHuqLH+Z5v329/qucwK4zPczzpRGh1ETfAhDJqrwssKDjFgFXcomwbzAd/z
-         mqVzUvHmWKO8A==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>, Michael Walle <michael@walle.cc>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] i2c: at91: Initialize dma_buf in at91_twi_xfer()
-Date:   Thu,  5 May 2022 08:27:38 -0700
-Message-Id: <20220505152738.1440249-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.36.0
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3ADD885A5A8;
+        Thu,  5 May 2022 15:28:12 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.3])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 1A398463EDE;
+        Thu,  5 May 2022 15:28:06 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Thu,  5 May 2022 17:28:11 +0200 (CEST)
+Date:   Thu, 5 May 2022 17:28:03 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v3 08/11] ptrace: Admit ptrace_stop can generate spuriuos
+ SIGTRAPs
+Message-ID: <20220505152801.GC13929@redhat.com>
+References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+ <20220504224058.476193-8-ebiederm@xmission.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504224058.476193-8-ebiederm@xmission.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+On 05/04, Eric W. Biederman wrote:
+>
+> -static int ptrace_stop(int exit_code, int why, int clear_code,
+> -			unsigned long message, kernel_siginfo_t *info)
+> +static int ptrace_stop(int exit_code, int why, unsigned long message,
+> +		       kernel_siginfo_t *info)
 
-  drivers/i2c/busses/i2c-at91-master.c:707:6: warning: variable 'dma_buf' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-          if (dev->use_dma) {
-              ^~~~~~~~~~~~
-  drivers/i2c/busses/i2c-at91-master.c:717:27: note: uninitialized use occurs here
-          i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
-                                   ^~~~~~~
+Forgot to mention... but in general I like this change.
 
-Initialize dma_buf to NULL, as i2c_put_dma_safe_msg_buf() is a no-op
-when the first argument is NULL, which will work for the !dev->use_dma
-case.
+In particular, I like the fact it kills the ugly "int clear_code" arg
+which looks as if it solves the problems with the exiting tracer, but
+actually it doesn't. And we do not really care, imo.
 
-Fixes: 03fbb903c8bf ("i2c: at91: use dma safe buffers")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1629
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/i2c/busses/i2c-at91-master.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
-index 5eca3b3bb609..c0c35785a0dc 100644
---- a/drivers/i2c/busses/i2c-at91-master.c
-+++ b/drivers/i2c/busses/i2c-at91-master.c
-@@ -656,7 +656,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	unsigned int_addr_flag = 0;
- 	struct i2c_msg *m_start = msg;
- 	bool is_read;
--	u8 *dma_buf;
-+	u8 *dma_buf = NULL;
- 
- 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
- 
-
-base-commit: a181b8d187319bf265a2019ddde856a3d2f107a6
--- 
-2.36.0
+Oleg.
 
