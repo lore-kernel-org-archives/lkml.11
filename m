@@ -2,105 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A8FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF081C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 19:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385044AbiEETeX (ORCPT
+        id S1385067AbiEETey (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 15:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        Thu, 5 May 2022 15:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351650AbiEETeV (ORCPT
+        with ESMTP id S1351650AbiEETel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 15:34:21 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D6F5A178
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 12:30:40 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id n8so5339158plh.1
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 12:30:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gLvYPio/y1Rsy8ZWzpMgmaTLG4G8yUQ5M+BgkCxtwtA=;
-        b=XQIzSd9nao1kbun84GbUFcH2P6yyzDFG+N0A2uCHmVBYC8oODM70pXR7xtStMpfyc5
-         mtLLHkk0xuZbqCU7Z5wfpn1V3VrJczJhfpGwyYX1NsIjuxhnx3cpVEjvnU072DQm7TsC
-         gFykdkxKL30lcwxhTxXlO00viowVHb31o4Z2Loba1USEpkQpfNxxSXoUolf1lg7eK28D
-         gU4oWX58uS9Uc4wMyy34HH3NIIDZng79hu94xSbuNXAA5Q+YGYbWkVR7CXkiOn3GfgBN
-         5WSfh48VFtwZ0Z7T/OV4fH9LnOoWTy+y8fK8buNSTDzi/szVTBJSmmRLPwFRFH2lKvwh
-         WMhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gLvYPio/y1Rsy8ZWzpMgmaTLG4G8yUQ5M+BgkCxtwtA=;
-        b=gYI0dlKMrzv5zYtBefgxBhZFJPMBEav0F/JdKAFOylliqZDxHE6FAbeztEuNwPM8Gl
-         ElOdBzwjqY91Z4pDzPUqW2AFsEJHQEOU4zxL22lb8GsrX/Jz+VnbSwJK7FnTLz0LFfH9
-         RGTMJjH0cyRBOX0LXyOYBq4zfCVRy+nXdJbncrNiA30iGpRQoNUToYfQC78F9sH7xb2Z
-         wBTpUWsFIJsEH4fPIQBkYKY4FOgwQ2ZncJh74fkZnONR7F5nip4rdP0ILKdLzknlk/3r
-         hARTRm0O664WSG9VO2NPa49F3I0hQf61twFihBqZssMBSperJE8s3tenjZu3jpicI+A6
-         twbw==
-X-Gm-Message-State: AOAM531IxgpzZVRYcU3SC9fEfeV9QXWin7GG4igbYx8B2GI7zvujcXzE
-        yFPlUT/641/vfZ1NMEN41q1lcgXoKzyGIEUtIUY2uA==
-X-Google-Smtp-Source: ABdhPJyXcVPUUtmRGPX2KwjdTIb5ADyqBAf+SHZRA/wRfxH1x/C1g1gXItwmdL+70dkvEIL2og+nTKc+ICshlHYRZ8k=
-X-Received: by 2002:a17:902:f682:b0:15e:951b:8091 with SMTP id
- l2-20020a170902f68200b0015e951b8091mr25548653plg.106.1651779040120; Thu, 05
- May 2022 12:30:40 -0700 (PDT)
+        Thu, 5 May 2022 15:34:41 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD1A55492;
+        Thu,  5 May 2022 12:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=26sf2Bz2SDgQmdCQw3Y4ZTnImgJ2MyGCiyio6ZL3q3Y=; b=OX97Z/D1CJSI6hriVTxC2kAnOw
+        1KITEk45cAtwCpY9rkRCDUh3KDg2O2YzMgXcmuPrqXaafenIhWWC1+LyxgtF/580Mzq9ZdOBGqQII
+        szuZz7L+gnBGPa0DhyrfUrxKFOKAOdS+/7tX8dF3YT6RRRi5n+Pvq9GzAiarMSPSGIbrEUOikWcQ4
+        luIwkR5QmpMMR3ULcRXOtddO+8na/Jrhq18XXAepQbZ7X+3+2omWFwgyxPBez0WA9LEkMMiNJ8gOK
+        /vnX5br4i70krbeAId+z+Wo/kxx7sPLDtH+XBAxzqCS0vo9z0RVsXdy6BbySPaaEQO2JnHI7/cIaw
+        LlqXpVFA==;
+Received: from [179.113.53.197] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nmhB9-0009Pt-2n; Thu, 05 May 2022 21:30:24 +0200
+Message-ID: <95fd6c2b-8a80-7161-953c-0660c9cc046f@igalia.com>
+Date:   Thu, 5 May 2022 16:28:55 -0300
 MIME-Version: 1.0
-References: <20220427160016.144237-1-hannes@cmpxchg.org> <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com> <YmmznQ8AO5RLxicA@cmpxchg.org>
- <Ymm3WpvJWby4gaD/@cmpxchg.org> <CALvZod5LBi5V6q1uHUTSNnLz64HbD499a+OZvdYsUcmcWSt8Jg@mail.gmail.com>
- <YmqmWPrIagEEceN1@cmpxchg.org> <CALvZod7wOyXpA3pycM2dav9_F9sW5ezC84or-75u8GdQyu30nw@mail.gmail.com>
- <Ymqv25+8IX2wqKzu@cmpxchg.org>
-In-Reply-To: <Ymqv25+8IX2wqKzu@cmpxchg.org>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 5 May 2022 12:30:29 -0700
-Message-ID: <CALvZod7_5CNjMqEo_SseW7VoVW9gRC8ZoVy=f9SAOL4+-1jR4A@mail.gmail.com>
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-To:     Johannes Weiner <hannes@cmpxchg.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Yuanchu Xie <yuanchu@google.com>
-Cc:     Minchan Kim <minchan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
+Content-Language: en-US
+To:     Hari Bathini <hbathini@linux.ibm.com>, akpm@linux-foundation.org,
+        bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-9-gpiccoli@igalia.com>
+ <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Yosry & Yuanchu
+On 05/05/2022 15:55, Hari Bathini wrote:
+> [...] 
+> 
+> The change looks good. I have tested it on an LPAR (ppc64).
+> 
+> Reviewed-by: Hari Bathini <hbathini@linux.ibm.com>
 
-On Thu, Apr 28, 2022 at 8:17 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
->
-[...]
-> >
-> > Yes, we have some modifications to zswap to make it work without any
-> > backing real swap.
->
-> Not sure if you can share them, but I would be interested in those
-> changes. We have real backing swap, but because of the way swap
-> entries are allocated, pages stored in zswap will consume physical
-> disk slots. So on top of regular swap, you need to provision disk
-> space for zswap as well, which is unfortunate.
->
-> What could be useful is a separate swap entry address space that maps
-> zswap slots and disk slots alike. This would fix the above problem. It
-> would have the added benefit of making swapoff much simpler and faster
-> too, as it doesn't need to chase down page tables to free disk slots.
->
-
-I think we can share the code. Adding Yosry & Yuanchu who are
-currently maintaining that piece of code.
-
-Though that code might not be in an upstreamable state. At the high
-level, it introduces a new type of swap (SWP_GHOST) which underlying
-is a truncated file, so no real disk space is needed. The zswap always
-accepts the page, so the kernel never tries to go to the underlying
-swapfile (reality is a bit more complicated due to the presence of
-incompressible memory and no real disk present on the system).
+Thanks a bunch Hari, much appreciated!
