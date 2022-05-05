@@ -2,147 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB22BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 220B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 07:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345403AbiEEHmI (ORCPT
+        id S1345426AbiEEHoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 03:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
+        Thu, 5 May 2022 03:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235142AbiEEHmF (ORCPT
+        with ESMTP id S235142AbiEEHoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 03:42:05 -0400
-X-Greylist: delayed 194 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 00:38:26 PDT
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 595DB488AC
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 00:38:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651736305;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b9rpry9zAS0NImcSGkX84W35fGXZlxRLYAukKDROuGs=;
-        b=hcnos0Zfz4dtsnjmOwXDcj4tT9XdCnguKVeIE6jymBjahHNoMqojaR+cOTYquet7kuhvhj
-        b6lNYjWEVWjTbCG7LkkN7zR9pZu/Vyr5ih6qy8+QcRVQYovX5YzxzbMxkIzkklPhR/sZmD
-        x4Kt6WjF6WrdWyZM0KLkCt/+A1MD49A=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-141-ZPodbWEcM76ip_3clU7xFQ-1; Thu, 05 May 2022 03:38:20 -0400
-X-MC-Unique: ZPodbWEcM76ip_3clU7xFQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 5 May 2022 03:44:13 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14D015FEE;
+        Thu,  5 May 2022 00:40:29 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5B0A3185A79C;
-        Thu,  5 May 2022 07:38:20 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 39E1540CF8FE;
-        Thu,  5 May 2022 07:38:18 +0000 (UTC)
-Message-ID: <a323749a15c76c32bb7e94a7f65b25de122c4065.camel@redhat.com>
-Subject: Re: [PATCH v3 03/14] KVM: SVM: Detect X2APIC virtualization
- (x2AVIC) support
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Thu, 05 May 2022 10:38:17 +0300
-In-Reply-To: <3af75c05-40e9-2371-b5a9-c702853a974e@amd.com>
-References: <20220504073128.12031-1-suravee.suthikulpanit@amd.com>
-         <20220504073128.12031-4-suravee.suthikulpanit@amd.com>
-         <a883ff438d6202f2dc0458dc4d7c1ab3688f5db8.camel@redhat.com>
-         <3af75c05-40e9-2371-b5a9-c702853a974e@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kv5G318bNz4xLb;
+        Thu,  5 May 2022 17:40:27 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1651736427;
+        bh=IdQFe9+XKU10DJC7a/VpNCylBdCaz9iU1nuEjSmC5Yc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LjRnWkLZusSAOi3M4N0PGM003dn9YbykceA1nNRTNTpyKvNVxB6hhXBSFJiafMIs/
+         xPV5xxgdm2+WiKKBcy2z5vntSfs/kOGh2etYdTvZ9BwYPZgg0jJtY7kQ6lBo1iITtX
+         LeGBrFQ/CycbEwyPYsNnUnDsftlo98Y2UCRuShYBBDLrtemd87J6DuYdsqTegV7QlN
+         2w7NMYmoQr9w6r3evvzIxf/zZNUq2E9LYFsi3MBbwAYzUQ/JxebCqx8g79yzXmsbnI
+         FYiaHmG8ZKdOTHhgpUeDaynZWq+K/euGRlluWMpWhzH3vCqAEfq6RrMqF4rr+53CVt
+         TM/ih/8WUiifg==
+Date:   Thu, 5 May 2022 17:40:25 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the kspp tree
+Message-ID: <20220505174025.07cc9967@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: multipart/signed; boundary="Sig_/M5RX/1U.XNv/liR8=s_9veL";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-05 at 11:07 +0700, Suravee Suthikulpanit wrote:
-> Maxim,
-> 
-> On 5/4/22 7:12 PM, Maxim Levitsky wrote:
-> > > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> > > index a8f514212b87..fc3ba6071482 100644
-> > > --- a/arch/x86/kvm/svm/avic.c
-> > > +++ b/arch/x86/kvm/svm/avic.c
-> > > @@ -40,6 +40,15 @@
-> > >   #define AVIC_GATAG_TO_VMID(x)		((x >> AVIC_VCPU_ID_BITS) & AVIC_VM_ID_MASK)
-> > >   #define AVIC_GATAG_TO_VCPUID(x)		(x & AVIC_VCPU_ID_MASK)
-> > >   
-> > > +enum avic_modes {
-> > > +	AVIC_MODE_NONE = 0,
-> > > +	AVIC_MODE_X1,
-> > > +	AVIC_MODE_X2,
-> > > +};
-> > > +
-> > > +static bool force_avic;
-> > > +module_param_unsafe(force_avic, bool, 0444);
-> > > +
-> > >   /* Note:
-> > >    * This hash table is used to map VM_ID to a struct kvm_svm,
-> > >    * when handling AMD IOMMU GALOG notification to schedule in
-> > > @@ -50,6 +59,7 @@ static DEFINE_HASHTABLE(svm_vm_data_hash, SVM_VM_DATA_HASH_BITS);
-> > >   static u32 next_vm_id = 0;
-> > >   static bool next_vm_id_wrapped = 0;
-> > >   static DEFINE_SPINLOCK(svm_vm_data_hash_lock);
-> > > +static enum avic_modes avic_mode;
-> > >   
-> > >   /*
-> > >    * This is a wrapper of struct amd_iommu_ir_data.
-> > > @@ -1077,3 +1087,33 @@ void avic_vcpu_unblocking(struct kvm_vcpu *vcpu)
-> > >   
-> > >   	avic_vcpu_load(vcpu);
-> > >   }
-> > > +
-> > > +/*
-> > > + * Note:
-> > > + * - The module param avic enable both xAPIC and x2APIC mode.
-> > > + * - Hypervisor can support both xAVIC and x2AVIC in the same guest.
-> > > + * - The mode can be switched at run-time.
-> > > + */
-> > > +bool avic_hardware_setup(struct kvm_x86_ops *x86_ops)
-> > > +{
-> > > +	if (!npt_enabled)
-> > > +		return false;
-> > > +
-> > > +	if (boot_cpu_has(X86_FEATURE_AVIC)) {
-> > > +		avic_mode = AVIC_MODE_X1;
-> > > +		pr_info("AVIC enabled\n");
-> > > +	} else if (force_avic) {
-> > > +		pr_warn("AVIC is not supported in CPUID but force enabled");
-> > > +		pr_warn("Your system might crash and burn");
-> > I think in this case avic_mode should also be set to AVIC_MODE_X1
-> > (Hopefully this won't be needed for systems that have x2avic enabled)
-> 
-> You are right. My appology :(
-> 
-> Actually, x2AVIC depends on both CPUID bits (i.e. X86_FEATURE_AVIC and X86_FEATURE_X2AVIC).
-> If the force_avic option is only applicable to only the X86_FEATURE_AVIC bit, we would
-> need to check for the following condition before enabling x2AVIC support in the driver:
-> 
->    if ((X86_FEATURE_AVIC | avic_force) & X86_FEATURE_X2AVIC)
-> 	avic_mode = AVIC_MODE_X2
+--Sig_/M5RX/1U.XNv/liR8=s_9veL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Let it be just for AVIC_MODE_X1, that is
+Hi all,
 
-else if (force_avic) {
-	pr_warn("AVIC is not supported in CPUID but force enabled");
-	pr_warn("Your system might crash and burn");
-	avic_mode = AVIC_MODE_X1;
+After merging the kspp tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-Best regards,
-	Maxim Levitsky
+drivers/misc/lkdtm/stackleak.c: In function 'check_stackleak_irqoff':
+drivers/misc/lkdtm/stackleak.c:30:46: error: implicit declaration of functi=
+on 'stackleak_task_low_bound' [-Werror=3Dimplicit-function-declaration]
+   30 |         const unsigned long task_stack_low =3D stackleak_task_low_b=
+ound(current);
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~=
+~~
+drivers/misc/lkdtm/stackleak.c:31:47: error: implicit declaration of functi=
+on 'stackleak_task_high_bound'; did you mean 'stackleak_task_init'? [-Werro=
+r=3Dimplicit-function-declaration]
+   31 |         const unsigned long task_stack_high =3D stackleak_task_high=
+_bound(current);
+      |                                               ^~~~~~~~~~~~~~~~~~~~~=
+~~~~
+      |                                               stackleak_task_init
+drivers/misc/lkdtm/stackleak.c:33:50: error: 'struct task_struct' has no me=
+mber named 'lowest_stack'; did you mean 'ret_stack'?
+   33 |         const unsigned long lowest_sp =3D current->lowest_stack;
+      |                                                  ^~~~~~~~~~~~
+      |                                                  ret_stack
+drivers/misc/lkdtm/stackleak.c:74:23: error: implicit declaration of functi=
+on 'stackleak_find_top_of_poison' [-Werror=3Dimplicit-function-declaration]
+   74 |         poison_high =3D stackleak_find_top_of_poison(task_stack_low=
+, untracked_high);
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-> 
-> Regards,
-> Suravee
-> 
-> 
+Caused by commit
 
+  f4cfacd92972 ("lkdtm/stackleak: rework boundary management")
 
+or maybe commit
+
+  cbe7edb47d3c ("stackleak: rework stack low bound handling")
+
+CONFIG_GCC_PLUGIN_STACKLEAK is not set for this build.
+
+I have used the kspp tree from next-20220504 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/M5RX/1U.XNv/liR8=s_9veL
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJzf2kACgkQAVBC80lX
+0GxSlAf/QEeNiidSGw2AWgcvsbeeicmb9sLLdgYFJ5Fe0ox7IJcemW4OdTpLq/QX
+c7tMvFr1yosmrfZC/AkeKqCL4R2i2QqQVW8QDA7dw83ZFfXBn5GwrT4Ri9HLVc2n
+OkQtmV5Tjiau0UQFsBNgR0EZYnLf8x6djlbMQaT74jbNm8k6gVZ+7AtX55MkfBlu
+QFz+9M7Zv+fdEJDH451Yr33E0bqyMv8/R7fJwUxrG80wBU4AyeJYJyHJnTqvGkNq
+HECT/rF0fMs8JG1HOZRZBGOvcOYp2tSnHWfQqKbys7mqAIifgkm1r04OJxKSnZHQ
+5xYcHLkRkOKQThe48kctcjvIjOnNQA==
+=G9NT
+-----END PGP SIGNATURE-----
+
+--Sig_/M5RX/1U.XNv/liR8=s_9veL--
