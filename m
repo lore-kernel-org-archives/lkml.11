@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02859C3527A
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A792C4707F
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385322AbiEESaV (ORCPT
+        id S1385863AbiEESax (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37416 "EHLO
+        Thu, 5 May 2022 14:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383407AbiEESVE (ORCPT
+        with ESMTP id S1383439AbiEESUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:21:04 -0400
+        Thu, 5 May 2022 14:20:10 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4815DBC7;
-        Thu,  5 May 2022 11:16:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607B95DA65;
+        Thu,  5 May 2022 11:16:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774588; x=1683310588;
+  t=1651774575; x=1683310575;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IbG+j+ZdWAUtQg/ZqHolbv+gUeqsU/yo5UGAxS0cGAs=;
-  b=HcgT1r+JzW4jH5e/nLM3+h+MqDiXjMkDJgh+eh+KavEO10xy0whbgYxV
-   e8DN4OcyzV2YI9Xp37nf+3oaT0d9KqDfCAgsh8abjpCFcl7oOMzD87XvP
-   0R/SQ7PEH2dC0Fc0B6IDoJ6sP9U6pYuoS6FX2Emg2YHKAxHS7jS493B+f
-   kTr/DsYsSjQshs/NlYiuieLnlSOjc1WKOEMIDHtAmuwJjTuB4czYchFxB
-   N9Kz5VkGoMtfEIEgLemrPOFbGoLbXcf+NjuLH9P/fSf2AkJXnGdvjUwQc
-   Vw4T5D9fREm+rXtkgxOdflC3h/tjulH6AU9zQI/jxHxBQkO9TlWSkA/f1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354897"
+  bh=pGVWdXymcfkAJa+MRlBkaFoB6YnKT+c72nrlPC0H22U=;
+  b=P4370nbxEdFCJs0kbOzRoU6bxCzD4APy5tE4x/WWv9cv/wQ+5jkXNSQ7
+   QrHdqiDZYUOYT4zq5BmraJVpH4xCANsLhMWz+AjmRsmleQgj5YzDXXfMT
+   oVnVG3wlnaWP2IVFXFYIMzuYuD8OMbm9OB3aWGm8nfKliIRxNeQTJjwpU
+   6ERFaC5EalJTQiFT887xSp0OWjhXxBTBDFQ98gYIZX3nsUdVJb2RH4pRD
+   cMzGZE5jc3w6ZJgYUhB2AvMgKkaLlxMd2sTHO6C0XgI3LpV2+u0pKnh2w
+   btbrU/BYfQ4UwXmfikjmg6rOBSGGeehfhX2VQWhWh2FGz3iz7xILF3NJw
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268354867"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="268354897"
+   d="scan'208";a="268354867"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:56 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:50 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083503"
+   d="scan'208";a="665083390"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:55 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:50 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 100/104] KVM: TDX: Silently ignore INIT/SIPI
-Date:   Thu,  5 May 2022 11:15:34 -0700
-Message-Id: <e83b335c8a0b02a9c30bea63291790223461ca70.1651774251.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 069/104] KVM: TDX: restore user ret MSRs
+Date:   Thu,  5 May 2022 11:15:03 -0700
+Message-Id: <8c065b3e16a754b80e7af5734330040295d657db.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,141 +58,83 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-The TDX module API doesn't provide API for VMM to inject INIT IPI and SIPI.
-Instead it defines the different protocols to boot application processors.
-Ignore INIT and SIPI events for the TDX guest.
-
-There are two options. 1) (silently) ignore INIT/SIPI request or 2) return
-error to guest TDs somehow.  Given that TDX guest is paravirtualized to
-boot AP, the option 1 is chosen for simplicity.
+Several user ret MSRs are clobbered on TD exit.  Restore those values on
+TD exit and before returning to ring 3.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm-x86-ops.h |  1 +
- arch/x86/include/asm/kvm_host.h    |  2 ++
- arch/x86/kvm/lapic.c               | 16 +++++++++++-----
- arch/x86/kvm/svm/svm.c             |  1 +
- arch/x86/kvm/vmx/main.c            | 22 +++++++++++++++++++++-
- 5 files changed, 36 insertions(+), 6 deletions(-)
+ arch/x86/kvm/vmx/tdx.c | 43 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index ec98b3f734a2..ff658969cfff 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -136,6 +136,7 @@ KVM_X86_OP_OPTIONAL(migrate_timers)
- KVM_X86_OP(msr_filter_changed)
- KVM_X86_OP(complete_emulated_msr)
- KVM_X86_OP(vcpu_deliver_sipi_vector)
-+KVM_X86_OP(vcpu_deliver_init)
- KVM_X86_OP_OPTIONAL_RET0(vcpu_get_apicv_inhibit_reasons);
- KVM_X86_OP(check_processor_compatibility)
- 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index f67fe33e6661..94736f107628 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1553,6 +1553,7 @@ struct kvm_x86_ops {
- 	int (*complete_emulated_msr)(struct kvm_vcpu *vcpu, int err);
- 
- 	void (*vcpu_deliver_sipi_vector)(struct kvm_vcpu *vcpu, u8 vector);
-+	void (*vcpu_deliver_init)(struct kvm_vcpu *vcpu);
- 
- 	/*
- 	 * Returns vCPU specific APICv inhibit reasons
-@@ -1777,6 +1778,7 @@ int kvm_emulate_wbinvd(struct kvm_vcpu *vcpu);
- void kvm_get_segment(struct kvm_vcpu *vcpu, struct kvm_segment *var, int seg);
- int kvm_load_segment_descriptor(struct kvm_vcpu *vcpu, u16 selector, int seg);
- void kvm_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector);
-+void kvm_vcpu_deliver_init(struct kvm_vcpu *vcpu);
- 
- int kvm_task_switch(struct kvm_vcpu *vcpu, u16 tss_selector, int idt_index,
- 		    int reason, bool has_error_code, u32 error_code);
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index bc329c4488a9..db5ff56538f7 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2976,6 +2976,16 @@ int kvm_lapic_set_pv_eoi(struct kvm_vcpu *vcpu, u64 data, unsigned long len)
- 	return 0;
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index a54ee22b6c64..80fe76214b3d 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -591,6 +591,28 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	vcpu->kvm->vm_bugged = true;
  }
  
-+void kvm_vcpu_deliver_init(struct kvm_vcpu *vcpu)
-+{
-+	kvm_vcpu_reset(vcpu, true);
-+	if (kvm_vcpu_is_bsp(vcpu))
-+		vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
-+	else
-+		vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
-+}
-+EXPORT_SYMBOL_GPL(kvm_vcpu_deliver_init);
++struct tdx_uret_msr {
++	u32 msr;
++	unsigned int slot;
++	u64 defval;
++};
 +
- int kvm_apic_accept_events(struct kvm_vcpu *vcpu)
++static struct tdx_uret_msr tdx_uret_msrs[] = {
++	{.msr = MSR_SYSCALL_MASK,},
++	{.msr = MSR_STAR,},
++	{.msr = MSR_LSTAR,},
++	{.msr = MSR_TSC_AUX,},
++};
++
++static void tdx_user_return_update_cache(void)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(tdx_uret_msrs); i++)
++		kvm_user_return_update_cache(tdx_uret_msrs[i].slot,
++					     tdx_uret_msrs[i].defval);
++}
++
+ static void tdx_restore_host_xsave_state(struct kvm_vcpu *vcpu)
  {
- 	struct kvm_lapic *apic = vcpu->arch.apic;
-@@ -3023,11 +3033,7 @@ int kvm_apic_accept_events(struct kvm_vcpu *vcpu)
+ 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
+@@ -630,6 +652,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
  
- 	if (test_bit(KVM_APIC_INIT, &pe)) {
- 		clear_bit(KVM_APIC_INIT, &apic->pending_events);
--		kvm_vcpu_reset(vcpu, true);
--		if (kvm_vcpu_is_bsp(apic->vcpu))
--			vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
--		else
--			vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
-+		static_call(kvm_x86_vcpu_deliver_init)(vcpu);
- 	}
- 	if (test_bit(KVM_APIC_SIPI, &pe)) {
- 		clear_bit(KVM_APIC_SIPI, &apic->pending_events);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index ca2700020322..ee11a4537ddd 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4729,6 +4729,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.complete_emulated_msr = svm_complete_emulated_msr,
+ 	tdx_vcpu_enter_exit(vcpu, tdx);
  
- 	.vcpu_deliver_sipi_vector = svm_vcpu_deliver_sipi_vector,
-+	.vcpu_deliver_init = kvm_vcpu_deliver_init,
- 	.vcpu_get_apicv_inhibit_reasons = avic_vcpu_get_apicv_inhibit_reasons,
- };
++	tdx_user_return_update_cache();
+ 	tdx_restore_host_xsave_state(vcpu);
+ 	tdx->host_state_need_restore = true;
  
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index b8d0b875d8d9..d7cc85f81713 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -295,6 +295,25 @@ static void vt_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
- 	vmx_deliver_interrupt(apic, delivery_mode, trig_mode, vector);
- }
+@@ -1474,6 +1497,26 @@ int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
+ 	if (WARN_ON_ONCE(x86_ops->tlb_remote_flush))
+ 		return -EIO;
  
-+static void vt_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
-+{
-+	if (is_td_vcpu(vcpu))
-+		return;
-+
-+	kvm_vcpu_deliver_sipi_vector(vcpu, vector);
-+}
-+
-+static void vt_vcpu_deliver_init(struct kvm_vcpu *vcpu)
-+{
-+	if (is_td_vcpu(vcpu)) {
-+		/* TDX doesn't support INIT.  Ignore INIT event */
-+		vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
-+		return;
++	for (i = 0; i < ARRAY_SIZE(tdx_uret_msrs); i++) {
++		/*
++		 * Here it checks if MSRs (tdx_uret_msrs) can be saved/restored
++		 * before returning to user space.
++		 *
++		 * this_cpu_ptr(user_return_msrs)->registerd isn't checked
++		 * because the registration is done at vcpu runtime by
++		 * kvm_set_user_return_msr().
++		 * Here is setting up cpu feature before running vcpu,
++		 * registered is alreays false.
++		 */
++		tdx_uret_msrs[i].slot = kvm_find_user_return_msr(tdx_uret_msrs[i].msr);
++		if (tdx_uret_msrs[i].slot == -1) {
++			/* If any MSR isn't supported, it is a KVM bug */
++			pr_err("MSR %x isn't included by kvm_find_user_return_msr\n",
++				tdx_uret_msrs[i].msr);
++			return -EIO;
++		}
 +	}
 +
-+	kvm_vcpu_deliver_init(vcpu);
-+}
-+
- static void vt_flush_tlb_all(struct kvm_vcpu *vcpu)
- {
- 	if (is_td_vcpu(vcpu))
-@@ -618,7 +637,8 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
- 	.msr_filter_changed = vmx_msr_filter_changed,
- 	.complete_emulated_msr = kvm_complete_insn_gp,
- 
--	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
-+	.vcpu_deliver_sipi_vector = vt_vcpu_deliver_sipi_vector,
-+	.vcpu_deliver_init = vt_vcpu_deliver_init,
- 
- 	.dev_mem_enc_ioctl = tdx_dev_ioctl,
- 	.mem_enc_ioctl = vt_mem_enc_ioctl,
+ 	max_pkgs = topology_max_packages();
+ 	tdx_mng_key_config_lock = kcalloc(max_pkgs, sizeof(*tdx_mng_key_config_lock),
+ 				   GFP_KERNEL);
 -- 
 2.25.1
 
