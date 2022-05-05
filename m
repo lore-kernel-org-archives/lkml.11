@@ -2,158 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1757BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17712C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380203AbiEENzt (ORCPT
+        id S1380194AbiEENzy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
+        Thu, 5 May 2022 09:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380278AbiEENzG (ORCPT
+        with ESMTP id S1349716AbiEENxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:55:06 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFD057B3A
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:51:15 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220505135114euoutp01485591c70decf4eaf43d362549cb35b7~sOcNNTvWA3116431164euoutp013
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 13:51:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220505135114euoutp01485591c70decf4eaf43d362549cb35b7~sOcNNTvWA3116431164euoutp013
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651758674;
-        bh=2XMubIyolz4ZLTc9DAEWfdq40b874mLFKF8nTtEYP/I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E0wnMNi6o6VpqVWeerR6H0o4DPAoZnjnpW4WdtH8WgqR2fuYbJdIzXE0ZwbJBNffm
-         AXXjY54NSLxOLP/1YOBgGrwJKIh1NwvUSyN58Y6hV01sSLGE1TNmwlQsoJdt7g8kg/
-         egWp6SEMujttwatGdcFud817L/dI6iq0xrP2HgTY=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220505135112eucas1p1f5543b0d1b522e3f7a73821940c9d5ed~sOcLiaiOK1070010700eucas1p1J;
-        Thu,  5 May 2022 13:51:12 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id B3.0D.10009.056D3726; Thu,  5
-        May 2022 14:51:12 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220505135111eucas1p218b79f4b1e54bb3a24d2ec189ec445d1~sOcKzFSGC0041400414eucas1p29;
-        Thu,  5 May 2022 13:51:11 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220505135111eusmtrp131b2472d47e1950f5d2b04b938f6ee9e~sOcKyPmFR1310613106eusmtrp1j;
-        Thu,  5 May 2022 13:51:11 +0000 (GMT)
-X-AuditID: cbfec7f2-e7fff70000002719-52-6273d6501c0d
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id CD.6A.09404.F46D3726; Thu,  5
-        May 2022 14:51:11 +0100 (BST)
-Received: from localhost (unknown [106.210.248.170]) by eusmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220505135111eusmtip25f1e0efa88e3a562d73f5ea4b94fbc5f~sOcKeCtqw1486514865eusmtip2I;
-        Thu,  5 May 2022 13:51:11 +0000 (GMT)
-From:   Pankaj Raghav <p.raghav@samsung.com>
-To:     axboe@kernel.dk, hch@lst.de, damien.lemoal@opensource.wdc.com,
-        dsterba@suse.com, jaegeuk@kernel.org, bvanassche@acm.org,
-        hare@suse.de
-Cc:     jonathan.derrick@linux.dev, jiangbo.365@bytedance.com,
-        matias.bjorling@wdc.com, gost.dev@samsung.com, pankydev8@gmail.com,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 11/11] dm-zoned: ensure only power of 2 zone sizes are
- allowed
-Date:   Thu,  5 May 2022 15:47:11 +0200
-Message-Id: <20220505134710.132630-12-p.raghav@samsung.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220505134710.132630-1-p.raghav@samsung.com>
+        Thu, 5 May 2022 09:53:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D44583B4
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:49:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651758596; x=1683294596;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9l6WaRb6oGd/EhXo4amB8hePW2EHsrBipNj6o911jRY=;
+  b=mcxCgXKK5oaksOWrwHxKClSXQCKvlBFe53f2aMiG09LTrFstfuCmJHCa
+   WEOO6Uo3NMjLlx4D3kXRdzFTWs5Z3jXG5XbCkSGkyKp+M3dUTyyaxLU2N
+   Y14RWeTMqXzmoCTkNo0XiR8cZD38E7fGM6JsFDktJRv5HqDdQI49Gkkem
+   S+QjFRR6v/LfijlIS3yOd+70UE6+/Pb1rsYf2/xQQQo8MiteNIM0dU0db
+   3eO+nNbpYvxNuGQtsoaPKW1FPoS0e0M7bnfGP0sbVIsEWvDtFTaBYyQiu
+   +qJUr2B0ZlpEQA2JsJlI5SN1m1WrM7zqIB6H8Jp3AdvcfmC3YFQhd+GPG
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="157922937"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 May 2022 06:49:56 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 5 May 2022 06:49:56 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 5 May 2022 06:49:54 -0700
+Message-ID: <58edb055-5320-f377-8a2f-1252e1bbea84@microchip.com>
+Date:   Thu, 5 May 2022 15:49:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SbUxTZxjlve/t7W23NtdK5jsomHXMBIxFXOPupjFua7K7OTOZP7ZpjLZw
-        RTZaSSsbG2YpguVDtNXNbZbilA2krbNY+RDxo2syoK2Mhs7ZmoFA2mSSiWAxUt3YWi5m/jvP
-        Oed5z3OSl4SSGV4aWazdx+q0qhIZIcS7+uK/rtryu169+nv/87TT1wdpx4iJoL+ZjkP68eAQ
-        pK9MNfLowFwlRofdPRh9ufkYRtscv2B0xGmBdIN7Gqdt1eOQDl6yErTZ+ADSIXMU0LGWaj59
-        NhzF6YFb6RslTPC3Tcz8wFmC6bGM8JngYBnjstcRzGnDccj0hg0J/uBtHnPv6g2COdJhB4yz
-        4wbOXPBXMDFXJlPjPoRtEW8Tri9kS4o/ZXW5G3YJ9/QHA6D0a2G5L+gABtBK1gMBiSgFehhp
-        hfVASEqoNoCMXXUgKUioWYAcVQpOiAHU1jCFPdkIDLUCTjgDkC8wRnDDHYACN9v49YAkCSoH
-        Vdbxk3wqdQigwaq/8OQAKS+Gjs/d5yefWkptRe3nWxfycOol9M/syYUIEbUOtbkGCC5uOTox
-        /HDBL0jw1rpxHudZgrwnIngSw4SnqrNxoQSifAJkjd6F3LISjVmnAIeXosn+Dj6Hpcj/VQPO
-        4QoUDT1eXK4GyNTjJJIVUCLtyPWSJIRUNnJeyuXsryPbv8mbkw4xCt1dwp0gRse6voUcLUK1
-        RgnnlqGeeGQxFKHgAetiKIP+cHlxM3jB8lQZy1NlLP/nngLQDpaxZXpNEavP07KfyfUqjb5M
-        WyQv2KtxgcSv9M/3378ImiZn5B6AkcADEAllqaI3W0rVElGh6vMvWN3enbqyElbvAekkLlsm
-        KihuV0moItU+9hOWLWV1T1SMFKQZsOpC93i23daQ/hP2seO9zj9blsvfNu0abfFl7m5Se1kI
-        f6iQO38uqNr28oY3Tnf7j24SxF/k5/gnpBm9OyyvXM9dg10L7Xx2perdZ1Tnat95f2ssYr8w
-        Qa3o3b4eqOdoZbhGUR5qDl48E8lakzVkeS31g/KP8o3GRqj98fyd6QPbXf0bHx0uOlj+XPt8
-        YbplRpeS/0jPfDeckgJn80ynCtQec7M5T3rTMPrWuYyYR8EzN6XV3FsRGNXMbS6dGNl/q/bw
-        rNSWJR7O7Bz5ku+e3C9eB1avNLPxvpOa+ssPlGutps0fZjBSRbgbxV/tO5o2VJl/W5kt8O7u
-        HvtbeTU3ulaG6/eo8nKgTq/6D/qtA9EEBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrIIsWRmVeSWpSXmKPExsVy+t/xe7r+14qTDJZd0rBYf+oYs8Xqu/1s
-        FtM+/GS2+H32PLPF3nezWS0u/Ghksrh5YCeTxZ5Fk5gsVq4+ymTxZP0sZoueAx9YLFa2PGS2
-        uLxrDpvFhLavzBY3JjxltPi8tIXdYs3NpywWJ25JOwh5XL7i7fHvxBo2j52z7rJ7XD5b6rFp
-        VSebx8KGqcweu282AMVb77N6vN93lc2jb8sqRo/1W66yeGw+Xe3xeZOcR/uBbqYAvig9m6L8
-        0pJUhYz84hJbpWhDCyM9Q0sLPSMTSz1DY/NYKyNTJX07m5TUnMyy1CJ9uwS9jOOXLzAWTOGq
-        OHV5NWMD4zKOLkZODgkBE4kL55cxdjFycQgJLGWUmHL8FgtEQkLi9sImRghbWOLPtS42iKLn
-        jBJ313QBJTg42AS0JBo72UHiIgJTGSUubL/AAuIwC1xlkri4eT8zSLewQKDE/t6jYJNYBFQl
-        /n6ZxwRi8wpYS6zYdIINYoO8xMxL39lBbE6g+JzOh6wgtpCAlcTEh+/YIOoFJU7OfAJ2HTNQ
-        ffPW2cwTGAVmIUnNQpJawMi0ilEktbQ4Nz232EivODG3uDQvXS85P3cTIzCutx37uWUH48pX
-        H/UOMTJxMB5ilOBgVhLhdV5akCTEm5JYWZValB9fVJqTWnyI0RTo7onMUqLJ+cDEklcSb2hm
-        YGpoYmZpYGppZqwkzutZ0JEoJJCeWJKanZpakFoE08fEwSnVwCTeXTNtRfn7G4HrZKYESNgq
-        lfwIffq7W+bLx+q+Vw6+i1MnblA+mMJ9P/ey2tUD4a2z7v2WkFI7mNTHucvv7sXibbyNPYGc
-        mh6y+rbHxHi11s5we5TbF/Xv4mSd4ukq6m+uaWZl8MTrBudlLVGQ/75dhoVTxFnjpOPvxXsq
-        9T5yMnad7V407xJbu57ryisqK1h1tO8+uTNPaNPjx4wnpbQExWp2hjw6bOAWa6ylczy3Pi2k
-        gynVqGvqq6oFm/jkenwtDsp1RS9SVTgYfWjhvYPWXL5PAlwWn2dSErsdIDh1dnxd0oZ4mZ1V
-        PXVXTRTOBKn3TLr5rXVD9/ylBdPd5xfl7Pc96vtV0bJw2vsaJZbijERDLeai4kQAYjOhCXQD
-        AAA=
-X-CMS-MailID: 20220505135111eucas1p218b79f4b1e54bb3a24d2ec189ec445d1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220505135111eucas1p218b79f4b1e54bb3a24d2ec189ec445d1
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220505135111eucas1p218b79f4b1e54bb3a24d2ec189ec445d1
-References: <20220505134710.132630-1-p.raghav@samsung.com>
-        <CGME20220505135111eucas1p218b79f4b1e54bb3a24d2ec189ec445d1@eucas1p2.samsung.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/3] ARM: configs: at91: Remove MTD_BLOCK and use
+ MTD_UBI_BLOCK for read only block FS
+Content-Language: en-US
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
+CC:     <codrin.ciubotariu@microchip.com>, <eugen.hristev@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220420134740.193563-1-tudor.ambarus@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220420134740.193563-1-tudor.ambarus@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luis Chamberlain <mcgrof@kernel.org>
+On 20/04/2022 at 15:47, Tudor Ambarus wrote:
+> Using mtdblock on raw flashes is generally a bad idea as it lacks
+> wear-leveling, bad block handling or power-cut management.
+> What happens when you use mtdblock and you change any sector of your
+> mtdblockX device, is that it reads the whole corresponding eraseblock into
+> the memory, erases the eraseblock, changes the sector in RAM, and writes
+> the whole eraseblock back. If you have a power failure when the eraseblock
+> is being erased, you lose all the block device sectors in it. The flash
+> will likely decay soon because the eraseblocks will wear out.
+> 
+> Remove this archaic tool as its use case should rather be only for debug
+> purposes. This means that write-capable block file systems like ext2,
+> ext3, FAT, etc. will no longer be addressed with at91 defconfigs. For
+> read only block filesystems like SquashFS, use MTD_UBI_BLOCK instead and
+> benefit of UBI's bit-flip handling and wear-levelling.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-Today dm-zoned relies on the assumption that you have a zone size
-with a power of 2. Even though the block layer today enforces this
-requirement, these devices do exist and so provide a stop-gap measure
-to ensure these devices cannot be used by mistake
+For the whole series:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
----
- drivers/md/dm-zone.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+and queued in at91-defconfig for 5.19.
 
-diff --git a/drivers/md/dm-zone.c b/drivers/md/dm-zone.c
-index 3e7b1fe15..27dc4ddf2 100644
---- a/drivers/md/dm-zone.c
-+++ b/drivers/md/dm-zone.c
-@@ -231,6 +231,18 @@ static int dm_revalidate_zones(struct mapped_device *md, struct dm_table *t)
- 	struct request_queue *q = md->queue;
- 	unsigned int noio_flag;
- 	int ret;
-+	struct block_device *bdev = md->disk->part0;
-+	sector_t zone_sectors;
-+	char bname[BDEVNAME_SIZE];
-+
-+	zone_sectors = bdev_zone_sectors(bdev);
-+
-+	if (!is_power_of_2(zone_sectors)) {
-+		DMWARN("%s: %s only power of two zone size supported\n",
-+		       dm_device_name(md),
-+		       bdevname(bdev, bname));
-+		return 1;
-+	}
- 
- 	/*
- 	 * Check if something changed. If yes, cleanup the current resources
+Best regards,
+   Nicolas
+
+> ---
+>   arch/arm/configs/at91_dt_defconfig | 2 +-
+>   arch/arm/configs/sama5_defconfig   | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/configs/at91_dt_defconfig b/arch/arm/configs/at91_dt_defconfig
+> index 549d01be0b47..cf79510631ea 100644
+> --- a/arch/arm/configs/at91_dt_defconfig
+> +++ b/arch/arm/configs/at91_dt_defconfig
+> @@ -50,13 +50,13 @@ CONFIG_DEVTMPFS_MOUNT=y
+>   CONFIG_MTD=y
+>   CONFIG_MTD_TESTS=m
+>   CONFIG_MTD_CMDLINE_PARTS=y
+> -CONFIG_MTD_BLOCK=y
+>   CONFIG_MTD_DATAFLASH=y
+>   CONFIG_MTD_RAW_NAND=y
+>   CONFIG_MTD_NAND_ATMEL=y
+>   CONFIG_MTD_SPI_NOR=y
+>   CONFIG_MTD_UBI=y
+>   CONFIG_MTD_UBI_FASTMAP=y
+> +CONFIG_MTD_UBI_BLOCK=y
+>   CONFIG_BLK_DEV_LOOP=y
+>   CONFIG_BLK_DEV_RAM=y
+>   CONFIG_BLK_DEV_RAM_COUNT=4
+> diff --git a/arch/arm/configs/sama5_defconfig b/arch/arm/configs/sama5_defconfig
+> index 03dd80c2a19e..1c4c5a035518 100644
+> --- a/arch/arm/configs/sama5_defconfig
+> +++ b/arch/arm/configs/sama5_defconfig
+> @@ -57,13 +57,13 @@ CONFIG_DEVTMPFS_MOUNT=y
+>   CONFIG_MTD=y
+>   CONFIG_MTD_TESTS=m
+>   CONFIG_MTD_CMDLINE_PARTS=y
+> -CONFIG_MTD_BLOCK=y
+>   CONFIG_MTD_CFI=y
+>   CONFIG_MTD_RAW_NAND=y
+>   CONFIG_MTD_NAND_ATMEL=y
+>   CONFIG_MTD_SPI_NOR=y
+>   CONFIG_MTD_UBI=y
+>   CONFIG_MTD_UBI_FASTMAP=y
+> +CONFIG_MTD_UBI_BLOCK=y
+>   CONFIG_BLK_DEV_LOOP=y
+>   CONFIG_BLK_DEV_RAM=y
+>   CONFIG_BLK_DEV_RAM_COUNT=4
+
+
 -- 
-2.25.1
-
+Nicolas Ferre
