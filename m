@@ -2,105 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B34F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B81C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240864AbiEEJsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59988 "EHLO
+        id S1354122AbiEEJtb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 05:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240358AbiEEJsn (ORCPT
+        with ESMTP id S1354097AbiEEJt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:48:43 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291B94BB89;
-        Thu,  5 May 2022 02:45:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651743904; x=1683279904;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZK4Qw2SAAdbxMpdVelVruC4nwcuRXe+yXC9Vi4jRqLA=;
-  b=BIRIHmmCJEgijtK5rK+a+klY9HUHhUxBADnGll2ZlGzAVTXEUzXs+9iq
-   GyRpLLh7bPNnQKZGxvV+ae3GjJGCDC3inP+viZB7wLmxvpFOEbo5If8Av
-   LTzs2K3Pxjan80VTpcxCBawIdhYD8lKhss5AOyvvzty8/34iBgYpDiTh2
-   hvMMP23p7k+9OdzJqJiiCZhEWKrR9Fyk3ijW99omtvtYTWs15qg1kApJW
-   avkLao74vB7m0tCG8nk+/RSQU+Hu5Q59I9agQr4WC3lBB2ukpwuOlRqv/
-   LIijgul+kK6ZFPHbGulQ6Xil3RtwZkJLdGJJ4sTgxyu/e31QMM8qTxWff
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="255532916"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="255532916"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 02:45:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="734822629"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by orsmga005.jf.intel.com with ESMTP; 05 May 2022 02:45:00 -0700
-From:   Tianfei Zhang <tianfei.zhang@intel.com>
-To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v5] uio: dfl: add HSSI subsystem feature id
-Date:   Thu,  5 May 2022 05:41:29 -0400
-Message-Id: <20220505094129.686535-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
+        Thu, 5 May 2022 05:49:29 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC841AF04
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:45:50 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id r9so3700202pjo.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:45:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Xd+tFU4G6DiHT7gIjy4KKIDQKgemXk6bnmPVHdW1sAc=;
+        b=qnlHZ+v6nzaiWZnsSkygEbiKNIGLS53iBtlot9+8u+KvtVnyMzeKoOksnY+xVHxKrT
+         Lz9CpGjYrEpC/QZm9KT19CItp17cgx9gnp66neRlQzxRR72//DpI7C2PjnWDdxmn6+xL
+         VB/f84cTCRcZtYxzRUtQRuth4nPhqyvZpgTlxP3bTcSy6JwuA1TDmdWaBdqfc3WcpXgn
+         njlIJ3XWnXC8lRMus63hIKZygsLUiOFbtjF2OFwogfhZtcexsS7PSwgZKTCYHXraU4pA
+         JJ5+KORlvZ6bAevhfRsviXyvZxUmJtCleiEb8C0sDrgfGL08z2Zv4uTbc1sNH4wiCMM0
+         /ndw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Xd+tFU4G6DiHT7gIjy4KKIDQKgemXk6bnmPVHdW1sAc=;
+        b=KTPNLAFQuARXusQ5ifsBvd3bV/v8gnlyhrn5iBVNakDstxoLeKaSSpmXL0Eq4SBATH
+         dlR7sD1Imt2SvoaKzOTkzSNLMUOOk/eXjKQc3BUQtVo/w2kgUgNVU3QVi1NU7TnDAycp
+         +LDmYoKI9tAZwbMDyxPetytZKKLnQ98/1bqO0H3LR49dv4VDReqyHNtObdjoIImihlSA
+         ACAuEf0+v8a7h9ilyDrz+lMSL4l0ilKMk+40QrtyB2G+OzvqOEg+gJYZfQlJSMrpC2Ls
+         ceAoKvm1nuso/vMjnrzirkBdkaLoOUp4nZq2bM+qFL24FQ8iULj8NW9vDsQOJB0oe1gO
+         DpdA==
+X-Gm-Message-State: AOAM532+PjrCqpLIQoi5vXWSLiOyI5FGEPCU6fM3drooP95hK1sbUtb0
+        DCbBpjSjKnSOohWk59O5eVAoFQ==
+X-Google-Smtp-Source: ABdhPJxhUO8FQ8vO2QKxlT51BGpwvAlvoIbwqpuo53kcnys/cWG/navnqZwc2uKd+K7E2NDJU85rDQ==
+X-Received: by 2002:a17:902:a987:b0:158:b020:e5b8 with SMTP id bh7-20020a170902a98700b00158b020e5b8mr26451166plb.103.1651743950207;
+        Thu, 05 May 2022 02:45:50 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id f18-20020a63f112000000b003c14af50603sm859049pgi.27.2022.05.05.02.45.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 02:45:49 -0700 (PDT)
+Date:   Thu, 5 May 2022 15:15:47 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     Rafael Wysocki <rjw@rjwysocki.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-pm@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] cpufreq: Avoid unnecessary frequency updates due to
+ mismatch
+Message-ID: <20220505094547.skkwuthq454ajo7l@vireshk-i7>
+References: <39e39a7d30c8ee6af81fb64670a330abeb87402e.1651652493.git.viresh.kumar@linaro.org>
+ <CAKfTPtDbsd+RLwY+0ZfnNWkQD+jOHmoX2K+ZfsOMnEH81ouVjw@mail.gmail.com>
+ <20220505074408.ayzmd5kdbw2fagbq@vireshk-i7>
+ <CAKfTPtCuJGsrsBJ2jACr_YeKN3RXNVMkgRgo+cw9t7CAyGwHWQ@mail.gmail.com>
+ <20220505082801.oks7ko2sbqazyenn@vireshk-i7>
+ <CAKfTPtCfKBiQkghY6gw+sSYYOXFRWMZNXsr64Vn5G-Oo1HF8ew@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKfTPtCfKBiQkghY6gw+sSYYOXFRWMZNXsr64Vn5G-Oo1HF8ew@mail.gmail.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+On 05-05-22, 11:40, Vincent Guittot wrote:
+> On Thu, 5 May 2022 at 10:28, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> >
+> > On 05-05-22, 10:21, Vincent Guittot wrote:
+> > > Part of your problem is that cpufreq use khz whereas clock uses hz
+> >
+> > Not in this case at least as the value mentioned in OPP table DT is in
+> > Hz.
+> 
+> But dev_pm_opp_init_cpufreq_table make it kHz anyway
 
-Add the Device Feature List (DFL) feature id for the
-High Speed Serial Interface (HSSI) Subsystem to the
-table of ids supported by the uio_dfl driver.
+Yes.
 
-The HSSI Subsystem is a configurable set of IP blocks
-to be used as part of a Ethernet or PCS/FEC/PMA pipeline.
-Like the Ethernet group used by the N3000 card, the HSSI
-Subsystem does not fully implement a network device from
-a Linux netdev perspective and is controlled and monitored
-from user space software via the uio interface.
+> > > Would it be better to do something like below in cpufreq_generic_get
+> > >
+> > > (clk_get_rate(policy->clk) + 500) / 1000
+> > >
+> > > so you round to closest instead of always floor rounding
+> >
+> > That would be a fine thing to do anyway, though I am not sure if it
+> > will fix the problem at hand.
+> >
+> > If the hardware returns 499,999,499 Hz, we will still have the
+> > problem.
+> 
+> But in this case, cpufreq table should use 499,999Khz IMO.
 
-The Feature ID table of DFL can be found:
-https://github.com/OPAE/dfl-feature-id
+I did think about it earlier, but then left it.
 
-Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-Reviewed-by: Tom Rix <trix@redhat.com>
-Acked-by: Xu Yilun <yilun.xu@intel.com>
----
-v5: re-order the SoB chains.
-v4: add Reviewed-by and Acked-by tag and add Feature ID table url in git message.
-v3: change the name of this feature id to HSSI_SUBSYS and rewrite
-    the git message.
-v2: add HSSI introduction and the git repo of Feature ID table.
----
- drivers/uio/uio_dfl.c | 2 ++
- 1 file changed, 2 insertions(+)
+> We already
+> have OPP/cpufreq table being updated at boot with actual value.
 
-diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
-index 89c0fc7b0cbc..8f39cc8bb034 100644
---- a/drivers/uio/uio_dfl.c
-+++ b/drivers/uio/uio_dfl.c
-@@ -45,9 +45,11 @@ static int uio_dfl_probe(struct dfl_device *ddev)
- }
- 
- #define FME_FEATURE_ID_ETH_GROUP	0x10
-+#define FME_FEATURE_ID_HSSI_SUBSYS	0x15
- 
- static const struct dfl_device_id uio_dfl_ids[] = {
- 	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
-+	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
- 	{ }
- };
- MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
+I don't think we update the frequency values there yet, but yes one
+way to fix it is via DT.
+
 -- 
-2.26.2
-
+viresh
