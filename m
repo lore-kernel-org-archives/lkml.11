@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A54C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5565C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383625AbiEESt6 (ORCPT
+        id S1380686AbiEESuO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        Thu, 5 May 2022 14:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384764AbiEESsZ (ORCPT
+        with ESMTP id S1355541AbiEEStx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:48:25 -0400
+        Thu, 5 May 2022 14:49:53 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB56F14035
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:41:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8CDF140DF
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:44:26 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C3AAA106F;
-        Thu,  5 May 2022 11:41:52 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC45D106F;
+        Thu,  5 May 2022 11:44:26 -0700 (PDT)
 Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 370603FA31;
-        Thu,  5 May 2022 11:41:51 -0700 (PDT)
-Message-ID: <cd29f36a-9063-dae6-4526-85494c221bd2@arm.com>
-Date:   Thu, 5 May 2022 20:41:45 +0200
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 44E493FA31;
+        Thu,  5 May 2022 11:44:25 -0700 (PDT)
+Message-ID: <e5c9bf77-7a86-ff6c-1a0f-57ba6d12ff6b@arm.com>
+Date:   Thu, 5 May 2022 20:44:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v8 6/7] sched/fair: Remove task_util from effective
- utilization in feec()
+Subject: Re: [PATCH v8 1/7] sched/fair: Provide u64 read for 32-bits arch
+ helper
 Content-Language: en-US
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
 To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
         vdonnefort@gmail.com
 Cc:     linux-kernel@vger.kernel.org, morten.rasmussen@arm.com,
         chris.redpath@arm.com, qperret@google.com, tao.zhou@linux.dev
 References: <20220429141148.181816-1-vincent.donnefort@arm.com>
- <20220429141148.181816-7-vincent.donnefort@arm.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220429141148.181816-7-vincent.donnefort@arm.com>
+ <20220429141148.181816-2-vincent.donnefort@arm.com>
+ <251d4cd4-7a28-af7b-942e-4e9f762fc05f@arm.com>
+In-Reply-To: <251d4cd4-7a28-af7b-942e-4e9f762fc05f@arm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -47,94 +48,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 + vdonnefort@gmail.com
 - vincent.donnefort@arm.com
 
-On 29/04/2022 16:11, Vincent Donnefort wrote:
+On 05/05/2022 20:25, Dietmar Eggemann wrote:
+> On 29/04/2022 16:11, Vincent Donnefort wrote:
+>> Introducing macro helpers u64_u32_{store,load}() to factorize lockless
+>> accesses to u64 variables for 32-bits architectures.
+>>
+>> Users are for now cfs_rq.min_vruntime and sched_avg.last_update_time. To
+>> accommodate the later where the copy lies outside of the structure
+>> (cfs_rq.last_udpate_time_copy instead of sched_avg.last_update_time_copy),
+>> use the _copy() version of those helpers.
+>>
+>> Those new helpers encapsulate smp_rmb() and smp_wmb() synchronization and
+>> therefore, have a small penalty in set_task_rq_fair() and init_cfs_rq().
+> 
+> ... but obviously only on 32bit machines. And for set_task_rq_fair() we
+> now do one smp_rmb per cfs_rq (prev and next), like we do one smp_wmb()
+> per cfs_rq in update_cfs_rq_load_avg().
+> 
+> [...]
+> 
+>> @@ -3786,8 +3770,9 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+>>  	decayed |= __update_load_avg_cfs_rq(now, cfs_rq);
+>>  
+>>  #ifndef CONFIG_64BIT
+> 
+> Can we not get rid of this last CONFIG_64BIT here?
+> 
+>> -	smp_wmb();
+>> -	cfs_rq->load_last_update_time_copy = sa->last_update_time;
+>> +	u64_u32_store_copy(sa->last_update_time,
+>> +			   cfs_rq->last_update_time_copy,
+>> +			   sa->last_update_time);
+> 
+> (sa->last_update_time = sa->last_update_time); should dissolve on 64bit.
+> 
+>>  #endif
+> 
+> [...]
+> 
+> Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-[...]
-
-> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-
-[...]
-
-> -static long
-> -compute_energy(struct task_struct *p, int dst_cpu, struct cpumask *cpus,
-> -	       struct perf_domain *pd)
-> +static inline void eenv_task_busy_time(struct energy_env *eenv,
-> +				       struct task_struct *p, int prev_cpu)
->  {
-> -	unsigned long max_util = 0, sum_util = 0, cpu_cap;
-> +	unsigned long max_cap = arch_scale_cpu_capacity(prev_cpu);
-> +	unsigned long irq = cpu_util_irq(cpu_rq(prev_cpu));
-> +
-> +	if (unlikely(irq >= max_cap)) {
-> +		eenv->task_busy_time = max_cap;
-> +		return;
-> +	}
-> +
-> +	eenv->task_busy_time =
-> +		scale_irq_capacity(task_util_est(p), irq, max_cap);
-
-Nit-pick:
-
-Maybe a little bit lighter:
-
- static inline void eenv_task_busy_time(struct energy_env *eenv,
-                                       struct task_struct *p, int prev_cpu)
- {
--       unsigned long max_cap = arch_scale_cpu_capacity(prev_cpu);
-+       unsigned long busy_time, max_cap = arch_scale_cpu_capacity(prev_cpu);
-        unsigned long irq = cpu_util_irq(cpu_rq(prev_cpu));
- 
--       if (unlikely(irq >= max_cap)) {
--               eenv->task_busy_time = max_cap;
--               return;
--       }
-+       if (unlikely(irq >= max_cap))
-+               busy_time = max_cap;
-+       else
-+               busy_time = scale_irq_capacity(task_util_est(p), irq, max_cap);
- 
--       eenv->task_busy_time =
--               scale_irq_capacity(task_util_est(p), irq, max_cap);
-+       eenv->task_busy_time = busy_time;
- }
-
-[...]
-
-> +static inline unsigned long
-> +compute_energy(struct energy_env *eenv, struct perf_domain *pd,
-> +	       struct cpumask *pd_cpus, struct task_struct *p, int dst_cpu)
-> +{
-> +	unsigned long max_util = eenv_pd_max_util(eenv, pd_cpus, p, dst_cpu);
-> +	unsigned long busy_time = eenv->pd_busy_time;
-> +
-> +	if (dst_cpu >= 0)
-> +		busy_time = min(eenv->pd_cap,
-> +				eenv->pd_busy_time + eenv->task_busy_time);
-
-Nit-pick:
-
-        if (dst_cpu >= 0)
--               busy_time = min(eenv->pd_cap,
--                               eenv->pd_busy_time + eenv->task_busy_time);
-+               busy_time = min(eenv->pd_cap, busy_time + eenv->task_busy_time);
-
-[..]
-
-> @@ -6905,12 +6976,14 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
->  			continue;
->  
->  		/* Compute the 'base' energy of the pd, without @p */
-> -		base_energy_pd = compute_energy(p, -1, cpus, pd);
-> +		eenv_pd_busy_time(&eenv, cpus, p);
-
-Nit-pick:
-
-Move comment /* Compute the 'base' energy of the pd, without @p */ here
-since eenv->pd_busy_time is also used to calculate prev_delta and cur_delta. 
-
-
-> +		base_energy_pd = compute_energy(&eenv, pd, cpus, p, -1);>  		base_energy += base_energy_pd;
-
-[...]
