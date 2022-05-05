@@ -2,111 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E883C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 10:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354658AbiEEKlm (ORCPT
+        id S1355995AbiEEKqW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 06:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
+        Thu, 5 May 2022 06:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbiEEKlj (ORCPT
+        with ESMTP id S1352217AbiEEKqL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 06:41:39 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C73415A03
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 03:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651747081; x=1683283081;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wV603nhnDa9kVJXVMArqUFut9nS+nq9L91q9VkdDoSY=;
-  b=bPOQmHdVqb9MjLYoOHMkXQtWb1V32mYS8GsZbc6xQUwhH5na3ljLy+io
-   CmSs5su0Bj2dt8Fi/jjIpysj5gVMQW5Eu27P5G/lPPMub8v1tgwQl4khK
-   nrbcgodPRDE0Ec+oUXFqd5NuwrFp4Y78+yIMtx3HOesFOAbDDLgV/x33D
-   pEez04nOk33Ruhwke5hSzvLI5hI0Tt4Q+8Q8wZ26pcsUkx7pKZ6Qihihc
-   PeLTliwAXqJgM+SD4Yd/CtEAS6JA5cD2U9JTrDgcEDmWizmUP/Si2P+wG
-   xqKFPmECPhSgaajOu22Cot0h4ytSSde62DNfGykv5nvrUQ78TN1ADAtgF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="328609822"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="328609822"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 03:38:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="664911279"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 05 May 2022 03:37:58 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmYrt-000CIL-LW;
-        Thu, 05 May 2022 10:37:57 +0000
-Date:   Thu, 5 May 2022 18:37:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Al Cooper <alcooperx@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Kamal Dasu <kdasu.kdev@gmail.com>
-Subject: [ulfh-mmc:next 43/52] drivers/mmc/host/sdhci-brcmstb.c:51:6:
- warning: no previous prototype for function 'brcmstb_reset'
-Message-ID: <202205051804.E5PoKkYL-lkp@intel.com>
+        Thu, 5 May 2022 06:46:11 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF5353716;
+        Thu,  5 May 2022 03:42:32 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id q4so1125144plr.11;
+        Thu, 05 May 2022 03:42:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VwJgS7EQVPINql3/IWkqXNQpE3klGJYH+DfKyFv2JQY=;
+        b=KScEbK/eLpYZn24jwF/V+qYRxX8O/bC1VEZvrmcsUkkJu4xqN8E5HS5Qvwka7XPO49
+         5or89yjGgo9Yn5/NV+02Q5SNhQIyCDWey8hzkvXBh5WygVRjT5xAy+FGXRp7Zw6VjIqV
+         7yLhmcTbdrmz9jNKLeHbn9tZhP/LZTsFJ2CoGkyfP2YnUhsSHoSlinnudG2p9F73Fo7a
+         7qqAZBw+wMLobNXMovDXCTZ7k67QmS96xA7OnpIjPqRm+xN+4RJBV+RkUKSKK5rgY6Bd
+         KRcweSrM3/OHbqzTseBZX1mG3A811JeVF3+3SaCo83JpRLR0J4x/n+b6sBgctJgm/9kg
+         fORA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VwJgS7EQVPINql3/IWkqXNQpE3klGJYH+DfKyFv2JQY=;
+        b=eKKpsNp/eKTXKgMga182+RHIfmPcSmzX/Y7Ptu954QISrcItUYhZm5C7noLWCa0lw9
+         aWS8DAlINh8JTTZKG1xlLrrH5VGRwS/V3hto3HQ1RsnbzHh+bfZ442h+3nzwzC1O4HRF
+         3AoPVrxQjFz1YBP3Wuvyeix5A29sRmrtse495O7yKeTCUWneBMGJ4Y7RQNCMbsF3PKlk
+         WWukw0UmROe0zsr86NEdubO+NbYaMbEXSBRjRJe+Coymh5uQlajgV0LOpShD6vvEy+9i
+         BXh+0PvPfyivtr6mriY3IyVjdx9DTc7hclJHGM1klJ3ghZ7HIfhOi6kVk/B5eSKQJJvS
+         L1kA==
+X-Gm-Message-State: AOAM531hgjgzdAfDYyKwzk8Oz75iRNZqy1W/pdWWBGEN8A5U8R5h6lyO
+        5ASUvVeboBeNNiUUl/mcFEtiAju6W2s=
+X-Google-Smtp-Source: ABdhPJzwPf1b02txXmiAhAdw7c4vm2/gjm8vTxHsLDx9RjanrKorKqFZ30wz0saply+QWDTItl3umg==
+X-Received: by 2002:a17:90b:1d83:b0:1dc:4362:61bd with SMTP id pf3-20020a17090b1d8300b001dc436261bdmr5338472pjb.126.1651747352073;
+        Thu, 05 May 2022 03:42:32 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id d20-20020a056a00199400b0050dc7628156sm1098222pfl.48.2022.05.05.03.42.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 03:42:31 -0700 (PDT)
+Message-ID: <c7a501cc-0a09-9f3d-8200-50fc3a854853@gmail.com>
+Date:   Thu, 5 May 2022 19:42:26 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v2] net/core: use ReST block quote in
+ __dev_queue_xmit() comment
+Content-Language: en-US
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Ben Greear <greearb@candelatech.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220505082907.42393-1-bagasdotme@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <20220505082907.42393-1-bagasdotme@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git next
-head:   0662d797d5962fd0a21aceb0cf651a6ff308e924
-commit: 6bcc55fe648b860ef0c2b8dc23adc05bcddb93c2 [43/52] mmc: sdhci-brcmstb: Enable Clock Gating to save power
-config: mips-bmips_stb_defconfig (https://download.01.org/0day-ci/archive/20220505/202205051804.E5PoKkYL-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e004fb787698440a387750db7f8028e7cb14cfc)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git/commit/?id=6bcc55fe648b860ef0c2b8dc23adc05bcddb93c2
-        git remote add ulfh-mmc git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git
-        git fetch --no-tags ulfh-mmc next
-        git checkout 6bcc55fe648b860ef0c2b8dc23adc05bcddb93c2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/mmc/host/
+On 2022/05/05 17:29,
+Bagas Sanjaya wrote:
+> When merging net-next for linux-next tree, Stephen Rothwell reported
+> htmldocs warning:
+> 
+> Documentation/networking/kapi:92: net/core/dev.c:4101: WARNING: Missing matching underline for section title overline.
+> 
+> -----------------------------------------------------------------------------------
+>      I notice this method can also return errors from the queue disciplines,
+>      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+> 
+> The warning is due to comment quote by Ben from commit af191367a75262
+> ("[NET]: Document ->hard_start_xmit() locking in comments.") interacts
+> with commit c526fd8f9f4f21 ("net: inline dev_queue_xmit()").
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I don't see why the change in commit c526fd8f9f4f21 caused the new
+warning.
+Please explain.  Just saying "interacts with" does not explain
+anything.
 
-All warnings (new ones prefixed by >>):
+        Thanks, Akria
 
->> drivers/mmc/host/sdhci-brcmstb.c:51:6: warning: no previous prototype for function 'brcmstb_reset' [-Wmissing-prototypes]
-   void brcmstb_reset(struct sdhci_host *host, u8 mask)
-        ^
-   drivers/mmc/host/sdhci-brcmstb.c:51:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void brcmstb_reset(struct sdhci_host *host, u8 mask)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/brcmstb_reset +51 drivers/mmc/host/sdhci-brcmstb.c
-
-    50	
-  > 51	void brcmstb_reset(struct sdhci_host *host, u8 mask)
-    52	{
-    53		struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-    54		struct sdhci_brcmstb_priv *priv = sdhci_pltfm_priv(pltfm_host);
-    55	
-    56		sdhci_reset(host, mask);
-    57	
-    58		/* Reset will clear this, so re-enable it */
-    59		if (priv->flags & BRCMSTB_PRIV_FLAGS_GATE_CLOCK)
-    60			enable_clock_gating(host);
-    61	}
-    62	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> Fix the warning by using ReST block quote syntax for the comment quote.
+> Note that the actual description for the method will be rendered above
+> "Description" section instead of below of it. However, preserve the
+> comment quote for now.
+> 
+> Fixes: c526fd8f9f4f21 ("net: inline dev_queue_xmit()")
+> Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Cc: Ben Greear <greearb@candelatech.com>
+> Cc: Pavel Begunkov <asml.silence@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Akira Yokosawa <akiyks@gmail.com>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-next@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> ---
+>  Changes since v1 [1]:
+>    - Use ReST block quote instead of deleting the comment quote
+>    - Mention the originating commit that introduces the quote
+> 
+>  [1]: https://lore.kernel.org/linux-doc/20220503072949.27336-1-bagasdotme@gmail.com/
+>  net/core/dev.c | 19 ++++++++++---------
+>  1 file changed, 10 insertions(+), 9 deletions(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index c2d73595a7c369..bcb47b889f5857 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4099,17 +4099,18 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+>   *	to congestion or traffic shaping.
+>   *
+>   * -----------------------------------------------------------------------------------
+> - *      I notice this method can also return errors from the queue disciplines,
+> - *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+> - *      be positive.
+>   *
+> - *      Regardless of the return value, the skb is consumed, so it is currently
+> - *      difficult to retry a send to this method.  (You can bump the ref count
+> - *      before sending to hold a reference for retry if you are careful.)
+> + *        I notice this method can also return errors from the queue disciplines,
+> + *        including NET_XMIT_DROP, which is a positive value.  So, errors can also
+> + *        be positive.
+>   *
+> - *      When calling this method, interrupts MUST be enabled.  This is because
+> - *      the BH enable code must have IRQs enabled so that it will not deadlock.
+> - *          --BLG
+> + *        Regardless of the return value, the skb is consumed, so it is currently
+> + *        difficult to retry a send to this method.  (You can bump the ref count
+> + *        before sending to hold a reference for retry if you are careful.)
+> + *
+> + *        When calling this method, interrupts MUST be enabled.  This is because
+> + *        the BH enable code must have IRQs enabled so that it will not deadlock.
+> + *        --BLG
+>   */
+>  int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>  {
+> 
+> base-commit: 4950b6990e3b1efae64a5f6fc5738d25e3b816b3
