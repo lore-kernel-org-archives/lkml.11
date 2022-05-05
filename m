@@ -2,182 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 348E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC40C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 14:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380855AbiEEOzo (ORCPT
+        id S1380223AbiEEO6s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 10:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
+        Thu, 5 May 2022 10:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380847AbiEEOzj (ORCPT
+        with ESMTP id S233840AbiEEO6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 10:55:39 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68A2156FBB
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 07:51:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651762318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uM+ofZNcfgbacCYmlCH29DRYVtctL+nEHY0EJrvY55Y=;
-        b=AsMVoOj5RR2T7fIl62bIhAYSeht0nMfldc84T2HgkOn2K2+1vUCyOsEjeEDAPy43ptosYw
-        xLhnYc487J9SS6K2tUJUtcIDDrAjP5/yI2IocvZztzi2ma+Xqmpk0ATE9Jb8gaskWqIt1c
-        kjFOnedYsMtRa7OmusYLPMY/BI7qUws=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-101-bgtXw1kJNk2TCtSyx28gWA-1; Thu, 05 May 2022 10:51:58 -0400
-X-MC-Unique: bgtXw1kJNk2TCtSyx28gWA-1
-Received: by mail-wm1-f69.google.com with SMTP id o24-20020a05600c379800b003943412e81dso1848075wmr.6
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 07:51:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=uM+ofZNcfgbacCYmlCH29DRYVtctL+nEHY0EJrvY55Y=;
-        b=A4P7uCaf/ai/hiT9/xyZC8YJ5r0zgx6ZiSvxDk78HwYuQWfQsae3EqTKBr98eWSm0U
-         3fnbFM7hLU1XW09KD7cBk4nPxLA8PTyUFH0vT168Merxy7f9Xcgxu1prbfwZsQO8hV1X
-         8kzOqJ1B2Vrs9US7/lS7AomPcWbnaFlQwJnMtPt6xWMvVAgwmn5532Qrpq9OOWKbrjgY
-         bDAAg0MWMTuSkOoO/89sO1BupZAwEaU4YTXY3b+LGSk+BN6pHSr1oCm3/ns2yvD1mGKb
-         YW7ldS0uD09riG8LOpbaJtaZMhcgYlVqxGOcksQHXNyhJMmuRM3YtIwKloNfgJgI7FuV
-         iGeg==
-X-Gm-Message-State: AOAM532b91ViuOqd4GvMDtdiWY5MOzwAd4Fyhjmbmpu6zjqoIaNlmWKh
-        pVMfs6TBml8d8lz9Uow1O/IqES9XuKBDeZ+g1ICEiS3Ukkr2mAqUkTlvbC0lJkuI4NWvKmEZ5fX
-        DM8gkcVZYVyPO2sKspy0dggw9
-X-Received: by 2002:a1c:6a1a:0:b0:394:272e:5bdf with SMTP id f26-20020a1c6a1a000000b00394272e5bdfmr5347729wmc.55.1651762316173;
-        Thu, 05 May 2022 07:51:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwzZ199d4B0hb5YxHFT/G5vw6e8Q1vc2C0FJNM5txW7lPwaFe4IrmxdRb6YfGAM2P9o3lQ5lw==
-X-Received: by 2002:a1c:6a1a:0:b0:394:272e:5bdf with SMTP id f26-20020a1c6a1a000000b00394272e5bdfmr5347690wmc.55.1651762315893;
-        Thu, 05 May 2022 07:51:55 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id 25-20020a05600c029900b003942a244ed1sm1524096wmk.22.2022.05.05.07.51.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 07:51:55 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: Re: Should arm64 have a custom crash shutdown handler?
-In-Reply-To: <YnPf3KPBXDNTpQoG@FVFF77S0Q05N.cambridge.arm.com>
-References: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
- <874k24igjf.wl-maz@kernel.org>
- <92645c41-96fd-2755-552f-133675721a24@igalia.com>
- <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
- <3bee47db-f771-b502-82a3-d6fac388aa89@igalia.com>
- <878rrg13zb.fsf@redhat.com>
- <YnPf3KPBXDNTpQoG@FVFF77S0Q05N.cambridge.arm.com>
-Date:   Thu, 05 May 2022 16:51:54 +0200
-Message-ID: <87y1zgyqut.fsf@redhat.com>
+        Thu, 5 May 2022 10:58:46 -0400
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CF25A5B5;
+        Thu,  5 May 2022 07:55:05 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id D70CF3000A3AD;
+        Thu,  5 May 2022 16:55:03 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id CB4F01D8B44; Thu,  5 May 2022 16:55:03 +0200 (CEST)
+Date:   Thu, 5 May 2022 16:55:03 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tan Jui Nee <jui.nee.tan@intel.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH v4 1/8] platform/x86/intel: Add Primary to Sideband
+ (P2SB) bridge support
+Message-ID: <20220505145503.GA25423@wunner.de>
+References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+ <20220131151346.45792-2-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131151346.45792-2-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mark Rutland <mark.rutland@arm.com> writes:
+On Mon, Jan 31, 2022 at 05:13:39PM +0200, Andy Shevchenko wrote:
+> Background information
+> ======================
 
-> On Thu, May 05, 2022 at 03:52:24PM +0200, Vitaly Kuznetsov wrote:
->> "Guilherme G. Piccoli" <gpiccoli@igalia.com> writes:
->> 
->> > On 05/05/2022 09:53, Mark Rutland wrote:
->> >> [...]
->> >> Looking at those, the cleanup work is all arch-specific. What exactly would we
->> >> need to do on arm64, and why does it need to happen at that point specifically?
->> >> On arm64 we don't expect as much paravirtualization as on x86, so it's not
->> >> clear to me whether we need anything at all.
->> >> 
->> >>> Anyway, the idea here was to gather a feedback on how "receptive" arm64
->> >>> community would be to allow such customization, appreciated your feedback =)
->> >> 
->> >> ... and are you trying to do this for Hyper-V or just using that as an example?
->> >> 
->> >> I think we're not going to be very receptive without a more concrete example of
->> >> what you want.
->> >> 
->> >> What exactly do *you* need, and *why*? Is that for Hyper-V or another hypervisor?
->> >> 
->> >> Thanks
->> >> Mark.
->> >
->> > Hi Mark, my plan would be doing that for Hyper-V - kind of the same
->> > code, almost. For example, in hv_crash_handler() there is a stimer
->> > clean-up and the vmbus unload - my understanding is that this same code
->> > would need to run in arm64. Michael Kelley is CCed, he was discussing
->> > with me in the panic notifiers thread and may elaborate more on the needs.
->> >
->> > But also (not related with my specific plan), I've seen KVM quiesce code
->> > on x86 as well [see kvm_crash_shutdown() on arch/x86] , I'm not sure if
->> > this is necessary for arm64 or if this already executing in some
->> > abstracted form, I didn't dig deep - probably Vitaly is aware of that,
->> > hence I've CCed him here.
->> 
->> Speaking about the difference between reboot notifiers call chain and
->> machine_ops.crash_shutdown for KVM/x86, the main difference is that
->> reboot notifier is called on some CPU while the VM is fully functional,
->> this way we may e.g. still use IPIs (see kvm_pv_reboot_notify() doing
->> on_each_cpu()). When we're in a crash situation,
->> machine_ops.crash_shutdown is called on the CPU which crashed. We can't
->> count on IPIs still being functional so we do the very basic minimum so
->> *this* CPU can boot kdump kernel. There's no guarantee other CPUs can
->> still boot but normally we do kdump with 'nprocs=1'.
->
-> Sure; IIUC the IPI problem doesn't apply to arm64, though, since that doesn't
-> use a PV mechanism (and practically speaking will either be GICv2 or GICv3).
->
+The wealth of information in the commit message obscures what the
+actual problem is, which is actually quite simple:  SoC features
+such as GPIO are accessed via a reserved MMIO area, we don't know
+its address but can obtain it from the BAR of the P2SB device,
+that device is normally hidden so we have to temporarily unhide it.
 
-This isn't really about PV: when the kernel is crashing, you have no
-idea what's going on on other CPUs, they may be crashing too, locked in
-a tight loop, ... so sending an IPI there to do some work and expecting
-it to report back is dangerous.
 
->> For Hyper-V, the situation is similar: hv_crash_handler() intitiates
->> VMbus unload on the crashing CPU only, there's no mechanism to do
->> 'global' unload so other CPUs will likely not be able to connect Vmbus
->> devices in kdump kernel but this should not be necessary.
->
-> Given kdump is best-effort (and we can't rely on secondary CPUs even making it
-> into the kdump kernel), I also don't think that should be necessary.
+> On top of that in some cases P2SB is represented by function 0 on PCI
+> slot (in terms of B:D.F) and according to the PCI specification any
+> other function can't be seen until function 0 is present and visible.
 
-Yes, exactly.
+I find that paragraph confusing:  Do multi-function P2SB devices exist?
+What are the other functions?  Are they visible but merely not enumerated
+because function 0 is not visible?
 
->
->> There's a crash_kexec_post_notifiers mechanism which can be used instead
->> but it's disabled by default so using machine_ops.crash_shutdown is
->> better.
->
-> Another option is to defer this to the kdump kernel. On arm64 at least, we know
-> if we're in a kdump kernel early on, and can reset some state based upon that.
->
-> Looking at x86's hyperv_cleanup(), everything relevant to arm64 can be deferred
-> to just before the kdump kernel detects and initializes anything relating to
-> hyperv. So AFAICT we could have hyperv_init() check is_kdump_kernel() prior to
-> the first hypercall, and do the cleanup/reset there.
 
-In theory yes, it is possible to try sending CHANNELMSG_UNLOAD on kdump
-kernel boot and not upon crash, I don't remember if this approach was
-tried in the past. 
+> P2SB unconditional unhiding awareness
+> =====================================
+> Technically it's possible to unhide the P2SB device and devices on
+> the same PCI slot and access them at any time as needed. But there are
+> several potential issues with that:
+> 
+>  - the systems were never tested against such configuration and hence
+>    nobody knows what kind of bugs it may bring, especially when we talk
+>    about SPI NOR case which contains Intel FirmWare Image (IFWI) code
+>    (including BIOS) and already known to be problematic in the past for
+>    end users
+> 
+>  - the PCI by its nature is a hotpluggable bus and in case somebody
+>    attaches a driver to the functions of a P2SB slot device(s) the
+>    end user experience and system behaviour can be unpredictable
+> 
+>  - the kernel code would need some ugly hacks (or code looking as an
+>    ugly hack) under arch/x86/pci in order to enable these devices on
+>    only selected platforms (which may include CPU ID table followed by
+>    a potentially growing number of DMI strings
 
->
-> Maybe we need more data for the vmbus bits? ... if so it seems that could blow
-> up anyway when the first kernel was tearing down.
+Honestly I would have taken the step to always expose the device,
+identify breakages and then fix those.
 
-Not sure I understood what you mean... From what I remember, there were
-issues with CHANNELMSG_UNLOAD handling on the Hyper-V host side in the
-past (it was taking *minutes* for the host to reply) but this is
-orthogonal to the fact that we need to do this cleanup so kdump kernel
-is able to connect to Vmbus devices again.
+We had a similar issue with HD audio controllers on Nvidia GPUs
+which were only visible when an HDMI cable was plugged in.
+We always expose them since b516ea586d71 and I recall we merely
+had a few cases that an audio device was exposed in cases when
+the card had no HDMI connectors at all.  So there was a useless
+HD audio card visible to the user but no real harm.
 
--- 
-Vitaly
 
+> +	pci_lock_rescan_remove();
+> +
+> +	/* Unhide the P2SB device, if needed */
+> +	pci_bus_read_config_dword(bus, devfn_p2sb, P2SBC, &value);
+> +	if ((value & P2SBC_HIDE) == P2SBC_HIDE)
+> +		pci_bus_write_config_dword(bus, devfn_p2sb, P2SBC, 0);
+> +
+> +	/* Read the first BAR of the device in question */
+> +	__pci_bus_read_base(bus, devfn, mem, PCI_BASE_ADDRESS_0);
+> +
+> +	/* Hide the P2SB device, if it was hidden */
+> +	if (value & P2SBC_HIDE)
+> +		pci_bus_write_config_dword(bus, devfn_p2sb, P2SBC, P2SBC_HIDE);
+> +
+> +	pci_unlock_rescan_remove();
+
+Please add a code comment why you're calling pci_lock_rescan_remove(),
+such as:
+
+	/*
+	 * Prevent concurrent PCI bus scan from seeing the P2SB device
+	 * while it is temporarily exposed.
+	 */
+
+Otherwise it looks like you're abusing that lock to prevent multiple
+simultaneous RMW operations of the P2SBC_HIDE bit.
+
+
+I think the first if-clause above can be simplified to
+
+	if (value & P2SBC_HIDE)
+
+I don't understand why one of the two if-clauses adds "== P2SBC_HIDE".
+
+
+Do you really need all the complicated logic in __pci_bus_read_base()?
+For comparison, simatic_ipc_get_membase0() in simatic-ipc.c merely does:
+
+	pci_bus_read_config_dword(bus, p2sb, PCI_BASE_ADDRESS_0, &bar0);
+
+If that's sufficient for simatic-ipc.c, why is the more complicated code
+necessary in p2sb.c?
+
+
+I'm wondering, since you're only retrieving the base address (and thus
+temporarily expose the P2SB device) when it's actually needed by a driver,
+would there be any harm in keeping the P2SB device exposed indefinitely
+from the moment a driver first requests the base address?  I.e., unhide it
+but don't hide it again.  That would allow you to call pci_scan_slot() and
+pci_bus_add_devices(), thus instantiating a proper pci_dev which you can
+access without the __pci_bus_read_base() kludge.
+
+
+> +	/*
+> +	 * I don't know how l can have all bits set.  Copied from old code.
+> +	 * Maybe it fixes a bug on some ancient platform.
+> +	 */
+> +	if (PCI_POSSIBLE_ERROR(l))
+> +		l = 0;
+
+l can have all bits set if the device was hot-removed.  That can't happen
+with a built-in device such as P2SB.
+
+Thanks,
+
+Lukas
