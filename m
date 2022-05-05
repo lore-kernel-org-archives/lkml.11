@@ -2,78 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF20C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B98DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 02:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240290AbiEEDAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 23:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34742 "EHLO
+        id S240306AbiEEDBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 4 May 2022 23:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240161AbiEEDAI (ORCPT
+        with ESMTP id S231204AbiEEDBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 23:00:08 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5493313DC8;
-        Wed,  4 May 2022 19:56:30 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242Nnl5h025194;
-        Tue, 3 May 2022 00:51:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=DZRyLUARGbpvjj9KLE8couN5sqcicCf2H9NcWm/lQeo=;
- b=tZUt5C97u62nlPQz4nVrqHZ99oviz+0sWlquG9KEV6KSJmIUy7eSIdQ/28AriRhAzaN+
- gw8yF2P3QrRDDyKv4DbXCzeGh8NjzWjAlxZn61P5AA/0qj+LvSzbUFUw4FJvzcIHw1ym
- dRJnANaLmjX9gZUAP6SDTnFDHGA2AwKJTwd+qnnNBRpLi7LQI7SxVadtIVNjVwSAOUDa
- CVgd8/v544Tf34CEQcRppFk5Jj6jSoxgyhjjqi3cWC9mal5SNH0LbI6WKh0yOh4zDOGP
- M+5c9kvpAA5/avqRKNKFVJzS4QjOhBrLm2Paw8ZFG+pYjWE2h08auytyp9jscz0cbXSr yg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fruw2cnx5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:50 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oo10008891;
-        Tue, 3 May 2022 00:51:49 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x5k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:51:49 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430plj4010389;
-        Tue, 3 May 2022 00:51:49 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-4;
-        Tue, 03 May 2022 00:51:49 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Haowen Bai <baihaowen@meizu.com>, jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: fnic: remove redundant NULL check
-Date:   Mon,  2 May 2022 20:51:14 -0400
-Message-Id: <165153836360.24053.10929907009827872411.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1647309219-12772-1-git-send-email-baihaowen@meizu.com>
-References: <1647309219-12772-1-git-send-email-baihaowen@meizu.com>
+        Wed, 4 May 2022 23:01:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738BD49270
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 19:57:45 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KtyzH1BWTzhYpF;
+        Thu,  5 May 2022 10:57:15 +0800 (CST)
+Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 10:57:36 +0800
+Received: from [10.174.177.133] (10.174.177.133) by
+ dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 10:57:36 +0800
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+CC:     <cj.chengjian@huawei.com>, <huawei.libin@huawei.com>,
+        <xiexiuqi@huawei.com>, <liwei391@huawei.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <zengshun.wu@outlook.com>
+References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+ <20220316100132.244849-4-bobo.shaobowang@huawei.com>
+ <YmFXrBG5AmX3+4f8@lakrids> <20220421100639.03c0d123@gandalf.local.home>
+ <YmF0xYpTMoWOIl00@lakrids> <20220421114201.21228eeb@gandalf.local.home>
+ <YmGF/OpIhAF8YeVq@lakrids>
+From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
+Message-ID: <8f36ebd2-2c56-d896-3a91-c97a5760b344@huawei.com>
+Date:   Thu, 5 May 2022 10:57:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <YmGF/OpIhAF8YeVq@lakrids>
+Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: dTvflSWKDBRWbpLhG3m55XEtZwl1Pw43
-X-Proofpoint-ORIG-GUID: dTvflSWKDBRWbpLhG3m55XEtZwl1Pw43
+X-Originating-IP: [10.174.177.133]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500015.china.huawei.com (7.185.36.181)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 09:53:39 +0800, Haowen Bai wrote:
 
-> Fix below warnings reported by coccicheck:
-> drivers/scsi/fnic/fnic_debugfs.c:90:2-7: WARNING: NULL check before some freeing functions is not needed.
-> 
-> 
+ÔÚ 2022/4/22 0:27, Mark Rutland Ð´µÀ:
+> On Thu, Apr 21, 2022 at 11:42:01AM -0400, Steven Rostedt wrote:
+>> On Thu, 21 Apr 2022 16:14:13 +0100
+>> Mark Rutland <mark.rutland@arm.com> wrote:
+>>
+>>>> Let's say you have 10 ftrace_ops registered (with bpf and kprobes this can
+>>>> be quite common). But each of these ftrace_ops traces a function (or
+>>>> functions) that are not being traced by the other ftrace_ops. That is, each
+>>>> ftrace_ops has its own unique function(s) that they are tracing. One could
+>>>> be tracing schedule, the other could be tracing ksoftirqd_should_run
+>>>> (whatever).
+>>> Ok, so that's when messing around with bpf or kprobes, and not generally
+>>> when using plain old ftrace functionality under /sys/kernel/tracing/
+>>> (unless that's concurrent with one of the former, as per your other
+>>> reply) ?
+>> It's any user of the ftrace infrastructure, which includes kprobes, bpf,
+>> perf, function tracing, function graph tracing, and also affects instances.
+>>
+>>>> Without this change, because the arch does not support dynamically
+>>>> allocated trampolines, it means that all these ftrace_ops will be
+>>>> registered to the same trampoline. That means, for every function that is
+>>>> traced, it will loop through all 10 of theses ftrace_ops and check their
+>>>> hashes to see if their callback should be called or not.
+>>> Sure; I can see how that can be quite expensive.
+>>>
+>>> What I'm trying to figure out is who this matters to and when, since the
+>>> implementation is going to come with a bunch of subtle/fractal
+>>> complexities, and likely a substantial overhead too when enabling or
+>>> disabling tracing of a patch-site. I'd like to understand the trade-offs
+>>> better.
+>>>
+>>>> With dynamically allocated trampolines, each ftrace_ops will have their own
+>>>> trampoline, and that trampoline will be called directly if the function
+>>>> is only being traced by the one ftrace_ops. This is much more efficient.
+>>>>
+>>>> If a function is traced by more than one ftrace_ops, then it falls back to
+>>>> the loop.
+>>> I see -- so the dynamic trampoline is just to get the ops? Or is that
+>>> doing additional things?
+>> It's to get both the ftrace_ops (as that's one of the parameters) as well
+>> as to call the callback directly. Not sure if arm is affected by spectre,
+>> but the "loop" function is filled with indirect function calls, where as
+>> the dynamic trampolines call the callback directly.
+>>
+>> Instead of:
+>>
+>>    bl ftrace_caller
+>>
+>> ftrace_caller:
+>>    [..]
+>>    bl ftrace_ops_list_func
+>>    [..]
+>>
+>>
+>> void ftrace_ops_list_func(...)
+>> {
+>> 	__do_for_each_ftrace_ops(op, ftrace_ops_list) {
+>> 		if (ftrace_ops_test(op, ip)) // test the hash to see if it
+>> 					     //	should trace this
+>> 					     //	function.
+>> 			op->func(...);
+>> 	}
+>> }
+>>
+>> It does:
+>>
+>>    bl dyanmic_tramp
+>>
+>> dynamic_tramp:
+>>    [..]
+>>    bl func  // call the op->func directly!
+>>
+>>
+>> Much more efficient!
+>>
+>>
+>>> There might be a middle-ground here where we patch the ftrace_ops
+>>> pointer into a literal pool at the patch-site, which would allow us to
+>>> handle this atomically, and would avoid the issues with out-of-range
+>>> trampolines.
+>> Have an example of what you are suggesting?
+> We can make the compiler to place 2 NOPs before the function entry point, and 2
+> NOPs after it using `-fpatchable-function-entry=4,2` (the arguments are
+> <total>,<before>). On arm64 all instructions are 4 bytes, and we'll use the
+> first two NOPs as an 8-byte literal pool.
+>
+> Ignoring BTI for now, the compiler generates (with some magic labels added here
+> for demonstration):
+>
+> 	__before_func:
+> 			NOP
+> 			NOP
+> 	func:
+> 			NOP
+> 			NOP
+> 	__remainder_of_func:
+> 			...
+>
+> At ftrace_init_nop() time we patch that to:
+>
+> 	__before_func:
+> 			// treat the 2 NOPs as an 8-byte literal-pool
+> 			.quad	<default ops pointer> // see below
+> 	func:
+> 			MOV	X9, X30
+> 			NOP
+> 	__remainder_of_func:
+> 			...
+>
+> When enabling tracing we do
+>
+> 	__before_func:
+> 			// patch this with the relevant ops pointer
+> 			.quad	<ops pointer>
+> 	func:
+> 			MOV	X9, X30
+> 			BL	<trampoline>	// common trampoline
 
-Applied to 5.19/scsi-queue, thanks!
+I have a question that does this common trampoline allocated by 
+module_alloc()? if yes,
 
-[1/1] scsi: fnic: remove redundant NULL check
-      https://git.kernel.org/mkp/scsi/c/1dcd96c4d0b7
+how to handle the long jump from traced func to common trampoline if 
+only adding
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+two NOPs in front of func.
+
+-- Wang ShaoBo
+
+> 	__remainder_of_func:
+> 		 	..
+>
+> The `BL <trampoline>` clobbers X30 with __remainder_of_func, so within
+> the trampoline we can find the ops pointer at an offset from X30. On
+> arm64 we can load that directly with something like:
+>
+> 	LDR	<tmp>, [X30, # -(__remainder_of_func - __before_func)]
+>
+> ... then load the ops->func from that and invoke it (or pass it to a
+> helper which does):
+>
+> 	// Ignoring the function arguments for this demonstration
+> 	LDR	<tmp2>, [<tmp>, #OPS_FUNC_OFFSET]
+> 	BLR	<tmp2>
+>
+> That avoids iterating over the list *without* requiring separate
+> trampolines, and allows us to patch the sequence without requiring
+> stop-the-world logic (since arm64 has strong requirements for patching
+> most instructions other than branches and nops).
+>
+> We can initialize the ops pointer to a default ops that does the whole
+> __do_for_each_ftrace_ops() dance.
+>
+> To handle BTI we can have two trampolines, or we can always reserve 3 NOPs
+> before the function so that we can have a consistent offset regardless.
+>
+> Thanks,
+> Mark.
+> .
