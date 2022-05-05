@@ -2,130 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D320C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345893AbiEEJKg (ORCPT
+        id S1351302AbiEEJLA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49308 "EHLO
+        Thu, 5 May 2022 05:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234566AbiEEJKd (ORCPT
+        with ESMTP id S1345965AbiEEJK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 05:10:33 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607584B41B;
-        Thu,  5 May 2022 02:06:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651741573;
-        bh=PE49ljxOaJbEZXi8zE0UMbSilxTIkum0Hyl9KtNCWhk=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=VUzb45/7jJ0QvY1LxJ8fGd5PIAHk5tdZv7WCsWGN7HfaLTECfsZkWen2XvyKS2Gcj
-         8kH0TsJ3fjICqkzk+WMAkUiLt9Bn1doMlT+h/XRlLyxtX+9DYHnXTl42I6LxeNibw+
-         Z5m/D4xAVI5EUTEwdTqGLboOd5OI7EtfGKKkEX84=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from frank-s9 ([217.61.145.208]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MO9z7-1nSWYG34kz-00OWh0; Thu, 05
- May 2022 11:06:13 +0200
-Date:   Thu, 05 May 2022 11:06:05 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <313a5b2e-c571-a13f-3447-b1cd7200f4c9@linaro.org>
-References: <20220430130347.15190-1-linux@fw-web.de> <20220430130347.15190-5-linux@fw-web.de> <20220504152450.cs2afa4hwkqp5b5m@skbuf> <trinity-9f557027-8e00-4a4a-bc19-bc576e163f7b-1651678399970@3c-app-gmx-bs42> <20220504154720.62cwrz7frjkjbb7u@skbuf> <313a5b2e-c571-a13f-3447-b1cd7200f4c9@linaro.org>
+        Thu, 5 May 2022 05:10:59 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D194B856
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 02:07:16 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id c11so3799830plg.13
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 02:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vzFHg7LpC1f5IJb8pgP21cVA3EcMC1zK7MvlkX40SCk=;
+        b=0YBWTe/JXyCFcM7dhTqyErMW3J9fHg4Anp14lNd9keICEzbNRzMsbp1T8DPiHhbfMv
+         a0bGSiyzndhBZwBq+K0b3Qq7+oRYgL6+f6369FDR9IduzUWXHPXAiXFJMGIyBYbZzMrW
+         V5FvnqJDLHHZO1Q8I5HstF1+xNYXYmqQ8uplY9nsdXwB0nOMo/JfIDoa1ykKZ8Cq2tpO
+         97SrgRGCW8HcZshF9yuXh41LzIk+0TwKXcYq1DIra3TIHyRct1VT4MCS3DM+xGRnPgmA
+         pAq0Bfb9tU2FCHyWHWASEsX6mJHv1YxTW6YEtdshodnyc2Dehfjo5tf1MuGyDwtD5/oM
+         EX4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vzFHg7LpC1f5IJb8pgP21cVA3EcMC1zK7MvlkX40SCk=;
+        b=KC33h/B0Isj3VfzBP4fdcWC9k236O/klq8eNf2cx2goVA8oJDt7mSR7wfrAmwGLZpq
+         wmqUsfEGWcxPftIZ01qBTlyDjeXmfr/ACve+cU+1ZnLQW3nwsuAUct9baz74Mb375GVt
+         HIw993EwOeSCo0d8RHfXsqbfNs9VnbdnKZSX3Mj0Ad6MgIU/OzAP6g1g6vzt4vjL1Eyg
+         0VP5Uq98ijPa9Pju/hSjGB0iyFkurF1PPR+vxvKOcgB/TKkctD1x/hfMtglDEWSs/EJ5
+         qZEZh6gkwYWviGLBb1ue3l1b9l91nbkbxvefUZ6aqh4KfDmKjLA9u+S9U37y2BtalrP5
+         2Imw==
+X-Gm-Message-State: AOAM533qvnp27feOWMDYY8SaDXbXJqplZBJvi0npeoYPkSH1p9xBOp9S
+        6TX57iFFJIs7Tbdg6l0p94RMxQ==
+X-Google-Smtp-Source: ABdhPJxPyTqYYsJ3ZFTfoesmL2tSuqns/ua0YMiyZo59qZCgtFrdEHC3JJIqM/k72EfBi6XJJHvaRw==
+X-Received: by 2002:a17:902:eacd:b0:15c:17fc:31e with SMTP id p13-20020a170902eacd00b0015c17fc031emr26338349pld.4.1651741636318;
+        Thu, 05 May 2022 02:07:16 -0700 (PDT)
+Received: from localhost ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id 145-20020a630297000000b003c14af505edsm821011pgc.5.2022.05.05.02.07.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 02:07:16 -0700 (PDT)
+Date:   Thu, 5 May 2022 17:07:12 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm/kfence: reset PG_slab and memcg_data before
+ freeing __kfence_pool
+Message-ID: <YnOTwJhB/Eq1FSqM@FVFYT0MHHV2J.googleapis.com>
+References: <20220505070105.1835745-1-42.hyeyoo@gmail.com>
+ <20220505073920.1880661-1-42.hyeyoo@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [RFC v2 4/4] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
-Reply-to: frank-w@public-files.de
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-CC:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <D201CE50-280C-4089-BB9F-053FEA28FE9A@public-files.de>
-X-Provags-ID: V03:K1:fswHZVyF/lRZd8JVwCdyHBJTeHXeAmwGzgMDMSGIdz0hDXO4adf
- 6DNQ7Hdu1vjFnafdsMjLokD96/xSHtW4P+JlwGF2ydVvccgeJQBGyVtf7/ZDzMAqCho34s6
- sqGM3PaZ3PFndCo6VMXLcocAJLEHxA55eeaTeLXVgZvDzQ8Eq5RrHCw/S+odtiUpd+qjGwv
- hU0vAPDjw5yIm6bXegJYA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:j9Ro5GzlgnE=:y3PubMXQ+/zpI4KYSQDupN
- oJQ4JRWONcKWVYZCKX5H33jQSFgLL0YuSvZjmf5jpfD9ZjxI1yRt3sXo5C6rRn34aoaYXcKP5
- /4H0dcXerNyfkv11BLsVwX2VgZQOxaQjNLpXLl3aGa3zNBYwqcSzz/EdExVhA9cuEf8sEgCfn
- 0wnFgq+SwuViwDNEq/HpuRQQaFDuxy1QDlx+o2nvYr3Hz788H0tqJwVfEMaWelJU+mtfwaBe6
- NzkUsrZ2U2B9dvCi+VSuW/GkhIMUw1KQlWZ4UKCNFtJAZmcwrMSIxIFOvJPEwDUaXgtE10z50
- 7Fiv/v8B6y2qiSGvW/ReSyVbVgmgZhe1YtU8E2XzI5TXrt7rFOQw87hJkp/crzLFShocXerQ7
- zm4WJks0YVv+1oltOdPUFIspJjubkzbv6XYiF6BdA+1CMEaKHrstBYrKXswB30nDsqcWhzjrw
- /kfzpB34G2xm9xqFsI5fuR9s77kfUsVeA4d6UFGAhBhHRaclbOsFaHtbFhSIhSHIwg9bwKVIh
- 92vmwoTI+2PqW/yiSDF3TKfSwd/vsdlZzF0+C3hwSi8Ko6/PFLXSWUVCWgA6nexfzcs1aVEqx
- 0I4/Z32mTAh00UsfdTLvjzeqkIgzoNRB74Sjxg+mFyaD/zrL38u74bF3LB109QcvBTTxYlG9y
- NKZZ0Zue4kRVXXJ6jMvnCicYjwWrdHSKgW4nTT6d0Q9LhQb0mHnA0HN/m+BJRQLa7q2oQQHKz
- 0lwS8B3plWBqraGPjKNqjhvTh/56cN9zvWWnXKNGA62Iayo5NAHKrVcuLPVUF1JFtbX4RVL3+
- rYbffYZn8AWErO/QSmfeoOWLPRiCSw5iQs214Qy7h2QgFe2mQb+BXSiZxLW1fQag1q+c3QUwT
- JRy7cyct7nh15eyCpady/PJZVyrV2v1SdKAZz2u5iF4aPZfy1qvV5C/lyUwqqEz/Q3Uael2IP
- M5nkUJKzCP6lIJUeLYU0LtyfFwZAAF/cyKyNAcZ3UvmQ8Rh1OFJadwYuyxLyRXiP3Wi6XDTAT
- gia7QCQap4UUaPAopLvQFtwWb0Gm66A9uYYycp2oQfnUWkuMSVGRNbufUVlKGNuB9pIvr8uQE
- 88aNqbN5kytPzg=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505073920.1880661-1-42.hyeyoo@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 5=2E Mai 2022 10:46:55 MESZ schrieb Krzysztof Kozlowski <krzysztof=2Ekoz=
-lowski@linaro=2Eorg>:
->On 04/05/2022 17:47, Vladimir Oltean wrote:
->>>
->>> current device-tree nodes using "switch" and "ports"
->>>
->>> see discussioon here about make it fixed to "ports" property instead
->of PatternProperties including optional "ethernet-"
->>>
->>>
->https://patchwork=2Ekernel=2Eorg/project/linux-mediatek/patch/20220502153=
-238=2E85090-1-linux@fw-web=2Ede/#24843155
->>=20
->> Hmm, I don't get why Krzysztof said to just keep what is used in
->> existing device trees=2E The schema validator should describe what is
->> valid,=20
+On Thu, May 05, 2022 at 04:39:20PM +0900, Hyeonggon Yoo wrote:
+> When kfence fails to initialize kfence pool, it frees the pool.
+> But it does not reset PG_slab flag and memcg_data of struct page.
+> 
+> Below is a BUG because of this. Let's fix it by resetting PG_slab
+> and memcg_data before free.
+> 
+> [    0.089149] BUG: Bad page state in process swapper/0  pfn:3d8e06
+> [    0.089149] page:ffffea46cf638180 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d8e06
+> [    0.089150] memcg:ffffffff94a475d1
+> [    0.089150] flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
+> [    0.089151] raw: 0017ffffc0000200 ffffea46cf638188 ffffea46cf638188 0000000000000000
+> [    0.089152] raw: 0000000000000000 0000000000000000 00000000ffffffff ffffffff94a475d1
+> [    0.089152] page dumped because: page still charged to cgroup
+> [    0.089153] Modules linked in:
+> [    0.089153] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B   W         5.18.0-rc1+ #965
+> [    0.089154] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+> [    0.089154] Call Trace:
+> [    0.089155]  <TASK>
+> [    0.089155]  dump_stack_lvl+0x49/0x5f
+> [    0.089157]  dump_stack+0x10/0x12
+> [    0.089158]  bad_page.cold+0x63/0x94
+> [    0.089159]  check_free_page_bad+0x66/0x70
+> [    0.089160]  __free_pages_ok+0x423/0x530
+> [    0.089161]  __free_pages_core+0x8e/0xa0
+> [    0.089162]  memblock_free_pages+0x10/0x12
+> [    0.089164]  memblock_free_late+0x8f/0xb9
+> [    0.089165]  kfence_init+0x68/0x92
+> [    0.089166]  start_kernel+0x789/0x992
+> [    0.089167]  x86_64_start_reservations+0x24/0x26
+> [    0.089168]  x86_64_start_kernel+0xa9/0xaf
+> [    0.089170]  secondary_startup_64_no_verify+0xd5/0xdb
+> [    0.089171]  </TASK>
+> 
+> Fixes: 0ce20dd84089 ("mm: add Kernel Electric-Fence infrastructure")
+> Fixes: 8f0b36497303 ("mm: kfence: fix objcgs vector allocation")
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 >
->These were talks about bindings which describe hardware=2E The node name,
->except Devicetree spec asking for generic names, does not matter here
->actually=2E
->
->> and since the mt7530 driver does not care one way or another
->> (some drivers do explicitly parse the "ports"/"ethernet-ports" node),
->> then whatever is valid for the DSA core is also valid for the mt7530
->> bindings=2E And "ethernet-ports" is valid too, so I think it should be
->> accepted by mediatek=2Eyaml=2E=2E=2E
->
->You can make it "(ethernet-)?ports" as well=2E My comment was purely to
->make it simpler, for bindings (goes into properties, not
->patternProperties) and for us=2E If you prefer to keep it like DSA core,
->also fine=2E
 
-Ok, i'm also thinking, the dsa-definition will be the right way (pattern-p=
-roperties with optional "ethernet-") in binding=2E
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 
-Should i use "ethernet-ports" instead of "ports" here? Current dts with mt=
-7530/mt7531 switches using "ports" so i would use it here too=2E If dsa pre=
-fer ethernet-ports now it should be changed in other files too=2E
-
->Best regards,
->Krzysztof
-
-Hi,
-regards Frank
+Thanks.
