@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1951EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7777EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352319AbiEESXf (ORCPT
+        id S1349180AbiEESXm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        Thu, 5 May 2022 14:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383282AbiEESTo (ORCPT
+        with ESMTP id S1383290AbiEESTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:44 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2297E5DA7C;
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BD7393F6;
         Thu,  5 May 2022 11:15:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651774559; x=1683310559;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cixCPEKKpzvmyK7DHYTRav82CT9isuogv5cupV3KuZM=;
-  b=fziwpUtwaZKF5G4as7bNB4GyI78vDX+SjYVmVkLBui6JN7pwNnbJPNQ1
-   xPrCCAlXu0f+iYQhQxJNHv7o1XUGFMEHnUYER41hMCjiwhAvNYUlSJdPH
-   S2HuVRc85D0+6H5cjwVC1xjKNib8HRk+kdEaNPRrX/xspyCAYwKyeW4dB
-   3IOpLAyUNTI02Y26KpFOwuxxobfUsZXnt2jCVyCxIrgztnrWE/NDm2EN4
-   Vy0Nns/DRVDAeep0rSFF+Tuly/P2P/wxR8vMGt0Y4pjrw9hln0XWOBgXh
-   lFcy2g0oYDosS7ZGfd6UVFXLMFn5xgyITCRSbOskXwoRjlzCO5gFin1vj
+  bh=69sh3pw1NcgscHP0fbjDPQ4nsOQbDzwcSXBGPmnH3Sc=;
+  b=E+qBnxiWagoUAdW6fvQciAOVdHPwex4u8Ca6flkFyKcMQ1Di27xbezNc
+   l1trEjSWhM0dN0TQP6N7H7cgJV0zF5Ram0hAgOGv5WPFTRgAJbPazxsPl
+   qHR7ybYB2DC/2cvovyaCjaHSjbZhYlaGGfg9ZnK/7F0hbce3LIFOgjF2V
+   iksSfF9MmrZE/THI56y8IB6KCvbLHSO4y9pgh1vvjijfA9OgtQrCqZYbf
+   ZketWL3K+Ldp0PA1GEK/yntnLOzR5MYE0LEhi58OfkwXsR3SWh7Lgef8O
+   vYQdkrsL8nUiKa5ZWAYcgfWh17Hg+WZ+jkqF5vmzaSXwmM3oq4JPvSx0N
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113929"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248742037"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248113929"
+   d="scan'208";a="248742037"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:47 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083440"
+   d="scan'208";a="665083313"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:53 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:47 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 083/104] KVM: x86: Split core of hypercall emulation to helper function
-Date:   Thu,  5 May 2022 11:15:17 -0700
-Message-Id: <ae16ad3dc0be329cbdc131e0cdd14dce65692a17.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 049/104] KVM: x86/mmu: Disallow dirty logging for x86 TDX
+Date:   Thu,  5 May 2022 11:14:43 -0700
+Message-Id: <d8df1cc5528d567a4f238a46365bf1aef930dec6.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -58,114 +58,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-By necessity, TDX will use a different register ABI for hypercalls.
-Break out the core functionality so that it may be reused for TDX.
+TDX doesn't support dirty logging.  Report dirty logging isn't supported so
+that device model, for example qemu, can properly handle it.
 
 Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  4 +++
- arch/x86/kvm/x86.c              | 54 ++++++++++++++++++++-------------
- 2 files changed, 37 insertions(+), 21 deletions(-)
+ arch/x86/kvm/x86.c       |  5 +++++
+ include/linux/kvm_host.h |  1 +
+ virt/kvm/kvm_main.c      | 15 ++++++++++++---
+ 3 files changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index d6dce57fe0eb..f67fe33e6661 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1867,6 +1867,10 @@ static inline void kvm_clear_apicv_inhibit(struct kvm *kvm,
- 	kvm_set_or_clear_apicv_inhibit(kvm, reason, false);
- }
- 
-+unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-+				      unsigned long a0, unsigned long a1,
-+				      unsigned long a2, unsigned long a3,
-+				      int op_64_bit);
- int kvm_emulate_hypercall(struct kvm_vcpu *vcpu);
- 
- int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 2691abb46fac..5f291470a6f6 100644
+index e9b5d6007025..8e6d54faa7ba 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -9259,26 +9259,15 @@ static int complete_hypercall_exit(struct kvm_vcpu *vcpu)
- 	return kvm_skip_emulated_instruction(vcpu);
+@@ -13122,6 +13122,11 @@ int kvm_sev_es_string_io(struct kvm_vcpu *vcpu, unsigned int size,
+ }
+ EXPORT_SYMBOL_GPL(kvm_sev_es_string_io);
+ 
++bool kvm_arch_dirty_log_supported(struct kvm *kvm)
++{
++	return kvm->arch.vm_type != KVM_X86_TDX_VM;
++}
++
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_entry);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_fast_mmio);
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 55dd08cca5d2..8488d85fdb33 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1452,6 +1452,7 @@ bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
+ int kvm_arch_post_init_vm(struct kvm *kvm);
+ void kvm_arch_pre_destroy_vm(struct kvm *kvm);
+ int kvm_arch_create_vm_debugfs(struct kvm *kvm);
++bool kvm_arch_dirty_log_supported(struct kvm *kvm);
+ 
+ #ifndef __KVM_HAVE_ARCH_VM_ALLOC
+ /*
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 0ed431a1e35f..4bf7178e42bd 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1458,9 +1458,18 @@ static void kvm_replace_memslot(struct kvm *kvm,
+ 	}
  }
  
--int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
-+unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-+				      unsigned long a0, unsigned long a1,
-+				      unsigned long a2, unsigned long a3,
-+				      int op_64_bit)
+-static int check_memory_region_flags(const struct kvm_userspace_memory_region *mem)
++bool __weak kvm_arch_dirty_log_supported(struct kvm *kvm)
  {
--	unsigned long nr, a0, a1, a2, a3, ret;
--	int op_64_bit;
--
--	if (kvm_xen_hypercall_enabled(vcpu->kvm))
--		return kvm_xen_hypercall(vcpu);
--
--	if (kvm_hv_hypercall_enabled(vcpu))
--		return kvm_hv_hypercall(vcpu);
--
--	nr = kvm_rax_read(vcpu);
--	a0 = kvm_rbx_read(vcpu);
--	a1 = kvm_rcx_read(vcpu);
--	a2 = kvm_rdx_read(vcpu);
--	a3 = kvm_rsi_read(vcpu);
-+	unsigned long ret;
- 
- 	trace_kvm_hypercall(nr, a0, a1, a2, a3);
- 
--	op_64_bit = is_64_bit_hypercall(vcpu);
- 	if (!op_64_bit) {
- 		nr &= 0xFFFFFFFF;
- 		a0 &= 0xFFFFFFFF;
-@@ -9287,11 +9276,6 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		a3 &= 0xFFFFFFFF;
- 	}
- 
--	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
--		ret = -KVM_EPERM;
--		goto out;
--	}
--
- 	ret = -KVM_ENOSYS;
- 
- 	switch (nr) {
-@@ -9350,6 +9334,34 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		ret = -KVM_ENOSYS;
- 		break;
- 	}
-+	return ret;
+-	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
++	return true;
 +}
-+EXPORT_SYMBOL_GPL(__kvm_emulate_hypercall);
 +
-+int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
++static int check_memory_region_flags(struct kvm *kvm,
++				     const struct kvm_userspace_memory_region *mem)
 +{
-+	unsigned long nr, a0, a1, a2, a3, ret;
-+	int op_64_bit;
++	u32 valid_flags = 0;
 +
-+	if (kvm_xen_hypercall_enabled(vcpu->kvm))
-+		return kvm_xen_hypercall(vcpu);
-+
-+	if (kvm_hv_hypercall_enabled(vcpu))
-+		return kvm_hv_hypercall(vcpu);
-+
-+	nr = kvm_rax_read(vcpu);
-+	a0 = kvm_rbx_read(vcpu);
-+	a1 = kvm_rcx_read(vcpu);
-+	a2 = kvm_rdx_read(vcpu);
-+	a3 = kvm_rsi_read(vcpu);
-+	op_64_bit = is_64_bit_hypercall(vcpu);
-+
-+	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
-+		ret = -KVM_EPERM;
-+		goto out;
-+	}
-+
-+	ret = __kvm_emulate_hypercall(vcpu, nr, a0, a1, a2, a3, op_64_bit);
- out:
- 	if (!op_64_bit)
- 		ret = (u32)ret;
++	if (kvm_arch_dirty_log_supported(kvm))
++		valid_flags |= KVM_MEM_LOG_DIRTY_PAGES;
+ 
+ #ifdef __KVM_HAVE_READONLY_MEM
+ 	valid_flags |= KVM_MEM_READONLY;
+@@ -1862,7 +1871,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
+ 	int as_id, id;
+ 	int r;
+ 
+-	r = check_memory_region_flags(mem);
++	r = check_memory_region_flags(kvm, mem);
+ 	if (r)
+ 		return r;
+ 
 -- 
 2.25.1
 
