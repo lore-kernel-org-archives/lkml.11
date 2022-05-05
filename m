@@ -2,80 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 08:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350366AbiEEIt2 (ORCPT
+        id S1350353AbiEEIuk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 04:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59676 "EHLO
+        Thu, 5 May 2022 04:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241214AbiEEIs5 (ORCPT
+        with ESMTP id S235438AbiEEIuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 04:48:57 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30906B93;
-        Thu,  5 May 2022 01:45:15 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 4E39792009C; Thu,  5 May 2022 10:45:14 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 4A38F92009B;
-        Thu,  5 May 2022 09:45:14 +0100 (BST)
-Date:   Thu, 5 May 2022 09:45:14 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-cc:     Arnd Bergmann <arnd@kernel.org>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [RFC v2 25/39] pcmcia: add HAS_IOPORT dependencies
-In-Reply-To: <20220504172201.GA454911@bhelgaas>
-Message-ID: <alpine.DEB.2.21.2205050917160.52331@angie.orcam.me.uk>
-References: <20220504172201.GA454911@bhelgaas>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 5 May 2022 04:50:37 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F3D49F35
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 01:46:59 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id i5so5115969wrc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 01:46:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KAi9SgYYEJZdQCddUzbx52lypx3cIglFyl/qHafebhw=;
+        b=tkNfdzaaxw1oNzzHEFi5PsCP9pSRB2g18WUgVkc6DnnNJz4opSwgzEVFoUUkq98Kud
+         DmFNXaVYExw1NuJr8DqujznLa2az0lWDiTc0qWvNUCAP5r5OW9iSR8QEqSlWZJONTS4P
+         F30VkUEk9v9uHoJqLqcvFr87lcceheNYz87udcrXOAHtFnIyEOvlcZaxaIZkOdNhT30Y
+         dB4ud6EWIxegH+EYbtLr/2s0zJ21Uw2TaCRSfxNT1dPyuAPqkA2Ti2WZXu8bcR/8mxNC
+         eMgh7vO/iGZwuEnOROZ+GPB0E6E/imyXgauO3i4m/vz/qEwWxwP3ttMVK1mz2Ist0shg
+         sbpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KAi9SgYYEJZdQCddUzbx52lypx3cIglFyl/qHafebhw=;
+        b=aV6mdcw+/rBxSXL815qPXnUMra4mY37Qg1/aVJt8GIkJFpDv+hvca1hqONe5e5sV01
+         JjVbQIlItWJf05zlGWYsa/5k3wE0YXfowFKZEsuS/ZSLIYPNGiPTfIXhwHRYWy57k8wP
+         PB3jE3IrN1KS9NDvNpyQ/mZ4AWBX1YmP5iZKLGdDgkMhxG5yZmoCUReLC09IKIvLQHUz
+         4cx3oTolMjC0zzfTtfCmrwDymKRUWZE4GPIA4CVSB+oBIAloTr769TypKK3LV6L6OIMF
+         XKirYkFExsql/R1pdIMH4R7Ii5eT7L/++EtFxbUY0LdSzsZFU9IkEJ8SIK1nAsCBUmF5
+         6ZSw==
+X-Gm-Message-State: AOAM530iKD2ggYtBDiOPESOtIWU6ljXGBKRX33twv7yvtI5WaYF0yIBV
+        U2oblTVbTmdvw02NnAsU9uqszQ==
+X-Google-Smtp-Source: ABdhPJx0cG82J35HyxF+U/lAjaHUyieUfdukDsGukXiyDflYgKWosvfKkWmN+5Kvijh4a8XoYMPHpw==
+X-Received: by 2002:a5d:6551:0:b0:20a:e23c:a7fa with SMTP id z17-20020a5d6551000000b0020ae23ca7famr19657153wrv.535.1651740417622;
+        Thu, 05 May 2022 01:46:57 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id 67-20020a1c1946000000b003942a244f2csm6771728wmz.5.2022.05.05.01.46.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 01:46:57 -0700 (PDT)
+Message-ID: <313a5b2e-c571-a13f-3447-b1cd7200f4c9@linaro.org>
+Date:   Thu, 5 May 2022 10:46:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC v2 4/4] arm64: dts: rockchip: Add mt7531 dsa node to
+ BPI-R2-Pro board
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220430130347.15190-1-linux@fw-web.de>
+ <20220430130347.15190-5-linux@fw-web.de>
+ <20220504152450.cs2afa4hwkqp5b5m@skbuf>
+ <trinity-9f557027-8e00-4a4a-bc19-bc576e163f7b-1651678399970@3c-app-gmx-bs42>
+ <20220504154720.62cwrz7frjkjbb7u@skbuf>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220504154720.62cwrz7frjkjbb7u@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 4 May 2022, Bjorn Helgaas wrote:
-
-> >  Well, yes, except I would expect POWER9_CPU (and any higher versions we 
-> > eventually get) to clear HAS_IOPORT.  Generic configurations (GENERIC_CPU) 
-> > would set HAS_IOPORT of course, as would any lower architecture variants 
-> > that do or may support port I/O (it's not clear to me if there are any 
-> > that do not).  Ideally a generic configuration would not issue accesses to 
-> > random MMIO locations for port I/O accesses via `inb'/`outb', etc. for 
-> > systems that do not support port I/O (which it now does, or at least used 
-> > to until recently).
+On 04/05/2022 17:47, Vladimir Oltean wrote:
+>>
+>> current device-tree nodes using "switch" and "ports"
+>>
+>> see discussioon here about make it fixed to "ports" property instead of PatternProperties including optional "ethernet-"
+>>
+>> https://patchwork.kernel.org/project/linux-mediatek/patch/20220502153238.85090-1-linux@fw-web.de/#24843155
 > 
-> It would seem weird to me that a module would build and run on a
-> generic kernel running on POWER9 (with some safe way of handling
-> inb/outb that don't actually work), but not on a kernel built
-> specifically for POWER9_CPU.
+> Hmm, I don't get why Krzysztof said to just keep what is used in
+> existing device trees. The schema validator should describe what is
+> valid, 
 
- Why?  If you say configure your Alpha kernel for ALPHA_JENSEN, a pure 
-EISA system, then you won't get PCI support nor any PCI drivers offered 
-even though a generic Alpha kernel will get them all and still run on a 
-Jensen system.  I find that no different from our case here.
+These were talks about bindings which describe hardware. The node name,
+except Devicetree spec asking for generic names, does not matter here
+actually.
 
- And if we do ever get TURBOchannel Alpha support, then a generic kernel 
-configuration will offer EISA, PCI and TURBOchannel drivers, while you 
-won't be offered TURBOchannel drivers for a PCI system and vice versa.  
-It would make no sense to me.
+> and since the mt7530 driver does not care one way or another
+> (some drivers do explicitly parse the "ports"/"ethernet-ports" node),
+> then whatever is valid for the DSA core is also valid for the mt7530
+> bindings. And "ethernet-ports" is valid too, so I think it should be
+> accepted by mediatek.yaml...
 
- Please mind that the main objective for system-specific configurations is 
-optimisation, including both size and speed, and a part of the solution is 
-discarding stuff that's irrelevant for the respective system.  So in our 
-case we do want any port I/O code not to be there at all in compiled code 
-and consequently any driver that absolutely requires port I/O code to work 
-will have to become a useless stub in its compiled form.  What would be 
-the point then of having it there in the first place except to spread 
-confusion?
+You can make it "(ethernet-)?ports" as well. My comment was purely to
+make it simpler, for bindings (goes into properties, not
+patternProperties) and for us. If you prefer to keep it like DSA core,
+also fine.
 
-  Maciej
+Best regards,
+Krzysztof
