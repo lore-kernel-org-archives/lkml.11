@@ -2,223 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B174C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244877AbiEEGl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 02:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
+        id S244928AbiEEGnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 02:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237351AbiEEGl0 (ORCPT
+        with ESMTP id S237351AbiEEGnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 02:41:26 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107C71A3A7;
-        Wed,  4 May 2022 23:37:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651732667; x=1683268667;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=bR5QP4SZ/llnksGKUl3tRe021IzQ8hlGge0HlIZJAO0=;
-  b=czAGh96uLR/jj66PLqvae5KkcqsL48pgYH7NvFG/68WUlu0grP4uBI2f
-   Ki58a0DLIgfJYWH/KZqCv8TngeinG3+hxD8OT4VxbxKkGP6mg590CUMT6
-   Lu3hrBSHQssR2oy3aBQmD43/h88RldZluut8FlttHwXfQk7hJ1dC9W+o5
-   nflQk3eFk0xlKoG9YpMqEypu2PzHpudxQt2DWBtiyh4E4vwn+U5GTe1ft
-   qw1b4XIiUWP5q/fZOQxc9lwByRtV8Is0wmiI3wRqwExEtyCKVtinMOYLx
-   g3uHE+L0ENWelaKYGAeX0PqaKGxHFxYUF1pVC5n4M6M3ddJYi9t8UFWmq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="266860301"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="266860301"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 23:34:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; 
-   d="scan'208";a="891202877"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga005.fm.intel.com with ESMTP; 04 May 2022 23:34:58 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 4 May 2022 23:34:57 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Wed, 4 May 2022 23:34:57 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Wed, 4 May 2022 23:34:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D1iieCAYI/8b1jQwdPZcDBbep4N+v6+jBrYRNDTmGOgIZZHV0AfqmV+hdt03lOu7OWHzUYBcuIzpTCnBaTrJBlctb92uf5NbKSp1UJvrESN6Gwve3XoQByxEKuhYfFrQrL7NQFWNQGf4jgbpdLvTaGGrXPC2LFmv91oLISpUbsQt0ltP39nBeGfVKNzGTVgjoksLJ37fta0TCo4Iyig7Se9dbp9OzIJJJGmDk0lFuw/N1mNkaCCxwgd1geR9bATrIRGGZf6pOCiyXj1BsXlx5UO6qkUvELsZe/1cUF7gALO8/WvOgOmn1ELd+KAiLcNv6jiWJZ7S9I1PCvGRUJJIxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TEL9DTWyAgmEeKc+JJT3MyLlXsuPcWAsNL/8RC2QFOc=;
- b=FYRONtuNkwiEiAg/F09TrsexeHCLjGsBVw91+IlFNvwsAPGgMIqIzzfODg//JHgEOLYKf1HYnjjvGcg2cBrUjGTP14gI/NEtFg7w+QhKJrcEu9GymTXFAley2U8fhxdOVems4oj7oBuOEF0HVlV7UucX1fs/aMfnGhKhkvn9Tf9uDKOCGNZQ8/34i3pWlr/GTtqmLis1XN0Plu7iJ0Cuoy9M8C5SEG9f94BdVXdTWz/lIg8jN9pFTZzrzhHx1gidbjIctNHtf5uURlTILVX3DU8jkqZxhYJApDFJT1GFRXd95xlu8I7V8KDkStW3m8lLb36JRQElVgrAsnJquVkK7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB3819.namprd11.prod.outlook.com (2603:10b6:5:13f::31)
- by BN6PR11MB1746.namprd11.prod.outlook.com (2603:10b6:404:fb::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Thu, 5 May
- 2022 06:34:55 +0000
-Received: from DM6PR11MB3819.namprd11.prod.outlook.com
- ([fe80::4838:60ae:b637:3fc0]) by DM6PR11MB3819.namprd11.prod.outlook.com
- ([fe80::4838:60ae:b637:3fc0%7]) with mapi id 15.20.5206.025; Thu, 5 May 2022
- 06:34:55 +0000
-From:   "Wu, Hao" <hao.wu@intel.com>
-To:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
-        "trix@redhat.com" <trix@redhat.com>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "Xu, Yilun" <yilun.xu@intel.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Matthew Gerlach" <matthew.gerlach@linux.intel.com>
-Subject: RE: [PATCH v4] uio: dfl: add HSSI subsystem feature id
-Thread-Topic: [PATCH v4] uio: dfl: add HSSI subsystem feature id
-Thread-Index: AQHYYBXhbDfzmBtOIEy5kNhTwRg2C60P0h9g
-Date:   Thu, 5 May 2022 06:34:55 +0000
-Message-ID: <DM6PR11MB38197DBE27837090E0C9165985C29@DM6PR11MB3819.namprd11.prod.outlook.com>
-References: <20220505001628.681226-1-tianfei.zhang@intel.com>
-In-Reply-To: <20220505001628.681226-1-tianfei.zhang@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 01f2419c-736c-4efa-2e79-08da2e615e6d
-x-ms-traffictypediagnostic: BN6PR11MB1746:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BN6PR11MB1746749014AB755661BC79D685C29@BN6PR11MB1746.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lPXrRdAfC9ChBs18qhkhMbDa01fx21jNTxsZkuiPukNt7yirA79Gj373PGIC9zdP6x9gZgQLdnNqbmvrCJstOmrmLDULcZsgnqKHM3l/lbpwhhuO3g2LsOptl9avFqdRp8R3bsP8Rh2T1LBp9CJYVgSBiIG+T1AoUgtQTMy0Xg/yRRK+Fv1nGKUIZ5CS1FHnpN9SlUKQkA4xP9QSBhv5Ynx9sSkC47oAvA/G/3mg7jq9XxDHyyLTrPRZfYLkvneBevuiUBHjBKWEBxUV5CiyotX+7lWP4eThEbO5HG4MBMi4KSeY8tanMywqg7F6OKWLV0XWw1yszibYDC6h4E11jQ0QOfKcizTMHqZ66tYkVU90Q9byQ/K1GDzZWMex9Pv4WIyDtFHyosDEc18ur5pC/gMOvqR7lbGK0CofbhT7KOegFrOrzjIHYaQlY6vmKgYg44p0mgS5VGwiJ7u9oNmGeWZlUGkekfAmxX0uO/nvYLehgCOPHzjGmr8qUFJeS6f4benoblXtOic5k7lsyn7havBxWBm93nySRbi6G7UqdgF0GeB3MEiznf48CTLu3R5vtDU9SFGJ1is3pyYYqsninV+JMHhtSSVPkxMXT/VOk0quXoC35YXezGOlAdP7rPN65D6OJ9Mjt3FQ0n8a9V8bCW7ohO7b6iIimkk+Pyy8bX2goAMBvU5sbelEGDTISGABYJNTjE0wuldH63bBBxcesQt4DQtu6svYZghNSfshCL687BIHxwjDVA9o5SiDSGp+SET+8pFVSyJKwrgFszI/TukUUzcue8BhL6FlpFdgK84=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3819.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(53546011)(6506007)(26005)(38070700005)(7696005)(38100700002)(122000001)(86362001)(9686003)(82960400001)(186003)(33656002)(66446008)(66476007)(316002)(64756008)(5660300002)(83380400001)(4326008)(8676002)(66556008)(66946007)(76116006)(52536014)(55016003)(2906002)(54906003)(8936002)(110136005)(508600001)(71200400001)(966005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?O0TqLGDBHy1T4X4HvgJSoCPsEFkfbrfcErpsYuWY6f2d9vo+d2X+bM+unn6B?=
- =?us-ascii?Q?gJ/Gm07kdjpRH29EpuZEHus86Ux/ZtrZfe90aUgB72dtNwOXyrbK3Jnx5sCD?=
- =?us-ascii?Q?BFBXxo9y16T/Pt3/wLwyzActQaNYWrVoGTT3BBW9f1qK9xLY8R+GNIVxLUNj?=
- =?us-ascii?Q?ammwU1XhuhvK843DoRbicCmvJdwNnUDXyW5jTg82Wep5RRWVuIUxkDogklTa?=
- =?us-ascii?Q?c2ZriLlxwU3g2Ujp8zGud1I0BSDw4vVWMyG+sj8u1BsOP61MDBLdfriNG887?=
- =?us-ascii?Q?sAws2QIqqtYGNKAGqDTGQfH174iuEutgGLr55uFeLTutLNkQdc+KGZNdDtk/?=
- =?us-ascii?Q?FUpZ+MyS0UfIPc+LA+BhuwSKYMMBrZc18NoQ0vnBat0ruB/Fe2Z//ElUo0hb?=
- =?us-ascii?Q?VsDUb6yXyEWOxyvDepwnsR4tFtGcW5yuJUxGYyuhgPJ5xTzWz/Yft29HMyk5?=
- =?us-ascii?Q?QMPbSeip3Iu5OhUZYcMYjxPJMUFDA+pt06iWFcHZqNwtaBdcAB1PjCOf2O6q?=
- =?us-ascii?Q?0eyqEz4pLUJCJDaODjGcPCqqhiiV2FO5jgls9ukjnCTKkb1VPjAI/Ny8Ko19?=
- =?us-ascii?Q?x6fR0XnIpP7d4RJo50Y4i0QwSUvbMS3ZOiAJEB1PJBnokmLfVay4pBREeNur?=
- =?us-ascii?Q?ch5HhUo9Go4CzDA1PWbtRyP01kJsL/9n+9RT56M4zQzfV6fFmYiOP7drKZDn?=
- =?us-ascii?Q?iq9+Ocyn2njBRvAD41UiD+eVJ52xJzxv2m3mhfHTn1+IF0sVzh5vKURrRfjn?=
- =?us-ascii?Q?9X0DNXVZ4QYmVid0ihm/VMOA4G9/c0qUb5Beehb0IjCRHT1fpbtfZ2q9Sknm?=
- =?us-ascii?Q?PBpNBMcgs3SNY5g6j4Cs3gREE6FzVONPnbtbalTqqGjXrT1iGutL8gPXXdHS?=
- =?us-ascii?Q?WoTPtd8Oj5otMNR+oTf6yanPhoI8U29mM5TUJwjf/PdehFvPCrRGjg9f4uLZ?=
- =?us-ascii?Q?n/vKEwhomIAsPVzNWMQzlEcEH4wDvDFJmWzYts/kQ5bPux5d8SSdf7J6groq?=
- =?us-ascii?Q?XjDQ7N8UuUHlreZLqA4JatS7UwDisTCaAoQkku4P1LB6oCh9dE9MDtw6NwMR?=
- =?us-ascii?Q?M/RPpZ4rBhDRgiolG670MychGHybhdEu9erfb2fzEbqbONJbiRC1rsMlVsjj?=
- =?us-ascii?Q?Y25KYrzZByoeQJeP+2jtHIBjCRz2KqiPuHwhZKzaOW+6B2Jslm/3UXOj3ZFO?=
- =?us-ascii?Q?dSbLMaNOalwbJhliuuDvoZaVPjmzBNKHkc8+q8JinL5wFRSfDTTlyqZy8/II?=
- =?us-ascii?Q?U7+vXOGtan3sV0JhEtRa9JpYj7UcaWPOSYbjXIjpXyAV9x+REqZXwHInOTGs?=
- =?us-ascii?Q?6xUrsj5r9WaQ6HQnCEFA4Woiw0JG0q7mDA5YaimlHSiN1yU/zfS5Ze3fzU3Y?=
- =?us-ascii?Q?dCDUrHPUvTgU0hgDrBGchm47jkkGOWV00y2zvS7z4G9/C3uASRbKHcn2R+pl?=
- =?us-ascii?Q?+oCGMnqA9xCqKOc8F9c46teEzM3u0WG1A5DLw8D5bHmEOOR/oZFDRRV2xOYB?=
- =?us-ascii?Q?62HgMpKsLJmi5k6GMbNH+Zu+DKe5Gplj9ibo+aNFYvNluktBEtwTvK9pxVv9?=
- =?us-ascii?Q?uWdD9wNAOeDAjs3Y+FUq4oxoBiF2y512nGMT40sY/9mo1ZM9eAO+Nw+JbxF6?=
- =?us-ascii?Q?+bFTPhqLYWibjIAy6idnBTzLrLlLXB4SMMwxTft+Gek5LRhAk/NBdH9HZYuK?=
- =?us-ascii?Q?R2xVdlYWHYtfmHX+gcROKu0GWz/iesxf1MykwtgmPImFiLjh3vCQBAvOYI8c?=
- =?us-ascii?Q?ddjEKgPe+g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 5 May 2022 02:43:01 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6CE1A3A7;
+        Wed,  4 May 2022 23:39:22 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id e5so2945924pgc.5;
+        Wed, 04 May 2022 23:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dFzgWSvicZ/XoDlji2B9QYRgUw7KCo17xjfB3tjep9E=;
+        b=jLSw7SKqlxTKrMtC0kT8DIYT2fZEiKS9oxY35xXiosLrHYj0dzGA8tMzqUJn2Cq/9S
+         5pdZzppf5oqvLLkXa/H389PbLWWLZ+cl7KAYALf9SCbZzKzvDSl7vBlFqPJXCE6qM+3q
+         lJa0DoJptozdvI8tgeHjqCn7cWwdxXo96bRYBV3CH0i/v+Vj/fxIEdsy8F50zoXpBBXL
+         ap+sgOESNa8a7ZA2XPVlIo8EwD+IEVOMI3vCKL+gn7H3AzxJ0Vi1px9VyzsWYNMWUP5Z
+         qvLHLmt1ldCRdjj8h8bYbLFrn2SGkBHxd5n97t4B6WESb4qJWVdBl+TOPG1ac7qq1SdX
+         n3YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dFzgWSvicZ/XoDlji2B9QYRgUw7KCo17xjfB3tjep9E=;
+        b=Z6mmNot/8lDTgCepH2nVurMfJ8rid/oc5HXLXYaQsKdp8QCRycfU6RvTJEL1U6GCoU
+         4uwukLhhkD7dBcl04bjvP+lRQAcTjOoQPtMXrPaYp/SsTOGX1GSgblAyyY9aIacKYW5I
+         PVP8W9DlsmnT1+ULq7VKw+eM/7xpthvZcRIdCvADwMj31wLgYzKlmrboNuxuXR4ympmR
+         3jPtltHY8MRmhjYv8OB3i9eIySPdCpJwXzdCgT3qv39Tgnbg3xSTjDAjfgKgF587PqNq
+         ixQs/Sac7jY+BAn5eKjseXHhVtYarnO+kMlGZN8mOHx8R+FQ7xnUA3AsLb6jytmOLn+C
+         bfbQ==
+X-Gm-Message-State: AOAM532GKB4rTflMRtxTd9q8Kwpn5iQ0MQXhiKysIpoXYhPNxtT2uVS7
+        v0ZDqxZAKs7ZZIfV0KvBKn3tlfcOdC8B7p6xWYLwiUnrGoJAgw==
+X-Google-Smtp-Source: ABdhPJw/Jpj/qGebD65QWYSYNM9nQ5k7SijJHYd3PBPYsmwPPR6hlYShQmeOHZ/RS+ePjwIoOOEnW46XMB6Qjyl459I=
+X-Received: by 2002:a05:6a00:10d0:b0:4f7:5af4:47b6 with SMTP id
+ d16-20020a056a0010d000b004f75af447b6mr24926907pfu.6.1651732761849; Wed, 04
+ May 2022 23:39:21 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3819.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 01f2419c-736c-4efa-2e79-08da2e615e6d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2022 06:34:55.7109
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: w7Q35UUY/p8iWsN1iV2TMd3hIYPuUWAw1vIHwr8x5ZlBfsYrcWxO5mHIpAM2q6JCe3p6jkvbwConOAxEWxOFeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1746
-X-OriginatorOrg: intel.com
+References: <20220502102521.22875-1-dharamhans87@gmail.com>
+ <20220502102521.22875-3-dharamhans87@gmail.com> <YnLD1ibtU0FM5nlS@redhat.com>
+In-Reply-To: <YnLD1ibtU0FM5nlS@redhat.com>
+From:   Dharmendra Hans <dharamhans87@gmail.com>
+Date:   Thu, 5 May 2022 12:09:10 +0530
+Message-ID: <CACUYsyGOwTjyOZYuAK1sxO9VFFBp-qPOjbQXJgQj2DK-_X1ynA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] FUSE: Implement atomic lookup + open
+To:     Vivek Goyal <vgoyal@redhat.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-fsdevel@vger.kernel.org,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org, Bernd Schubert <bschubert@ddn.com>,
+        Dharmendra Singh <dsingh@ddn.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Zhang, Tianfei <tianfei.zhang@intel.com>
-> Sent: Thursday, May 5, 2022 8:16 AM
-> To: Wu, Hao <hao.wu@intel.com>; trix@redhat.com; mdf@kernel.org; Xu, Yilu=
-n
-> <yilun.xu@intel.com>; linux-fpga@vger.kernel.org;
-> gregkh@linuxfoundation.org
-> Cc: linux-kernel@vger.kernel.org; Matthew Gerlach
-> <matthew.gerlach@linux.intel.com>; Zhang, Tianfei <tianfei.zhang@intel.co=
-m>
-> Subject: [PATCH v4] uio: dfl: add HSSI subsystem feature id
->=20
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->=20
-> Add the Device Feature List (DFL) feature id for the
-> High Speed Serial Interface (HSSI) Subsystem to the
-> table of ids supported by the uio_dfl driver.
->=20
-> The HSSI Subsystem is a configurable set of IP blocks
-> to be used as part of a Ethernet or PCS/FEC/PMA pipeline.
-> Like the Ethernet group used by the N3000 card, the HSSI
-> Subsystem does not fully implement a network device from
-> a Linux netdev perspective and is controlled and monitored
-> from user space software via the uio interface.
->=20
-> The Feature ID table of DFL can be found:
-> https://github.com/OPAE/dfl-feature-id
+On Wed, May 4, 2022 at 11:50 PM Vivek Goyal <vgoyal@redhat.com> wrote:
+>
+> On Mon, May 02, 2022 at 03:55:20PM +0530, Dharmendra Singh wrote:
+> > From: Dharmendra Singh <dsingh@ddn.com>
+> >
+> > We can optimize aggressive lookups which are triggered when
+> > there is normal open for file/dir (dentry is new/negative).
+> >
+> > Here in this case since we are anyway going to open the file/dir
+> > with USER SPACE, avoid this separate lookup call into libfuse
+> > and combine it with open call into libfuse.
+> >
+> > This lookup + open in single call to libfuse has been named
+> > as atomic open. It is expected that USER SPACE opens the file
+> > and fills in the attributes, which are then used to make inode
+> > stand/revalidate in the kernel cache.
+> >
+> > Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
+> > ---
+> >  fs/fuse/dir.c             | 78 ++++++++++++++++++++++++++++++---------
+> >  fs/fuse/fuse_i.h          |  3 ++
+> >  fs/fuse/inode.c           |  4 +-
+> >  include/uapi/linux/fuse.h |  2 +
+> >  4 files changed, 69 insertions(+), 18 deletions(-)
+> >
+> > diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
+> > index cad3322a007f..6879d3a86796 100644
+> > --- a/fs/fuse/dir.c
+> > +++ b/fs/fuse/dir.c
+> > @@ -516,18 +516,18 @@ static int get_security_context(struct dentry *entry, umode_t mode,
+> >  }
+> >
+> >  /*
+> > - * Atomic create+open operation
+> > - *
+> > - * If the filesystem doesn't support this, then fall back to separate
+> > - * 'mknod' + 'open' requests.
+> > + * This is common function for initiating atomic operations into libfuse.
+> > + * Currently being used by Atomic create(atomic lookup + create) and
+> > + * Atomic open(atomic lookup + open).
+> >   */
+> > -static int fuse_create_open(struct inode *dir, struct dentry *entry,
+> > -                         struct file *file, unsigned int flags,
+> > -                         umode_t mode, uint32_t opcode)
+> > +static int fuse_atomic_do_common(struct inode *dir, struct dentry *entry,
+> > +                              struct dentry **alias, struct file *file,
+> > +                              unsigned int flags, umode_t mode, uint32_t opcode)
+>
+> If this common function is really useful for atomic create + atomic open,
+> I will first add a patch which adds a common function and makes FUSE_CREATE_EXT use that function. And in later patch add functionality to do atomic open.
+> Just makes code more readable.
 
-Is it possible to have multiple different HSSI implementations?
-Will they share the same feature id or not? If yes, why uses a
-generic name here?
+This func is commonly used by atomic create and atomic open, both.
+atomic open has fuse_do_atomic_open wrapper over it. I just renamed
+this func except doing it in a separate patch (just to avoid another
+patch though I understand that it might be a little hard to read the
+code).
 
-Is it possible someday this feature id is marked as legacy not used
-and introduce a new one as the same name?
 
->=20
-> Reviewed-by: Tom Rix <trix@redhat.com>
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-> ---
-> v4: add Reviewed-by and Acked-by tag and add Feature ID table url in git
-> message.
-> v3: change the name of this feature id to HSSI_SUBSYS and rewrite
->     the git message.
-> v2: add HSSI introduction and the git repo of Feature ID table.
-> ---
->  drivers/uio/uio_dfl.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/uio/uio_dfl.c b/drivers/uio/uio_dfl.c
-> index 89c0fc7b0cbc..8f39cc8bb034 100644
-> --- a/drivers/uio/uio_dfl.c
-> +++ b/drivers/uio/uio_dfl.c
-> @@ -45,9 +45,11 @@ static int uio_dfl_probe(struct dfl_device *ddev)
->  }
->=20
->  #define FME_FEATURE_ID_ETH_GROUP	0x10
-> +#define FME_FEATURE_ID_HSSI_SUBSYS	0x15
->=20
->  static const struct dfl_device_id uio_dfl_ids[] =3D {
->  	{ FME_ID, FME_FEATURE_ID_ETH_GROUP },
-> +	{ FME_ID, FME_FEATURE_ID_HSSI_SUBSYS },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(dfl, uio_dfl_ids);
-> --
-> 2.26.2
+>
+> >  {
+> >       int err;
+> >       struct inode *inode;
+> >       struct fuse_mount *fm = get_fuse_mount(dir);
+> > +     struct fuse_conn *fc = get_fuse_conn(dir);
+> >       FUSE_ARGS(args);
+> >       struct fuse_forget_link *forget;
+> >       struct fuse_create_in inarg;
+> > @@ -539,9 +539,13 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+> >       void *security_ctx = NULL;
+> >       u32 security_ctxlen;
+> >       bool atomic_create = (opcode == FUSE_ATOMIC_CREATE ? true : false);
+> > +     bool create_op = (opcode == FUSE_CREATE ||
+> > +                       opcode == FUSE_ATOMIC_CREATE) ? true : false;
+> > +     if (alias)
+> > +             *alias = NULL;
+> >
+> >       /* Userspace expects S_IFREG in create mode */
+> > -     BUG_ON((mode & S_IFMT) != S_IFREG);
+> > +     BUG_ON(create_op && (mode & S_IFMT) != S_IFREG);
+> >
+> >       forget = fuse_alloc_forget();
+> >       err = -ENOMEM;
+> > @@ -553,7 +557,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+> >       if (!ff)
+> >               goto out_put_forget_req;
+> >
+> > -     if (!fm->fc->dont_mask)
+> > +     if (!fc->dont_mask)
+> >               mode &= ~current_umask();
+> >
+> >       flags &= ~O_NOCTTY;
+> > @@ -642,8 +646,9 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
+> >                               err = PTR_ERR(res);
+> >                               goto out_err;
+> >                       }
+> > -                     /* res is expected to be NULL since its REG file */
+> > -                     WARN_ON(res);
+> > +                     entry = res;
+> > +                     if (alias)
+> > +                             *alias = res;
+> >               }
+> >       }
+> >       fuse_change_entry_timeout(entry, &outentry);
+> > @@ -681,8 +686,8 @@ static int fuse_atomic_create(struct inode *dir, struct dentry *entry,
+> >       if (fc->no_atomic_create)
+> >               return -ENOSYS;
+> >
+> > -     err = fuse_create_open(dir, entry, file, flags, mode,
+> > -                            FUSE_ATOMIC_CREATE);
+> > +     err = fuse_atomic_do_common(dir, entry, NULL, file, flags, mode,
+> > +                                 FUSE_ATOMIC_CREATE);
+> >       /* If atomic create is not implemented then indicate in fc so that next
+> >        * request falls back to normal create instead of going into libufse and
+> >        * returning with -ENOSYS.
+> > @@ -694,6 +699,29 @@ static int fuse_atomic_create(struct inode *dir, struct dentry *entry,
+> >       return err;
+> >  }
+> >
+> > +static int fuse_do_atomic_open(struct inode *dir, struct dentry *entry,
+> > +                             struct dentry **alias, struct file *file,
+> > +                             unsigned int flags, umode_t mode)
+> > +{
+> > +     int err;
+> > +     struct fuse_conn *fc = get_fuse_conn(dir);
+> > +
+> > +     if (!fc->do_atomic_open)
+> > +             return -ENOSYS;
+> > +
+> > +     err = fuse_atomic_do_common(dir, entry, alias, file, flags, mode,
+> > +                                 FUSE_ATOMIC_OPEN);
+> > +     /* Atomic open imply atomic trunc as well i.e truncate should be performed
+> > +      * as part of atomic open call itself.
+> > +      */
+> > +     if (!fc->atomic_o_trunc) {
+> > +             if (fc->do_atomic_open)
+> > +                     fc->atomic_o_trunc = 1;
+> > +     }
+> > +
+> > +     return err;
+> > +}
+> > +
+> >  static int fuse_mknod(struct user_namespace *, struct inode *, struct dentry *,
+> >                     umode_t, dev_t);
+> >  static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+> > @@ -702,12 +730,23 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+> >  {
+> >       int err;
+> >       struct fuse_conn *fc = get_fuse_conn(dir);
+> > -     struct dentry *res = NULL;
+> > +     struct dentry *res = NULL, *alias = NULL;
+> >       bool create = flags & O_CREAT ? true : false;
+> >
+> >       if (fuse_is_bad(dir))
+> >               return -EIO;
+> >
+> > +     if (!create) {
+> > +             err = fuse_do_atomic_open(dir, entry, &alias,
+> > +                                       file, flags, mode);
+>
+> So this is the core change of behavior. As of now, if we are not doing
+> create operation, we just lookup and return. But now you are doing
+> open + lookup in a single operation. Interesting. I am not sure if
+> it breaks anything in VFS.
 
+Yes, here we are handling optimizing lookups for open calls. If atomic
+open is implemented underlying we use it otherwise falls back to
+normal open.
+
+>
+> > +             res = alias;
+> > +             if (!err || err != -ENOSYS)
+> > +                     goto out_dput;
+> > +     }
+> > +      /*
+> > +       * ENOSYS fall back for open- user space does not have full
+> > +       * atomic open.
+> > +       */
+>
+> This ENOSYS stuff all the place is making these patches look very unclean
+> to me. A part of me says that should we negotiate these as feature bits.
+> Having said that feature bits are precious and should not be used for
+> trivial purposes. Hmm..., may be we can make handle ENOSYS little better
+> in general.
+
+Actually atomic open is based upon init bits considering the 3rd patch
+which optimizes lookups in d_revalidate(). I would see if I can clean
+ENOSYS a bit.
+>
+> >       if ((!create || fc->no_atomic_create) && d_in_lookup(entry)) {
+> >               res = fuse_lookup(dir, entry, 0);
+> >               if (IS_ERR(res))
+> > @@ -730,9 +769,14 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
+> >       /* Libfuse/user space has not implemented atomic create, therefore
+> >        * fall back to normal create.
+> >        */
+> > -     if (err == -ENOSYS)
+> > -             err = fuse_create_open(dir, entry, file, flags, mode,
+> > -                                    FUSE_CREATE);
+> > +     /* Atomic create+open operation
+> > +      * If the filesystem doesn't support this, then fall back to separate
+> > +      * 'mknod' + 'open' requests.
+> > +      */
+> > +     if (err == -ENOSYS) {
+> > +             err = fuse_atomic_do_common(dir, entry, NULL, file, flags,
+> > +                                         mode, FUSE_CREATE);
+> > +     }
+> >       if (err == -ENOSYS) {
+> >               fc->no_create = 1;
+> >               goto mknod;
+> > diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+> > index d577a591ab16..24793b82303f 100644
+> > --- a/fs/fuse/fuse_i.h
+> > +++ b/fs/fuse/fuse_i.h
+> > @@ -669,6 +669,9 @@ struct fuse_conn {
+> >       /** Is open/release not implemented by fs? */
+> >       unsigned no_open:1;
+> >
+> > +     /** Is atomic open implemented by fs ? */
+> > +     unsigned do_atomic_open : 1;
+> > +
+> >       /** Is atomic create not implemented by fs? */
+> >       unsigned no_atomic_create:1;
+> >
+> > diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
+> > index ee846ce371d8..5f667de69115 100644
+> > --- a/fs/fuse/inode.c
+> > +++ b/fs/fuse/inode.c
+> > @@ -1190,6 +1190,8 @@ static void process_init_reply(struct fuse_mount *fm, struct fuse_args *args,
+> >                               fc->setxattr_ext = 1;
+> >                       if (flags & FUSE_SECURITY_CTX)
+> >                               fc->init_security = 1;
+> > +                     if (flags & FUSE_DO_ATOMIC_OPEN)
+> > +                             fc->do_atomic_open = 1;
+>
+> Hey you are negotiating FUSE_DO_ATOMIC_OPEN flag. If that's the case why
+> do you have to deal with -ENOSYS in fuse_do_atomic_open(). You should
+> be able to just check.
+>
+> if (!create && fc->do_atomic_open) {
+>         fuse_do_atomic_open().
+> }
+
+You are right. This happens due to the reason that we have auto atomic
+create check in atomic create but yes, we do not need ENOSYS here. I
+will clean it.
+
+
+> I have yet to check what happens if file does not exist.
+>
+> >               } else {
+> >                       ra_pages = fc->max_read / PAGE_SIZE;
+> >                       fc->no_lock = 1;
+> > @@ -1235,7 +1237,7 @@ void fuse_send_init(struct fuse_mount *fm)
+> >               FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
+> >               FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
+> >               FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_INIT_EXT |
+> > -             FUSE_SECURITY_CTX;
+> > +             FUSE_SECURITY_CTX | FUSE_DO_ATOMIC_OPEN;
+> >  #ifdef CONFIG_FUSE_DAX
+> >       if (fm->fc->dax)
+> >               flags |= FUSE_MAP_ALIGNMENT;
+> > diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+> > index e4b56004b148..ab91e391241a 100644
+> > --- a/include/uapi/linux/fuse.h
+> > +++ b/include/uapi/linux/fuse.h
+> > @@ -391,6 +391,7 @@ struct fuse_file_lock {
+> >  /* bits 32..63 get shifted down 32 bits into the flags2 field */
+> >  #define FUSE_SECURITY_CTX    (1ULL << 32)
+> >  #define FUSE_HAS_INODE_DAX   (1ULL << 33)
+> > +#define FUSE_DO_ATOMIC_OPEN  (1ULL << 34)
+> >
+> >  /**
+> >   * CUSE INIT request/reply flags
+> > @@ -540,6 +541,7 @@ enum fuse_opcode {
+> >       FUSE_REMOVEMAPPING      = 49,
+> >       FUSE_SYNCFS             = 50,
+> >       FUSE_ATOMIC_CREATE      = 51,
+> > +     FUSE_ATOMIC_OPEN        = 52,
+> >
+> >       /* CUSE specific operations */
+> >       CUSE_INIT               = 4096,
+> > --
+> > 2.17.1
+> >
+>
