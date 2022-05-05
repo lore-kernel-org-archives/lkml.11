@@ -2,76 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 111FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378156AbiEEMyp (ORCPT
+        id S1378054AbiEEMzL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
+        Thu, 5 May 2022 08:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377827AbiEEMyO (ORCPT
+        with ESMTP id S1378363AbiEEMzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:54:14 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220FC527CF;
-        Thu,  5 May 2022 05:50:34 -0700 (PDT)
-Date:   Thu, 5 May 2022 14:50:31 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651755032;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FLqE2JkFG6wskvkAF74RyMbEOiLynryLGT+inUSn7EA=;
-        b=3xp7O05OJNSxkbSR+9rQkTEF7CPouvJjOfPZM54VIo2k364AuWFNmO8OKNfPNKeIovxt6G
-        E67NYpC7+c+e88q7DAlFINhhg+TWgproY/2VKvIWJ/rQj6lYKkKXGIkRiUEIUh9rcg0L93
-        S38ZDBoGoqx7lzEhN/e3upw3cokfeN2+NWZLjndXSFXsBcmHfENnhwlqGLij/H2tqnirbz
-        +M+RZ0qtyPDwqhzCaIcIl0h0BQsTEbwdOwJY+3pVzBWQIpxPgww8MhNtSaTUqIYVGPj187
-        tcWFT7vizHDSNmjGcHgvQZuPg1y6WcNyIdgAjFLM0tgME7/kMaeez/a/GD/9JA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651755032;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FLqE2JkFG6wskvkAF74RyMbEOiLynryLGT+inUSn7EA=;
-        b=TPhpV6m2xTtkLaiPVVKbbScuDeSevE2Fbi+jxi7o95ROlDs4TtcmSSI3o+GZ87UnDDPR3T
-        j1P/gCiVWNqV+fAQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v3 09/11] ptrace: Don't change __state
-Message-ID: <YnPIF9DvM9L0k+0U@linutronix.de>
-References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
- <20220504224058.476193-9-ebiederm@xmission.com>
+        Thu, 5 May 2022 08:55:04 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEB756772
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:51:14 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id y3so8481210ejo.12
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 05:51:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cf6b5pV3UMfQkVtF+8ODWsaGpTKDEhUIkLvFUHa+azk=;
+        b=EFOY1e7wzmMiTo5aHq2giskd/Cr8TikeLQWNah+7OetLEo9t9nmt6zA5y8wJ2X0xVd
+         uBVsPhYk8QcWGlFpAxjcjUle4RFIucf62JKuB2mrlAge/LRD/ndaR0krkj7yZR2gKT1h
+         F6LGY2RSR4n1dQx9214UASDZz6rmSlKGsEGUERkfATLVKVWYKKT906gcOI+/htsNczXO
+         sxJapXGUAiyXxpyamb3uo9ruBybLuNvGK+seZKXg3Qg73z7LjLKw0vRvQ0Bl62ZhZCW5
+         zDfBCAiFrRExJKSAbp3QGudXEADTO/e1RFlqNNJl9wzzQo83dMv6dMG/JcGcW2GPwzdQ
+         TAoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cf6b5pV3UMfQkVtF+8ODWsaGpTKDEhUIkLvFUHa+azk=;
+        b=LrAXWDRFIIV1G0Qu2KvX6Abrj7zhAGfVBGzXBQ21tL3Pemfd7WuPZy4gCkeEA0qXUl
+         bdUS0jjmt6Sr9CnMlUD6vLbeoJeBK6pyyCGEjb5+7xMTiplH6ymj7yd77CKiR7vUjlH+
+         YD2Ea8MT1kQmU/FAzfSUa+JKt5OD0DMUd0c0f7fpXgk/Kdaiiat0L1jKzxFS1Nrqu/2T
+         b3GcESdzTDO6j25a94aA5N+ek8JyaX3GcmeRJpTGWDuCekgt3PYMubTTyq/iNeBypSwJ
+         p5SNA9mw7/DOBx68Fm7C4rWEPqIhXkz/1tYUSmsDb+5RBRmJlYbjTZxcgi3kKpbrGUwg
+         qxAw==
+X-Gm-Message-State: AOAM531gwoDIXtlmfc39eaHXIxIG5/xYEL5ihzP4ZMZ/mDHdQgKehMFR
+        mBwhXbWck7ONQYq7WDmghxxUcugszXhRd4Tew2mcjygYFyvAKQ==
+X-Google-Smtp-Source: ABdhPJyccBQs438IbcOWBLBqEuGKyFzi6RMdb5FH5tYCWKodJL15SEZRUoMNKuuROIqE1Nk9mqA3wiIEhyZQi7aicNo=
+X-Received: by 2002:a17:907:7e92:b0:6f4:c553:c734 with SMTP id
+ qb18-20020a1709077e9200b006f4c553c734mr8113090ejc.286.1651755072981; Thu, 05
+ May 2022 05:51:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220504224058.476193-9-ebiederm@xmission.com>
+References: <20220501092201.16411-1-puyou.lu@gmail.com>
+In-Reply-To: <20220501092201.16411-1-puyou.lu@gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Thu, 5 May 2022 14:51:02 +0200
+Message-ID: <CAMRc=MegD1gwe_FNc04K8-f7PxVauY4L00958oZ5PXaTmL7+_Q@mail.gmail.com>
+Subject: Re: [PATCH] gpio: pca953x: update irq_stat even when irq is not
+ enabled (irq_mask not set).
+To:     Puyou Lu <puyou.lu@gmail.com>
+Cc:     Puyou Lu <lupuyou@aifrutech.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-04 17:40:56 [-0500], Eric W. Biederman wrote:
-> Stop playing with tsk->__state to remove TASK_WAKEKILL while a ptrace
-> command is executing.
-> 
-> Instead remove TASK_WAKEKILL from the definition of TASK_TRACED, and
-> implemention a new jobctl flag TASK_PTRACE_FROZEN.  This new flag is
-implement ?
+On Sun, May 1, 2022 at 11:22 AM Puyou Lu <puyou.lu@gmail.com> wrote:
+>
+> From: Puyou Lu <lupuyou@aifrutech.com>
+>
+> When one port's input state get inverted (eg. from low to hight) after
+> pca953x_irq_setup but before setting irq_mask (by some other driver such as
+> "gpio-keys"), the next inversion of this port (eg. from hight to low) will not
+> triggered any more (because irq_stat is not updated at the first time). Issue
+> should be fixed after this commit.
+>
+> Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
+> ---
+>  drivers/gpio/gpio-pca953x.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
+> index d2fe76f3f34f..8726921a1129 100644
+> --- a/drivers/gpio/gpio-pca953x.c
+> +++ b/drivers/gpio/gpio-pca953x.c
+> @@ -762,11 +762,11 @@ static bool pca953x_irq_pending(struct pca953x_chip *chip, unsigned long *pendin
+>         bitmap_xor(cur_stat, new_stat, old_stat, gc->ngpio);
+>         bitmap_and(trigger, cur_stat, chip->irq_mask, gc->ngpio);
+>
+> +       bitmap_copy(chip->irq_stat, new_stat, gc->ngpio);
+> +
+>         if (bitmap_empty(trigger, gc->ngpio))
+>                 return false;
+>
+> -       bitmap_copy(chip->irq_stat, new_stat, gc->ngpio);
+> -
+>         bitmap_and(cur_stat, chip->irq_trig_fall, old_stat, gc->ngpio);
+>         bitmap_and(old_stat, chip->irq_trig_raise, new_stat, gc->ngpio);
+>         bitmap_or(new_stat, old_stat, cur_stat, gc->ngpio);
+> --
+> 2.17.1
+>
 
-> set in jobctl_freeze_task and cleared when ptrace_stop is awoken or in
-> jobctl_unfreeze_task (when ptrace_stop remains asleep).
+This needs to Cc stable and a fixes tag.
 
-Sebastian
+Bart
