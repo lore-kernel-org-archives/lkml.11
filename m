@@ -2,146 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 147AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA38CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377377AbiEEMmF (ORCPT
+        id S1377332AbiEEMmp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
+        Thu, 5 May 2022 08:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377291AbiEEMlt (ORCPT
+        with ESMTP id S1376382AbiEEMmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:41:49 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F6D554AD;
-        Thu,  5 May 2022 05:38:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id l18so8451114ejc.7;
-        Thu, 05 May 2022 05:38:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9/Dde4UNfL6ypJvuFq7SbKuCVgXOqEoZbvuwh4Syunc=;
-        b=EHYu39dg1X6wSQygmCU6TlatQ8i/+/wXPb6+zlpywyhl44xvgS84FY+9a+m/J/8twQ
-         5tX2YSrlDMzbGN5/7QoDUqjnrZpJxsoZy5fOmUnHsVEYuqKNVt1Yo74NmNlIR5UgwkaR
-         4RySGhKkMfPO6Ojr5tYnxxLv7ONUhfDgPJInuYfhblbXQCVoTzWZNU37Slg/+Pj73MKz
-         isrP21eizd8oX/Ru4Z8u2mIguNk+xM2tOGaK7dMpiPAkycb4Qq0orGQzH3rPrWwtcC9Q
-         gwcIxCVH2agcTXlY4bfXa+V3Ti7M7nw8+Moioc8Lpj31XnH9jPnzpd7MY4G01pjRV5HW
-         ogXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9/Dde4UNfL6ypJvuFq7SbKuCVgXOqEoZbvuwh4Syunc=;
-        b=UTULfZMDdoCV23cfPip7WImZ9iiD+v0QzgbA34RQ5xx9RBkY71p1jGKO2gwPgzadaU
-         AGOX3NuvRFJ1H7CIs5GsQs2N42GFBCGCluq0jFaXl2GiiX9kxQ+BhkyDaRREzOBv3Aan
-         SOmNj0enMLYJz6a1OGpHpBvd1GhcqW7Ng4/FuWvzajnFsjzdJ3ETKm+RQ63sVwryJimA
-         MbJSSnzdqNTLV5lBlpjK14+feP/yWhacxVCIfSNmWhZnoFO8C3eCurr6tYnHl6hEZamH
-         jHJqtlD6Uq8+sRtBlqWatRyez7Dj1zBIRZtstYlJd0vjlt2LXOLfAeSg69A9DV+0csAm
-         P2ZQ==
-X-Gm-Message-State: AOAM530yf0NtoiC7AD9y2hXbR0KDEFqifig6+y4R/cVCkQ7+NxjCuHLI
-        s5T4MPPiFtSIOSuQ8eDT5hs=
-X-Google-Smtp-Source: ABdhPJyEiMCNEphmoHgIo6UH3s2odeBPsJ505+enAJUiDgcS754G/jsXazX3wC0wvqZTLlBTXkWQVg==
-X-Received: by 2002:a17:907:9811:b0:6f3:a389:a203 with SMTP id ji17-20020a170907981100b006f3a389a203mr26905918ejc.381.1651754288512;
-        Thu, 05 May 2022 05:38:08 -0700 (PDT)
-Received: from localhost.localdomain (136.red-2-136-200.staticip.rima-tde.net. [2.136.200.136])
-        by smtp.gmail.com with ESMTPSA id qv48-20020a17090787b000b006f3ef214d9esm724345ejc.4.2022.05.05.05.38.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 05:38:08 -0700 (PDT)
-From:   Carlos Fernandez <carlos.escuin@gmail.com>
-X-Google-Original-From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-To:     pabeni@redhat.com, carlos.fernandez@technica-enineering.de,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-Subject: [PATCH] net: macsec: XPN Salt copied before passing offload context
-Date:   Thu,  5 May 2022 14:38:03 +0200
-Message-Id: <20220505123803.17553-1-carlos.fernandez@technica-engineering.de>
+        Thu, 5 May 2022 08:42:40 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC363554AC;
+        Thu,  5 May 2022 05:39:00 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvCqM4BhTzGpTN;
+        Thu,  5 May 2022 20:36:15 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 20:38:59 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 20:38:58 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <eddie.huang@mediatek.com>, <sean.wang@mediatek.com>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <lee.jones@linaro.org>
+Subject: [PATCH] rtc: mt6397: check return value after calling platform_get_resource()
+Date:   Thu, 5 May 2022 20:50:43 +0800
+Message-ID: <20220505125043.1594771-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <[PATCH] net/macsec copy salt to MACSec ctx for XPN>
-References: <[PATCH] net/macsec copy salt to MACSec ctx for XPN>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When macsec offloading is used with XPN, before mdo_add_rxsa
-and mdo_add_txsa functions are called, the key salt is not
-copied to the macsec context struct.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Fix by copying salt to context struct before calling the
-offloading functions.
-
-Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
-Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/macsec.c | 30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ drivers/rtc/rtc-mt6397.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 832f09ac075e..4f2bd3d722c3 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1804,6 +1804,14 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
+index 80dc479a6ff0..1d297af80f87 100644
+--- a/drivers/rtc/rtc-mt6397.c
++++ b/drivers/rtc/rtc-mt6397.c
+@@ -269,6 +269,8 @@ static int mtk_rtc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
- 	rx_sa->sc = rx_sc;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	rtc->addr_base = res->start;
  
-+	if (secy->xpn) {
-+		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
-+		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
-+			   MACSEC_SALT_LEN);
-+	}
-+
-+	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
-+
- 	/* If h/w offloading is available, propagate to the device */
- 	if (macsec_is_offloaded(netdev_priv(dev))) {
- 		const struct macsec_ops *ops;
-@@ -1826,13 +1834,6 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 			goto cleanup;
- 	}
- 
--	if (secy->xpn) {
--		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
--		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
--			   MACSEC_SALT_LEN);
--	}
--
--	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(rx_sc->sa[assoc_num], rx_sa);
- 
- 	rtnl_unlock();
-@@ -2046,6 +2047,14 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	if (assoc_num == tx_sc->encoding_sa && tx_sa->active)
- 		secy->operational = true;
- 
-+	if (secy->xpn) {
-+		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
-+		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
-+			   MACSEC_SALT_LEN);
-+	}
-+
-+	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
-+
- 	/* If h/w offloading is available, propagate to the device */
- 	if (macsec_is_offloaded(netdev_priv(dev))) {
- 		const struct macsec_ops *ops;
-@@ -2068,13 +2077,6 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 			goto cleanup;
- 	}
- 
--	if (secy->xpn) {
--		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
--		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
--			   MACSEC_SALT_LEN);
--	}
--
--	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(tx_sc->sa[assoc_num], tx_sa);
- 
- 	rtnl_unlock();
+ 	rtc->data = of_device_get_match_data(&pdev->dev);
 -- 
 2.25.1
 
