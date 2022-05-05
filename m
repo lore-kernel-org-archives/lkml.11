@@ -2,103 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F03A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67729C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378713AbiEENHq (ORCPT
+        id S1378754AbiEENJI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
+        Thu, 5 May 2022 09:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346531AbiEENHo (ORCPT
+        with ESMTP id S1378883AbiEENJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:07:44 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBAB25641A
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:04:04 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91CCD106F;
-        Thu,  5 May 2022 06:04:04 -0700 (PDT)
-Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.29.132])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F2213F885;
-        Thu,  5 May 2022 06:04:03 -0700 (PDT)
-Date:   Thu, 5 May 2022 14:04:00 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] arm64: add the printing of tpidr_elx in __show_regs()
-Message-ID: <YnPLQJhu5B1Cxvoh@FVFF77S0Q05N.cambridge.arm.com>
-References: <20220505095640.312-1-thunder.leizhen@huawei.com>
+        Thu, 5 May 2022 09:09:01 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED4265B0;
+        Thu,  5 May 2022 06:05:21 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bv19so8611700ejb.6;
+        Thu, 05 May 2022 06:05:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aNKOhtKTSEh4Mqkalcz76ou0WqeGSr1qJcVWuxMdUgc=;
+        b=Rl64O5ujSl9GyaSM5CAsEp/QIQNn+pY27aNk3caCBymQk23TAnjTdLhOdwHuO6v0Xe
+         LX95mSzpjCgmTKkznYc5Yyn76KiDpX9xumKc4M1AUZEYRARlObL/akMmPkCzORIKL2lX
+         dlpF+c7Fo/EM2tTUuQq6vezqYHPWtHJMjpiZD295uy9umFpMWTszJvqe8O9FMRVKKzWZ
+         39NxWphExiy2VLUvQHnw1XON74THBYcpqVaK7Ay9nwQyOij7UZJuTGjXdOoXRJAHLA2l
+         eVAymy9eRQmh81jLURLeW4veoZ0H4K1ec6R+oOwMfiYPlpTwVqvB9viXzZuWG3IS1eu6
+         Paxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aNKOhtKTSEh4Mqkalcz76ou0WqeGSr1qJcVWuxMdUgc=;
+        b=PJM40PmC6l5F4QsHvu8LMmD0bO35bnQV2IQnGl19spdZHs+KY5T9e/mi4cFkYIz4TR
+         4c0zvXfN6zJiChY3OstDxmigL9FrHRiqN+NV29iPlrNI+/t6nCDwcqP9J9mImtaZz7yk
+         a/sQlbDoyeUiUt5TKOO2voAYu3r0AgGxFFcjmb72IaLoKFGjTb8TtTORhrO/Fga4lyMA
+         gdXoCHDZ3nG+X5bIaQpQjgljyujP1if/BAjrlnTjv7Br6NGd9mfy5mV1zPPIIuFlgSLr
+         jdbqQbWBPCleLocRmF2O/iFo0lBhOwKYrpyXgvwwBlEczPp8KQcokj2b4I4Ldw6I6y/U
+         UILQ==
+X-Gm-Message-State: AOAM533E5J+8Qt26IFavaUCrkumTDm4iS9HZHpy5XmhqNcwF+FjkwQXP
+        HtoydIgxNXI3nEbBBt34soA=
+X-Google-Smtp-Source: ABdhPJyyVh6cKMR5tBekSuJuZBCdlWUsoD48Yo83JDTJb326k6wuXABrCERWF5ectwaSbf2VtzR4pw==
+X-Received: by 2002:a17:907:7e88:b0:6f4:99be:a333 with SMTP id qb8-20020a1709077e8800b006f499bea333mr12336755ejc.719.1651755918889;
+        Thu, 05 May 2022 06:05:18 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id p4-20020a17090628c400b006f3ef214e07sm721237ejd.109.2022.05.05.06.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 06:05:18 -0700 (PDT)
+Message-ID: <6273cb8e.1c69fb81.716fc.3f98@mx.google.com>
+X-Google-Original-Message-ID: <YnPLjDg5Vs3eQyG+@Ansuel-xps.>
+Date:   Thu, 5 May 2022 15:05:16 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 03/11] leds: trigger: netdev: drop
+ NETDEV_LED_MODE_LINKUP from mode
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-4-ansuelsmth@gmail.com>
+ <YnMLay1N2KBjC1VE@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505095640.312-1-thunder.leizhen@huawei.com>
+In-Reply-To: <YnMLay1N2KBjC1VE@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 05:56:40PM +0800, Zhen Lei wrote:
-> Commit 7158627686f0 ("arm64: percpu: implement optimised pcpu access
-> using tpidr_el1") and commit 6d99b68933fb ("arm64: alternatives: use
-> tpidr_el2 on VHE hosts") use tpidr_elx to cache my_cpu_offset to optimize
-> pcpu access. However, when performing reverse execution based on the
-> registers and the memory contents in kdump, this information is sometimes
-> required if there is a pcpu access.
+On Thu, May 05, 2022 at 01:25:31AM +0200, Andrew Lunn wrote:
+> On Tue, May 03, 2022 at 05:16:25PM +0200, Ansuel Smith wrote:
+> > Drop NETDEV_LED_MODE_LINKUP from mode list and convert to a simple bool
+> > that will be true or false based on the carrier link. No functional
+> > change intended.
 > 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  arch/arm64/kernel/process.c | 5 +++++
->  1 file changed, 5 insertions(+)
+> What is missing from the commit message is an explanation why?
 > 
-> v2 --> v3:
-> 1) Relace "switch (read_sysreg(CurrentEL))" statement with
->    "if (is_kernel_in_hyp_mode())" statement.
-> 2) Change the register name to lowercase.
-> 
-> v1 --> v2:
-> Directly print the tpidr_elx register of the current exception level.
-> Avoid coupling with the implementation of 'my_cpu_offset'.
-> 
-> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
-> index 7fa97df55e3ad3f..7b6bccce9721c36 100644
-> --- a/arch/arm64/kernel/process.c
-> +++ b/arch/arm64/kernel/process.c
-> @@ -216,6 +216,11 @@ void __show_regs(struct pt_regs *regs)
->  	show_regs_print_info(KERN_DEFAULT);
->  	print_pstate(regs);
->  
-> +	if (is_kernel_in_hyp_mode())
-> +		printk("tpidr_el2 : %016llx\n", read_sysreg(tpidr_el2));
-> +	else
-> +		printk("tpidr_el1 : %016llx\n", read_sysreg(tpidr_el1));
+>      Andrew
 
-If we care about the offset specifically, this would be simpler as:
+Will add the reason.
+Just in case it doesn't make sense...
+The reason is that putting a state in the mode bitmap doesn't look
+correct. It's ""acceptable"" if we have only 3 state (rx, tx and link).
+It become problematic when we start to have 7 modes and a link up state
+should be handled differently.
 
-	printk("cpu offset : 0x%016lx\n", __my_cpu_offset());
+Does it make sense?
 
-... which should do the right thing even if we repurpose the TPIDRs and move the offset elsewhere.
-
-As Will says, we should only log this for !user_mode(regs), so it could
-be placed in the block below, immediately before we print the kernel PC, i.e.
-
-	if (!user_mode_regs) {
-		printk("cpu offset : %016lx\n", __my_cpu_offset());
-		printk("pc : %pS\n", (void *)regs->pc);
-		printk("lr : %pS\n", (void *)ptrauth_strip_insn_pac(lr));
-		...
-	}
-
-... or in a separate block which checks the same condition.
-
-Thanks,
-Mark.
-
-> +
->  	if (!user_mode(regs)) {
->  		printk("pc : %pS\n", (void *)regs->pc);
->  		printk("lr : %pS\n", (void *)ptrauth_strip_insn_pac(lr));
-> -- 
-> 2.25.1
-> 
+-- 
+	Ansuel
