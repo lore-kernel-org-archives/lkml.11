@@ -2,125 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E6AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382559AbiEERQg (ORCPT
+        id S1382580AbiEERRW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37798 "EHLO
+        Thu, 5 May 2022 13:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382531AbiEERQb (ORCPT
+        with ESMTP id S1378100AbiEERRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:16:31 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890585C877;
-        Thu,  5 May 2022 10:12:51 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 245GVK9C030921;
-        Thu, 5 May 2022 17:12:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Oy7utAOsTBky6zMG1vAj2bVPZkz4VO9zEgBvUU2VdDQ=;
- b=lAy9ZJqOldS9XMxA/dIyKG0AyKKhtj5XKYe0LxkMUbKH5MMEJwUFijo8mSfAQNXlfMYN
- TCXwkpgffEN6GWEQB8+eFcOvE68cdhTwE69cR6JPqNCgQUMV5Cmxd2/3HbJ0XbfotXWg
- X/xnh5QpQxA47lZpqcGhHXgNGUZQUFCcA/iD0F4RQR6NkBg9vnhxBaJz/vc58dh3Mh4Y
- Uin1Q68W4IglqcoGI5Z8d2itlKv8BYHf63IVYph5VpzOBcLYevWjI8sYtD3AHO4Cdcqi
- 3q6TtXksGqTh4NL0TobxcH37Rn80PYHgJtaeih4sz2TQikdi393FBnDeplku/4TjHtJL 1w== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fvj630u09-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 17:12:43 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 245H2Pb6017022;
-        Thu, 5 May 2022 17:12:42 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma01wdc.us.ibm.com with ESMTP id 3frvr9u0as-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 17:12:41 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 245HCfOp29163976
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 5 May 2022 17:12:41 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2574EBE058;
-        Thu,  5 May 2022 17:12:41 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C5010BE051;
-        Thu,  5 May 2022 17:12:40 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  5 May 2022 17:12:40 +0000 (GMT)
-Message-ID: <ae5889bc-f5aa-6d0a-fdce-81819a15d22c@linux.ibm.com>
-Date:   Thu, 5 May 2022 13:12:40 -0400
+        Thu, 5 May 2022 13:17:16 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B60D5D18D
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:13:34 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id q76so4084532pgq.10
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 10:13:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9qiBMV9oYjDpCy34YRBYNCemjkgxUmGv2WmJfOj+tII=;
+        b=teAdRcJ9QQBUyV8uhmvTRzjSDui6pYWv4sTBrD2KW7sbdfn7RI4mNI0y+Qauoxansk
+         3EixmksFP1RpVnP8psBUNqOTW5gzHV96xuvL0+EcedXetUCwqTF5pzd0YZeeslBcbWoT
+         3dqVwZ0ojb4uvxS4gJXfRg0irgSpOTF7OTgsn0yMJTWH3ojW9ZiiyfTbpQMDEr10zLpg
+         j/QgQiTTWS8E7/XUWke9MkKVlWouasOBgx3vKmUQ4r5nXEo20hB7VvXW91JhzAKn6GGk
+         Yl41Ma1f3zHJBM7dLuef/rcuJO6xj1zcDEBGeh6UB+5mCnxp1rchJAo2ZAD/gUOUjMJe
+         wDEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9qiBMV9oYjDpCy34YRBYNCemjkgxUmGv2WmJfOj+tII=;
+        b=zp/HS8aLprgIo8J+Q6eue37M8mDGz6SK7vteCn3Tr8GDIjwWYJgtyiNl+AqEn6ob7Z
+         qxCHT+qZtjg27FnTRvdo3a3urpBdGjUTZf6c5LQAd71/L4kp+ZGMqaB2L4MPp5YV0IYV
+         CVa7NZcU282A9TtszRPTe2ywcsdG58X/zGi+rmlwXgIzt1P+PPVEf97yRFfA20I2sgcm
+         1VsW4S8IbTjLE7IfZYgtpHsYV6avPbfny6bQN9dCBZEket+SjgbixErhKy3+kzHRJAUE
+         sB0tGAsF/utFkj1P8H6mMPzIyp3/+6Rk/Iw2LXZDf1ShH7EkeMQFELEq375VDKNbpZ3W
+         UyHA==
+X-Gm-Message-State: AOAM532aQfZWh/V/yPgmTUJMVrR/8s9bbys+Na4c0SNQON7kRKGXFQK5
+        hBKohWOlMuL7dlJfLaL2f1OHWQ==
+X-Google-Smtp-Source: ABdhPJzLjMHpBQLX6+W/hcTPmJexDtOxWKh9YHSpZCq6rITDbVoqi8tAwDHYpp4BS7t+whBi1qtGYg==
+X-Received: by 2002:a63:2263:0:b0:399:561e:810b with SMTP id t35-20020a632263000000b00399561e810bmr22637735pgm.615.1651770813380;
+        Thu, 05 May 2022 10:13:33 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id a25-20020aa780d9000000b0050dc7628182sm1653006pfn.92.2022.05.05.10.13.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 10:13:33 -0700 (PDT)
+Date:   Thu, 5 May 2022 17:13:29 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH v7 03/11] KVM: selftests: Read binary stats desc in lib
+Message-ID: <YnQFuQxIgopQf9ij@google.com>
+References: <20220503183045.978509-1-bgardon@google.com>
+ <20220503183045.978509-4-bgardon@google.com>
+ <YnQEkVQJlhTTo6BQ@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v9 6/7] ima: support fs-verity file digest based version 3
- signatures
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
-Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fscrypt@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220505123141.1599622-1-zohar@linux.ibm.com>
- <20220505123141.1599622-7-zohar@linux.ibm.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220505123141.1599622-7-zohar@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: coOlU9zrGOKZpJOhXPb5K8YTp8hsJ5pa
-X-Proofpoint-GUID: coOlU9zrGOKZpJOhXPb5K8YTp8hsJ5pa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-05_06,2022-05-05_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- suspectscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
- mlxlogscore=905 priorityscore=1501 mlxscore=0 spamscore=0 phishscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205050118
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnQEkVQJlhTTo6BQ@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 05, 2022, Sean Christopherson wrote:
+> @@ -63,11 +63,12 @@ static void stats_test(int stats_fd)
+>  			"Descriptor block is overlapped with data block");
+> 
+>  	/* Read kvm stats descriptors */
+> -	stats_desc = read_stats_desc(stats_fd, &header);
+> +	stats_desc = read_stats_descriptors(stats_fd, &header);
+> 
+>  	/* Sanity check for fields in descriptors */
+>  	for (i = 0; i < header.num_desc; ++i) {
+> -		pdesc = (void *)stats_desc + i * size_desc;
+> +		pdesc = get_stats_descriptor(stats_desc, i, &header);
+> +
+>  		/* Check type,unit,base boundaries */
+>  		TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK)
+>  				<= KVM_STATS_TYPE_MAX, "Unknown KVM stats type");
 
+Drat, I missed two instances!  And more on top...
 
-On 5/5/22 08:31, Mimi Zohar wrote:
-> IMA may verify a file's integrity against a "good" value stored in the
-> 'security.ima' xattr or as an appended signature, based on policy.  When
-> the "good value" is stored in the xattr, the xattr may contain a file
-> hash or signature.  In either case, the "good" value is preceded by a
-> header.  The first byte of the xattr header indicates the type of data
-> - hash, signature - stored in the xattr.  To support storing fs-verity
-> signatures in the 'security.ima' xattr requires further differentiating
-> the fs-verity signature from the existing IMA signature.
-> 
-> In addition the signatures stored in 'security.ima' xattr, need to be
-> disambiguated.  Instead of directly signing the fs-verity digest, a new
-> signature format version 3 is defined as the hash of the ima_file_id
-> structure, which identifies the type of signature and the digest.
-> 
-> The IMA policy defines "which" files are to be measured, verified, and/or
-> audited.  For those files being verified, the policy rules indicate "how"
-> the file should be verified.  For example to require a file be signed,
-> the appraise policy rule must include the 'appraise_type' option.
-> 
-> 	appraise_type:= [imasig] | [imasig|modsig] | [sigv3]
->             where 'imasig' is the original or signature format v2 (default),
->             where 'modsig' is an appended signature,
->             where 'sigv3' is the signature format v3.
-> 
-> The policy rule must also indicate the type of digest, if not the IMA
-> default, by first specifying the digest type:
-> 
-> 	digest_type:= [verity]
-> 
-> The following policy rule requires fsverity signatures.  The rule may be
-> constrained, for example based on a fsuuid or LSM label.
-> 
->        appraise func=BPRM_CHECK digest_type=verity appraise_type=sigv3
-> 
-> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+ tools/testing/selftests/kvm/kvm_binary_stats_test.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Acked-by: Stefan Berger <stefanb@linux.ibm.com>
+diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+index 6252e3d6e964..6b5ce270b890 100644
+--- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
++++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+@@ -124,7 +124,7 @@ static void stats_test(int stats_fd)
+ 			"Data size is not correct");
+ 	/* Check stats offset */
+ 	for (i = 0; i < header.num_desc; ++i) {
+-		pdesc = (void *)stats_desc + i * size_desc;
++		pdesc = get_stats_descriptor(stats_desc, i, &header);
+ 		TEST_ASSERT(pdesc->offset < size_data,
+ 			"Invalid offset (%u) for stats: %s",
+ 			pdesc->offset, pdesc->name);
+@@ -139,7 +139,7 @@ static void stats_test(int stats_fd)
+ 	/* Read kvm stats data one by one */
+ 	size_data = 0;
+ 	for (i = 0; i < header.num_desc; ++i) {
+-		pdesc = (void *)stats_desc + i * size_desc;
++		pdesc = get_stats_descriptor(stats_desc, i, &header);
+ 		ret = pread(stats_fd, stats_data,
+ 				pdesc->size * sizeof(*stats_data),
+ 				header.data_offset + size_data);
+
+base-commit: 84185927b3e27502a70685848adffbe56a804d98
+--
+
