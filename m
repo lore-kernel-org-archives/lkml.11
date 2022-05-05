@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA97C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383936AbiEES0o (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
+        id S235548AbiEES0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 14:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383227AbiEESTm (ORCPT
+        with ESMTP id S1383211AbiEESTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:19:42 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D79F5D676;
-        Thu,  5 May 2022 11:15:55 -0700 (PDT)
+        Thu, 5 May 2022 14:19:41 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A57A41FAE;
+        Thu,  5 May 2022 11:15:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774555; x=1683310555;
+  t=1651774553; x=1683310553;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wCptZcUcsyZySNsXKqKhsEo8FgpHxpA5MijVVTkWO3g=;
-  b=FWHPv2wIAiL3rH63zUqyWNNmuYSwhtZMIwbXtmMbXDuSIw1HFDZQ7972
-   mP4ovJmcS9lCVTG0JMhByUKonite8DiM9RXAFNQcZgMYHPWHXXmL/7Zz+
-   KS2MQXwW/rXD5MyW7iTD5Ljt7ZTXT3dheVCy6lRLZwVFloyi30fr+pQry
-   6gYrZhcOyM8JRwpZcAl5tc+NRholceyIRTeTgvxGAbZTdzR0dAeOIHMfB
-   VliROIEo2KXZXSc69voVVYZYS8tB4lbtAvp5b8MTi/WDQNuu/LuW8cyMt
-   vCee30FfcaQEzmCMIZwU0S+rVMiDDx26cRYb/aIWUQtXF2FN81FBx1jkS
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248113908"
+  bh=c4l/dtPeYjGdPkK10ruYt5hIF0woALL4dwVeXy0KjaY=;
+  b=hRutbVcxKGYmQS4BmALpfPmhHvRcKPq0zrEaKPyhMl+RvrwdYqDcqYZu
+   zrTYfrKtVot5MvrCfUhq5Tg8qcNWfaIbo+WteMU0lyxuV/kCPZ96VWIYZ
+   EKiGDSkgeEdlUuirGXzlwvF52FkaFt8RKtIuSCO0BOS2gZwdy/Mahw4sa
+   UrYqOxIqySq05pD6fQW6FfR/+Y32HXfJeArYIqHd1N3004YrZKqpW9Ean
+   P4UXI5EDVE+JAm2KPjFctthkAw8p4pOMemcHATPrQ/gq9QEyC9MO4NtV8
+   GuD/Fqo4oKKvcU95+Ob1VrpDkFMCHgM+BP9di/d8lThgwqosfgE1p36w7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248742018"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="248113908"
+   d="scan'208";a="248742018"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:51 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:45 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083411"
+   d="scan'208";a="665083257"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:51 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:45 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 076/104] KVM: x86: Assume timer IRQ was injected if APIC state is proteced
-Date:   Thu,  5 May 2022 11:15:10 -0700
-Message-Id: <5e167bdffa69ecd0d58b630036719c3a515ee5af.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 036/104] KVM: x86/mmu: Explicitly check for MMIO spte in fast page fault
+Date:   Thu,  5 May 2022 11:14:30 -0700
+Message-Id: <d1a1da631b44f425d929767fda74c90de2d87a8d.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -56,45 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-If APIC state is protected, i.e. the vCPU is a TDX guest, assume a timer
-IRQ was injected when deciding whether or not to busy wait in the "timer
-advanced" path.  The "real" vIRR is not readable/writable, so trying to
-query for a pending timer IRQ will return garbage.
+Explicitly check for an MMIO spte in the fast page fault flow.  TDX will
+use a not-present entry for MMIO sptes, which can be mistaken for an
+access-tracked spte since both have SPTE_SPECIAL_MASK set.
 
-Note, TDX can scour the PIR if it wants to be more precise and skip the
-"wait" call entirely.
+MMIO sptes are handled in handle_mmio_page_fault for non-TDX VMs, so this
+patch does not affect them.  TDX will handle MMIO emulation through a
+hypercall instead.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/lapic.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 953b7f1d6257..f8e190da769f 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -1577,8 +1577,17 @@ static void apic_update_lvtt(struct kvm_lapic *apic)
- static bool lapic_timer_int_injected(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_lapic *apic = vcpu->arch.apic;
--	u32 reg = kvm_lapic_get_reg(apic, APIC_LVTT);
-+	u32 reg;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index d1c37295bb6e..4a12d862bbb6 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3184,7 +3184,7 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 		else
+ 			sptep = fast_pf_get_last_sptep(vcpu, fault->addr, &spte);
  
-+	/*
-+	 * Assume a timer IRQ was "injected" if the APIC is protected.  KVM's
-+	 * copy of the vIRR is bogus, it's the responsibility of the caller to
-+	 * precisely check whether or not a timer IRQ is pending.
-+	 */
-+	if (apic->guest_apic_protected)
-+		return true;
-+
-+	reg  = kvm_lapic_get_reg(apic, APIC_LVTT);
- 	if (kvm_apic_hw_enabled(apic)) {
- 		int vec = reg & APIC_VECTOR_MASK;
- 		void *bitmap = apic->regs + APIC_ISR;
+-		if (!is_shadow_present_pte(spte))
++		if (!is_shadow_present_pte(spte) || is_mmio_spte(spte))
+ 			break;
+ 
+ 		sp = sptep_to_sp(sptep);
 -- 
 2.25.1
 
