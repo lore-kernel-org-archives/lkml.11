@@ -2,122 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 705BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C68B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378956AbiEENPG (ORCPT
+        id S1378965AbiEENTO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        Thu, 5 May 2022 09:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376871AbiEENPA (ORCPT
+        with ESMTP id S1376729AbiEENS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:15:00 -0400
-Received: from smtp14.infineon.com (smtp14.infineon.com [IPv6:2a00:18f0:1e00:4::6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9AC27B2C;
-        Thu,  5 May 2022 06:11:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1651756277; x=1683292277;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xsOMw0gRr0SLaJWZpts/Mm92RAFuNPJLPsaz21uD8Ww=;
-  b=FBTSHmIlIdE832JlYBLV7yOCvXGSjOOwpLTBWKHtzOzjmCfjmz9rzAKT
-   0BurVxBjCa9jduMfm3+7mZHyRjYUAjriT8gY/3ybC5xmgdipJWU2AsiEa
-   NX3XcawdsVI08o9UUxR4Dv6ixanp/bGT2Wb3Fs5tjNkHWFaZ4JkqBtHWF
-   Y=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="119355111"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647298800"; 
-   d="scan'208";a="119355111"
-Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
-  by smtp14.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 15:11:12 +0200
-Received: from MUCSE812.infineon.com (MUCSE812.infineon.com [172.23.29.38])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
-        Thu,  5 May 2022 15:11:12 +0200 (CEST)
-Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE812.infineon.com
- (172.23.29.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 5 May 2022
- 15:11:12 +0200
-Received: from [10.160.221.24] (172.23.8.247) by MUCSE807.infineon.com
- (172.23.29.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 5 May 2022
- 15:11:11 +0200
-Message-ID: <1e8cfbc6-8452-0e87-9713-536d235e5b51@infineon.com>
-Date:   Thu, 5 May 2022 15:11:09 +0200
+        Thu, 5 May 2022 09:18:56 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67BF12BED;
+        Thu,  5 May 2022 06:15:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 395E1106F;
+        Thu,  5 May 2022 06:15:16 -0700 (PDT)
+Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.29.132])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 89EEA3F885;
+        Thu,  5 May 2022 06:15:14 -0700 (PDT)
+Date:   Thu, 5 May 2022 14:15:11 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        will Deacon <will@kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ard Biesheuvel <ardb@kernel.org>, broonie@kernel.org,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: Re: Should arm64 have a custom crash shutdown handler?
+Message-ID: <YnPN33qN7oVQa4fA@FVFF77S0Q05N.cambridge.arm.com>
+References: <427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com>
+ <874k24igjf.wl-maz@kernel.org>
+ <92645c41-96fd-2755-552f-133675721a24@igalia.com>
+ <YnPIwjLMDXgII1vf@FVFF77S0Q05N.cambridge.arm.com>
+ <3bee47db-f771-b502-82a3-d6fac388aa89@igalia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/2] dt-bindings: net: broadcom-bluetooth: Add property
- for autobaud mode
-Content-Language: en-US
-To:     Linus Walleij <linus.walleij@linaro.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        <linux-bluetooth@vger.kernel.org>
-References: <cover.1651647576.git.hakan.jansson@infineon.com>
- <64b59ca66cc22e6433a044e7bba2b3e97c810dc2.1651647576.git.hakan.jansson@infineon.com>
- <CACRpkdY3xPcyNcJfdGbSP5rdcUV6hr87yJNDVDGZdRCfN+MqLA@mail.gmail.com>
-From:   Hakan Jansson <hakan.jansson@infineon.com>
-In-Reply-To: <CACRpkdY3xPcyNcJfdGbSP5rdcUV6hr87yJNDVDGZdRCfN+MqLA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE805.infineon.com (172.23.29.31) To
- MUCSE807.infineon.com (172.23.29.33)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3bee47db-f771-b502-82a3-d6fac388aa89@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Thu, May 05, 2022 at 10:05:18AM -0300, Guilherme G. Piccoli wrote:
+> On 05/05/2022 09:53, Mark Rutland wrote:
+> > [...]
+> > Looking at those, the cleanup work is all arch-specific. What exactly would we
+> > need to do on arm64, and why does it need to happen at that point specifically?
+> > On arm64 we don't expect as much paravirtualization as on x86, so it's not
+> > clear to me whether we need anything at all.
+> > 
+> >> Anyway, the idea here was to gather a feedback on how "receptive" arm64
+> >> community would be to allow such customization, appreciated your feedback =)
+> > 
+> > ... and are you trying to do this for Hyper-V or just using that as an example?
+> > 
+> > I think we're not going to be very receptive without a more concrete example of
+> > what you want.
+> > 
+> > What exactly do *you* need, and *why*? Is that for Hyper-V or another hypervisor?
+> > 
+> > Thanks
+> > Mark.
+> 
+> Hi Mark, my plan would be doing that for Hyper-V - kind of the same
+> code, almost. For example, in hv_crash_handler() there is a stimer
+> clean-up and the vmbus unload - my understanding is that this same code
+> would need to run in arm64. Michael Kelley is CCed, he was discussing
+> with me in the panic notifiers thread and may elaborate more on the needs.
 
-Thanks for responding.
+The key problem here is that there's no justification as to why this cannot be
+done in a panic notifier (or a regular reboot notifer for the plain shutdown
+or kexec case).
 
-On 5/5/2022 12:15 AM, Linus Walleij wrote:
-> On Wed, May 4, 2022 at 11:04 AM Hakan Jansson
-> <hakan.jansson@infineon.com> wrote:
->
->> +  brcm,uses-autobaud-mode:
->> +    type: boolean
->> +    description: >
->> +      The controller should be started in autobaud mode by asserting
->> +      BT_UART_CTS_N (i.e. host RTS) during startup. Only HCI commands supported
->> +      in autobaud mode should be used until patch FW has been loaded.
-> Things like gnss uses the current-speed attribute to set a serial link speed,
-> maybe also Bluetooth?
-As far as I can tell, not many Bluetooth drivers use the current-speed 
-attribute yet but perhaps it would be a good idea to start using it more 
-broadly in the future to set the initial serial link speed.
+I undertstand that x86 does one thing, and what Marc and I have said is that
+fact alone doesn't justify doing the same.
 
->
-> Would it make sense to use
->
-> current-speed-auto;
->
-> As a flag for these things in general?
-I suppose a general flag could be useful but to be honest I don't know 
-if any other devices besides the ones using the Broadcom driver has any 
-use for it. You would probably also still want to be able to use 
-current-speed to set the link speed and end up using both 
-current-speed=x and current-speed-auto at the same time, which might 
-look a little confusing?
+We need to know:
 
-Please let me know if you'd still prefer "current-speed-auto" over 
-"brcm,uses-autobaud-mode" and I'll revise the patch and rename it!
+a) What specifically you want to do on arm64
 
->
-> Yours,
-> Linus Walleij
+b) Why you think this cannot be done using the existing mechanisms (e.g.
+   notifiers).
+
+Without a strong justification, we wouldn't add such hooks to arm64.
+
+Could you start by trying to use the notifiers, and if you encounter a problem,
+*then* we consider an alternative? That should mean we have a concrete reason.
 
 Thanks,
-Håkan
+Mark.
+
+> But also (not related with my specific plan), I've seen KVM quiesce code
+> on x86 as well [see kvm_crash_shutdown() on arch/x86] , I'm not sure if
+> this is necessary for arm64 or if this already executing in some
+> abstracted form, I didn't dig deep - probably Vitaly is aware of that,
+> hence I've CCed him here.
+> 
+> Cheers,
+> 
+> 
+> Guilherme
