@@ -2,152 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32580C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387394AbiEFAEx (ORCPT
+        id S1387339AbiEFAE6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
+        Thu, 5 May 2022 20:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387227AbiEFAC0 (ORCPT
+        with ESMTP id S1387405AbiEFAEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:02:26 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B47661627
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651795081; x=1683331081;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=CEzigczvRyU1oQzEnVej8ViYVBfDe59Bvau/LRgGfAw=;
-  b=JD21qsHSBnCi18XMReoR2u3TNRwNJpyvZ4bq83K9XfJcxLgAbRDwfHL9
-   Plt7xfb4lLsjXs6eT0OuiXHKlkqRQ4uKI74LbXPtr25HDJRAMBj71t/aD
-   O1M0BP2xUt+dCstU7irXXrV0immxW80YN72EeUYVrqLRo9nMWI2C+uKD8
-   CURGybN8lFYGWE+kjba63VhPRqHff7NOdxlUW8r2kIePptQohiCncH8DV
-   XPZka48dte/4PpTQ0VU+2BIfoJCQKPemSnjYs9Cht+fyNBNvYIbiZJFP0
-   9JT3HY/Gxlteps9UK2qi658GCGp+UCoN2OXx/3gk7NIdOZoTNH1j55QBs
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283662"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283662"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914451"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:56 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 27/29] watchdog: Expose lockup_detector_reconfigure()
-Date:   Thu,  5 May 2022 17:00:06 -0700
-Message-Id: <20220506000008.30892-28-ricardo.neri-calderon@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+        Thu, 5 May 2022 20:04:05 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD51B6211A
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:58:15 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id q2so5707174vsr.5
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 16:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gpFb8Gr9xZ6jtouMT2pIJ7gZ1NMprA13sbW1RG6i+Wg=;
+        b=Ps+rIUYLYUPJvA6Yg44wWsGTb/ZneBk5T1XItoYqyMXKzR0WwJzT2XDsDmARtKJsvD
+         sEYu0O2gX3m214u9nEzy94AQHVNtKG8kFTbRiy5STtFTEI/X7wmxR54aS+IMLIJIDCIR
+         BAfp+/lvZLUUU1zyDIxtOuyU+X7GezTZt0VnF48/7LtOLK9Qby3Cf2AkJS9KHZjLcq1V
+         xiICyEJnJtvQdes8ZyLL1btDbq8kHANsqo1Kx0gr3yn6lbKVIvnMBE7q0MNa6PfXMTwY
+         AnVQaRhenTOq/CdpS/Z7tSgjJsWP4U5jy+cWg0i0ELOgqDqOYeoYtziIxa+uaXGM2AfO
+         93Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gpFb8Gr9xZ6jtouMT2pIJ7gZ1NMprA13sbW1RG6i+Wg=;
+        b=ZSia/cQ7IJdf2x3HKOe/3ONk+EZvg14l4scPVc2zQkGpYnQrggOc+epuoy/4TjPsll
+         6cdViutsJEDQRkfkRGT1DWuda0mTUwyN8VjEYj9HTK3CletZZlVFh3F5Y6HjXUDaF65I
+         rW2eUi1OCg0leLdV1P6fztFkbcSYVVMymqldqagL8in6hETys73W4fKl61LleYUsDjx3
+         IEOtSnEW/9Lp/30iLtfK1ZVQZIVeL3zalbBqqSniqiuf1PYaE/f+Y1Cm9chXe0xoE6qu
+         LcUkiWeqNkgy9eKPJYXGgujCefCp3P/lM44GgFo3a8I43nT/u9sniLhDP0pWNnT15l6p
+         W9Zw==
+X-Gm-Message-State: AOAM5321D+DVsigAKTkkq3+wBsgQNEOwvtTDMzn+/vFbm4cJYnuMcLf2
+        3m2TdicbIjrKpf5VV6lY6Rhltghsw9YPLnnpdlV/iQ==
+X-Google-Smtp-Source: ABdhPJy/tT6+x03aPIFdLdYs3mGfRN/yfZRJaHhq2DvGL46xgDbUPrQx8Om0d8YpJPkxU/n7+hGO7hKKSOAhQkbJ3Qs=
+X-Received: by 2002:a67:cf49:0:b0:32d:1bea:c7b8 with SMTP id
+ f9-20020a67cf49000000b0032d1beac7b8mr184051vsm.39.1651795094696; Thu, 05 May
+ 2022 16:58:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220505165639.361733-1-adrian.hunter@intel.com> <20220505165639.361733-16-adrian.hunter@intel.com>
+In-Reply-To: <20220505165639.361733-16-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 5 May 2022 16:58:02 -0700
+Message-ID: <CAP-5=fUmXU7smPbGvK8Q1RxfZ-7C+WbUK_Xa9yz3WgQdk9YdPw@mail.gmail.com>
+Subject: Re: [PATCH V1 15/23] perf intel-pt: Use evlist__add_system_wide_dummy()
+ for switch tracking
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When there are multiple implementations of the NMI watchdog, there may be
-situations in which switching from one to another is needed. If the time-
-stamp counter becomes unstable, the HPET-based NMI watchdog can no longer
-be used. Similarly, the HPET-based NMI watchdog relies on tsc_khz and
-needs to be informed when it is refined.
+On Thu, May 5, 2022 at 9:57 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> Use evlist__add_system_wide_dummy() for switch tracking in preparation for
+> allowing system-wide events on all CPUs while the user requested events are
+> on only user requested CPUs.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-Reloading the NMI watchdog or switching to another hardlockup detector can
-be done cleanly by updating the arch-specific stub and then reconfiguring
-the whole lockup detector.
+Delta function names.
 
-Expose lockup_detector_reconfigure() to achieve this goal.
+Acked-by: Ian Rogers <irogers@google.com>
 
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: x86@kernel.org
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
----
-Changes since v5:
- * None
+Thanks,
+Ian
 
-Changes since v4:
- * Switching to the perf-based lockup detector under the hood is hacky.
-   Instead, reconfigure the whole lockup detector.
-
-Changes since v3:
- * None
-
-Changes since v2:
- * Introduced this patch.
-
-Changes since v1:
- * N/A
----
- include/linux/nmi.h | 2 ++
- kernel/watchdog.c   | 4 ++--
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/nmi.h b/include/linux/nmi.h
-index cf12380e51b3..73827a477288 100644
---- a/include/linux/nmi.h
-+++ b/include/linux/nmi.h
-@@ -16,6 +16,7 @@ void lockup_detector_init(void);
- void lockup_detector_soft_poweroff(void);
- void lockup_detector_cleanup(void);
- bool is_hardlockup(void);
-+void lockup_detector_reconfigure(void);
- 
- extern int watchdog_user_enabled;
- extern int nmi_watchdog_user_enabled;
-@@ -37,6 +38,7 @@ extern int sysctl_hardlockup_all_cpu_backtrace;
- static inline void lockup_detector_init(void) { }
- static inline void lockup_detector_soft_poweroff(void) { }
- static inline void lockup_detector_cleanup(void) { }
-+static inline void lockup_detector_reconfigure(void) { }
- #endif /* !CONFIG_LOCKUP_DETECTOR */
- 
- #ifdef CONFIG_SOFTLOCKUP_DETECTOR
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 6443841a755f..e5b67544f8c8 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -537,7 +537,7 @@ int lockup_detector_offline_cpu(unsigned int cpu)
- 	return 0;
- }
- 
--static void lockup_detector_reconfigure(void)
-+void lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -579,7 +579,7 @@ static __init void lockup_detector_setup(void)
- }
- 
- #else /* CONFIG_SOFTLOCKUP_DETECTOR */
--static void lockup_detector_reconfigure(void)
-+void lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
--- 
-2.17.1
-
+> ---
+>  tools/perf/arch/x86/util/intel-pt.c | 13 +++----------
+>  1 file changed, 3 insertions(+), 10 deletions(-)
+>
+> diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
+> index 2eaac4638aab..e45d64dec57c 100644
+> --- a/tools/perf/arch/x86/util/intel-pt.c
+> +++ b/tools/perf/arch/x86/util/intel-pt.c
+> @@ -811,18 +811,11 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
+>                         if (!cpu_wide && perf_can_record_cpu_wide()) {
+>                                 struct evsel *switch_evsel;
+>
+> -                               err = parse_events(evlist, "dummy:u", NULL);
+> -                               if (err)
+> -                                       return err;
+> +                               switch_evsel = evlist__add_system_wide_dummy(evlist);
+> +                               if (!switch_evsel)
+> +                                       return -ENOMEM;
+>
+> -                               switch_evsel = evlist__last(evlist);
+> -
+> -                               switch_evsel->core.attr.freq = 0;
+> -                               switch_evsel->core.attr.sample_period = 1;
+>                                 switch_evsel->core.attr.context_switch = 1;
+> -
+> -                               switch_evsel->core.system_wide = true;
+> -                               switch_evsel->no_aux_samples = true;
+>                                 switch_evsel->immediate = true;
+>
+>                                 evsel__set_sample_bit(switch_evsel, TID);
+> --
+> 2.25.1
+>
