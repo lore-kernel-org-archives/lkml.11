@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A59C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379888AbiEENgz (ORCPT
+        id S1377880AbiEENhJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        Thu, 5 May 2022 09:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379779AbiEENg3 (ORCPT
+        with ESMTP id S1379805AbiEENga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:36:29 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8209256FBD;
-        Thu,  5 May 2022 06:32:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651757531; x=1683293531;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0n9xKziNJR4TEkk9TsrLeTOHao554U8zzlo+fCxG4Ow=;
-  b=HUV3jhWcDBoqOh5Gdqgx7j6ITYlNWOhwFs2Pz03YC9FfbkWBqUM/IMHd
-   I8d5FhPJB/w2gX9wFIhD4si6lJv2JqdWwWzO12PvENxAcVbSCfdfF33X/
-   f1zDWgj6WzoQ2YkQaMVhJHWr+YAYLTObpFLaYUT8lFw+M1qZZ3OeeRnie
-   0m2DbKL5jkKBX5c7zXK/1GR6hJPR8gw4zKpea7/PBF5IbjGnsYVAgY8bA
-   hwxI2DePHP+kjJTxfY3BfEJMAkSc8LQGwpr5rjKytdZACHFdw3j4dPcGm
-   FjQojIZD7bUpSvF/Ka+X12bXXTBxdQllAn0d3ceF5ynRdSTbralTwaJuZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250093963"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="250093963"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:32:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="537334824"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 05 May 2022 06:32:07 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmbaQ-000CQy-Eo;
-        Thu, 05 May 2022 13:32:06 +0000
-Date:   Thu, 5 May 2022 21:31:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        willy@infradead.org, shy828301@gmail.com
-Cc:     kbuild-all@lists.01.org, mhocko@kernel.org,
-        roman.gushchin@linux.dev, shakeelb@google.com,
-        linmiaohe@huawei.com, william.kucharski@oracle.com,
-        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
-        songmuchun@bytedance.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-Message-ID: <202205052101.TsTEcZoc-lkp@intel.com>
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+        Thu, 5 May 2022 09:36:30 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6D4F57114
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 06:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651757546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+kiADHH0OTUEekRfTTqboMY0mUFLqzmSHiGBuu3QXQA=;
+        b=UTMoBhW4SoONg1+zanmHNFXftfBWlFuobTeaCDOz/J1CgZJR2zF9qJaN5cLiGxwnojQ09P
+        XJCUMKnZdNWW8JuXQZU5P1R6o/GKodqunViH10vBltMaQCShVIWjlv+huAXO/OsE6yVxqw
+        PWjwak1p/BB4gtaqWRM+pTLoxFIQ3ME=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-127-ST_BgvSbPYivES7cdVsQXA-1; Thu, 05 May 2022 09:32:25 -0400
+X-MC-Unique: ST_BgvSbPYivES7cdVsQXA-1
+Received: by mail-ed1-f69.google.com with SMTP id k13-20020a50ce4d000000b00425e4447e64so2317206edj.22
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 06:32:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+kiADHH0OTUEekRfTTqboMY0mUFLqzmSHiGBuu3QXQA=;
+        b=mOOrQ0kI+Hfy0Q+efie6JAOdzX4Im9mV0iuaF52VyUsnXYj692v+3C6gsMhH8vA8ng
+         MQZAL5mjhzN5g1N3WK3RNyhxPoXygMu6qMA9CWlXaDgJY9dLxTCdg4AlnOYMvW6vs0Pe
+         LAOvJDtd+LQWkQfqrSqPRYltzzjZfaVw9rOQKiHeOpoxNH0c6As19B66LX+i89MJsNti
+         TOL20gqk/J/RL+oaBXdyzbhLjWvH5WehVL/dar0+jojRBiJHRupxXk9tsnOP01QU2NMl
+         FpBuCtOrTB/HHZha4CLtf17kuB7mO7TlhvxffqVJgYMOFxu975H22M8QkxkxS56HRlTa
+         CsPg==
+X-Gm-Message-State: AOAM530+g2Z5uLVHGjyKid3s6YY1yBv+ppvwlZS9oBl7btVJbeCOmQeZ
+        aKEaGTZHAUYLYK6rRNQAnSqzSlYduxXoMPT1/eqIUGSmdCpPZdmP4OcwDp1mdN+NxR2XcgXwS3y
+        e0cmdfDLcUMBQhGJB8puNZndb
+X-Received: by 2002:a17:907:9053:b0:6f3:9f7e:5325 with SMTP id az19-20020a170907905300b006f39f7e5325mr26644991ejc.455.1651757544355;
+        Thu, 05 May 2022 06:32:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy52UhctkwW9yt5QGwSz6n+bp/2FcbovNN8FC8hnhQ4d8qEEUMnISxAnpY/IrKzXNsv5I+1WQ==
+X-Received: by 2002:a17:907:9053:b0:6f3:9f7e:5325 with SMTP id az19-20020a170907905300b006f39f7e5325mr26644966ejc.455.1651757544125;
+        Thu, 05 May 2022 06:32:24 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id bc20-20020a056402205400b0042617ba63cesm812545edb.88.2022.05.05.06.32.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 06:32:23 -0700 (PDT)
+Message-ID: <688a817f-b2e2-4620-ef4b-f3c5f73ae34d@redhat.com>
+Date:   Thu, 5 May 2022 15:32:19 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] selftests: KVM: aarch64: Let hypercalls use UAPI
+ *_BIT_COUNT
+Content-Language: en-US
+To:     Marc Zyngier <maz@kernel.org>, Oliver Upton <oupton@google.com>
+Cc:     Raghavendra Rao Ananta <rananta@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <20220504184415.1905224-1-rananta@google.com>
+ <YnLa8uH55/epyjlS@google.com> <87zgjw6v9k.wl-maz@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <87zgjw6v9k.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 5/5/22 14:04, Marc Zyngier wrote:
+> diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+> index e523bb6eac67..3cde9f958eee 100644
+> --- a/arch/arm64/include/uapi/asm/kvm.h
+> +++ b/arch/arm64/include/uapi/asm/kvm.h
+> @@ -342,6 +342,10 @@ struct kvm_arm_copy_mte_tags {
+>   
+>   enum {
+>   	KVM_REG_ARM_STD_BIT_TRNG_V1_0	= 0,
+> +	/*
+> +	 * KVM_REG_ARM_STD_BMAP_BIT_COUNT will vary as new services
+> +	 * are added, and is explicitely not part of the ABI.
+> +	 */
+>   	KVM_REG_ARM_STD_BMAP_BIT_COUNT,
+>   };
 
-Thank you for the patch! Yet something to improve:
+That seems like a bad idea.  Perhaps you can wrap it in #ifdef 
+__KERNEL_OR_SELFTESTS__?  I can't find any prior art.
 
-[auto build test ERROR on linux/master]
-[also build test ERROR on linus/master v5.18-rc5 next-20220505]
-[cannot apply to hnaz-mm/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Paolo
 
-url:    https://github.com/intel-lab-lkp/linux/commits/cgel-zte-gmail-com/mm-memcg-support-control-THP-behaviour-in-cgroup/20220505-114028
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 107c948d1d3e61d10aee9d0f7c3d81bbee9842af
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220505/202205052101.TsTEcZoc-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/f08a35b9798572693a91c6a3d823ed9ae54ef688
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/mm-memcg-support-control-THP-behaviour-in-cgroup/20220505-114028
-        git checkout f08a35b9798572693a91c6a3d823ed9ae54ef688
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   ld: mm/memory.o: in function `__handle_mm_fault':
->> memory.c:(.text+0xc6f9): undefined reference to `__transparent_hugepage_enabled'
->> ld: memory.c:(.text+0xc751): undefined reference to `__transparent_hugepage_enabled'
-   ld: mm/huge_memory.o: in function `transparent_hugepage_active':
->> huge_memory.c:(.text+0x6351): undefined reference to `__transparent_hugepage_enabled'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
