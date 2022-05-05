@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F8C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7106C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 09:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351552AbiEEJLK (ORCPT
+        id S1351682AbiEEJLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 05:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
+        Thu, 5 May 2022 05:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351367AbiEEJLD (ORCPT
+        with ESMTP id S1351349AbiEEJLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 05:11:03 -0400
 Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ADA4B871;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED04A4BB89;
         Thu,  5 May 2022 02:07:24 -0700 (PDT)
 Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24597E0L091469;
-        Thu, 5 May 2022 04:07:14 -0500
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24597HZP091484;
+        Thu, 5 May 2022 04:07:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651741634;
-        bh=cuNlpAakS45rBc8XBXO2gkkoHDbvVLiW7EmY+HgwLOY=;
-        h=From:To:CC:Subject:Date;
-        b=xh02vZf69oWa0NLyqR+e9Iql2/Q40Mw1IGBgP9txfkKSLjEwwe9wHdpWgfuQAK+c6
-         L2aKuseb3/4V7EZd8p5nnH+TVw2X4EdoG+v03s6Edmp2nPjjevReJBLOEuSkFuF4e7
-         FOqYi4Lm5JUWs4B/Kdhu1fsyJpEmcV1LZfuuP0rw=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24597DXQ043661
+        s=ti-com-17Q1; t=1651741637;
+        bh=hlLDAumZ2FyEFKvNswfGzuvkZ9zLOVp1U5Zzfg0dQdM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=YCRwO7NL6D8hhdQBkl/sZrtXEnR3KkdOB4fjlcv3RpC/ZhQDjF4cc9BRlo9buj8In
+         6hlWlH33c8I2/gX7h2aIQB8Gc0YzBMCvOrt6/fhkdayPFPUmx3nnjzZFYHYTaRsct/
+         p2RsoukRj1pmzSynAVTQSllgYTqyhbEmgDPePvKU=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24597HfH043673
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 5 May 2022 04:07:13 -0500
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 5 May 2022 04:07:17 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 5
- May 2022 04:07:13 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ May 2022 04:07:17 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 5 May 2022 04:07:13 -0500
+ Frontend Transport; Thu, 5 May 2022 04:07:17 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24597B9d089648;
-        Thu, 5 May 2022 04:07:12 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24597FRK089687;
+        Thu, 5 May 2022 04:07:16 -0500
 From:   Rahul T R <r-ravikumar@ti.com>
 To:     <nm@ti.com>
 CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
@@ -50,10 +50,12 @@ CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
         <tomi.valkeinen@ideasonboard.com>,
         <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>,
         <a-bhatia1@ti.com>, <r-ravikumar@ti.com>
-Subject: [PATCH v2 0/2] Add support for DP and HDMI on j721e-sk
-Date:   Thu, 5 May 2022 14:37:07 +0530
-Message-ID: <20220505090709.9252-1-r-ravikumar@ti.com>
+Subject: [PATCH v2 2/2] arm64: dts: ti: k3-j721e-sk: Enable HDMI
+Date:   Thu, 5 May 2022 14:37:09 +0530
+Message-ID: <20220505090709.9252-3-r-ravikumar@ti.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220505090709.9252-1-r-ravikumar@ti.com>
+References: <20220505090709.9252-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -61,29 +63,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following series of patches enables DisplayPort and
-HDMI on j721e-sk
+Add node for dvi bridge and the endpoint nodes to
+describe connection from
+DSS => TI TFP410 DPI-to-DVI Bridge => HDMI connector.
+Also add the required pinmux for HDMI hotplug and
+powerdown
 
-v2:
-   - Fix name for dpi1 dss endpoint
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-j721e-sk.dts | 80 +++++++++++++++++++++++++-
+ 1 file changed, 79 insertions(+), 1 deletion(-)
 
-This series depends on
-https://lore.kernel.org/all/20220429112639.13004-1-r-ravikumar@ti.com/
-which adds required nodes in the SoC dtsi file
-
-boot logs:
-   https://gist.githubusercontent.com/ravi-rahul/d2e139d8ff9446ede003291a6a3e8be5/raw/ed51498efe7f7bc4848dffb27e2b37e0beb7a94d/j7_sk_DP_HDMI_boot.log
-
-kernel patch verify report:
-   https://gist.githubusercontent.com/ravi-rahul/1e2350b53ac7d6ba7694373c0b3bbb44/raw/f09f75821610b42ad1f8b4bf3e5ef7843de0c76e/report-kernel-patch-verify-sk-dp-hdmi.txt
-
-Rahul T R (2):
-  arm64: dts: ti: k3-j721e-sk: Enable DisplayPort
-  arm64: dts: ti: k3-j721e-sk: Enable HDMI
-
- arch/arm64/boot/dts/ti/k3-j721e-sk.dts | 123 ++++++++++++++++++++++++-
- 1 file changed, 119 insertions(+), 4 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+index 07b1e40fbc47..80358cba6954 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
++++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+@@ -225,6 +225,59 @@
+ 			};
+ 		};
+ 	};
++
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		label = "hdmi";
++		type = "a";
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&hdmi_hpd_pins_default>;
++
++		ddc-i2c-bus = <&main_i2c1>;
++
++		/* HDMI_HPD */
++		hpd-gpios = <&main_gpio1 0 GPIO_ACTIVE_HIGH>;
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&tfp410_out>;
++			};
++		};
++	};
++
++	dvi-bridge {
++		compatible = "ti,tfp410";
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&hdmi_pdn_pins_default>;
++
++		powerdown-gpios = <&main_gpio0 127 GPIO_ACTIVE_LOW>;
++		ti,deskew = <0>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				tfp410_in: endpoint {
++					remote-endpoint = <&dpi1_out>;
++					pclk-sample = <1>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				tfp410_out: endpoint {
++					remote-endpoint =
++						<&hdmi_connector_in>;
++				};
++			};
++		};
++	};
+ };
+ 
+ &main_pmx0 {
+@@ -329,6 +382,18 @@
+ 		>;
+ 	};
+ 
++	hdmi_hpd_pins_default: hdmi-hpd-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x204, PIN_INPUT, 7) /* (AD5) UART1_RTSn.GPIO1_0 */
++		>;
++	};
++
++	hdmi_pdn_pins_default: hdmi-pdn-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x200, PIN_INPUT, 7) /* (AC4) UART1_CTSn.GPIO0_127 */
++		>;
++	};
++
+ 	/* Reset for M.2 E Key slot on PCIe0  */
+ 	ekey_reset_pins_default: ekey-reset-pns-pins-default {
+ 		pinctrl-single,pins = <
+@@ -733,11 +798,24 @@
+ };
+ 
+ &dss_ports {
+-	port {
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	port@0  {
++		reg = <0>;
++
+ 		dpi0_out: endpoint {
+ 			remote-endpoint = <&dp0_in>;
+ 		};
+ 	};
++
++	port@1 {
++		reg = <1>;
++
++		dpi1_out: endpoint {
++			remote-endpoint = <&tfp410_in>;
++		};
++	};
+ };
+ 
+ &dp0_ports {
 -- 
 2.17.1
 
