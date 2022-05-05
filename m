@@ -2,220 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00492C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 22:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 22:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386162AbiEEWEK (ORCPT
+        id S1386140AbiEEWIS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 18:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        Thu, 5 May 2022 18:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386112AbiEEWEI (ORCPT
+        with ESMTP id S237116AbiEEWIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 18:04:08 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020023.outbound.protection.outlook.com [52.101.61.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE48811C3E;
-        Thu,  5 May 2022 15:00:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lfFNIb0WqQ7Q0cS74kEwnNQGwQ6Gl1+1gxLgb4vOEGcZE9hgenzDrbpmno1DBsGYlfefFSxLDh7+gTFyMJU7irw98vlM9/qGf1zJKwbs+jmEXnI7938Io+klLqoVvUi6dIwJrmRjuhsPEH4Zgu0c92G94KdtGfivL33wnLTu4xXL1jI6yi6h4bbxJ7yzUZzEI5ErGdu+Nohfj40/M+Ehgkq3dgksVO9fvI4UyAVjQfcxj1RpN/GzHpktIkYkmwJGNIpkR5wcqEHKDytwSnhmxfvOMr2fOSdkQPxJVzAzBPfpBLJAw+roc6dOApsX1BwrpK8iaKMdMYrVS4sUun+miA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nTwyU3I08js55lvmkGsAB+sLep8AJEICZ4BxL20Fwlc=;
- b=TBFQRs4OQDD7Y8dDrSNlDTVDw9wsbKy+/O042glHYMdxOVpuxnjqXUv77+1v8RJqPAn6QWN/QaEJMflmjyFomT48lNdEsTIx+8etDK/Wqs4PNS2hPtPbxpwdEDe4zgOHZg5pm//CmBxqhjblqVk2w7qC8zGjBTZY0+gmAkVuEpfmh686Cjn2Ei1pdsH5hj/x6txYhxK2kMBlVm1sjjUdLofk9eipxJeFcMginLZzK/I7Cd8fB9IfCt3cPorvuLwLsK9dztv5ub8FZoj8tXmi4zE9UAUBPflndLS/2UgE+WX36QSiBzo9nndXNt7rKker8MBoL1NuzQjnBkpbs/+asg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nTwyU3I08js55lvmkGsAB+sLep8AJEICZ4BxL20Fwlc=;
- b=QvWy3RTYcAjGMHsZED7lD9UF2Wuox1PWN/07vMjZH3QpnAGLZvG/BXCo9Z4z8ub9K2eImEhC4CLTWoizhNvnbtDViIsfK8MB+YU9PoLcOpggKKPFFUO6ndex40cnP2zjzc6tRKrGzNOoxYQOqsbrTem5zZLYxihHBE9pTzi2JUs=
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
- by SA1PR21MB2051.namprd21.prod.outlook.com (2603:10b6:806:1b6::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.8; Thu, 5 May
- 2022 22:00:20 +0000
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::dd77:2d4d:329e:87df]) by PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::dd77:2d4d:329e:87df%5]) with mapi id 15.20.5250.008; Thu, 5 May 2022
- 22:00:20 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/2] PCI: hv: Fix synchronization between channel callback
- and hv_pci_bus_exit()
-Thread-Topic: [PATCH 2/2] PCI: hv: Fix synchronization between channel
- callback and hv_pci_bus_exit()
-Thread-Index: AQHYX7WhwElYbDPDpUWGUtXwWEAy9K0Q11tg
-Date:   Thu, 5 May 2022 22:00:20 +0000
-Message-ID: <PH0PR21MB3025226119A4BB25473BC722D7C29@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <20220504125039.2598-1-parri.andrea@gmail.com>
- <20220504125039.2598-3-parri.andrea@gmail.com>
-In-Reply-To: <20220504125039.2598-3-parri.andrea@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=db9f30b9-ccc7-4574-95bf-f92df033c7cd;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-05T21:59:26Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 939367b3-7fb5-491c-5a5a-08da2ee2a5a2
-x-ms-traffictypediagnostic: SA1PR21MB2051:EE_
-x-microsoft-antispam-prvs: <SA1PR21MB2051D650E815B1A9B4FB41D3D7C29@SA1PR21MB2051.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 61hMWwGkkiuitfPHODBfckl0bveV5T0dWRqPdeKN9BBVD8dTyy+DhJXn+uim//MAp9CyiGsL/h2S78HRCF31GNmnf0xKnQdUqr9X+tMQ4lyiy50ZJ5v+YwN+Vhv/p90W1VMwZuFSeD2z3WSf+v6d6fKlPfkXm2FmJgRhm+18s7PclU/p3GvUs1riJ3m10g3VuvlsscLEANkJF9Bp70s/Im+8hpip/rLZNybRmzsGXTUaYKf27UVMHVozb3j5BwSwMo2yQ7oPdiPqYOJdi08eQNeYHoYqfYfrx90ckmoe+VLyK0kgf4O6Ex08YiAShq0ls6PXhY44rY1MF0GdoS8ePgXEOrpqZKga5hxerbnz/ZlxqeeBlSJdEGHq3Usqyohsbah5yGuCqNUNJZNFTQfLCgkXyUr4v/EeTkt5qZxv/NG/haU9n5dlNkVrk6shDfkgHZb+3RDCjcw/HQtsQ2EjKOeWGRmWEXDJq/XqpLOLdfU+keztH+sgXaCK1pjJ7OXBVvo3f3SbAMoiJTGWPeUiJONUnvkrPDvSxzvjo9P/TUsiI0vXvpFBTO62fI8ent487WJCPLqpXmKcBCFTRVqE3kYYSyx98E1PoBdhDL/ky5yYUEQjJhuiu5QPd5Gr+XTNSUybHGOkP7p4Fyq0YkbSmw9d8b88PALTyv0LnQMzihzAFBg53lBbYBfvq4KCqRUppBjHQ+YjBcxazRxv3FWIkUt10bg2G2kjECrirytWeADpt8FR8yyDIMJqtP2rpCYIUs19vw4XS+vHWwpOfMxVzA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(71200400001)(66556008)(186003)(33656002)(921005)(122000001)(52536014)(4326008)(64756008)(66446008)(66476007)(8676002)(110136005)(54906003)(55016003)(316002)(5660300002)(10290500003)(8990500004)(38100700002)(38070700005)(6506007)(83380400001)(9686003)(7696005)(2906002)(26005)(508600001)(82950400001)(82960400001)(86362001)(76116006)(66946007)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?k/vGL7L+vgdnAXeM+z3uQ8D9xrHGtA7iFUiy22lL4VIegVMyYRGom4AXA3s8?=
- =?us-ascii?Q?9uGmg3diWYm3hACV7TIAdVDpmq+akYyW4k85IOdaVWjK44XyFZt8efSXuSAH?=
- =?us-ascii?Q?pTwp2hciBfx3vLzCQwudZFsOjV+xFipXdi/m5ZAB9aDKCEkNhCSrH75ZoQN3?=
- =?us-ascii?Q?GRN2HpjaTDiJ+WmlOi5qQFgTOP/ygfzIn5Yl4vO2X0BEJpbKkhCV/kiqy2uS?=
- =?us-ascii?Q?rpHQIKnK1WUGg3OGUxrLF5XjujJEz/8p5eRAWR5BjbrAK9/6CqHaJneYQm/w?=
- =?us-ascii?Q?t3G6EZlWQcS/yRUoYAIE4mi95Srs/GypZlPqkzyb9Sqf2u3AUH/yiDk1jss0?=
- =?us-ascii?Q?SnBTjMYQx8Qo9oLaUlL5NYxQo7lM7uAXsWv6r7Gk8DJzoON9WJxFg63/MhII?=
- =?us-ascii?Q?J0a7p7iF8RBnR70+rkaOx+OAiB56iflDKiK/xh1XHhSeVYdHBaKdDUPTFstV?=
- =?us-ascii?Q?oOIPK8y/oFl6zIEDhEzYpycABl3qSp1Vku3IRTPrY1KfFhskN7BgPZE70+Yj?=
- =?us-ascii?Q?PB+knxAn+5ivBjAKyIaPiX1klB3vhq/IeNH69FXgIj2YLyIXvDopLgGYq9E8?=
- =?us-ascii?Q?1aJwHmNgDkXMdx+G+2A3VBo21S+M+lTkD+ZOqm0IFCsczy0Yvm/tE2/dm0xh?=
- =?us-ascii?Q?lAxVRzpwFh83lwvip1Goe3SNz9fCyej2FDQkrQugScX7XVbyvX2eYBHeDGcf?=
- =?us-ascii?Q?wZt6AvDRAdFRzLmUYzdCDBwGNJtqdRFotoiH7J4lVCn0o9iALs5UElL+EeQx?=
- =?us-ascii?Q?mhPDmfxF4GfD2xNy50RwUIv+PUhCYxaV5LFPBLvmt9KHlEHqdcxs6UFQInyK?=
- =?us-ascii?Q?kIdK/qxrMHHjvdbnWEdikD3baK68bDol1LHwxtdOQW19Ij7Uw7usFlnzfjpH?=
- =?us-ascii?Q?ucgROh0/Zvn/g9HNYQW9VdYlb8LBgyoDSKJcr3hWH56fEFE2reeYF8G/JM91?=
- =?us-ascii?Q?ge5Ef1tHy8o3kSMqvlRb04XCrvqEOHmQBcwr4au2YqPywdvFSYLJXlO2uRT/?=
- =?us-ascii?Q?3z9XALcZE4rfejSQLWzAodBUNXBQWrQD1CGcVlCxwvQ7UIrW6JFAiWvZsELn?=
- =?us-ascii?Q?vru0ilue8rGoxwuUqjU96l+mNZwh+LEyIQ1pCM+iJPrQEzKCtU60BzQB59CI?=
- =?us-ascii?Q?CXH7RqKwkMjLQzJCLcV4+P6f6r/Xg0OdDsq5M/BsVZg1C4VjI1PrOjwFecHm?=
- =?us-ascii?Q?8pDruJXgZP59dzkBlaA/hSVbX3qMd65ZQ1hn7tQ+sFfe9o+1Z9z8jAWE8Oop?=
- =?us-ascii?Q?o0GxYWS5w67qfOPwUDDIQCUP/AO0/q/Yu4Nc07zE0nApoGBWD1P7Z0lxIios?=
- =?us-ascii?Q?tnXmzTHSHq/igKwYT+Sxn8yAkx1YUu20HDjKFu3eaZcIgafQ006lSdXQOCcJ?=
- =?us-ascii?Q?PrarP1VxOlyiWEqBbKK+FmXO794Z1V7nrKuR8WhZLFl9ST566P3qr16mCmOl?=
- =?us-ascii?Q?ZScWb8yNZ5zl2FScQL8Ix1hbn3RSkrNJKPj71V+6Pnm/G+ThxF2uhFxedYVH?=
- =?us-ascii?Q?jVL5+h8Mn7Zs6PcUIkfbRc7ManzS9IGrCdSw8u/TLDylZlhdHMD+Lkke0jTV?=
- =?us-ascii?Q?gs2r1nso8f2j3G3SFvWD+ZsUiMG+b3pL+KzxY7+DK6wPm07bqzANf8Eubs9G?=
- =?us-ascii?Q?P6xHc6+qj6OE2uVHzp0Z/nkZGVoRGYNmDF04Hl/dsXCOeKy8rpBnbQbuUP8T?=
- =?us-ascii?Q?kz0oV90CrkExucZtwtYIfkgpi4BzX7fYwrN4u0vH/udBMMDF2NKlVNaf9o/p?=
- =?us-ascii?Q?+aDxTFWacNrIFWdsUGqpvhgScdZPLUc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 5 May 2022 18:08:16 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00EDD1EEF0
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 15:04:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651788274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ncwUrPXa6D//xAE+gUKX4W9jlEJvsWNrctcaxVQSCb8=;
+        b=PweeKV1NXVpyIKwskeT5YWzMaOC8hxCWX50B+RJhVgasW4M/7b+YGOgtPuiB5iEyMrZMwE
+        u/eKyb8rJxxRo83/ZqQ2JBqwy+JwSm+opIyQoZJFx4Ad4b1A6ndjELKCAgmnoPkfcNP9/i
+        BkgkF24AE8ikHmSrWu7Rp+Lwao7EvC8=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-215-2g0Sq597PYuiA62tgGDZhA-1; Thu, 05 May 2022 18:04:25 -0400
+X-MC-Unique: 2g0Sq597PYuiA62tgGDZhA-1
+Received: by mail-wr1-f71.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so1872384wra.15
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 15:04:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ncwUrPXa6D//xAE+gUKX4W9jlEJvsWNrctcaxVQSCb8=;
+        b=X7IKakNfuemgSg7A1tR+HChKeEnWTxcXVbnFIWG/rbURC1lwmLql8U3z0Ovj/1kAGe
+         JPX7nq9wpBpnn4B2OL7LDBCzPIcEraAnLtVJouvvwlDXt/YIidhQmKuSQdqVMbPoxr4n
+         e8cqtn51Ukao88VwUUdqzsqgxSFKsJWUAt/EenSgadYp48ZuA6Tu0QfOtuMFcslcaavv
+         wDyyrjmFA/OggqBEtFy8r470scErsmgwyUN8MtakIdi+J7GayLC9FW4nbpiszaIak0IH
+         09TP8JWostrrtbj4pCmp+drOC4OoKi6SmmXZxxMsroI9P6fNCKRqJ+S0QCKsQ1sPaDwV
+         msGA==
+X-Gm-Message-State: AOAM530Cn8icTu7pTtC57hJfmBMu+43pPvXIJkjKCFa5o1pNlUsHpNK8
+        waQZudw/h4PQyNO0Dlszcz/MnRNaPVgYmfmsRHwT6F0AhxAwdjNpf7ksteDai/3lH3WRSPQZh/3
+        k4lBCSPHpcW3AJYkL8NBAF73h+CKPOn6wM/HUF+qHCxT9K/Y1nYP+KXNB1bVEMjDxGmtZlDBMxY
+        Y=
+X-Received: by 2002:a05:600c:3d8c:b0:394:6097:9994 with SMTP id bi12-20020a05600c3d8c00b0039460979994mr6726669wmb.29.1651788264100;
+        Thu, 05 May 2022 15:04:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyfwhAOIQeVF2O3srNOg8rIqNBWMADJBM0ucjW4JDKss+KaRrP/Oe0Hd/iuu0biw9+SXEcE9g==
+X-Received: by 2002:a05:600c:3d8c:b0:394:6097:9994 with SMTP id bi12-20020a05600c3d8c00b0039460979994mr6726643wmb.29.1651788263758;
+        Thu, 05 May 2022 15:04:23 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003942a244f4bsm7980875wms.36.2022.05.05.15.04.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 15:04:23 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in fb_release()
+Date:   Fri,  6 May 2022 00:04:13 +0200
+Message-Id: <20220505220413.365977-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220505215947.364694-1-javierm@redhat.com>
+References: <20220505215947.364694-1-javierm@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 939367b3-7fb5-491c-5a5a-08da2ee2a5a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2022 22:00:20.2163
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nh4VEazMnrt1yawkUywp9tgYwQKAcGQhX3fDzfNGYpn9lKDRt6bS+8+7wiaFrby+Edzxj9Ep5dC7z5de12Mtw8GgxrSAr/YuVJoBo8qhPvg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR21MB2051
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Parri (Microsoft) <parri.andrea@gmail.com> Sent: Wednesday, Ma=
-y 4, 2022 5:51 AM
->=20
-> [ Similarly to commit a765ed47e4516 ("PCI: hv: Fix synchronization
->   between channel callback and hv_compose_msi_msg()"): ]
->=20
-> The (on-stack) teardown packet becomes invalid once the completion
-> timeout in hv_pci_bus_exit() has expired and hv_pci_bus_exit() has
-> returned.  Prevent the channel callback from accessing the invalid
-> packet by removing the ID associated to such packet from the VMbus
-> requestor in hv_pci_bus_exit().
->=20
-> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> ---
->  drivers/pci/controller/pci-hyperv.c | 26 +++++++++++++++++++-------
->  1 file changed, 19 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller=
-/pci-hyperv.c
-> index 9a3e17b682eb7..db4b3f86726b2 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -3620,6 +3620,7 @@ static int hv_pci_probe(struct hv_device *hdev,
->  static int hv_pci_bus_exit(struct hv_device *hdev, bool keep_devs)
->  {
->  	struct hv_pcibus_device *hbus =3D hv_get_drvdata(hdev);
-> +	struct vmbus_channel *chan =3D hdev->channel;
->  	struct {
->  		struct pci_packet teardown_packet;
->  		u8 buffer[sizeof(struct pci_message)];
-> @@ -3627,13 +3628,14 @@ static int hv_pci_bus_exit(struct hv_device *hdev=
-, bool
-> keep_devs)
->  	struct hv_pci_compl comp_pkt;
->  	struct hv_pci_dev *hpdev, *tmp;
->  	unsigned long flags;
-> +	u64 trans_id;
->  	int ret;
->=20
->  	/*
->  	 * After the host sends the RESCIND_CHANNEL message, it doesn't
->  	 * access the per-channel ringbuffer any longer.
->  	 */
-> -	if (hdev->channel->rescind)
-> +	if (chan->rescind)
->  		return 0;
->=20
->  	if (!keep_devs) {
-> @@ -3670,16 +3672,26 @@ static int hv_pci_bus_exit(struct hv_device *hdev=
-, bool
-> keep_devs)
->  	pkt.teardown_packet.compl_ctxt =3D &comp_pkt;
->  	pkt.teardown_packet.message[0].type =3D PCI_BUS_D0EXIT;
->=20
-> -	ret =3D vmbus_sendpacket(hdev->channel, &pkt.teardown_packet.message,
-> -			       sizeof(struct pci_message),
-> -			       (unsigned long)&pkt.teardown_packet,
-> -			       VM_PKT_DATA_INBAND,
-> -			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
-> +	ret =3D vmbus_sendpacket_getid(chan, &pkt.teardown_packet.message,
-> +				     sizeof(struct pci_message),
-> +				     (unsigned long)&pkt.teardown_packet,
-> +				     &trans_id, VM_PKT_DATA_INBAND,
-> +
-> VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
->  	if (ret)
->  		return ret;
->=20
-> -	if (wait_for_completion_timeout(&comp_pkt.host_event, 10 * HZ) =3D=3D 0=
-)
-> +	if (wait_for_completion_timeout(&comp_pkt.host_event, 10 * HZ) =3D=3D 0=
-) {
-> +		/*
-> +		 * The completion packet on the stack becomes invalid after
-> +		 * 'return'; remove the ID from the VMbus requestor if the
-> +		 * identifier is still mapped to/associated with the packet.
-> +		 *
-> +		 * Cf. hv_pci_onchannelcallback().
-> +		 */
-> +		vmbus_request_addr_match(chan, trans_id,
-> +					 (unsigned long)&pkt.teardown_packet);
->  		return -ETIMEDOUT;
-> +	}
->=20
->  	return 0;
->  }
-> --
-> 2.25.1
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Most fbdev drivers have issues with the fb_info lifetime, because call to
+framebuffer_release() from their driver's .remove callback, rather than
+doing from fbops.fb_destroy callback.
+
+Doing that will destroy the fb_info too early, while references to it may
+still exist, leading to a use-after-free error.
+
+To prevent this, check the fb_info reference counter when attempting to
+kfree the data structure in framebuffer_release(). That will leak it but
+at least will prevent the mentioned error.
+
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+---
+
+(no changes since v1)
+
+ drivers/video/fbdev/core/fbsysfs.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index 8c1ee9ecec3d..c2a60b187467 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
+ {
+ 	if (!info)
+ 		return;
++
++	if (WARN_ON(refcount_read(&info->count)))
++		return;
++
+ 	kfree(info->apertures);
+ 	kfree(info);
+ }
+-- 
+2.35.1
 
