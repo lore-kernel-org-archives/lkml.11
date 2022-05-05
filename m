@@ -2,109 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1514C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A76C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382799AbiEERoQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34316 "EHLO
+        id S240855AbiEERoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 13:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382782AbiEERno (ORCPT
+        with ESMTP id S1382758AbiEERnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:43:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE74C5BD30;
+        Thu, 5 May 2022 13:43:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDEB5BD2C;
         Thu,  5 May 2022 10:40:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81117B82E15;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70DA7B82E13;
         Thu,  5 May 2022 17:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 177E8C385C9;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA1EC385C1;
         Thu,  5 May 2022 17:40:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651772401;
-        bh=cpQMmbRVdDBMeuI5w6SyoGllIexfXaT+hvXuJPkJ0rE=;
-        h=Subject:To:From:Date:From;
-        b=fmJYRjOeNzbiQDIhsV87ddjKMnPXufI6koKm+QksbT0YlpRsV+8EIPerfGsfklkab
-         FBQcUbd84dWAQrR9kq73l+rkBeiA+pSGYhgJB7p3VgGRrEl6d1H82N5lpzJFx8v55x
-         LOYoTBCw6VRb0zeE9VgL6kBekQ2+RPhvg3i7NcU0=
-Subject: patch "firmware_loader: describe 'module' parameter of" added to driver-core-next
-To:     bagasdotme@gmail.com, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        mcgrof@kernel.org, rafael@kernel.org, russell.h.weight@intel.com,
-        sfr@canb.auug.org.au
-From:   <gregkh@linuxfoundation.org>
-Date:   Thu, 05 May 2022 19:35:25 +0200
-Message-ID: <16517721257181@kroah.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651772401;
+        bh=2IoE4BfEuAg77WmuhMuImyNDvTFHhyYDFxiBCowXMW0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jjkpXAHdVdaGYPRA/+3MWK8YySttWTFzcYC1keAu8erj/0Qv22sl3zrDQYguGunS5
+         EYa5oM+lHkIE7YTdldWLi0OWY/DsNHWma+k3zqfE22SXyjFuALh5riYHbPe1kbAc44
+         9KAWXnmbdCqw/9NbiY+BaqDNCtIn7quRedBG1XfiA99nj6AB8gym8fHYhho7MeeQF1
+         l9XXlvvZnqwjxE3vlzhp6PnrE7j4IrFhVl0Qex8zon67fDEF5nEZv2gZ3ktfM3q+fs
+         7pbwFrQBZZkl4jB1bUVpER7HBPy1pVzyBaA4EK56UQiDwNHTAidoXgBZp7AUZ4Ox2c
+         dWIFDXtyn6eAA==
+Received: by mail-wm1-f47.google.com with SMTP id l62-20020a1c2541000000b0038e4570af2fso3057496wml.5;
+        Thu, 05 May 2022 10:40:00 -0700 (PDT)
+X-Gm-Message-State: AOAM530yTQ0JfV7UcZJ2sGdAUtPmpZUHjzeVwfywFlcrhtcN+zBTpQ3E
+        I54ikdPAfAKxu/CEiGl5fe/z60RnqY9ehyeeKhM=
+X-Google-Smtp-Source: ABdhPJxtMhUha7a+dwpeZyyg5w+ON9JC8vKB6RB8veyDWjdr1D7VRDLkqvJBk615pYcXmnWu5kgj+KPCSrbSxhVU2uo=
+X-Received: by 2002:a7b:cc93:0:b0:394:2622:fcd9 with SMTP id
+ p19-20020a7bcc93000000b003942622fcd9mr6321312wma.20.1651772399229; Thu, 05
+ May 2022 10:39:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: 8bit
+References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
+ <20220505161028.GA492600@bhelgaas>
+In-Reply-To: <20220505161028.GA492600@bhelgaas>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 5 May 2022 19:39:42 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
+Message-ID: <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
+Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select it
+ as necessary
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
+        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        "open list:SUPERH" <linux-sh@vger.kernel.org>,
+        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
+        <sparclinux@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 5, 2022 at 6:10 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> On Wed, May 04, 2022 at 11:31:28PM +0200, Arnd Bergmann wrote:
+> >
+> > The main goal is to avoid c), which is what happens on s390, but
+> > can also happen elsewhere. Catching b) would be nice as well,
+> > but is much harder to do from generic code as you'd need an
+> > architecture specific inline asm statement to insert a ex_table
+> > fixup, or a runtime conditional on each access.
+>
+> Or s390 could implement its own inb().
+>
+> I'm hearing that generic powerpc kernels have to run both on machines
+> that have I/O port space and those that don't.  That makes me think
+> s390 could do something similar.
 
-This is a note to let you know that I've just added the patch titled
+No, this is actually the current situation, and it makes absolutely no
+sense. s390 has no way of implementing inb()/outb() because there
+are no instructions for it and it cannot tunnel them through a virtual
+address mapping like on most of the other architectures. (it has special
+instructions for accessing memory space, which is not the same as
+a pointer dereference here).
 
-    firmware_loader: describe 'module' parameter of
+The existing implementation gets flagged as a NULL pointer dereference
+by a compiler warning because it effectively is.
 
-to my driver-core git tree which can be found at
-    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
-in the driver-core-next branch.
+powerpc kernels generally map the I/O space into a section of the
+physical address space, where it gets mapped into a fixed virtual
+address and accessed through pointer dereference. This works on
+any powerpc CPU as long as it is implemented in the PCI host
+bridge in the usual way. The only difference between powerpc and
+arm here is that there are fewer implementations, so one can
+make assumptions about which PCI host bridge is used based on
+a CPU core.
 
-The patch will show up in the next release of the linux-next tree
-(usually sometime within the next 24 hours during the week.)
-
-The patch will also be merged in the next major kernel release
-during the merge window.
-
-If you have any questions about this process, please let me know.
-
-
-From 6370b04f24bc10c1f2056c0f12dd651ac0121a6f Mon Sep 17 00:00:00 2001
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-Date: Mon, 2 May 2022 12:14:56 +0700
-Subject: firmware_loader: describe 'module' parameter of
- firmware_upload_register()
-
-Stephen Rothwell reported kernel-doc warning:
-
-drivers/base/firmware_loader/sysfs_upload.c:285: warning: Function parameter or member 'module' not described in 'firmware_upload_register'
-
-Fix the warning by describing the 'module' parameter.
-
-Link: https://lore.kernel.org/linux-next/20220502083658.266d55f8@canb.auug.org.au/
-Fixes: 97730bbb242cde ("firmware_loader: Add firmware-upload support")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Russ Weight <russell.h.weight@intel.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: Linux Next Mailing List <linux-next@vger.kernel.org>
-Reviewed-by: Russ Weight <russell.h.weight@intel.com>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220502051456.30741-1-bagasdotme@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/base/firmware_loader/sysfs_upload.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/base/firmware_loader/sysfs_upload.c b/drivers/base/firmware_loader/sysfs_upload.c
-index 8cdcf3516c7e..87044d52322a 100644
---- a/drivers/base/firmware_loader/sysfs_upload.c
-+++ b/drivers/base/firmware_loader/sysfs_upload.c
-@@ -266,6 +266,7 @@ int fw_upload_start(struct fw_sysfs *fw_sysfs)
- 
- /**
-  * firmware_upload_register() - register for the firmware upload sysfs API
-+ * @module: kernel module of this device
-  * @parent: parent device instantiating firmware upload
-  * @name: firmware name to be associated with this device
-  * @ops: pointer to structure of firmware upload ops
--- 
-2.36.0
-
-
+     Arnd
