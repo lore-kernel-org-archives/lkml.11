@@ -2,253 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 540CFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C31C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbiEERMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
+        id S1382456AbiEEROS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 13:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349424AbiEERMS (ORCPT
+        with ESMTP id S1382454AbiEEROP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:12:18 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014335C852
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:08:37 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id x12so4085164pgj.7
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 10:08:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uBNCKxvmD2AgiNs6UtG7Z6xeP7ZYoOXy6b2j7MDXML4=;
-        b=ICh9pg+4NMm9VwAozwf7MBdoT5RR1sDAfc19D8TnIIyvW4wERqBbVGxrEYT/LHsayh
-         aFCyJWskiqfEuFR7+rD6qRxTtNVoP+I06n8Dl9hwPIjhyFhrFAKUrtE79pC6Z3Lq2vTy
-         P1rJU/hX3wJ8A/wVCy4wv4eV/T1pLi6jbEINMcnSOcws4H1ctr7mNnPzEjxNZ26AtDzK
-         1F2enXfgtBCElzxMIW98/nrZSTIszjgIcj+lP0P3hgiCALLL8geBibiMAIDvfZoAOwdC
-         F5gnk3D9mtZ0UfyEGYS0SstCY1rML4Xx7/YRIicFuzj1qVxgZpOOI+N+2wxeMhw1AmeA
-         HMkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uBNCKxvmD2AgiNs6UtG7Z6xeP7ZYoOXy6b2j7MDXML4=;
-        b=UnX8LXdMckoPKg29l1ZVAozIUgFW7WgjrG84ueKviLJ9do9HBvL23cClaYIp1UDoVb
-         naONATfigmmiyPzZwi/+VbA5jbrzWGgLOZ/3kzlq/o82Qcp+vbAi5ai2dZ2dwUejST47
-         Nkt/BjAIjnHNeMfztP8oy1HWLBAqqOUHVfOBJNONtrSqdY5lG/RKDJBVHOTtPHUhnvKk
-         6V2nDR5NhwIuy1AKbt3+Y/OX33w0QtOgB1Lavvmn8C40sKr1jrEn0FfEjNGdF69E2FVq
-         cs6YAmsee1Gi9levNH5NYb9wx989DYSyCZy+lIcVz5Mj2nmjOVmPN+Fs36amNTRBhZK0
-         uBdg==
-X-Gm-Message-State: AOAM532XpCq6LMwFh8+1zKdzASJazisOAvZv3btrVC5x4kh9dPT8mgyp
-        P9tCC4fG4GurgRi3SjBk84APqg==
-X-Google-Smtp-Source: ABdhPJxFE5V7Oa5RPpyHwM7YEuZTgvyaJPTE9iHSTiV1XcvnVSj0u3YfibFFUuBo7Ay3EaksFGHYmg==
-X-Received: by 2002:a63:7d04:0:b0:378:fb34:5162 with SMTP id y4-20020a637d04000000b00378fb345162mr22988866pgc.487.1651770517272;
-        Thu, 05 May 2022 10:08:37 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id be12-20020a056a001f0c00b0050dc76281basm1622739pfb.148.2022.05.05.10.08.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 10:08:36 -0700 (PDT)
-Date:   Thu, 5 May 2022 17:08:33 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Subject: Re: [PATCH v7 03/11] KVM: selftests: Read binary stats desc in lib
-Message-ID: <YnQEkVQJlhTTo6BQ@google.com>
-References: <20220503183045.978509-1-bgardon@google.com>
- <20220503183045.978509-4-bgardon@google.com>
+        Thu, 5 May 2022 13:14:15 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4864556C32
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651770636; x=1683306636;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=R1klEn3mIJKBtGxC0s/2URpewCZFaeKDRLeugxCsMpk=;
+  b=A1bVqGKUSyWDFRY8kEZRsiLBgi1MjytALr3Ia75XuNKGYaM/x7LfbNUZ
+   zH0yXr8jd69bVxO/V5Kq5a0hmkInXDzlpzwopQCW6xnzraKTYLYxJg8LG
+   epzXzW/a9sutVv6lEMFiNVfhuyRms0dTaEHaRUPJ2SqJyVtpEZnNupBdH
+   kqE0V8B+FxYXQtMJogdPVz+rUwYB2QvcbjB7TPZzzxPb5Z50izp0Jzs7e
+   fLX276gcCKDrl6yaXAZjzNwaft2xl40Cb1SmoVAKd3rQmytp6ZMFCD6B3
+   IaGar1+Nz4TYb+PKylIAFE+fpmOyBRbjIKLKzumLq5PF3AzT2p8g1+7/8
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250174634"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="250174634"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:10:35 -0700
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="694755909"
+Received: from evegaag-mobl1.amr.corp.intel.com (HELO [10.209.187.127]) ([10.209.187.127])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:10:34 -0700
+Message-ID: <ce377229-06ee-7f68-ca55-361a8986a7e7@intel.com>
+Date:   Thu, 5 May 2022 10:10:54 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503183045.978509-4-bgardon@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 3/3] x86: Fix comment for X86_FEATURE_ZEN
+Content-Language: en-US
+To:     Wyes Karny <wyes.karny@amd.com>, linux-kernel@vger.kernel.org
+Cc:     Lewis.Carroll@amd.com, Mario.Limonciello@amd.com,
+        gautham.shenoy@amd.com, Ananth.Narayan@amd.com, bharata@amd.com,
+        len.brown@intel.com, x86@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, peterz@infradead.org, chang.seok.bae@intel.com,
+        keescook@chromium.org, metze@samba.org, zhengqi.arch@bytedance.com,
+        mark.rutland@arm.com, puwen@hygon.cn, rafael.j.wysocki@intel.com,
+        andrew.cooper3@citrix.com, jing2.liu@intel.com,
+        jmattson@google.com, pawan.kumar.gupta@linux.intel.com
+References: <20220505104856.452311-1-wyes.karny@amd.com>
+ <20220505110429.453279-1-wyes.karny@amd.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220505110429.453279-1-wyes.karny@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022, Ben Gardon wrote:
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index 1d75d41f92dc..12fa8cc88043 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -2577,3 +2577,41 @@ void read_stats_header(int stats_fd, struct kvm_stats_header *header)
->  	ret = read(stats_fd, header, sizeof(*header));
->  	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
->  }
-> +
-> +static ssize_t stats_descs_size(struct kvm_stats_header *header)
+On 5/5/22 04:04, Wyes Karny wrote:
+> The feature X86_FEATURE_ZEN implies that the CPU supports Zen
+> microarchitecture. Call this out explicitly in the comment.
 
-Please spell out "descriptors", I find it difficult to visually differentiate
-desc vs. descs.  I don't mind the short version for variable names, but for helpers
-provided by the library I think the added clarity is worth the verbosity.
+Is "supports" the best word here?
 
-> +{
-> +	return header->num_desc *
-> +	       (sizeof(struct kvm_stats_desc) + header->name_size);
-> +}
+A CPU is based on a microarchitecture, it doesn't really support it.  I
+guess we could say the CPU supports a microarchitecture's *features*,
+but that's a bit wordy for a tiny comment.
 
-Aha!  This is the right patch to deal with the "variable" name_size.  Rather than
-open code the adjustment for header->name_size, add a helper for _that_.  Then
-read_stats_descriptors() can do:
+Maybe:
 
-	desc_size = get_stats_descriptor_size(header);
-	total_size = header->num_desc * get_stats_descriptor_size(header);
+#define X86_FEATURE_ZEN			(7*32+28) /* "" CPU based on Zen uarch */
 
-	stats_desc = calloc(header->num_desc, desc_size);
-	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-
-	ret = pread(stats_fd, stats_desc, total_size, header->desc_offset);
-	TEST_ASSERT(ret == total_size, "Read KVM stats descriptors");
-
-Those helpers provide an even better place for the comments that my cleanup patch
-adds.
-
-> +
-> +/*
-> + * Read binary stats descriptors
-> + *
-> + * Input Args:
-> + *   stats_fd - the file descriptor for the binary stats file from which to read
-> + *   header - the binary stats metadata header corresponding to the given FD
-> + *
-> + * Output Args: None
-> + *
-> + * Return:
-> + *   A pointer to a newly allocated series of stat descriptors.
-> + *   Caller is responsible for freeing the returned kvm_stats_desc.
-> + *
-> + * Read the stats descriptors from the binary stats interface.
-> + */
-> +struct kvm_stats_desc *read_stats_desc(int stats_fd,
-
-This be "read_stats_descriptors" (or read_stats_descs() if someone objects to the
-verbose name) to make it clear this reads multiple desriptors.
-
-E.g. this on top (compile tested only)
-
----
- .../selftests/kvm/include/kvm_util_base.h     | 26 +++++++++++++++++--
- .../selftests/kvm/kvm_binary_stats_test.c     |  7 ++---
- tools/testing/selftests/kvm/lib/kvm_util.c    | 23 +++++++---------
- 3 files changed, 37 insertions(+), 19 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index fabe46ddc1b2..e31f7113a529 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -401,8 +401,30 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
- int vm_get_stats_fd(struct kvm_vm *vm);
- int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
- void read_stats_header(int stats_fd, struct kvm_stats_header *header);
--struct kvm_stats_desc *read_stats_desc(int stats_fd,
--				       struct kvm_stats_header *header);
-+struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
-+					      struct kvm_stats_header *header);
-+
-+static inline ssize_t get_stats_descriptor_size(struct kvm_stats_header *header)
-+{
-+        /*
-+         * The base size of the descriptor is defined by KVM's ABI, but the
-+         * size of the name field is variable as far as KVM's ABI is concerned.
-+         * But, the size of name is constant for a given instance of KVM and
-+         * is provided by KVM in the overall stats header.
-+         */
-+	return sizeof(struct kvm_stats_desc) + header->name_size;
-+}
-+
-+static inline struct kvm_stats_desc *get_stats_descriptor(struct kvm_stats_desc *stats,
-+							  int index,
-+							  struct kvm_stats_header *header)
-+{
-+	/*
-+	 * Note, size_desc includes the of the name field, which is
-+         * variable, i.e. this is NOT equivalent to &stats_desc[i].
-+	 */
-+	return (void *)stats + index * get_stats_descriptor_size(header);
-+}
-
- uint32_t guest_get_vcpuid(void);
-
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index b49fae45db1e..6252e3d6e964 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -35,7 +35,7 @@ static void stats_test(int stats_fd)
- 	/* Read kvm stats header */
- 	read_stats_header(stats_fd, &header);
-
--	size_desc = sizeof(*stats_desc) + header.name_size;
-+	size_desc = get_stats_descriptor_size(&header);
-
- 	/* Read kvm stats id string */
- 	id = malloc(header.name_size);
-@@ -63,11 +63,12 @@ static void stats_test(int stats_fd)
- 			"Descriptor block is overlapped with data block");
-
- 	/* Read kvm stats descriptors */
--	stats_desc = read_stats_desc(stats_fd, &header);
-+	stats_desc = read_stats_descriptors(stats_fd, &header);
-
- 	/* Sanity check for fields in descriptors */
- 	for (i = 0; i < header.num_desc; ++i) {
--		pdesc = (void *)stats_desc + i * size_desc;
-+		pdesc = get_stats_descriptor(stats_desc, i, &header);
-+
- 		/* Check type,unit,base boundaries */
- 		TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK)
- 				<= KVM_STATS_TYPE_MAX, "Unknown KVM stats type");
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 12fa8cc88043..4374c553de1f 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -2578,12 +2578,6 @@ void read_stats_header(int stats_fd, struct kvm_stats_header *header)
- 	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
- }
-
--static ssize_t stats_descs_size(struct kvm_stats_header *header)
--{
--	return header->num_desc *
--	       (sizeof(struct kvm_stats_desc) + header->name_size);
--}
--
- /*
-  * Read binary stats descriptors
-  *
-@@ -2599,19 +2593,20 @@ static ssize_t stats_descs_size(struct kvm_stats_header *header)
-  *
-  * Read the stats descriptors from the binary stats interface.
-  */
--struct kvm_stats_desc *read_stats_desc(int stats_fd,
--				       struct kvm_stats_header *header)
-+struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
-+					      struct kvm_stats_header *header)
- {
-+	ssize_t ret, desc_size, total_size;
- 	struct kvm_stats_desc *stats_desc;
--	ssize_t ret;
-
--	stats_desc = malloc(stats_descs_size(header));
-+	desc_size = get_stats_descriptor_size(header);
-+	total_size = header->num_desc * get_stats_descriptor_size(header);
-+
-+	stats_desc = calloc(header->num_desc, desc_size);
- 	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-
--	ret = pread(stats_fd, stats_desc, stats_descs_size(header),
--		    header->desc_offset);
--	TEST_ASSERT(ret == stats_descs_size(header),
--		    "Read KVM stats descriptors");
-+	ret = pread(stats_fd, stats_desc, total_size, header->desc_offset);
-+	TEST_ASSERT(ret == total_size, "Read KVM stats descriptors");
-
- 	return stats_desc;
- }
-
-base-commit: 6d8fd8c4f5fa1da6fa63da1d127b2804e79b1092
---
-
+or spell out "microarchitecture" if there's room.
