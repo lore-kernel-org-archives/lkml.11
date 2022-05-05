@@ -2,79 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9253CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 06:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232607AbiEEG4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 02:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        id S235052AbiEEG4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 02:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242125AbiEEGzn (ORCPT
+        with ESMTP id S233443AbiEEG4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 02:55:43 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF1B47045
-        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 23:52:04 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kv48v6qXczfbFN;
-        Thu,  5 May 2022 14:50:55 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.125) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 14:52:00 +0800
-From:   Yuanzheng Song <songyuanzheng@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Yuanzheng Song <songyuanzheng@huawei.com>
-Subject: [PATCH] mm: usercopy: move the virt_addr_valid() below the is_vmalloc_addr()
-Date:   Thu, 5 May 2022 07:10:37 +0000
-Message-ID: <20220505071037.4121100-1-songyuanzheng@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 5 May 2022 02:56:17 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B00547045
+        for <linux-kernel@vger.kernel.org>; Wed,  4 May 2022 23:52:38 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id g23so4084867edy.13
+        for <linux-kernel@vger.kernel.org>; Wed, 04 May 2022 23:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XYgl2GPJF28aJs5B+RpFseO5tV+QNon9XhfPoGG3PI8=;
+        b=cENiLRYfcN75f6CnglIbvxA2bI2N1rua85uURj/hI1INjQwXtlAcx91G+CvRdBGO/A
+         FMJbv61o2S/beNF39E3yoykvDZzzZ650S2mGeqnWK2Hc9fk/ooFW1710RMlrYLNurQW+
+         W/3jR1D89YO53hYiXV7rIw1Y63kyLyRmY3imrR/DboP46AIsa4jNHu9kv/qR+tB7ndAV
+         1FExkHutNpFe87thqr44bjrBSZ8jfqqgTLwr4r5VixcQshRwKf3lMp+3Twc3UF6QXjbq
+         3Bj/RLE4Vt/64ci39WSKw7Kkvqp8c4+Z/jQlMadJlXol3rMw9o8TYdIFtc/cxZrCXV4q
+         UTlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XYgl2GPJF28aJs5B+RpFseO5tV+QNon9XhfPoGG3PI8=;
+        b=EDlc7eCp8YCRaiwwk7Tuv37L50uHdXFUbkQXy68TngigunPBOhrNfkZXwfd8AZDYAB
+         H4nTunt0LTjkBKEei5yGY2rOv1RTfJnJtjRqUWu3Wj6u5J399MA+6J/y5kEJBfvZNGMS
+         DfzNiT+5oMgLU42yAwjvThHlNRVVbwGkMoLtZ/xyR2rLVNrYdodTJsWnJvC0h9JhquA9
+         Xg38ydLvFwOEO3Xg1Wx8a2rRM3fznbs9idqPrycS7ktiV/GI7ds3JeqqE1H4E8u12ie2
+         6kDr2ewWZvRIm7Ez2pDqIacUtDt7OfPA2zUmHCcLvPzwnWdun8xFzDgY4whJTfEXL+DI
+         cLxQ==
+X-Gm-Message-State: AOAM533EftR2IFlvOFQbzP4tDyLFs7QvmpdTgkgryr7n6/KRFlHfOHgm
+        gk7hbKl9rbbJjpF8L2hDLbFSiA==
+X-Google-Smtp-Source: ABdhPJxUhJeE8shIpgV2fivsl6yjzln9grab1GOW4jd9EQ1iOClkHnL1HvGOjZyNRUEum2qQfmoDvA==
+X-Received: by 2002:a05:6402:1148:b0:416:a4fb:3c2e with SMTP id g8-20020a056402114800b00416a4fb3c2emr28107283edw.182.1651733556865;
+        Wed, 04 May 2022 23:52:36 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y15-20020a170906070f00b006f3ef214e3asm378632ejb.160.2022.05.04.23.52.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 May 2022 23:52:36 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH qcom v2] spi: dt-bindings: qcom,spi-geni-qcom: allow three interconnects
+Date:   Thu,  5 May 2022 08:52:33 +0200
+Message-Id: <20220505065233.28476-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The is_kmap_addr() and the is_vmalloc_addr() in the check_heap_object()
-will not work, because the virt_addr_valid() will exclude the kmap and
-vmalloc regions. So let's move the virt_addr_valid() below
-the is_vmalloc_addr().
+Recent Qualcomm Geni SPI nodes, e.g. on SM8450, come also with three
+interconnects.  This fixes dtbs_check warnings like:
 
-Signed-off-by: Yuanzheng Song <songyuanzheng@huawei.com>
+  sm8450-qrd.dtb: spi@a98000: interconnects: [[46, 1, 0, 46, 4, 0], [47, 2, 0, 48, 12, 0], [49, 1, 0, 50, 1, 0]] is too long
+  sm8450-qrd.dtb: spi@a98000: interconnect-names: ['qup-core', 'qup-config', 'qup-memory'] is too long
+
+Fixes: 5bdcae1fe1c5 ("spi: dt-bindings: qcom,spi-geni-qcom: convert to dtschema")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- mm/usercopy.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/mm/usercopy.c b/mm/usercopy.c
-index ac8a093e90c1..baeacc735b83 100644
---- a/mm/usercopy.c
-+++ b/mm/usercopy.c
-@@ -163,9 +163,6 @@ static inline void check_heap_object(const void *ptr, unsigned long n,
- {
- 	struct folio *folio;
+Fix for a commit in MSM/Bjorn's tree.
+
+Changes since v1:
+1. Correct error msg (Rob).
+---
+ .../devicetree/bindings/spi/qcom,spi-geni-qcom.yaml          | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+index e2c7b934c50d..47e1b3ee8b1b 100644
+--- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
++++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+@@ -45,12 +45,15 @@ properties:
+       - const: rx
  
--	if (!virt_addr_valid(ptr))
--		return;
--
- 	if (is_kmap_addr(ptr)) {
- 		unsigned long page_end = (unsigned long)ptr | (PAGE_SIZE - 1);
+   interconnects:
+-    maxItems: 2
++    minItems: 2
++    maxItems: 3
  
-@@ -190,6 +187,9 @@ static inline void check_heap_object(const void *ptr, unsigned long n,
- 		return;
- 	}
+   interconnect-names:
++    minItems: 2
+     items:
+       - const: qup-core
+       - const: qup-config
++      - const: qup-memory
  
-+	if (!virt_addr_valid(ptr))
-+		return;
-+
- 	folio = virt_to_folio(ptr);
- 
- 	if (folio_test_slab(folio)) {
+   interrupts:
+     maxItems: 1
 -- 
-2.25.1
+2.32.0
 
