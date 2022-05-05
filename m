@@ -2,129 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D03C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 11:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357748AbiEELip (ORCPT
+        id S1357775AbiEELjV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 07:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
+        Thu, 5 May 2022 07:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357590AbiEELim (ORCPT
+        with ESMTP id S1357936AbiEELjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 07:38:42 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481FB517F0
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:35:03 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id n8so4138762plh.1
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 04:35:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H9AMjgQBvCmyA1ePp0ugTHXhdA/KV96TGy2zDZ4TeDc=;
-        b=gD36s46ywn5cBGjvq273k7r3M8UfRfELRbCviW7Ne+LrL7zlIWk0V338EHrG6xGBrp
-         sDTe26YWMOut0oJD/9j+3uYqD8Z8PGi7t+jHqUknfzF9VHuari22j3iOf12XGfDuF/k4
-         mAzOcUoi8hC91Ra+pX8P5uNb9MJo7Xk7xFUR/HSIh6RSDIir53VVqAnzqX/3G0QzhcDR
-         gAeyQLQJaxNhr0KRDX7w3HJwTe+xMmM+KGnenXa5vEJv0d2PKkeZr3bgG2uqeerWKD42
-         BmVE8Fd5Xw3SlRDrpfaap452zPwvX24o/yoGLZEjXi9pTUXIf0sClpxEdVRTO5/ZHBJj
-         z5Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H9AMjgQBvCmyA1ePp0ugTHXhdA/KV96TGy2zDZ4TeDc=;
-        b=C7Oekb+RyWFVkjOpu0xY2/M8MAHMgr6ZVnv/OBMhEoHZh+NQM3CgN62A2OUpTrBRon
-         UYli0btm6j25JpZbzvMuX11vMZ8ArPKqE3PSV3vnNFT3Q6KqXm8hOkDIvocegfaa/QMC
-         YPJvrfXwV/GfE0Of9n8qM1h48knveLWwdO+DSStmRNTzS98P2ZHaeP6VbKnT3Aab4uGe
-         xhyuf9431VqOvkO5D8rMOapTQKPv5E74HVk7H8KwH3sY8ogHT4sk5eF4WfsfbuCjRaoy
-         98rR5nHqBFg2aI6/HVyIERXi9VzLlZCLSfRRwZPG04sHrYhDRt+ydIOo7KEmK9i01MIM
-         Sdag==
-X-Gm-Message-State: AOAM533Xh/wfTbMZ0ut2f1ElnsxYdI6BiC2LFoeoNofXZtXPW9p2lILZ
-        8mki1k0DHchJwagc1d5tUv9ebiYXjzY=
-X-Google-Smtp-Source: ABdhPJxMOL/XuysWiausOaNMSrSxhKUgt0xkWw7NL/KHtJve6nExj56tez+jTxZWPMa0ircZm7qBPQ==
-X-Received: by 2002:a17:90b:3b4b:b0:1dc:5ee5:19ce with SMTP id ot11-20020a17090b3b4b00b001dc5ee519cemr5569473pjb.234.1651750502755;
-        Thu, 05 May 2022 04:35:02 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id l17-20020a170903121100b0015eaa9797e8sm1330856plh.172.2022.05.05.04.35.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 04:35:01 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     hughd@google.com, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] mm/shmem: fix build failure when CONFIG_TRANSPARENT_HUGEPAGE is not set
-Date:   Thu,  5 May 2022 11:33:55 +0000
-Message-Id: <20220505113354.202979-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 5 May 2022 07:39:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AE36571
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 04:35:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9A356CE2CD6
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 11:35:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525FCC385A8;
+        Thu,  5 May 2022 11:35:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651750520;
+        bh=IwCWf3GJBdo99UeZ55sROy91SUTr3iRNx0svAIAvgzk=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=PrQVzq4ybXbjpT5PAqq9XszP47Lk99oBP+sg39XIaxW5IrYRkhE75nLJ+C3Lf8zt6
+         fP3hnnGBl1U3DpE2W8g8yFWooqaoVTnM/h2FWbBRQ+9DP3sZdbWrOmKIO1thJzfH4w
+         zTQerpKdkH3SBgEVrMUUfAwLkIqxR1NUqJLmdpmXloJtXY+ydJT4WE03y2AJtwzSzA
+         JBsLGUhEn1KqKaMPvmlcsqU4+XdurBka9/OYpVjcKuOazdQzKCaRy12toSpwI7J+7X
+         CVa8HHiHwxeALRWzeOzOM2RXRDySQyQ+KMrKCdvSza86rdRSPh/9tdrhj75MU0qENC
+         JBuSFujtVKG3A==
+Message-ID: <eb440861-1de1-ebe8-1115-1004677f8306@kernel.org>
+Date:   Thu, 5 May 2022 19:35:19 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [f2fs-dev] [PATCH 2/2 v2] f2fs: avoid to select pinned section
+ during checkpoint=disable
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220503203040.365028-1-jaegeuk@kernel.org>
+ <20220503203040.365028-2-jaegeuk@kernel.org> <YnLgnhiJtrutv8nw@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YnLgnhiJtrutv8nw@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+On 2022/5/5 4:22, Jaegeuk Kim wrote:
+> The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
+> chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
+> segment as a victim all the time, resulting in checkpoint=disable failure.
+> Let's pick another one, if we fail to collect it.
+> 
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+> ---
+> 
+>   Change log from v1:
+>    - keep sync condition to stop GC
+> 
+>   fs/f2fs/gc.c | 5 +----
+>   1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+> index 4d47723523c3..441190ab8593 100644
+> --- a/fs/f2fs/gc.c
+> +++ b/fs/f2fs/gc.c
+> @@ -1838,10 +1838,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+>   	if (gc_type == FG_GC)
+>   		sbi->cur_victim_sec = NULL_SEGNO;
+>   
+> -	if (sync)
+> -		goto stop;
+> -
+> -	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
+> +	if ((!has_not_enough_free_secs(sbi, sec_freed, 0) || sync) && seg_freed)
 
-shmem_add_to_page_cache() use THP_FILE_FALLBACK even if
-CONFIG_TRANSPARENT_HUGEPAGE is not set and triggers this
-compile error.
+Wait, it doesn't make sense that it needs to migrate one section successfully
+when there is enough free sections, e.g. for background GC case.
 
-Add ifdef CONFIG_TRANSPARENT_HUGEPAGE in shmem_add_to_page_cache().
+I doubt above implementation may force bggc to migrate all dirty sections?
+due to seg_freed will always be zero, because it increases only if gc_type
+is FG_GC?
 
-In file included from <command-line>:
-mm/shmem.c: In function ‘shmem_add_to_page_cache’:
-././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_327’ declared with attribute error: BUILD_BUG failed
-  352 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-      |                                      ^
-././include/linux/compiler_types.h:333:4: note: in definition of macro ‘__compiletime_assert’
-  333 |    prefix ## suffix();    \
-      |    ^~~~~~
-././include/linux/compiler_types.h:352:2: note: in expansion of macro ‘_compiletime_assert’
-  352 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-      |  ^~~~~~~~~~~~~~~~~~~
-./include/linux/build_bug.h:39:37: note: in expansion of macro ‘compiletime_assert’
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-./include/linux/build_bug.h:59:21: note: in expansion of macro ‘BUILD_BUG_ON_MSG’
-   59 | #define BUILD_BUG() BUILD_BUG_ON_MSG(1, "BUILD_BUG failed")
-      |                     ^~~~~~~~~~~~~~~~
-./include/linux/vm_event_item.h:148:30: note: in expansion of macro ‘BUILD_BUG’
-  148 | #define THP_FILE_FALLBACK ({ BUILD_BUG(); 0; })
-      |                              ^~~~~~~~~
-mm/shmem.c:721:20: note: in expansion of macro ‘THP_FILE_FALLBACK’
-  721 |     count_vm_event(THP_FILE_FALLBACK);
-      |                    ^~~~~~~~~~~~~~~~~
-  CC      arch/x86/events/intel/p4.o
-make[1]: *** [scripts/Makefile.build:288: mm/shmem.o] Error 1
-make: *** [Makefile:1997: mm] Error 2
-make: *** Waiting for unfinished jobs....
+		if (gc_type == FG_GC &&
+				get_valid_blocks(sbi, segno, false) == 0)
+			seg_freed++;
 
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
+And I didn't see there is one or combinations of parameters can indicate
+meaning: "it needs to migrate one section at least before exit", so how
+about introducing another parameter for this requirement?
+
+From: Jaegeuk Kim <jaegeuk@kernel.org>
+Date: Sat, 30 Apr 2022 03:27:20 -0700
+Subject: [PATCH] f2fs: avoid to select pinned section during
+  checkpoint=disable
+
+The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
+chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
+segment as a victim all the time, resulting in checkpoint=disable failure.
+Let's pick another one, if we fail to collect it.
+
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 ---
- mm/shmem.c | 2 ++
- 1 file changed, 2 insertions(+)
+  fs/f2fs/f2fs.h    |  2 +-
+  fs/f2fs/file.c    |  8 ++++----
+  fs/f2fs/gc.c      | 17 ++++++++++++-----
+  fs/f2fs/segment.c |  2 +-
+  fs/f2fs/super.c   |  2 +-
+  5 files changed, 19 insertions(+), 12 deletions(-)
 
-diff --git a/mm/shmem.c b/mm/shmem.c
-index 107f1e4dd0aa..f01ceedf88c0 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -717,10 +717,12 @@ static int shmem_add_to_page_cache(struct folio *folio,
- 	if (!folio_test_swapcache(folio)) {
- 		error = mem_cgroup_charge(folio, charge_mm, gfp);
- 		if (error) {
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
- 			if (folio_test_large(folio)) {
- 				count_vm_event(THP_FILE_FALLBACK);
- 				count_vm_event(THP_FILE_FALLBACK_CHARGE);
- 			}
-+#endif
- 			goto error;
- 		}
- 	}
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 56adc3b68e14..0f8c426aed50 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -3787,7 +3787,7 @@ int f2fs_start_gc_thread(struct f2fs_sb_info *sbi);
+  void f2fs_stop_gc_thread(struct f2fs_sb_info *sbi);
+  block_t f2fs_start_bidx_of_node(unsigned int node_ofs, struct inode *inode);
+  int f2fs_gc(struct f2fs_sb_info *sbi, bool sync, bool background, bool force,
+-			unsigned int segno);
++			unsigned int segno, unsigned int nr_section);
+  void f2fs_build_gc_manager(struct f2fs_sb_info *sbi);
+  int f2fs_resize_fs(struct f2fs_sb_info *sbi, __u64 block_count);
+  int __init f2fs_create_garbage_collection_cache(void);
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index e4cf8b7b23aa..07d2fa6c774b 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1684,7 +1684,7 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
+  		if (has_not_enough_free_secs(sbi, 0,
+  			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
+  			f2fs_down_write(&sbi->gc_lock);
+-			err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
++			err = f2fs_gc(sbi, true, false, false, NULL_SEGNO, 0);
+  			if (err && err != -ENODATA && err != -EAGAIN)
+  				goto out_err;
+  		}
+@@ -2472,7 +2472,7 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
+  		f2fs_down_write(&sbi->gc_lock);
+  	}
+
+-	ret = f2fs_gc(sbi, sync, true, false, NULL_SEGNO);
++	ret = f2fs_gc(sbi, sync, true, false, NULL_SEGNO, 0);
+  out:
+  	mnt_drop_write_file(filp);
+  	return ret;
+@@ -2509,7 +2509,7 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
+  	}
+
+  	ret = f2fs_gc(sbi, range->sync, true, false,
+-				GET_SEGNO(sbi, range->start));
++				GET_SEGNO(sbi, range->start), 0);
+  	if (ret) {
+  		if (ret == -EBUSY)
+  			ret = -EAGAIN;
+@@ -2966,7 +2966,7 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
+  		sm->last_victim[GC_CB] = end_segno + 1;
+  		sm->last_victim[GC_GREEDY] = end_segno + 1;
+  		sm->last_victim[ALLOC_NEXT] = end_segno + 1;
+-		ret = f2fs_gc(sbi, true, true, true, start_segno);
++		ret = f2fs_gc(sbi, true, true, true, start_segno, 0);
+  		if (ret == -EAGAIN)
+  			ret = 0;
+  		else if (ret < 0)
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index 4d47723523c3..2364ffe6bbbf 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -142,7 +142,7 @@ static int gc_thread_func(void *data)
+  			sync_mode = false;
+
+  		/* if return value is not zero, no victim was selected */
+-		if (f2fs_gc(sbi, sync_mode, !foreground, false, NULL_SEGNO))
++		if (f2fs_gc(sbi, sync_mode, !foreground, false, NULL_SEGNO, 0))
+  			wait_ms = gc_th->no_gc_sleep_time;
+
+  		if (foreground)
+@@ -1751,7 +1751,8 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
+  }
+
+  int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+-			bool background, bool force, unsigned int segno)
++			bool background, bool force, unsigned int segno,
++			unsigned int nr_section)
+  {
+  	int gc_type = sync ? FG_GC : BG_GC;
+  	int sec_freed = 0, seg_freed = 0, total_freed = 0;
+@@ -1838,11 +1839,17 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+  	if (gc_type == FG_GC)
+  		sbi->cur_victim_sec = NULL_SEGNO;
+
+-	if (sync)
+-		goto stop;
++	
+
+-	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
++	if (sync || !has_not_enough_free_secs(sbi, sec_freed, 0)) {
++		/*
++		 * f2fs_disable_checkpoint() needs to migrate enough section
++		 * before f2fs_gc() exits.
++		 */
++		if (total_freed < nr_section)
++			goto gc_more;
+  		goto stop;
++	}
+
+  	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
+
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 8c17fed8987e..3a3e2cec2ac4 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -524,7 +524,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
+  			finish_wait(&sbi->gc_thread->fggc_wq, &wait);
+  		} else {
+  			f2fs_down_write(&sbi->gc_lock);
+-			f2fs_gc(sbi, false, false, false, NULL_SEGNO);
++			f2fs_gc(sbi, false, false, false, NULL_SEGNO, 0);
+  		}
+  	}
+  }
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index d06a577a1208..2f0ad9ffbf17 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2076,7 +2076,7 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
+
+  	while (!f2fs_time_over(sbi, DISABLE_TIME)) {
+  		f2fs_down_write(&sbi->gc_lock);
+-		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
++		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO, 1);
+  		if (err == -ENODATA) {
+  			err = 0;
+  			break;
 -- 
-2.25.1
+2.32.0
 
+>   		goto stop;
+>   
+>   	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
