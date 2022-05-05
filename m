@@ -2,133 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E325C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1514C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233867AbiEERoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34244 "EHLO
+        id S1382799AbiEERoQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 13:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382777AbiEERnm (ORCPT
+        with ESMTP id S1382782AbiEERno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:43:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5B05C86D;
-        Thu,  5 May 2022 10:40:02 -0700 (PDT)
+        Thu, 5 May 2022 13:43:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE74C5BD30;
+        Thu,  5 May 2022 10:40:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1279B82DBE;
-        Thu,  5 May 2022 17:40:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F5AEC385AC;
-        Thu,  5 May 2022 17:39:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81117B82E15;
+        Thu,  5 May 2022 17:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 177E8C385C9;
+        Thu,  5 May 2022 17:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651772399;
-        bh=gOSgZEk3jsHNIB+ckRTLVRGCrgRIybWDts/FsyhHUkU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=c/ZwZULIsr3S3e6l2j6DfUiZogiPnOiwDrXq2MAgB7w6Drf7ILW4AXDb/CGofQjGX
-         LFHLjF/ekyxAgxdpg64X5AzSiYm0CgiReNVM9qPC/cS9kkyzcvrlSqr0u2MRqZGr2b
-         c1mblinTzxMmUt1Y+6x50UimQPyOwpQLVobTatGg=
-Date:   Thu, 5 May 2022 19:32:48 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Russ Weight <russell.h.weight@intel.com>,
-        Tianfei zhang <tianfei.zhang@intel.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Shawn Guo <shawn.guo@linaro.org>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v2] test_firmware: fix end of loop test in
- upload_read_show()
-Message-ID: <YnQKQLMkUNgyN2+C@kroah.com>
-References: <YnPMt/syJAqqOBh3@kili>
+        s=korg; t=1651772401;
+        bh=cpQMmbRVdDBMeuI5w6SyoGllIexfXaT+hvXuJPkJ0rE=;
+        h=Subject:To:From:Date:From;
+        b=fmJYRjOeNzbiQDIhsV87ddjKMnPXufI6koKm+QksbT0YlpRsV+8EIPerfGsfklkab
+         FBQcUbd84dWAQrR9kq73l+rkBeiA+pSGYhgJB7p3VgGRrEl6d1H82N5lpzJFx8v55x
+         LOYoTBCw6VRb0zeE9VgL6kBekQ2+RPhvg3i7NcU0=
+Subject: patch "firmware_loader: describe 'module' parameter of" added to driver-core-next
+To:     bagasdotme@gmail.com, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        mcgrof@kernel.org, rafael@kernel.org, russell.h.weight@intel.com,
+        sfr@canb.auug.org.au
+From:   <gregkh@linuxfoundation.org>
+Date:   Thu, 05 May 2022 19:35:25 +0200
+Message-ID: <16517721257181@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnPMt/syJAqqOBh3@kili>
+Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 04:10:15PM +0300, Dan Carpenter wrote:
-> If a list_for_each_entry() loop exits without hitting a break statement
-> then the iterator points to invalid memory.  So in this code the
-> "tst->name" dereference is an out bounds read.  It's an offset from the
-> &test_upload_list pointer and it will likely work fine most of the time
-> but it's not correct.
-> 
-> One alternative is to fix this this by changing the test to:
-> 
-> 	if (list_entry_is_head(tst, &test_upload_list, node)) {
-> 
-> But the simpler, trendy new way is just create a new variable and test
-> for NULL.
-> 
-> Fixes: a31ad463b72d ("test_firmware: Add test support for firmware upload")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  lib/test_firmware.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/lib/test_firmware.c b/lib/test_firmware.c
-> index 76115c1a2629..c82b65947ce6 100644
-> --- a/lib/test_firmware.c
-> +++ b/lib/test_firmware.c
-> @@ -1392,7 +1392,8 @@ static ssize_t upload_read_show(struct device *dev,
->  				struct device_attribute *attr,
->  				char *buf)
->  {
-> -	struct test_firmware_upload *tst;
-> +	struct test_firmware_upload *tst = NULL;
-> +	struct test_firmware_upload *tst_iter;
->  	int ret = -EINVAL;
->  
->  	if (!test_fw_config->upload_name) {
-> @@ -1401,11 +1402,13 @@ static ssize_t upload_read_show(struct device *dev,
->  	}
->  
->  	mutex_lock(&test_fw_mutex);
-> -	list_for_each_entry(tst, &test_upload_list, node)
-> -		if (tst->name == test_fw_config->upload_name)
-> +	list_for_each_entry(tst_iter, &test_upload_list, node)
-> +		if (tst_iter->name == test_fw_config->upload_name) {
-> +			tst = tst_iter;
->  			break;
-> +		}
->  
-> -	if (tst->name != test_fw_config->upload_name) {
-> +	if (!tst) {
->  		pr_err("Firmware name not found: %s\n",
->  		       test_fw_config->upload_name);
->  		goto out;
-> -- 
-> 2.35.1
-> 
 
-Hi,
+This is a note to let you know that I've just added the patch titled
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+    firmware_loader: describe 'module' parameter of
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+to my driver-core git tree which can be found at
+    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
+in the driver-core-next branch.
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
+The patch will show up in the next release of the linux-next tree
+(usually sometime within the next 24 hours during the week.)
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+The patch will also be merged in the next major kernel release
+during the merge window.
 
-thanks,
+If you have any questions about this process, please let me know.
 
-greg k-h's patch email bot
+
+From 6370b04f24bc10c1f2056c0f12dd651ac0121a6f Mon Sep 17 00:00:00 2001
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+Date: Mon, 2 May 2022 12:14:56 +0700
+Subject: firmware_loader: describe 'module' parameter of
+ firmware_upload_register()
+
+Stephen Rothwell reported kernel-doc warning:
+
+drivers/base/firmware_loader/sysfs_upload.c:285: warning: Function parameter or member 'module' not described in 'firmware_upload_register'
+
+Fix the warning by describing the 'module' parameter.
+
+Link: https://lore.kernel.org/linux-next/20220502083658.266d55f8@canb.auug.org.au/
+Fixes: 97730bbb242cde ("firmware_loader: Add firmware-upload support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Russ Weight <russell.h.weight@intel.com>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc: Linux Next Mailing List <linux-next@vger.kernel.org>
+Reviewed-by: Russ Weight <russell.h.weight@intel.com>
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220502051456.30741-1-bagasdotme@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/base/firmware_loader/sysfs_upload.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/base/firmware_loader/sysfs_upload.c b/drivers/base/firmware_loader/sysfs_upload.c
+index 8cdcf3516c7e..87044d52322a 100644
+--- a/drivers/base/firmware_loader/sysfs_upload.c
++++ b/drivers/base/firmware_loader/sysfs_upload.c
+@@ -266,6 +266,7 @@ int fw_upload_start(struct fw_sysfs *fw_sysfs)
+ 
+ /**
+  * firmware_upload_register() - register for the firmware upload sysfs API
++ * @module: kernel module of this device
+  * @parent: parent device instantiating firmware upload
+  * @name: firmware name to be associated with this device
+  * @ops: pointer to structure of firmware upload ops
+-- 
+2.36.0
+
+
