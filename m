@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F0FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243902AbiEES2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36868 "EHLO
+        id S1384323AbiEES3F (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 14:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382880AbiEESTl (ORCPT
+        with ESMTP id S1383179AbiEESTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 5 May 2022 14:19:41 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9B0443E1;
-        Thu,  5 May 2022 11:15:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6962C67A;
+        Thu,  5 May 2022 11:15:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774553; x=1683310553;
+  t=1651774552; x=1683310552;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dqWkE2oXMmA/xSffMn3L9CacObWffok44u2yasFRPjk=;
-  b=AL2XsOYxNXAT7CXCx0JPkVLfc+EGCmyGXnDDAsyvZXWqD146S3PV8s9+
-   W/gJCdnWzojuNxTAHNj1fTAbcP6lf/7PqN7fRBlOQE7zGErtCeLnmtzxK
-   p0ZwYtKucn26WF1F28dj7n7Qg8wvt/LtuZxaNWmBDex0mpE4yCrt7373V
-   l5Gye2FGMUiocH8DD+tCm5/lxFwmv+Rg6Y/SSvpnUk/di4SCHKGLROhjG
-   eX3A7O/e3So4eXjR1wOjzCA4XfRiOOwO3+7xbo/mv4mOmy6pipeZS+ZKv
-   IvixtnMVt2i5TBZZvi3P/RI/JzbvSkBiAzNJ7p+BRqbeqPxKlSRujw+mM
+  bh=lEoC3Ic1zLdkdH9xkBmGOfUxHuUICOpZJb0q3gtoue0=;
+  b=BNtyeUKxVuO/6igdjDCJQd0fNlK+aAgY9JHALLhl4ahitDqNRGdaJqoW
+   PlRSIBmyae6gcumi+Zwewg4mmcFvclDk999sgCr8k7kxdLyT/PqqjMPhC
+   TkOZ/MbsnGYVfLnixmFUzQ0W/gI66iEsXPy4bNu2HP0D3L8id02IQtfVi
+   bFLX66jkBaxoaVqZsXO3ov76BD7roJs8M4RApeQza/L3pwOLGB1qz8sfL
+   USQotqDfsGUn00RMZpo859sOUoL2N006TFWh3iclV8xIZS7GRsFxB8Ey3
+   zq8YSRUF/OA2XEAg2g7qbqFuOgRF1PcTZu1hHduS7NliMfmk3uKaOdOq3
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746281"
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328746257"
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="328746281"
+   d="scan'208";a="328746257"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:46 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:43 -0700
 X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="665083290"
+   d="scan'208";a="665083207"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:46 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:15:43 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH v6 044/104] KVM: x86/mmu: Focibly use TDP MMU for TDX
-Date:   Thu,  5 May 2022 11:14:38 -0700
-Message-Id: <74ed344d1ee81bc378dcd0339278b0c3b7d675e9.1651774250.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH v6 024/104] KVM: TDX: Add place holder for TDX VM specific mem_enc_op ioctl
+Date:   Thu,  5 May 2022 11:14:18 -0700
+Message-Id: <46c9ee65c92b526f8c1c009099a08a2e0b291649.1651774250.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651774250.git.isaku.yamahata@intel.com>
 References: <cover.1651774250.git.isaku.yamahata@intel.com>
@@ -57,35 +58,115 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-In this patch series, TDX supports only TDP MMU and doesn't support legacy
-MMU.  Forcibly use TDP MMU for TDX irrelevant of kernel parameter to
-disable TDP MMU.
+Add a place holder function for TDX specific VM-scoped ioctl as mem_enc_op.
+TDX specific sub-commands will be added to retrieve/pass TDX specific
+parameters.
+
+KVM_MEMORY_ENCRYPT_OP was introduced for VM-scoped operations specific for
+guest state-protected VM.  It defined subcommands for technology-specific
+operations under KVM_MEMORY_ENCRYPT_OP.  Despite its name, the subcommands
+are not limited to memory encryption, but various technology-specific
+operations are defined.  It's natural to repurpose KVM_MEMORY_ENCRYPT_OP
+for TDX specific operations and define subcommands.
+
+TDX requires VM-scoped, and VCPU-scoped TDX-specific operations for device
+model, for example, qemu.  Getting system-wide parameters, TDX-specific VM
+initialization, and TDX-specific vCPU initialization.  Which requires KVM
+vCPU-scoped operations in addition to the existing VM-scoped operations.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/main.c    |  9 +++++++++
+ arch/x86/kvm/vmx/tdx.c     | 26 ++++++++++++++++++++++++++
+ arch/x86/kvm/vmx/x86_ops.h |  4 ++++
+ 3 files changed, 39 insertions(+)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index f8c1824d85a5..b8850a0ceb15 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -18,8 +18,13 @@ int kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index 7b497ed1f21c..067f5de56c53 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -73,6 +73,14 @@ static void vt_vm_free(struct kvm *kvm)
+ 		return tdx_vm_free(kvm);
+ }
+ 
++static int vt_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
++{
++	if (!is_td(kvm))
++		return -ENOTTY;
++
++	return tdx_vm_ioctl(kvm, argp);
++}
++
+ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.name = "kvm_intel",
+ 
+@@ -214,6 +222,7 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
+ 	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
+ 
+ 	.dev_mem_enc_ioctl = tdx_dev_ioctl,
++	.mem_enc_ioctl = vt_mem_enc_ioctl,
+ };
+ 
+ struct kvm_x86_init_ops vt_init_ops __initdata = {
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 07b69ffbe55b..a4be3ef313b2 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -438,6 +438,32 @@ int tdx_dev_ioctl(void __user *argp)
+ 	return 0;
+ }
+ 
++int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
++{
++	struct kvm_tdx_cmd tdx_cmd;
++	int r;
++
++	if (copy_from_user(&tdx_cmd, argp, sizeof(struct kvm_tdx_cmd)))
++		return -EFAULT;
++	if (tdx_cmd.error || tdx_cmd.unused)
++		return -EINVAL;
++
++	mutex_lock(&kvm->lock);
++
++	switch (tdx_cmd.id) {
++	default:
++		r = -EINVAL;
++		goto out;
++	}
++
++	if (copy_to_user(argp, &tdx_cmd, sizeof(struct kvm_tdx_cmd)))
++		r = -EFAULT;
++
++out:
++	mutex_unlock(&kvm->lock);
++	return r;
++}
++
+ int __init tdx_module_setup(void)
  {
- 	struct workqueue_struct *wq;
+ 	const struct tdsysinfo_struct *tdsysinfo;
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 75e6cdcb06f5..1ff555cc6c17 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -137,6 +137,8 @@ int tdx_dev_ioctl(void __user *argp);
+ int tdx_vm_init(struct kvm *kvm);
+ void tdx_mmu_release_hkid(struct kvm *kvm);
+ void tdx_vm_free(struct kvm *kvm);
++
++int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
+ #else
+ static inline int tdx_hardware_setup(struct kvm_x86_ops *x86_ops) { return 0; }
+ static inline bool tdx_is_vm_type_supported(unsigned long type) { return false; }
+@@ -147,6 +149,8 @@ static inline int tdx_vm_init(struct kvm *kvm) { return -EOPNOTSUPP; }
+ static inline void tdx_mmu_release_hkid(struct kvm *kvm) {}
+ static inline void tdx_flush_shadow_all_private(struct kvm *kvm) {}
+ static inline void tdx_vm_free(struct kvm *kvm) {}
++
++static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
+ #endif
  
--	if (!tdp_enabled || !READ_ONCE(tdp_mmu_enabled))
--		return 0;
-+	/*
-+	 *  Because TDX supports only TDP MMU, forcibly use TDP MMU in the case
-+	 *  of TDX.
-+	 */
-+	if (kvm->arch.vm_type != KVM_X86_TDX_VM &&
-+		(!tdp_enabled || !READ_ONCE(tdp_mmu_enabled)))
-+		return false;
- 
- 	wq = alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
- 	if (!wq)
+ #endif /* __KVM_X86_VMX_X86_OPS_H */
 -- 
 2.25.1
 
