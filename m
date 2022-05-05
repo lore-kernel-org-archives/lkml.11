@@ -2,105 +2,648 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C77C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91328C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345063AbiEERpr (ORCPT
+        id S1382862AbiEERrP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        Thu, 5 May 2022 13:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382810AbiEERny (ORCPT
+        with ESMTP id S1382811AbiEERrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:43:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C885D643;
-        Thu,  5 May 2022 10:40:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E52BACE2F17;
-        Thu,  5 May 2022 17:40:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B9FC385AE;
-        Thu,  5 May 2022 17:40:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651772402;
-        bh=LadALzBO76IZIhY8zk7doDAmtjAq+INNAF1NnnHxrUs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sLInGr2tnnXgxO0ZV1wLnKBiMXljVidKippK7tkX/zrESqFVJoJrClIjABzah4W4x
-         6gk6Vwq/4H24PlAitI9jgsfJP0Xmz9QVv5maunm9tFX4ysmjxLZSnqWBTnbcbH7WI3
-         VOLyqDWhObxI9s5nHH0Bhx6JEHzL0hT2yg4pubIw=
-Date:   Thu, 5 May 2022 19:38:24 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Frank Wunderlich <linux@fw-web.de>, linux-pm@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: Aw: Re: [RFC v1] opp: add config option for debug
-Message-ID: <YnQLkBwMyIDdjbL0@kroah.com>
-References: <20220504174823.156709-1-linux@fw-web.de>
- <20220505055857.bqjm72qkzwcbuvuh@vireshk-i7>
- <trinity-6a6249b9-69eb-459c-96f1-dbf8f031a86f-1651766058085@3c-app-gmx-bs47>
+        Thu, 5 May 2022 13:47:09 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2194BFFC
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 10:43:28 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id c14so4216193pfn.2
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 10:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=v7kBgMwkhDKS1P/GGVSCBEQndR8B+5qPihDc5B6U4WE=;
+        b=IDSyDUvPTK55ATfD6dA4LPc1o7EVMc95aY/xiADJlHiyCrQF/0VYCjLdiXMqHF4J9m
+         UjQjUIj9kR15gS/armC9dSsIv6tt+yqjwn7MkZ14iG1jiCNtqkwrDTXkYBKf3x4SlhZp
+         fRr4olHw5vlv5DpfYgZS6fHkdu4YfspDyU4+A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=v7kBgMwkhDKS1P/GGVSCBEQndR8B+5qPihDc5B6U4WE=;
+        b=QYjixYzVuInvyCDD3JEAIqj6QO3Pt3/vhL57qpMMIORdF5XYAMjYWsYcNjS+Ag64CL
+         1ZHdZDFTtWw4ZYjK5SNbfVgXcejUZaQg3b0lLnfX4oL8eZTn6MPRBbo7CLHIVycZbsjL
+         3brm2iOg0S5/J/89nYcuNXq9FbD5wmVfuU75HUIeJklaDHqhWWDOyEDHWkvOvImaWck9
+         JpV88VoAM6m2wSdI1XGkbxttvVVb7syW3tlmMhQiN+aMyMt2PKUgt0bolBkxfMtX4oUe
+         4HB+cQIOMwxZRaukQ1NlERPAIF8cvJeBRicGAP2CV4dGlK/tIdHZZlvTzQUth6Gnytpx
+         RFjg==
+X-Gm-Message-State: AOAM532Dmj1wSgsEIR6/M5Wh1lTUxM6WCi/BCnRNr+EMnVx8t/aWsfoE
+        vQgTe55PLpR93v7BSHLgfLTpkvz1mqjNzA==
+X-Google-Smtp-Source: ABdhPJxqFVUbqeW79xyUssY2jvsK9hjAWnDREFUfyfOWlVciRJhRzX8iYf/IhbEDGmwlFn9ic8nwnQ==
+X-Received: by 2002:a62:d415:0:b0:50d:baaf:4156 with SMTP id a21-20020a62d415000000b0050dbaaf4156mr26994218pfh.28.1651772607283;
+        Thu, 05 May 2022 10:43:27 -0700 (PDT)
+Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
+        by smtp.gmail.com with ESMTPSA id a6-20020a636606000000b003c60b1f0dbasm1599928pgc.35.2022.05.05.10.43.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 10:43:27 -0700 (PDT)
+From:   "Joseph S. Barrera III" <joebar@chromium.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v4 2/5] arm64: dts: qcom: sc7180: Add mrbland dts files
+Date:   Thu,  5 May 2022 10:41:13 -0700
+Message-Id: <20220505104024.v4.2.I71176ebf7e5aebddb211f00e805b32c08376d1be@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220505104024.v4.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
+References: <20220505104024.v4.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-6a6249b9-69eb-459c-96f1-dbf8f031a86f-1651766058085@3c-app-gmx-bs47>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 05:54:18PM +0200, Frank Wunderlich wrote:
-> Hi,
-> 
-> > Gesendet: Donnerstag, 05. Mai 2022 um 07:58 Uhr
-> > Von: "Viresh Kumar" <viresh.kumar@linaro.org>
-> > An: "Frank Wunderlich" <linux@fw-web.de>
-> > Cc: linux-pm@vger.kernel.org, "Frank Wunderlich" <frank-w@public-files.de>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Viresh Kumar" <vireshk@kernel.org>, "Nishanth Menon" <nm@ti.com>, "Stephen Boyd" <sboyd@kernel.org>, linux-kernel@vger.kernel.org
-> > Betreff: Re: [RFC v1] opp: add config option for debug
-> >
-> > On 04-05-22, 19:48, Frank Wunderlich wrote:
-> > > From: Frank Wunderlich <frank-w@public-files.de>
-> > >
-> > > Currently OPP debug is enabled by DEBUG_DRIVER option. This is generic
-> > > driver debug and opp floods serial console. This is annoying if opp is
-> > > not needed so give it an additional config-key.
-> > >
-> > > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> > > ---
-> > >  drivers/base/Kconfig | 1 +
-> > >  drivers/opp/Kconfig  | 7 +++++++
-> > >  drivers/opp/Makefile | 2 +-
-> > >  3 files changed, 9 insertions(+), 1 deletion(-)
-> >
-> > Isn't something like Dynamic Debug helpful here ?
-> 
-> you mean something like this:
-> 
-> https://www.kernel.org/doc/html/v5.17/admin-guide/dynamic-debug-howto.html#debug-messages-during-boot-process
-> 
-> so enabling debug only with cmdline-param...
-> 
-> have you a simple example how to implement it? have not done anything with dynamic-debug yet...seems mighty but not trivial to implement.
-> 
-> currently dev_dbg() is used for the messages that i try to disable...but show others from driver_debug at debug level.
-> 
-> What needs to be changed to filter it via DYNAMIC_DEBUG?
-> 
-> found this, but i'm not sure if i interpret it the right way...
-> 
-> https://elixir.bootlin.com/linux/v5.18-rc5/source/drivers/acpi/utils.c#L495
-> defines __acpi_handle_debug
-> called via acpi_handle_debug macro
-> https://elixir.bootlin.com/linux/v5.18-rc5/source/include/linux/acpi.h#L1136
-> 
-> so basicly convert dev_dbg to __dynamic_pr_debug
+Mrbland is a trogdor-based board. These dts files are copies from
+the downstream Chrome OS 5.4 kernel, but with downstream bits removed.
 
-Ick, no, just stick with all dev_dbg() calls and do not add any Makefile
-changes and all should be fine.  And drop the Kconfig option, should not
-be needed for a subsystem/driver at all.
+Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+---
 
-thanks,
+Changes in v4:
+- Added missing version history
 
-greg k-h
+Changes in v2:
+- Word wrapped patch description.
+- Removed "Author" from patch description.
+- Fixed whitespace around "en_pp3300_dx_edp"
+
+ arch/arm64/boot/dts/qcom/Makefile             |   4 +
+ .../qcom/sc7180-trogdor-mrbland-rev0-auo.dts  |  22 ++
+ .../qcom/sc7180-trogdor-mrbland-rev0-boe.dts  |  22 ++
+ .../dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi |  53 +++
+ .../qcom/sc7180-trogdor-mrbland-rev1-auo.dts  |  22 ++
+ .../qcom/sc7180-trogdor-mrbland-rev1-boe.dts  |  24 ++
+ .../boot/dts/qcom/sc7180-trogdor-mrbland.dtsi | 352 ++++++++++++++++++
+ 7 files changed, 499 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index e4114e22548a..2330b5ea13bf 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -75,6 +75,10 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-r9.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-nots-r4.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-nots-r5.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-limozeen-nots-r9.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev0-auo.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev0-boe.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev1-auo.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev1-boe.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+new file mode 100644
+index 000000000000..2767817fb053
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-auo.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x0 => 0
++ *  - bits 7..4: Panel ID: 0x0 (AUO)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland-rev0.dtsi"
++
++/ {
++	model = "Google Mrbland rev0 AUO panel board";
++	compatible = "google,mrbland-rev0-sku0", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "auo,b101uan08.3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+new file mode 100644
+index 000000000000..711485574a03
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0-boe.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x10 => 16
++ *  - bits 7..4: Panel ID: 0x1 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland-rev0.dtsi"
++
++/ {
++	model = "Google Mrbland rev0 BOE panel board";
++	compatible = "google,mrbland-rev0-sku16", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "boe,tv101wum-n53";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+new file mode 100644
+index 000000000000..7bc8402c018e
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev0.dtsi
+@@ -0,0 +1,53 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland.dtsi"
++
++&avdd_lcd {
++	gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
++};
++
++&panel {
++	enable-gpios = <&tlmm 76 GPIO_ACTIVE_HIGH>;
++};
++
++&v1p8_mipi {
++	gpio = <&tlmm 81 GPIO_ACTIVE_HIGH>;
++};
++
++/* PINCTRL - modifications to sc7180-trogdor-mrbland.dtsi */
++&avdd_lcd_en {
++	pinmux {
++		pins = "gpio80";
++	};
++
++	pinconf {
++		pins = "gpio80";
++	};
++};
++
++&mipi_1800_en {
++	pinmux {
++		pins = "gpio81";
++	};
++
++	pinconf {
++		pins = "gpio81";
++	};
++};
++&vdd_reset_1800 {
++	pinmux {
++		pins = "gpio76";
++	};
++
++	pinconf {
++		pins = "gpio76";
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+new file mode 100644
+index 000000000000..275313ef7554
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-auo.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x600 => 1536
++ *  - bits 11..8: Panel ID: 0x6 (AUO)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland.dtsi"
++
++/ {
++	model = "Google Mrbland rev1+ AUO panel board";
++	compatible = "google,mrbland-sku1536", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "auo,b101uan08.3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+new file mode 100644
+index 000000000000..87c6b6c30b5e
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland-rev1-boe.dts
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x300 => 768
++ *  - bits 11..8: Panel ID: 0x3 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-mrbland.dtsi"
++
++/ {
++	model = "Google Mrbland (rev1 - 2) BOE panel board";
++	/* Uses ID 768 on rev1 and 1024 on rev2+ */
++	compatible = "google,mrbland-sku1024", "google,mrbland-sku768",
++		"qcom,sc7180";
++};
++
++&panel {
++	compatible = "boe,tv101wum-n53";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+new file mode 100644
+index 000000000000..e1c1ea09b690
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-mrbland.dtsi
+@@ -0,0 +1,352 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Mrbland board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180.dtsi"
++
++ap_ec_spi: &spi6 {};
++ap_h1_spi: &spi0 {};
++
++#include "sc7180-trogdor.dtsi"
++
++/* This board only has 1 USB Type-C port. */
++/delete-node/ &usb_c1;
++
++/ {
++	avdd_lcd: avdd-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "avdd_lcd";
++
++		gpio = <&tlmm 88 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&avdd_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	avee_lcd: avee-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "avee_lcd";
++
++		gpio = <&tlmm 21 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&avee_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	v1p8_mipi: v1p8-mipi {
++		compatible = "regulator-fixed";
++		regulator-name = "v1p8_mipi";
++
++		gpio = <&tlmm 86 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&mipi_1800_en>;
++
++		vin-supply = <&pp3300_a>;
++	};
++};
++
++&ap_tp_i2c {
++	status = "disabled";
++};
++
++&backlight {
++	pwms = <&cros_ec_pwm 0>;
++};
++
++&camcc {
++	status = "okay";
++};
++
++&dsi0 {
++
++	panel: panel@0 {
++		reg = <0>;
++		enable-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vdd_reset_1800>;
++		avdd-supply = <&avdd_lcd>;
++		avee-supply = <&avee_lcd>;
++		pp1800-supply = <&v1p8_mipi>;
++		pp3300-supply = <&pp3300_dx_edp>;
++		backlight = <&backlight>;
++		rotation = <270>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			port@0 {
++				reg = <0>;
++				panel_in: endpoint {
++					remote-endpoint = <&dsi0_out>;
++				};
++			};
++		};
++	};
++
++	ports {
++		port@1 {
++			endpoint {
++				remote-endpoint = <&panel_in>;
++				data-lanes = <0 1 2 3>;
++			};
++		};
++	};
++};
++
++&gpio_keys {
++	status = "okay";
++};
++
++&i2c4 {
++	status = "okay";
++	clock-frequency = <400000>;
++
++	ap_ts: touchscreen@5d {
++		compatible = "goodix,gt7375p";
++		reg = <0x5d>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&ts_int_l>, <&ts_reset_l>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
++
++		reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
++
++		vdd-supply = <&pp3300_ts>;
++	};
++};
++
++&pp1800_uf_cam {
++	status = "okay";
++};
++
++&pp1800_wf_cam {
++	status = "okay";
++};
++
++&pp2800_uf_cam {
++	status = "okay";
++};
++
++&pp2800_wf_cam {
++	status = "okay";
++};
++
++&wifi {
++	qcom,ath10k-calibration-variant = "GO_MRBLAND";
++};
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++pp3300_disp_on: &pp3300_dx_edp {
++	gpio = <&tlmm 85 GPIO_ACTIVE_HIGH>;
++};
++
++/* PINCTRL - modifications to sc7180-trogdor.dtsi */
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++
++tp_en: &en_pp3300_dx_edp {
++	pinmux {
++		pins = "gpio85";
++	};
++
++	pinconf {
++		pins = "gpio85";
++	};
++};
++
++/* PINCTRL - board-specific pinctrl */
++
++&tlmm {
++	gpio-line-names = "HUB_RST_L",
++			  "AP_RAM_ID0",
++			  "AP_SKU_ID2",
++			  "AP_RAM_ID1",
++			  "",
++			  "AP_RAM_ID2",
++			  "UF_CAM_EN",
++			  "WF_CAM_EN",
++			  "TS_RESET_L",
++			  "TS_INT_L",
++			  "",
++			  "",
++			  "AP_EDP_BKLTEN",
++			  "UF_CAM_MCLK",
++			  "WF_CAM_CLK",
++			  "",
++			  "",
++			  "UF_CAM_SDA",
++			  "UF_CAM_SCL",
++			  "WF_CAM_SDA",
++			  "WF_CAM_SCL",
++			  "AVEE_LCD_EN",
++			  "",
++			  "AMP_EN",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "HP_IRQ",
++			  "WF_CAM_RST_L",
++			  "UF_CAM_RST_L",
++			  "AP_BRD_ID2",
++			  "",
++			  "AP_BRD_ID0",
++			  "AP_H1_SPI_MISO",
++			  "AP_H1_SPI_MOSI",
++			  "AP_H1_SPI_CLK",
++			  "AP_H1_SPI_CS_L",
++			  "BT_UART_CTS",
++			  "BT_UART_RTS",
++			  "BT_UART_TXD",
++			  "BT_UART_RXD",
++			  "H1_AP_INT_ODL",
++			  "",
++			  "UART_AP_TX_DBG_RX",
++			  "UART_DBG_TX_AP_RX",
++			  "HP_I2C_SDA",
++			  "HP_I2C_SCL",
++			  "FORCED_USB_BOOT",
++			  "AMP_BCLK",
++			  "AMP_LRCLK",
++			  "AMP_DIN",
++			  "PEN_DET_ODL",
++			  "HP_BCLK",
++			  "HP_LRCLK",
++			  "HP_DOUT",
++			  "HP_DIN",
++			  "HP_MCLK",
++			  "AP_SKU_ID0",
++			  "AP_EC_SPI_MISO",
++			  "AP_EC_SPI_MOSI",
++			  "AP_EC_SPI_CLK",
++			  "AP_EC_SPI_CS_L",
++			  "AP_SPI_CLK",
++			  "AP_SPI_MOSI",
++			  "AP_SPI_MISO",
++			  /*
++			   * AP_FLASH_WP_L is crossystem ABI. Schematics
++			   * call it BIOS_FLASH_WP_L.
++			   */
++			  "AP_FLASH_WP_L",
++			  "",
++			  "AP_SPI_CS0_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "WLAN_SW_CTRL",
++			  "",
++			  "REPORT_E",
++			  "",
++			  "ID0",
++			  "",
++			  "ID1",
++			  "",
++			  "",
++			  "",
++			  "CODEC_PWR_EN",
++			  "HUB_EN",
++			  "TP_EN",
++			  "MIPI_1.8V_EN",
++			  "VDD_RESET_1.8V",
++			  "AVDD_LCD_EN",
++			  "",
++			  "AP_SKU_ID1",
++			  "AP_RST_REQ",
++			  "",
++			  "AP_BRD_ID1",
++			  "AP_EC_INT_L",
++			  "SDM_GRFC_3",
++			  "",
++			  "",
++			  "BOOT_CONFIG_4",
++			  "BOOT_CONFIG_2",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "BOOT_CONFIG_3",
++			  "WCI2_LTE_COEX_TXD",
++			  "WCI2_LTE_COEX_RXD",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "FORCED_USB_BOOT_POL",
++			  "AP_TS_PEN_I2C_SDA",
++			  "AP_TS_PEN_I2C_SCL",
++			  "DP_HOT_PLUG_DET",
++			  "EC_IN_RW_ODL";
++
++	vdd_reset_1800: vdd-reset-1800 {
++		pinmux {
++			pins = "gpio87";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio87";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	avdd_lcd_en: avdd-lcd-en {
++		pinmux {
++			pins = "gpio88";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio88";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	avee_lcd_en: avee-lcd_en {
++		pinmux {
++			pins = "gpio21";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio21";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	mipi_1800_en: mipi-1800-en {
++		pinmux {
++			pins = "gpio86";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio86";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++};
+-- 
+2.31.0
+
