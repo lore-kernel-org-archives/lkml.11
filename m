@@ -2,110 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95CAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2636C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 15:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380356AbiEEPFU (ORCPT
+        id S1380969AbiEEPF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 11:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55014 "EHLO
+        Thu, 5 May 2022 11:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233555AbiEEPFR (ORCPT
+        with ESMTP id S1380949AbiEEPF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 11:05:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0F622280;
-        Thu,  5 May 2022 08:01:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 5 May 2022 11:05:56 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73DCA222BD
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 08:02:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651762935;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I3fL/x7Xenik54basEds0J2F7uKxunsCuMprnbYoyPM=;
+        b=NVBX972iFFolnrKC/n4Yc3N5vcFDro6HK4moQcTMZYO+RWSZAN8BeUBYsKAVNkfH97bcul
+        YQU9j9DbEJbUvMhq5tEmr3AJ36U/hqS8ULraA6s6uV8sHQ77q+Fh/ARAL3MSeqt34gqJU3
+        Fa+vgeO8/y0xZKqWfIoeTelB/vaqKx4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-517-_OCgwZHFOa-R75Os49XEVg-1; Thu, 05 May 2022 11:02:09 -0400
+X-MC-Unique: _OCgwZHFOa-R75Os49XEVg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99E5DB82B7A;
-        Thu,  5 May 2022 15:01:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14047C385A4;
-        Thu,  5 May 2022 15:01:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651762894;
-        bh=UUh4IAYvnUeRl0+FGz9aUqMk1V1C/5Mv1s6gce1m4PY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=S8Y4NKxoe5tibidDLQ1YsIqidmaB/VrEldK+Y9cbMH5jS/+MM5rgrPY10yHnZuKpA
-         Vx9PHYyx0ctjGVYN0AW2U+dj9sQF9nYeW19rmlBAaro91ZcvrnCEvQGSa4AOhWe4F+
-         AORKwgkynESpVtUsLkKVDuj91k0fG9nqnFkW+X74VADC85jI/SoExoUCj45dBUkPpw
-         Xi936/6T6rBsBBkB/rBLDpE8NcvgzDUFSfZGqCKN4nIruGHpACikgCGzflWOu6DwGI
-         kpfzOf2U/DAZwBv3TrR1gbINOSQxTB6NUvESyu3p4jsN3Y180ej0joxdrI7Y7frWDd
-         SCwA7xo4UFLIw==
-Date:   Thu, 5 May 2022 16:01:28 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Codrin.Ciubotariu@microchip.com
-Cc:     Nicolas.Ferre@microchip.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, lars@metafoo.de,
-        perex@perex.cz, tiwai@suse.com, robh+dt@kernel.org
-Subject: Re: [PATCH v3 6/6] ARM: configs: at91: sama7_defconfig: add MCHP
- PDMC and DMIC drivers
-Message-ID: <YnPmyEujwByeFDdp@sirena.org.uk>
-References: <20220307122202.2251639-1-codrin.ciubotariu@microchip.com>
- <20220307122202.2251639-7-codrin.ciubotariu@microchip.com>
- <d84e0e48-cf35-ae1a-e384-067d361457ba@microchip.com>
- <77c2b348-b7a6-458d-21b6-68c54efc317f@microchip.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CEADA1014A69;
+        Thu,  5 May 2022 15:02:06 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.3])
+        by smtp.corp.redhat.com (Postfix) with SMTP id AD2C49E94;
+        Thu,  5 May 2022 15:02:01 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Thu,  5 May 2022 17:02:05 +0200 (CEST)
+Date:   Thu, 5 May 2022 17:01:59 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v3 08/11] ptrace: Admit ptrace_stop can generate spuriuos
+ SIGTRAPs
+Message-ID: <20220505150158.GB13929@redhat.com>
+References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+ <20220504224058.476193-8-ebiederm@xmission.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="V6OcCftqYTAkRMmU"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <77c2b348-b7a6-458d-21b6-68c54efc317f@microchip.com>
-X-Cookie: Real programs don't eat cache.
+In-Reply-To: <20220504224058.476193-8-ebiederm@xmission.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/04, Eric W. Biederman wrote:
+>
+> With the removal of the incomplete detection of the tracer going away
+> in ptrace_stop, ptrace_stop always sleeps in schedule after
+> ptrace_freeze_traced succeeds.  Modify ptrace_check_attach to
+> warn if wait_task_inactive fails.
 
---V6OcCftqYTAkRMmU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Oh. Again, I don't understand the changelog. If we forget about RT,
+ptrace_stop() will always sleep if ptrace_freeze_traced() succeeds.
+may_ptrace_stop() has gone.
 
-On Thu, May 05, 2022 at 02:47:04PM +0000, Codrin.Ciubotariu@microchip.com w=
-rote:
-> On 05.05.2022 16:58, Nicolas Ferre wrote:
+IOW. Lets forget about RT
 
-> > I'm fine with that, but I see that some Kconfig entries "select" this=
-=20
-> > SND_SOC_DMIC directly (amd, intel, mediatek, stm).
-> > If it's absolutely needed for PDMC to work, what about doing the same a=
-s=20
-> > it would prevent some broken configurations?
+> --- a/kernel/ptrace.c
+> +++ b/kernel/ptrace.c
+> @@ -266,17 +266,9 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
+>  	}
+>  	read_unlock(&tasklist_lock);
+>
+> -	if (!ret && !ignore_state) {
+> -		if (!wait_task_inactive(child, __TASK_TRACED)) {
+> -			/*
+> -			 * This can only happen if may_ptrace_stop() fails and
+> -			 * ptrace_stop() changes ->state back to TASK_RUNNING,
+> -			 * so we should not worry about leaking __TASK_TRACED.
+> -			 */
+> -			WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
+> -			ret = -ESRCH;
+> -		}
+> -	}
+> +	if (!ret && !ignore_state &&
+> +	    WARN_ON_ONCE(!wait_task_inactive(child, __TASK_TRACED)))
+> +		ret = -ESRCH;
+>
+>  	return ret;
+>  }
 
-> The only way it makes sense to me to have this driver selected somewhere=
-=20
-> is in a sound card driver, used for a specific board, which we know it=20
-> has PDM microphones. Since, for now, we use the simple sound card for=20
-> our audio interfaces, we have no place to add this select.
-> The reason I do not like to add this select under the controller driver,=
-=20
-> as some of the vendors did, is because, in the future, we might have=20
-> different PDM microphones that might not work with SND_SOC_DMIC and=20
-> might need a different driver.
-> I don't have a strong opinion on this. If you think I am overthinking,=20
-> please let me know and I will change this.
+Why do you think this change would be wrong without any other changes?
 
-It's unlikely but possible that there could be some other device
-connected (eg, you could have a DSP or something that generates PDM
-output).  If the driver doesn't directly instantiate the DMIC itself
-then it's probably reasonable for it to be user controllable if the DMIC
-driver is there.
+Oleg.
 
---V6OcCftqYTAkRMmU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJz5scACgkQJNaLcl1U
-h9BoAQf/RxATTm9oBfzFYiQDmMZnY6nSvVtROk9XiCIp4BRvt4ezstNodFEGlLKQ
-fWhTWfMmr7rGF9Syj1Zb6W/2Fahc/R04bml6dXcDHBKeW5a9Tnslg4U0brWHd2oT
-SeE9ZVLQzoFgUcCh6DrwxpYIkfbPrZwrBS0YNHHgjw3LAc2voYJiNm8njcOXop9i
-+kpz1RZs60mULxSPGoNOr/9HNfNc2H3lZcSG6ZkdjkiXMJ4TjedzB5YpaOFGrYLN
-hCy9jHw/mzCFq9EnV8ubaTI05RFwIusQd0doLtRxlgrrS94+mwNqHggZLnFK95Z/
-BnnQHFiY+49FUwRU4NPZhfcFayakzQ==
-=TVpY
------END PGP SIGNATURE-----
-
---V6OcCftqYTAkRMmU--
