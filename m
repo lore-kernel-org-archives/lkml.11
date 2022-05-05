@@ -2,89 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB68DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 13:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380125AbiEENya (ORCPT
+        id S1380135AbiEENyo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 09:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39910 "EHLO
+        Thu, 5 May 2022 09:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380177AbiEENyJ (ORCPT
+        with ESMTP id S1380128AbiEENym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 09:54:09 -0400
-X-Greylist: delayed 23050 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 06:50:27 PDT
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2421C4;
-        Thu,  5 May 2022 06:50:23 -0700 (PDT)
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 245Do2Vm001524;
-        Thu, 5 May 2022 22:50:03 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 245Do2Vm001524
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651758603;
-        bh=9oRpkNgyXXtV+zgGcTivzSiWJg6PL7lzsKUtb+il+xA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WCAi+X3iW2LWnS+cyU6Xwt+mVMFWGKNgvm1N4fQyjnqbm5kc3n8AZNfmfQahJf44C
-         8baCi4AzET7HA49g1FxlljYCIcyH27XetjJU5oHET938gKf0mwwJvz2T8HhpMNLCrz
-         P9Pn3Km3/Y/vQeek7U0RGRx1wEMV/zynJog1koCSG/7blY0+bz+o/+V+nd0dhDVIgT
-         ObLR1jGvcZqTTJusj3s304q3S0HOyD8i5NlnZKlgrayMMnTlwQhkOi3xewdpgkQ2UG
-         FMtXR+0Z3J9CI9yvcXTbq4t0xxUsKdPB9BdEjyOOS3D5O8xVFTCPswe5Ah2kSLCHdl
-         WLmJgONxSW2YA==
-X-Nifty-SrcIP: [209.85.214.174]
-Received: by mail-pl1-f174.google.com with SMTP id n18so4453578plg.5;
-        Thu, 05 May 2022 06:50:03 -0700 (PDT)
-X-Gm-Message-State: AOAM5337OApzlSjvMivzBuGPOcIlt85F07dCzPAk70PrPMKs1ZJpu0TO
-        ALyzMqaQ7j0d3brF4XksznGsKpYAul0EsDH8fk8=
-X-Google-Smtp-Source: ABdhPJwUvU2dd6I2MVotZAWGiD+mCtj6djZTY+lh8nRnnAK5x12OI9taA02MBGobfNqjKVY/3aiklbcYcNl4MlrBSIM=
-X-Received: by 2002:a17:90a:8405:b0:1bc:d521:b2c9 with SMTP id
- j5-20020a17090a840500b001bcd521b2c9mr6301241pjn.119.1651758602352; Thu, 05
- May 2022 06:50:02 -0700 (PDT)
+        Thu, 5 May 2022 09:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE0657145;
+        Thu,  5 May 2022 06:51:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5146961E9A;
+        Thu,  5 May 2022 13:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F7FC385A4;
+        Thu,  5 May 2022 13:51:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651758660;
+        bh=iPXVsUeefsSXMgAyzKINU9dFR0i49AXp7kY8lMNocSY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kICzedcjShQGtfptdoI3ZF6md244nv/qOUtAG75Vfr84Rte56ijtdFWkysZ3hCSC0
+         ftzgZksXOOKaUW2+zzxmQJdZEdFMC33cdsXZxhaiBQfedW0T9OJP0QfQ3BqlQB3x3K
+         1jHTCNgPyUyV/8DQD/dEbcVghPCzMfHY9hKt22QdTZdFu8cGixph6U5FeNTAHJmgiF
+         VPuRwwVWFw36bLkWqTJ6rl4bV6gVGHm3MRAJVcZz/HZABXoILJB9zk8GLl84eo7x2d
+         gawfKya/kmLxCSpiBdU/DMJq/LqfCWWXfnzRbanCjKZau2+qb4OgCw0vSdc9UAGDrs
+         W/W6K1x7zjBpQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nmbsi-0008EU-KU; Thu, 05 May 2022 15:51:01 +0200
+Date:   Thu, 5 May 2022 15:51:00 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Ethan Yang <etyang@sierrawireless.com>
+Cc:     =?utf-8?B?55qT5a6HIO+/vQ==?= <ipis.yang@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Glen Chiang <GChiang@sierrawireless.com>
+Subject: Re: [PATCH v3] usb: serial: qcserial: add support for Sierra
+ Wireless EM7590
+Message-ID: <YnPWRJT+NoxQcp7a@hovoldconsulting.com>
+References: <YmYvPXeqQzyms91m@kroah.com>
+ <20220425055840.5693-1-etyang@sierrawireless.com>
+ <YnO1NHWCFCIfydBI@hovoldconsulting.com>
+ <BL0PR02MB4451F88B384BA9D7FCE6A7C3ABC29@BL0PR02MB4451.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220505072244.1155033-1-masahiroy@kernel.org> <20220505072244.1155033-3-masahiroy@kernel.org>
-In-Reply-To: <20220505072244.1155033-3-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 5 May 2022 22:48:55 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAREQt5rPGK8zsti_UA-dGFKfqHsVWbSgMLw-yLoeNkJeA@mail.gmail.com>
-Message-ID: <CAK7LNAREQt5rPGK8zsti_UA-dGFKfqHsVWbSgMLw-yLoeNkJeA@mail.gmail.com>
-Subject: Re: [PATCH v3 02/15] modpost: change the license of EXPORT_SYMBOL to
- bool type
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     clang-built-linux <clang-built-linux@googlegroups.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nicolas Schier a <nicolas@fjasle.eu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-um@lists.infradead.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BL0PR02MB4451F88B384BA9D7FCE6A7C3ABC29@BL0PR02MB4451.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 5, 2022 at 4:24 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Currently, enum export is tristate, but export_unknown does not make
-> sense in any way.
->
-> If the symbol name starts with "__ksymtab_", but the section name
-> does not start with "___ksymtab+" or "___ksymtab_gpl+", it is not
-> an exported symbol. The variable name just happens to start with
-> "__ksymtab_". Do not call sym_add_exported() in this case.
->
-> __ksymtab_* is internally by EXPORT_SYMBOL(_GPL) but somebody may
+On Thu, May 05, 2022 at 12:35:41PM +0000, Ethan Yang wrote:
+> Hi Johan,
+> 
+> Here is the change log:
+> To revise the correct composition for QDL/APP mode.
+> 1199:c080 is for QDL, and 1199:c081 is for APP mode.
 
-I mean
-"... is internally used by ..."
+I meant that when you when you resend a new version of a patch you
+should include a changelog for what changed since the previous
+version(s) (below the --- line).
 
+In this case I think you only changed the From address from v1 to v2,
+but I'm not sure.
 
+No need to resend, but please keep that in mind for your future
+submissions.
 
+> I also enclose the lsusb -v output for both compositions.
 
--- 
-Best Regards
-Masahiro Yamada
+Thanks a lot for that.
+
+I've applied the patch now.
+
+Johan
