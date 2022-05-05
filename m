@@ -2,94 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13881C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 12:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376571AbiEEMW6 (ORCPT
+        id S1376651AbiEEMXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 08:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        Thu, 5 May 2022 08:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376505AbiEEMWy (ORCPT
+        with ESMTP id S1376547AbiEEMWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 08:22:54 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E6A354F92;
-        Thu,  5 May 2022 05:19:14 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxYNq9wHNiWN0KAA--.42405S3;
-        Thu, 05 May 2022 20:19:09 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] selftests/ftrace: Save kprobe_events to test log
-Date:   Thu,  5 May 2022 20:19:07 +0800
-Message-Id: <1651753148-1464-2-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1651753148-1464-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1651753148-1464-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9BxYNq9wHNiWN0KAA--.42405S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Gry7GF4rZFykAFWxZFyxKrg_yoW8JF1kpa
-        93W3Z8Ka18J3W7JryxCw1DGrW09r4kArWUCryrXry3Zwn5ZFsrJr1IgFWDGF93urZYgryf
-        Aw1ayry7ZF97Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBa14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
-        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-        vE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW5JwCF04k20x
-        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIx
-        AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
-        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
-        IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUx3kZUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Thu, 5 May 2022 08:22:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A23953B49
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 05:19:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4EC8B82B98
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 12:19:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F6C6C385A4;
+        Thu,  5 May 2022 12:19:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651753153;
+        bh=XIEIo8vB6+bdwynrUci6u8jhVuAbLP0G/E6z0wFUGvw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QYNULHU7SgtHwYK+OIty9bp/HYvtDJ+ZysnctLCnmhRdpygjnsd4HTKqL2ik4D7mw
+         /KfIaWWZGZy3MKHdPXpOOMC7XF+s0Ri1FkhZOqGFtv6Yw0Cw+hv0nDaw/B9ATxH5pD
+         29q55fwdhBnLrIHzsqIwDQHT6uATvmv3UXGK0O0HSjpeH1Vb2l8uGPXvJq3UI9zu25
+         Zsokqu5L/YoixW3RJkvZ2eBCO5ezI8bMnmyLbpBYDgujOGmo+HGbdZXrOOQLlWdflu
+         +SCHR12MwPH1iVjGNB1Zbby1zfbxtSo7M8UIAWv7nLryy54jm/QLaMsv5NYNICUlzE
+         xbWpJUk/Oeasw==
+Date:   Thu, 5 May 2022 13:19:09 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Stefan Binding <sbinding@opensource.cirrus.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com
+Subject: Re: [PATCH v1 1/3] ASoC: cs42l42: Move CS42L42 register descriptions
+ to general include
+Message-ID: <YnPAvXKWtQsF2PG9@sirena.org.uk>
+References: <20220504161236.2490532-1-sbinding@opensource.cirrus.com>
+ <20220504161236.2490532-2-sbinding@opensource.cirrus.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="A49oNdcvS3T/SemI"
+Content-Disposition: inline
+In-Reply-To: <20220504161236.2490532-2-sbinding@opensource.cirrus.com>
+X-Cookie: Real programs don't eat cache.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It may lead to kernel panic when execute the following testcase on mips:
 
-  # ./ftracetest test.d/kprobe/multiple_kprobes.tc
+--A49oNdcvS3T/SemI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-A preliminary analysis shows that the issue is related with
+On Wed, May 04, 2022 at 05:12:34PM +0100, Stefan Binding wrote:
+> This is to allow the hda driver to have access to the register names,
+> for improved maintainability.
+> Also ensure new header is aligned to 100 columns.
+>=20
+> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> ---
+>  include/sound/cs42l42.h    | 810 ++++++++++++++++++++++++++++++++++++
+>  sound/soc/codecs/cs42l42.h | 826 +------------------------------------
+>  2 files changed, 812 insertions(+), 824 deletions(-)
+>  create mode 100644 include/sound/cs42l42.h
 
-  echo 1 > events/kprobes/enable
+You should use git format-patch -M for things like this, it makes the
+diff more legible though in this case the fact that you've mixed content
+changes in with the rename will not help - those are separate changes
+and it's hard to verify things as they are.  Still, seems to be OK
 
-after add the 256 probe points.
+Acked-by: Mark Brown <broonie@kernel.org>
 
-In order to find the root cause, I want to verify which probe point has
-problem, so it is necessary to save kprobe_events to test log.
+--A49oNdcvS3T/SemI
+Content-Type: application/pgp-signature; name="signature.asc"
 
-With this patch, we can get the 256 probe points in the test log through
-the following command:
+-----BEGIN PGP SIGNATURE-----
 
-  # ./ftracetest test.d/kprobe/multiple_kprobes.tc -vvv -k
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJzwLwACgkQJNaLcl1U
+h9BkLAf+OrsVZZEPmUrcKrQLRqlrVd/1go4OcsbERWqbpsQ2yNYSvmqoIhBiQzaD
+66NmRTKs/bPVqTpHcoGJwRYojKjs82/47E8ouFV13AhAsFyYvzuHqrPtNr3EO4RV
+zBaWwQ9uwjolqJ/FaPOe5oUyDByhkwAWLXyUK5E9jBv9X/7fgyt/B4Xd90PB9xS4
+r+i3HoHL/OTWM8XTyOrMMCQj+vQYtGaWbSES9D2UiK97b4gIUtV2LxmX1s0Ab1+T
+mBAZnHxUnHxdc4XkWEJXSLlcqPu4NUd2UzS46SsqQ8efk9pqTAlaj9ztLqOtH+tA
+XGHI3MjAAcZ84SgKNbfHqGnJNPDgMw==
+=CS0+
+-----END PGP SIGNATURE-----
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc b/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc
-index 312d237..be754f5 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc
-@@ -25,6 +25,8 @@ if [ $L -ne 256 ]; then
-   exit_fail
- fi
- 
-+cat kprobe_events >> $testlog
-+
- echo 1 > events/kprobes/enable
- echo 0 > events/kprobes/enable
- echo > kprobe_events
--- 
-2.1.0
-
+--A49oNdcvS3T/SemI--
