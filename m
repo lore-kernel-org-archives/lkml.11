@@ -2,174 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41118C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA57C4167B
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356143AbiEERFe (ORCPT
+        id S1356896AbiEERFm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
+        Thu, 5 May 2022 13:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231975AbiEERFU (ORCPT
+        with ESMTP id S1382496AbiEERFb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:05:20 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF48A5D674;
-        Thu,  5 May 2022 10:00:00 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:48790)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmepa-00GFfm-PE; Thu, 05 May 2022 10:59:58 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37068 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmepZ-0034rQ-GI; Thu, 05 May 2022 10:59:58 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <20220504224058.476193-8-ebiederm@xmission.com>
-        <20220505145721.GA13929@redhat.com>
-Date:   Thu, 05 May 2022 11:59:49 -0500
-In-Reply-To: <20220505145721.GA13929@redhat.com> (Oleg Nesterov's message of
-        "Thu, 5 May 2022 16:57:22 +0200")
-Message-ID: <87v8uj9apm.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 5 May 2022 13:05:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4E05C840;
+        Thu,  5 May 2022 10:01:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98ED961E8A;
+        Thu,  5 May 2022 17:01:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A37C385A4;
+        Thu,  5 May 2022 17:01:26 +0000 (UTC)
+Date:   Thu, 5 May 2022 18:01:23 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH v23 3/6] arm64: kdump: Reimplement crashkernel=X
+Message-ID: <YnQC44KVKirH0vyB@arm.com>
+References: <20220505091845.167-1-thunder.leizhen@huawei.com>
+ <20220505091845.167-4-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nmepZ-0034rQ-GI;;;mid=<87v8uj9apm.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18IlEhzpWaHAD1ZV6ZojjYGolgnLPbCqLQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v3 08/11] ptrace: Admit ptrace_stop can generate
- spuriuos SIGTRAPs
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505091845.167-4-thunder.leizhen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+On Thu, May 05, 2022 at 05:18:42PM +0800, Zhen Lei wrote:
+> From: Chen Zhou <chenzhou10@huawei.com>
+> 
+> There are following issues in arm64 kdump:
+> 1. We use crashkernel=X to reserve crashkernel in DMA zone, which
+> will fail when there is not enough low memory.
+> 2. If reserving crashkernel above DMA zone, in this case, crash dump
+> kernel will fail to boot because there is no low memory available
+> for allocation.
+> 
+> To solve these issues, introduce crashkernel=X,[high,low].
+> The "crashkernel=X,high" is used to select a region above DMA zone, and
+> the "crashkernel=Y,low" is used to allocate specified size low memory.
 
-> On 05/04, Eric W. Biederman wrote:
->>
->> -static int ptrace_stop(int exit_code, int why, int clear_code,
->> -			unsigned long message, kernel_siginfo_t *info)
->> +static int ptrace_stop(int exit_code, int why, unsigned long message,
->> +		       kernel_siginfo_t *info)
->>  	__releases(&current->sighand->siglock)
->>  	__acquires(&current->sighand->siglock)
->>  {
->> @@ -2259,54 +2259,33 @@ static int ptrace_stop(int exit_code, int why, int clear_code,
->>  
->>  	spin_unlock_irq(&current->sighand->siglock);
->>  	read_lock(&tasklist_lock);
->> -	if (likely(current->ptrace)) {
->> -		/*
->> -		 * Notify parents of the stop.
->> -		 *
->> -		 * While ptraced, there are two parents - the ptracer and
->> -		 * the real_parent of the group_leader.  The ptracer should
->> -		 * know about every stop while the real parent is only
->> -		 * interested in the completion of group stop.  The states
->> -		 * for the two don't interact with each other.  Notify
->> -		 * separately unless they're gonna be duplicates.
->> -		 */
->> +	/*
->> +	 * Notify parents of the stop.
->> +	 *
->> +	 * While ptraced, there are two parents - the ptracer and
->> +	 * the real_parent of the group_leader.  The ptracer should
->> +	 * know about every stop while the real parent is only
->> +	 * interested in the completion of group stop.  The states
->> +	 * for the two don't interact with each other.  Notify
->> +	 * separately unless they're gonna be duplicates.
->> +	 */
->> +	if (current->ptrace)
->>  		do_notify_parent_cldstop(current, true, why);
->> -		if (gstop_done && ptrace_reparented(current))
->> -			do_notify_parent_cldstop(current, false, why);
->> +	if (gstop_done && (!current->ptrace || ptrace_reparented(current)))
->> +		do_notify_parent_cldstop(current, false, why);
->>  
->> -		/*
->> -		 * Don't want to allow preemption here, because
->> -		 * sys_ptrace() needs this task to be inactive.
->> -		 *
->> -		 * XXX: implement read_unlock_no_resched().
->> -		 */
->> -		preempt_disable();
->> -		read_unlock(&tasklist_lock);
->> -		cgroup_enter_frozen();
->> -		preempt_enable_no_resched();
->> -		freezable_schedule();
->> -		cgroup_leave_frozen(true);
->> -	} else {
->> -		/*
->> -		 * By the time we got the lock, our tracer went away.
->> -		 * Don't drop the lock yet, another tracer may come.
->> -		 *
->> -		 * If @gstop_done, the ptracer went away between group stop
->> -		 * completion and here.  During detach, it would have set
->> -		 * JOBCTL_STOP_PENDING on us and we'll re-enter
->> -		 * TASK_STOPPED in do_signal_stop() on return, so notifying
->> -		 * the real parent of the group stop completion is enough.
->> -		 */
->> -		if (gstop_done)
->> -			do_notify_parent_cldstop(current, false, why);
->> -
->> -		/* tasklist protects us from ptrace_freeze_traced() */
->> -		__set_current_state(TASK_RUNNING);
->> -		read_code = false;
->> -		if (clear_code)
->> -			exit_code = 0;
->> -		read_unlock(&tasklist_lock);
->> -	}
->> +	/*
->> +	 * Don't want to allow preemption here, because
->> +	 * sys_ptrace() needs this task to be inactive.
->> +	 *
->> +	 * XXX: implement read_unlock_no_resched().
->> +	 */
->> +	preempt_disable();
->> +	read_unlock(&tasklist_lock);
->> +	cgroup_enter_frozen();
->> +	preempt_enable_no_resched();
->> +	freezable_schedule();
->
-> I must have missed something.
->
-> So the tracee calls ptrace_notify() but debugger goes away before the
-> ptrace_notify() takes siglock. After that the no longer traced task
-> will sleep in TASK_TRACED ?
->
-> Looks like ptrace_stop() needs to check current->ptrace before it does
-> set_special_state(TASK_TRACED) with siglock held? Then we can rely on
-> ptrace_unlink() which will wake the tracee up even if debugger exits.
->
-> No?
+Thanks for posting the simplified version, though the discussion with
+Baoquan is still ongoing. AFAICT there is no fallback if crashkernel=
+fails. The advantage with this series is cleaner code, we set the limits
+during parsing and don't have to adjust them if some of the first
+allocation failed.
 
-Hmm.  If the debugger goes away when siglock is dropped and reaquired at
-the top of ptrace_stop, that would appear to set the debugged process up
-to sleep indefinitely.
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 51863f1448c6989..11406f3e1443168 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -90,6 +90,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+>  phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+>  #endif
+>  
+> +/* Current arm64 boot protocol requires 2MB alignment */
+> +#define CRASH_ALIGN			SZ_2M
+> +
+> +#define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
+> +#define CRASH_ADDR_HIGH_MAX		memblock.current_limit
 
-I was thinking of the SIGKILL case which is handled.
+Better use memblock_get_current_limit() if you need to or just
+MEMBLOCK_ALLOC_ANYWHERE, memblock.current_limit is just a memblock
+internal. But I think we can go for (PHYS_MASK + 1) if you need
+something other than MEMBLOCK_ALLOC_ANYWHERE, memblock knows what to
+allocate anyway.
 
-Thank you for catching that.
+> +static int __init reserve_crashkernel_low(unsigned long long low_size)
+> +{
+> +	unsigned long long low_base;
+> +
+> +	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
+> +	if (!low_base) {
+> +		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	pr_info("crashkernel low memory reserved: 0x%08llx - 0x%08llx (%lld MB)\n",
+> +		low_base, low_base + low_size, low_size >> 20);
+> +
+> +	crashk_low_res.start = low_base;
+> +	crashk_low_res.end   = low_base + low_size - 1;
+> +	insert_resource(&iomem_resource, &crashk_low_res);
+> +
+> +	return 0;
+> +}
+> +
+>  /*
+>   * reserve_crashkernel() - reserves memory for crash kernel
+>   *
+> @@ -100,17 +126,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+>  static void __init reserve_crashkernel(void)
+>  {
+>  	unsigned long long crash_base, crash_size;
+> -	unsigned long long crash_max = arm64_dma_phys_limit;
+> +	unsigned long long crash_low_size = 0;
+> +	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+> +	char *cmdline = boot_command_line;
+>  	int ret;
+>  
+>  	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
+>  		return;
+>  
+> -	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
+> +	/* crashkernel=X[@offset] */
+> +	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
+>  				&crash_size, &crash_base);
+> -	/* no crashkernel= or invalid value specified */
+> -	if (ret || !crash_size)
+> -		return;
+> +	if (ret || !crash_size) {
 
-Eric
+I think we should check for ret == -ENOENT only. If the crashkernel=
+exists but is malformed or the size is 0, we shouldn't bother with
+high/low at all.
 
+> +		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
+> +		if (ret || !crash_size)
+> +			return;
+> +
+> +		/*
+> +		 * crashkernel=Y,low can be specified or not, but invalid value
+> +		 * is not allowed.
+> +		 */
+> +		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
+> +		if (ret && (ret != -ENOENT))
+> +			return;
+> +
+> +		crash_max = CRASH_ADDR_HIGH_MAX;
+> +	}
+>  
+>  	crash_size = PAGE_ALIGN(crash_size);
+>  
+> @@ -118,8 +159,7 @@ static void __init reserve_crashkernel(void)
+>  	if (crash_base)
+>  		crash_max = crash_base + crash_size;
+>  
+> -	/* Current arm64 boot protocol requires 2MB alignment */
+> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
+> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>  					       crash_base, crash_max);
+>  	if (!crash_base) {
+>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
 
+I personally like this but let's see how the other thread goes. I guess
+if we want a fallback, it would come just before the check the above:
+
+	if (!crash_base && crash_max != CRASH_ADDR_HIGH_MAX) {
+		/* attempt high allocation with default low */
+		if (!crash_low_size)
+			crash_low_size = some default;
+		crash_max = CRASH_ADDR_LOW_MAX;
+		crash_base = memblock_phys_alloc_range();
+	}
+
+Well, I guess we end up with your earlier proposal but I think I
+understand it better now ;).
+
+-- 
+Catalin
