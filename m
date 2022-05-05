@@ -2,93 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DACC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 16:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41118C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 17:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382449AbiEERDS (ORCPT
+        id S1356143AbiEERFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 13:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
+        Thu, 5 May 2022 13:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382305AbiEERB6 (ORCPT
+        with ESMTP id S231975AbiEERFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 13:01:58 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1455D64C
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 09:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651769887; x=1683305887;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1ZGDTFt3ANGjVXO1SE+EorvU0Q2cnsm2qj95k+Pzic4=;
-  b=fgsWllkfU3fRK4vzmeLUbrlDUH3mTv+kxSWjbxmysl3oR92iiqudfOrV
-   eoXxtrbRqoDCyzqfPAbenxlR4dXjGxmAW+Z5delxvgBdkvqifqXWG9lzY
-   BSwKNKaiPdOqOvY9wjIo2de8jYZEl6v5pJE+OF2l2LWPL41JSDBoahGe5
-   dxdJGO5fLxuOoLljE1ttGIZmoEmi7bg9m5huedc5MPaTuPQROUCyjehhs
-   YucGVNPHdb4vtoco1mTUREggtm83/5POfbxHTIzy2Kvc5pxZtaWAINnLF
-   WApfv/dBDtivK7X0Czj/p/t7ZVPuKFfcp+Jyi+9n19E0bUrz4Q/0CtagI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248718325"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="248718325"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 09:57:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="709033092"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 09:57:36 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V1 22/23] perf tools: Allow system-wide events to keep their own CPUs
-Date:   Thu,  5 May 2022 19:56:38 +0300
-Message-Id: <20220505165639.361733-23-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220505165639.361733-1-adrian.hunter@intel.com>
-References: <20220505165639.361733-1-adrian.hunter@intel.com>
+        Thu, 5 May 2022 13:05:20 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF48A5D674;
+        Thu,  5 May 2022 10:00:00 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:48790)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmepa-00GFfm-PE; Thu, 05 May 2022 10:59:58 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37068 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmepZ-0034rQ-GI; Thu, 05 May 2022 10:59:58 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Oleg Nesterov <oleg@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+References: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <20220504224058.476193-8-ebiederm@xmission.com>
+        <20220505145721.GA13929@redhat.com>
+Date:   Thu, 05 May 2022 11:59:49 -0500
+In-Reply-To: <20220505145721.GA13929@redhat.com> (Oleg Nesterov's message of
+        "Thu, 5 May 2022 16:57:22 +0200")
+Message-ID: <87v8uj9apm.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nmepZ-0034rQ-GI;;;mid=<87v8uj9apm.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18IlEhzpWaHAD1ZV6ZojjYGolgnLPbCqLQ=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v3 08/11] ptrace: Admit ptrace_stop can generate
+ spuriuos SIGTRAPs
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, user_requested_cpus supplants system-wide CPUs when the evlist
-has_user_cpus. Change that so that system-wide events retain their own
-CPUs and they are added to all_cpus.
+Oleg Nesterov <oleg@redhat.com> writes:
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/lib/perf/evlist.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+> On 05/04, Eric W. Biederman wrote:
+>>
+>> -static int ptrace_stop(int exit_code, int why, int clear_code,
+>> -			unsigned long message, kernel_siginfo_t *info)
+>> +static int ptrace_stop(int exit_code, int why, unsigned long message,
+>> +		       kernel_siginfo_t *info)
+>>  	__releases(&current->sighand->siglock)
+>>  	__acquires(&current->sighand->siglock)
+>>  {
+>> @@ -2259,54 +2259,33 @@ static int ptrace_stop(int exit_code, int why, int clear_code,
+>>  
+>>  	spin_unlock_irq(&current->sighand->siglock);
+>>  	read_lock(&tasklist_lock);
+>> -	if (likely(current->ptrace)) {
+>> -		/*
+>> -		 * Notify parents of the stop.
+>> -		 *
+>> -		 * While ptraced, there are two parents - the ptracer and
+>> -		 * the real_parent of the group_leader.  The ptracer should
+>> -		 * know about every stop while the real parent is only
+>> -		 * interested in the completion of group stop.  The states
+>> -		 * for the two don't interact with each other.  Notify
+>> -		 * separately unless they're gonna be duplicates.
+>> -		 */
+>> +	/*
+>> +	 * Notify parents of the stop.
+>> +	 *
+>> +	 * While ptraced, there are two parents - the ptracer and
+>> +	 * the real_parent of the group_leader.  The ptracer should
+>> +	 * know about every stop while the real parent is only
+>> +	 * interested in the completion of group stop.  The states
+>> +	 * for the two don't interact with each other.  Notify
+>> +	 * separately unless they're gonna be duplicates.
+>> +	 */
+>> +	if (current->ptrace)
+>>  		do_notify_parent_cldstop(current, true, why);
+>> -		if (gstop_done && ptrace_reparented(current))
+>> -			do_notify_parent_cldstop(current, false, why);
+>> +	if (gstop_done && (!current->ptrace || ptrace_reparented(current)))
+>> +		do_notify_parent_cldstop(current, false, why);
+>>  
+>> -		/*
+>> -		 * Don't want to allow preemption here, because
+>> -		 * sys_ptrace() needs this task to be inactive.
+>> -		 *
+>> -		 * XXX: implement read_unlock_no_resched().
+>> -		 */
+>> -		preempt_disable();
+>> -		read_unlock(&tasklist_lock);
+>> -		cgroup_enter_frozen();
+>> -		preempt_enable_no_resched();
+>> -		freezable_schedule();
+>> -		cgroup_leave_frozen(true);
+>> -	} else {
+>> -		/*
+>> -		 * By the time we got the lock, our tracer went away.
+>> -		 * Don't drop the lock yet, another tracer may come.
+>> -		 *
+>> -		 * If @gstop_done, the ptracer went away between group stop
+>> -		 * completion and here.  During detach, it would have set
+>> -		 * JOBCTL_STOP_PENDING on us and we'll re-enter
+>> -		 * TASK_STOPPED in do_signal_stop() on return, so notifying
+>> -		 * the real parent of the group stop completion is enough.
+>> -		 */
+>> -		if (gstop_done)
+>> -			do_notify_parent_cldstop(current, false, why);
+>> -
+>> -		/* tasklist protects us from ptrace_freeze_traced() */
+>> -		__set_current_state(TASK_RUNNING);
+>> -		read_code = false;
+>> -		if (clear_code)
+>> -			exit_code = 0;
+>> -		read_unlock(&tasklist_lock);
+>> -	}
+>> +	/*
+>> +	 * Don't want to allow preemption here, because
+>> +	 * sys_ptrace() needs this task to be inactive.
+>> +	 *
+>> +	 * XXX: implement read_unlock_no_resched().
+>> +	 */
+>> +	preempt_disable();
+>> +	read_unlock(&tasklist_lock);
+>> +	cgroup_enter_frozen();
+>> +	preempt_enable_no_resched();
+>> +	freezable_schedule();
+>
+> I must have missed something.
+>
+> So the tracee calls ptrace_notify() but debugger goes away before the
+> ptrace_notify() takes siglock. After that the no longer traced task
+> will sleep in TASK_TRACED ?
+>
+> Looks like ptrace_stop() needs to check current->ptrace before it does
+> set_special_state(TASK_TRACED) with siglock held? Then we can rely on
+> ptrace_unlink() which will wake the tracee up even if debugger exits.
+>
+> No?
 
-diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-index 3bf77f9617b6..da30e88c76b9 100644
---- a/tools/lib/perf/evlist.c
-+++ b/tools/lib/perf/evlist.c
-@@ -40,12 +40,11 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
- 	 * We already have cpus for evsel (via PMU sysfs) so
- 	 * keep it, if there's no target cpu list defined.
- 	 */
--	if (!evsel->own_cpus || evlist->has_user_cpus) {
--		perf_cpu_map__put(evsel->cpus);
--		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
--	} else if (!evsel->system_wide &&
--		   !evsel->requires_cpu &&
--		   perf_cpu_map__empty(evlist->user_requested_cpus)) {
-+	if (!evsel->own_cpus ||
-+	    (!evsel->system_wide && evlist->has_user_cpus) ||
-+	    (!evsel->system_wide &&
-+	     !evsel->requires_cpu &&
-+	     perf_cpu_map__empty(evlist->user_requested_cpus))) {
- 		perf_cpu_map__put(evsel->cpus);
- 		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
- 	} else if (evsel->cpus != evsel->own_cpus) {
--- 
-2.25.1
+Hmm.  If the debugger goes away when siglock is dropped and reaquired at
+the top of ptrace_stop, that would appear to set the debugged process up
+to sleep indefinitely.
+
+I was thinking of the SIGKILL case which is handled.
+
+Thank you for catching that.
+
+Eric
+
 
