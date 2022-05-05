@@ -2,202 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5490BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  5 May 2022 18:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234291AbiEESgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 14:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
+        id S1384324AbiEESgq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 14:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385133AbiEESaJ (ORCPT
+        with ESMTP id S1385620AbiEESfZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 14:30:09 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A86FA49921;
-        Thu,  5 May 2022 11:20:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651774842; x=1683310842;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kW5KwWZgzC3SmgpsLzBBNvOnmxUYdJFDMnc/md3fAow=;
-  b=n9mg/wR389MSrxnR9HDa5kG1mOd7rcVuf839ZIYQwkTw2xLXdXk9y2V3
-   07+E1hhaFDFRmHZof6AvG17k8tsBpr56r37VsdcZpXwr2nKiPMB8nIX40
-   cDjqG9lO0kKkHoLOfGO4xygL389+lgt2YqSNRdFAR80yuAWxjMygRi+tN
-   A/STlfVpZJYQy3xJtDmghWZnzT2P/9WJFxJeRD7Ov4yh2uCznoIGHrQ1A
-   SnS1ae3qiFTM45lsmVmOrOVs+yRse40ebsnWLA/OK7HrYC5axxJcr7Bun
-   AoLuOxJQxN1kB6D9wlphv8ZSerhzFmPx49ZhN+an9ozEvHHIoEGe6cURP
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="354642597"
-X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="354642597"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 11:19:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
-   d="scan'208";a="694788612"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 11:19:31 -0700
-Received: from [10.252.209.228] (kliang2-MOBL.ccr.corp.intel.com [10.252.209.228])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id B68DF5808EF;
-        Thu,  5 May 2022 11:19:28 -0700 (PDT)
-Message-ID: <e11e873c-6e61-5d50-ba6a-a99045e486bc@linux.intel.com>
-Date:   Thu, 5 May 2022 14:19:27 -0400
+        Thu, 5 May 2022 14:35:25 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EABF17E1B;
+        Thu,  5 May 2022 11:26:35 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:35900)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmgAw-004YvQ-5P; Thu, 05 May 2022 12:26:06 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37108 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nmgAv-003VYC-3m; Thu, 05 May 2022 12:26:05 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Thu, 05 May 2022 13:25:57 -0500
+In-Reply-To: <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Wed, 04 May 2022 17:39:33 -0500")
+Message-ID: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/2] perf test: Add basic stat and topdown group test
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>
-Cc:     Caleb Biggers <caleb.biggers@intel.com>,
-        Perry Taylor <perry.taylor@intel.com>,
-        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Haowen Bai <baihaowen@meizu.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Stephane Eranian <eranian@google.com>
-References: <20220505043846.3165303-1-irogers@google.com>
- <20220505043846.3165303-2-irogers@google.com>
- <cb6065af-7e3f-53fa-5d82-67be04ca833f@linux.intel.com>
- <CAP-5=fV6Sj3PMjVBYtCRZUXXrwOJC9ETffQYscvcgJZ7gm2tFw@mail.gmail.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <CAP-5=fV6Sj3PMjVBYtCRZUXXrwOJC9ETffQYscvcgJZ7gm2tFw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nmgAv-003VYC-3m;;;mid=<87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18JBIioV2PhpJQppVzrfu1tMMPl3nYOVbs=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+The states TASK_STOPPED and TASK_TRACE are special in they can not
+handle spurious wake-ups.  This plus actively depending upon and
+changing the value of tsk->__state causes problems for PREEMPT_RT and
+Peter's freezer rewrite.
 
-On 5/5/2022 11:22 AM, Ian Rogers wrote:
-> On Thu, May 5, 2022 at 5:12 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->>
->> On 5/5/2022 12:38 AM, Ian Rogers wrote:
->>> Add a basic stat test.
->>> Add two tests of grouping behavior for topdown events. Topdown events
->>> are special as they must be grouped with the slots event first.
->>>
->>> Signed-off-by: Ian Rogers <irogers@google.com>
->>> ---
->>>    tools/perf/tests/shell/stat.sh | 65 ++++++++++++++++++++++++++++++++++
->>>    1 file changed, 65 insertions(+)
->>>    create mode 100755 tools/perf/tests/shell/stat.sh
->>>
->>> diff --git a/tools/perf/tests/shell/stat.sh b/tools/perf/tests/shell/stat.sh
->>> new file mode 100755
->>> index 000000000000..80869ea6debc
->>> --- /dev/null
->>> +++ b/tools/perf/tests/shell/stat.sh
->>> @@ -0,0 +1,65 @@
->>> +#!/bin/sh
->>> +# perf stat tests
->>> +# SPDX-License-Identifier: GPL-2.0
->>> +
->>> +set -e
->>> +
->>> +err=0
->>> +test_default_stat() {
->>> +  echo "Basic stat command test"
->>> +  if ! perf stat true 2>&1 | egrep -q "Performance counter stats for 'true':"
->>> +  then
->>> +    echo "Basic stat command test [Failed]"
->>> +    err=1
->>> +    return
->>> +  fi
->>> +  echo "Basic stat command test [Success]"
->>> +}
->>> +
->>> +test_topdown_groups() {
->>> +  # Topdown events must be grouped with the slots event first. Test that
->>> +  # parse-events reorders this.
->>> +  echo "Topdown event group test"
->>> +  if ! perf stat -e '{slots,topdown-retiring}' true > /dev/null 2>&1
->>> +  then
->>> +    echo "Topdown event group test [Skipped event parsing failed]"
->>> +    return
->>> +  fi
->>> +  if perf stat -e '{slots,topdown-retiring}' true 2>&1 | egrep -q "<not supported>"
->>> +  then
->>> +    echo "Topdown event group test [Failed events not supported]"
->>> +    err=1
->>> +    return
->>> +  fi
->>> +  if perf stat -e '{topdown-retiring,slots}' true 2>&1 | egrep -q "<not supported>"
->>> +  then
->>> +    echo "Topdown event group test [Failed slots not reordered first]"
->>> +    err=1
->>> +    return
->>> +  fi
->>> +  echo "Topdown event group test [Success]"
->>> +}
->>> +
->>> +test_topdown_weak_groups() {
->>> +  # Weak groups break if the perf_event_open of multiple grouped events
->>> +  # fails. Breaking a topdown group causes the events to fail. Test a very large
->>> +  # grouping to see that the topdown events aren't broken out.
->>> +  echo "Topdown weak groups test"
->>> +  if ! perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring},branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,baclears.any,ARITH.DIVIDER_ACTIVE' true > /dev/null 2>&1
->>> +  then
->>> +    echo "Topdown weak groups test [Skipped event parsing failed]"
->>> +    return
->>> +  fi
->>> +  if perf stat -e '{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring,branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,baclears.any,ARITH.DIVIDER_ACTIVE}:W' true 2>&1 | egrep -q "<not supported>"
->>> +  then
->>> +    echo "Topdown weak groups test [Failed events not supported]"
->>> +    err=1
->>> +    return
->>> +  fi
->>> +  echo "Topdown weak groups test [Success]"
->>> +}
->>> +
->>
->> Should we check the existence of the slots event before the test?
->> The perf metrics feature only be available on the new platform after
->> ICL. It doesn't work on Atom.
->>
->> Also, I think the test may fails on the hybrid platform, since big core
->> and small core have different formula for the topdown. I think we should
->> avoid the test for the hybrid platform for now.
->> +Zhengjun, who is fixing the topdown gap for the hybrid platform. I
->> think he may take care of the hybrid support later.
-> 
-> Thanks Kan, the test filters out systems that don't support the events
-> and silently skips the test. The main purpose of the test is to make
-> sure the somewhat complicated grouping operations for Icelake have
-> some coverage. Adding more coverage for hybrid would be great, but not
-> something I think gates this change.
->
+There are a lot of details we have to get right to sort out the
+technical challenges and this is my parred back version of the changes
+that contains just those problems I see good solutions to that I believe
+are ready.
 
-Sure, we can add the coverage for hybrid later. But please make sure the 
-test can filter out both the systems which doesn't support perf metircs 
-and the hybrid system.
+A couple of issues have been pointed but I think this parred back set of
+changes is still on the right track.  The biggest change in v4 is the
+split of "ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs" into
+two patches because the dependency I thought exited between two
+different changes did not exist.  The rest of the changes are minor
+tweaks to "ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs";
+removing an always true branch, and adding an early  test to see if the
+ptracer had gone, before TASK_TRAPPING was set.
 
-Thanks,
-Kan
+This set of changes should support Peter's freezer rewrite, and with the
+addition of changing wait_task_inactive(TASK_TRACED) to be
+wait_task_inactive(0) in ptrace_check_attach I don't think there are any
+races or issues to be concerned about from the ptrace side.
 
-> Thanks,
-> Ian
-> 
->> Thanks,
->> Kan
->>> +test_default_stat
->>> +test_topdown_groups
->>> +test_topdown_weak_groups
->>> +exit $err
+More work is needed to support PREEMPT_RT, but these changes get things
+closer.
+
+This set of changes continues to look like it will provide a firm
+foundation for solving the PREEMPT_RT and freezer challenges.
+
+Eric W. Biederman (11):
+      signal: Rename send_signal send_signal_locked
+      signal: Replace __group_send_sig_info with send_signal_locked
+      ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+      ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
+      ptrace: Remove arch_ptrace_attach
+      signal: Use lockdep_assert_held instead of assert_spin_locked
+      ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
+      ptrace: Document that wait_task_inactive can't fail
+      ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs
+      ptrace: Don't change __state
+      ptrace: Always take siglock in ptrace_resume
+
+Peter Zijlstra (1):
+      sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
+
+ arch/ia64/include/asm/ptrace.h    |   4 --
+ arch/ia64/kernel/ptrace.c         |  57 ----------------
+ arch/um/include/asm/thread_info.h |   2 +
+ arch/um/kernel/exec.c             |   2 +-
+ arch/um/kernel/process.c          |   2 +-
+ arch/um/kernel/ptrace.c           |   8 +--
+ arch/um/kernel/signal.c           |   4 +-
+ arch/x86/kernel/step.c            |   3 +-
+ arch/xtensa/kernel/ptrace.c       |   4 +-
+ arch/xtensa/kernel/signal.c       |   4 +-
+ drivers/tty/tty_jobctrl.c         |   4 +-
+ include/linux/ptrace.h            |   7 --
+ include/linux/sched.h             |  10 ++-
+ include/linux/sched/jobctl.h      |   8 +++
+ include/linux/sched/signal.h      |  20 ++++--
+ include/linux/signal.h            |   3 +-
+ kernel/ptrace.c                   |  87 ++++++++---------------
+ kernel/sched/core.c               |   5 +-
+ kernel/signal.c                   | 140 +++++++++++++++++---------------------
+ kernel/time/posix-cpu-timers.c    |   6 +-
+ 20 files changed, 140 insertions(+), 240 deletions(-)
+
+Eric
