@@ -2,200 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA2DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 619BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392571AbiEFNaR (ORCPT
+        id S1359525AbiEFNcl convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52720 "EHLO
+        Fri, 6 May 2022 09:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392540AbiEFN2u (ORCPT
+        with ESMTP id S1392538AbiEFNcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:28:50 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5316D69CE3;
-        Fri,  6 May 2022 06:25:00 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MgdCj-1nQEYk2nAt-00Nvbo;
- Fri, 06 May 2022 15:24:38 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
+        Fri, 6 May 2022 09:32:31 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2468F15A36
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 06:28:46 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-216-O2D6viKlNf-4TslEv6Mr8Q-1; Fri, 06 May 2022 14:28:44 +0100
+X-MC-Unique: O2D6viKlNf-4TslEv6Mr8Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Fri, 6 May 2022 14:28:42 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Fri, 6 May 2022 14:28:42 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Maciej W. Rozycki'" <macro@orcam.me.uk>
+CC:     Arnd Bergmann <arnd@kernel.org>, Rich Felker <dalias@libc.org>,
+        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
+        "open list:SUPERH" <linux-sh@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
+        <sparclinux@vger.kernel.org>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        Will Deacon <will@kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Helge Deller <deller@gmx.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 04/13] ARM: dts: imx6ull-colibri: add touchscreen device nodes
-Date:   Fri,  6 May 2022 15:24:07 +0200
-Message-Id: <20220506132416.273965-5-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220506132416.273965-1-marcel@ziswiler.com>
-References: <20220506132416.273965-1-marcel@ziswiler.com>
+        Ingo Molnar <mingo@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Matt Turner <mattst88@gmail.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: RE: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select it
+ as necessary
+Thread-Topic: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
+ it as necessary
+Thread-Index: AQHYYUSwX3QwDKjE7kKG/gGNt1cnA60Rx6Pg///7pACAABHIsA==
+Date:   Fri, 6 May 2022 13:28:42 +0000
+Message-ID: <3669a28a055344a792b51439c953fd30@AcuMS.aculab.com>
+References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
+ <20220505161028.GA492600@bhelgaas>
+ <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
+ <alpine.DEB.2.21.2205061058540.52331@angie.orcam.me.uk>
+ <CAK8P3a0NzG=3tDLCdPj2=A__2r_+xiiUTW=WJCBNp29x_A63Og@mail.gmail.com>
+ <alpine.DEB.2.21.2205061314110.52331@angie.orcam.me.uk>
+ <5239892986c94239a122ab2f7a18a7a5@AcuMS.aculab.com>
+ <alpine.DEB.2.21.2205061412080.52331@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2205061412080.52331@angie.orcam.me.uk>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:kTzP2dKjh7P3AChHYjD9MUXLo2VnKd4yHU8l0rV658RSKhGVuYv
- zlNvvphj3mHFa3BjpmhDKLHsQUpe0A+ALVKog17BvM9CsEjL08GLcLmjLn7WFRL27CfC1Fu
- hwGs04rcAbJqoFmGX8TOGaIqPXJjj6QOzD7edgXsRSyJustVxRcJ9cUyrlfux6nyKd+9W+R
- xAItNje5JE9SXdZvcFxsw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:a6/ScGZMOdo=:UhP+R4Q0LOeH5GT+KBdRFY
- W4AxU8ZDW7SATWcN/7KDNOTbZNrJglijwhQweMtS2njDIjJ4a65BYc7XBQrhWzfGUByOVPOSt
- kRWVUJxrPMUwWd1LBjSNdfRlF23wdTnVx1MJa2sxX5qntuSRE9nTjrbM17bOouk7XEajFp82w
- KJTVAfJIdx8gKr6+AXPxr2tFajUFeFKd99JGyDP4wzVu6rbqaAvy7M/S35ZHs3dtN3rI8PN89
- KgaHKx1v3ZN5SrwAtU3RUJQQWV79Yoqp+HERTz0fL1YKWxmjuT4iK80kst0FNnDfYgwk2oTKH
- dfrA5Hbr2UCxJGtA43V2KnNt5KhdTxgvEl9PSpWJi70FqvUuv6nLnf/0j4G730IGio8QMaEIo
- hcMyj6679B9Fo+kYAukDqa3V187tj2a7qUgCJsUredaD/79ANSFyuHBKxoRHkkpz+1gugZr0c
- MYsi51nPBjcs8diPyZUVFayka1o5yD1Vhb4E08YUx+RKiDAhgBjn9YgBSawS/UASZ/p0nR1Jr
- G2GjrK8f70iWKVr5OWGJHv5AFs1VBfs/8f7BMTsw1GKlnEyOGu1tKHi4HpG3g57bdFHzxVnoP
- SySOjjKEW1ZR1ZvnC8Dino0pNABzn15TWvdbuVW7B85OUEbeLfATT2jggOcWg2NHRuvy5tFUK
- L36M2kWNEOvj14uka/fEzlp/+w+chAEEeWOJNtEp8LFzoGacI4VJP4KZ+bMXsJIoKirw=
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denys Drozdov <denys.drozdov@toradex.com>
+From: Maciej W. Rozycki
+> Sent: 06 May 2022 14:15
+> On Fri, 6 May 2022, David Laight wrote:
+> 
+> > >  The PCI configuration space was retrofitted into x86 systems (and is
+> > > accessed in an awkward manner with them), but with a new design such a
+> > > clean approach is most welcome IMHO.  Thank you for your explanation.
+> >
+> > Actually I think x86 was the initial system for PCI.
+> > The PCI config space 'mess' is all about trying to make
+> > something that wouldn't break existing memory maps.
+> 
+>  It was retrofitted in that x86 systems already existed for ~15 years when
+> PCI came into picture.  Therefore the makers of the CPU ISA couldn't have
+> envisaged the need for config access instructions like they did for memory
+> and port access.
 
-Move all Atmel nodes from the board-level into the main module-level
-device tree and prepare the device trees for use with Atmel MXT device
-tree overlays. Also, add required pinmux groups.
+Rev 2.0 of the PCI spec (1993) defines two mechanisms for config cycles.
+#2 is probably the first one and maps all of PCI config space into
+4k of IO space (PCI bridges aren't supported).
+#1 requires a pair of accesses (and SMP locking).
 
-The common scheme for pin groups in touch screen overlays is as follows:
-- pinctrl_atmel_conn - SODIMM 106/107 pins for INT/RST signals (default)
-- pinctrl_atmel_adap - SODIMM   28/30 pins for INT/RST signals.
+Neither is really horrid.
 
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+For horrid try the ISApnp interface.
 
----
+	David
 
-Changes in v3:
-- Fixed reset GPIO polarity in-line with the following upstream commit:
-  feedaacdadfc ("Input: atmel_mxt_ts - fix up inverted RESET handler")
-- Fixed comment using more common SODIMM followed by number naming.
-
-Changes in v2:
-- Fixed pinctrl node names as suggested by Shawn.
-
- .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi |  4 +-
- arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   |  4 +-
- arch/arm/boot/dts/imx6ull-colibri.dtsi        | 39 +++++++++++++------
- 3 files changed, 31 insertions(+), 16 deletions(-)
-
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
-index 95a11b8bcbdb..5e55a6c820bc 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
-@@ -15,10 +15,10 @@ memory@80000000 {
- &iomuxc {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
--		&pinctrl_gpio4 &pinctrl_gpio5 &pinctrl_gpio6 &pinctrl_gpio7>;
-+		&pinctrl_gpio4 &pinctrl_gpio6 &pinctrl_gpio7>;
- };
- 
- &iomuxc_snvs {
- 	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio2 &pinctrl_snvs_gpio3>;
-+	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio3>;
- };
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
-index 9f1e38282bee..6e8ddb07e11d 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
-@@ -26,13 +26,13 @@ &cpu0 {
- &iomuxc {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
--		&pinctrl_gpio4 &pinctrl_gpio5 &pinctrl_gpio7>;
-+		&pinctrl_gpio4 &pinctrl_gpio7>;
- 
- };
- 
- &iomuxc_snvs {
- 	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio2>;
-+	pinctrl-0 = <&pinctrl_snvs_gpio1>;
- };
- 
- &usdhc2 {
-diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index 7cd912df5d19..c89b209be316 100644
---- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -124,6 +124,19 @@ &i2c1 {
- 	pinctrl-1 = <&pinctrl_i2c1_gpio>;
- 	sda-gpios = <&gpio1 29 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	scl-gpios = <&gpio1 28 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-+	status = "okay";
-+
-+	/* Atmel maxtouch controller */
-+	atmel_mxt_ts: touchscreen@4a {
-+		compatible = "atmel,maxtouch";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_atmel_conn>;
-+		reg = <0x4a>;
-+		interrupt-parent = <&gpio5>;
-+		interrupts = <4 IRQ_TYPE_EDGE_FALLING>;       /* SODIMM 107 / INT */
-+		reset-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;    /* SODIMM 106 / RST */
-+		status = "disabled";
-+	};
- };
- 
- &i2c2 {
-@@ -241,6 +254,20 @@ MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x3000 /* SODIMM 2 */
- 		>;
- 	};
- 
-+	pinctrl_atmel_adap: atmeladapgrp {
-+		fsl,pins = <
-+			MX6UL_PAD_NAND_DQS__GPIO4_IO16          0xb0a0  /* SODIMM 28 */
-+			MX6UL_PAD_ENET1_TX_EN__GPIO2_IO05       0xb0a0  /* SODIMM 30 */
-+		>;
-+	};
-+
-+	pinctrl_atmel_conn: atmelconngrp {
-+		fsl,pins = <
-+			MX6UL_PAD_JTAG_MOD__GPIO1_IO10          0xb0a0  /* SODIMM 106 */
-+			MX6ULL_PAD_SNVS_TAMPER4__GPIO5_IO04     0xb0a0	/* SODIMM 107 */
-+		>;
-+	};
-+
- 	pinctrl_can_int: canint-grp {
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_TX_DATA1__GPIO2_IO04	0x13010	/* SODIMM 73 */
-@@ -347,12 +374,6 @@ MX6UL_PAD_CSI_DATA07__GPIO4_IO28	0x10b0 /* SODIMM 65 */
- 		>;
- 	};
- 
--	pinctrl_gpio5: gpio5-grp { /* ATMEL MXT TOUCH */
--		fsl,pins = <
--			MX6UL_PAD_JTAG_MOD__GPIO1_IO10		0xb0a0 /* SODIMM 106 */
--		>;
--	};
 -
- 	pinctrl_gpio6: gpio6-grp { /* Wifi pins */
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x10b0 /* SODIMM 89 */
-@@ -606,12 +627,6 @@ MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x110a0	/* SODIMM 138 */
- 		>;
- 	};
- 
--	pinctrl_snvs_gpio2: snvs-gpio2-grp { /* ATMEL MXT TOUCH */
--		fsl,pins = <
--			MX6ULL_PAD_SNVS_TAMPER4__GPIO5_IO04	0xb0a0	/* SODIMM 107 */
--		>;
--	};
--
- 	pinctrl_snvs_gpio3: snvs-gpio3-grp { /* Wifi pins */
- 		fsl,pins = <
- 			MX6ULL_PAD_BOOT_MODE1__GPIO5_IO11	0x130a0	/* SODIMM 127 */
--- 
-2.35.1
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
