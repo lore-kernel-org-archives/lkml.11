@@ -2,100 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A737C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5820CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442197AbiEFOc6 (ORCPT
+        id S1442226AbiEFOeJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 10:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        Fri, 6 May 2022 10:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238749AbiEFOc4 (ORCPT
+        with ESMTP id S1442195AbiEFOdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 10:32:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 285E368FA3
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 07:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651847352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sl3tayqSeSwStUmGAN4VOsTJbnxMRfuI6128fPfMd2A=;
-        b=QxUmpHzz1oXQbuQqUS375Fb8zuB/nBXvf866odq6az17w81/aEvPWFCJIxmSbgEIELbNDK
-        /qfALXeuWBx/jSQC7E61UpFZ9CC7PTpqKP1r4RADuXinkvOksukOD5kJhProQU/zsN61y1
-        Jz6z1N8S2WRUXpJQOpTKTsm16/HhIuo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-rFIbqaMeOQSzRU-fSNvhKw-1; Fri, 06 May 2022 10:29:08 -0400
-X-MC-Unique: rFIbqaMeOQSzRU-fSNvhKw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 66A2C1014A63;
-        Fri,  6 May 2022 14:29:08 +0000 (UTC)
-Received: from lorien.usersys.redhat.com (unknown [10.22.32.97])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 114664010E2C;
-        Fri,  6 May 2022 14:29:08 +0000 (UTC)
-Date:   Fri, 6 May 2022 10:29:06 -0400
-From:   Phil Auld <pauld@redhat.com>
-To:     Joseph Salisbury <joseph.salisbury@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, corbet@lwn.net,
-        linux-doc@vger.kernel.org, stable@vger.kernel.org,
-        peterz@infradead.org, tglx@linutronix.de
-Subject: Re: [PATCH] docs: sched: Update sched-rt-group Documentation For
- Gender Inclusiveness
-Message-ID: <YnUwsnt52aB0sZi0@lorien.usersys.redhat.com>
-References: <20220505021424.12656-1-joseph.salisbury@canonical.com>
+        Fri, 6 May 2022 10:33:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B3D68FA3;
+        Fri,  6 May 2022 07:30:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651847410; x=1683383410;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/3bQs46ARc9z6IxvGQKAIeVw9c66t2zrtmGP1N90Tss=;
+  b=kIlxcGKBxmL8XxzICY8ODoqt39SOIU1lTJf2fwm3FuIJVE0oooGDznnO
+   oWtjwc5d1fEMNMC6SPePgk5d6lCIx9KIE0Dh49E+yWN9g5AUCupasuxjD
+   w1U76aLwEYMckJcdklun//fIRSnHkqyHTcIujFCj0gLkHg3kiIkIui/kN
+   6YIZ8CbwweVEpGO/m6Sg1uUyQCH9euRI7VjJJZtpJ5vUqctcRaDxbgzvG
+   e5Kml5gQdYGcPBC5EZlam1VF98PXcImhSxP+FaU5WT1TYZudx6c1iD5s4
+   8GFKmLe/M4qP6DO1WmaLv4qgHRq9uq0GZ6UfgRxMJMx5eDgRbuqnooz/i
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268376273"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="268376273"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 07:30:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="665498808"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 06 May 2022 07:30:05 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmyy4-000DY8-89;
+        Fri, 06 May 2022 14:30:04 +0000
+Date:   Fri, 6 May 2022 22:29:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     cgel.zte@gmail.com, akpm@linux-foundation.org, hannes@cmpxchg.org,
+        willy@infradead.org, shy828301@gmail.com
+Cc:     kbuild-all@lists.01.org, mhocko@kernel.org,
+        roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, hughd@google.com, songmuchun@bytedance.com,
+        surenb@google.com, vbabka@suse.cz, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, cgroups@vger.kernel.org,
+        william.kucharski@oracle.com, peterx@redhat.com,
+        Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH v2] mm/memcg: support control THP behaviour in cgroup
+Message-ID: <202205062206.5pPA18rP-lkp@intel.com>
+References: <20220506031804.437642-1-yang.yang29@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505021424.12656-1-joseph.salisbury@canonical.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+In-Reply-To: <20220506031804.437642-1-yang.yang29@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 10:14:24PM -0400 Joseph Salisbury wrote:
-> Document assumes root user is he:
-> "assumes root knows what he is doing."
-> 
-> Update documentation for inclusivness, since root is not limited by gender.
-> 
-> Fixes: 60aa605dfce2 ("sched: rt: document the risk of small values in the bandwidth settings")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Joseph Salisbury <joseph.salisbury@canonical.com>
-> ---
->  Documentation/scheduler/sched-rt-group.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/scheduler/sched-rt-group.rst b/Documentation/scheduler/sched-rt-group.rst
-> index 655a096ec8fb..e55fee6772c4 100644
-> --- a/Documentation/scheduler/sched-rt-group.rst
-> +++ b/Documentation/scheduler/sched-rt-group.rst
-> @@ -19,7 +19,7 @@ Real-Time group scheduling
->  ==========
->  
->   Fiddling with these settings can result in an unstable system, the knobs are
-> - root only and assumes root knows what he is doing.
-> + root only and assumes root knows what they are doing.
->
+Hi,
 
-Now there's a singular vs plural problem.
+Thank you for the patch! Yet something to improve:
 
-"... assumes root users know ..."  ?
+[auto build test ERROR on akpm-mm/mm-everything]
+[also build test ERROR on linux/master linus/master v5.18-rc5 next-20220506]
+[cannot apply to hnaz-mm/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/cgel-zte-gmail-com/mm-memcg-support-control-THP-behaviour-in-cgroup/20220506-112100
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
+config: s390-randconfig-r013-20220505 (https://download.01.org/0day-ci/archive/20220506/202205062206.5pPA18rP-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/01b750c350f3c12ca3908e94dc4447041ac9d89b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review cgel-zte-gmail-com/mm-memcg-support-control-THP-behaviour-in-cgroup/20220506-112100
+        git checkout 01b750c350f3c12ca3908e94dc4447041ac9d89b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Cheers,
-Phil
+All errors (new ones prefixed by >>):
 
->  Most notable:
->  
-> -- 
-> 2.34.1
-> 
+   s390-linux-ld: mm/shmem.o: in function `shmem_zero_setup':
+   shmem.c:(.text+0x380): undefined reference to `khugepaged_always'
+>> s390-linux-ld: shmem.c:(.text+0x3f2): undefined reference to `khugepaged_req_madv'
+   s390-linux-ld: mm/huge_memory.o: in function `do_huge_pmd_anonymous_page':
+>> huge_memory.c:(.text+0x3d9c): undefined reference to `khugepaged_always'
+>> s390-linux-ld: huge_memory.c:(.text+0x3e2a): undefined reference to `khugepaged_req_madv'
+   s390-linux-ld: mm/khugepaged.o: in function `set_recommended_min_free_kbytes':
+   khugepaged.c:(.text+0x1d06): undefined reference to `khugepaged_enabled'
+   s390-linux-ld: mm/khugepaged.o: in function `hugepage_vma_check.part.0':
+   khugepaged.c:(.text+0x24c4): undefined reference to `khugepaged_always'
+   s390-linux-ld: mm/khugepaged.o: in function `khugepaged_wait_work':
+   khugepaged.c:(.text+0x2da8): undefined reference to `khugepaged_enabled'
+>> s390-linux-ld: khugepaged.c:(.text+0x2e94): undefined reference to `khugepaged_enabled'
+   s390-linux-ld: mm/khugepaged.o: in function `khugepaged_do_scan':
+   khugepaged.c:(.text+0x46e8): undefined reference to `khugepaged_enabled'
+   s390-linux-ld: khugepaged.c:(.text+0x482a): undefined reference to `khugepaged_enabled'
+   s390-linux-ld: mm/khugepaged.o: in function `khugepaged_enter_vma_merge':
+   khugepaged.c:(.text+0x4bb2): undefined reference to `khugepaged_always'
+>> s390-linux-ld: khugepaged.c:(.text+0x4c1a): undefined reference to `khugepaged_req_madv'
+   s390-linux-ld: mm/khugepaged.o: in function `start_stop_khugepaged':
+   khugepaged.c:(.text+0x4eb6): undefined reference to `khugepaged_enabled'
+   s390-linux-ld: mm/khugepaged.o: in function `khugepaged_min_free_kbytes_update':
+   khugepaged.c:(.text+0x5066): undefined reference to `khugepaged_enabled'
 
 -- 
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
