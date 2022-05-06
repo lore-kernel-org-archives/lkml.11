@@ -2,116 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D3DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE12C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347213AbiEFPPp (ORCPT
+        id S1442732AbiEFPRO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
+        Fri, 6 May 2022 11:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233837AbiEFPPm (ORCPT
+        with ESMTP id S1347956AbiEFPRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:15:42 -0400
-Received: from conuserg-07.nifty.com (conuserg-07.nifty.com [210.131.2.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E4B47575
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:11:59 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-07.nifty.com with ESMTP id 246F8tNF028085;
-        Sat, 7 May 2022 00:08:55 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 246F8tNF028085
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651849736;
-        bh=VWu6RNovZZlWzjVI82T26ZkYKFtgzo8H7rKhNuRBvqE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JjukZl1ajjnROurCI7d4tVD2V+auAAoaTV8eCoq4+DaujU3yMVuUEyuyr6LwWj0L3
-         JWLl97Veyic5o1T/O+yEvgIbnvD2oJ53WvLFTekEPE2XGlzuuwxIbV475fhVzZUTXb
-         9vLIZRPiAdYKUjzvkJReF1rlOeVZMxRfyRAF8MDhq9pS5gdoENYbaH2VnIlFS3dfVe
-         +cJXIXolT3MfRNa6j+tnmjv1arylMYNLmbAsql7Cq51Q/lNrwbg//b+CWaVLXATVox
-         aveENEtZzaDGhZeLMdoGW21mQ/qpWaTPmycNecnftbuY+/21XlrCkT0zIcFshfJR8j
-         CPEHCRkuH/Ilg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?q?Breno=20Leit=C3=A3o?= <leitao@debian.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2] crypto: vmx - Align the short log with Makefile cleanups
-Date:   Sat,  7 May 2022 00:08:20 +0900
-Message-Id: <20220506150820.1310802-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Fri, 6 May 2022 11:17:10 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF8E6D1AA;
+        Fri,  6 May 2022 08:13:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651850007; x=1683386007;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=puX4EKZE6D8sSmtW6hKpKI+ksKjdRXgah3n7yK57/TI=;
+  b=hm9J9MP235O+qAx6Cby7L2E3M7SDrYYzxOhGV1XVc413wRH5GSLZTHBz
+   uasArLZ6sjzfTfjvpDteWPYtKS4ji1kJbyEgDFgdHwHcZpw3qATW6WipR
+   LBpJwL2y7OxggjJMfSNupKOb5MkDRz2EwPItk82QMDzaWJ0RkvTcDjWpP
+   M6UspvVPB4IHGVCeha2806v1ObEcXjY43RJjhILpjyifaptmhXNW6wcyj
+   5dYNkaLDIifGwODKkFLzHRaV8Yg0QUR62/D5aLCP8Rm+dWttoVwDCnaeX
+   NG+9CDNFCiWKliXPFu8Dq8P+CnBjXPsWYL4GipmW9QgUjeGCfzb0HFgRT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="248396223"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="248396223"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:13:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="563854822"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 06 May 2022 08:13:26 -0700
+Received: from [10.252.212.236] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 7FF3E58093E;
+        Fri,  6 May 2022 08:13:25 -0700 (PDT)
+Message-ID: <5189de02-46bd-f315-fadb-4127e4fee412@linux.intel.com>
+Date:   Fri, 6 May 2022 11:13:24 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v11 16/16] KVM: x86/cpuid: Advertise Arch LBR feature in
+ CPUID
+Content-Language: en-US
+To:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
+        jmattson@google.com, seanjc@google.com, like.xu.linux@gmail.com,
+        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220506033305.5135-1-weijiang.yang@intel.com>
+ <20220506033305.5135-17-weijiang.yang@intel.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220506033305.5135-17-weijiang.yang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I notieced the log is not properly aligned:
 
-  PERL drivers/crypto/vmx/aesp8-ppc.S
-  CC [M]  fs/xfs/xfs_reflink.o
-  PERL drivers/crypto/vmx/ghashp8-ppc.S
-  CC [M]  drivers/crypto/vmx/aes.o
 
-Add some spaces after 'PERL'.
+On 5/5/2022 11:33 PM, Yang Weijiang wrote:
+> Add Arch LBR feature bit in CPU cap-mask to expose the feature.
+> Only max LBR depth is supported for guest, and it's consistent
+> with host Arch LBR settings.
+> 
+> Co-developed-by: Like Xu <like.xu@linux.intel.com>
+> Signed-off-by: Like Xu <like.xu@linux.intel.com>
+> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 
-While I was here, I cleaned up the Makefile:
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 
- - Merge the two similar rules
-
- - Remove redundant 'clean-files' (Having 'targets' is enough)
-
- - Move the flavour into the build command
-
-This still avoids the build failures fixed by commit 4ee812f6143d
-("crypto: vmx - Avoid weird build failures").
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
-Changes in v2:
-  - Fix CONFIG_LITTLE_ENDIAN -> CONFIG_CPU_LITTLE_ENDIAN
-
- drivers/crypto/vmx/Makefile | 17 +++--------------
- 1 file changed, 3 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/crypto/vmx/Makefile b/drivers/crypto/vmx/Makefile
-index 709670d2b553..2560cfea1dec 100644
---- a/drivers/crypto/vmx/Makefile
-+++ b/drivers/crypto/vmx/Makefile
-@@ -2,21 +2,10 @@
- obj-$(CONFIG_CRYPTO_DEV_VMX_ENCRYPT) += vmx-crypto.o
- vmx-crypto-objs := vmx.o aesp8-ppc.o ghashp8-ppc.o aes.o aes_cbc.o aes_ctr.o aes_xts.o ghash.o
- 
--ifeq ($(CONFIG_CPU_LITTLE_ENDIAN),y)
--override flavour := linux-ppc64le
--else
--override flavour := linux-ppc64
--endif
--
--quiet_cmd_perl = PERL $@
--      cmd_perl = $(PERL) $(<) $(flavour) > $(@)
-+quiet_cmd_perl = PERL    $@
-+      cmd_perl = $(PERL) $< $(if $(CONFIG_CPU_LITTLE_ENDIAN), linux-ppc64le, linux-ppc64) > $@
- 
- targets += aesp8-ppc.S ghashp8-ppc.S
- 
--$(obj)/aesp8-ppc.S: $(src)/aesp8-ppc.pl FORCE
--	$(call if_changed,perl)
--  
--$(obj)/ghashp8-ppc.S: $(src)/ghashp8-ppc.pl FORCE
-+$(obj)/aesp8-ppc.S $(obj)/ghashp8-ppc.S: $(obj)/%.S: $(src)/%.pl FORCE
- 	$(call if_changed,perl)
--
--clean-files := aesp8-ppc.S ghashp8-ppc.S
--- 
-2.32.0
-
+> ---
+>   arch/x86/kvm/cpuid.c | 33 ++++++++++++++++++++++++++++++++-
+>   1 file changed, 32 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+> index 63870f78ed16..be4eb4e5e1fc 100644
+> --- a/arch/x86/kvm/cpuid.c
+> +++ b/arch/x86/kvm/cpuid.c
+> @@ -102,6 +102,16 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
+>   		if (vaddr_bits != 48 && vaddr_bits != 57 && vaddr_bits != 0)
+>   			return -EINVAL;
+>   	}
+> +	best = cpuid_entry2_find(entries, nent, 0x1c, 0);
+> +	if (best) {
+> +		unsigned int eax, ebx, ecx, edx;
+> +
+> +		/* Reject user-space CPUID if depth is different from host's.*/
+> +		cpuid_count(0x1c, 0, &eax, &ebx, &ecx, &edx);
+> +
+> +		if ((best->eax & 0xff) != BIT(fls(eax & 0xff) - 1))
+> +			return -EINVAL;
+> +	}
+>   
+>   	/*
+>   	 * Exposing dynamic xfeatures to the guest requires additional
+> @@ -598,7 +608,7 @@ void kvm_set_cpu_caps(void)
+>   		F(SPEC_CTRL_SSBD) | F(ARCH_CAPABILITIES) | F(INTEL_STIBP) |
+>   		F(MD_CLEAR) | F(AVX512_VP2INTERSECT) | F(FSRM) |
+>   		F(SERIALIZE) | F(TSXLDTRK) | F(AVX512_FP16) |
+> -		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16)
+> +		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16) | F(ARCH_LBR)
+>   	);
+>   
+>   	/* TSC_ADJUST and ARCH_CAPABILITIES are emulated in software. */
+> @@ -1044,6 +1054,27 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+>   				goto out;
+>   		}
+>   		break;
+> +	/* Architectural LBR */
+> +	case 0x1c: {
+> +		u32 lbr_depth_mask = entry->eax & 0xff;
+> +
+> +		if (!lbr_depth_mask ||
+> +		    !kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR)) {
+> +			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
+> +			break;
+> +		}
+> +		/*
+> +		 * KVM only exposes the maximum supported depth, which is the
+> +		 * fixed value used on the host side.
+> +		 * KVM doesn't allow VMM userspace to adjust LBR depth because
+> +		 * guest LBR emulation depends on the configuration of host LBR
+> +		 * driver.
+> +		 */
+> +		lbr_depth_mask = BIT((fls(lbr_depth_mask) - 1));
+> +		entry->eax &= ~0xff;
+> +		entry->eax |= lbr_depth_mask;
+> +		break;
+> +	}
+>   	/* Intel AMX TILE */
+>   	case 0x1d:
+>   		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
