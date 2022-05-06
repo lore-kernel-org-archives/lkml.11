@@ -2,70 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14758C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 125D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388730AbiEFDsy (ORCPT
+        id S1388798AbiEFDur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
+        Thu, 5 May 2022 23:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384740AbiEFDsv (ORCPT
+        with ESMTP id S1347188AbiEFDun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:48:51 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1643140DC;
-        Thu,  5 May 2022 20:45:09 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R431e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VCPqtyH_1651808701;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VCPqtyH_1651808701)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 06 May 2022 11:45:06 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     peterz@infradead.org
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] x86/events: Replace snprintf() with sysfs_emit()
-Date:   Fri,  6 May 2022 11:44:59 +0800
-Message-Id: <20220506034459.63236-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Thu, 5 May 2022 23:50:43 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CF0443E1
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:47:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651808822; x=1683344822;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=PuYrMj63YyMRYLmAA4R6IiGv02Cb+xhTPXskjUxQXQ8=;
+  b=h5zJAOOHA2B4I8cRKzmn4431uiZbR9iAHREC/GwjmQWn6XcLu7vg2cBy
+   c3eNR4277EA3RVQKJAWGNwse2BtgiWcuCUJHUBQaZ4shmnu694RYBph2x
+   8ovLvm6ZhgijGRNO4q/G6uBaxRXWeHRJE7lqJusRMYEHqfkIx/Ru/luis
+   iSNSl2bIVXWQN6pY3y+k5dhE9WufSVLKAAHms5BupR5C2oyOKB1r5t+ke
+   Xgu1dZAb4Kx1T1ZsOvfIO+MsDdp7RQbZU2dx4n+yw/JJUtGR7FuzxjOjL
+   nDvmkxsAf0PGfoRq+IkDduuyzPJ/K8ZVOCgpMRtue19twD7MGX3LXpabs
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268235368"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="268235368"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:47:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="812119207"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 05 May 2022 20:47:00 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmovj-000D40-NO;
+        Fri, 06 May 2022 03:46:59 +0000
+Date:   Fri, 6 May 2022 11:46:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [linuxppc:next-test 75/91] arch/powerpc/kernel/prom_parse.c:10:6:
+ warning: no previous prototype for 'of_parse_dma_window'
+Message-ID: <202205061138.zH9VucCL-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-coccicheck complains about the use of snprintf() in sysfs show
-functions.
+tree:   https://github.com/linuxppc/linux next-test
+head:   1d8abffc14aef88bfe1ad036084070af62f30c03
+commit: 34fa52eec206db38399dc9b54f2da2eed4fdad5e [75/91] powerpc: Remove asm/prom.h from all files that don't need it
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220506/202205061138.zH9VucCL-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/linuxppc/linux/commit/34fa52eec206db38399dc9b54f2da2eed4fdad5e
+        git remote add linuxppc https://github.com/linuxppc/linux
+        git fetch --no-tags linuxppc next-test
+        git checkout 34fa52eec206db38399dc9b54f2da2eed4fdad5e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kernel/
 
-Fix the coccicheck warning:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-./arch/x86/events/amd/core.c:1300:8-16: WARNING: use scnprintf or
-sprintf.
+All warnings (new ones prefixed by >>):
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- arch/x86/events/amd/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>> arch/powerpc/kernel/prom_parse.c:10:6: warning: no previous prototype for 'of_parse_dma_window' [-Wmissing-prototypes]
+      10 | void of_parse_dma_window(struct device_node *dn, const __be32 *dma_window,
+         |      ^~~~~~~~~~~~~~~~~~~
 
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 262e39a85031..47ef8aee15d2 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -1297,7 +1297,7 @@ static ssize_t branches_show(struct device *cdev,
- 			      struct device_attribute *attr,
- 			      char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%d\n", x86_pmu.lbr_nr);
-+	return sysfs_emit(buf, "%d\n", x86_pmu.lbr_nr);
- }
- 
- static DEVICE_ATTR_RO(branches);
+
+vim +/of_parse_dma_window +10 arch/powerpc/kernel/prom_parse.c
+
+83efafb301bc79 Andy Fleming    2006-10-16   9  
+2083f681e38983 Anton Blanchard 2013-08-07 @10  void of_parse_dma_window(struct device_node *dn, const __be32 *dma_window,
+
+:::::: The code at line 10 was first introduced by commit
+:::::: 2083f681e3898394dcf5fb3285bb385e21facb9a powerpc: of_parse_dma_window should take a __be32 *dma_window
+
+:::::: TO: Anton Blanchard <anton@samba.org>
+:::::: CC: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+
 -- 
-2.20.1.7.g153144c
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
