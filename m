@@ -2,83 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D25C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 09:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 09:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355356AbiEFJgV (ORCPT
+        id S1376681AbiEFJi0 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 05:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
+        Fri, 6 May 2022 05:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390426AbiEFJex (ORCPT
+        with ESMTP id S238563AbiEFJiX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 05:34:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7A7B68;
-        Fri,  6 May 2022 02:31:10 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kvlfs6CCSzfYkx;
-        Fri,  6 May 2022 17:30:45 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+        Fri, 6 May 2022 05:38:23 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFCB106;
+        Fri,  6 May 2022 02:34:41 -0700 (PDT)
+Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kvlkl6FPMzhYhf;
+        Fri,  6 May 2022 17:34:07 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 17:31:08 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 6 May
- 2022 17:31:08 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-parisc@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>
-Subject: [PATCH] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
-Date:   Fri, 6 May 2022 17:42:50 +0800
-Message-ID: <20220506094250.3630615-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2375.24; Fri, 6 May 2022 17:34:39 +0800
+Received: from dggpemm500006.china.huawei.com ([7.185.36.236]) by
+ dggpemm500006.china.huawei.com ([7.185.36.236]) with mapi id 15.01.2375.024;
+ Fri, 6 May 2022 17:34:39 +0800
+From:   "Gonglei (Arei)" <arei.gonglei@huawei.com>
+To:     zhenwei pi <pizhenwei@bytedance.com>,
+        "mst@redhat.com" <mst@redhat.com>
+CC:     "jasowang@redhat.com" <jasowang@redhat.com>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCH v5 5/5] virtio-crypto: enable retry for virtio-crypto-dev
+Thread-Topic: [PATCH v5 5/5] virtio-crypto: enable retry for virtio-crypto-dev
+Thread-Index: AQHYYGfJIkLldEFis0GWr3Sle9+GwK0Rltzw
+Date:   Fri, 6 May 2022 09:34:39 +0000
+Message-ID: <ad61b1ae4bd145eaa18fc28696e9502a@huawei.com>
+References: <20220505092408.53692-1-pizhenwei@bytedance.com>
+ <20220505092408.53692-6-pizhenwei@bytedance.com>
+In-Reply-To: <20220505092408.53692-6-pizhenwei@bytedance.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.149.11]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the missing pci_disable_device() before return
-from tulip_init_one() in the error handling case.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
-index 79df5a72877b..0040dcaab945 100644
---- a/drivers/net/ethernet/dec/tulip/tulip_core.c
-+++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
-@@ -1399,8 +1399,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	/* alloc_etherdev ensures aligned and zeroed private structures */
- 	dev = alloc_etherdev (sizeof (*tp));
--	if (!dev)
-+	if (!dev) {
-+		pci_disable_device(pdev);
- 		return -ENOMEM;
-+	}
- 
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
-@@ -1785,6 +1787,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- err_out_free_netdev:
- 	free_netdev (dev);
-+	pci_disable_device(pdev);
- 	return -ENODEV;
- }
- 
--- 
-2.25.1
+> -----Original Message-----
+> From: zhenwei pi [mailto:pizhenwei@bytedance.com]
+> Sent: Thursday, May 5, 2022 5:24 PM
+> To: Gonglei (Arei) <arei.gonglei@huawei.com>; mst@redhat.com
+> Cc: jasowang@redhat.com; herbert@gondor.apana.org.au;
+> linux-kernel@vger.kernel.org; virtualization@lists.linux-foundation.org;
+> linux-crypto@vger.kernel.org; helei.sig11@bytedance.com;
+> pizhenwei@bytedance.com; davem@davemloft.net
+> Subject: [PATCH v5 5/5] virtio-crypto: enable retry for virtio-crypto-dev
+> 
+> From: lei he <helei.sig11@bytedance.com>
+> 
+> Enable retry for virtio-crypto-dev, so that crypto-engine can process
+> cipher-requests parallelly.
+> 
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Gonglei <arei.gonglei@huawei.com>
+> Signed-off-by: lei he <helei.sig11@bytedance.com>
+> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
+> ---
+>  drivers/crypto/virtio/virtio_crypto_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/crypto/virtio/virtio_crypto_core.c
+> b/drivers/crypto/virtio/virtio_crypto_core.c
+> index 60490ffa3df1..f67e0d4c1b0c 100644
+> --- a/drivers/crypto/virtio/virtio_crypto_core.c
+> +++ b/drivers/crypto/virtio/virtio_crypto_core.c
+> @@ -144,7 +144,8 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
+>  		spin_lock_init(&vi->data_vq[i].lock);
+>  		vi->data_vq[i].vq = vqs[i];
+>  		/* Initialize crypto engine */
+> -		vi->data_vq[i].engine = crypto_engine_alloc_init(dev, 1);
+> +		vi->data_vq[i].engine = crypto_engine_alloc_init_and_set(dev, true,
+> NULL, 1,
+> +						virtqueue_get_vring_size(vqs[i]));
+
+Here the '1' can be 'true' too.
+
+Sure, you can add
+
+Reviewed-by: Gonglei <arei.gonglei@huawei.com>
+
+Regards,
+-Gonglei
+
+>  		if (!vi->data_vq[i].engine) {
+>  			ret = -ENOMEM;
+>  			goto err_engine;
+> --
+> 2.20.1
 
