@@ -2,94 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B43EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388279AbiEFHHX (ORCPT
+        id S1388335AbiEFHH1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 03:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        Fri, 6 May 2022 03:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388114AbiEFHHP (ORCPT
+        with ESMTP id S1384172AbiEFHHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 03:07:15 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E81C666CB5
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:03:13 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24038:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 06 May 2022 15:01:02 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.6; Fri, 6 May 2022 15:01:00 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2507.006; Fri, 6 May 2022 15:01:00 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: RE: [PATCH v14 6/9] dt-bindings: interrupt-controller: Add bindings
- for SP7021 interrupt controller
-Thread-Topic: [PATCH v14 6/9] dt-bindings: interrupt-controller: Add bindings
- for SP7021 interrupt controller
-Thread-Index: AQHYYPmoKr87uTd0mUKH1SxX+WAEFK0Q3wAAgACMdMA=
-Date:   Fri, 6 May 2022 07:01:00 +0000
-Message-ID: <d4ec03ed722349dda9fa3357449ac612@cqplus1.com>
-References: <cover.1651805790.git.qinjian@cqplus1.com>
- <56fb5e9a35a901f15d8e9721385c7e916c181377.1651805790.git.qinjian@cqplus1.com>
- <550cd907-be2a-4e90-350c-fbc3bdc03728@linaro.org>
-In-Reply-To: <550cd907-be2a-4e90-350c-fbc3bdc03728@linaro.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 6 May 2022 03:07:17 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24D566F82
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:03:32 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id s27so8209813ljd.2
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 00:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=HgHALsyDDul+mc+1DSzMYml4J86Z9SHNWaoFWG5JUw8=;
+        b=pCPde4mTdjwSTR8g1zQ4ksFClzTrlYZt7XTkR4bRFZM644CK08GuCtBjolZqqtxGKO
+         Q4vYjkuM0GsP7TWXdkKKgbGziS8V8dNZ3KVNpdETSePgZsYIIW1EmLDENZtZc+IYL3HQ
+         p5fVlyRK2rwtTFpt5me25KVbOdUH+xTVdOPIB8gH6cmWGnL4tgBc/POeAHlxG1BRvVHm
+         C+I1IcAcUzTtcKqwznJNyFvimheXp2ECR4T6AsMW828Za3Y6/fK1A4Yzknm3rNRy/HmJ
+         F/NPQzou+k2ZdWTK5BJ7ZssS0BrgupEb6w6cbHLo07DRH0Tg+gtqIM+WaU6Si1r+86iS
+         PT9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=HgHALsyDDul+mc+1DSzMYml4J86Z9SHNWaoFWG5JUw8=;
+        b=pNr0wXku8yAY1XSObg6TJJdYnpeqTKOl03Lp4nLSLMpkZeqj+31ddGnouYyM3ppEA/
+         6F/mQ3LjdzB87dfjgtTo0lsy+5dWv7bCGslwVXMwUZ+m560KCsVawD279Z/XF36iOM55
+         rD48pBrRTzj78yDU6biRwjborIy1Chuw62zVH4S54RC6KFHCKfN0geANxRntDahPhRp2
+         7VMkVell+Ummwbjkx1r1fA0mIoDvUy7P05YwV2EGHFPf1xhAka8vG/smZjjq4MnuGt1M
+         Y0TVZg951PZFJZBXuSaBGWCJT/+XmwHJX0IcJgcegXTkpTTPFzxyCx+SVmpFrDNcCD8Q
+         2opQ==
+X-Gm-Message-State: AOAM530tLXlbhOST8+eQpcVo20SIrtDIXv4Z66wgIU9s8qbf0uBu2Ygo
+        pTndu25qkscIa9jzrtlJ2+9rFg==
+X-Google-Smtp-Source: ABdhPJznUTr5ulzv3av1M+Wo2Zqt4M8NBLFPNb7kWBPw7T1LHaYWJFyPAFDg9gC5MayiDt0O4yFFjA==
+X-Received: by 2002:a2e:b8c3:0:b0:250:6889:6782 with SMTP id s3-20020a2eb8c3000000b0025068896782mr1173664ljp.531.1651820611192;
+        Fri, 06 May 2022 00:03:31 -0700 (PDT)
+Received: from jade (h-79-136-84-253.A175.priv.bahnhof.se. [79.136.84.253])
+        by smtp.gmail.com with ESMTPSA id o13-20020a056512050d00b0047255d211ffsm12960lfb.302.2022.05.06.00.03.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 00:03:30 -0700 (PDT)
+Date:   Fri, 6 May 2022 09:03:28 +0200
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+To:     arm@kernel.org, soc@kernel.org
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        op-tee@lists.trustedfirmware.org
+Subject: [GIT PULL] TEE Cleanup for v5.19
+Message-ID: <20220506070328.GA1344495@jade>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBPbiAwNi8wNS8yMDIyIDA1OjIzLCBRaW4gSmlhbiB3cm90ZToNCj4gPiBBZGQgZG9jdW1lbnRh
-dGlvbiB0byBkZXNjcmliZSBTdW5wbHVzIFNQNzAyMSBpbnRlcnJ1cHQgY29udHJvbGxlciBiaW5k
-aW5ncy4NCj4gPg0KPiA+IFJldmlld2VkLWJ5OiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwub3Jn
-Pg0KPiA+IFNpZ25lZC1vZmYtYnk6IFFpbiBKaWFuIDxxaW5qaWFuQGNxcGx1czEuY29tPg0KPiA+
-IC0tLQ0KPiA+ICAuLi4vc3VucGx1cyxzcDcwMjEtaW50Yy55YW1sICAgICAgICAgICAgICAgICAg
-fCA2MiArKysrKysrKysrKysrKysrKysrDQo+ID4gIE1BSU5UQUlORVJTICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICB8ICAxICsNCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA2MyBpbnNl
-cnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvc3VucGx1cyxzcDcwMjEtaW50Yy55YW1s
-DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L2ludGVycnVwdC1jb250cm9sbGVyL3N1bnBsdXMsc3A3MDIxLWludGMueWFtbA0KPiBiL0RvY3Vt
-ZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxlci9zdW5wbHVz
-LHNwNzAyMS1pbnRjLnlhbWwNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAw
-MDAwMDAwMC4uZjI2ZDhiMjEzDQo+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxlci9zdW5wbHVzLHNw
-NzAyMS1pbnRjLnlhbWwNCj4gPiBAQCAtMCwwICsxLDYyIEBADQo+ID4gKyMgU1BEWC1MaWNlbnNl
-LUlkZW50aWZpZXI6IChHUEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNlKQ0KPiA+ICsjIENvcHly
-aWdodCAoQykgU3VucGx1cyBDby4sIEx0ZC4gMjAyMQ0KPiA+ICslWUFNTCAxLjINCj4gPiArLS0t
-DQo+ID4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvaW50ZXJydXB0LWNvbnRy
-b2xsZXIvc3VucGx1cyxzcDcwMjEtaW50Yy55YW1sIw0KPiA+ICskc2NoZW1hOiBodHRwOi8vZGV2
-aWNldHJlZS5vcmcvbWV0YS1zY2hlbWFzL2NvcmUueWFtbCMNCj4gPiArDQo+ID4gK3RpdGxlOiBT
-dW5wbHVzIFNQNzAyMSBTb0MgSW50ZXJydXB0IENvbnRyb2xsZXIgRGV2aWNlIFRyZWUgQmluZGlu
-Z3MNCj4gDQo+IFJlbW92ZSAiRGV2aWNlIFRyZWUgQmluZGluZ3MiLiBUaGlzIGFwcGxpZXMgdG8g
-YWxsIGJpbmRpbmdzIHBhdGNoZXMsIG5vdA0KPiBvbmx5IHRvIG9uZS4NCj4gDQoNCkRpZCB5b3Ug
-bWVhbnMgY2hhbmdlDQoidGl0bGU6IFN1bnBsdXMgU1A3MDIxIFNvQyBJbnRlcnJ1cHQgQ29udHJv
-bGxlciBEZXZpY2UgVHJlZSBCaW5kaW5ncyINCnRvIA0KInRpdGxlOiBTdW5wbHVzIFNQNzAyMSBT
-b0MgSW50ZXJydXB0IENvbnRyb2xsZXIiPw0KDQoNCg==
+Hello arm-soc maintainers,
+
+Please pull these small cleanup patches which removes two unused and
+outdated TEE_IOCTL_SHM_* flags and two unused pa2va and va2pa functions for
+tee_shm's. 
+
+Thanks,
+Jens
+
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  https://git.linaro.org/people/jens.wiklander/linux-tee.git tags/tee-cleanup-for-v5.19
+
+for you to fetch changes up to d8fc1c7c4c9b705ce5f5bba772ad66a0137c685d:
+
+  tee: remove flags TEE_IOCTL_SHM_MAPPED and TEE_IOCTL_SHM_DMA_BUF (2022-04-26 10:17:03 +0200)
+
+----------------------------------------------------------------
+TEE cleanup
+
+Removes the old and unused TEE_IOCTL_SHM_* flags
+Removes unused the unused tee_shm_va2pa() and tee_shm_pa2va() functions
+
+----------------------------------------------------------------
+Andrew Davis (2):
+      tee: remove tee_shm_va2pa() and tee_shm_pa2va()
+      tee: remove flags TEE_IOCTL_SHM_MAPPED and TEE_IOCTL_SHM_DMA_BUF
+
+ drivers/tee/tee_core.c   |  2 --
+ drivers/tee/tee_shm.c    | 50 ------------------------------------------------
+ include/linux/tee_drv.h  | 18 -----------------
+ include/uapi/linux/tee.h |  4 ----
+ 4 files changed, 74 deletions(-)
