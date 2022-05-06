@@ -2,145 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 19:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F44C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351635AbiEFUBP (ORCPT
+        id S1391291AbiEFUJY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 16:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60344 "EHLO
+        Fri, 6 May 2022 16:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392202AbiEFUBD (ORCPT
+        with ESMTP id S1352661AbiEFUJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 16:01:03 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3185F270
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 12:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651867039; x=1683403039;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fYx0jVPAY26QYp8frW2LMbGHUaazdt9/1xBg56xLgF0=;
-  b=fJjHb77yU9eKpLBR6sNiWGKcnt80j/UXUh33fy6Ul+h+FLFZKldKOlFM
-   qRM/Q3ZFy1xA57BkykRyR96IKBwgP1Y0VxYUq9lYETpytDzO5Qqj/ZEdc
-   GMGL5r0u/FO4+kwZM6+Iu2z8mL3wE/jSsj492dOklgfqJ+ZLKCBiTUxQW
-   xzmIL77lb8cpE0ltmfZoaTErlvJxAl7SvVzyWsiyKj3tyenhE7os/6gvh
-   Ev6L3odUTVHqUbAc5CKQQTUr2eS4ixvlZ1fC9Xeabd9TETniByzG+rEzA
-   nV4OH2zqboEkGBze6hHQIOnVXJH7IB47azBfpPWbnEfw4mztyBMiABhuB
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="293773285"
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="293773285"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 12:57:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="518204464"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 06 May 2022 12:57:15 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nn44g-000DpX-VR;
-        Fri, 06 May 2022 19:57:14 +0000
-Date:   Sat, 7 May 2022 03:56:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jagdish Gediya <jvgediya@linux.ibm.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        rafael@kernel.org, akpm@linux-foundation.org
-Cc:     kbuild-all@lists.01.org, keescook@chromium.org,
-        andriy.shevchenko@linux.intel.com, geert@linux-m68k.org,
-        linux@roeck-us.net, adobriyan@gmail.com,
-        Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: Re: [PATCH] kobject: Refactor kobject_set_name_vargs()
-Message-ID: <202205070311.4T8ZKSWq-lkp@intel.com>
-References: <20220506133309.36794-1-jvgediya@linux.ibm.com>
+        Fri, 6 May 2022 16:09:22 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D24913E9D
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 13:05:36 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651867535;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MVppxWloPHGJWVXPfoL2Mp1gCDmCbq5jYvkOUctTPwE=;
+        b=zS7mT4GOFbktfGjTiNzsOezexuL61fgcFzjZlZAaPH7GPyJ2Q7bJAFEDsyscoPuCfFVQXy
+        MQv9fxTolSCsKtYLSyZInAmifCbsge2rcmwRurq4fs6letvqkFnJbaTyhjCsRTPV60X6uE
+        rinuSxovZT2eQZmTTINCqVtTXoHEFIdOgI1zfPR/KL1VUfVwn2fIFHM766ozhigodnfH5s
+        jReDujbvbA2//EkDSTXQNLuOihMxNNQNvdzlCmWip8r6V8GGcekFaYq43MM8Slzjs9F8uF
+        PGtWQGOFlmpNWcrTP2AzpuqH8ZoMSNTnNEko3cwpIKeOk6ve9AbhRkGjDS/MIg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651867535;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MVppxWloPHGJWVXPfoL2Mp1gCDmCbq5jYvkOUctTPwE=;
+        b=5wkuYkNHIkwqACUXoQDb2h1xfBOD4wVbdnhxKNW06YuXNMEFHsj/QnO9X2mOg3FHRYYiy1
+        G0NPRPNdhl+hS1AA==
+To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        x86@kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 03/29] x86/apic/msi: Set the delivery mode
+ individually for each IRQ
+In-Reply-To: <20220506000008.30892-4-ricardo.neri-calderon@linux.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-4-ricardo.neri-calderon@linux.intel.com>
+Date:   Fri, 06 May 2022 22:05:34 +0200
+Message-ID: <8735hmh1f5.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220506133309.36794-1-jvgediya@linux.ibm.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jagdish,
+On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> There are no restrictions in hardware to set  MSI messages with its
+> own delivery mode.
 
-Thank you for the patch! Perhaps something to improve:
+"messages with its own" ? Plural/singular confusion.
 
-[auto build test WARNING on driver-core/driver-core-testing]
-[also build test WARNING on hnaz-mm/master linux/master linus/master v5.18-rc5 next-20220506]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> Use the mode specified in the provided IRQ hardware
+> configuration data. Since most of the IRQs are configured to use the
+> delivery mode of the APIC driver in use (set in all of them to
+> APIC_DELIVERY_MODE_FIXED), the only functional changes are where
+> IRQs are configured to use a specific delivery mode.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jagdish-Gediya/kobject-Refactor-kobject_set_name_vargs/20220506-213448
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git bc443c31def574e3bfaed50cb493b8305ad79435
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220507/202205070311.4T8ZKSWq-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/4aac95bc8a052e61d5013a25a2099ed711e88fde
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jagdish-Gediya/kobject-Refactor-kobject_set_name_vargs/20220506-213448
-        git checkout 4aac95bc8a052e61d5013a25a2099ed711e88fde
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+This does not parse. There are no functional changes due to this patch
+and there is no point talking about functional changes in subsequent
+patches here.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Changing the utility function __irq_msi_compose_msg() takes care of
+> implementing the change in the in the local APIC, PCI-MSI, and DMAR-MSI
 
-All warnings (new ones prefixed by >>):
+in the in the
 
-   mm/util.c: In function 'set_name_vargs':
->> mm/util.c:128:9: warning: function 'set_name_vargs' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     128 |         s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
-         |         ^
+> irq_chips.
+>
+> The IO-APIC irq_chip configures the entries in the interrupt redirection
+> table using the delivery mode specified in the corresponding MSI message.
+> Since the MSI message is composed by a higher irq_chip in the hierarchy,
+> it does not need to be updated.
 
+The point is that updating __irq_msi_compose_msg() covers _all_ MSI
+consumers including IO-APIC.
 
-vim +128 mm/util.c
+I had to read that changelog 3 times to make sense of it. Something like
+this perhaps:
 
-   114	
-   115	/**
-   116	 * set_name_vargs() - Set the name as per format
-   117	 * @name: pointer to point to the name as per format
-   118	 * @fmt: format string used to build the name
-   119	 * @vargs: vargs to format the string.
-   120	 */
-   121	int set_name_vargs(const char **name, const char *fmt, va_list vargs)
-   122	{
-   123		const char *s;
-   124	
-   125		if (*name && !fmt)
-   126			return 0;
-   127	
- > 128		s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
-   129		if (!s)
-   130			return -ENOMEM;
-   131	
-   132		/*
-   133		 * ewww... some of these buggers have '/' in the name ... If
-   134		 * that's the case, we need to make sure we have an actual
-   135		 * allocated copy to modify, since kvasprintf_const may have
-   136		 * returned something from .rodata.
-   137		 */
-   138		if (strchr(s, '/')) {
-   139			char *t;
-   140	
-   141			t = kstrdup(s, GFP_KERNEL);
-   142			kfree_const(s);
-   143			if (!t)
-   144				return -ENOMEM;
-   145			strreplace(t, '/', '!');
-   146			s = t;
-   147		}
-   148		kfree_const(*name);
-   149		*name = s;
-   150	
-   151		return 0;
-   152	}
-   153	EXPORT_SYMBOL(set_name_vargs);
-   154	
+  "x86/apic/msi: Use the delivery mode from irq_cfg for message composition
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+   irq_cfg provides a delivery mode for each interrupt. Use it instead
+   of the hardcoded APIC_DELIVERY_MODE_FIXED. This allows to compose
+   messages for NMI delivery mode which is required to implement a HPET
+   based NMI watchdog.
+
+   No functional change as the default delivery mode is set to
+   APIC_DELIVERY_MODE_FIXED."
+
+Thanks,
+
+        tglx
