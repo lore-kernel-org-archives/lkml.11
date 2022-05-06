@@ -2,181 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB3AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390166AbiEFIiO (ORCPT
+        id S1390179AbiEFIir (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53164 "EHLO
+        Fri, 6 May 2022 04:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238317AbiEFIiM (ORCPT
+        with ESMTP id S1390172AbiEFIin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:38:12 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD19D68317
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:34:29 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id t6so9054156wra.4
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jfh1fiTIk1xCjgD8sLnxJeVxqah+r7Lt/e2Er2MKweM=;
-        b=BIjezw8vzVBC6te99D/heMb58qfFzO6633FNhmDKPtCcDeG6h+TFDT5AKJrAqy6PwB
-         grTS4qadiFNOCnoj9YiKGj55sFSqxTWASgiT3+3ht3qwXErGWgdAqQ7HuXIMeg7mpC3n
-         6pTqX94+qeoXEZMeKZNK7EC+vxh3T+TB4KGZ5xtgrjX9H0hk/pbobp5la0qREYETW24Q
-         vW15W9W2AVBAqfGsc1+u7CrC3+s5COd+Z88ez4zSWqMk+4htdlm8D4o/e1EbgaB9rGVq
-         lWqgsFT/Yn8SxgeLLWUAes8ugzZAPvMam/vdMYwhMkWj/nx86H1FUzGTq4EfrjVvj/Z8
-         B5Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jfh1fiTIk1xCjgD8sLnxJeVxqah+r7Lt/e2Er2MKweM=;
-        b=C6V6u1MuSpqiXya1fxq6nxOi2R59B0ymogjcUY63P2XHaTSyKhm4qmGZOPnxTL+9Hp
-         aX97t/a3djaUoraHCnYwT1+/5kw+09pMf6lHSTHDrui9/lm22Y+vcHJrSggs5Z72pNem
-         85+Dqk+cNlB5svTZiB6Yw0nod2OaWyE72KF0M0Qvr1LEh/vClrLZ1x2LDRHaRxKnrClr
-         TV5ZnGYpuyMrGIVkiaK1qTnGdPDPv8XU3n8jY9MjguAuuQxWePhqKzzFoyODktdsBd5i
-         zwvRHFSxl96yqlIq13Ut5DGIEaSMZ7wi6ImT0JuH0ZeIK5j6SGbgpEKd314u6s5EyYYL
-         aLYA==
-X-Gm-Message-State: AOAM533yS/6QK0pC4bWxjJPnlzxb170n/7BWayNEBSSCugGAuZ3TWNPR
-        UZthuQF0W0pMhB5Dsih7RJwvBZGQqC9mCJCpzPQQjw==
-X-Google-Smtp-Source: ABdhPJwjfdeDkLrBrRvSFcoAXyHnw/ATiHEoEGj0i5O1MHzRFqMgGo1B1TzFQJmPPUjqG7SVlEr17uLDrfiUwt0vFCs=
-X-Received: by 2002:adf:d1e9:0:b0:20c:6c76:14d5 with SMTP id
- g9-20020adfd1e9000000b0020c6c7614d5mr1774940wrd.375.1651826068090; Fri, 06
- May 2022 01:34:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220505165639.361733-1-adrian.hunter@intel.com>
- <20220505165639.361733-14-adrian.hunter@intel.com> <CAP-5=fWKOYiOSs=TppGCD+k283rUUsexzVuJP17Pm76EMOs+xA@mail.gmail.com>
- <fed8d256-b214-e25f-9a5f-492442c4b849@intel.com>
-In-Reply-To: <fed8d256-b214-e25f-9a5f-492442c4b849@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 6 May 2022 01:34:13 -0700
-Message-ID: <CAP-5=fWF=c1Hu5JaJfz4oZLg15ZQy=gqVkNc34Xphtroenfm8g@mail.gmail.com>
-Subject: Re: [PATCH V1 13/23] perf evlist: Add evlist__add_system_wide_dummy()
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Fri, 6 May 2022 04:38:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598E862BF1;
+        Fri,  6 May 2022 01:35:01 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id AB3B021A63;
+        Fri,  6 May 2022 08:34:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651826099; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E8fz2Qj+5LloVB8vVJMGmoituacjkJeR6Cyj3S17Ync=;
+        b=kdq0pyczu0FGQoWPRbX1YpR0o5BSPmfjwNvpAxR1AlStsynwpp7SB/tNoYJxLftFy/aiUv
+        TZXJf8hGYPOFT/rqwaq/jR8vnukH8M+voTZMHiaqCo+4BZBydvA2Tph0SGDOBhQj3nX2Vs
+        RrOb1FgrjYdDKxGn/SJkjE9UrMN8MUY=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C16E32C142;
+        Fri,  6 May 2022 08:34:58 +0000 (UTC)
+Date:   Fri, 6 May 2022 10:34:58 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
         Namhyung Kim <namhyung@kernel.org>,
-        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Helge Deller <deller@gmx.de>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Changbin Du <changbin.du@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, rust-for-linux@vger.kernel.org,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [PATCH v1 3/3] kallsyms: increase maximum kernel symbol length
+ to 512
+Message-ID: <YnTdslR0jhUNo0lu@alley>
+References: <20220505191704.22812-1-ojeda@kernel.org>
+ <20220505191704.22812-4-ojeda@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505191704.22812-4-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 1:14 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> On 6/05/22 02:56, Ian Rogers wrote:
-> > On Thu, May 5, 2022 at 9:57 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
-> >>
-> >> Add evlist__add_system_wide_dummy() to enable creating a system-wide dummy
-> >> event that sets up the system-wide maps before map propagation.
-> >
-> > Perhaps this should be:
-> > evlist__add_dummy_on_all_online_cpus()
->
-> Ok, but offline isn't an option, so I'll drop 'online' from the name.
+On Thu 2022-05-05 21:16:45, Miguel Ojeda wrote:
+> Rust symbols can become quite long due to namespacing introduced
+> by modules, types, traits, generics, etc. For instance,
+> the following code:
+> 
+>     pub mod my_module {
+>         pub struct MyType;
+>         pub struct MyGenericType<T>(T);
+> 
+>         pub trait MyTrait {
+>             fn my_method() -> u32;
+>         }
+> 
+>         impl MyTrait for MyGenericType<MyType> {
+>             fn my_method() -> u32 {
+>                 42
+>             }
+>         }
+>     }
+> 
+> generates a symbol of length 96 when using the upcoming v0 mangling scheme:
+> 
+>     _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
+> 
+> At the moment, Rust symbols may reach up to 300 in length.
+> Setting 512 as the maximum seems like a reasonable choice to
+> keep some headroom.
+> 
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Co-developed-by: Gary Guo <gary@garyguo.net>
+> Signed-off-by: Gary Guo <gary@garyguo.net>
+> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 
-I'm not sure I follow. There can be CPUs that are offline (echo 0 >
-/sys/devices/system/cpu/cpu2/online) and then brought online while
-perf is running. The output obviously won't be right as we're missing
-dummy events. Losing online from the name here seems to remove a
-useful clue.
+I was primary interested into the livepatching code.
+But the entire patch looks good:
 
-Thanks,
-Ian
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-> > my thoughts being that a system wide dummy sounds like the dummy CPU
-> > map, ie {-1} whilst what happens here is opening on all online CPUs
-> > {0-35} on a 36 hyperthread system. Note also that the libperf
-> > cpu_map__read_all_cpu_map code doesn't discover sysfs' mount properly,
-> > as done in:
-> > tools/lib/api/fs/fs.h
-> > Some tech debt.
-> >
-> >> For convenience, add evlist__add_aux_dummy() so that the logic can be used
-> >> whether or not the event needs to be system-wide.
-> >>
-> >> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> >> ---
-> >>  tools/perf/util/evlist.c | 40 ++++++++++++++++++++++++++++++++++++++++
-> >>  tools/perf/util/evlist.h |  5 +++++
-> >>  2 files changed, 45 insertions(+)
-> >>
-> >> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-> >> index 78c47cbafbc2..58ea562ddbd2 100644
-> >> --- a/tools/perf/util/evlist.c
-> >> +++ b/tools/perf/util/evlist.c
-> >> @@ -264,6 +264,46 @@ int evlist__add_dummy(struct evlist *evlist)
-> >>         return 0;
-> >>  }
-> >>
-> >> +static void evlist__add_system_wide(struct evlist *evlist, struct evsel *evsel)
-> >
-> > This would be:
-> > evlist__add_on_all_online_cpus(..)
-> >
-> >> +{
-> >> +       evsel->core.system_wide = true;
-> >> +
-> >> +       /* All CPUs */
-> >> +       perf_cpu_map__put(evsel->core.own_cpus);
-> >> +       evsel->core.own_cpus = perf_cpu_map__new(NULL);
-> >> +       perf_cpu_map__put(evsel->core.cpus);
-> >> +       evsel->core.cpus = perf_cpu_map__get(evsel->core.own_cpus);
-> >> +
-> >> +       /* No threads */
-> >> +       perf_thread_map__put(evsel->core.threads);
-> >> +       evsel->core.threads = perf_thread_map__new_dummy();
-> >> +
-> >> +       evlist__add(evlist, evsel);
-> >> +}
-> >> +
-> >> +struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide)
-> >> +{
-> >> +       struct evsel *evsel = evlist__dummy_event(evlist);
-> >> +
-> >> +       if (!evsel)
-> >> +               return NULL;
-> >> +
-> >> +       evsel->core.attr.exclude_kernel = 1;
-> >> +       evsel->core.attr.exclude_guest = 1;
-> >> +       evsel->core.attr.exclude_hv = 1;
-> >> +       evsel->core.attr.freq = 0;
-> >> +       evsel->core.attr.sample_period = 1;
-> >> +       evsel->no_aux_samples = true;
-> >> +       evsel->name = strdup("dummy:u");
-> >> +
-> >> +       if (system_wide)
-> >> +               evlist__add_system_wide(evlist, evsel);
-> >> +       else
-> >> +               evlist__add(evlist, evsel);
-> >> +
-> >> +       return evsel;
-> >> +}
-> >> +
-> >>  static int evlist__add_attrs(struct evlist *evlist, struct perf_event_attr *attrs, size_t nr_attrs)
-> >>  {
-> >>         struct evsel *evsel, *n;
-> >> diff --git a/tools/perf/util/evlist.h b/tools/perf/util/evlist.h
-> >> index 4062f5aebfc1..dd1af114e033 100644
-> >> --- a/tools/perf/util/evlist.h
-> >> +++ b/tools/perf/util/evlist.h
-> >> @@ -114,6 +114,11 @@ int arch_evlist__add_default_attrs(struct evlist *evlist);
-> >>  struct evsel *arch_evlist__leader(struct list_head *list);
-> >>
-> >>  int evlist__add_dummy(struct evlist *evlist);
-> >> +struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide);
-> >> +static inline struct evsel *evlist__add_system_wide_dummy(struct evlist *evlist)
-> >> +{
-> >> +       return evlist__add_aux_dummy(evlist, true);
-> >> +}
-> >>
-> >>  int evlist__add_sb_event(struct evlist *evlist, struct perf_event_attr *attr,
-> >>                          evsel__sb_cb_t cb, void *data);
-> >> --
-> >> 2.25.1
-> >>
->
+I just hope that it will not cause stack overflows
+somewhere.
+
+Best Regards,
+Petr
