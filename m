@@ -2,112 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 485F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 09:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 09:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243727AbiEFJ5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 05:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
+        id S1390722AbiEFJ7q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 05:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236473AbiEFJ45 (ORCPT
+        with ESMTP id S236473AbiEFJ7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 05:56:57 -0400
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EDB67D28
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 02:53:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=urze1RM/gX18V878AZ6j/ivdQDVcYKjIqHZDW8Da1MA=;
-  b=SFavKmlT8DEGi/9oCpAqWxugYXIgZwXkngrNq+97vEdi+coaSSh0yHPm
-   Yw2auqqwRB25aoji3y1v03veYx/7frj0JPM2Xgd7EetJo8k288K+8NpSa
-   XcgrCEvdcGj4/RXiPprKkK3JI0Oi0lHcR/Pf/ls2Dhq4vqYpJh2PrP0AL
-   A=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.91,203,1647298800"; 
-   d="scan'208";a="13371044"
-Received: from 245.122.68.85.rev.sfr.net (HELO hadrien) ([85.68.122.245])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 11:53:08 +0200
-Date:   Fri, 6 May 2022 11:53:07 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-cc:     ksummit-discuss@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        kbuild@lists.01.org, lkp@intel.com
-Subject: Re: [Ksummit-discuss] uninitialized variables bugs
-In-Reply-To: <20220506091338.GE4031@kadam>
-Message-ID: <alpine.DEB.2.22.394.2205061150230.2845@hadrien>
-References: <20220506091338.GE4031@kadam>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Fri, 6 May 2022 05:59:41 -0400
+X-Greylist: delayed 433 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 May 2022 02:55:57 PDT
+Received: from rosa.stappers.it (rosa.stappers.it [77.72.145.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E3B24754F;
+        Fri,  6 May 2022 02:55:56 -0700 (PDT)
+Received: by rosa.stappers.it (Postfix, from userid 1000)
+        id 5B06F2014; Fri,  6 May 2022 11:45:36 +0200 (CEST)
+Date:   Fri, 6 May 2022 11:45:36 +0200
+From:   Geert Stappers <stappers@stappers.nl>
+To:     Miguel Ojeda <ojeda@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Helge Deller <deller@gmx.de>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Changbin Du <changbin.du@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, rust-for-linux@vger.kernel.org,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [PATCH v1 3/3] kallsyms: increase maximum kernel symbol length
+ to 512
+Message-ID: <20220506094536.GL1551@rosa.stappers.it>
+References: <20220505191704.22812-1-ojeda@kernel.org>
+ <20220505191704.22812-4-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505191704.22812-4-ojeda@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 05, 2022 at 09:16:45PM +0200, Miguel Ojeda wrote:
+> 
+> generates a symbol of length 96 when using the upcoming v0 mangling scheme:
+> 
+>     _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
+> 
+> At the moment, Rust symbols may reach up to 300 in length.
+> Setting 512 as the maximum seems like a reasonable choice to
+> keep some headroom.
+> 
+> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
+> index ce1bd2fbf23e..e5ad6e31697d 100644
+> --- a/include/linux/kallsyms.h
+> +++ b/include/linux/kallsyms.h
+> @@ -15,7 +15,7 @@
+>  
+>  #include <asm/sections.h>
+>  
+> -#define KSYM_NAME_LEN 128
+> +#define KSYM_NAME_LEN 512
+
+multiplication factor is four
 
 
-On Fri, 6 May 2022, Dan Carpenter wrote:
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -213,7 +213,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+>  	 * we use the smallest/strictest upper bound possible (56, based on
+>  	 * the current definition of MODULE_NAME_LEN) to prevent overflows.
+>  	 */
+> -	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 128);
+> +	BUILD_BUG_ON(MODULE_NAME_LEN < 56 || KSYM_NAME_LEN != 512);
 
-> Ever since commit 78a5255ffb6a ("Stop the ad-hoc games with
-> -Wno-maybe-initialized"), GCC's uninitialized variable warnings have
-> been disabled by default.  Now, you have to turn on W=1 or W=2 to see
-> the warnings which nobody except Arnd does.
->
-> Disabling that has lead to a bunch of embarrassing bugs where variables
-> are *never* initialized.  Very unsubtle bugs.  The bugs doesn't reach
-> users because Nathan Chancellor and I review Clang and Smatch warnings
-> respectively.  Also the kbuild-bot reports uninitialized variables.
->
-> It's a lot to deal with.  Uninitialized variable bugs are probably the
-> most common bug I have to deal with.
->
-> It's frustrating.  Sometimes the false positives are hard to analyse
-> because I have to read through multiple functions.  A lot of times
-> when I write a patch and a commit message Nathan has already fixed it
-> so it's just a waste of time.
->
-> It's risky as well.  The Smatch check for uninitialized variables was
-> broken for most of 2021.  Nathan sometimes goes on vacation.
->
-> I guess I would hope that one day we can turn on the GCC uninitialized
-> variable warnings again.  That would mean silencing false positives
-> which a lot of people don't want to do...  Maybe Clang has fewer false
-> positives than GCC?
->
-> The Smatch check for uninitialized variable was deliberately written to
-> be more strict than GCC because GCC was missing bugs.  So I think
-> leaving Smatch false positives is fine.  There is a trade off between
-> fewer false positives and missing bugs and Smatch is meant to err on the
-> side of finding bugs but with the cost of false positives.
->
-> Most of the Smatch uninitialized false positives are caused by loops:
->
-> 	int i, ret;
->
-> 	for (i = 0; i < bytes; i++) { // <-- what if bytes is zero?
-> 		if (...)
-> 			continue; // <-- can every iteration hit continue?
-> 		ret = frob();
-> 	}
->
-> 	return ret;
->
-> There is also stuff like this which is harmless:
->
-> 	uint val;
->
-> 	ret = read(&val);
-> 	*p = val;  // <-- uninitialized variable if read() fails
-> 	return ret;
->
-> Btw, here is how to run Smatch on your code:
-> https://staticthinking.wordpress.com/2022/04/25/how-to-run-smatch-on-your-code/
+factor four
 
-Could smatch inform the user that some results are likely false positives,
-or even order the results according to their likely true positiveness?
 
-julia
+> @@ -227,7 +227,7 @@ static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
+>  
+>  		/* Format: .klp.sym.sym_objname.sym_name,sympos */
+>  		cnt = sscanf(strtab + sym->st_name,
+> -			     ".klp.sym.%55[^.].%127[^,],%lu",
+> +			     ".klp.sym.%55[^.].%511[^,],%lu",
+
+4 * ( 127 + 1 )  =  511 + 1
+
+
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -30,10 +30,10 @@
+>  #define _stringify_1(x)	#x
+>  #define _stringify(x)	_stringify_1(x)
+>  
+> -#define KSYM_NAME_LEN		128
+> +#define KSYM_NAME_LEN		512
+
+factor four
+
+
+> --- a/tools/include/linux/kallsyms.h
+> +++ b/tools/include/linux/kallsyms.h
+> @@ -6,7 +6,7 @@
+>  #include <stdio.h>
+>  #include <unistd.h>
+>  
+> -#define KSYM_NAME_LEN 128
+> +#define KSYM_NAME_LEN 512
+
+factor four
+
+
+> --- a/tools/lib/perf/include/perf/event.h
+> +++ b/tools/lib/perf/include/perf/event.h
+> @@ -95,7 +95,7 @@ struct perf_record_throttle {
+>  };
+>  
+>  #ifndef KSYM_NAME_LEN
+> -#define KSYM_NAME_LEN 256
+> +#define KSYM_NAME_LEN 512
+
+Here is the multiplication factor  two.
+
+
+> --- a/tools/lib/symbol/kallsyms.h
+> +++ b/tools/lib/symbol/kallsyms.h
+> @@ -7,7 +7,7 @@
+>  #include <linux/types.h>
+>  
+>  #ifndef KSYM_NAME_LEN
+> -#define KSYM_NAME_LEN 256
+> +#define KSYM_NAME_LEN 512
+
+Another  "factor two"
+
+
+
+It feels good to unify all the KSYM_NAME_LEN to 512.
+
+Thing that feels less good is doubling 256 versus quadrupling 128.
+
+I felt the need to report that.
+
+
+Feel free to ignore this remark.
+
+
+
+Groeten
+Geert Stappers
+-- 
+Silence is hard to parse
