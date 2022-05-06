@@ -2,139 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF10C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F28EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391771AbiEFMaA (ORCPT
+        id S1391810AbiEFMaF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 08:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        Fri, 6 May 2022 08:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391770AbiEFM3z (ORCPT
+        with ESMTP id S1391778AbiEFM34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 08:29:55 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61895D677
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 05:26:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651839972; x=1683375972;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sojdGw9opoImqR032DmyGxmitp8ivyJL9TNX9//xDhE=;
-  b=N9+rsAUrcEl/OuL9U9QfCuvkK+K1zGGJIehwLddz/SIB1TK6aIlP6pW4
-   poPFeF6qdUJKSrGgZieVSsCB/0USNCZFGNk2gYGfmsUmIPKe5RW6jK85z
-   M1im5+rXMAf4swxAAlgAeABslhOXiUON2MA4VgAiu3/UL3q1iMUwBRBNB
-   zFcU+LxgbflzfJljubUOwGRt2uwuQMlz4UAI60U7c5f31WZRCvpjdk/a3
-   d7cKOlZWTM8+TzABRlBI9CJxtdIhkv/NvB/8UdRuAOJ5NExY+AFFxGceX
-   9lWd+vEUpMTG0ON9JMwrCOq0vFCzUqTCDe3hFSLe+T6BdGRoaZEjnnD/L
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="266045736"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="266045736"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 05:26:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="709440681"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by fmsmga001.fm.intel.com with ESMTP; 06 May 2022 05:26:10 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V2 03/23] perf evlist: Use libperf functions in evlist__enable_event_idx()
-Date:   Fri,  6 May 2022 15:25:41 +0300
-Message-Id: <20220506122601.367589-4-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220506122601.367589-1-adrian.hunter@intel.com>
-References: <20220506122601.367589-1-adrian.hunter@intel.com>
+        Fri, 6 May 2022 08:29:56 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A985E5D679;
+        Fri,  6 May 2022 05:26:12 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KvqXq3chjzhYv2;
+        Fri,  6 May 2022 20:25:47 +0800 (CST)
+Received: from [10.174.179.215] (10.174.179.215) by
+ canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 6 May 2022 20:26:10 +0800
+Subject: Re: [PATCH -next] drm/msm: Add missing OF dependency for DRM_MSM
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        <robdclark@gmail.com>, <sean@poorly.run>,
+        <quic_abhinavk@quicinc.com>, <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     <linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+References: <20220506020300.20704-1-yuehaibing@huawei.com>
+ <dbe452b1-7f6a-141c-5fe3-bd889c62abc7@linaro.org>
+From:   YueHaibing <yuehaibing@huawei.com>
+Message-ID: <f0ac2d9a-1005-b7e9-f263-5f02a37f8e55@huawei.com>
+Date:   Fri, 6 May 2022 20:26:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <dbe452b1-7f6a-141c-5fe3-bd889c62abc7@linaro.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-evlist__enable_event_idx() is used only for auxtrace events which are never
-system_wide. Simplify by using libperf enable event functions.
+On 2022/5/6 19:36, Dmitry Baryshkov wrote:
+> On 06/05/2022 05:03, YueHaibing wrote:
+>> WARNING: unmet direct dependencies detected for DRM_DP_AUX_BUS
+>>    Depends on [n]: HAS_IOMEM [=y] && DRM [=y] && OF [=n]
+>>    Selected by [y]:
+>>    - DRM_MSM [=y] && HAS_IOMEM [=y] && DRM [=y] && (ARCH_QCOM || SOC_IMX5 || COMPILE_TEST [=y]) && COMMON_CLK [=y] && IOMMU_SUPPORT [=y] && (QCOM_OCMEM [=n] || QCOM_OCMEM [=n]=n) && (QCOM_LLCC [=y] || QCOM_LLCC [=y]=n) && (QCOM_COMMAND_DB [=n] || QCOM_COMMAND_DB [=n]=n)
+>>
+>> DRM_DP_AUX_BUS depends on OF, so DRM_MSM also should depends on it.
+> 
+> I think the proper fix would be to make DRM_DP_AUX_BUS depend on OF || COMPILE_TEST rather than just OF
 
-Acked-by: Ian Rogers <irogers@google.com>
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/util/evlist.c | 44 ++--------------------------------------
- 1 file changed, 2 insertions(+), 42 deletions(-)
-
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 52ea004ba01e..9fcecf7daa62 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -334,14 +334,6 @@ int evlist__add_newtp(struct evlist *evlist, const char *sys, const char *name,
- 	return 0;
- }
- 
--static int evlist__nr_threads(struct evlist *evlist, struct evsel *evsel)
--{
--	if (evsel->core.system_wide)
--		return 1;
--	else
--		return perf_thread_map__nr(evlist->core.threads);
--}
--
- struct evlist_cpu_iterator evlist__cpu_begin(struct evlist *evlist, struct affinity *affinity)
- {
- 	struct evlist_cpu_iterator itr = {
-@@ -546,46 +538,14 @@ void evlist__toggle_enable(struct evlist *evlist)
- 	(evlist->enabled ? evlist__disable : evlist__enable)(evlist);
- }
- 
--static int evlist__enable_event_cpu(struct evlist *evlist, struct evsel *evsel, int cpu)
--{
--	int thread;
--	int nr_threads = evlist__nr_threads(evlist, evsel);
--
--	if (!evsel->core.fd)
--		return -EINVAL;
--
--	for (thread = 0; thread < nr_threads; thread++) {
--		int err = ioctl(FD(evsel, cpu, thread), PERF_EVENT_IOC_ENABLE, 0);
--		if (err)
--			return err;
--	}
--	return 0;
--}
--
--static int evlist__enable_event_thread(struct evlist *evlist, struct evsel *evsel, int thread)
--{
--	int cpu;
--	int nr_cpus = perf_cpu_map__nr(evlist->core.user_requested_cpus);
--
--	if (!evsel->core.fd)
--		return -EINVAL;
--
--	for (cpu = 0; cpu < nr_cpus; cpu++) {
--		int err = ioctl(FD(evsel, cpu, thread), PERF_EVENT_IOC_ENABLE, 0);
--		if (err)
--			return err;
--	}
--	return 0;
--}
--
- int evlist__enable_event_idx(struct evlist *evlist, struct evsel *evsel, int idx)
- {
- 	bool per_cpu_mmaps = !perf_cpu_map__empty(evlist->core.user_requested_cpus);
- 
- 	if (per_cpu_mmaps)
--		return evlist__enable_event_cpu(evlist, evsel, idx);
-+		return perf_evsel__enable_cpu(&evsel->core, idx);
- 
--	return evlist__enable_event_thread(evlist, evsel, idx);
-+	return perf_evsel__enable_thread(&evsel->core, idx);
- }
- 
- int evlist__add_pollfd(struct evlist *evlist, int fd)
--- 
-2.25.1
-
+Make sense, will do this in v2.
+> 
+>>
+>> Fixes: f5d01644921b ("drm/msm: select DRM_DP_AUX_BUS for the AUX bus support")
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>> ---
+>>   drivers/gpu/drm/msm/Kconfig | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
+>> index 4e0cbd682725..1d710a20ffdd 100644
+>> --- a/drivers/gpu/drm/msm/Kconfig
+>> +++ b/drivers/gpu/drm/msm/Kconfig
+>> @@ -3,6 +3,7 @@
+>>   config DRM_MSM
+>>       tristate "MSM DRM"
+>>       depends on DRM
+>> +    depends on OF
+>>       depends on ARCH_QCOM || SOC_IMX5 || COMPILE_TEST
+>>       depends on COMMON_CLK
+>>       depends on IOMMU_SUPPORT
+> 
+> 
