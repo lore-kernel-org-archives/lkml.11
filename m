@@ -2,28 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D592C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392533AbiEFN3e (ORCPT
+        id S1392565AbiEFN3m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        Fri, 6 May 2022 09:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392538AbiEFN2u (ORCPT
+        with ESMTP id S1392574AbiEFN2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:28:50 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC9F69CE9;
-        Fri,  6 May 2022 06:25:00 -0700 (PDT)
+        Fri, 6 May 2022 09:28:54 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0CF69CCB;
+        Fri,  6 May 2022 06:25:10 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MWUKy-1nKyqC0pqM-00Xaf3;
- Fri, 06 May 2022 15:24:46 +0200
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MXanQ-1nHfzD22dC-00WUCL;
+ Fri, 06 May 2022 15:24:57 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -34,347 +32,253 @@ Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 07/13] ARM: dts: imx6ull-colibri: add gpio-line-names
-Date:   Fri,  6 May 2022 15:24:10 +0200
-Message-Id: <20220506132416.273965-8-marcel@ziswiler.com>
+Subject: [PATCH v3 11/13] ARM: dts: imx6ull-colibri: add/update some comments
+Date:   Fri,  6 May 2022 15:24:14 +0200
+Message-Id: <20220506132416.273965-12-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220506132416.273965-1-marcel@ziswiler.com>
 References: <20220506132416.273965-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:SFAlcu06cKvTNE1AUscYdjzXk9ABdA0YnfOeZC4PmeJkDoafheT
- J2pXTv3Fh8zoeDv9HD+aFfXCqnexRlHUz0+q9WBiK3iXrYZoJ+qTwERpqDn2Rz+gnFJ04SW
- IxvRGnU7AfONHtQcH1G0plB3RKzv9xaj1/nrlv42pZzlfTvjB33AlWRBprbDP9B3xct7Mzz
- ReTTz2DC2trYikDhwn6aA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5fCgHa7ypMQ=:hPDPu2zlOIVsXtSDxl+QbR
- L8GOr++vRvbOOCprhCd/YiuFAEOYntTd75g+z1vJoViIIuuBvmvosjvubjPgvae9hiWuMwf9b
- ++KfKuCMhKriHkQnYViGxSSZte4evrXuM3oUOIGr9A3tM8Bk4Xa1mPa+x/RcdtgQ4BHOR9yN2
- RrbQiqpiiHqIJCoQpSYhKGiMO9xEOXgB5dtCtJ1En8Reu4LptKvHP05JySsEJaMGRUB3DaqbD
- rJfKzx+z840ChKjmo+ipeKd/G/XCsF0VLEtoreMiafJnzE4NxMKy4dTxr25bq0IQnU1D4oTQr
- tQgbjlL0Tf4PYI0aLEnlAyin2WvI68g0lniVmWBs7/5DyuAjkSIjPN2leK74YdahLcU05+48x
- AzbOCNO9Ktx5uknO2aNbapnq73fpOP8h+bOZtIS7iHBNCFMdotC22yQkrdWd8r0wYLc2EfGjW
- nvaD2pH49oZ8GW+dAYAX8QQsj/mgt+jiuejI7za3Qs1VgV+7+w8f3J2tEyu72wvxBJsmTtjBH
- 7gx64NYbNeuH13pUTA1Ec+3c9pTYPYuKlpN0hz1OuWI0WAm3fiuSFGCA8A4L8s/XW//rDV2IV
- vFL9CKmDphCQTHhPuvsF6zNalZpK60IhP7jYeh7BfwpOZE92y9bGqV/5mbBYuBwy0C9dx3VuA
- U6nLNnm4nim+pOpmd3Hz43QK8f4hFvROy1tFI8rFYmFCt7/0lFWZ6oU08NcgDdDma3y3oheJp
- zbMkInlJ1vr/eqTU
+X-Provags-ID: V03:K1:vaeA06BgXJuOaaK+2QFmwWmbwCfAUsokGQd8xzEc771jLQDpwEL
+ /q+XKQJ42ed81iLuGksTcdJFUhudKX1AfkzjE2Sfe7lICPZ71iQfQdn/5ocIImmxdcAA4zd
+ n5TkSMAg3DWLJS/LV5dnF0l8E/7hOImePkkbsefSXRUJYHR4adoXNdDOuCd/8KV1M+XvibU
+ t1S4g/ilPZ8EEgEKYorew==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bjfLOSatrTE=:++kDoSF5Q3YAAK9Gmo8aTW
+ dgWwDsJJExh9ZuOMqVueA/XTWf0CcQFnuVh4jvACdiquAPCEip3F9xrIMjdtVlo2LtYFm8X0o
+ BfGfMVze5J4nIZrkZmLqaQYukkGGMTeA0P/jeifxH7hozKq3NorWcHVL3AbucMF77ZjAM/mqw
+ qJtlcy7j3FIDlmLGsY/xArgZ/J5Wa5IXxYRQXKy8Liqpngs0/JPGl+9UhnJNZJoj0R3+dY4WR
+ hVSxR6jrrGii+wboVVpKaPID+LspDtcgfskrhxRsFzD5OaQSFvqiyPYtwgUCTdsaQO6Jxpiez
+ +fHX9aAS+NQvFABZksNE8IjRkZ0ZhEzYCAvCQpIj/W4Zb9isr+oqxalh+vLcxExIpQjSSHEEa
+ AbY9Ew8y7tLkyGt+ViVmdDOgWDU2io1nroRilW9X3bVh1IYwEt/MvLDp0F7a9CLG5M49yrZrf
+ DgfLk35kwevuWPVqpuawIiuIBOhQUnAswjlpnjjTrUUwIxnPOKGweS1Hjuq7dB7xFCL092jC1
+ QILFOLc8IPp5zeXo+/oE1vAaJCuu0ubfMdF9+3LhFwbO2+Oqn720sFO5Wi1HTPuWZkMM/3OA/
+ 0/vNtdrBWxFnxhKw6ob/dk/yVY6x1gow/RfFDpupyJYaoCojWww+ZgwTL9GQhpxOw3BrTssYw
+ RulEktoHG9s1vveiqz3W9k4iSSMa8P61yIQvai4ZhC11DUYcA8si7YaAAsIvswbS+m4Ak9Z+t
+ Eb9/3hvWZ87gt5oL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Add GPIO line names on module-level. Those are all GPIOs that a user
-might use on his custom carrier board. If more meaningful names are
-available on the carrier board, the user can overwrite the line names
-in the carrier board-level device tree.
+Add/update some comments.
 
-Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
 (no changes since v1)
 
- .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi | 137 ++++++++++++++++++
- arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   | 136 +++++++++++++++++
- 2 files changed, 273 insertions(+)
+ .../dts/imx6ull-colibri-emmc-nonwifi.dtsi     |  4 ++-
+ arch/arm/boot/dts/imx6ull-colibri.dtsi        | 36 ++++++++++++++-----
+ 2 files changed, 30 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
-index 5e55a6c820bc..60f169227ad9 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
-@@ -12,6 +12,143 @@ memory@80000000 {
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
+index 1d75bc671f75..ea238525d5c0 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
+@@ -8,7 +8,7 @@
+ / {
+ 	aliases {
+ 		mmc0 = &usdhc2; /* eMMC */
+-		mmc1 = &usdhc1; /* MMC 4bit slot */
++		mmc1 = &usdhc1; /* MMC 4-bit slot */
+ 	};
+ 
+ 	memory@80000000 {
+@@ -154,6 +154,7 @@ &gpio5 {
+ 			  "SODIMM_127";
+ };
+ 
++/* NAND */
+ &gpmi {
+ 	status = "disabled";
+ };
+@@ -170,6 +171,7 @@ &iomuxc_snvs {
+ 	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio3>;
+ };
+ 
++/* eMMC */
+ &usdhc2 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_usdhc2emmc>;
+diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+index 5e0cee146121..4611fa890889 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+@@ -6,6 +6,7 @@
+ #include "imx6ull.dtsi"
+ 
+ / {
++	/* Ethernet aliases to ensure correct MAC addresses */
+ 	aliases {
+ 		ethernet0 = &fec2;
+ 		ethernet1 = &fec1;
+@@ -104,6 +105,7 @@ &ecspi1 {
+ 	pinctrl-0 = <&pinctrl_ecspi1 &pinctrl_ecspi1_cs>;
+ };
+ 
++/* Ethernet */
+ &fec2 {
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&pinctrl_enet2>;
+@@ -125,6 +127,7 @@ ethphy1: ethernet-phy@2 {
  	};
  };
  
-+&gpio1 {
-+	gpio-line-names = "SODIMM_8",
-+			  "SODIMM_6",
-+			  "SODIMM_129",
-+			  "SODIMM_89",
-+			  "SODIMM_19",
-+			  "SODIMM_21",
-+			  "UNUSABLE_SODIMM_180",
-+			  "UNUSABLE_SODIMM_184",
-+			  "SODIMM_4",
-+			  "SODIMM_2",
-+			  "SODIMM_106",
-+			  "SODIMM_71",
-+			  "SODIMM_23",
-+			  "SODIMM_31",
-+			  "SODIMM_99",
-+			  "SODIMM_102",
-+			  "SODIMM_33",
-+			  "SODIMM_35",
-+			  "SODIMM_25",
-+			  "SODIMM_27",
-+			  "SODIMM_36",
-+			  "SODIMM_38",
-+			  "SODIMM_32",
-+			  "SODIMM_34",
-+			  "SODIMM_135",
-+			  "SODIMM_77",
-+			  "SODIMM_100",
-+			  "SODIMM_186",
-+			  "SODIMM_196",
-+			  "SODIMM_194";
-+};
-+
-+&gpio2 {
-+	gpio-line-names = "SODIMM_55",
-+			  "SODIMM_63",
-+			  "SODIMM_178",
-+			  "SODIMM_188",
-+			  "SODIMM_73",
-+			  "SODIMM_30",
-+			  "SODIMM_67",
-+			  "SODIMM_104",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "SODIMM_190",
-+			  "SODIMM_47",
-+			  "SODIMM_192",
-+			  "SODIMM_49",
-+			  "SODIMM_51",
-+			  "SODIMM_53";
-+};
-+
-+&gpio3 {
-+	gpio-line-names = "SODIMM_56",
-+			  "SODIMM_44",
-+			  "SODIMM_68",
-+			  "SODIMM_82",
-+			  "",
-+			  "SODIMM_76",
-+			  "SODIMM_70",
-+			  "SODIMM_60",
-+			  "SODIMM_58",
-+			  "SODIMM_78",
-+			  "SODIMM_72",
-+			  "SODIMM_80",
-+			  "SODIMM_46",
-+			  "SODIMM_62",
-+			  "SODIMM_48",
-+			  "SODIMM_74",
-+			  "SODIMM_50",
-+			  "SODIMM_52",
-+			  "SODIMM_54",
-+			  "SODIMM_66",
-+			  "SODIMM_64",
-+			  "SODIMM_57",
-+			  "SODIMM_61",
-+			  "SODIMM_29",
-+			  "SODIMM_37",
-+			  "SODIMM_88",
-+			  "SODIMM_86",
-+			  "SODIMM_92",
-+			  "SODIMM_90";
-+};
-+
-+&gpio4 {
-+	gpio-line-names = "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "SODIMM_59",
-+			  "",
-+			  "",
-+			  "SODIMM_133",
-+			  "",
-+			  "SODIMM_28",
-+			  "SODIMM_75",
-+			  "SODIMM_96",
-+			  "SODIMM_81",
-+			  "SODIMM_94",
-+			  "SODIMM_101",
-+			  "SODIMM_103",
-+			  "SODIMM_79",
-+			  "SODIMM_97",
-+			  "SODIMM_69",
-+			  "SODIMM_98",
-+			  "SODIMM_85",
-+			  "SODIMM_65";
-+};
-+
-+&gpio5 {
-+	gpio-line-names = "SODIMM_43",
-+			  "SODIMM_45",
-+			  "SODIMM_137",
-+			  "SODIMM_95",
-+			  "SODIMM_107",
-+			  "SODIMM_131",
-+			  "SODIMM_93",
-+			  "",
-+			  "SODIMM_138",
-+			  "",
-+			  "SODIMM_105",
-+			  "SODIMM_127";
-+};
-+
- &iomuxc {
++/* NAND */
+ &gpmi {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
-index 6e8ddb07e11d..3c47cfa7afa5 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
-@@ -23,6 +23,142 @@ &cpu0 {
- 	clock-frequency = <792000000>;
+ 	pinctrl-0 = <&pinctrl_gpmi_nand>;
+@@ -136,6 +139,7 @@ &gpmi {
+ 	status = "okay";
  };
  
-+&gpio1 {
-+	gpio-line-names = "SODIMM_8",
-+			  "SODIMM_6",
-+			  "SODIMM_129",
-+			  "",
-+			  "SODIMM_19",
-+			  "SODIMM_21",
-+			  "UNUSABLE_SODIMM_180",
-+			  "UNUSABLE_SODIMM_184",
-+			  "SODIMM_4",
-+			  "SODIMM_2",
-+			  "SODIMM_106",
-+			  "SODIMM_71",
-+			  "SODIMM_23",
-+			  "SODIMM_31",
-+			  "SODIMM_99",
-+			  "SODIMM_102",
-+			  "SODIMM_33",
-+			  "SODIMM_35",
-+			  "SODIMM_25",
-+			  "SODIMM_27",
-+			  "SODIMM_36",
-+			  "SODIMM_38",
-+			  "SODIMM_32",
-+			  "SODIMM_34",
-+			  "SODIMM_135",
-+			  "SODIMM_77",
-+			  "SODIMM_100",
-+			  "SODIMM_186",
-+			  "SODIMM_196",
-+			  "SODIMM_194";
-+};
-+
-+&gpio2 {
-+	gpio-line-names = "SODIMM_55",
-+			  "SODIMM_63",
-+			  "SODIMM_178",
-+			  "SODIMM_188",
-+			  "SODIMM_73",
-+			  "SODIMM_30",
-+			  "SODIMM_67",
-+			  "SODIMM_104",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "SODIMM_190",
-+			  "SODIMM_47",
-+			  "SODIMM_192",
-+			  "SODIMM_49",
-+			  "SODIMM_51",
-+			  "SODIMM_53";
-+};
-+
-+&gpio3 {
-+	gpio-line-names = "SODIMM_56",
-+			  "SODIMM_44",
-+			  "SODIMM_68",
-+			  "SODIMM_82",
-+			  "",
-+			  "SODIMM_76",
-+			  "SODIMM_70",
-+			  "SODIMM_60",
-+			  "SODIMM_58",
-+			  "SODIMM_78",
-+			  "SODIMM_72",
-+			  "SODIMM_80",
-+			  "SODIMM_46",
-+			  "SODIMM_62",
-+			  "SODIMM_48",
-+			  "SODIMM_74",
-+			  "SODIMM_50",
-+			  "SODIMM_52",
-+			  "SODIMM_54",
-+			  "SODIMM_66",
-+			  "SODIMM_64",
-+			  "SODIMM_57",
-+			  "SODIMM_61",
-+			  "SODIMM_29",
-+			  "SODIMM_37",
-+			  "SODIMM_88",
-+			  "SODIMM_86",
-+			  "SODIMM_92",
-+			  "SODIMM_90";
-+};
-+
-+&gpio4 {
-+	gpio-line-names = "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "SODIMM_59",
-+			  "",
-+			  "",
-+			  "SODIMM_133",
-+			  "",
-+			  "SODIMM_28",
-+			  "SODIMM_75",
-+			  "SODIMM_96",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "SODIMM_69",
-+			  "SODIMM_98",
-+			  "SODIMM_85",
-+			  "SODIMM_65";
-+};
-+
-+&gpio5 {
-+	gpio-line-names = "SODIMM_43",
-+			  "SODIMM_45",
-+			  "SODIMM_137",
-+			  "SODIMM_95",
-+			  "SODIMM_107",
-+			  "SODIMM_131",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "SODIMM_105";
-+};
-+
- &iomuxc {
++/* I2C3_SDA/SCL on SODIMM 194/196 (e.g. RTC on carrier board) */
+ &i2c1 {
+ 	pinctrl-names = "default", "gpio";
+ 	pinctrl-0 = <&pinctrl_i2c1>;
+@@ -157,6 +161,10 @@ atmel_mxt_ts: touchscreen@4a {
+ 	};
+ };
+ 
++/*
++ * PWR_I2C: power I2C to audio codec, PMIC, temperature sensor and
++ * touch screen controller
++ */
+ &i2c2 {
+ 	/* Use low frequency to compensate for the high pull-up values. */
+ 	clock-frequency = <40000>;
+@@ -196,21 +204,25 @@ lcdif_out: endpoint {
+ 	};
+ };
+ 
++/* PWM <A> */
+ &pwm4 {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
+ 	pinctrl-0 = <&pinctrl_pwm4>;
+ };
+ 
++/* PWM <B> */
+ &pwm5 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pwm5>;
+ };
+ 
++/* PWM <C> */
+ &pwm6 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pwm6>;
+ };
+ 
++/* PWM <D> */
+ &pwm7 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pwm7>;
+@@ -224,6 +236,7 @@ &snvs_pwrkey {
+ 	status = "disabled";
+ };
+ 
++/* Colibri UART_A */
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart1 &pinctrl_uart1_ctrl1>;
+@@ -231,6 +244,7 @@ &uart1 {
+ 	fsl,dte-mode;
+ };
+ 
++/* Colibri UART_B */
+ &uart2 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart2>;
+@@ -238,12 +252,14 @@ &uart2 {
+ 	fsl,dte-mode;
+ };
+ 
++/* Colibri UART_C */
+ &uart5 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart5>;
+ 	fsl,dte-mode;
+ };
+ 
++/* Colibri USBC */
+ &usbotg1 {
+ 	dr_mode = "otg";
+ 	srp-disable;
+@@ -251,10 +267,12 @@ &usbotg1 {
+ 	adp-disable;
+ };
+ 
++/* Colibri USBH */
+ &usbotg2 {
+ 	dr_mode = "host";
+ };
+ 
++/* Colibri MMC/SD */
+ &usdhc1 {
+ 	pinctrl-names = "default", "state_100mhz", "state_200mhz", "sleep";
+ 	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd>;
+@@ -265,7 +283,7 @@ &usdhc1 {
+ 	assigned-clock-parents = <&clks IMX6UL_CLK_PLL2_PFD2>;
+ 	assigned-clock-rates = <0>, <198000000>;
+ 	bus-width = <4>;
+-	cd-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
++	cd-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>; /* MMC_CD */
+ 	disable-wp;
+ 	keep-power-in-suspend;
+ 	no-1-8-v;
+@@ -431,7 +449,7 @@ MX6UL_PAD_ENET1_RX_DATA1__GPIO2_IO01	0xb0b0 /* SODIMM 63 */
+ 
+ 	/*
+ 	 * With an eMMC instead of a raw NAND device the following pins
+-	 * are available at SODIMM pins
++	 * are available at SODIMM pins.
+ 	 */
+ 	pinctrl_gpmi_gpio: gpmi-gpio-grp {
+ 		fsl,pins = <
+@@ -556,10 +574,10 @@ MX6UL_PAD_UART1_CTS_B__UART1_DTE_RTS	0x1b0b1	/* SODIMM 25 */
+ 
+ 	pinctrl_uart1_ctrl1: uart1-ctrl1-grp { /* Additional DTR, DCD */
+ 		fsl,pins = <
+-			MX6UL_PAD_JTAG_TDI__GPIO1_IO13		0x70a0 /* SODIMM 31 */
+-			MX6UL_PAD_LCD_DATA18__GPIO3_IO23	0x10b0 /* SODIMM 29 */
+-			MX6UL_PAD_JTAG_TDO__GPIO1_IO12		0x90b1 /* SODIMM 23 */
+-			MX6UL_PAD_LCD_DATA19__GPIO3_IO24        0x10b0 /* SODIMM 37 */
++			MX6UL_PAD_JTAG_TDI__GPIO1_IO13		0x70a0 /* SODIMM 31 / DCD */
++			MX6UL_PAD_LCD_DATA18__GPIO3_IO23	0x10b0 /* SODIMM 29 / DSR */
++			MX6UL_PAD_JTAG_TDO__GPIO1_IO12		0x90b1 /* SODIMM 23 / DTR */
++			MX6UL_PAD_LCD_DATA19__GPIO3_IO24        0x10b0 /* SODIMM 37 / RI */
+ 		>;
+ 	};
+ 
+@@ -580,7 +598,7 @@ MX6UL_PAD_GPIO1_IO05__UART5_DTE_TX	0x1b0b1 /* SODIMM 21 */
+ 
+ 	pinctrl_usbh_reg: gpio-usbh-reg {
+ 		fsl,pins = <
+-			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0x10b0 /* SODIMM 129 */
++			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0x10b0 /* SODIMM 129 / USBH_PEN */
+ 		>;
+ 	};
+ 
+@@ -658,7 +676,7 @@ pinctrl_snvs_gpio1: snvs-gpio1-grp {
+ 			MX6ULL_PAD_SNVS_TAMPER6__GPIO5_IO06	0x110a0	/* SODIMM 93 */
+ 			MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x110a0	/* SODIMM 95 */
+ 			MX6ULL_PAD_BOOT_MODE0__GPIO5_IO10	0x1b0a0	/* SODIMM 105 */
+-			MX6ULL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x0b0a0	/* SODIMM 131 */
++			MX6ULL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x0b0a0	/* SODIMM 131 / USBH_OC */
+ 			MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x110a0	/* SODIMM 138 */
+ 		>;
+ 	};
+@@ -695,7 +713,7 @@ MX6ULL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x130a0	/* SODIMM 45 */
+ 
+ 	pinctrl_snvs_usdhc1_cd: snvs-usdhc1-cd-grp {
+ 		fsl,pins = <
+-			MX6ULL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x1b0a0 /* SODIMM 43 */
++			MX6ULL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x1b0a0 /* SODIMM 43 / MMC_CD */
+ 		>;
+ 	};
+ 
 -- 
 2.35.1
 
