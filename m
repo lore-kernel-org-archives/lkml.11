@@ -2,87 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55797C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443991AbiEFRBL (ORCPT
+        id S1444012AbiEFRCp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 13:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
+        Fri, 6 May 2022 13:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443981AbiEFRBJ (ORCPT
+        with ESMTP id S1444005AbiEFRCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 13:01:09 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0276A079
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:57:26 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id m20so15548123ejj.10
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kWTfFwPUe+akq8O9xoc+GEwOhm09+8e/D5W4UvY4gD0=;
-        b=ceuvAqXdWvZeF2C0Y5EDLKK77hsGHUE38ZdM2vcpFkVoxaH8YseTLQnxTfC7bMDIvD
-         1kTp25IZh3PciTkBUs79hUfk7bwcW4lK6yeFGtAhg21SmiEZbuqdeo1nDpMVLZhL4Zpj
-         tcEZogQAbi8rzX8rgTUf8CXMGeP9r8q6PuGtk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kWTfFwPUe+akq8O9xoc+GEwOhm09+8e/D5W4UvY4gD0=;
-        b=SL0peW5w8NRTuwRKAsJz4NOUVmCiGa5nhEQDftOvsUw+qlKmEfJCvn8Y7aFUK0x1Ej
-         0ByouFmq8xYA+HkA6cY2wBW6PK38QZsR2hy4zsRzaZiYCmvl3vh30P7lMmQBcdBPInCt
-         w6jakyExKnZG6FXYpU3Y6j5HeYZxjuRXMFRE7JVnV0krzFCgqG6GoZXjToGYn/y7ZD4M
-         0O5lFCIPsX7DECSHO+3J7faEV7ntS0fVfhX8M4Mep2TxFwv9uYw/Iq6UitqbWFeU9FjC
-         RzUX/HRVScJLFiCUWXxbC0uKkB+jBINg3z5SSve/Jw5wPhypdxpkxpSuudhqcYxvdpAW
-         tbpQ==
-X-Gm-Message-State: AOAM5337FsOtk+tDtMLN22V0+BBXJ5b2vxcE24peFW0k72B/gWoNd4dU
-        fiaoqxScHqNE3XyDvMSqCI+AbFwqotk0r8q6+qg=
-X-Google-Smtp-Source: ABdhPJzFhR7kGiKLKsfhICHFmndUNNlXK6/ANdR1xFt/aCn8bT+Iw74I9oNsdWLX5OgVBA4cOMPs4g==
-X-Received: by 2002:a17:907:7e91:b0:6f4:3b93:1f6e with SMTP id qb17-20020a1709077e9100b006f43b931f6emr3891509ejc.91.1651856244943;
-        Fri, 06 May 2022 09:57:24 -0700 (PDT)
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
-        by smtp.gmail.com with ESMTPSA id z22-20020a50f156000000b0042617ba63c3sm2492427edl.77.2022.05.06.09.57.24
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 09:57:24 -0700 (PDT)
-Received: by mail-wm1-f47.google.com with SMTP id i67-20020a1c3b46000000b003946c466c17so747306wma.4
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:57:24 -0700 (PDT)
-X-Received: by 2002:a1c:cc16:0:b0:394:61e1:94f with SMTP id
- h22-20020a1ccc16000000b0039461e1094fmr4204147wmb.38.1651856243921; Fri, 06
- May 2022 09:57:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220506160151.GA596656@nvidia.com>
-In-Reply-To: <20220506160151.GA596656@nvidia.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 6 May 2022 09:57:07 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whZZvzpMHPSWSUWV3tq7VEZW_m-SJqwEDMzYVHdYV_UDA@mail.gmail.com>
-Message-ID: <CAHk-=whZZvzpMHPSWSUWV3tq7VEZW_m-SJqwEDMzYVHdYV_UDA@mail.gmail.com>
+        Fri, 6 May 2022 13:02:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594516A40E;
+        Fri,  6 May 2022 09:59:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE1CB8366B;
+        Fri,  6 May 2022 16:58:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B15F5C385A9;
+        Fri,  6 May 2022 16:58:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651856337;
+        bh=49ozkdixZYMrL9E3p3xV0UqZRaaTer52aw1l9SSwIFE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=r5B2eS0c6mMKSgL9b5luKtoYV1KTQhBcsXdv7VlX3DQBRq3ApBErNIyhjvFVa+93s
+         ZgnxE/CzQ2v+c6pXvHMghTsgecOI0p1D0X/4CGKoSgUQd3IQ6ORabkQaH7rJC0kMRa
+         NE9MyO34+QCIur+XJr2q7dbZPWYrACnX6RBxydVTWL0Rz+IJFruNN4vMOVrBFd+FJ8
+         QhgT8forSN+xaG70zNMAqTb3kewpcWmhGOUmcC/5qstWgpsiO+q/2Iu5hGOJIfF25R
+         /FLporD7NDXI2qr1ily+TztNItAFNJUDnpv87qub/NZ+WBocRbWFe32dTT730eHprb
+         wz2xsA3IrUDxw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9CD22F0389E;
+        Fri,  6 May 2022 16:58:57 +0000 (UTC)
 Subject: Re: [GIT PULL] Please pull RDMA subsystem changes
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220506160151.GA596656@nvidia.com>
+References: <20220506160151.GA596656@nvidia.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220506160151.GA596656@nvidia.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git tags/for-linus
+X-PR-Tracked-Commit-Id: bfdc0edd11f9501b891a069b5bbd3b16731941e1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4df22ca85d3d73f9822b1a354bb56dd1872180cd
+Message-Id: <165185633763.7534.15072230294670244258.pr-tracker-bot@kernel.org>
+Date:   Fri, 06 May 2022 16:58:57 +0000
 To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     linux-rdma <linux-rdma@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
         Leon Romanovsky <leonro@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 9:01 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
->  6 files changed, 92 insertions(+), 103 deletions(-)
+The pull request you sent on Fri, 6 May 2022 13:01:51 -0300:
 
-I couldn't for the life of me understand how you got to that diffstat,
-since everything I tried gave me
+> git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git tags/for-linus
 
- 6 files changed, 85 insertions(+), 96 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4df22ca85d3d73f9822b1a354bb56dd1872180cd
 
-instead.
+Thank you!
 
-Until I realized that you must be using the '--histogram' flag to git
-diff. It seems to give quite different results for rxe/rxe_mcast.c.
-
-Better? Worse? I dunno. But it threw me.
-
-                Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
