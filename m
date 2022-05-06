@@ -2,125 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1927C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 05:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 979DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 05:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389188AbiEFFeC (ORCPT
+        id S1346681AbiEFFeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 01:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39660 "EHLO
+        Fri, 6 May 2022 01:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382385AbiEFFeB (ORCPT
+        with ESMTP id S1347742AbiEFFeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 01:34:01 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A42262C1;
-        Thu,  5 May 2022 22:30:18 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|ian@linux.cowan.aero
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id D0FDF560D71;
-        Fri,  6 May 2022 05:30:17 +0000 (UTC)
-Received: from pdx1-sub0-mail-a243.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 275C15608D3;
-        Fri,  6 May 2022 05:30:15 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651815017; a=rsa-sha256;
-        cv=none;
-        b=kfCDl5RbpTt7rP1hGCIe4GZj++v9M4lEZ23DVfnmpR2crAgJsCkp+VaFroL3WomIexGDtk
-        ercZUd1BFYtBwSWgvF9UpgbJdnEGrw4yHnSYPT6yQU7z1EmzdjOTG4qy6vVZkyCCitRK06
-        OjP71CvXYO+IpsDot6357Qser7IJQ+ShKmQcgnnRw7L17g1IJb4vLmS7W7Le4QA8BYYxDM
-        WPeI54kl4HtpfagmrhY0OA8PXV+ttxd8MRnXAd0BYKCIki5dlUcvZNN/qz/v9N9M9gGQZn
-        qlkV1oFrm9A7GA6+eNOfDyGFvL3eexZEnkE/N/f/K5TbZ5r6BKZudX/E+1iB7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1651815017;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=EVkr9CmxaYXCctU93BalOMVfkfCCgbUETz9MHNKsnlw=;
-        b=o/Rr+9JgaZsxLlwgZpQ2Kntifve8C7TDJTTj3dt2ZvaOtcvlIs0AV7srvcvN727N5psjli
-        hD69qn+hDZGQ2+BMJ0voKc0WMLFP0i5kUjIpOqb1Yw0ORc46uVITHTnSPGJ1jXpTpfxwFp
-        8/wESprHOCRgusN4snhaD/wVUJ0mVP51CesuuLHd/P+CNLFdjec7tSIkaOMn5Z/WfYkYnI
-        5WyF8a8d5tLJ6KclSzPa7KZPSlnkZxvxuLqfDwbmqbIX3Q2NCScWMDfaAkwQYA11Lfl6tH
-        rkx0uYJVBK2HmDSSHMxj3GeHmp0eWJDIqeaWavz2z/+04ayerwW2/yBzcA1BGQ==
-ARC-Authentication-Results: i=1;
-        rspamd-847dd8955c-cpsmn;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
-X-Sender-Id: dreamhost|x-authsender|ian@linux.cowan.aero
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
-X-MailChannels-Auth-Id: dreamhost
-X-Cure-Shrill: 6b76dc7a0e7105ae_1651815017690_445065697
-X-MC-Loop-Signature: 1651815017690:1202526960
-X-MC-Ingress-Time: 1651815017689
-Received: from pdx1-sub0-mail-a243.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.125.123.55 (trex/6.7.1);
-        Fri, 06 May 2022 05:30:17 +0000
-Received: from fedora (unknown [69.12.38.97])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: ian@linux.cowan.aero)
-        by pdx1-sub0-mail-a243.dreamhost.com (Postfix) with ESMTPSA id 4KvfKL0w4qz2M;
-        Thu,  5 May 2022 22:30:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
-        s=dreamhost; t=1651815014;
-        bh=EVkr9CmxaYXCctU93BalOMVfkfCCgbUETz9MHNKsnlw=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=YuPu14i4PP4uV68df3aQmHwWCPiNeJcK816rvUa4cBW60kor8hdrREsSTu5BXXthB
-         pf8WPHDY9KGd4PfzwtQB/jHSjiaSdki86oZFaxDEpx+cUGebxSkzEDsOhZWzLUYOcz
-         9jYonuD3ahADRP4RjJ3Ve8E8CtGnxnyldJO2OOkIKkEKYe9bYglocuNQm5RqVjeI3w
-         pMQF/iIXwfLTrQGtgiaFe6itL/RlMEHYJgPq7zEryFpPgPjaxeqFQ6rshnGgm7ezUJ
-         BB+UqjXopCTtRF84HHSUMed/S4BxcNdmLadDcSdWlT5knSvP7uFkHwttdIkbFBbIki
-         E7RxdS9hAZumg==
-Date:   Fri, 6 May 2022 01:30:12 -0400
-From:   Ian Cowan <ian@linux.cowan.aero>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     Corentin Labbe <clabbe@baylibre.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mjpeg-users@lists.sourceforge.net, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH v2 4/4] staging: media: zoran: replace dprintk with new
- debugging macros
-Message-ID: <YnSyZEF8n7luVvHM@fedora>
-References: <20220425144110.133316-1-ian@linux.cowan.aero>
- <3270dd49-0d68-5b60-d766-940b39aa463e@xs4all.nl>
+        Fri, 6 May 2022 01:34:11 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5593819008
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 22:30:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651815027; x=1683351027;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5UPUZjJVdMzrW2rShCCX+WFC3SvhnCk41EqWtRxsWIE=;
+  b=JItjtE5h2SaXLKCLYHuxSb7eMMsfPGYba+keTLnWcYdCS9kbVSEWwwrr
+   jYoldxBFF3VMuSwV5GpqqSKbD1YW9cEbilSzx//SXUGzytJkAma134QTk
+   +kLQYU9cf2HU84Dy65l6fXzt1pDpQ22/WYBbE7NSm0eaavcDzNIQ2Fgsk
+   BTE/bGwAUxouEjoADGWeKNvAXh2wSzjBlKUnK+CBQLUe9mXv1wwfz9r2c
+   oqpX7YKaLSQO4zRJSVi/cp4FvATSfTfcSjiv7ptzcuAwFZeVM7Q+keXTs
+   JaNtKxMyMW3Tr/TJ4/G3EEBVQqYvMoAV/6UzAPV2+XmW09iSuGpc83AXv
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="255838457"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="255838457"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 22:30:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="695011041"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 22:30:24 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>
+Cc:     Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 0/4] iommu/vt-d: Force snooping improvement
+Date:   Fri,  6 May 2022 13:27:23 +0800
+Message-Id: <20220506052727.1689687-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3270dd49-0d68-5b60-d766-940b39aa463e@xs4all.nl>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 10:15:03AM +0200, Hans Verkuil wrote:
-> Hi Ian,
-> 
-> When I compiled this patch series with smatch I got these warnings:
-> 
-> zoran/videocodec.c:45 videocodec_attach() warn: variable dereferenced before check 'master' (see line 40)
-> zoran/videocodec.c:115 videocodec_detach() warn: variable dereferenced before check 'codec' (see line 111)
-> zoran/videocodec.c:168 videocodec_register() warn: variable dereferenced before check 'codec' (see line 166)
-> zoran/videocodec.c:200 videocodec_unregister() warn: variable dereferenced before check 'codec' (see line 198)
-> 
-> And I also got this warning when checking the kerneldoc:
-> 
-> zoran/zoran.h:307: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-> 
-> Can you fix this and post a v3?
-> 
-> Thanks!
-> 
-> 	Hans
+Hi folks,
 
-I just resubmitted v3.
+Previously, the IOMMU capability of enforcing cache coherency was queried
+through iommu_capable(IOMMU_CAP_CACHE_COHERENCY). This is a global
+capability, hence the IOMMU driver reports support for this capability
+only when all IOMMUs in the system has this support.
 
-What did you use to see these issues? When I ran the checkpatch script
-and compiled, I did not see any of this.
+Commit 6043257b1de06 ("iommu: Introduce the domain op
+enforce_cache_coherency()") converts this into a per-domain test-and-set
+option, and the previous iommu_capable(IOMMU_CAP_CACHE_COHERENCY) is
+deprecated.
 
-Thanks!
-Ian
+This is a follow-up series which improves the Intel IOMMU driver to
+support the per-domain scheme better.
+
+Best regards,
+baolu
+
+Change log:
+v3:
+ - Hold the device_domain_lock when check and set force snooping.
+ - Refind the commit messages.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220505010710.1477739-1-baolu.lu@linux.intel.com/
+ - Check whether force_snooping has already been set in
+   intel_iommu_enforce_cache_coherency().
+ - Set PGSNP pasid bit field during domain attaching if forcing_snooping
+   is set.
+ - Remove redundant list_empty() checks.
+ - Add dmar_domain->set_pte_snp and set it if force snooping is enforced
+   on a domain with 2nd-level translation.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220501112434.874236-1-baolu.lu@linux.intel.com
+ - Initial post.
+
+Lu Baolu (4):
+  iommu/vt-d: Block force-snoop domain attaching if no SC support
+  iommu/vt-d: Check domain force_snooping against attached devices
+  iommu/vt-d: Remove domain_update_iommu_snooping()
+  iommu/vt-d: Remove hard coding PGSNP bit in PASID entries
+
+ include/linux/intel-iommu.h |  1 +
+ drivers/iommu/intel/pasid.h |  2 +
+ drivers/iommu/intel/iommu.c | 90 ++++++++++++++++++++++---------------
+ drivers/iommu/intel/pasid.c | 26 +++++++++--
+ 4 files changed, 80 insertions(+), 39 deletions(-)
+
+-- 
+2.25.1
+
