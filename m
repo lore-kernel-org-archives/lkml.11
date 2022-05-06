@@ -2,116 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE81C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388607AbiEFDgR (ORCPT
+        id S1388683AbiEFDhU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:36:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
+        Thu, 5 May 2022 23:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346609AbiEFDgJ (ORCPT
+        with ESMTP id S1388633AbiEFDhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:36:09 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BC03FBCC
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:32:27 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id i1so6196411plg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:32:27 -0700 (PDT)
+        Thu, 5 May 2022 23:37:05 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5524364703
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:33:21 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-edf9ddb312so5158167fac.8
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:33:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=asq1GsK2iP60zPURDoJiaqZrj1b/oRYrh2NIL66ASXY=;
-        b=A5R+QgbkQY/b9pt/zpN4FQSLdc75DJtMIayyn5WIe1M8RAn5/H92sELF5NQSRbYwaP
-         h0KnGXdji5cdjXEl9Yeo1eDyfPEoc99H3bfSd+F2l1ihlR0cRc7LocmA+Y34+hwQK+jD
-         HS3mTrHBIyHs+ZjqKGJOW5PhD31HK0S5UWooJflZSS6AFdyPyOJBx6bB9btEWOO6itiy
-         /vB8Ko49CwAQdUxK2/kXLOTaBNOg0l6Y2hRBXFaKs/NKtibrZF3z/ExqnnKwe4jXlAXX
-         QAhuM9HqDlFQUeQX+3+N0zz9U6TNDtN5J8MmqWLNa7xUSBLFpBitD68Kx81P7nKR445K
-         ETQA==
+         :content-disposition:in-reply-to;
+        bh=IO0/vO4FJ1sTb7qZweTSIBe2tfCCOReYy49usyQ9Yho=;
+        b=UDayjcrvBMd3DZhNplOehLV6npjyo4DG4Qxd9K5hcMRE1W0kV+UC6C1jqO//vdj2Zc
+         +Bu9Nj+fYOfUGld6cA6+QESsVCvvAwPTMmBbYQRr5JroQ9gdc4UTDok7gUuiBbVoJWXd
+         SG/9fGhyIqi2a63Fw4bWCwEEWJNeXOthRKpE61RRZaWmNLJ2cdLqBbxxc8tm0AQ1WiAC
+         C5TUidsaSZXlHoX4/lVQyjbV7v+ks81814NTw+xLU/PRUX+KbS6CTkNCxQsO7jRMHpgE
+         OZs9hVXB8GiwgHhvNzhyEEsYm2SM4Ama3XKb2VZbkncCWQWh4OjS2I6dqjx9pIgSaI9x
+         NBlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=asq1GsK2iP60zPURDoJiaqZrj1b/oRYrh2NIL66ASXY=;
-        b=3azAW9SkeNATUntF76pw2W7t9ghcFp2SCWyp+BJsAnFIQ/yDz11RJStiViX6aZPpI4
-         P0w0DmTdN7cQdWHAEVJYsaJ6lX6NND4QIYrYK3g7WMJEdTT2R/2ITh9RGnBF0BEvmyrv
-         KSwSysFaWmrXT2LxgD4FOz1nr8il5pkBW/de/jqK3o9Do/l2SFK4ck74JbZFogzO1gT3
-         f7ymGBqegQi0h1vkUGeTHwbWgwAm/ANF3ZICUmII09BTLBt+Wjy+hBA4mtHyqVgZTrhN
-         YcuAGn7o12I2SF/l7SnCMAOvctKZIWu+dvlsIwYXxO2WZHiE4nHNuE87L4uPvAAu/ZAQ
-         y7vA==
-X-Gm-Message-State: AOAM53306kGAev2EO3ouvW+sFye2ysxr98oFFDhaSv1sEQPSba3VtYqs
-        EcB43k2n8SONSIG5ecROakpMtzA0On8qaA==
-X-Google-Smtp-Source: ABdhPJzUQR4zLt0S+U3opN35Ejwzugn4AwM70j+cIKNxj/BkVwRUQvHT3NOFZ9B0ZDH+yZ1YttAyDw==
-X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr1578557plh.156.1651807947447;
-        Thu, 05 May 2022 20:32:27 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id s17-20020a170902c65100b0015e8d4eb2a3sm383395pls.237.2022.05.05.20.32.26
+         :mime-version:content-disposition:in-reply-to;
+        bh=IO0/vO4FJ1sTb7qZweTSIBe2tfCCOReYy49usyQ9Yho=;
+        b=lcBuZagr5s13ZDBkSMTvQXngwOy3yUsL5iroDLdgSnDsp7XJ4b04gjqnlDjNXMWSHs
+         dEywqJtGC14HVfTpJKIwHaYLO3vqIPImBrz9V9fm39OKuhByC3ObP9Zm/f8pCb4c3NAp
+         q6aI8hI0G7Bh2KxA1YZyWRdyDmorMECh+Zmtqx3plBneXKvHYy78GYmu/SZxoF+RqYW1
+         2dxDgVGusHaUyRWir1FidEGINUvo3CIOW6NVZPpY/gHyKWdD7K5nvH9aezW1Wn+tnhol
+         qU2biTH6id55OHTKL26RyrJEbv1RXJtUeIvjTMlhetHFun2CIKhb48z2rR19lluMTBP5
+         tVnQ==
+X-Gm-Message-State: AOAM531kRUWVXBiYS8Z0kYGdFkUNjR/tEK8j7G/jJeb2rrWWgWVfYYZw
+        gRWlUZ6JCarBcFLIGETNYTlJPw==
+X-Google-Smtp-Source: ABdhPJzVjBK4CW09O5H6maRjYHieeJlhHKNJrwljZxMeaxYgC21vui8itT8aOo+h3kAsq7sdI4jPMg==
+X-Received: by 2002:a05:6870:708a:b0:e9:9349:9410 with SMTP id v10-20020a056870708a00b000e993499410mr3490249oae.265.1651808000619;
+        Thu, 05 May 2022 20:33:20 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id l21-20020a9d7095000000b0060603221263sm1233846otj.51.2022.05.05.20.33.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 20:32:26 -0700 (PDT)
-Date:   Fri, 6 May 2022 09:02:23 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Chen-Yu Tsai <wenst@chromium.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org, matthias.bgg@gmail.com,
-        jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
-        hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Subject: Re: [PATCH v6 05/10] cpufreq: mediatek: Add opp notification support
-Message-ID: <20220506033223.6ixlse3psixfeec7@vireshk-i7>
-References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
- <20220505115226.20130-6-rex-bc.chen@mediatek.com>
- <89dc58a34ea080ca50a94187e24cabc22aba3304.camel@mediatek.com>
- <CAGXv+5EOdXFjwbtZWY4_KBdp6BaQdp389JqUS18ifAgdcQiAtQ@mail.gmail.com>
+        Thu, 05 May 2022 20:33:20 -0700 (PDT)
+Date:   Thu, 5 May 2022 22:33:14 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        absahu@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/7] clk: qcom: ipq8074: disable USB GDSC-s SW_COLLAPSE
+Message-ID: <YnSW+mNgAp17e/YE@builder.lan>
+References: <20220425182249.2753690-1-robimarko@gmail.com>
+ <20220425182249.2753690-2-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAGXv+5EOdXFjwbtZWY4_KBdp6BaQdp389JqUS18ifAgdcQiAtQ@mail.gmail.com>
-User-Agent: NeoMutt/20180716-391-311a52
+In-Reply-To: <20220425182249.2753690-2-robimarko@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Konstantin
+On Mon 25 Apr 13:22 CDT 2022, Robert Marko wrote:
 
-On 06-05-22, 11:22, Chen-Yu Tsai wrote:
-> On Fri, May 6, 2022 at 9:56 AM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
-> >
-> > On Thu, 2022-05-05 at 19:52 +0800, Rex-BC Chen wrote:
-> > > From this opp notifier, cpufreq should listen to opp notification and
-> > > do
-> >
-> > Hello Viresh,
-> >
-> > There is still ">" in this patch...
-> > I think the root cause could be the "From" word in the beginning of
-> > this message.
-> > I will not use "From" in next version..
+> Like in IPQ6018 Qualcomm intentionally disables the SW_COLLAPSE on the USB
+> GDSC-s in the downstream 5.4 kernel.
 > 
-> Could this be a bug in lore?
+> This could potentially be better handled by utilizing the GDSC driver, but
+> I am not familiar with it nor do I have datasheets.
+
+Could you please give it a try before we pick this up?
+Look at e.g. drivers/clk/qcom/gcc-sdm845.c how usb30_prim_gdsc and
+usb30_sec_gdsc are defined, the offsets in specified in .gdscr should be
+the same offsets you give below.
+
+Then you specify an array of struct gdsc *, associating the two gdscs
+you have specified to some identifier (USB30_PRIM_GDSC and
+USB30_SEC_GDSC is used in sdm845) and reference this list as .gdscs and
+num_gdscs in the gcc_ipq8074_desc.
+
+The last part is to tie the USB controllers to the two GDSCs, this is
+done by simply specifying:
+
+	power-domains = <&gcc USB30_PRIM_GDSC>;
+
+and USB30_SEC_GDSC, in the two USB nodes in DeviceTree. SW_COLLAPSE will
+be toggled by the PM state of the USB driver, like it's done on e.g.
+sdm845.
+
+Regards,
+Bjorn
+
 > 
-> I'm not seeing this extra ">" in either the email in my inbox, viewed
-> raw, nor the patch downloaded from patchwork [1].
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> ---
+>  drivers/clk/qcom/gcc-ipq8074.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
+> diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+> index 2ebd1462db78..65249a03a672 100644
+> --- a/drivers/clk/qcom/gcc-ipq8074.c
+> +++ b/drivers/clk/qcom/gcc-ipq8074.c
+> @@ -4806,6 +4806,11 @@ static int gcc_ipq8074_probe(struct platform_device *pdev)
+>  	if (IS_ERR(regmap))
+>  		return PTR_ERR(regmap);
+>  
+> +	/* Disable SW_COLLAPSE for USB0 GDSCR */
+> +	regmap_update_bits(regmap, 0x3e078, BIT(0), 0x0);
+> +	/* Disable SW_COLLAPSE for USB1 GDSCR */
+> +	regmap_update_bits(regmap, 0x3f078, BIT(0), 0x0);
+> +
+>  	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
+>  	clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
+>  				&nss_crypto_pll_config);
+> -- 
+> 2.35.1
 > 
-> ChenYu
-> 
-> [1] https://patchwork.kernel.org/project/linux-mediatek/patch/20220505115226.20130-6-rex-bc.chen@mediatek.com/mbox/
-
-Interesting.
-
-Konstantin, we are witnessing an additional ">" symbol in the first
-line of the commit log for this particular patch for some reason.
-
-https://lore.kernel.org/lkml/20220505115226.20130-6-rex-bc.chen@mediatek.com/raw
-
-Any idea ?
-
--- 
-viresh
