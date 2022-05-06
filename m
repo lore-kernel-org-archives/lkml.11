@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71108C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45329C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350853AbiEFISd (ORCPT
+        id S1389964AbiEFISg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
+        Fri, 6 May 2022 04:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351853AbiEFIS2 (ORCPT
+        with ESMTP id S1385666AbiEFISa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:18:28 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FFA67D3B
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:14:45 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id i5so8968362wrc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:14:45 -0700 (PDT)
+        Fri, 6 May 2022 04:18:30 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2E46830F
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:14:47 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id r1-20020a1c2b01000000b00394398c5d51so3915940wmr.2
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/88PareT3FwqgQqeieGvN6EcUA+3T4c6k7+dT7Kdhd8=;
-        b=r/cxdJ5nHqykOS3JTkfrKs4GPwUNikKhRZp8payZC+QEejHrBpvXEH58/a03wbuBG/
-         VY18f5njTHTnREExBBbT8yoX8BkLGu7N16h+DjFCWqMFG3xDB270EhI1rlwGKAzuQlEN
-         X3fTLBW0xyo+MKwnQPF2D0XC63IgshFLpfN68y6s4iSSCRDY94NOOTR/4QDZrwPWFo6l
-         Qs+iZt42jCocGmcsWYUAXQffneDbJcE5NTusAxkvn0iaVptGu1ellbDdgE+kLysBhiQO
-         lpxatkNrnyak7cyI+ooUnSqad9//ghnbngagLntZaL3SQupdnsIyot2DUFUPKNKMbVZG
-         wj/w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xpOcDZG3VsHKMRkqd+A+g34iqZmhtRfpCGSjJhC44/I=;
+        b=mylpU264xNwSuqHcl7TSS/pfgkflTa4CM+C1PTNplNI4s8FdOsBhLpH14M/HeTEbhi
+         DK83CbrTfTd84dHPWLP7m+ZkI/IX3g/XGZkSMECMEsjXZW3xj9qFbJ8dBICPxhAoneJM
+         7Rz9F5552e5TRXaOhNuQ+JtNTNtPJFZ/1P0rnW7N+L2JMeQo7EIhEDYM+63BHcPbhR5C
+         uzW/u9Xabsn55Z2X850E7RdPqfdQzDpjWlMLkHCl7jyZkdAK8Vb6Z2HjoyEz+1mxj+KU
+         Op4mLdD0dbOY0lK6BufdUL9I6sYj1cJ0wwp78BOPHW0+eAviXrsoNnv2m5EDF5ksMuNs
+         hfBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/88PareT3FwqgQqeieGvN6EcUA+3T4c6k7+dT7Kdhd8=;
-        b=c7MeCJPJ6YfLKHxzOOIIS1ZOHW/tQ3yj95nSsk055JlugY51gbVUvPZTtRnSHFeXZG
-         PfNc6PuHajoJgYic0DfV7eHKTEn788jVSx206crZWysa39t8pGmgVCBi93HiwH+TeoAe
-         nnd+hUTTbPmtEwYyqu/gtwaH3HW29O8OW2fy+ulAT8Ecjz7IQE4bSVVRLDqTBp1byRHF
-         uTKilhW47Ly/xtDKppfoaGCEGZr8tGaQ/l/mR8LP9LoCVVbhEr14kd4T7EAIgJ8QxX47
-         Dp43G/sL1vI/PEA4kYxjH5WEMgVgpMu07ZafWq4FN+YyZEpDu5IuD5W2POfHWvXvGch6
-         Nhnw==
-X-Gm-Message-State: AOAM531yAzv/z5+ZAnWfB5zgOgvSd2YgJnGwjs9VAtgdPHzWdH7aNU/x
-        g7RriMxmIeJwRzadZFpc2QU1Hw==
-X-Google-Smtp-Source: ABdhPJwYp8Fq7iZ8niSaeSO+xK9EyZuxtnwlwi33jbqc92ETr6vConll0/LoWvaQT2kFOsd2gYwKyA==
-X-Received: by 2002:a5d:5051:0:b0:20c:884b:2347 with SMTP id h17-20020a5d5051000000b0020c884b2347mr1684270wrt.224.1651824883839;
-        Fri, 06 May 2022 01:14:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xpOcDZG3VsHKMRkqd+A+g34iqZmhtRfpCGSjJhC44/I=;
+        b=2g83sYkhaQmGJ7QJTuSjnuBtsV7h9keUnTiOG3aXcFfG9q73yGIwjjUH1/tfCCPFUK
+         qL5XPWe0l8sTyGVdVUj5G9kZQAYGy+F0e5/iNH1xME5UXHA56IxS+Ll+Yu3G8v/1IheD
+         5L69iElGrraOSCVKGvepSj0QNVKbhm7pltaKnL4IZdNnVJAthISd3cZlLTTbADiRm4VM
+         CzJWgf2iuPMI34RyTGtyhDk1iZtaRpYqff5LAvO8nWDdS9ccBbBcxrGs1eZgh89FlT7k
+         TU9j28xYN/pMdjnUV+fZy+0r05ZxXOiG+vlmof6qP9ttTYPADt3I537TrsJ5t+IlfCQS
+         QDzw==
+X-Gm-Message-State: AOAM532hElPPm6eJ7M2xqPmeMhdeam3T8ocgVVj4RpVDdSsXvzcoJ4Yl
+        Dvpn8nkSKXa8bIUDrz54IQI3Ig==
+X-Google-Smtp-Source: ABdhPJwMarLKCW6zCDyx+rdB95U5y3SehGvBMfkYKv6TJHd5tJPqliYy21laG2ZaVGuCUNYuWEsNRA==
+X-Received: by 2002:a05:600c:3393:b0:394:160a:18aa with SMTP id o19-20020a05600c339300b00394160a18aamr8762137wmp.58.1651824886077;
+        Fri, 06 May 2022 01:14:46 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c14-20020adffb0e000000b0020c6fa5a797sm3059657wrr.91.2022.05.06.01.14.42
+        by smtp.gmail.com with ESMTPSA id c14-20020adffb0e000000b0020c6fa5a797sm3059657wrr.91.2022.05.06.01.14.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 01:14:43 -0700 (PDT)
+        Fri, 06 May 2022 01:14:45 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
         arm@kernel.org, soc@kernel.org
@@ -57,10 +57,12 @@ Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Alim Akhtar <alim.akhtar@samsung.com>,
         Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [GIT PULL 1/6] arm64: dts: various cleanup for v5.19
-Date:   Fri,  6 May 2022 10:14:33 +0200
-Message-Id: <20220506081438.149192-1-krzysztof.kozlowski@linaro.org>
+Subject: [GIT PULL 3/6] ARM: drivers: samsung: for v5.19
+Date:   Fri,  6 May 2022 10:14:35 +0200
+Message-Id: <20220506081438.149192-3-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220506081438.149192-1-krzysztof.kozlowski@linaro.org>
+References: <20220506081438.149192-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -69,9 +71,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-Set of cleanup patches for various ARM64 archs.  Some of them were acked by
-respective maintainers, some were waiting a bit so I decided to push through my
-tree.
+Actually only binding changes.
 
 Best regards,
 Krzysztof
@@ -83,46 +83,23 @@ The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
 
 are available in the Git repository at:
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/dt64-cleanup-5.19
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/samsung-drivers-5.19
 
-for you to fetch changes up to 8dba791a7280542bc125b68b3547bfa2680bc1af:
+for you to fetch changes up to 5fe580196dd9b7d8eb2a99629055bb4ffa00f262:
 
-  arm64: dts: broadcom: drop useless 'dma-channels/requests' properties (2022-05-04 10:26:56 +0200)
-
-----------------------------------------------------------------
-Minor cleanup of ARM64 DTS for v5.19
-
-Align SPI NOR node names and freq-table-hz to DT schema. Drop
-unused/undocumented dma-channels/dma-requests.
+  dt-bindings: timer: exynos4210-mct: describe known hardware and its interrupts (2022-04-24 16:53:46 +0200)
 
 ----------------------------------------------------------------
-Krzysztof Kozlowski (5):
-      arm64: dts: hisilicon: align 'freq-table-hz' with dtschema in UFS
-      arm64: dts: microchip: align SPI NOR node name with dtschema
-      arm64: dts: marvell: align SPI NOR node name with dtschema
-      arm64: dts: stratix10/agilex: drop useless 'dma-channels/requests' properties
-      arm64: dts: broadcom: drop useless 'dma-channels/requests' properties
+Samsung SoC drivers changes for v5.19
 
- arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi          | 2 --
- arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi           | 2 --
- arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi        | 2 --
- arch/arm64/boot/dts/hisilicon/hi3660.dtsi                  | 4 ++--
- arch/arm64/boot/dts/hisilicon/hi3670.dtsi                  | 4 ++--
- arch/arm64/boot/dts/intel/socfpga_agilex.dtsi              | 2 --
- arch/arm64/boot/dts/marvell/armada-3720-db.dts             | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts     | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts           | 2 +-
- arch/arm64/boot/dts/marvell/armada-7040-db.dts             | 4 ++--
- arch/arm64/boot/dts/marvell/armada-7040-mochabin.dts       | 2 +-
- arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts | 2 +-
- arch/arm64/boot/dts/marvell/armada-8040-db.dts             | 4 ++--
- arch/arm64/boot/dts/marvell/armada-8040-mcbin.dtsi         | 2 +-
- arch/arm64/boot/dts/marvell/armada-8040-puzzle-m801.dts    | 2 +-
- arch/arm64/boot/dts/marvell/cn9130-crb.dtsi                | 2 +-
- arch/arm64/boot/dts/marvell/cn9130-db.dtsi                 | 2 +-
- arch/arm64/boot/dts/marvell/cn9131-db.dtsi                 | 2 +-
- arch/arm64/boot/dts/microchip/sparx5_nand.dtsi             | 2 +-
- arch/arm64/boot/dts/microchip/sparx5_pcb125.dts            | 4 ++--
- arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi     | 4 ++--
- arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi     | 4 ++--
- 22 files changed, 25 insertions(+), 33 deletions(-)
+Make MCT and USI bindings stricter by describing expected interrupts
+per variant and expected child node.
+
+----------------------------------------------------------------
+Krzysztof Kozlowski (2):
+      dt-bindings: soc: samsung: usi: refer to dtschema for SPI
+      dt-bindings: timer: exynos4210-mct: describe known hardware and its interrupts
+
+ .../bindings/soc/samsung/exynos-usi.yaml           |  2 +-
+ .../bindings/timer/samsung,exynos4210-mct.yaml     | 67 +++++++++++++++++++++-
+ 2 files changed, 65 insertions(+), 4 deletions(-)
