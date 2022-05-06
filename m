@@ -2,158 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49BA0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443937AbiEFQyc (ORCPT
+        id S1443940AbiEFQy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55732 "EHLO
+        Fri, 6 May 2022 12:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443952AbiEFQy1 (ORCPT
+        with ESMTP id S1346165AbiEFQy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:54:27 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F2B140F3;
-        Fri,  6 May 2022 09:50:43 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bv19so15552752ejb.6;
-        Fri, 06 May 2022 09:50:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kUvr4fMP2elRfDyGqxMyfJTTNp+E8ksaw8Lx5Viwtkc=;
-        b=HF/DeaGJK5NSYoN64s/08h6x8B2rWgCMQQ+RA6RbZGQQmXGGQMSlunQ3xqaAdCYb7X
-         pr/wPiGO9jDBXZhNQQG2dwtDUQUUhCwZ/FxADiY5usIK9V7FromCFGIuRt7ZVlMSgVgN
-         vDYkAb7zu0JlfkxHRGxA3FBwNFf+vFaz2VLeLVdSjS0uEfSHiVdHYAOaIGf5ZQ9i/4d/
-         crqkVJ27Wi5yI33qMjQ5wIswLFfPiVqVDn5sWN6s4AAlkhOPB17Aqq3H7z3ng/OuurS8
-         eC9g0xOMt5S6r7BsBOP5gBc8+WFQQ8rBaeTewH7DWla3dgwGLsyVxjPeNvpij2qLdiGd
-         4SlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kUvr4fMP2elRfDyGqxMyfJTTNp+E8ksaw8Lx5Viwtkc=;
-        b=bRmiD1RFImo9m5Hc50xR+EVKzowgSUU1gms/DwqeK8aoysnhvEp+bCrNN7LdiLBBWA
-         MiVXGxYggKmxAK5W3lK3K1ata7ToprVON5seGPSRjnoy5fa9Lxq2AT9OnK0d4p13s+DJ
-         B6vlTkjZ61E8kcIUlx1gaZLnuEPnFEHcnLtl0bRgEM+QfewEWJG+vzQWeTSw3TJZ6hhB
-         JqO4Wa+Gu9VUwBkWd0ERF80Hn8tlKvJfzoUn3AIigtZSPhX2rdO37Sixl9xwOBAx2iRw
-         63ZBrMJ9t40Ho76EdakSzo5UaW4wX7AOVdyWGFymfHEsEaKVA60TpGQsc0071JJrB6W3
-         XGMQ==
-X-Gm-Message-State: AOAM530FcAmbjbt3QoEsAKrDkBF3Qlj8+vj6tRbTsjbGGMozGYnIPKhO
-        +83srJCJMdw4CpUE9tOfqm3k3QUoMWd9Lx1uk4EkuT/jblP75g==
-X-Google-Smtp-Source: ABdhPJx7dHmK9oHkI0ldCdTpG8JoA202u7A6O8PxK+0IKd3axIqD/BvP9TCwb5gbbinYDuTCGCQ7kW6WouY2cQdEOEs=
-X-Received: by 2002:a17:907:86a7:b0:6f7:ea6:1acb with SMTP id
- qa39-20020a17090786a700b006f70ea61acbmr698109ejc.413.1651855841749; Fri, 06
- May 2022 09:50:41 -0700 (PDT)
+        Fri, 6 May 2022 12:54:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207EE633A9;
+        Fri,  6 May 2022 09:51:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CD3761FEF;
+        Fri,  6 May 2022 16:51:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B90B5C385AC;
+        Fri,  6 May 2022 16:51:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651855872;
+        bh=JLOPe7is6n6Rmcoo4s0ssyBJhamRXROIw2bTQJTX4u4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=qElFZ11li7gXN1H+bAlgkcrSrCJ0uRCkHCB9jwQKD/r9hOaTKUVZobEeLhILWPDY8
+         QQCwWagoimnRG3zfDjEBKY5HsiTq3IroD7PBtnndHQ4gdDzRItrc99Mj2SGhXcEAqc
+         MrTgLn3NEt5iRtGt21i6HDUfU9/EzPbSuL1PWh2zpfZg3/mZseoHDWS2CBxJb5fF9K
+         2n/HcLahg7iU3X3F6At9IbCWgpN1exT94uIwJA/A50xm4s1GvXsZNaP0cCt3i8EId0
+         nZM6SGEk2hPyl1ZZIgt8aQtjOp1yxaK9dBhftQH9fifYuHtBmuJ92JU6QAh49ILwQF
+         g7pejc3Hlbhxw==
+Date:   Fri, 6 May 2022 11:51:10 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 1/1] x86/PCI: Ignore E820 reservations for bridge
+ windows on newer systems
+Message-ID: <20220506165110.GA509329@bhelgaas>
 MIME-Version: 1.0
-References: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
- <16415431.geO5KgaWL5@pc-42> <20220504170816.GB970146@jaehee-ThinkPad-X1-Extreme>
-In-Reply-To: <20220504170816.GB970146@jaehee-ThinkPad-X1-Extreme>
-From:   Jaehee <jhpark1013@gmail.com>
-Date:   Fri, 6 May 2022 12:50:30 -0400
-Message-ID: <CAA1TwFBr=6P=ydfqr3hqcO-gLuSYreOME-yUkSL6==pLuzastw@mail.gmail.com>
-Subject: Re: [PATCH v5] wfx: use container_of() to get vif
-To:     =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Outreachy Linux Kernel <outreachy@lists.linux.dev>,
-        Stefano Brivio <sbrivio@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220505152016.5059-2-hdegoede@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 1:08 PM Jaehee Park <jhpark1013@gmail.com> wrote:
->
-> On Wed, May 04, 2022 at 09:21:21AM +0200, J=C3=A9r=C3=B4me Pouiller wrote=
-:
-> > On Tuesday 3 May 2022 20:21:46 CEST Jaehee Park wrote:
-> > > Currently, upon virtual interface creation, wfx_add_interface() store=
-s
-> > > a reference to the corresponding struct ieee80211_vif in private data=
-,
-> > > for later usage. This is not needed when using the container_of
-> > > construct. This construct already has all the info it needs to retrie=
-ve
-> > > the reference to the corresponding struct from the offset that is
-> > > already available, inherent in container_of(), between its type and
-> > > member inputs (struct ieee80211_vif and drv_priv, respectively).
-> > > Remove vif (which was previously storing the reference to the struct
-> > > ieee80211_vif) from the struct wfx_vif, define a function
-> > > wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-> > > the newly defined container_of construct.
-> > >
-> > > Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> > > ---
-> > > v2
-> > > - Sequenced the wfx.h file (with the new defines) to show up first on
-> > > the diff, which makes the ordering of the diff more logical.
-> > >
-> > > v3
-> > > - Made edits to the commit message.
-> > > - Shortened the macro name from wvif_to_vif to to_vif.
-> > > - For functions that had more than one instance of vif, defined one
-> > > reference vif at the beginning of the function and used that instead.
-> > > - Broke the if-statements that ran long into two lines.
-> > >
-> > > v4
-> > > - Changed macro into function and named it back to wvif_to_vif
-> > > - Fit all lines in patch to 80 columns
-> > > - Decared a reference to vif at the beginning of all the functions
-> > > where it's being used
-> > >
-> > > v5
-> > > - Placed longest declarations first
-> > >
-> > >
-> > >  drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
-> > >  drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
-> > >  drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
-> > >  drivers/net/wireless/silabs/wfx/key.c     |  4 +-
-> > >  drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
-> > >  drivers/net/wireless/silabs/wfx/scan.c    | 11 ++--
-> > >  drivers/net/wireless/silabs/wfx/sta.c     | 71 ++++++++++++++-------=
---
-> > >  7 files changed, 65 insertions(+), 38 deletions(-)
-> > >
-> > [...]
-> > > diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wire=
-less/silabs/wfx/sta.c
-> > > index 3297d73c327a..040d1f9fb03a 100644
-> > > --- a/drivers/net/wireless/silabs/wfx/sta.c
-> > > +++ b/drivers/net/wireless/silabs/wfx/sta.c
-> > > @@ -101,6 +101,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw=
-, unsigned int changed_flags,
-> > >         struct wfx_vif *wvif =3D NULL;
-> > >         struct wfx_dev *wdev =3D hw->priv;
-> > >         bool filter_bssid, filter_prbreq, filter_beacon;
-> > > +       struct ieee80211_vif *vif =3D wvif_to_vif(wvif);
-> >
-> > wvif is modified later in the function, so this one is not correct.
-> >
->
-> Hi Jerome, I'm so sorry about this. I'll check more carefully and
-> correct for any other occurrences.
->
+On Thu, May 05, 2022 at 05:20:16PM +0200, Hans de Goede wrote:
+> Some BIOS-es contain bugs where they add addresses which are already
+> used in some other manner to the PCI host bridge window returned by
+> the ACPI _CRS method. To avoid this Linux by default excludes
+> E820 reservations when allocating addresses since 2010, see:
+> commit 4dc2287c1805 ("x86: avoid E820 regions when allocating address
+> space").
+> 
+> Recently (2019) some systems have shown-up with E820 reservations which
+> cover the entire _CRS returned PCI bridge memory window, causing all
+> attempts to assign memory to PCI BARs which have not been setup by the
+> BIOS to fail. For example here are the relevant dmesg bits from a
+> Lenovo IdeaPad 3 15IIL 81WE:
+> 
+>  [mem 0x000000004bc50000-0x00000000cfffffff] reserved
+>  pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
+> 
+> The ACPI specifications appear to allow this new behavior:
+> 
+> The relationship between E820 and ACPI _CRS is not really very clear.
+> ACPI v6.3, sec 15, table 15-374, says AddressRangeReserved means:
+> 
+>   This range of addresses is in use or reserved by the system and is
+>   not to be included in the allocatable memory pool of the operating
+>   system's memory manager.
+> 
+> and it may be used when:
+> 
+>   The address range is in use by a memory-mapped system device.
+> 
+> Furthermore, sec 15.2 says:
+> 
+>   Address ranges defined for baseboard memory-mapped I/O devices, such
+>   as APICs, are returned as reserved.
+> 
+> A PCI host bridge qualifies as a baseboard memory-mapped I/O device,
+> and its apertures are in use and certainly should not be included in
+> the general allocatable pool, so the fact that some BIOS-es reports
+> the PCI aperture as "reserved" in E820 doesn't seem like a BIOS bug.
+> 
+> So it seems that the excluding of E820 reserved addresses is a mistake.
+> 
+> Ideally Linux would fully stop excluding E820 reserved addresses,
+> but then various old systems will regress.
+> Instead keep the old behavior for old systems, while ignoring
+> the E820 reservations for any systems from now on.
+> 
+> Old systems are defined here as BIOS year < 2018, this was chosen to
+> make sure that pci_use_e820 will not be set on the currently affected
+> systems, the oldest known one is from 2019.
+> 
+> Testing has shown that some newer systems also have a bad _CRS return.
+> The pci_crs_quirks DMI table is used to keep excluding E820 reservations
+> from the bridge window on these systems.
+> 
+> Also add pci=no_e820 and pci=use_e820 options to allow overriding
+> the BIOS year + DMI matching logic.
+> 
+> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=206459
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1868899
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1871793
+> BugLink: https://bugs.launchpad.net/bugs/1878279
+> BugLink: https://bugs.launchpad.net/bugs/1931715
+> BugLink: https://bugs.launchpad.net/bugs/1932069
+> BugLink: https://bugs.launchpad.net/bugs/1921649
+> Cc: Benoit Grégoire <benoitg@coeus.ca>
+> Cc: Hui Wang <hui.wang@canonical.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
-Hi Jerome,
+> +	 * Ideally Linux would fully stop using E820 reservations, but then
+> +	 * various old systems will regress. Instead keep the old behavior for
+> +	 * old systems + known to be broken newer systems in pci_crs_quirks.
+> +	 */
+> +	if (year >= 0 && year < 2018)
+> +		pci_use_e820 = true;
 
-Thank you for catching the mistake! I think this is the only place
-where vif was set prematurely, but I could have missed something.
+How did you pick 2018?  Prior to this patch, we used E820 reservations
+for all machines.  This patch would change that for 2019-2022
+machines, so there's a risk of breaking some of them.
 
-I will send a revised patch (now v6) with this edit today.
+I'm hesitant about changing the behavior for machines already in the
+field because if they were tested at all with Linux, it was without
+this patch.  So I would lean toward preserving the current behavior
+for BIOS year < 2023.
 
-Thanks,
-Jaehee
+> diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
+> index 9e1e6b8d8876..7e6f79aab6a8 100644
+> --- a/arch/x86/pci/common.c
+> +++ b/arch/x86/pci/common.c
+> @@ -595,6 +595,12 @@ char *__init pcibios_setup(char *str)
+>  	} else if (!strcmp(str, "nocrs")) {
+>  		pci_probe |= PCI_ROOT_NO_CRS;
+>  		return NULL;
+> +	} else if (!strcmp(str, "use_e820")) {
+> +		pci_probe |= PCI_USE_E820;
 
-> >
-> > --
-> > J=C3=A9r=C3=B4me Pouiller
-> >
-> >
+I think we should add_taint(TAINT_FIRMWARE_WORKAROUND) for both these
+cases.
+
+We probably should do it for *all* the parameters here, but that would
+be a separate discussion.
+
+> +		return NULL;
+> +	} else if (!strcmp(str, "no_e820")) {
+> +		pci_probe |= PCI_NO_E820;
+> +		return NULL;
+>  #ifdef CONFIG_PHYS_ADDR_T_64BIT
+>  	} else if (!strcmp(str, "big_root_window")) {
+>  		pci_probe |= PCI_BIG_ROOT_WINDOW;
+> -- 
+> 2.36.0
+> 
