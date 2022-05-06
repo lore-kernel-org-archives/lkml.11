@@ -2,101 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB988C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442547AbiEFPgl (ORCPT
+        id S1442952AbiEFPhB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
+        Fri, 6 May 2022 11:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443091AbiEFPgV (ORCPT
+        with ESMTP id S1443083AbiEFPgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:36:21 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C9E6D951;
-        Fri,  6 May 2022 08:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651851130; x=1683387130;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LfMNbao3ZjCq5W5xkjvkRFQQK+D46fsTZ0ZtKYEZ5ow=;
-  b=QKU/UUY7W6Ld1Wq88rJsnRi4nM5gqxnTWbRLg7XbnlKWXNR8kSoYs2Zx
-   Inw3CzAsszIL+1HNbuRVlNjreDzB55pDyVRvUzjRcJn5pbbfl7mCT3sF7
-   o1KJgeHoiAaH6YC96rf6k3MbMqJYTxh1YlslaLXpzLLHN1jLo8CCkp2w5
-   dGG4u80GfKo6GF2BleaYLriQmcxmw4j/ZxvaVuF21+UshjjgMobjcL7C1
-   zSg8CRpzC3VpXi7i9n8tj9RdYegDXNfoNoZx61GbdxNh+hU91NnEMDXpR
-   3S8QwG9v7VuuiQnZ4GYCzDcdNa7yq0O9DvvOxlkaUQt1uDDbsG7LwlDBy
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268101344"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="268101344"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:32:09 -0700
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="812430096"
-Received: from nnwaiwux-mobl.amr.corp.intel.com (HELO [10.212.56.26]) ([10.212.56.26])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:32:08 -0700
-Message-ID: <6d90c832-af4a-7ed6-4f72-dae08bb69c37@intel.com>
-Date:   Fri, 6 May 2022 08:32:29 -0700
+        Fri, 6 May 2022 11:36:31 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AB449F9D;
+        Fri,  6 May 2022 08:32:47 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id AAFC61F46B21
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651851166;
+        bh=E9l9sl9XPbOxjAAJCEpY1wi9N4oVvcnWNoaRqxjeKaE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HwsVlLDRN+mPeE5XOJN9SrgZViyD4n7jTBgI133jgiTtJ270+gEcI1KTmgBO2nVJp
+         3u8Bp/fL1gHcs78xMzxhXbjEyc+93iodMXlCkSyRzsoRN8nLT2Kud6tJazN0Z6a5vA
+         MR39o257cBNwLSvC+emqdRhejNEplfY8ZpWfWg+9r8PQkFiS4Vk0N+V/DE9IIdJDEO
+         g7VRMQA2n2nrR+yiUKFzJBYpjjFT4BS6x/tA7Pm17vjx15zCbbOT7NGz8T8u/dXtYJ
+         bIMHDexQomhLGVOax3oXVaA1tt5TUdieOSAPxgM0fmGAXmURGW8ewY7Pni3UGDUuOO
+         lQhGxClbKNJOg==
+Message-ID: <22c1aa6b-d785-9bb3-354f-0d747e2392a1@collabora.com>
+Date:   Fri, 6 May 2022 17:32:43 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v8 0/8] x86: Show in sysfs if a memory node is able to do
- encryption
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 00/16] Introduce support for MediaTek MT8192 Google
+ Chromebooks
 Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>,
-        Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
-        tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, ardb@kernel.org,
-        dvhart@infradead.org, andy@infradead.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
-        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
-        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
-        alison.schofield@intel.com, keescook@chromium.org,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        "Huang, Kai" <kai.huang@intel.com>
-References: <20220429201717.1946178-1-martin.fernandez@eclypsium.com>
- <YnKr+aMf4PspDpHZ@zn.tnic>
- <CAKgze5YDD02AsrF0yESv2sptZ4qxyTMgCDmnOKcbQWjKQsJRsw@mail.gmail.com>
- <YnUYLDjIThbIz/Uf@zn.tnic>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <YnUYLDjIThbIz/Uf@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Chen-Yu Tsai <wenst@chromium.org>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>, kernel@collabora.com,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Luca Weiss <luca@z3ntu.xyz>, Maxim Kutnij <gtk3@inbox.ru>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Shih <sam.shih@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+References: <20220505194550.3094656-1-nfraprado@collabora.com>
+ <CAGXv+5Hk2u+1zkVjNEt7wdwAJyoB+-PMAuh7UKWEkDeYxp5zUQ@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CAGXv+5Hk2u+1zkVjNEt7wdwAJyoB+-PMAuh7UKWEkDeYxp5zUQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/6/22 05:44, Borislav Petkov wrote:
->> Dave Hansen pointed those out in a previuos patch serie, here is the
->> quote:
+Il 06/05/22 13:41, Chen-Yu Tsai ha scritto:
+> On Fri, May 6, 2022 at 3:46 AM Nícolas F. R. A. Prado
+> <nfraprado@collabora.com> wrote:
 >>
->>> CXL devices will have normal RAM on them, be exposed as "System RAM" and
->>> they won't have encryption capabilities.  I think these devices were
->>> probably the main motivation for EFI_MEMORY_CPU_CRYPTO.
-> So this would mean that if a system doesn't have CXL devices and has
-> TME/SME/SEV-* enabled, then it is running with encrypted memory.
+>>
+>> This series introduces Devicetrees for the MT8192-based Asurada platform
+>> as well as Asurada Spherion and Asurada Hayato boards.
+>>
+>> Support for the boards is added to the extent that is currently enabled
+>> in the mt8192.dtsi, as to not add any dependencies to this series.
+>>
+>> Besides the other dt-binding fixes already on linux-next to avoid new
+>> warnings by this series, [1] is already merged but not on next yet.
+>>
+>> This series was peer-reviewed internally before submission.
+>>
+>> [1] https://lore.kernel.org/all/20220429201325.2205799-1-nfraprado@collabora.com/
+>>
+>> v1: https://lore.kernel.org/all/20220316151327.564214-1-nfraprado@collabora.com/
+>>
+>> Changes in v2:
+>> - Added patches 1-2 for Mediatek board dt-bindings
+>> - Added patches 13-16 enabling hardware for Asurada that has since been
+>>    enabled on mt8192.dtsi
+>>
+>> Nícolas F. R. A. Prado (16):
+>>    dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-spherion
+>>    dt-bindings: arm64: dts: mediatek: Add mt8192-asurada-hayato
+>>    arm64: dts: mediatek: Introduce MT8192-based Asurada board family
+>>    arm64: dts: mediatek: asurada: Document GPIO names
+>>    arm64: dts: mediatek: asurada: Add system-wide power supplies
+>>    arm64: dts: mediatek: asurada: Enable and configure I2C and SPI busses
+>>    arm64: dts: mediatek: asurada: Add ChromeOS EC
+>>    arm64: dts: mediatek: asurada: Add keyboard mapping for the top row
+>>    arm64: dts: mediatek: asurada: Add Cr50 TPM
+>>    arm64: dts: mediatek: asurada: Add Elan eKTH3000 I2C trackpad
+>>    arm64: dts: mediatek: asurada: Add I2C touchscreen
+>>    arm64: dts: mediatek: spherion: Add keyboard backlight
+>>    arm64: dts: mediatek: asurada: Enable XHCI
+>>    arm64: dts: mediatek: asurada: Enable PCIe and add WiFi
+>>    arm64: dts: mediatek: asurada: Add MT6359 PMIC
+>>    arm64: dts: mediatek: asurada: Add SPMI regulators
 > 
-> Which would then also mean, you don't need any of that code - you only
-> need to enumerate CXL devices which, it seems, do not support memory
-> encryption, and then state that memory encryption is enabled on the
-> whole system, except for the memory of those devices.
+> Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+> 
+> I tested all the external peripherals, including touchpad, touchscreen,
+> keyboard (which needs a fix), USB, WiFi on both models, and the keyboard
+> backlight and (USB-based) Bluetooth on Spherion.
+> 
+> Could you also enable the SCP? Otherwise the vcodec generates big warnings
+> when it probes.
+> 
+> And also would like to see MMC. :)
+> 
+> 
+> Thanks
+> ChenYu
 
-CXL devices are just the easiest example to explain, but they are not
-the only problem.
+Hello ChenYu,
 
-For example, Intel NVDIMMs don't support TDX (or MKTME with integrity)
-since TDX requires integrity protection and NVDIMMs don't have metadata
-space available.
+we avoided enabling the SCP and the MMC because of some things that have to be
+assessed and fixed on our side.
+For the SCP, we have some issues about loading the firmware, we suspect that the
+binary that is in linux-firmware needs different and/or larger carveouts;
+For the MMC, we have some issues with the pin configuration regarding the pins
+drive strength: this should be solved, but we want to make sure that more testing
+gets done before we push that upstream.
 
-Also, if this were purely a CXL problem, I would have expected this to
-have been dealt with in the CXL spec alone.  But, this series is
-actually driven by an ACPI spec.  That tells me that we'll see these
-mismatched encryption capabilities in many more places than just CXL
-devices.
+We're trying to upstream the Asurada platform step by step as to see these
+machines present on upstream as soon as possible, with functionality that is
+well tested and clean, so that it would make no sense to modify them again in
+the near future.
 
+As this series gets picked (hopefully) by the maintainer, we will then make sure
+to send one (or more, depending on various factors) followup series enabling more
+and more functionality, until the platform integration reaches 100% completion.
+
+At least, that's the plan :-)
+
+Cheers,
+Angelo
