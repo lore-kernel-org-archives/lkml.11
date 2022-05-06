@@ -2,107 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391264AbiEFLU6 (ORCPT
+        id S1391272AbiEFLXp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 07:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
+        Fri, 6 May 2022 07:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244042AbiEFLUz (ORCPT
+        with ESMTP id S243024AbiEFLXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 07:20:55 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD315DA31;
-        Fri,  6 May 2022 04:17:07 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246AvTPO020974;
-        Fri, 6 May 2022 11:16:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=+EpF3VzKu+KmK6UkqQNJPa9WTJ1aH25dO2+qeNTHboQ=;
- b=Z61I6egSQjjOVGXVUh8Ht+HSE4Y9pvtLIRiVEhs51i1W3npA7PYozxfarQh0HDYtjz3I
- KH2JLewNLR3fIblyZixmiz0N9KAWMSG2ruxBa7x2zYFB/GpbMsDOpL+3yqggl3i2c6aL
- FiCPjFAEzTRgi4CKpYDBMpIOvlBQ7AxvdCIbr7lMnNW8sf57ei7BIEAhFWAWYB21PHxX
- OVnxC+ft9/0OkkJxf8En6R0i5ThjzWQ3GvRccPYWqwk6MJNYUetBaEzwYmKICU3y9OmL
- fP6eGi0h96/hGcIwKjxPYuQHky0uqseCD1Lc6FWmtCCgUbsb3bv+87caDh99pz/0FY39 Xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw2cnrcc5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 11:16:53 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 246AwNGi027547;
-        Fri, 6 May 2022 11:16:52 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw2cnrcbe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 11:16:52 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 246BDOu1002025;
-        Fri, 6 May 2022 11:16:51 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ftp7fwcs8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 11:16:50 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246BGmmu58392934
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 6 May 2022 11:16:48 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4BD6F4C046;
-        Fri,  6 May 2022 11:16:48 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 34F014C040;
-        Fri,  6 May 2022 11:16:47 +0000 (GMT)
-Received: from sig-9-65-81-120.ibm.com (unknown [9.65.81.120])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  6 May 2022 11:16:47 +0000 (GMT)
-Message-ID: <c6df072a55a29f670357e2dda384ec7c9ef332c9.camel@linux.ibm.com>
-Subject: Re: [PATCH 3/3] ima: Append line feed to
- ima/binary_runtime_measurements
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Wang Weiyang <wangweiyang2@huawei.com>, dmitry.kasatkin@gmail.com,
-        jmorris@namei.org, serge@hallyn.com
-Cc:     linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org
-Date:   Fri, 06 May 2022 07:16:46 -0400
-In-Reply-To: <20220505132301.124832-4-wangweiyang2@huawei.com>
-References: <20220505132301.124832-1-wangweiyang2@huawei.com>
-         <20220505132301.124832-4-wangweiyang2@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Fri, 6 May 2022 07:23:42 -0400
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [96.44.175.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCC45DA36
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 04:19:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1651835994;
+        bh=58oURv2d1sC3UHpxw7+6haohpmNCYl41EdKlr3w1Gzs=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=rvRyz0Ty4ATkdIMBIHIdYONhNe2YlbhcwWSrfooDFsQJnvKfp2c0Cez0KAyMxmAPt
+         3B0P3qDYuTN4e2t5lelQBef5mvIqr+cBBZJsMKQF1317pJ4wc0La9yYVZbJYjsAhjA
+         wy8cfSVRmK3GBfw+O/Q3/owPxgHBeMoEOubUByV8=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 01D4D12868AC;
+        Fri,  6 May 2022 07:19:54 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id QzPQXx1m3v7s; Fri,  6 May 2022 07:19:53 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1651835993;
+        bh=58oURv2d1sC3UHpxw7+6haohpmNCYl41EdKlr3w1Gzs=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=cAIErAhXSrfSYxHPIDMU2Hy+rQ0GY1U1TOPJy96YHxQErIgBAR+1zcUr90dCnkQ+f
+         iIOTTzVLJ/lsCZLxlhyq4UbbXOzrPHO9g7F28fzugCtsQUhra9+kVRVEt3zD0d6w+Z
+         XIQ7CkKROdKS/AErgxI8vBAn6sI6c2vh9U0ek9uA=
+Received: from [172.20.4.189] (unknown [173.211.218.201])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 0687A1286866;
+        Fri,  6 May 2022 07:19:52 -0400 (EDT)
+Message-ID: <7e20c844dadacb3dac822220ca108f4d786ceb7d.camel@HansenPartnership.com>
+Subject: Re: [PATCH v1 1/3] kallsyms: avoid hardcoding the buffer size
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Miguel Ojeda <ojeda@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-kernel@vger.kernel.org
+Cc:     rust-for-linux@vger.kernel.org, Boqun Feng <boqun.feng@gmail.com>
+Date:   Fri, 06 May 2022 07:19:51 -0400
+In-Reply-To: <20220505191704.22812-2-ojeda@kernel.org>
+References: <20220505191704.22812-1-ojeda@kernel.org>
+         <20220505191704.22812-2-ojeda@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 4ioqBiyCyuIaBzkjGTnGwLoiVESWLZuh
-X-Proofpoint-GUID: wk7lAduHv0EDXUwkV4L7URFEcIeGahX9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-06_03,2022-05-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- suspectscore=0 priorityscore=1501 mlxlogscore=904 clxscore=1011
- spamscore=0 phishscore=0 mlxscore=0 bulkscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205060062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-05 at 21:23 +0800, Wang Weiyang wrote:
-> There is no LF in binary_runtime_measurements output. It is little weird,
-> so append LF to it.
+On Thu, 2022-05-05 at 21:16 +0200, Miguel Ojeda wrote:
+> From: Boqun Feng <boqun.feng@gmail.com>
 > 
-> Example:
+> This makes it easier to update the size later on.
 > 
-> / # cat /sys/kernel/security/ima/binary_runtime_measurements
-> ...imaboot_aggregate/ #
-
-Why would you cat a binary file?!.  Doesn't make sense.
-
-Mimi
-
+> Furthermore, a static assert is added to ensure both are updated
+> when that happens. The relationship used is one that keeps the new
+> size (512+1) close to the original buffer size (500).
 > 
-> Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+> ---
+>  scripts/kallsyms.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index 8caabddf817c..880c4404731b 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -27,8 +27,18 @@
+>  
+>  #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+>  
+> +#define _stringify_1(x)	#x
+> +#define _stringify(x)	_stringify_1(x)
+> +
+>  #define KSYM_NAME_LEN		128
+>  
+> +/* A substantially bigger size than the current maximum. */
+> +#define KSYM_NAME_LEN_BUFFER	512
+> +_Static_assert(
+> +	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
+> +	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
+> +);
+> +
+>  struct sym_entry {
+>  	unsigned long long addr;
+>  	unsigned int len;
+> @@ -197,15 +207,15 @@ static void check_symbol_range(const char *sym,
+> unsigned long long addr,
+>  
+>  static struct sym_entry *read_symbol(FILE *in)
+>  {
+> -	char name[500], type;
+> +	char name[KSYM_NAME_LEN_BUFFER+1], type;
+
+When you raise KSYM_NAME_LEN to 512, this on stack allocation becomes
+2049 bytes.  How did you manage not to trigger the frame size warning,
+which is 1024 on 32 bit and 2048 on 64 bit by default?
+
+James
 
