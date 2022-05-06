@@ -2,27 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 571ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4DE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392522AbiEFN31 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52746 "EHLO
+        id S229758AbiEFN3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 09:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392520AbiEFN2s (ORCPT
+        with ESMTP id S1392566AbiEFN2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:28:48 -0400
+        Fri, 6 May 2022 09:28:54 -0400
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226A369CD9;
-        Fri,  6 May 2022 06:24:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153B96972C;
+        Fri,  6 May 2022 06:25:07 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M0fge-1o6R4X1T9q-00uoW5;
- Fri, 06 May 2022 15:24:43 +0200
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LcAWh-1oC5x53kGb-00jdYs;
+ Fri, 06 May 2022 15:24:55 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -33,167 +31,58 @@ Cc:     Denys Drozdov <denys.drozdov@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 06/13] ARM: dts: imx6ull-colibri: update device trees to support overlays
-Date:   Fri,  6 May 2022 15:24:09 +0200
-Message-Id: <20220506132416.273965-7-marcel@ziswiler.com>
+Subject: [PATCH v3 10/13] ARM: dts: imx6ull-colibri: fix nand bch geometry
+Date:   Fri,  6 May 2022 15:24:13 +0200
+Message-Id: <20220506132416.273965-11-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220506132416.273965-1-marcel@ziswiler.com>
 References: <20220506132416.273965-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Y+KHdTdOAJTiItaIdQpfXfwJHvCoYEyTTzVPAC/1y8B4wO7s2C8
- Sb4UDZUHs9VbLggOEqTijXLtZi2a1WleBGrLW3AQxp/igV9Lb9fENn6fGU4uNxipP9byyHU
- 0i/ap/Gg5hixITUto7BXrkAs6RNpJNfGMq/VXFgq1y0ZJbIYipt8xvD3R1yDmQgQvbzKvpn
- 2ST1i7nV3Gs998fwk+JoA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NQTj//WwDBQ=:emh555MUqzab00HdP4in69
- DCLGlQWph1tapDNo7AJaVOMD4aowxVYpmAgSA/oselL+Oa43zzvOpksnQBlWODsUmBMt3UGNu
- wVTuHddKPZNS2/X5jmCkk329f7BMP1sa2Y7+1j4er4d1jDswPZEPNRoFwhac7VP29Sb3Wyv0G
- Hd7jHF9ILGObZQw+LbCG2m+m7ebj+NCFoMRZ0Ee3EasmdmO4fP4CL28vUmfO3NSIKvrr2Jz4Z
- mp+wziYe9EsWNzGNvBPGvgHx77iZs1ZqPM8ricWkvZK2FhuwJT3Jbmk5soj8uJ0xzavzDXynw
- 4dEey7ZHN5Ntbk+bVTQTR7xCnz9G9rmV9oWrLI/GBIoqZuLlJUtqEBd1UMwVCivh7sSJZQqtB
- 7PWDRlh2eDnSQJAGYivHzsetzvCXM5Gsp+6HGmiDyrS7/r7+tZlV7zOBKVKAdgp3Kmeav3buW
- daSq93kT2aHY7FpcgiPlXP6r15QYXM5E1SdBv+680S3IBPkVDPoj8hqsaS7b85JPQD9jrXVnd
- /lOnKINzUoExRiPiLdsfT/wOesfDKktkbK0uGT1YMdXZCOjZ7c9gXlAPZzzHzPX4QWbfGMwwp
- 8qflE6SGesnH70svr1siNSd672PADqgC5t0TNQmmBVbTlOZ4Cxpi8qjRHikMF2Ud8jHfcQH8v
- iTijY7TtBnzjQ6OeC/DCxpjofqPAUzLJpQm95MZThIHhJbtDw44W9eF1sTof2h9vNmbU=
+X-Provags-ID: V03:K1:rpEKWpAhE2cfXREOK6cvHNFrxxALhy80kDx1PldgifDBF+yMz30
+ oL9Hce1oRR1Lvv3PvegLJfUbXLNT+H//w+zSSkcc9RxbrixEI4faCuerIPegk9oCRVe4353
+ XjCBw76lZfuEbWZfOc7EUJFBZUBQAdxuXeDBY7NCuq83icDG66pahk4vaerijuWSUS2Ylau
+ dMP8f/P+oFRB5q+6UZb4w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:r6cmugd0f9U=:TaD6Hr6K9LRILd8i6RKPaq
+ 5Sda9gacaZ8BAX7LeX5RcJV0TnwnJNPu3cyfH/WNbxlAnXwiY28lqiCQ475CJ7+yo1R8YyU0K
+ tNwCh98eJYeKZv0QoaLYVf+DHhdB4hImYSir8WlbD/82+dKrb8e8EoW87YrcW0w+Vbh91oH4w
+ YgdclZEE4JDRTJYqRohTlsuBygtB4yPpVTq/bYT/GKVzx86iaerAH/oR1pjprZkmtPHxf823/
+ YYBbZuDtOwkXJG03H6lUmfDyht/kLFR4TfoDFJD2lG4FnbklFsDIaKUjATe2AXMMW4y1HdqmE
+ fVIi2qC6tDnUpJbqm1k4TiobE6gm2tYG6wBmrLK6b0TUko/O/rKsC7hkf4zo0995DHnpoapDt
+ jNxXOeW9gFhNIv5OMgXoRkHiUvSQwwx5WhbeXC0gVgPG41sVO73PGoyWrSeyMXK/THlvTB7dl
+ T/OFeza4gRxSDIFqBLr4e0EU+gqei28VP5SSkfWhLmXPIB28WA+5BOrJVS+WVGb73iZnOwKwg
+ IX+adG5n6FSgZslzrFLlGiqGSMiyfVAD34vsqKW/omPhpTSO9fOBoDNV/gmbIh7PcF0dYk8ou
+ 9B0/wQfIXe5Pt03gKntpzVtZZXoDBU+MO/NxU3ca9NnypFnH+WTw+S8zPAoVDpvhv6A3jRtbm
+ ZvMQlXv7rrL9eh8Nb74ts04dMDdAQyZ1jpSeJ0HuW7LIddPjRZH1kEtneO8WdwBKrDch/w4ip
+ 4yx9FdietL/t2VWZ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denys Drozdov <denys.drozdov@toradex.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Prepare in-tree device trees for out-of-tree device tree overlay support
-(eMMC SKU only).
+Fix NAND BCH geometry relevant mainly for U-Boot.
 
-Relocate panel-dpi default to edt,et057090dhu (RGB 18bit VGA 640x480)
-to the module-level dtsi and remove it from the carrier board dtsi.
-
-Keep backlight, resistive touch and Atmel maxtouch nodes enabled
-for both eMMC and NAND modules.
-
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
 (no changes since v1)
 
- .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi | 29 -----------------
- arch/arm/boot/dts/imx6ull-colibri.dtsi        | 31 ++++++++++++++++---
- 2 files changed, 27 insertions(+), 33 deletions(-)
+ arch/arm/boot/dts/imx6ull-colibri.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-index ea086b305d22..3c07b4273e80 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-@@ -29,17 +29,6 @@ clk16m: clk16m {
- 		clock-frequency = <16000000>;
- 	};
- 
--	panel: panel {
--		compatible = "edt,et057090dhu";
--		backlight = <&bl>;
--		power-supply = <&reg_3v3>;
--
--		port {
--			panel_in: endpoint {
--				remote-endpoint = <&lcdif_out>;
--			};
--		};
--	};
- 
- 	reg_3v3: regulator-3v3 {
- 		compatible = "regulator-fixed";
-@@ -71,14 +60,6 @@ &adc1 {
- 	status = "okay";
- };
- 
--&bl {
--	brightness-levels = <0 4 8 16 32 64 128 255>;
--	default-brightness-level = <6>;
--	power-supply = <&reg_3v3>;
--	pwms = <&pwm4 0 5000000 1>;
--	status = "okay";
--};
--
- &ecspi1 {
- 	status = "okay";
- 
-@@ -107,16 +88,6 @@ m41t0m6: rtc@68 {
- 	};
- };
- 
--&lcdif {
--	status = "okay";
--
--	port {
--		lcdif_out: endpoint {
--			remote-endpoint = <&panel_in>;
--		};
--	};
--};
--
- /* PWM <A> */
- &pwm4 {
- 	status = "okay";
 diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index 351ea2acd5a6..28baffcef096 100644
+index e74dd98fa66a..5e0cee146121 100644
 --- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
 +++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -11,12 +11,29 @@ aliases {
- 		ethernet1 = &fec1;
- 	};
- 
--	bl: backlight {
-+	backlight: backlight {
- 		compatible = "pwm-backlight";
-+		brightness-levels = <0 4 8 16 32 64 128 255>;
-+		default-brightness-level = <6>;
-+		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_gpio_bl_on>;
--		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
--		status = "disabled";
-+		power-supply = <&reg_3v3>;
-+		pwms = <&pwm4 0 5000000 1>;
-+		status = "okay";
-+	};
-+
-+	panel_dpi: panel-dpi {
-+		compatible = "edt,et057090dhu";
-+		backlight = <&backlight>;
-+		power-supply = <&reg_3v3>;
-+		status = "okay";
-+
-+		port {
-+			lcd_panel_in: endpoint {
-+				remote-endpoint = <&lcdif_out>;
-+			};
-+		};
- 	};
- 
- 	reg_module_3v3: regulator-module-3v3 {
-@@ -149,7 +166,7 @@ &i2c2 {
- 	scl-gpios = <&gpio1 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	status = "okay";
- 
--	ad7879@2c {
-+	ad7879_ts: touchscreen@2c {
- 		compatible = "adi,ad7879-1";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_snvs_ad7879_int>;
-@@ -170,6 +187,12 @@ &lcdif {
+@@ -128,6 +128,7 @@ ethphy1: ethernet-phy@2 {
+ &gpmi {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_lcdif_dat
- 		     &pinctrl_lcdif_ctrl>;
-+
-+	port {
-+		lcdif_out: endpoint {
-+			remote-endpoint = <&lcd_panel_in>;
-+		};
-+	};
- };
- 
- &pwm4 {
+ 	pinctrl-0 = <&pinctrl_gpmi_nand>;
++	fsl,use-minimum-ecc;
+ 	nand-on-flash-bbt;
+ 	nand-ecc-mode = "hw";
+ 	nand-ecc-strength = <8>;
 -- 
 2.35.1
 
