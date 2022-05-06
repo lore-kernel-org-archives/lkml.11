@@ -2,466 +2,656 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA3DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE71C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392591AbiEFN37 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
+        id S243870AbiEFNaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 09:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392606AbiEFN3B (ORCPT
+        with ESMTP id S1392637AbiEFN3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:29:01 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69AA5193;
-        Fri,  6 May 2022 06:25:17 -0700 (PDT)
+        Fri, 6 May 2022 09:29:09 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE66EDEDB;
+        Fri,  6 May 2022 06:25:25 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LqBHC-1oHuzW2hrU-00do03;
- Fri, 06 May 2022 15:25:03 +0200
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MHmnb-1nnnpc17zp-003fxu;
+ Fri, 06 May 2022 15:24:49 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
+        Olof Johansson <olof@lixom.net>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 13/13] ARM: dts: imx6ull-colibri: improve pinctrl node names
-Date:   Fri,  6 May 2022 15:24:16 +0200
-Message-Id: <20220506132416.273965-14-marcel@ziswiler.com>
+        linux-kernel@vger.kernel.org, soc@kernel.org
+Subject: [PATCH v3 08/13] ARM: dts: imx6ull-colibri: add support for toradex iris carrier boards
+Date:   Fri,  6 May 2022 15:24:11 +0200
+Message-Id: <20220506132416.273965-9-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220506132416.273965-1-marcel@ziswiler.com>
 References: <20220506132416.273965-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:tRLEt5KRAA5DyaTZ1wVXIj5nAvNNikzNfvudQtmSfN9J8qhom8U
- zVlS2+n1awxkbPmaJlb6b6XfJsFoStqtyLf2Y1aKf7D1HuRmvd5e3/xi79YF9u2js7Uo8Sj
- dSRGAH1GEh+zqfT+h2Eh6tcOCfj/jphNdpSYyiWFKQEERhYhlEkp+SRAR29t7IyV+rCupc2
- p3+gk3uYOUU9dJmyokXiA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tbbC5en0/DQ=:0qIjDmZgnYUbc6I6ebWVgi
- e+ivx1af6A8uaQqrlKNjheZZOY+zfk8QHkjV/9nTG5PdnKo09AUmdR/g8FDgRmUHrTPZe2Ssb
- 5N9VC5fQYAm3JcHLmHBJaoeJtwC/9TgnMjfG63kEqmaITd4dpSHtPBOTXnwp8W7fZDgkA7kh7
- aXyFKFik4iA42w4oHPyRjyznnUcc9Q2vhUdp2XpIETEA/JZY1zAE4YR5z+nalRSSNRx3XfwY/
- 2SmcIsSl77qpOMBOvslEf/Ipbo0dV9CaQEpa+ee+BGeuaoc7BnGCkeEqgmHVepKERmlPz5afM
- yluqBQUZD88QgEbLCcyXcqXMTtFWkYzu5Ui4wKigo3aL2Dc9DWHIVX5V9iWmSiXOzorr5+OQd
- 7b+yR4K7e/x7s1Lsdn3GQnZuzg100oFQhP9llzPBD+OZAmtCqGkXPdj3ay6xemP19E3hsQB3J
- 6aMWu692fUxaZiGXuimkxmA/a5DgWcDmL4AS3/olt27umB74lXElxhlPlJRw9KYOZvQDC+Y5F
- sdeM4X5StecL2fSYyIgQdebIPuUIPqxp50oHk9rB56B17J+FxPM6iXJzm0lsJJYuPTvGEdeFr
- TRgEEBBLeUz/e2cpe2ymycIvFlsW+sjCeoDsjyIevPdmLeatSqD4rNDQfgXemW96TVIZ2xbfv
- SBSk8R+c9i1vOj3rhLCcq+Y0rYm52z2ijYJnIHjgjyMiEwrq9ZrgQckEcPWW56BbYOi90S71T
- cP5d40kHrvHOuB9o
+X-Provags-ID: V03:K1:XVnGLvfT9RAgSXntsQzKOxA2U1aob3avOFMoEbCwf5u+/zWMXY7
+ ebgVsLARLDFUaoz3s48dXkw671rt0ZvY36lZ/O60sbcVLJcDF8guPbIj33jC+dmGf4ONV1Q
+ q67dK7utkkmZZ2teGzaJ6TI1+0f2t/Hb5tyXlEb3yoZzSuFRPLH5qUqEkq1xLdkGAUaL/09
+ 4MfEZffi8A7ipPvctH+mw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:X+G8Z4paqdg=:CAFvuYjvEA10rMcHipyBR2
+ SXLtyA7ITq/WsynolOTLqN5eYjNo5Bkt874gXcq1fpm9qmhpC8Pg17yfZxDKSfS1MH4d1F67Q
+ r0cuJoJobtoG7XAHnXZ//rh3L1D30tDAkohI6hAufrYWsNzXUHYEINbMpzXz7L6335/bNpr9E
+ kjHm0jgJ2xVuJrU9oPTavRppj8KuSjcjaf0Mab1JE4Nl+8zvRjYPNmjo+Da6jzGliUj3I3t2N
+ pC9JEopiVv5FrEIxiXg1ZW/1RHixE4qKHgsO1b3V4kQ+lPz1jrr0COohYJ/2EKD+D4eTbSzSH
+ YAtjJgOJU8quCCFZB4H3qDhYqio7pDjCkHEYeY2s1eSYmM3KeI/QMxVPyjoU7evzll2s089uU
+ OEtdtpry2SvtAr4Q6GuFvdWYzc2WNK1EQlhWV8a18+EzXzAdmkHnvw8Rr1vWJlbG8r7IvDhVM
+ pEzMqJ7TMWUuZ4AJiM0gYBjAZK6AUNzrHTPsz0YUjPD/FwnzVAhWZ0iEPOkvB0QayQsTeg4bS
+ X9Sq59vT1C7qy5sGS7QNpLB3kZLH7MrJvcLVyPRnt+hzD2ge8y4ORbU7egROBqUZl+RUW9dn2
+ txnlOLwtgoExL0J1WHmP58RFl+081c4zYL/ay3hwQVEXAniNftgKZEQq/QZ130hWetT0+0oKC
+ nB2Acfxom0suiG5cHJSLm8ZgELetduQzkKCqyUUlPmq/228+2Q8Sb6FNrT+ThV5998kyoqWiV
+ DFWjysn7owLJB6B4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Denys Drozdov <denys.drozdov@toradex.com>
 
-Improve on pinctrl node names.
+Add support for Toradex Iris, small form-factor Pico-ITX Colibri Arm
+Computer Module family carrier boards.
 
+Iris Device Trees:
+- imx6ull-colibri-iris.dtb
+- imx6ull-colibri-emmc-iris.dtb
+- imx6ull-colibri-wifi-iris.dtb
+
+Iris-V2 Device Trees:
+- imx6ull-colibri-iris-v2.dtb
+- imx6ull-colibri-emmc-iris-v2.dtb
+- imx6ull-colibri-wifi-iris-v2.dtb
+
+Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
 ---
 
-(no changes since v2)
+Changes in v3:
+- Replaced underscores by dashes in GPIO hog node names.
+- Added more LVDS specific GPIO hogs in-line with other modules.
 
 Changes in v2:
-- New commit with pinctrl node name improvements as suggested by Shawn.
+- Fix alphabetical node order as suggested by Shawn.
 
- arch/arm/boot/dts/imx6ull-colibri.dtsi | 93 +++++++++++++-------------
- 1 file changed, 46 insertions(+), 47 deletions(-)
+ arch/arm/boot/dts/Makefile                    |   6 +
+ .../boot/dts/imx6ull-colibri-emmc-iris-v2.dts |  17 +++
+ .../boot/dts/imx6ull-colibri-emmc-iris.dts    |  17 +++
+ .../dts/imx6ull-colibri-emmc-nonwifi.dtsi     |   4 +-
+ arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts |   6 +-
+ .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi |   5 +-
+ arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts |  65 +++++++++
+ .../arm/boot/dts/imx6ull-colibri-iris-v2.dtsi |  27 ++++
+ arch/arm/boot/dts/imx6ull-colibri-iris.dts    |  20 +++
+ arch/arm/boot/dts/imx6ull-colibri-iris.dtsi   | 132 ++++++++++++++++++
+ .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi |   4 +-
+ .../boot/dts/imx6ull-colibri-wifi-eval-v3.dts |   4 +-
+ .../boot/dts/imx6ull-colibri-wifi-iris-v2.dts |  65 +++++++++
+ .../boot/dts/imx6ull-colibri-wifi-iris.dts    |  20 +++
+ arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   |   4 +-
+ arch/arm/boot/dts/imx6ull-colibri.dtsi        |   4 +-
+ 16 files changed, 385 insertions(+), 15 deletions(-)
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtsi
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris.dtsi
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dts
 
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 0ad8339e07d8..6c737679165c 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -707,8 +707,14 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+ 	imx6ul-tx6ul-mainboard.dtb \
+ 	imx6ull-14x14-evk.dtb \
+ 	imx6ull-colibri-emmc-eval-v3.dtb \
++	imx6ull-colibri-emmc-iris.dtb \
++	imx6ull-colibri-emmc-iris-v2.dtb \
+ 	imx6ull-colibri-eval-v3.dtb \
++	imx6ull-colibri-iris.dtb \
++	imx6ull-colibri-iris-v2.dtb \
+ 	imx6ull-colibri-wifi-eval-v3.dtb \
++	imx6ull-colibri-wifi-iris.dtb \
++	imx6ull-colibri-wifi-iris-v2.dtb \
+ 	imx6ull-jozacp.dtb \
+ 	imx6ull-myir-mys-6ulx-eval.dtb \
+ 	imx6ull-opos6uldev.dtb \
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dts b/arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dts
+new file mode 100644
+index 000000000000..b9060c2f7977
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dts
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2022 Toradex
++ */
++
++/dts-v1/;
++
++#include "imx6ull-colibri-emmc-nonwifi.dtsi"
++#include "imx6ull-colibri-iris-v2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6ULL 1G (eMMC) on Colibri Iris V2";
++	compatible = "toradex,colibri-imx6ull-iris-v2",
++		     "toradex,colibri-imx6ull-emmc",
++		     "toradex,colibri-imx6ull",
++		     "fsl,imx6ull";
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dts b/arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dts
+new file mode 100644
+index 000000000000..0ab71f2f5daa
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dts
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2022 Toradex
++ */
++
++/dts-v1/;
++
++#include "imx6ull-colibri-emmc-nonwifi.dtsi"
++#include "imx6ull-colibri-iris.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6ULL 1GB (eMMC) on Colibri Iris";
++	compatible = "toradex,colibri-imx6ull-emmc-iris",
++		     "toradex,colibri-imx6ull-emmc",
++		     "toradex,colibri-imx6ull",
++		     "fsl,imx6ull";
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
+index a099abfdfa27..1d75bc671f75 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2021 Toradex
++ * Copyright 2022 Toradex
+  */
+ 
+ #include "imx6ull-colibri.dtsi"
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts
+index 08669a18349e..9bf7111d7b00 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts
++++ b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2018 Toradex AG
++ * Copyright 2018-2022 Toradex
+  */
+ 
+ /dts-v1/;
+@@ -9,6 +9,6 @@
+ #include "imx6ull-colibri-eval-v3.dtsi"
+ 
+ / {
+-	model = "Toradex Colibri iMX6ULL 256MB on Colibri Evaluation Board V3";
++	model = "Toradex Colibri iMX6ULL 256/512MB on Colibri Evaluation Board V3";
+ 	compatible = "toradex,colibri-imx6ull-eval", "fsl,imx6ull";
+ };
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
+index 3c07b4273e80..08197c66af12 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017 Toradex AG
++ * Copyright 2017-2022 Toradex
+  */
+ 
+ / {
+@@ -121,6 +121,7 @@ &uart5 {
+ };
+ 
+ &usbotg1 {
++	vbus-supply = <&reg_usbh_vbus>;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts b/arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts
+new file mode 100644
+index 000000000000..afc1e0119783
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts
+@@ -0,0 +1,65 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2018-2022 Toradex
++ */
++
++/dts-v1/;
++
++#include "imx6ull-colibri-nonwifi.dtsi"
++#include "imx6ull-colibri-iris-v2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6ULL 256M/512B on Colibri Iris V2";
++	compatible = "toradex,colibri-imx6ull-iris-v2",
++		     "toradex,colibri-imx6ull",
++		     "fsl,imx6ull";
++};
++
++&atmel_mxt_ts {
++	status = "okay";
++};
++
++&gpio1 {
++	/* This turns the LVDS transceiver on */
++	lvds-power-on {
++		gpio-hog;
++		gpios = <14 GPIO_ACTIVE_HIGH>; /* SODIMM 99 */
++		line-name = "LVDS_POWER_ON";
++		output-high;
++	};
++};
++
++&gpio2 {
++	/*
++	 * This switches the LVDS transceiver to the single-channel
++	 * output mode.
++	 */
++	lvds-ch-mode {
++		gpio-hog;
++		gpios = <0 GPIO_ACTIVE_HIGH>; /* SODIMM 55 */
++		line-name = "LVDS_CH_MODE";
++		output-high;
++	};
++
++	/*
++	 * This switches the LVDS transceiver to the 24-bit RGB mode.
++	 */
++	lvds-rgb-mode {
++		gpio-hog;
++		gpios = <1 GPIO_ACTIVE_HIGH>; /* SODIMM 63 */
++		line-name = "LVDS_RGB_MODE";
++		output-low;
++	};
++};
++
++&gpio5 {
++	/*
++	 * This switches the LVDS transceiver to VESA color mapping mode.
++	 */
++	lvds-color-map {
++		gpio-hog;
++		gpios = <3 GPIO_ACTIVE_HIGH>; /* SODIMM 95 */
++		line-name = "LVDS_COLOR_MAP";
++		output-low;
++	};
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtsi b/arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtsi
+new file mode 100644
+index 000000000000..93649cad0cc0
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtsi
+@@ -0,0 +1,27 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2018-2022 Toradex
++ */
++
++#include "imx6ull-colibri-iris.dtsi"
++
++/ {
++	reg_3v3_vmmc: regulator-3v3-vmmc {
++		compatible = "regulator-fixed";
++		regulator-name = "3v3_vmmc";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpio1 26 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <100>;
++		enable-active-high;
++	};
++};
++
++
++&usdhc1 {
++	cap-power-off-card;
++	vmmc-supply = <&reg_3v3_vmmc>;
++	/delete-property/ keep-power-in-suspend;
++	/delete-property/ no-1-8-v;
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-iris.dts b/arch/arm/boot/dts/imx6ull-colibri-iris.dts
+new file mode 100644
+index 000000000000..4fb97b0fe30b
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-iris.dts
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2018-2022 Toradex
++ */
++
++/dts-v1/;
++
++#include "imx6ull-colibri-nonwifi.dtsi"
++#include "imx6ull-colibri-iris.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6ULL 256/512MB on Colibri Iris";
++	compatible = "toradex,colibri-imx6ull-iris",
++		     "toradex,colibri-imx6ull",
++		     "fsl,imx6ull";
++};
++
++&atmel_mxt_ts {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-iris.dtsi b/arch/arm/boot/dts/imx6ull-colibri-iris.dtsi
+new file mode 100644
+index 000000000000..7f3b37baba88
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-iris.dtsi
+@@ -0,0 +1,132 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2018-2022 Toradex
++ */
++
++/ {
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_snvs_gpiokeys>;
++
++		power {
++			label = "Wake-Up";
++			gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_WAKEUP>;
++			debounce-interval = <10>;
++			wakeup-source;
++		};
++	};
++
++	reg_3v3: regulator-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "3.3V";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++	};
++
++	reg_5v0: regulator-5v0 {
++		compatible = "regulator-fixed";
++		regulator-name = "5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++
++	reg_usbh_vbus: regulator-usbh-vbus {
++		compatible = "regulator-fixed";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_usbh_reg>;
++		regulator-name = "VCC_USB[1-4]";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		gpio = <&gpio1 2 GPIO_ACTIVE_LOW>;
++		vin-supply = <&reg_5v0>;
++	};
++};
++
++&adc1 {
++	status = "okay";
++};
++
++&gpio1 {
++	/*
++	 * uart25_tx_on turns the UART transceiver on. If one wants to turn the
++	 * transceiver off, that property has to be deleted and the gpio handled
++	 * in userspace.
++	 * The same applies to uart1_tx_on.
++	 */
++	uart25_tx_on {
++		gpio-hog;
++		gpios = <15 0>;
++		output-high;
++	};
++};
++
++&gpio2 {
++	uart1_tx_on {
++		gpio-hog;
++		gpios = <7 0>;
++		output-high;
++	};
++};
++
++&i2c1 {
++	status = "okay";
++
++	/* M41T0M6 real time clock on carrier board */
++	m41t0m6: rtc@68 {
++		compatible = "st,m41t0";
++		reg = <0x68>;
++	};
++};
++
++/* PWM <A> */
++&pwm4 {
++	status = "okay";
++};
++
++/* PWM <B> */
++&pwm5 {
++	status = "okay";
++};
++
++/* PWM <C> */
++&pwm6 {
++	status = "okay";
++};
++
++/* PWM <D> */
++&pwm7 {
++	status = "okay";
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&uart2 {
++	status = "okay";
++};
++
++&uart5 {
++	status = "okay";
++};
++
++&usbotg1 {
++	vbus-supply = <&reg_usbh_vbus>;
++	status = "okay";
++};
++
++&usbotg2 {
++	vbus-supply = <&reg_usbh_vbus>;
++	status = "okay";
++};
++
++&usdhc1 {
++	vmmc-supply = <&reg_3v3>;
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+index 60f169227ad9..88901db255d6 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2018 Toradex AG
++ * Copyright 2018-2022 Toradex
+  */
+ 
+ #include "imx6ull-colibri.dtsi"
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dts b/arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dts
+index df72ce1ae2cb..1d64d1a5d8a7 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dts
++++ b/arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2018 Toradex AG
++ * Copyright 2018-2022 Toradex
+  */
+ 
+ /dts-v1/;
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dts b/arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dts
+new file mode 100644
+index 000000000000..ce02f8a9ddd3
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dts
+@@ -0,0 +1,65 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2018-2022 Toradex
++ */
++
++/dts-v1/;
++
++#include "imx6ull-colibri-wifi.dtsi"
++#include "imx6ull-colibri-iris-v2.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6ULL 512MB on Colibri Iris V2";
++	compatible = "toradex,colibri-imx6ull-wifi-iris-v2",
++		     "toradex,colibri-imx6ull",
++		     "fsl,imx6ull";
++};
++
++&atmel_mxt_ts {
++	status = "okay";
++};
++
++&gpio1 {
++	/* This turns the LVDS transceiver on */
++	lvds-power-on {
++		gpio-hog;
++		gpios = <14 GPIO_ACTIVE_HIGH>; /* SODIMM 99 */
++		line-name = "LVDS_POWER_ON";
++		output-high;
++	};
++};
++
++&gpio2 {
++	/*
++	 * This switches the LVDS transceiver to the single-channel
++	 * output mode.
++	 */
++	lvds-ch-mode {
++		gpio-hog;
++		gpios = <0 GPIO_ACTIVE_HIGH>; /* SODIMM 55 */
++		line-name = "LVDS_CH_MODE";
++		output-high;
++	};
++
++	/*
++	 * This switches the LVDS transceiver to the 24-bit RGB mode.
++	 */
++	lvds-rgb-mode {
++		gpio-hog;
++		gpios = <1 GPIO_ACTIVE_HIGH>; /* SODIMM 63 */
++		line-name = "LVDS_RGB_MODE";
++		output-low;
++	};
++};
++
++&gpio5 {
++	/*
++	 * This switches the LVDS transceiver to VESA color mapping mode.
++	 */
++	lvds-color-map {
++		gpio-hog;
++		gpios = <3 GPIO_ACTIVE_HIGH>; /* SODIMM 95 */
++		line-name = "LVDS_COLOR_MAP";
++		output-low;
++	};
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dts b/arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dts
+new file mode 100644
+index 000000000000..5ac1aa298ce7
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dts
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright 2018-2022 Toradex
++ */
++
++/dts-v1/;
++
++#include "imx6ull-colibri-wifi.dtsi"
++#include "imx6ull-colibri-iris.dtsi"
++
++/ {
++	model = "Toradex Colibri iMX6ULL 512MB on Colibri Iris";
++	compatible = "toradex,colibri-imx6ull-wifi-iris",
++		     "toradex,colibri-imx6ull",
++		     "fsl,imx6ull";
++};
++
++&atmel_mxt_ts {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+index 3c47cfa7afa5..db59ee6b1c86 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2018 Toradex AG
++ * Copyright 2018-2022 Toradex
+  */
+ 
+ #include "imx6ull-colibri.dtsi"
 diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index 4292311bdc6e..15ebabcacfc5 100644
+index 28baffcef096..e74dd98fa66a 100644
 --- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
 +++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -292,7 +292,7 @@ &usdhc1 {
- 	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd>;
- 	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_snvs_usdhc1_cd>;
- 	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_snvs_usdhc1_cd>;
--	pinctrl-3 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_sleep_cd>;
-+	pinctrl-3 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd_sleep>;
- 	assigned-clocks = <&clks IMX6UL_CLK_USDHC1_SEL>, <&clks IMX6UL_CLK_USDHC1>;
- 	assigned-clock-parents = <&clks IMX6UL_CLK_PLL2_PFD2>;
- 	assigned-clock-rates = <0>, <198000000>;
-@@ -312,7 +312,6 @@ &wdog1 {
- };
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2018-2021 Toradex
++ * Copyright 2018-2022 Toradex
+  */
  
- &iomuxc {
--
- 	pinctrl_adc1: adc1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO00__GPIO1_IO00        0x3000 /* SODIMM 8 */
-@@ -336,13 +335,13 @@ MX6ULL_PAD_SNVS_TAMPER4__GPIO5_IO04     0xb0a0	/* SODIMM 107 */
- 		>;
- 	};
- 
--	pinctrl_can_int: canint-grp {
-+	pinctrl_can_int: canintgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_TX_DATA1__GPIO2_IO04	0x13010	/* SODIMM 73 */
- 		>;
- 	};
- 
--	pinctrl_enet2: enet2-grp {
-+	pinctrl_enet2: enet2grp {
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO06__ENET2_MDIO	0x1b0b0
- 			MX6UL_PAD_GPIO1_IO07__ENET2_MDC		0x1b0b0
-@@ -357,7 +356,7 @@ MX6UL_PAD_ENET2_TX_EN__ENET2_TX_EN	0x1b0b0
- 		>;
- 	};
- 
--	pinctrl_enet2_sleep: enet2sleepgrp {
-+	pinctrl_enet2_sleep: enet2-sleepgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO06__GPIO1_IO06	0x0
- 			MX6UL_PAD_GPIO1_IO07__GPIO1_IO07	0x0
-@@ -372,13 +371,13 @@ MX6UL_PAD_ENET2_TX_EN__GPIO2_IO13	0x0
- 		>;
- 	};
- 
--	pinctrl_ecspi1_cs: ecspi1-cs-grp {
-+	pinctrl_ecspi1_cs: ecspi1csgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_LCD_DATA21__GPIO3_IO26	0x70a0	/* SODIMM 86 */
- 		>;
- 	};
- 
--	pinctrl_ecspi1: ecspi1-grp {
-+	pinctrl_ecspi1: ecspi1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_LCD_DATA20__ECSPI1_SCLK	0x000a0	/* SODIMM 88 */
- 			MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI	0x000a0 /* SODIMM 92 */
-@@ -386,27 +385,27 @@ MX6UL_PAD_LCD_DATA23__ECSPI1_MISO	0x100a0 /* SODIMM 90 */
- 		>;
- 	};
- 
--	pinctrl_flexcan1: flexcan1-grp {
-+	pinctrl_flexcan1: flexcan1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_RX_DATA0__FLEXCAN1_TX	0x1b020
- 			MX6UL_PAD_ENET1_RX_DATA1__FLEXCAN1_RX	0x1b020
- 		>;
- 	};
- 
--	pinctrl_flexcan2: flexcan2-grp {
-+	pinctrl_flexcan2: flexcan2grp {
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_TX_DATA0__FLEXCAN2_RX	0x1b020
- 			MX6UL_PAD_ENET1_RX_EN__FLEXCAN2_TX	0x1b020
- 		>;
- 	};
- 
--	pinctrl_gpio_bl_on: gpio-bl-on-grp {
-+	pinctrl_gpio_bl_on: gpioblongrp {
- 		fsl,pins = <
- 			MX6UL_PAD_JTAG_TMS__GPIO1_IO11		0x30a0	/* SODIMM 71 */
- 		>;
- 	};
- 
--	pinctrl_gpio1: gpio1-grp {
-+	pinctrl_gpio1: gpio1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART3_RX_DATA__GPIO1_IO25	0x10b0 /* SODIMM 77 */
- 			MX6UL_PAD_JTAG_TCK__GPIO1_IO14		0x70a0 /* SODIMM 99 */
-@@ -419,7 +418,7 @@ MX6UL_PAD_UART3_RTS_B__GPIO1_IO27	0x10b0 /* SODIMM 186 */
- 		>;
- 	};
- 
--	pinctrl_gpio2: gpio2-grp { /* Camera */
-+	pinctrl_gpio2: gpio2grp { /* Camera */
- 		fsl,pins = <
- 			MX6UL_PAD_CSI_DATA04__GPIO4_IO25	0x10b0 /* SODIMM 69 */
- 			MX6UL_PAD_CSI_MCLK__GPIO4_IO17		0x10b0 /* SODIMM 75 */
-@@ -429,20 +428,20 @@ MX6UL_PAD_CSI_DATA05__GPIO4_IO26	0x10b0 /* SODIMM 98 */
- 		>;
- 	};
- 
--	pinctrl_gpio3: gpio3-grp { /* CAN2 */
-+	pinctrl_gpio3: gpio3grp { /* CAN2 */
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_RX_EN__GPIO2_IO02	0x10b0 /* SODIMM 178 */
- 			MX6UL_PAD_ENET1_TX_DATA0__GPIO2_IO03	0x10b0 /* SODIMM 188 */
- 		>;
- 	};
- 
--	pinctrl_gpio4: gpio4-grp {
-+	pinctrl_gpio4: gpio4grp {
- 		fsl,pins = <
- 			MX6UL_PAD_CSI_DATA07__GPIO4_IO28	0x10b0 /* SODIMM 65 */
- 		>;
- 	};
- 
--	pinctrl_gpio6: gpio6-grp { /* Wifi pins */
-+	pinctrl_gpio6: gpio6grp { /* Wifi pins */
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x10b0 /* SODIMM 89 */
- 			MX6UL_PAD_CSI_DATA02__GPIO4_IO23	0x10b0 /* SODIMM 79 */
-@@ -454,7 +453,7 @@ MX6UL_PAD_CSI_HSYNC__GPIO4_IO20		0x10b0 /* SODIMM 94 */
- 		>;
- 	};
- 
--	pinctrl_gpio7: gpio7-grp { /* CAN1 */
-+	pinctrl_gpio7: gpio7grp { /* CAN1 */
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_RX_DATA0__GPIO2_IO00	0xb0b0/* SODIMM 55 */
- 			MX6UL_PAD_ENET1_RX_DATA1__GPIO2_IO01	0xb0b0 /* SODIMM 63 */
-@@ -465,7 +464,7 @@ MX6UL_PAD_ENET1_RX_DATA1__GPIO2_IO01	0xb0b0 /* SODIMM 63 */
- 	 * With an eMMC instead of a raw NAND device the following pins
- 	 * are available at SODIMM pins.
- 	 */
--	pinctrl_gpmi_gpio: gpmi-gpio-grp {
-+	pinctrl_gpmi_gpio: gpmigpiogrp {
- 		fsl,pins = <
- 			MX6UL_PAD_NAND_ALE__GPIO4_IO10		0x10b0 /* SODIMM 140 */
- 			MX6UL_PAD_NAND_CE0_B__GPIO4_IO13	0x10b0 /* SODIMM 144 */
-@@ -474,7 +473,7 @@ MX6UL_PAD_NAND_READY_B__GPIO4_IO12	0x10b0 /* SODIMM 142 */
- 		>;
- 	};
- 
--	pinctrl_gpmi_nand: gpmi-nand-grp {
-+	pinctrl_gpmi_nand: gpminandgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_NAND_DATA00__RAWNAND_DATA00	0x100a9
- 			MX6UL_PAD_NAND_DATA01__RAWNAND_DATA01	0x100a9
-@@ -493,35 +492,35 @@ MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B	0x100a9
- 		>;
- 	};
- 
--	pinctrl_i2c1: i2c1-grp {
-+	pinctrl_i2c1: i2c1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART4_TX_DATA__I2C1_SCL 0x4001b8b0	/* SODIMM 196 */
- 			MX6UL_PAD_UART4_RX_DATA__I2C1_SDA 0x4001b8b0	/* SODIMM 194 */
- 		>;
- 	};
- 
--	pinctrl_i2c1_gpio: i2c1-gpio-grp {
-+	pinctrl_i2c1_gpio: i2c1-gpiogrp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART4_TX_DATA__GPIO1_IO28 0x4001b8b0	/* SODIMM 196 */
- 			MX6UL_PAD_UART4_RX_DATA__GPIO1_IO29 0x4001b8b0	/* SODIMM 194 */
- 		>;
- 	};
- 
--	pinctrl_i2c2: i2c2-grp {
-+	pinctrl_i2c2: i2c2grp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART5_TX_DATA__I2C2_SCL 0x4001f8b0
- 			MX6UL_PAD_UART5_RX_DATA__I2C2_SDA 0x4001f8b0
- 		>;
- 	};
- 
--	pinctrl_i2c2_gpio: i2c2-gpio-grp {
-+	pinctrl_i2c2_gpio: i2c2-gpiogrp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART5_TX_DATA__GPIO1_IO30 0x4001f8b0
- 			MX6UL_PAD_UART5_RX_DATA__GPIO1_IO31 0x4001f8b0
- 		>;
- 	};
- 
--	pinctrl_lcdif_dat: lcdif-dat-grp {
-+	pinctrl_lcdif_dat: lcdifdatgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_LCD_DATA00__LCDIF_DATA00 0x00079	/* SODIMM 76 */
- 			MX6UL_PAD_LCD_DATA01__LCDIF_DATA01 0x00079	/* SODIMM 70 */
-@@ -544,7 +543,7 @@ MX6UL_PAD_LCD_DATA17__LCDIF_DATA17 0x00079	/* SODIMM 61 */
- 		>;
- 	};
- 
--	pinctrl_lcdif_ctrl: lcdif-ctrl-grp {
-+	pinctrl_lcdif_ctrl: lcdifctrlgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_LCD_CLK__LCDIF_CLK	    0x00079	/* SODIMM 56 */
- 			MX6UL_PAD_LCD_ENABLE__LCDIF_ENABLE  0x00079	/* SODIMM 44 */
-@@ -553,31 +552,31 @@ MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x00079	/* SODIMM 82 */
- 		>;
- 	};
- 
--	pinctrl_pwm4: pwm4-grp {
-+	pinctrl_pwm4: pwm4grp {
- 		fsl,pins = <
- 			MX6UL_PAD_NAND_WP_B__PWM4_OUT	0x00079		/* SODIMM 59 */
- 		>;
- 	};
- 
--	pinctrl_pwm5: pwm5-grp {
-+	pinctrl_pwm5: pwm5grp {
- 		fsl,pins = <
- 			MX6UL_PAD_NAND_DQS__PWM5_OUT	0x00079		/* SODIMM 28 */
- 		>;
- 	};
- 
--	pinctrl_pwm6: pwm6-grp {
-+	pinctrl_pwm6: pwm6grp {
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_TX_EN__PWM6_OUT	0x00079		/* SODIMM 30 */
- 		>;
- 	};
- 
--	pinctrl_pwm7: pwm7-grp {
-+	pinctrl_pwm7: pwm7grp {
- 		fsl,pins = <
- 			MX6UL_PAD_ENET1_TX_CLK__PWM7_OUT	0x00079	/* SODIMM 67 */
- 		>;
- 	};
- 
--	pinctrl_uart1: uart1-grp {
-+	pinctrl_uart1: uart1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART1_TX_DATA__UART1_DTE_RX	0x1b0b1	/* SODIMM 33 */
- 			MX6UL_PAD_UART1_RX_DATA__UART1_DTE_TX	0x1b0b1	/* SODIMM 35 */
-@@ -586,7 +585,7 @@ MX6UL_PAD_UART1_CTS_B__UART1_DTE_RTS	0x1b0b1	/* SODIMM 25 */
- 		>;
- 	};
- 
--	pinctrl_uart1_ctrl1: uart1-ctrl1-grp { /* Additional DTR, DCD */
-+	pinctrl_uart1_ctrl1: uart1ctrl1grp { /* Additional DTR, DCD */
- 		fsl,pins = <
- 			MX6UL_PAD_JTAG_TDI__GPIO1_IO13		0x70a0 /* SODIMM 31 / DCD */
- 			MX6UL_PAD_LCD_DATA18__GPIO3_IO23	0x10b0 /* SODIMM 29 / DSR */
-@@ -595,7 +594,7 @@ MX6UL_PAD_LCD_DATA19__GPIO3_IO24        0x10b0 /* SODIMM 37 / RI */
- 		>;
- 	};
- 
--	pinctrl_uart2: uart2-grp {
-+	pinctrl_uart2: uart2grp {
- 		fsl,pins = <
- 			MX6UL_PAD_UART2_TX_DATA__UART2_DTE_RX	0x1b0b1 /* SODIMM 36 */
- 			MX6UL_PAD_UART2_RX_DATA__UART2_DTE_TX	0x1b0b1 /* SODIMM 38 */
-@@ -603,20 +602,20 @@ MX6UL_PAD_UART2_CTS_B__UART2_DTE_RTS	0x1b0b1 /* SODIMM 32 */
- 			MX6UL_PAD_UART2_RTS_B__UART2_DTE_CTS	0x1b0b1 /* SODIMM 34 */
- 		>;
- 	};
--	pinctrl_uart5: uart5-grp {
-+	pinctrl_uart5: uart5grp {
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO04__UART5_DTE_RX	0x1b0b1 /* SODIMM 19 */
- 			MX6UL_PAD_GPIO1_IO05__UART5_DTE_TX	0x1b0b1 /* SODIMM 21 */
- 		>;
- 	};
- 
--	pinctrl_usbh_reg: gpio-usbh-reg {
-+	pinctrl_usbh_reg: usbhreggrp {
- 		fsl,pins = <
- 			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0x10b0 /* SODIMM 129 / USBH_PEN */
- 		>;
- 	};
- 
--	pinctrl_usdhc1: usdhc1-grp {
-+	pinctrl_usdhc1: usdhc1grp {
- 		fsl,pins = <
- 			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x10059 /* SODIMM 47 */
- 			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x17059 /* SODIMM 190 */
-@@ -627,7 +626,7 @@ MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x17059 /* SODIMM 53 */
- 		>;
- 	};
- 
--	pinctrl_usdhc1_100mhz: usdhc1-100mhz-grp {
-+	pinctrl_usdhc1_100mhz: usdhc1-100mhzgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x100b9
- 			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x170b9
-@@ -638,7 +637,7 @@ MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x170b9
- 		>;
- 	};
- 
--	pinctrl_usdhc1_200mhz: usdhc1-200mhz-grp {
-+	pinctrl_usdhc1_200mhz: usdhc1-200mhzgrp {
- 		fsl,pins = <
- 			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x100f9
- 			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x170f9
-@@ -649,7 +648,7 @@ MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x170f9
- 		>;
- 	};
- 
--	pinctrl_usdhc2: usdhc2-grp {
-+	pinctrl_usdhc2: usdhc2grp {
- 		fsl,pins = <
- 			MX6UL_PAD_CSI_DATA00__USDHC2_DATA0	0x17069
- 			MX6UL_PAD_CSI_DATA01__USDHC2_DATA1	0x17069
-@@ -677,7 +676,7 @@ MX6UL_PAD_NAND_DATA07__USDHC2_DATA7 0x17059
- 		>;
- 	};
- 
--	pinctrl_wdog: wdog-grp {
-+	pinctrl_wdog: wdoggrp {
- 		fsl,pins = <
- 			MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
- 		>;
-@@ -685,7 +684,7 @@ MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
- };
- 
- &iomuxc_snvs {
--	pinctrl_snvs_gpio1: snvs-gpio1-grp {
-+	pinctrl_snvs_gpio1: snvsgpio1grp {
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER6__GPIO5_IO06	0x110a0	/* SODIMM 93 */
- 			MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x110a0	/* SODIMM 95 */
-@@ -695,49 +694,49 @@ MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x110a0	/* SODIMM 138 */
- 		>;
- 	};
- 
--	pinctrl_snvs_gpio3: snvs-gpio3-grp { /* Wifi pins */
-+	pinctrl_snvs_gpio3: snvsgpio3grp { /* Wifi pins */
- 		fsl,pins = <
- 			MX6ULL_PAD_BOOT_MODE1__GPIO5_IO11	0x130a0	/* SODIMM 127 */
- 		>;
- 	};
- 
--	pinctrl_snvs_ad7879_int: snvs-ad7879-int-grp { /* TOUCH Interrupt */
-+	pinctrl_snvs_ad7879_int: snvsad7879intgrp { /* TOUCH Interrupt */
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x100b0
- 		>;
- 	};
- 
--	pinctrl_snvs_reg_sd: snvs-reg-sd-grp {
-+	pinctrl_snvs_reg_sd: snvsregsdgrp {
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09	0x400100b0
- 		>;
- 	};
- 
--	pinctrl_snvs_usbc_det: snvs-usbc-det-grp {
-+	pinctrl_snvs_usbc_det: snvsusbcdetgrp {
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER2__GPIO5_IO02	0x130b0
- 		>;
- 	};
- 
--	pinctrl_snvs_gpiokeys: snvs-gpiokeys-grp {
-+	pinctrl_snvs_gpiokeys: snvsgpiokeysgrp {
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x130a0	/* SODIMM 45 / WAKE_UP */
- 		>;
- 	};
- 
--	pinctrl_snvs_usdhc1_cd: snvs-usdhc1-cd-grp {
-+	pinctrl_snvs_usdhc1_cd: snvsusdhc1cdgrp {
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x1b0a0 /* SODIMM 43 / MMC_CD */
- 		>;
- 	};
- 
--	pinctrl_snvs_usdhc1_sleep_cd: snvs-usdhc1-cd-grp-slp {
-+	pinctrl_snvs_usdhc1_cd_sleep: snvsusdhc1cd-sleepgrp {
- 		fsl,pins = <
- 			MX6ULL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x0
- 		>;
- 	};
- 
--	pinctrl_snvs_wifi_pdn: snvs-wifi-pdn-grp {
-+	pinctrl_snvs_wifi_pdn: snvswifipdngrp {
- 		fsl,pins = <
- 			MX6ULL_PAD_BOOT_MODE1__GPIO5_IO11	0x130a0
- 		>;
+ #include "imx6ull.dtsi"
 -- 
 2.35.1
 
