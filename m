@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D92BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391514AbiEFLt2 (ORCPT
+        id S1391519AbiEFLth (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 07:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
+        Fri, 6 May 2022 07:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379127AbiEFLsz (ORCPT
+        with ESMTP id S1391472AbiEFLtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 07:48:55 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9D062BF7;
-        Fri,  6 May 2022 04:45:11 -0700 (PDT)
+        Fri, 6 May 2022 07:49:03 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667B458E40;
+        Fri,  6 May 2022 04:45:17 -0700 (PDT)
 Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvpZn3Fm1zGpP0;
-        Fri,  6 May 2022 19:42:25 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kvpcn4C1mzfbJg;
+        Fri,  6 May 2022 19:44:09 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
  dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 19:45:09 +0800
+ 15.1.2375.24; Fri, 6 May 2022 19:45:15 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 19:45:08 +0800
+ 15.1.2375.24; Fri, 6 May 2022 19:45:14 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -49,9 +49,9 @@ CC:     Zhen Lei <thunder.leizhen@huawei.com>,
         Chen Zhou <dingguo.cz@antgroup.com>,
         "John Donnelly" <John.p.donnelly@oracle.com>,
         Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH v24 1/6] kdump: return -ENOENT if required cmdline option does not exist
-Date:   Fri, 6 May 2022 19:43:57 +0800
-Message-ID: <20220506114402.365-2-thunder.leizhen@huawei.com>
+Subject: [PATCH v24 6/6] docs: kdump: Update the crashkernel description for arm64
+Date:   Fri, 6 May 2022 19:44:02 +0800
+Message-ID: <20220506114402.365-7-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220506114402.365-1-thunder.leizhen@huawei.com>
 References: <20220506114402.365-1-thunder.leizhen@huawei.com>
@@ -66,38 +66,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to the current crashkernel=Y,low support in other ARCHes, it's
-an optional command-line option. When it doesn't exist, kernel will try
-to allocate minimum required memory below 4G automatically.
-
-However, __parse_crashkernel() returns '-EINVAL' for all error cases. It
-can't distinguish the nonexistent option from invalid option.
-
-Change __parse_crashkernel() to return '-ENOENT' for the nonexistent option
-case. With this change, crashkernel,low memory will take the default
-value if crashkernel=,low is not specified; while crashkernel reservation
-will fail and bail out if an invalid option is specified.
+Now arm64 has added support for "crashkernel=X,high" and
+"crashkernel=Y,low". Unlike x86, crash low memory is not allocated if
+"crashkernel=Y,low" is not specified.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Baoquan He <bhe@redhat.com>
 ---
- kernel/crash_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 256cf6db573cd09..4d57c03714f4e13 100644
---- a/kernel/crash_core.c
-+++ b/kernel/crash_core.c
-@@ -243,9 +243,8 @@ static int __init __parse_crashkernel(char *cmdline,
- 	*crash_base = 0;
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed4a5..aa44c61114aa4b8 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -808,7 +808,7 @@
+ 			Documentation/admin-guide/kdump/kdump.rst for an example.
  
- 	ck_cmdline = get_last_crashkernel(cmdline, name, suffix);
--
- 	if (!ck_cmdline)
--		return -EINVAL;
-+		return -ENOENT;
+ 	crashkernel=size[KMG],high
+-			[KNL, X86-64] range could be above 4G. Allow kernel
++			[KNL, X86-64, ARM64] range could be above 4G. Allow kernel
+ 			to allocate physical memory region from top, so could
+ 			be above 4G if system have more than 4G ram installed.
+ 			Otherwise memory region will be allocated below 4G, if
+@@ -821,7 +821,7 @@
+ 			that require some amount of low memory, e.g. swiotlb
+ 			requires at least 64M+32K low memory, also enough extra
+ 			low memory is needed to make sure DMA buffers for 32-bit
+-			devices won't run out. Kernel would try to allocate at
++			devices won't run out. Kernel would try to allocate
+ 			at least 256M below 4G automatically.
+ 			This one let user to specify own low range under 4G
+ 			for second kernel instead.
+@@ -829,6 +829,11 @@
+ 			It will be ignored when crashkernel=X,high is not used
+ 			or memory reserved is below 4G.
  
- 	ck_cmdline += strlen(name);
++			[KNL, ARM64] range in low memory.
++			This one let user to specify a low range in DMA zone for
++			crash dump kernel.
++			It will be ignored when crashkernel=X,high is not used.
++
+ 	cryptomgr.notests
+ 			[KNL] Disable crypto self-tests
  
 -- 
 2.25.1
