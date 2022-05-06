@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA891C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 05:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB399C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 05:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378069AbiEFFaj (ORCPT
+        id S1389114AbiEFFbY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 01:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
+        Fri, 6 May 2022 01:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389208AbiEFFaW (ORCPT
+        with ESMTP id S1389116AbiEFFbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 01:30:22 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4BB66ACB;
-        Thu,  5 May 2022 22:26:24 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id i22so4188923ila.1;
-        Thu, 05 May 2022 22:26:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=btRfdC3/ebasVHvh6uBMVKIVD47Na90nsM4/u+AC2ZM=;
-        b=csQ7RZUtRH6jQJGzwUTsP8YRSCyTNZYFEEs5nHcuj27V2/BbiCk22oZe28NzwdR5Y6
-         /+icHCwD+cPSuiC5HXHZdW2ufqsDeIvtMO9bgJ8mdYI45dusdxQimS3BV7wHCzUO1RL8
-         40aIWruIi6OuClhmuetnsCyV1nKDBV0Jt0r/7BzpOrZp1JR6zzGa4oMJ8eUy3HvTxIea
-         d2KEntj7H2lcf/5fCxonDp5ZlPphExdTd/vLOvA0WX5infw2wPeOYxn0t86Jzdj37b1y
-         Tdr9HQrrz4domCTJaqWB+k0JHbRJDhtfkEa+Ma+Qn5JtOtIPBVxv/whExZHUXAE60GAI
-         GLaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=btRfdC3/ebasVHvh6uBMVKIVD47Na90nsM4/u+AC2ZM=;
-        b=g8fRmnHwUBYmuOcyUGe7+AisMiea1Hmt1nIhu7TvZCCtfhtaaZBsxRP4A9rqzK+U1h
-         HnuX9vslN1W46bs0DHm1LVQ5NAXHYN6B8KTVx01vNBnarEZWY7jByzoB0P/enFLLc044
-         F2L39Jhj0kKEctYGqAC0DUIbp6S6l/5HoQIGdxlqvuifdxfRxBiYRC3RxfARTFzUHqRw
-         /1lHvek52+QfxE1IXan6PWEoKJZE0ws+FdSRfiFrueta0cOervaJKcQZaVE8AETXwt5S
-         UCiNJwz1h7H+MxiAvjVr4Bj9H94UzLBtZJ2bUYSYuRMsVqYRSYuJ0KuZjF9IQ9x9rAvy
-         0oHg==
-X-Gm-Message-State: AOAM5326TYhmLlsZAv5cZ7FGEXXUkhYl5rOa2YOTgdhNeaIaHFPgZHSa
-        ozypv8IVwZiohmPdd3Z6R8YGOneNYxA4AmymhpU=
-X-Google-Smtp-Source: ABdhPJyeIUrhz3EpREFg1AsHHMUf4LhxfAFGKKfYPJemYWqV0jWB1mOS4wrsMq7C8VUTYVLdfmaDY3VDmVi0y+nojG0=
-X-Received: by 2002:a05:6e02:152e:b0:2cf:548d:a400 with SMTP id
- i14-20020a056e02152e00b002cf548da400mr715860ilu.72.1651814783766; Thu, 05 May
- 2022 22:26:23 -0700 (PDT)
+        Fri, 6 May 2022 01:31:21 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6282C91;
+        Thu,  5 May 2022 22:27:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651814859; x=1683350859;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=jjJ7o6bLleTyPSL5b0r/x/WkMwEejBsryTcFEZh8gPU=;
+  b=NHkpr+PE1Rb8RVvHCpakawJcvpL9zOrcoFMsayLXcdo/795v+pQ2CAMT
+   hHy6jOqA+7sJ+pAIUEj9umkWCjRt3qAmZqbdOSwTtY0q7arkVgFNUGzKm
+   Tsd9Rhtg+/n+G1ZBawkcB2m3f0XYWNQZkYl/fuOaRv4YL7ofvNJgibgIc
+   06uThUi7552dzJ7GIOBPJrN5VLtAxkTvTlzbVLfosyOpQLSwlagypxGIZ
+   E7hrZG1gCvZlYs7luQQZti/0MFhnAPSo4ef28maJE7RxLKjaOJgrvawZr
+   tEdA/j43g0UWJwJ+ufNecxdTMwq3poEor6RgrgHmz5MJgiPh+gxp6W1sc
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328901599"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="328901599"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 22:27:38 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="585780403"
+Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.249.169.36]) ([10.249.169.36])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 22:27:35 -0700
+Message-ID: <0233f2dc-31b9-ff30-67c9-2ad5871e7dda@intel.com>
+Date:   Fri, 6 May 2022 13:27:33 +0800
 MIME-Version: 1.0
-References: <20220505191704.22812-1-ojeda@kernel.org> <20220505191704.22812-2-ojeda@kernel.org>
- <202205051643.1A8E38C7F2@keescook>
-In-Reply-To: <202205051643.1A8E38C7F2@keescook>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Fri, 6 May 2022 07:26:12 +0200
-Message-ID: <CANiq72n+g_=QQcSuE13+58j+PCuqLEyCusEUqMKFywR8UKHK6g@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] kallsyms: avoid hardcoding the buffer size
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [RFC PATCH v6 025/104] KVM: TDX: initialize VM with TDX specific
+ parameters
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+ <fbc23565f7556e7b33227bcad95441195bb4758d.1651774250.git.isaku.yamahata@intel.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <fbc23565f7556e7b33227bcad95441195bb4758d.1651774250.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 1:46 AM Kees Cook <keescook@chromium.org> wrote:
->
-> No need to repeat the sizing:
->
->         fgets(name, sizeof(name), in)
+On 5/6/2022 2:14 AM, isaku.yamahata@intel.com wrote:
 
-Definitely.
+...
 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
+> +	if (init_vm->tsc_khz) {
+> +		guest_tsc_khz = init_vm->tsc_khz;
+> +		kvm->arch.default_tsc_khz = guest_tsc_khz;
+> +	} else
+> +		guest_tsc_khz = kvm->arch.default_tsc_khz;
+> +	td_params->tsc_frequency = TDX_TSC_KHZ_TO_25MHZ(guest_tsc_khz);
 
-Thanks for the three reviews!
+Isaku,
 
-Cheers,
-Miguel
+I think Paolo meant
+
+1. user space calls VM-scope KVM_SET_TSC_KHZ
+
+and
+
+2. td_params->tsc_frequency = 
+TDX_TSC_KHZ_TO_25MHZ(kvm->arch.default_tsc_khz);
+
+in 
+https://lore.kernel.org/all/e392b53a-fbaa-4724-07f4-171424144f70@redhat.com/
+
+so we can drop @tsc_khz in struct kvm_tdx_init_vm.
