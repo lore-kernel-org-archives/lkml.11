@@ -2,102 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A70C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC25C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355739AbiEFQEM (ORCPT
+        id S1443279AbiEFQEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33780 "EHLO
+        Fri, 6 May 2022 12:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443267AbiEFQDj (ORCPT
+        with ESMTP id S1392246AbiEFQEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:03:39 -0400
-Received: from smtp-42ab.mail.infomaniak.ch (smtp-42ab.mail.infomaniak.ch [84.16.66.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAD96D3AF
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:59:56 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwHr6bv2zMqSHG;
-        Fri,  6 May 2022 17:59:52 +0200 (CEST)
-Received: from localhost (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwHq1CRGzljsTN;
-        Fri,  6 May 2022 17:59:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651852792;
-        bh=wXt5V32MOkd3JJdPG9GwDCkPTH/BF8OWATmyHyUQ6Gs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lRc3SrWTV3AmR/r28718FJBdJMqWCLH3epIPUkeDPP5Fvsxo0yTfsoSPEIx8a41Y3
-         eD6qhRb2ozK76zekD+h18j4KhJ0cqak1Vg21qn/w3LrH6g6XnjHr5Ez123dytbMtSe
-         g6zCe59CnX4hyrlxED8pwmtjPGgn6C06qu7PKqFk=
-From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
-        Andy Whitcroft <apw@canonical.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Joe Perches <joe@perches.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH v2 5/5] clang-format: Fix space after for_each macros
-Date:   Fri,  6 May 2022 18:01:06 +0200
-Message-Id: <20220506160106.522341-6-mic@digikod.net>
-In-Reply-To: <20220506160106.522341-1-mic@digikod.net>
-References: <20220506160106.522341-1-mic@digikod.net>
+        Fri, 6 May 2022 12:04:35 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB624D636;
+        Fri,  6 May 2022 09:00:49 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246FeEnw028532;
+        Fri, 6 May 2022 16:00:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=bRmWHothJ44idqRxRc2b4VvG+NnDl/cNT8TjtLNF0oA=;
+ b=qj1uWR9hKfdHIXUpYuovn0sRaVNrm0WqBoQwyDIBr9xYlP46hgM9ZrPKbjxUysPrV2p0
+ NZ9z5uQ0KdeTKyvr5SduHtYvEJx0DodtNVtjtkkQdA0wUAR4uwq2FjkllkX14b01EyiF
+ T+sP4EAKOwo9XMebeVwbQ6Xz6jrSiYhmWsOPRUVbVeOUW27erfz+NPs3JYWU6m4Cf+DQ
+ Fns15BFUbiWlvFi4T4zjU4rJgxmJh410mde+wLJbZl9/niOjaQyJmrTsSD8/cfI8CWVA
+ TPzkvaYqChyU7HrN1oOy+Srj36LNDs/lKTb0Lwq5ppsnHOA+edwOyuwzpraMyw0WP+21 Sw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw5b4a1kh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 16:00:44 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 246FxA5I007140;
+        Fri, 6 May 2022 16:00:43 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw5b4a1k8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 16:00:43 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 246FeR5F018164;
+        Fri, 6 May 2022 15:55:39 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma04dal.us.ibm.com with ESMTP id 3frvrabh39-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 15:55:39 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246FtcBB34800094
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 6 May 2022 15:55:38 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5A5AB78060;
+        Fri,  6 May 2022 15:55:38 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 080DA7805F;
+        Fri,  6 May 2022 15:55:36 +0000 (GMT)
+Received: from [9.211.41.182] (unknown [9.211.41.182])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri,  6 May 2022 15:55:35 +0000 (GMT)
+Message-ID: <6e3f4d81-dcb5-9a64-a9f8-2c9b319574ef@linux.ibm.com>
+Date:   Fri, 6 May 2022 11:55:35 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v6 14/21] KVM: s390: pci: provide routines for
+ enabling/disabling interrupt forwarding
+Content-Language: en-US
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220426200842.98655-1-mjrosato@linux.ibm.com>
+ <20220426200842.98655-15-mjrosato@linux.ibm.com>
+ <28395b98-3489-342a-970a-5358e4405f22@linux.ibm.com>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <28395b98-3489-342a-970a-5358e4405f22@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZYJdC1IPRRb3XJnAspOlOwIp7kSxSB3-
+X-Proofpoint-ORIG-GUID: 1Tvfo-boab2yO5F4ca5zEB0e4uWca6Lx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-06_04,2022-05-06_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ adultscore=0 phishscore=0 priorityscore=1501 impostorscore=0 spamscore=0
+ mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205060082
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set SpaceBeforeParens to ControlStatementsExceptForEachMacros to not add
-space between a for_each macro and the following parenthesis.  This
-option is available since clang-format-11 [1] and is in line with the
-checkpatch.pl rules [2].
+On 5/6/22 11:35 AM, Christian Borntraeger wrote:
+> 
+> 
+> Am 26.04.22 um 22:08 schrieb Matthew Rosato:
+> [...]
+>> +static inline void unaccount_mem(unsigned long nr_pages)
+>> +{
+>> +    struct user_struct *user = get_uid(current_user());
+>> +
+>> +    if (user)
+>> +        atomic_long_sub(nr_pages, &user->locked_vm);
+>> +    if (current->mm)
+>> +        atomic64_sub(nr_pages, &current->mm->pinned_vm);
+>> +}
+>> +
+>> +static inline int account_mem(unsigned long nr_pages)
+>> +{
+>> +    struct user_struct *user = get_uid(current_user());
+>> +    unsigned long page_limit, cur_pages, new_pages;
+>> +
+>> +    page_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+>> +
+>> +    do {
+>> +        cur_pages = atomic_long_read(&user->locked_vm);
+>> +        new_pages = cur_pages + nr_pages;
+>> +        if (new_pages > page_limit)
+>> +            return -ENOMEM;
+>> +    } while (atomic_long_cmpxchg(&user->locked_vm, cur_pages,
+>> +                    new_pages) != cur_pages);
+>> +
+>> +    atomic64_add(nr_pages, &current->mm->pinned_vm);
+>> +
+>> +    return 0;
+> 
+> user->locked_vm is not available unconditionally. Shall we add
+> 
+> CONFIG_S390 && CONFIG_KVM here?
+> 
+> include/linux/sched/user.h
+> #if defined(CONFIG_PERF_EVENTS) || defined(CONFIG_BPF_SYSCALL) || \
+>      defined(CONFIG_NET) || defined(CONFIG_IO_URING)
+>          atomic_long_t locked_vm;
+> #endif
+> Or we could get rid of the user memlock checking for now until this is 
+> more ubiquitous.
 
-I found that this patch has also been sent by Brian Norris some weeks
-ago [3].
+Oh, good catch.  Per my conversation with Jason in a thread on patch 16, 
+we will end up with a CONFIG_VFIO_PCI_ZDEV_KVM (or something like that) 
+-- this could be used instead of CONFIG_S390 && CONFIG_KVM and would 
+imply both of those anyway
 
-Link: https://clang.llvm.org/docs/ClangFormatStyleOptions.html [1]
-Link: https://lore.kernel.org/r/8b6b252b-47a6-9d52-f0bd-10d3bc4ad244@digikod.net [2]
-Link: https://lore.kernel.org/lkml/YmHuZjmP9MxkgJ0R@google.com/ [3]
-Cc: Miguel Ojeda <ojeda@kernel.org>
-Cc: Tom Rix <trix@redhat.com>
-Co-developed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Link: https://lore.kernel.org/r/20220506160106.522341-6-mic@digikod.net
----
- .clang-format | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/.clang-format b/.clang-format
-index 235f7bb8f84a..1e083df1a689 100644
---- a/.clang-format
-+++ b/.clang-format
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- #
--# clang-format configuration file. Intended for clang-format >= 6.
-+# clang-format configuration file. Intended for clang-format >= 11.
- #
- # For more information, see:
- #
-@@ -667,7 +667,7 @@ SpaceAfterTemplateKeyword: true
- SpaceBeforeAssignmentOperators: true
- SpaceBeforeCtorInitializerColon: true
- SpaceBeforeInheritanceColon: true
--SpaceBeforeParens: ControlStatements
-+SpaceBeforeParens: ControlStatementsExceptForEachMacros
- SpaceBeforeRangeBasedForLoopColon: true
- SpaceInEmptyParentheses: false
- SpacesBeforeTrailingComments: 1
--- 
-2.35.1
+> 
+> 
+> Otherwise this looks sane
+> 
+> Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 
