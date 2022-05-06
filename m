@@ -2,181 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D90C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 275E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443707AbiEFQP4 (ORCPT
+        id S1443697AbiEFQRV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47902 "EHLO
+        Fri, 6 May 2022 12:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443839AbiEFQOc (ORCPT
+        with ESMTP id S1443743AbiEFQRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:14:32 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BDA517C9;
-        Fri,  6 May 2022 09:10:30 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id g6so15363824ejw.1;
-        Fri, 06 May 2022 09:10:30 -0700 (PDT)
+        Fri, 6 May 2022 12:17:10 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F327092D
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:12:15 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id v4so9804827ljd.10
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:12:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=q7S/y28eqi3N/L95p7EBMJ6GJfVto1Y5X4u2RhsC0wE=;
-        b=nDxXrLK/2alK0R/dV4PoFxfaIc0++7aUntrgqo9m3deZ6M4YC49MFiKb3uvMZBR3Zh
-         2OF89jimVV/FPGFX3PncALdtEZGACmelc8xysgk5tLxz7ZECRUkz7PmgQOMO5H7O3zPc
-         UwT/Y9XlitVF7JygPxTx8i13/0fpmU9XMK2FeRrlyPHkpUPFzvrJug8q45Sy7mKqFUug
-         uN7AkrMaxy548vq2rjZriaZBuLq+Jr3xYLBH5ObUshZyV4a2b1Htrr4tMuUaJ2YBhZkq
-         eQSkO5/gSwhZHosByDPvFwG2VEnsGQblvR3n4S4Fv4f03Y2otdhZGwpVsjhpCeAEt17+
-         yoVw==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3LVCF+EC61p3SRHqy5+HBfYg8g8sBVA6E2RSjLMm3ic=;
+        b=71gELqa8e3JZdAR40f88qYRAendRWwJy32RDkq6jbbgAR1oFpqUnUAh7JDtx9eVM4b
+         hXnwylvyfzfwO1l5pR5a8tj6McjLg1BgMlPCXYajEuS9KSDUdhDD4IEadqjiXDqkc5MN
+         jgRnaEFuE4vFyEl8fmIM9iQXW9RSsk/YvT+UGEyx56ucVrRD6B9KQ/k3MQeUHryYIjuD
+         6HSmA9SD2cmqfM/Rtv+U/n0Ew972cSEgHdE7tNtlrRWpD4u3DVdtKECy53If23SgbnzR
+         xej7+9vB9kXXhnte6xgRsD1WPNIKMmy+MI5P0vF2w3FABpNop43zQpwmMAvrts8IUo6u
+         Ay6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q7S/y28eqi3N/L95p7EBMJ6GJfVto1Y5X4u2RhsC0wE=;
-        b=gDOunqDLKFZPJU5+2IV7B3eOQZpHPETvumsYdRlk8+v7qne7E2jkE2QtBUyCGV4UHL
-         UwYG5V6a+pJ7IlSrK9Lg4CWvP/39jqMSs8jh/cfjvwD6hiaQgfRUyv+sKHhZCKMdDuLx
-         hs8kfyjVz59Ax+p7A5H6MpMPDgoxzbwvBJ5ASTrMlsOe8tjyitYRREUaRE1+fe1XoIyj
-         XzoBoeJCF91Lc9heH9cJTayI9IDty+2FTQ+bK/UKAvn5LedftpnhKsnkXbyxPDol3fU3
-         XGqSoa+kcjYkLQD7s05H+jtrHhrU7MnIXdu/H4kLQSJ15BBSX87QhVnCyXvpzJDwDbS/
-         VlXQ==
-X-Gm-Message-State: AOAM532nfwGRF9WBjtTMLBzQgHdg7wCUZTxjhjV4oEfa10/UxH4jzaCS
-        HMKQMfZyuwVPI453tRStm1o=
-X-Google-Smtp-Source: ABdhPJywfqlagcm1d/F3oR/wXhzRvDeJuuiv9xPJejbTkQJwuvMkE+QedR/B+OQM4YCWROCiFWqiuw==
-X-Received: by 2002:a17:907:728f:b0:6f4:5d2d:38c8 with SMTP id dt15-20020a170907728f00b006f45d2d38c8mr3423115ejc.345.1651853428706;
-        Fri, 06 May 2022 09:10:28 -0700 (PDT)
-Received: from kista.localnet (cpe1-3-76.cable.triera.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id g3-20020a056402424300b0042617ba6387sm2499443edb.17.2022.05.06.09.10.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3LVCF+EC61p3SRHqy5+HBfYg8g8sBVA6E2RSjLMm3ic=;
+        b=ekI7FLX72cEUxJflVKzfUfla3NGr3Rh6BlvIWiS3ZsnEvOsFhjhKtvgsj3lrzfuX+l
+         rPHdRqzSzwvMk54NP5GTdYnVsKG2ZD+RXAjkY2eEhKWaJGj8Qbqzr5mMMTldX8ceZwA8
+         40ntm+IXOc8rWFhj8xITsTLXXZaB9bIBGUjDJZkBAURQDE8F2GEpF1LRSBAbfV/zhIrQ
+         FulZehrpj8z3rMqYhe33q0jepiXjC7YDU2BaoZtTV6AoZrdVhF9JMaAleTQJ7bbjsBAN
+         c6mjZy0FjL5vwgqugASHeTyCVjwZ8CAn9JXBosAlrt9u/70VfOZS+MSXEBWMEGNobhxQ
+         vBlw==
+X-Gm-Message-State: AOAM531E/9wnLKniGyU/BnV1KfqhKeb+xv9XCISqTXdJhNN2KpnaAN2F
+        xsDpTk0KgmaKnMELK8HxF8M6kg==
+X-Google-Smtp-Source: ABdhPJxcoFt3N3AtHGRW62qNedg2H/hvHQ56BxLep0ct05gnPOlLMPFLw3EGV7t5IJpESnjqgxaHQQ==
+X-Received: by 2002:a2e:b6c6:0:b0:24f:3919:5923 with SMTP id m6-20020a2eb6c6000000b0024f39195923mr2365023ljo.398.1651853533664;
+        Fri, 06 May 2022 09:12:13 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id v17-20020a2e9611000000b0024f3d1daed9sm680999ljh.97.2022.05.06.09.12.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 09:10:28 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Andre Przywara <andre.przywara@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-clk@vger.kernel.org
-Subject: Re: Re: [PATCH v11 1/6] clk: sunxi-ng: h6-r: Add RTC gate clock
-Date:   Fri, 06 May 2022 18:10:26 +0200
-Message-ID: <2108126.Mh6RI2rZIc@kista>
-In-Reply-To: <875fc3d6-fb45-903c-e52e-4abf43b46db2@sholland.org>
-References: <20220428230933.15262-1-andre.przywara@arm.com> <20220428230933.15262-2-andre.przywara@arm.com> <875fc3d6-fb45-903c-e52e-4abf43b46db2@sholland.org>
+        Fri, 06 May 2022 09:12:13 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 27825104AFD; Fri,  6 May 2022 19:13:59 +0300 (+03)
+Date:   Fri, 6 May 2022 19:13:59 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv5 08/12] x86/mm: Provide helpers for unaccepted memory
+Message-ID: <20220506161359.4j5j5fxrw53fdbyr@box.shutemov.name>
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-9-kirill.shutemov@linux.intel.com>
+ <YnJfhiiHn+48H2vb@zn.tnic>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnJfhiiHn+48H2vb@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne torek, 03. maj 2022 ob 04:06:59 CEST je Samuel Holland napisal(a):
-> On 4/28/22 6:09 PM, Andre Przywara wrote:
-> > The H6 and H616 feature an (undocumented) bus clock gate for accessing
-> > the RTC registers. This seems to be enabled at reset (or by the BootROM),
-> > so we got away without it so far, but exists regardless.
-> > Since the new RTC clock binding for the H616 requires this "bus" clock
-> > to be specified in the DT, add this to R_CCU clock driver and expose it
-> > on the DT side with a new number.
-> > We do this for both the H6 and H616, but mark it as IGNORE_UNUSED, as we
-> > cannot reference it in any H6 DTs.
-> > 
-> > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+On Wed, May 04, 2022 at 01:12:06PM +0200, Borislav Petkov wrote:
+> On Mon, Apr 25, 2022 at 06:39:30AM +0300, Kirill A. Shutemov wrote:
+> > +	unaccepted_memory = __va(boot_params.unaccepted_memory);
+> > +	range_start = start / PMD_SIZE;
+> > +
+> > +	spin_lock_irqsave(&unaccepted_memory_lock, flags);
+> > +	for_each_set_bitrange_from(range_start, range_end, unaccepted_memory,
+> > +				   DIV_ROUND_UP(end, PMD_SIZE)) {
+> > +		unsigned long len = range_end - range_start;
+> > +
+> > +		/* Platform-specific memory-acceptance call goes here */
+> > +		panic("Cannot accept memory");
 > 
-> Reviewed-by: Samuel Holland <samuel@sholland.org>
-> 
-> One tiny nit below, if you resend.
+> Yeah, no, WARN_ON_ONCE() pls.
 
-Fixed and applied to sunxi/clk-for-5.19, thanks!
+Failure to accept the memory is fatal. Why pretend it is not?
 
-Best regards,
-Jernej
+For TDX it will result in a crash on the first access. Prolonging the
+suffering just make it harder to understand what happened.
 
+> > +	unsigned long flags;
+> > +	bool ret = false;
+> > +
+> > +	spin_lock_irqsave(&unaccepted_memory_lock, flags);
+> > +	while (start < end) {
+> > +		if (test_bit(start / PMD_SIZE, unaccepted_memory)) {
+> > +			ret = true;
 > 
-> > ---
-> >  drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c      | 5 +++++
-> >  drivers/clk/sunxi-ng/ccu-sun50i-h6-r.h      | 2 +-
-> >  include/dt-bindings/clock/sun50i-h6-r-ccu.h | 1 +
-> >  3 files changed, 7 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c b/drivers/clk/sunxi-ng/
-ccu-sun50i-h6-r.c
-> > index 712e103382d8..88509339031e 100644
-> > --- a/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c
-> > +++ b/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c
-> > @@ -98,6 +98,8 @@ static SUNXI_CCU_GATE(r_apb1_ir_clk,	"r-apb1-ir",	
-"r-apb1",
-> >  		      0x1cc, BIT(0), 0);
-> >  static SUNXI_CCU_GATE(r_apb1_w1_clk,	"r-apb1-w1",	"r-apb1",
-> >  		      0x1ec, BIT(0), 0);
-> > +static SUNXI_CCU_GATE(r_apb1_rtc_clk,	"r-apb1-rtc",	"r-apb1",
-> > +		      0x20c, BIT(0), CLK_IGNORE_UNUSED);
-> >  
-> >  /* Information of IR(RX) mod clock is gathered from BSP source code */
-> >  static const char * const r_mod0_default_parents[] = { "osc32k", "osc24M" 
-};
-> > @@ -147,6 +149,7 @@ static struct ccu_common *sun50i_h616_r_ccu_clks[] = {
-> >  	&r_apb2_i2c_clk.common,
-> >  	&r_apb2_rsb_clk.common,
-> >  	&r_apb1_ir_clk.common,
-> > +	&r_apb1_rtc_clk.common,
-> >  	&ir_clk.common,
-> >  };
-> >  
-> > @@ -163,6 +166,7 @@ static struct clk_hw_onecell_data sun50i_h6_r_hw_clks 
-= {
-> >  		[CLK_R_APB2_I2C]	= &r_apb2_i2c_clk.common.hw,
-> >  		[CLK_R_APB2_RSB]	= &r_apb2_rsb_clk.common.hw,
-> >  		[CLK_R_APB1_IR]		= 
-&r_apb1_ir_clk.common.hw,
-> > +		[CLK_R_APB1_RTC]	= &r_apb1_rtc_clk.common.hw,
-> >  		[CLK_R_APB1_W1]		= 
-&r_apb1_w1_clk.common.hw,
+> Wait, what?
 > 
-> The new clock should go after CLK_R_APB1_W1 to match the ordering above.
-> 
-> >  		[CLK_IR]		= &ir_clk.common.hw,
-> >  		[CLK_W1]		= &w1_clk.common.hw,
-> > @@ -179,6 +183,7 @@ static struct clk_hw_onecell_data 
-sun50i_h616_r_hw_clks = {
-> >  		[CLK_R_APB2_I2C]	= &r_apb2_i2c_clk.common.hw,
-> >  		[CLK_R_APB2_RSB]	= &r_apb2_rsb_clk.common.hw,
-> >  		[CLK_R_APB1_IR]		= 
-&r_apb1_ir_clk.common.hw,
-> > +		[CLK_R_APB1_RTC]	= &r_apb1_rtc_clk.common.hw,
-> >  		[CLK_IR]		= &ir_clk.common.hw,
-> >  	},
-> >  	.num	= CLK_NUMBER,
-> > diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.h b/drivers/clk/sunxi-ng/
-ccu-sun50i-h6-r.h
-> > index 7e290b840803..10e9b66afc6a 100644
-> > --- a/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.h
-> > +++ b/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.h
-> > @@ -14,6 +14,6 @@
-> >  
-> >  #define CLK_R_APB2	3
-> >  
-> > -#define CLK_NUMBER	(CLK_R_APB2_RSB + 1)
-> > +#define CLK_NUMBER	(CLK_R_APB1_RTC + 1)
-> >  
-> >  #endif /* _CCU_SUN50I_H6_R_H */
-> > diff --git a/include/dt-bindings/clock/sun50i-h6-r-ccu.h b/include/dt-
-bindings/clock/sun50i-h6-r-ccu.h
-> > index 890368d252c4..a96087abc86f 100644
-> > --- a/include/dt-bindings/clock/sun50i-h6-r-ccu.h
-> > +++ b/include/dt-bindings/clock/sun50i-h6-r-ccu.h
-> > @@ -22,5 +22,6 @@
-> >  #define CLK_W1			12
-> >  
-> >  #define CLK_R_APB2_RSB		13
-> > +#define CLK_R_APB1_RTC		14
-> >  
-> >  #endif /* _DT_BINDINGS_CLK_SUN50I_H6_R_CCU_H_ */
-> > 
-> 
-> 
+> That thing is lying: it'll return true for *some* PMD which is accepted
+> but not the whole range of [start, end].
 
+That's true. Note also that the check is inherently racy. Other CPU can
+get the range or subrange accepted just after spin_unlock().
 
+The check indicates that accept_memory() has to be called on the range
+before first access.
+
+Do you have problem with a name? Maybe has_unaccepted_memory()?
+
+-- 
+ Kirill A. Shutemov
