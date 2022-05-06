@@ -2,73 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8868C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4190FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388105AbiEFBve (ORCPT
+        id S1388123AbiEFBwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 21:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43104 "EHLO
+        Thu, 5 May 2022 21:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349717AbiEFBvb (ORCPT
+        with ESMTP id S1349717AbiEFBwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 21:51:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B8F6211A;
-        Thu,  5 May 2022 18:47:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B5D7B82E5C;
-        Fri,  6 May 2022 01:47:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A507C385A8;
-        Fri,  6 May 2022 01:47:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651801668;
-        bh=iNUPXDucMQscZkSdsD/gujWEOnLUNJIvuH6wMr6eYqw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aElIlxRmxgkknuQ7NnqOdJphYuTMt1YQyUay8eIs9EsHxPHQ7cGYy93rdgJnbP63T
-         Ykuj7qhcgFwkCf8B9O+a7yCF/fFlw2Ywp2jIERDv5H/89Lnt6UOcpTTTIq9VaVwJQX
-         GaaTIRJeV5I5fW+2jLk4yCI9W7010dmV+YPZGqz67LMadyGgkQqQ7T2Z80EHhMAyDz
-         EO4PK28Y7iT9CTb7bXdLzP8YsNUV/XSJHihi1AVr1gt1VpKEgRUNptW2k/ZPOzNY2a
-         iEmnh5PDnvFH6CGulrAoJUrSzaU4E/Lk8iuPUD274ZnPxvy5UgaHlrhojAtddwdfNn
-         inlF4ZIXAaW/g==
-Date:   Thu, 5 May 2022 18:47:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: Re: [PATCH net-next 3/5] net: hns3: add byte order conversion for
- PF to VF mailbox message
-Message-ID: <20220505184746.122aea96@kernel.org>
-In-Reply-To: <20220505124444.2233-4-huangguangbin2@huawei.com>
-References: <20220505124444.2233-1-huangguangbin2@huawei.com>
-        <20220505124444.2233-4-huangguangbin2@huawei.com>
+        Thu, 5 May 2022 21:52:05 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B487962A0F;
+        Thu,  5 May 2022 18:48:23 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 6 May 2022
+ 09:48:25 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 6 May
+ 2022 09:48:20 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] tools/lib/thermal: Remove unneeded semicolon
+Date:   Fri, 6 May 2022 09:48:14 +0800
+Message-ID: <1651801694-23311-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 20:44:42 +0800 Guangbin Huang wrote:
-> From: Jie Wang <wangjie125@huawei.com>
-> 
-> Currently, hns3 mailbox processing between PF and VF missed to convert
-> message byte order and use data type u16 instead of __le16 for mailbox
-> data process. These processes may cause problems between different
-> architectures.
-> 
-> So this patch uses __le16/__le32 data type to define mailbox data
-> structures. To be compatible with old hns3 driver, these structures use
-> one-byte alignment. Then byte order conversions are added to mailbox
-> messages from PF to VF.
+Fixes coccicheck warning:
 
-This adds a few sparse [1] warnings, you must have missed a few
-conversions.
+tools/lib/thermal/commands.c:215:2-3: Unneeded semicolon
 
-Please wait at least 24h for additional feedback before reposting.
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ tools/lib/thermal/commands.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1] https://www.kernel.org/doc/html/latest/dev-tools/sparse.html
+diff --git a/tools/lib/thermal/commands.c b/tools/lib/thermal/commands.c
+index 4e289ca1e5f3..73d4d4e8d6ec 100644
+--- a/tools/lib/thermal/commands.c
++++ b/tools/lib/thermal/commands.c
+@@ -212,7 +212,7 @@ static int handle_netlink(struct nl_cache_ops *unused,
+ 
+ 	default:
+ 		return THERMAL_ERROR;
+-	};
++	}
+ 
+ 	return ret;
+ }
+-- 
+2.7.4
 
