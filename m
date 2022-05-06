@@ -2,236 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A94C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87CFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388896AbiEFECC (ORCPT
+        id S1388857AbiEFEF3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 00:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
+        Fri, 6 May 2022 00:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344554AbiEFEBp (ORCPT
+        with ESMTP id S232934AbiEFEF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 00:01:45 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10FC1A06A
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:58:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651809483; x=1683345483;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=pDxxVR3O79qUpOv5tkT2HfXe7BUFMNZEqYVvxFgTC8Q=;
-  b=JP2o3iLK0gH3DZ+jOADrqaP4XKZ//55vunGDXcHrD/ZS2CXXwzfuv477
-   bmMkm++dC6oznZPey5WM13qdCoKZSywrFZ4YzSS8jKCVCT5Eyx2IkuRGL
-   2oy8TreGKcT4xi70QBbRunsezFEOi5XM/q6t0LXOj1wi8cCdXgdswFbLX
-   gl4gKwBEEx2IydoUdPWIQ9YTRcGw08yvESLXkM/upciBXVIw2C2QQxvTX
-   4eSqtylBjxzf3aG8RvwhICAP6kRV5XLJGWzUoSW2O2vj9JCLBbTI/1jWJ
-   VlXIeNL5pv6fwoaFJpS3fozsQh3RvvU7UB0I2aSRPmp4eeMxDxcxfgP97
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="267942329"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="267942329"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:58:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694984391"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 20:58:01 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmp6O-000D4q-Vq;
-        Fri, 06 May 2022 03:58:00 +0000
-Date:   Fri, 6 May 2022 11:57:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chao Yu <yuchao0@huawei.com>, Chao Yu <chao@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
-Subject: fs/f2fs/inode.c:284:26: warning: format specifies type 'long' but
- the argument has type 'unsigned int'
-Message-ID: <202205061127.vt9N0sP5-lkp@intel.com>
+        Fri, 6 May 2022 00:05:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2085DA27;
+        Thu,  5 May 2022 21:01:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E9C961E18;
+        Fri,  6 May 2022 04:01:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02D6C385AC;
+        Fri,  6 May 2022 04:01:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651809703;
+        bh=0VvDd2qLHOir3AGMSWjj9ZY4GCWoBH6pWQ+q4LN+xSM=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=NWPDyf3Zow4EUw8T8KAgFaveQGcDgO6/jFIgHxtFZyCcGN2+oDb4CbnvOT8991LJe
+         C+hDC//rp1aKJMAHzWAMJmxSCorR90GBos910FUBTWI35gP+Lb5SJ0yBdcTsC61EiY
+         KN3i+0I+AEKGDg1c6xbRmhYe9vfQH6K/n+f6UUf+YNAU7kQRdz0FLkZfKCRFgDNjaT
+         W26TIqx5YdPhn9HD5rwTwwI8PKgmH6rZkCXonQWwPJpoCvLFSY8AafxBYNfoElU0lE
+         HiM0QVMNqxUOQbQkXP+fP3pXAiZ8O75+4eTWcnKPWxj5o2o6/Nzj52iemfc0XqUTMj
+         WGywkyvP20aLQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 7536C5C2CB7; Thu,  5 May 2022 21:01:41 -0700 (PDT)
+Date:   Thu, 5 May 2022 21:01:41 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "frederic@kernel.org" <frederic@kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rcu: Add rnp->cbovldmask check in
+ rcutree_migrate_callbacks()
+Message-ID: <20220506040141.GA1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220505155236.1559619-1-qiang1.zhang@intel.com>
+ <20220505192956.GX1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880A25078A7D4DBAB1267C2DAC59@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <PH0PR11MB5880A25078A7D4DBAB1267C2DAC59@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220505-223550/Chao-Yu/f2fs-fix-to-do-sanity-check-for-inline-inode/20220428-105005
-head:   632856cc52a2023c9f07eea39ea41ddff5389997
-commit: 632856cc52a2023c9f07eea39ea41ddff5389997 f2fs: fix to do sanity check for inline inode
-date:   13 hours ago
-config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220506/202205061127.vt9N0sP5-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e004fb787698440a387750db7f8028e7cb14cfc)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/632856cc52a2023c9f07eea39ea41ddff5389997
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220505-223550/Chao-Yu/f2fs-fix-to-do-sanity-check-for-inline-inode/20220428-105005
-        git checkout 632856cc52a2023c9f07eea39ea41ddff5389997
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/net/wireless/ath/ath6kl/ drivers/net/wireless/broadcom/brcm80211/brcmfmac/ drivers/net/wireless/marvell/libertas/ drivers/net/wireless/marvell/mwifiex/ drivers/net/wireless/microchip/wilc1000/ drivers/staging/rtl8723bs/ fs/f2fs/
+On Fri, May 06, 2022 at 12:40:09AM +0000, Zhang, Qiang1 wrote:
+> On Thu, May 05, 2022 at 11:52:36PM +0800, Zqiang wrote:
+> > Currently, the rnp's cbovlmask is set in call_rcu(). when CPU going 
+> > offline, the outgoing CPU's callbacks is migrated to target CPU, the 
+> > number of callbacks on the my_rdp may be overloaded, if overload and 
+> > there is no call_rcu() call on target CPU for a long time, the rnp's 
+> > cbovldmask is not set in time. in order to fix this situation, add
+> > check_cb_ovld_locked() in rcutree_migrate_callbacks() to help CPU more 
+> > quickly reach quiescent states.
+> > 
+> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> 
+> >Doesn't this get set right at the end of the current grace period?
+> >Given that there is a callback overload, there should be a grace period in progress.
+> >
+> >See this code in rcu_gp_cleanup():
+> >
+> >		if (rcu_is_leaf_node(rnp))
+> >			for_each_leaf_node_cpu_mask(rnp, cpu, rnp->cbovldmask) {
+> >				rdp = per_cpu_ptr(&rcu_data, cpu);
+> >				check_cb_ovld_locked(rdp, rnp);
+> >			}
+> >
+> >So what am I missing here?  Or are you planning to remove the above code?
+> 
+> We only checked the overloaded rdp at the end of current grace period, for
+> my_rdp overloaded cause by migration callbacks to it,  if the my_rdp overloaded,
+> and the my_rdp->mynode 's cbovldmask  is empty,  the my_rdp overloaded may be
+> not checked at end of the current grace period.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Very good!
 
-All warnings (new ones prefixed by >>):
+> I have another question, why don't we call check_cb_ovld_locked() when rdp's n_cbs decreases.
+> for example call check_cb_ovld_locked() in rcu_do_bacth(), not at the end of grace period.
 
->> fs/f2fs/inode.c:284:26: warning: format specifies type 'long' but the argument has type 'unsigned int' [-Wformat]
-                             i_size_read(inode), MAX_INLINE_DATA(inode),
-                                                 ^~~~~~~~~~~~~~~~~~~~~~
-   fs/f2fs/f2fs.h:2353:39: note: expanded from macro 'f2fs_warn'
-           f2fs_printk(sbi, KERN_WARNING fmt, ##__VA_ARGS__)
-                                         ~~~    ^~~~~~~~~~~
-   fs/f2fs/f2fs.h:463:32: note: expanded from macro 'MAX_INLINE_DATA'
-   #define MAX_INLINE_DATA(inode)  (sizeof(__le32) *                       \
-                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
+The idea (as you noted above) is that it gets cleared at the end of each
+grace period.  We could also clear it in rcu_do_batch() as you suggest,
+but to make that change you would need to convince me that the extra
+overhead and complexity would provide a useful benefit.  This will not
+be easy.  ;-)
 
+> >If so, wouldn't you also need to clear the indication for the CPU that is going offline, being careful to handle the case where the two CPUs have different leaf rcu_node structures?
+> 
+> Yes the offline CPU need to clear.
 
-vim +284 fs/f2fs/inode.c
+But again, the clearing happens at the end of the next grace period.
+Here we lose (almost) nothing by leaving the bit set because the other
+bit is set as well.
 
-   202	
-   203	static bool sanity_check_inode(struct inode *inode, struct page *node_page)
-   204	{
-   205		struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-   206		struct f2fs_inode_info *fi = F2FS_I(inode);
-   207		struct f2fs_inode *ri = F2FS_INODE(node_page);
-   208		unsigned long long iblocks;
-   209	
-   210		iblocks = le64_to_cpu(F2FS_INODE(node_page)->i_blocks);
-   211		if (!iblocks) {
-   212			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   213			f2fs_warn(sbi, "%s: corrupted inode i_blocks i_ino=%lx iblocks=%llu, run fsck to fix.",
-   214				  __func__, inode->i_ino, iblocks);
-   215			return false;
-   216		}
-   217	
-   218		if (ino_of_node(node_page) != nid_of_node(node_page)) {
-   219			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   220			f2fs_warn(sbi, "%s: corrupted inode footer i_ino=%lx, ino,nid: [%u, %u] run fsck to fix.",
-   221				  __func__, inode->i_ino,
-   222				  ino_of_node(node_page), nid_of_node(node_page));
-   223			return false;
-   224		}
-   225	
-   226		if (f2fs_sb_has_flexible_inline_xattr(sbi)
-   227				&& !f2fs_has_extra_attr(inode)) {
-   228			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   229			f2fs_warn(sbi, "%s: corrupted inode ino=%lx, run fsck to fix.",
-   230				  __func__, inode->i_ino);
-   231			return false;
-   232		}
-   233	
-   234		if (f2fs_has_extra_attr(inode) &&
-   235				!f2fs_sb_has_extra_attr(sbi)) {
-   236			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   237			f2fs_warn(sbi, "%s: inode (ino=%lx) is with extra_attr, but extra_attr feature is off",
-   238				  __func__, inode->i_ino);
-   239			return false;
-   240		}
-   241	
-   242		if (fi->i_extra_isize > F2FS_TOTAL_EXTRA_ATTR_SIZE ||
-   243				fi->i_extra_isize % sizeof(__le32)) {
-   244			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   245			f2fs_warn(sbi, "%s: inode (ino=%lx) has corrupted i_extra_isize: %d, max: %zu",
-   246				  __func__, inode->i_ino, fi->i_extra_isize,
-   247				  F2FS_TOTAL_EXTRA_ATTR_SIZE);
-   248			return false;
-   249		}
-   250	
-   251		if (f2fs_has_extra_attr(inode) &&
-   252			f2fs_sb_has_flexible_inline_xattr(sbi) &&
-   253			f2fs_has_inline_xattr(inode) &&
-   254			(!fi->i_inline_xattr_size ||
-   255			fi->i_inline_xattr_size > MAX_INLINE_XATTR_SIZE)) {
-   256			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   257			f2fs_warn(sbi, "%s: inode (ino=%lx) has corrupted i_inline_xattr_size: %d, max: %zu",
-   258				  __func__, inode->i_ino, fi->i_inline_xattr_size,
-   259				  MAX_INLINE_XATTR_SIZE);
-   260			return false;
-   261		}
-   262	
-   263		if (F2FS_I(inode)->extent_tree) {
-   264			struct extent_info *ei = &F2FS_I(inode)->extent_tree->largest;
-   265	
-   266			if (ei->len &&
-   267				(!f2fs_is_valid_blkaddr(sbi, ei->blk,
-   268							DATA_GENERIC_ENHANCE) ||
-   269				!f2fs_is_valid_blkaddr(sbi, ei->blk + ei->len - 1,
-   270							DATA_GENERIC_ENHANCE))) {
-   271				set_sbi_flag(sbi, SBI_NEED_FSCK);
-   272				f2fs_warn(sbi, "%s: inode (ino=%lx) extent info [%u, %u, %u] is incorrect, run fsck to fix",
-   273					  __func__, inode->i_ino,
-   274					  ei->blk, ei->fofs, ei->len);
-   275				return false;
-   276			}
-   277		}
-   278	
-   279		if (f2fs_has_inline_data(inode) && !f2fs_may_inline_data(inode)) {
-   280			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   281			f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) reason(%d, %llu, %ld, %d, %d, %lu) should not have inline_data, run fsck to fix",
-   282				  __func__, inode->i_ino, inode->i_mode,
-   283				  f2fs_is_atomic_file(inode),
- > 284				  i_size_read(inode), MAX_INLINE_DATA(inode),
-   285				  file_is_encrypt(inode), file_is_verity(inode),
-   286				  F2FS_I(inode)->i_flags & F2FS_COMPR_FL);
-   287			return false;
-   288		}
-   289	
-   290		if (f2fs_has_inline_dentry(inode) && !S_ISDIR(inode->i_mode)) {
-   291			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   292			f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) should not have inline_dentry, run fsck to fix",
-   293				  __func__, inode->i_ino, inode->i_mode);
-   294			return false;
-   295		}
-   296	
-   297		if ((fi->i_flags & F2FS_CASEFOLD_FL) && !f2fs_sb_has_casefold(sbi)) {
-   298			set_sbi_flag(sbi, SBI_NEED_FSCK);
-   299			f2fs_warn(sbi, "%s: inode (ino=%lx) has casefold flag, but casefold feature is off",
-   300				  __func__, inode->i_ino);
-   301			return false;
-   302		}
-   303	
-   304		if (f2fs_has_extra_attr(inode) && f2fs_sb_has_compression(sbi) &&
-   305				fi->i_flags & F2FS_COMPR_FL &&
-   306				F2FS_FITS_IN_INODE(ri, fi->i_extra_isize,
-   307							i_log_cluster_size)) {
-   308			if (ri->i_compress_algorithm >= COMPRESS_MAX) {
-   309				set_sbi_flag(sbi, SBI_NEED_FSCK);
-   310				f2fs_warn(sbi, "%s: inode (ino=%lx) has unsupported "
-   311					"compress algorithm: %u, run fsck to fix",
-   312					  __func__, inode->i_ino,
-   313					  ri->i_compress_algorithm);
-   314				return false;
-   315			}
-   316			if (le64_to_cpu(ri->i_compr_blocks) >
-   317					SECTOR_TO_BLOCK(inode->i_blocks)) {
-   318				set_sbi_flag(sbi, SBI_NEED_FSCK);
-   319				f2fs_warn(sbi, "%s: inode (ino=%lx) has inconsistent "
-   320					"i_compr_blocks:%llu, i_blocks:%llu, run fsck to fix",
-   321					  __func__, inode->i_ino,
-   322					  le64_to_cpu(ri->i_compr_blocks),
-   323					  SECTOR_TO_BLOCK(inode->i_blocks));
-   324				return false;
-   325			}
-   326			if (ri->i_log_cluster_size < MIN_COMPRESS_LOG_SIZE ||
-   327				ri->i_log_cluster_size > MAX_COMPRESS_LOG_SIZE) {
-   328				set_sbi_flag(sbi, SBI_NEED_FSCK);
-   329				f2fs_warn(sbi, "%s: inode (ino=%lx) has unsupported "
-   330					"log cluster size: %u, run fsck to fix",
-   331					  __func__, inode->i_ino,
-   332					  ri->i_log_cluster_size);
-   333				return false;
-   334			}
-   335		}
-   336	
-   337		return true;
-   338	}
-   339	
+Another question, as long as we brought up rcu_do_batch().
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Why have the local variable "empty" given that the local variable "count"
+could be checked against zero?
+
+In the meantime, I have queued your commit for v5.20, thank you and
+good eyes!  As always, I could not resist the urge to wordsmith the
+commit log, so could you please check it for errors?
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+commit 5c36f04bd460246dd28c178ce5dce6fb02f898e1
+Author: Zqiang <qiang1.zhang@intel.com>
+Date:   Thu May 5 23:52:36 2022 +0800
+
+    rcu: Add rnp->cbovldmask check in rcutree_migrate_callbacks()
+    
+    Currently, the rcu_node structure's ->cbovlmask field is set in call_rcu()
+    when a given CPU is suffering from callback overload.  But if that CPU
+    goes offline, the outgoing CPU's callbacks is migrated to the running
+    CPU, which is likely to overload the running CPU.  However, that CPU's
+    bit in its leaf rcu_node structure's ->cbovlmask field remains zero.
+    
+    Initially, this is OK because the outgoing CPU's bit remains set.
+    However, that bit will be cleared at the next end of a grace period,
+    at which time it is quite possible that the running CPU will still
+    be overloaded.  If the running CPU invokes call_rcu(), then overload
+    will be checked for and the bit will be set.  Except that there is no
+    guarantee that the running CPU will invoke call_rcu(), in which case the
+    next grace period will fail to take the running CPU's overload condition
+    into account.  Plus, because the bit is not set, the end of the grace
+    period won't check for overload on this CPU.
+    
+    This commit therefore adds a call to check_cb_ovld_locked() in
+    check_cb_ovld_locked() to set the running CPU's ->cbovlmask bit
+    appropriately.
+    
+    Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 9dc4c4e82db62..bcc5876c9753b 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4577,6 +4577,7 @@ void rcutree_migrate_callbacks(int cpu)
+ 	needwake = needwake || rcu_advance_cbs(my_rnp, my_rdp);
+ 	rcu_segcblist_disable(&rdp->cblist);
+ 	WARN_ON_ONCE(rcu_segcblist_empty(&my_rdp->cblist) != !rcu_segcblist_n_cbs(&my_rdp->cblist));
++	check_cb_ovld_locked(my_rdp, my_rnp);
+ 	if (rcu_rdp_is_offloaded(my_rdp)) {
+ 		raw_spin_unlock_rcu_node(my_rnp); /* irqs remain disabled. */
+ 		__call_rcu_nocb_wake(my_rdp, true, flags);
