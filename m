@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02339C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29860C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384422AbiEFCDK (ORCPT
+        id S1388286AbiEFCDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 22:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
+        Thu, 5 May 2022 22:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388237AbiEFCCw (ORCPT
+        with ESMTP id S1388231AbiEFCCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 22:02:52 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5690213D0B;
-        Thu,  5 May 2022 18:59:10 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 02C7B200AA7;
-        Fri,  6 May 2022 03:59:09 +0200 (CEST)
+        Thu, 5 May 2022 22:02:54 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC63F13D10;
+        Thu,  5 May 2022 18:59:12 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 91A2F1A09D0;
+        Fri,  6 May 2022 03:59:11 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BF9E2200AAB;
-        Fri,  6 May 2022 03:59:08 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2E2C31A0A37;
+        Fri,  6 May 2022 03:59:11 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 1DE85180031B;
-        Fri,  6 May 2022 09:59:07 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 7C43C180031B;
+        Fri,  6 May 2022 09:59:09 +0800 (+08)
 From:   Richard Zhu <hongxing.zhu@nxp.com>
 To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
         broonie@kernel.org, lorenzo.pieralisi@arm.com,
@@ -33,9 +33,9 @@ To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
 Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v9 6/8] PCI: imx6: Disable clocks and regulators after link is down
-Date:   Fri,  6 May 2022 09:47:07 +0800
-Message-Id: <1651801629-30223-7-git-send-email-hongxing.zhu@nxp.com>
+Subject: [PATCH v9 8/8] PCI: imx6: Add compliance tests mode support
+Date:   Fri,  6 May 2022 09:47:09 +0800
+Message-Id: <1651801629-30223-9-git-send-email-hongxing.zhu@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
 References: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
@@ -44,67 +44,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since i.MX PCIe doesn't support hot-plug, reduce power consumption
-as much as possible by disabling clocks and regulators and returning
-error when the link is down.
+Refer to the Chapter 3.2 System Board Signal Quality of PCI Express
+Architecture PHY Test Specification Revision 2.0.
+
+Signal quality tests (for example: jitter, differential eye opening and
+so on) can be executed with devices in the polling.compliance state.
+
+To let the device support polling.compliance state, the clocks and powers
+shouldn't be turned off when the probe of device driver fails.
+
+Based on CLB (Compliance Load Board) Test Fixture and so on test
+equipments, the PHY link would be down during the compliance tests.
+Refer to this scenario, add the i.MX PCIe compliance tests mode enable
+support, and keep the clocks and powers on, and finish the driver probe
+without error return.
+
+Use the "pci_imx6.compliance=1" in kernel command line to enable the
+compliance tests mode.
 
 Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/pci/controller/dwc/pci-imx6.c | 39 ++++++++++++++++++---------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 3ce3993d5797..d122c12193a6 100644
+index f0ffd9011975..f78b59822626 100644
 --- a/drivers/pci/controller/dwc/pci-imx6.c
 +++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -845,7 +845,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+@@ -146,6 +146,10 @@ struct imx6_pcie {
+ #define PHY_RX_OVRD_IN_LO_RX_DATA_EN		BIT(5)
+ #define PHY_RX_OVRD_IN_LO_RX_PLL_EN		BIT(3)
+ 
++static bool imx6_pcie_cmp_mode;
++module_param_named(compliance, imx6_pcie_cmp_mode, bool, 0644);
++MODULE_PARM_DESC(compliance, "i.MX PCIe compliance test mode (1=compliance test mode enabled)");
++
+ static int pcie_phy_poll_ack(struct imx6_pcie *imx6_pcie, bool exp_val)
+ {
+ 	struct dw_pcie *pci = imx6_pcie->pci;
+@@ -826,10 +830,12 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ 	 * started in Gen2 mode, there is a possibility the devices on the
+ 	 * bus will not be detected at all.  This happens with PCIe switches.
+ 	 */
+-	tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
+-	tmp &= ~PCI_EXP_LNKCAP_SLS;
+-	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
+-	dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, tmp);
++	if (!imx6_pcie_cmp_mode) {
++		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
++		tmp &= ~PCI_EXP_LNKCAP_SLS;
++		tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
++		dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, tmp);
++	}
+ 
  	/* Start LTSSM. */
  	imx6_pcie_ltssm_enable(dev);
- 
--	dw_pcie_wait_for_link(pci);
-+	ret = dw_pcie_wait_for_link(pci);
-+	if (ret)
-+		goto err_out;
- 
- 	if (pci->link_gen == 2) {
- 		/* Allow Gen2 mode after the link is up. */
-@@ -876,12 +878,14 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 			ret = imx6_pcie_wait_for_speed_change(imx6_pcie);
- 			if (ret) {
- 				dev_err(dev, "Failed to bring link up!\n");
--				goto err_reset_phy;
-+				goto err_out;
- 			}
- 		}
- 
- 		/* Make sure link training is finished as well! */
--		dw_pcie_wait_for_link(pci);
-+		ret = dw_pcie_wait_for_link(pci);
-+		if (ret)
-+			goto err_out;
- 	} else {
- 		dev_info(dev, "Link: Gen2 disabled\n");
- 	}
-@@ -890,11 +894,18 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 	dev_info(dev, "Link up, Gen%i\n", tmp & PCI_EXP_LNKSTA_CLS);
- 	return 0;
- 
--err_reset_phy:
-+err_out:
+@@ -887,14 +893,16 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
  	dev_dbg(dev, "PHY DEBUG_R0=0x%08x DEBUG_R1=0x%08x\n",
  		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG0),
  		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1));
- 	imx6_pcie_reset_phy(imx6_pcie);
-+	imx6_pcie_clk_disable(imx6_pcie);
-+	if (imx6_pcie->phy != NULL) {
-+		phy_power_off(imx6_pcie->phy);
-+		phy_exit(imx6_pcie->phy);
-+	}
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
+-	imx6_pcie_reset_phy(imx6_pcie);
+-	imx6_pcie_clk_disable(imx6_pcie);
+-	if (imx6_pcie->phy != NULL) {
+-		phy_power_off(imx6_pcie->phy);
+-		phy_exit(imx6_pcie->phy);
++	if (!imx6_pcie_cmp_mode) {
++		imx6_pcie_reset_phy(imx6_pcie);
++		imx6_pcie_clk_disable(imx6_pcie);
++		if (imx6_pcie->phy != NULL) {
++			phy_power_off(imx6_pcie->phy);
++			phy_exit(imx6_pcie->phy);
++		}
++		if (imx6_pcie->vpcie)
++			regulator_disable(imx6_pcie->vpcie);
+ 	}
+-	if (imx6_pcie->vpcie)
+-		regulator_disable(imx6_pcie->vpcie);
  	return ret;
  }
  
+@@ -1289,8 +1297,15 @@ static int imx6_pcie_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	ret = dw_pcie_host_init(&pci->pp);
+-	if (ret < 0)
++	if (ret < 0) {
++		if (imx6_pcie_cmp_mode) {
++			dev_info(dev, "driver loaded with compliance test mode enabled\n");
++			ret = 0;
++		} else {
++			dev_err(dev, "unable to add PCIe port\n");
++		}
+ 		return ret;
++	}
+ 
+ 	if (pci_msi_enabled()) {
+ 		u8 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
 -- 
 2.25.1
 
