@@ -2,146 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 571F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443130AbiEFPt6 (ORCPT
+        id S1443141AbiEFPuz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
+        Fri, 6 May 2022 11:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381806AbiEFPt4 (ORCPT
+        with ESMTP id S1443103AbiEFPuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:49:56 -0400
-Received: from de-smtp-delivery-213.mimecast.com (de-smtp-delivery-213.mimecast.com [194.104.109.213])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A5546A413
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:46:12 -0700 (PDT)
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2047.outbound.protection.outlook.com [104.47.22.47]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-37-em1xDHG_Pya2PH8WaI-YsQ-1; Fri, 06 May 2022 17:46:09 +0200
-X-MC-Unique: em1xDHG_Pya2PH8WaI-YsQ-1
-Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3b::9) by
- GVAP278MB0151.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:3f::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5206.24; Fri, 6 May 2022 15:46:08 +0000
-Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
- ([fe80::c52f:2a3f:8cf5:6144]) by ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
- ([fe80::c52f:2a3f:8cf5:6144%4]) with mapi id 15.20.5206.027; Fri, 6 May 2022
- 15:46:08 +0000
-From:   Marcel Ziswiler <marcel.ziswiler@toradex.com>
-To:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     "linux-imx@nxp.com" <linux-imx@nxp.com>,
-        "soc@kernel.org" <soc@kernel.org>,
-        "frowand.list@gmail.com" <frowand.list@gmail.com>,
-        "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
-        "ariel.dalessandro@collabora.com" <ariel.dalessandro@collabora.com>,
-        "alexander.stein@ew.tq-group.com" <alexander.stein@ew.tq-group.com>,
-        "olof@lixom.net" <olof@lixom.net>,
-        "stefan@agner.ch" <stefan@agner.ch>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "sebastian.reichel@collabora.com" <sebastian.reichel@collabora.com>,
-        "leoyang.li@nxp.com" <leoyang.li@nxp.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        "cniedermaier@dh-electronics.com" <cniedermaier@dh-electronics.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "matthias.schiffer@ew.tq-group.com" 
-        <matthias.schiffer@ew.tq-group.com>,
-        "festevam@gmail.com" <festevam@gmail.com>
-Subject: Re: [PATCH v1 00/24] ARM: dts: imx7-colibri: device tree improvements
-Thread-Topic: [PATCH v1 00/24] ARM: dts: imx7-colibri: device tree
- improvements
-Thread-Index: AQHYYV34eY43c5Of3k+8s0HH0JFx8a0R/hCA
-Date:   Fri, 6 May 2022 15:46:08 +0000
-Message-ID: <92cbf17c1b09ee2d6b97e4ce2203f419c1144c84.camel@toradex.com>
-References: <20220506152809.295409-1-marcel@ziswiler.com>
-In-Reply-To: <20220506152809.295409-1-marcel@ziswiler.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9c77d82d-dd3a-42c0-ce62-08da2f778978
-x-ms-traffictypediagnostic: GVAP278MB0151:EE_
-x-microsoft-antispam-prvs: <GVAP278MB01511AE1C0FA65EA0DD99FF5FBC59@GVAP278MB0151.CHEP278.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: NqXBRm43cDv4cvuu3Y2GygDLMODbb638PbROrBitj4e7CF7Ll4y8bxs88gXGhq3Cl2rxy9N1xV/7SuKKxS6b7yvcrYm0BXZbWJ2sneX2A8nvBoDfe0ykf0JSHL6TFngd4+hQz/rwgXtVz/cO+IL+wil3uG5chDR4kQ7M03VFFakqBACi7sKvPP0AqzeNMWVgM5lUwPpMmQxD80qZSLKJaypCO16XEGkBXc8aXKqRriUbqONIyA3G3hVBxufeh2vRGUBx5uio6pct6mk+XxlOiNl5itbQkcoUIBISpmVm1jB1c4in4rCvg2wGqo9xX2bGp8Nx6PIGgSs1h6pWSA/BQKdfrVL+d5606JcJBFt/1bbHRgeVBgOBB0qKLtK/0Ks5Di/sJPZ0pRKxA4AIK+Imj3d3tQ6+a3xQSCZcrPmvBK9wo53PWw5WNLH7ffISDNcGnfPdYOIisryZ+YKZArvylQTVnPcY05zu2lS9xvYIxZaUEdlX9kMRPcH0FwipX12yYKTPMoSmCET7qNNOxikv40qXwu8G26JyiXdxozhvLjA852VyyRCFu37g1g9cnXDuBBZEjgzTAzTbirm657MjXVg1VLONIFqChEthQq6xZmVbIh3cv3VKK9SvcceWkOvno9c/U+eiUdt7Nquxjt5aXq791GpK57tUYN3SdboPbqe709iCLaqwJ1NLjA8czUIU+mbnECdffrHxFtVOascEwA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(136003)(366004)(39850400004)(346002)(396003)(376002)(122000001)(38100700002)(508600001)(5660300002)(86362001)(54906003)(6916009)(71200400001)(186003)(4270600006)(6486002)(44832011)(36756003)(316002)(558084003)(66946007)(4326008)(6506007)(2616005)(66556008)(83380400001)(8676002)(76116006)(2906002)(7416002)(66476007)(8936002)(38070700005)(6512007)(66446008)(64756008)(26005);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?N3piQnZPbE92VFA4VHpidGMySEtoN2hIcVFVem8rMVgyUUh2ZXBSMVMzZ1pw?=
- =?utf-8?B?QUxIRFFaRnVRc0VtR09ZZVlWZGx6R2RIck9GbzhhQjcvV25CbzFUR1pFNnhm?=
- =?utf-8?B?VDd6WkVqMjZkK2Zvc3lKYm52NTNwcW55YmZsall5dlAvYTFMNDlJYXJUN1J2?=
- =?utf-8?B?QWd2VUFEN3o5c09idHViYm5Zd0Y2QVBJNXlXL0szNTNoQkQwcXVUK2dnTFdl?=
- =?utf-8?B?VmFLNXdzSm81SHlmZUZvS2R2cnp5dmg1RUVrU1ViOVlVNEJUK3FZeG5pTkdQ?=
- =?utf-8?B?VEhkNGxSUFNnM1RnRG44NU1MZVBpTkxqY1FwUVk1cWN5cTRuNm5vQ1VacnBG?=
- =?utf-8?B?dFF0MWlNWlNpWTZIYlFKTzRIK0lQMmF6U1Z5TjVoSHBJdGxhWmFCeWdWaU5r?=
- =?utf-8?B?MlpCUm80UmVZNTcvZGc5a3EyN0xFbGp4elVFalNESjN5OGlJbTBSK1lSWUpt?=
- =?utf-8?B?QjJwNS95RjdRK1pnYUI0L2Y1Q0ZyME03OXo2emR5UitPUmJGQTd6OWJrK0Zj?=
- =?utf-8?B?RWUxektQcnlndlQ5RkI0RHF4UWFnSjNtTXh6cEg2Sm9yek9pUndTNHJTOEVq?=
- =?utf-8?B?emFWSTF0ZGFJMWJXMVlsSGNIQXMyYzFrQ1pNU0dlUHRnemdvVXBBRkJHR3F2?=
- =?utf-8?B?ZzlOaGlVSk9RN0Jaakp2Q01kclNLbk16ZUVaR21NcFFMNmF6ckFkc00yY2FV?=
- =?utf-8?B?MmV6dHJrLzNHRzU2cEVjLzdZTTk1RWY3WVh6Rzh0V3RwdytzMGx1K0ZOSTRH?=
- =?utf-8?B?UkVzallDd0Y5emt2SVkyZ1BZWTM4SlV6U0ZmRUlKcEZnbzEyYTVvV0xpVUhH?=
- =?utf-8?B?Rk1hZXJDWlU5TmN0SFlHUmdqb0wzK0Q5Qm5Dd0dVMlkyVlZuRU9TWi9oc0Rz?=
- =?utf-8?B?dHFzUnlvaWk5cVBVUmlCNHZpOEFpTSs4NHlIVG9iS2ZXTS9pNm1tMm0xck9n?=
- =?utf-8?B?Nk9UdWFJcHkyb0lCRXhsa3F2clFJK3hUVlpyTTlxVm5pTXg5S3crbXFRQlJt?=
- =?utf-8?B?OXpDVXpwbkRzaDBRYUtGTzRHUkZiUmkwa2MxcG9TTG9ZM2FUNjZYR3cvd0w0?=
- =?utf-8?B?RlRqcnZLQXRxRmE4dlk4SUlHbmorOU5wZzl5c3FxS1Y1YWJzSGY3dTJUczNk?=
- =?utf-8?B?NUZUZ2ZBemlxN0UvcGZFSE9sL20rb3ZBMzlWenk2TGNDZ2w0VnBUbEVZUUNk?=
- =?utf-8?B?cVVsenZSOVVpTGtUOUJNUGNOU1VPUUU3OG5Hb2FjaTBVNHJWcGFyWjlNSmZo?=
- =?utf-8?B?Y09EcmVyaXBxcUEzTU5UbHNCcWdlcVFCNnRGTnlVcjRWWHNac005WW9tUElB?=
- =?utf-8?B?WVR2Qm91N3BMYmpVVURSTUFaZW9XY2ZXVkFnR2hzR0JCNm1tTS9kOG5obFpx?=
- =?utf-8?B?bGc2QjdXNldUYnljTzZ5dnQ2MDYvb2JVWHhRZDZ2cWdLcnF1b0R6cHExMVRI?=
- =?utf-8?B?dnJCTUV6WmtOR0tneHBlZXFwcDg0NFNyZW1MQUtwMHZDSjkwTE4vSkZWc1A0?=
- =?utf-8?B?OFltTm5XaHVVUVRuT1ZJTHhpeDZqNGVDT2hxRzlpRUNaaXNxRWh1MXhZNlJK?=
- =?utf-8?B?MFZ3dlBKRGZKWURQc0RHTE5Mc1JtOUl5NFZUbDB3dFpBUXQ3VlBHSW9hOXpQ?=
- =?utf-8?B?N01Hb3BlM1ZSb1hCQklBYXhOSGZtQVB0bmFXWGhxanZldUtHOEhudngrNDZR?=
- =?utf-8?B?dnRNaEFXQ2ZOOU5qWWdUNkxWK0JRZVBiTVFtSlhtb3N4S2JCSVp3ejhOUTc4?=
- =?utf-8?B?eU5kZ1hGaDNpWVMxZkhMRkw5bE1DTHBSR2tSMjJrUVdqR0pia3NFSHE1bDdo?=
- =?utf-8?B?QitieGxkZm5HaTdqSGtMNmNsT0hOWkRPYk0yRm9TN0dCakhZL3M0KzlCWmli?=
- =?utf-8?B?a2tmU1pKTVhrTnI5NlJxY3ZmNGtKSzZMRExGYzlQOEJvVXVJWk5jdjhacEE1?=
- =?utf-8?B?cFZYMDNPSDJoZ3NlcERIbHhhK0NGS3B0OFFWQ0FpZE81dTFzQ2pGSnArSTky?=
- =?utf-8?B?Sml6N0NaU0xYc0NNYUhYTmJCQklYN2RJUUlFR0s2cVA0bGY2K3RJVmxES3Fq?=
- =?utf-8?B?N2JQOHVRTmRaUkZjY1NLZ1NFUC8zQWc4WkR6ZE9jdWhRVDZXdlk4NHZvZDlO?=
- =?utf-8?B?WUNCOU1iQkdsL0hpMFI2VUlDRElnVVJ1TDNGS2ZHWHVUeFRtNjZrWGJlRDhs?=
- =?utf-8?B?MEE2dnhqbUFjRFlhRnNuZFdkc09sYUFIK1JpTWN6dWV0M2pSaFF4ZzRmL0xP?=
- =?utf-8?B?T21Jd0FkbUNLTDRBT2pxd0Rvb0F1cVlGT0JDZXJRZEFWSWs1MGQ0aHNIWEZi?=
- =?utf-8?B?SENKNE1jRU1vU1BiVkFrUFFUZzgvMTg5ZE0wcWkwcFI4dExyZTZHanJONXRR?=
- =?utf-8?Q?8DyfGXyrc/D7q0IZWZ1bNHXeYsQDAWSq7ej1q?=
+        Fri, 6 May 2022 11:50:54 -0400
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86EA6D85F
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1651852032; x=1683388032;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=59Rf2fI9Uw9YDeWqGexMB7hcfRNyi4rusRKW1UzXakE=;
+  b=Z00Zar/1qxYaGxjV0E9gwi82NvmEgOtfi3f60OKELLpZzSmjManBKgut
+   e+JJXStybhd9iqU+znjgepf8kAkxyx7xFSuNSZS/JkIDYX7OqB3JoGgHn
+   iyDKRtAM6OmQJI7nFks2wOp1YMG1qABNU1zq3Vz6RMrP7GT/TFvNL2HZA
+   rdsCY72N7gG2mViP//z7rFeyCX+sPOjUqUqqVoPB+nKrMoUA5PS7TZtiX
+   qXuc7uNbMO/fHxwfacIPM25YFLwDFom7DWDAhM6Fehh/k3dFIpXxMNfNb
+   PANu77iGI3JWEufYZIzQIao2aJuGtbKX59Ju+2guCbLr0mqPaVwugPHHe
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,203,1647273600"; 
+   d="scan'208";a="200577969"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 06 May 2022 23:47:10 +0800
+IronPort-SDR: tqQvKcuLB9zXp4REcTSm84OSkS4xL87VWGUowpTWh0Ii1fcB3pGMO5uQDyNYxqhODLwtyyITNl
+ HbY8bJcYVlaVpOYiSiQNvB5dlb3m2O4cY4xPbM9ufPP7Agi/NEITc5GoLGxELH9kGwaDZBv+aQ
+ 2rG8V7TtP+Fcgmz4Jiq6IckT4RNqNOZ9QXTU//gXOO7fIiUAffGyHLxmWlaTC7AnJEjBUm1EOk
+ Rl5C6e3HyjkIfWwobbCqTXJ7x9HRGC1B2P51NxnLx/SLCb4FfZyN9RK4We1PdzRf3C3mboUYmR
+ SIEo9/SA2pSAm5ADQmwh2UKf
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 May 2022 08:17:25 -0700
+IronPort-SDR: fgwEQdbRBYMiYceHsOrqyXLVOTde7M+ts9bsc7VypwPzLK+GSMK4l/Jn/afU0SzhmRYYPvGY+O
+ Dx+YmkMAbZ3Wf5X1vyQtffX+1kndPhFkxvO26eB4p1hTFu/XJNo2BKF+qT51+Yoi/P/q80HYzt
+ dc4zM8Ev9joCPG7S3MFwNxz5twxfxMKFiQShJxybaFYLhq2uPboTOSo5t05qcA1Dqo0xPcGIz0
+ /IsWA0Sb6/PU3p7uEppSxTN33OfBMeT0sUqdn2GJad4h63QK9jDtSvK8AbGht5ZwLp7jedD0E/
+ nnc=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 May 2022 08:47:08 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Kvw1730Mfz1SVp8
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:47:07 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1651852026; x=1654444027; bh=59Rf2fI9Uw9YDeWqGexMB7hcfRNyi4rusRK
+        W1UzXakE=; b=X/b6rmohjasoazviVlFH//kXZ5lOWuyvheX6ZGozEy/Jw39WmZE
+        lWU+QQpYsARF7Q6O4/8mG0d3aCioDx7xyZIAIKTrW0ge4u3Pm2yFjBgrk6Svbp1D
+        qLdbvfRaBSO07Bd6/hziKh9hDjSHP65ov9mYNr5Zq/ukRH0DvyhVmLKf4RGT+tuR
+        i6crnhIeY12x/o89Q7N/fW+YJmKZqB+udn3/wJI+Ap0WGDz0A0Sq6iPrRuVjo/TY
+        LV0aC4gcGtWY5HAvjpY3WevY+iJIvEEbaiCdQDE5D9HajIcIDrYtCpyIUqEdBFAX
+        4ZhZ7bLuMpsdOgiZ7WIFkPP1CjEbyCK2YmA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id x-hSmQoNo3R7 for <linux-kernel@vger.kernel.org>;
+        Fri,  6 May 2022 08:47:06 -0700 (PDT)
+Received: from [10.225.103.215] (hn9j2j3.ad.shared [10.225.103.215])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Kvw133RlTz1Rvlc;
+        Fri,  6 May 2022 08:47:03 -0700 (PDT)
+Message-ID: <39a80347-af70-8af0-024a-52f92e27a14a@opensource.wdc.com>
+Date:   Sat, 7 May 2022 00:47:02 +0900
 MIME-Version: 1.0
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c77d82d-dd3a-42c0-ce62-08da2f778978
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2022 15:46:08.0199
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: keV8kd5/eytp9WafpFb9aVJDa57wnGXEWIdFawg1QOqn4ZkIKBcqkZ2hPCIFwaitClENRlpPY0bXb8zOUxe5rbMChC7AGUnZNGXK3hCwYoc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0151
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=marcel.ziswiler@toradex.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: [PATCH v3 10/11] null_blk: allow non power of 2 zoned devices
 Content-Language: en-US
+To:     Pankaj Raghav <p.raghav@samsung.com>, jaegeuk@kernel.org,
+        hare@suse.de, dsterba@suse.com, axboe@kernel.dk, hch@lst.de,
+        snitzer@kernel.org
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
+        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
+        gost.dev@samsung.com, jonathan.derrick@linux.dev,
+        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
+        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Alasdair Kergon <agk@redhat.com>, linux-block@vger.kernel.org,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>
+References: <20220506081105.29134-1-p.raghav@samsung.com>
+ <CGME20220506081116eucas1p2cce67bbf30f4c9c4e6854965be41b098@eucas1p2.samsung.com>
+ <20220506081105.29134-11-p.raghav@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220506081105.29134-11-p.raghav@samsung.com>
 Content-Type: text/plain; charset=UTF-8
-Content-ID: <849AC5BDE57C5747A4D119A6AFF29EED@CHEP278.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-U29ycnksIHJ1biBpbnRvIHNvbWUgZW1haWwgc2Vzc2lvbiBsaW1pdCBhZ2Fpbi4gV2lsbCBzZW5k
-IHRoZSByZXN0IHNob3J0bHkuDQo=
+On 2022/05/06 17:11, Pankaj Raghav wrote:
+> Convert the power of 2 based calculation with zone size to be generic in
+> null_zone_no with optimization for power of 2 based zone sizes.
+> 
+> The nr_zones calculation in null_init_zoned_dev has been replaced with a
+> division without special handling for power of 2 based zone sizes as
+> this function is called only during the initialization and will not
+> invoked in the hot path.
+> 
+> Performance Measurement:
+> 
+> Device:
+> zone size = 128M, blocksize=4k
+> 
+> FIO cmd:
+> 
+> fio --name=zbc --filename=/dev/nullb0 --direct=1 --zonemode=zbd  --size=23G
+> --io_size=<iosize> --ioengine=io_uring --iodepth=<iod> --rw=<mode> --bs=4k
+> --loops=4
+> 
+> The following results are an average of 4 runs on AMD Ryzen 5 5600X with
+> 32GB of RAM:
+> 
+> Sequential Write:
+> 
+> x-----------------x---------------------------------x---------------------------------x
+> |     IOdepth     |            8                    |            16                   |
+> x-----------------x---------------------------------x---------------------------------x
+> |                 |  KIOPS   |BW(MiB/s) | Lat(usec) |  KIOPS   |BW(MiB/s) | Lat(usec) |
+> x-----------------x---------------------------------x---------------------------------x
+> | Without patch   |  578     |  2257    |   12.80   |  576     |  2248    |   25.78   |
+> x-----------------x---------------------------------x---------------------------------x
+> |  With patch     |  581     |  2268    |   12.74   |  576     |  2248    |   25.85   |
+> x-----------------x---------------------------------x---------------------------------x
+> 
+> Sequential read:
+> 
+> x-----------------x---------------------------------x---------------------------------x
+> | IOdepth         |            8                    |            16                   |
+> x-----------------x---------------------------------x---------------------------------x
+> |                 |  KIOPS   |BW(MiB/s) | Lat(usec) |  KIOPS   |BW(MiB/s) | Lat(usec) |
+> x-----------------x---------------------------------x---------------------------------x
+> | Without patch   |  667     |  2605    |   11.79   |  675     |  2637    |   23.49   |
+> x-----------------x---------------------------------x---------------------------------x
+> |  With patch     |  667     |  2605    |   11.79   |  675     |  2638    |   23.48   |
+> x-----------------x---------------------------------x---------------------------------x
+> 
+> Random read:
+> 
+> x-----------------x---------------------------------x---------------------------------x
+> | IOdepth         |            8                    |            16                   |
+> x-----------------x---------------------------------x---------------------------------x
+> |                 |  KIOPS   |BW(MiB/s) | Lat(usec) |  KIOPS   |BW(MiB/s) | Lat(usec) |
+> x-----------------x---------------------------------x---------------------------------x
+> | Without patch   |  522     |  2038    |   15.05   |  514     |  2006    |   30.87   |
+> x-----------------x---------------------------------x---------------------------------x
+> |  With patch     |  522     |  2039    |   15.04   |  523     |  2042    |   30.33   |
+> x-----------------x---------------------------------x---------------------------------x
+> 
+> Minor variations are noticed in Sequential write with io depth 8 and
+> in random read with io depth 16. But overall no noticeable differences
+> were noticed
+> 
+> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+> Reviewed by: Adam Manzanares <a.manzanares@samsung.com>
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+> ---
+>  drivers/block/null_blk/main.c  |  5 ++---
+>  drivers/block/null_blk/zoned.c | 14 +++++++-------
+>  2 files changed, 9 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
+> index 5cb4c92cd..ed9a58201 100644
+> --- a/drivers/block/null_blk/main.c
+> +++ b/drivers/block/null_blk/main.c
+> @@ -1929,9 +1929,8 @@ static int null_validate_conf(struct nullb_device *dev)
+>  	if (dev->queue_mode == NULL_Q_BIO)
+>  		dev->mbps = 0;
+>  
+> -	if (dev->zoned &&
+> -	    (!dev->zone_size || !is_power_of_2(dev->zone_size))) {
+> -		pr_err("zone_size must be power-of-two\n");
+> +	if (dev->zoned && !dev->zone_size) {
+> +		pr_err("zone_size must not be zero\n");
 
+May be a simpler phrasing would be better:
+
+pr_err("Invalid zero zone size\n");
+
+>  		return -EINVAL;
+>  	}
+>  
+> diff --git a/drivers/block/null_blk/zoned.c b/drivers/block/null_blk/zoned.c
+> index dae54dd1a..00c34e65e 100644
+> --- a/drivers/block/null_blk/zoned.c
+> +++ b/drivers/block/null_blk/zoned.c
+> @@ -13,7 +13,10 @@ static inline sector_t mb_to_sects(unsigned long mb)
+>  
+>  static inline unsigned int null_zone_no(struct nullb_device *dev, sector_t sect)
+>  {
+> -	return sect >> ilog2(dev->zone_size_sects);
+> +	if (is_power_of_2(dev->zone_size_sects))
+> +		return sect >> ilog2(dev->zone_size_sects);
+
+As a separate patch, I think we should really have ilog2(dev->zone_size_sects)
+as a dev field to avoid doing this ilog2 for every call..
+
+> +
+> +	return div64_u64(sect, dev->zone_size_sects);
+>  }
+>  
+>  static inline void null_lock_zone_res(struct nullb_device *dev)
+> @@ -62,10 +65,6 @@ int null_init_zoned_dev(struct nullb_device *dev, struct request_queue *q)
+>  	sector_t sector = 0;
+>  	unsigned int i;
+>  
+> -	if (!is_power_of_2(dev->zone_size)) {
+> -		pr_err("zone_size must be power-of-two\n");
+> -		return -EINVAL;
+> -	}
+>  	if (dev->zone_size > dev->size) {
+>  		pr_err("Zone size larger than device capacity\n");
+>  		return -EINVAL;
+> @@ -83,8 +82,9 @@ int null_init_zoned_dev(struct nullb_device *dev, struct request_queue *q)
+>  	zone_capacity_sects = mb_to_sects(dev->zone_capacity);
+>  	dev_capacity_sects = mb_to_sects(dev->size);
+>  	dev->zone_size_sects = mb_to_sects(dev->zone_size);
+> -	dev->nr_zones = round_up(dev_capacity_sects, dev->zone_size_sects)
+> -		>> ilog2(dev->zone_size_sects);
+> +	dev->nr_zones =
+> +		div64_u64(roundup(dev_capacity_sects, dev->zone_size_sects),
+> +			  dev->zone_size_sects);
+>  
+>  	dev->zones = kvmalloc_array(dev->nr_zones, sizeof(struct nullb_zone),
+>  				    GFP_KERNEL | __GFP_ZERO);
+
+
+-- 
+Damien Le Moal
+Western Digital Research
