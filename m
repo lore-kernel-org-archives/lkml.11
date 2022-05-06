@@ -2,101 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392376AbiEFNZg (ORCPT
+        id S1392414AbiEFN0Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+        Fri, 6 May 2022 09:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392450AbiEFNZN (ORCPT
+        with ESMTP id S1392417AbiEFN0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:25:13 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A523F69CC0
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 06:21:18 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id c9so6712725plh.2
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 06:21:18 -0700 (PDT)
+        Fri, 6 May 2022 09:26:21 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B20694AF;
+        Fri,  6 May 2022 06:22:37 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id w4so9998911wrg.12;
+        Fri, 06 May 2022 06:22:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=snAq8vOceBJQXNtHaQrKZKIzrWkN2Ytbsg/b/TMNKmk=;
-        b=RcbJboymTfiVvIkRHCgMojUfl9bLvh+A2nG+XBtgmx0u4q3MuN7jucM7/yuVKMzlwh
-         UnMU2h/tV8bvG7ApiCvCmir6sodCeLyONGmHHscGkU0RofG2yjBLERzmHarv3zKNdn3c
-         W1qDNbeb8vuDdLXbyGwpLxh4as5TGCG+DtP5oGtMuiJwcz9+Ocnj6sZ9xOBb211wgbSW
-         lsRhEZHd8CZ93wsB7gNlHbWHuwdNKtEIzUYtmdB/cxqBRweoDwfSlHs4aj/ZF7ZTmad+
-         TDCC2YheRyFnYFVnvg1YVHCxdu5HESG/g1d4BiK1Ixu56OjuAOLXVlpoBk9MzY19DPQI
-         qzKQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xnE/wFgLIRN0jlfgB48rKqRGVy1eNhP4yxVMqJbknj0=;
+        b=FjZdAY2wnuHAS93BTXhJAPrZAaWaHRy79IjcTfCUeBH/Kunt+OVla7vvHK1nHIXqFc
+         weecEfU3K7auHBasZj5B/NC2ADNC/mh9HnZ5D8JJxhPKkNFloU0XaLUelAm9ooe+yxFt
+         BYDzLYKqeV2to6dMADxt3oBSPk16AFQOYSJBKqaiyOYpkdcqbAzhzO6VjxOxGheB+cIm
+         CA7vB/laPzLTh1/gyaLOKS22x32weAsUDZ3EyKZtPsSv8UascwFzbqgjbLpfKA8KN5fZ
+         bbPkFsDM140FIRKsNzcYOY9iENIKFEbhuWTubSiuH3I9UUJSOKcCSMpFiwMShCcf+6MW
+         MviQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=snAq8vOceBJQXNtHaQrKZKIzrWkN2Ytbsg/b/TMNKmk=;
-        b=PV/ihsG/eKi4WoKvZAISF1Rjt0QPYa6op1a/isOedTY0euxwEZRogFP/vRl9k+yX7/
-         qOiedaFdg761z7QaWgt8TerABHQuAPsKlFozpSNVgVU1EAEmd1AJdqFFatZ1/8IW6ksM
-         6AryvKEF9vpDf0fcBGXJsdIzX1qfHaPXvhpYMTNHVn/T5sfzY0xI0hFSsApfecoa0sC/
-         XNRqLQDJX+Fv+Y8ySowdLyBzdVpQ3HibaG9xb05DOA16AqnIfGxfjgrn4O4IT/8nfSb/
-         pSMGoQ8l/bvHmFq+4+0ROEajEOo32NJDWcn5KRf0KKIsH22HhhIa4pmln01A572cYhG9
-         3Jzw==
-X-Gm-Message-State: AOAM530pST1tP3Rl+0lw4CiE3uXDlJKy953cFlFXmcnbTnFCAccEr/d4
-        G0gmL5ft5JMpXXHlGJI0rG/zgw==
-X-Google-Smtp-Source: ABdhPJyFm1OdK877ATfQ8sTTUFDzZf6kwJX19vO8QKfl9vfzuJo5UneDBXKKQgQprvUGJ1o25mQvVQ==
-X-Received: by 2002:a17:902:8605:b0:15d:10dc:1c6f with SMTP id f5-20020a170902860500b0015d10dc1c6fmr3781372plo.4.1651843277875;
-        Fri, 06 May 2022 06:21:17 -0700 (PDT)
-Received: from always-x1.www.tendawifi.com ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id i22-20020a63e916000000b003c14af50643sm3256986pgh.91.2022.05.06.06.21.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xnE/wFgLIRN0jlfgB48rKqRGVy1eNhP4yxVMqJbknj0=;
+        b=PIoFfRa8dpks3tNnQTpVc1t72WSImZik5TFUhk5jIOCaxq0etonH3/TDNJwnvs58PR
+         sJcBpexz1mg4M41a8Xc0gb1xv4mlO73K9ey2o3VjM/80sttUrsLtFQlnRibOqulyDXHG
+         Qu1Pd+s/dpxY2eCv2NRSGfNnbKXi6hgmtANYeS8AjIYv4d948x3c4Z7fAMMAoRj8tZX9
+         T7X8Ed9IDpoO9ZlW862YjrsfX6WxtDyliRAobG+tdegF9FbIZwxeFKaypFgw7tV4SZSo
+         GOx2ft43yzvJcDlj5cV3uZabu38G5DUf7GSVlWJMRTwm74105PDY1ZpmJWgV/UDlOtSj
+         XA0A==
+X-Gm-Message-State: AOAM530yJ2x/zkOcJ7pLe+lQvwBwBBcvjw5Uoq1CHRTblZyeHIZHceSE
+        RJqWS01wI/7jsrAlEKM0QkIytGqRQZs=
+X-Google-Smtp-Source: ABdhPJwkVFy1RIZuE8dDzKw9CHw0QD8uVDl3jH0vijBWoEoDBCzWo5pHNhstsX7sTNjoHykZsCoIcw==
+X-Received: by 2002:adf:dc0e:0:b0:20c:8a3f:b523 with SMTP id t14-20020adfdc0e000000b0020c8a3fb523mr2715293wri.201.1651843355959;
+        Fri, 06 May 2022 06:22:35 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id l12-20020a05600012cc00b0020c5253d8b9sm3635379wrx.5.2022.05.06.06.22.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 06:21:17 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     arei.gonglei@huawei.com, mst@redhat.com
-Cc:     jasowang@redhat.com, herbert@gondor.apana.org.au,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, helei.sig11@bytedance.com,
-        pizhenwei@bytedance.com, davem@davemloft.net
-Subject: [PATCH v6 5/5] virtio-crypto: enable retry for virtio-crypto-dev
-Date:   Fri,  6 May 2022 21:16:27 +0800
-Message-Id: <20220506131627.180784-6-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220506131627.180784-1-pizhenwei@bytedance.com>
-References: <20220506131627.180784-1-pizhenwei@bytedance.com>
+        Fri, 06 May 2022 06:22:34 -0700 (PDT)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Ashish Mhetre <amhetre@nvidia.com>,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] memory: tegra: Tegra234 and error logging support
+Date:   Fri,  6 May 2022 15:22:25 +0200
+Message-Id: <20220506132230.3910539-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lei he <helei.sig11@bytedance.com>
+From: Thierry Reding <treding@nvidia.com>
 
-Enable retry for virtio-crypto-dev, so that crypto-engine
-can process cipher-requests parallelly.
+Hi Krzysztof,
 
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Gonglei <arei.gonglei@huawei.com>
-Reviewed-by: Gonglei <arei.gonglei@huawei.com>
-Signed-off-by: lei he <helei.sig11@bytedance.com>
-Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
----
- drivers/crypto/virtio/virtio_crypto_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+here's the set of patches that add the initial Tegra234 support with
+Ashish's error logging support applied on top. This should all apply
+cleanly onto v5.18-rc1 (and consequently to your tree).
 
-diff --git a/drivers/crypto/virtio/virtio_crypto_core.c b/drivers/crypto/virtio/virtio_crypto_core.c
-index 60490ffa3df1..1198bd306365 100644
---- a/drivers/crypto/virtio/virtio_crypto_core.c
-+++ b/drivers/crypto/virtio/virtio_crypto_core.c
-@@ -144,7 +144,8 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
- 		spin_lock_init(&vi->data_vq[i].lock);
- 		vi->data_vq[i].vq = vqs[i];
- 		/* Initialize crypto engine */
--		vi->data_vq[i].engine = crypto_engine_alloc_init(dev, 1);
-+		vi->data_vq[i].engine = crypto_engine_alloc_init_and_set(dev, true, NULL, true,
-+						virtqueue_get_vring_size(vqs[i]));
- 		if (!vi->data_vq[i].engine) {
- 			ret = -ENOMEM;
- 			goto err_engine;
+Thierry
+
+Ashish Mhetre (2):
+  memory: tegra: Add memory controller channels support
+  memory: tegra: Add MC error logging on Tegra186 onward
+
+Sameer Pujar (1):
+  memory: tegra: Add APE memory clients for Tegra234
+
+Thierry Reding (1):
+  memory: tegra: Add Tegra234 support
+
+ drivers/memory/tegra/Makefile       |   2 +
+ drivers/memory/tegra/mc.c           | 137 ++++++++++++++++++++++++----
+ drivers/memory/tegra/mc.h           |  50 +++++++++-
+ drivers/memory/tegra/tegra186-emc.c |   3 +
+ drivers/memory/tegra/tegra186.c     |  39 ++++++++
+ drivers/memory/tegra/tegra194.c     |   9 ++
+ drivers/memory/tegra/tegra234.c     | 110 ++++++++++++++++++++++
+ include/soc/tegra/mc.h              |   8 +-
+ 8 files changed, 339 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/memory/tegra/tegra234.c
+
 -- 
-2.20.1
+2.35.1
 
