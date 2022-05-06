@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B69C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443591AbiEFQNA (ORCPT
+        id S1443666AbiEFQNb convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        Fri, 6 May 2022 12:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443558AbiEFQMt (ORCPT
+        with ESMTP id S1443595AbiEFQM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:12:49 -0400
+        Fri, 6 May 2022 12:12:59 -0400
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6840F6EC53;
-        Fri,  6 May 2022 09:08:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8652712ACE;
+        Fri,  6 May 2022 09:09:04 -0700 (PDT)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 2CEDD1C0BCD; Fri,  6 May 2022 18:08:22 +0200 (CEST)
-Date:   Fri, 6 May 2022 18:08:20 +0200
+        id 3209C1C0BCD; Fri,  6 May 2022 18:09:03 +0200 (CEST)
+Date:   Fri, 6 May 2022 18:09:01 +0200
 From:   Pavel Machek <pavel@ucw.cz>
-To:     Evan Green <evgreen@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Matthew Garrett <mgarrett@aurora.tech>, dlunev@google.com,
-        zohar@linux.ibm.com, jejb@linux.ibm.com,
-        linux-integrity@vger.kernel.org, corbet@lwn.net, rjw@rjwysocki.net,
-        gwendal@chromium.org, jarkko@kernel.org, linux-pm@vger.kernel.org,
-        Len Brown <len.brown@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 08/10] PM: hibernate: Mix user key in encrypted hibernate
-Message-ID: <20220506160820.GB1060@bug>
-References: <20220504232102.469959-1-evgreen@chromium.org>
- <20220504161439.8.I87952411cf83f2199ff7a4cc8c828d357b8c8ce3@changeid>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>,
+        Doug Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v14 2/2] leds: Add driver for Qualcomm LPG
+Message-ID: <20220506160901.GA1199@bug>
+References: <20220303214300.59468-1-bjorn.andersson@linaro.org>
+ <20220303214300.59468-2-bjorn.andersson@linaro.org>
+ <20220504073009.GC8204@duo.ucw.cz>
+ <YnKTAvQc6eDxTl14@ripper>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504161439.8.I87952411cf83f2199ff7a4cc8c828d357b8c8ce3@changeid>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <YnKTAvQc6eDxTl14@ripper>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -43,18 +48,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi!
 
-> One annoyance of the "preloading" scheme is that hibernate image memory
-> is effectively double-allocated: first by the usermode process pulling
-> encrypted contents off of disk and holding it, and second by the kernel
-> in its giant allocation in prepare_image(). An interesting future
-> optimization would be to allow the kernel to accept and store encrypted
-> page data before the user key is available. This would remove the
-> double allocation problem, as usermode could push the encrypted pages
-> loaded from disk immediately without storing them. The kernel could defer
-> decryption of the data until the user key is available, while still
-> knowing the correct page locations to store the encrypted data in.
+> > > +    "255 500 0 500"
+> > > +
+> > > +        ^
+> > > +        |
+> > > +    255 +----+    +----+
+> > > +        |    |    |    |      ...
+> > > +      0 |    +----+    +----
+> > > +        +---------------------->
+> > > +        0    5   10   15     time (100ms)
+> > > +
+> > > +The LPG supports specifying a longer hold-time for the first and last element
+> > > +in the pattern, the so called "low pause" and "high pause".
+> > 
+> > Please see
+> > Documentation/devicetree/bindings/leds/leds-trigger-pattern.txt . This
+> > should really be compatible.
+> 
+> Unfortunately the LPG hardware only supports fixed duration (except for
+> the ability to hold/extend the first and last duration in the pattern)
+> and it also does not support gradual transition between the brightness
+> levels.
 
-Um. Dunno. Won't you run out of memory? Hibernation images can be quite big...
+Ok.
+
+> As such the pattern sequence provided to hw_pattern looks to be the
+> smae, but I don't see that it can be made compatible.
+> 
+> > Can I get either patch to disable pattern infrastructure for now or to
+> > get it compatible?
+> > 
+> 
+> I'd be happy to get this updated to your liking, but this was one of the
+> drivers we discussed when we introduced the pattern trigger and led to
+> the conclusion that we need the ability to do hw-specific patterns.
+> 
+> As such this document provides the hardware specific documentation, as
+> we describe under "hw_pattern" in
+> Documentation/ABI/testing/sysfs-class-led-trigger-pattern.
+> 
+> Please advice on what you would like me to do.
+
+I'd like you to use same format leds-trigger-pattern describes.
+
+If someone passes "255 500 0 500", that's requesting gradual transitions and
+your hw can not do that. You return -EINVAL.
+
+If someone wants that kind of blinking, they need to pass "255 0 255 500 0 0 0 500".
 
 Best regards,
 									Pavel
+
+
+-- (english) http://www.livejournal.com/~pavelmachek (cesky, pictures) 
+http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
