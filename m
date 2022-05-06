@@ -2,104 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3272FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390342AbiEFIyd convert rfc822-to-8bit (ORCPT
+        id S1344235AbiEFI5F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
+        Fri, 6 May 2022 04:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390277AbiEFIxl (ORCPT
+        with ESMTP id S1343537AbiEFI5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:53:41 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE5F5AA50;
-        Fri,  6 May 2022 01:49:59 -0700 (PDT)
-Received: from mail-wr1-f49.google.com ([209.85.221.49]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N1x2P-1nxwFw25zV-012FBZ; Fri, 06 May 2022 10:49:57 +0200
-Received: by mail-wr1-f49.google.com with SMTP id i5so9082442wrc.13;
-        Fri, 06 May 2022 01:49:57 -0700 (PDT)
-X-Gm-Message-State: AOAM532ENFL60AnGg6ALGvJQxD72rHDz4RrVSaZfcsnn2yyzJt9EYWKf
-        OPsAv+NXmsRC4o9VGx52UelcAOyQV25+pSK3XFE=
-X-Google-Smtp-Source: ABdhPJzpDzWUR0ajOoJu/waDnEPgpgtwfKqxU+fZU0c2d1qiVZ6MUUFlP18HOFAXL2PSxQdq5IIn6MuGWVWpQTx6a4c=
-X-Received: by 2002:a05:6000:707:b0:20c:4fd8:1d61 with SMTP id
- bs7-20020a056000070700b0020c4fd81d61mr1821972wrb.407.1651826997102; Fri, 06
- May 2022 01:49:57 -0700 (PDT)
+        Fri, 6 May 2022 04:57:02 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E365D5D181
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:53:19 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id bu29so11522135lfb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:53:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eaAW8uOFlvAinrao426R7OuE0ao2r8O8NVXKwXYnVX8=;
+        b=wiZCB9DfTEPaFeiCnFgmB2CMBEwD1hiSVCRgnYecxvdZrzapfyCMHuRA+Akq1WGcti
+         8nRPJu1TSpgG4pluut8jdfE8esvQySd6wQbmbcay8cEYT1bzLm7LA8zy8F75Jbxfp4pZ
+         f/beuZ6yv2MyOyv2VmZNofKX16Xmem55e9R1qS2x1Yr73BBWuWncF7t52BXwz0QDoC2n
+         X2artWPbeGuIYD3wcrm0yYFcyZaKpaUPpTP/Pdd4oMl4N2DXSmu7Zq1XJ/vWh3Z/R9fw
+         xtRv0+bnymfvkVIqIwxqi6RYfy0D/4GsluTdhzOd/CPP5jl56ear2+Ul8mrxsY7pZyXm
+         8ulw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eaAW8uOFlvAinrao426R7OuE0ao2r8O8NVXKwXYnVX8=;
+        b=bhnzzXbGswTgu7tWumJaJvIhwk5h+aRIwDOVJ4xQAwzaTHoXiVkAKneVA2mYVIyUyp
+         53wDcokpqaPmDuB6nBnEmEutxNACeyk1KpTSZl8pIwb98UglsdRjHYM2hbmm/n/Sov2p
+         cq8EZ1MJ7GibFERtEeCkhBev6Y4QloFKb9XP9u5BdlBICuYO3qPXfG1WESutwpWGc0Lx
+         P2N9FAlBpwU86ynJOJoBDbZZBfRvnJlVhERFd3rD2uNtp6PUKe9kD9g1prMvvVASrheC
+         roBNa8GyKg9X1wP3C2BgLvETxB+qy2ySgnuOL4fsQFggpIhaWPIeZy5oBMp0ob75EBpX
+         cFjQ==
+X-Gm-Message-State: AOAM5309AMxxpTTuM//+tOgky80H9Rnz5gGwlRUJP/cm6Z8mHTDSnC3y
+        icF7MUbK8v9XOMUU+xDNTVEfrcpLKmf2TdQx8lqW2w==
+X-Google-Smtp-Source: ABdhPJw0PTzOmg/+CrYgh09I3H2knLnkp9taoJl4RWlutgW8GPm+L9ti1Bep2tow/W7F5VNwFE8BOvnjE2bvwfCFMhQ=
+X-Received: by 2002:ac2:4e98:0:b0:448:3039:d170 with SMTP id
+ o24-20020ac24e98000000b004483039d170mr1889783lfr.233.1651827198179; Fri, 06
+ May 2022 01:53:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1651805790.git.qinjian@cqplus1.com> <CAK8P3a0W4wpVwDmCXDkm_u9W=JozrnCnxW7zK3h2XD8f_ODy6w@mail.gmail.com>
- <23e22e4e8b9e4d7ab02caaa1c3f7b599@cqplus1.com>
-In-Reply-To: <23e22e4e8b9e4d7ab02caaa1c3f7b599@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 6 May 2022 10:49:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2C1Vbccs6uWGdmWdwNqZomz6L_gA3Wiymn_AR3gsr3gw@mail.gmail.com>
-Message-ID: <CAK8P3a2C1Vbccs6uWGdmWdwNqZomz6L_gA3Wiymn_AR3gsr3gw@mail.gmail.com>
-Subject: Re: [PATCH v14 0/9] Add Sunplus SP7021 SoC Support
-To:     =?UTF-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
+References: <20220504213251.264819-1-sebastian.reichel@collabora.com> <20220504213251.264819-10-sebastian.reichel@collabora.com>
+In-Reply-To: <20220504213251.264819-10-sebastian.reichel@collabora.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Fri, 6 May 2022 10:52:42 +0200
+Message-ID: <CAPDyKFqLn4LfPRbhoWw_9BF26Lgmzq_1j=RB31NDGn9YvMnB5w@mail.gmail.com>
+Subject: Re: [PATCHv2 09/21] mmc: sdhci-of-dwcmshc: add reset call back for
+ rockchip Socs
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Adrian Hunter <adrian.hunter@intel.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>, kernel@collabora.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:RWCVYHsawE9YsuOlW9itUpthwfK1vZe6EQwDQy7Hnn1IwGEQHHb
- 1H78mVLck4X+5GnMbjMW+uaCXZOpQaWps/plV4nqqizmbGYZ9zQBs/HiN6Gw3QyPpAhqR6d
- 7oVcxzhjyRPmkGVmBnqFAeyAFk87WFF6BHH0kYmAtX9Ad/wvnMnODrd/MddNAXo/ps6atnQ
- 4iGDRP9vRBiVI/VTiU3vQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9Cw64gLQqV8=:ExDjxqW51xrMTmbo/XpbZk
- sKZmpqSh+utWVMZ973Jjp7hjvE+wXaQIXn0cIaQHGwvf9P9QTExbMfpihxsNPcxUEBOSzV1tk
- McDgPPdpAr5phwCFn8eHzEtQqrpO7t9J0vs6QC7bbef7f/rs+aQq5PPCCjS3o89fMdyoWnKTE
- nA3xUmYp9xwia0MKyaEZPO+pa4ny8TEa5fVCTk2bPhXRBAe5G7Hatc0RA43kiEmur71rP/QhL
- NAWk62wBvJrUYHRCrmvzUU6llJ/HGQsNiY7i4CpFNcZifQ3+AJfkYSJfj9vOpsi4P0h52+0Sz
- Dogj1FtZ0ayfOQISDueifSQefJJHr5tCNSgVFUij54vDfeLUMqqU4klq4ls0MqhoPPVDCZ238
- GP8+yCIwe+vr6j9jR7jy5gv6YdcjO5gdHPl/aasg7un6HCy31ooxA/l7O98P/zINCmu3l/GCl
- VM8TV+0Q96RVK38LeyECy5Pg8xq1nqAMGRuIf+GeVcRQ/ck1uYZqvXBEvWNd4KZEk1Mjgy3Wa
- iUfRE2xKUwQxcmV5ldBq9rBP5VuRjWe7RkxHSFDogFFcaJ3Iz2cIyIc/nCK/wsZ9OH5S2zHM2
- ZtuN2BpIDIB16Ir5kIWFJUBa5naFN1kMf4LXr3miamTqO5yEToXa83pzEyuWUCJZ7ZJpteB+J
- 1VW4pN0NWyJEylNXy6UmaE/Vq52ORvcLFzXNxh7lL4odFUArMec836tlrktQfs9WwlndMt0Js
- S70qWdDGqFQp0NDE/vNzAtB8MbXJs/Nw9gvYUZ3WDwj1NVB0OIsb9mnGhkULA3XfgioSflGJF
- JbOrT+eooourTm1JZTnL6CxlSA2fPX/EqaIHbw+8N/IwNc9Exc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 10:34 AM qinjian[覃健] <qinjian@cqplus1.com> wrote:
-> > On Fri, May 6, 2022 at 5:23 AM Qin Jian <qinjian@cqplus1.com> wrote:
-> > >
-> > > This patch series add Sunplus SP7021 SoC support.
-> > >
-> > > Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates many
-> > > peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and etc.) into a
-> > > single chip. It is designed for industrial control.
-> > >
-> > > SP7021 consists of two chips (dies) in a package. One is called C-chip
-> > > (computing chip). It is a 4-core ARM Cortex A7 CPU. It adopts high-level
-> > > process (22 nm) for high performance computing. The other is called P-
-> > > chip (peripheral chip). It has many peripherals and an ARM A926 added
-> > > especially for real-time control. P-chip is made for customers. It adopts
-> > > low-level process (ex: 0.11 um) to reduce cost.
-> >
-> > Just an update from my side about merging the platform code: the
-> > submission looks mostly sensible to me, but as long as the clk and irqchip
-> > drivers have not finished the review, I cannot take this through the soc
-> > tree. We could consider merging the platform code without those two
-> > drivers, but that seems pointless because it will not boot.
-> >
+On Wed, 4 May 2022 at 23:33, Sebastian Reichel
+<sebastian.reichel@collabora.com> wrote:
 >
-> The reviewers no reply, I don’t know why.
+> From: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+>
+> The reset function build in the SDHCI will not reset the logic
+> circuit related to the tuning function, which may cause data
+> reading errors. Resetting the complete SDHCI controller through
+> the reset controller fixes the issue.
+>
+> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> [rebase, use optional variant of reset getter]
+> Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-They may have missed the emails because they were part of a separate
-patch series. It may help to post them separately just to the respective
-subsystem list and maintainers, with me on Cc.
+I think this needs a corresponding update of the DT docs. Otherwise
+this looks good to me.
 
-        Arnd
+Kind regards
+Uffe
+
+> ---
+>  drivers/mmc/host/sdhci-of-dwcmshc.c | 26 +++++++++++++++++++++++++-
+>  1 file changed, 25 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/mmc/host/sdhci-of-dwcmshc.c b/drivers/mmc/host/sdhci-of-dwcmshc.c
+> index bac874ab0b33..3a1b5ba36405 100644
+> --- a/drivers/mmc/host/sdhci-of-dwcmshc.c
+> +++ b/drivers/mmc/host/sdhci-of-dwcmshc.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/reset.h>
+>  #include <linux/sizes.h>
+>
+>  #include "sdhci-pltfm.h"
+> @@ -63,6 +64,7 @@
+>  struct rk3568_priv {
+>         /* Rockchip specified optional clocks */
+>         struct clk_bulk_data rockchip_clks[RK3568_MAX_CLKS];
+> +       struct reset_control *reset;
+>         u8 txclk_tapnum;
+>  };
+>
+> @@ -255,6 +257,21 @@ static void dwcmshc_rk3568_set_clock(struct sdhci_host *host, unsigned int clock
+>         sdhci_writel(host, extra, DWCMSHC_EMMC_DLL_STRBIN);
+>  }
+>
+> +static void rk35xx_sdhci_reset(struct sdhci_host *host, u8 mask)
+> +{
+> +       struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+> +       struct dwcmshc_priv *dwc_priv = sdhci_pltfm_priv(pltfm_host);
+> +       struct rk35xx_priv *priv = dwc_priv->priv;
+> +
+> +       if (mask & SDHCI_RESET_ALL && priv->reset) {
+> +               reset_control_assert(priv->reset);
+> +               udelay(1);
+> +               reset_control_deassert(priv->reset);
+> +       }
+> +
+> +       sdhci_reset(host, mask);
+> +}
+> +
+>  static const struct sdhci_ops sdhci_dwcmshc_ops = {
+>         .set_clock              = sdhci_set_clock,
+>         .set_bus_width          = sdhci_set_bus_width,
+> @@ -269,7 +286,7 @@ static const struct sdhci_ops sdhci_dwcmshc_rk3568_ops = {
+>         .set_bus_width          = sdhci_set_bus_width,
+>         .set_uhs_signaling      = dwcmshc_set_uhs_signaling,
+>         .get_max_clock          = sdhci_pltfm_clk_get_max_clock,
+> -       .reset                  = sdhci_reset,
+> +       .reset                  = rk35xx_sdhci_reset,
+>         .adma_write_desc        = dwcmshc_adma_write_desc,
+>  };
+>
+> @@ -292,6 +309,13 @@ static int dwcmshc_rk3568_init(struct sdhci_host *host, struct dwcmshc_priv *dwc
+>         int err;
+>         struct rk3568_priv *priv = dwc_priv->priv;
+>
+> +       priv->reset = devm_reset_control_array_get_optional_exclusive(mmc_dev(host->mmc));
+> +       if (IS_ERR(priv->reset)) {
+> +               err = PTR_ERR(priv->reset);
+> +               dev_err(mmc_dev(host->mmc), "failed to get reset control %d\n", err);
+> +               return err;
+> +       }
+> +
+>         priv->rockchip_clks[0].id = "axi";
+>         priv->rockchip_clks[1].id = "block";
+>         priv->rockchip_clks[2].id = "timer";
+> --
+> 2.35.1
+>
