@@ -2,137 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D24C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F79FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388462AbiEFDTw (ORCPT
+        id S1355556AbiEFDU1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
+        Thu, 5 May 2022 23:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388465AbiEFDTt (ORCPT
+        with ESMTP id S1388465AbiEFDUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:19:49 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F6C1705E
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:16:08 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id c14so5212229pfn.2
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:16:07 -0700 (PDT)
+        Thu, 5 May 2022 23:20:25 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35BB1A816
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:16:43 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id m11so6298902oib.11
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:16:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=nLavEAR5Aau9+5bXqJeGR1zfvkVlJijBBWww/pFaBdg=;
-        b=RHFW7PR2ybJs1cy+WdEB+4lpWd2eFOMHKJZmV0VPnQ3dOQti4MvfAH0xOn7GBQwjvS
-         YHzBwCTXh/ZMbjYw17lZW/f38S4m59xyaANd7N8pm/HSa+HuWReiLi19cEwVyr+nYMBt
-         XgduYTfzuSR4yxsrqf19hnfQNgXLlBzb5ztyalWYNSHe54H6HfOHurJMY30C0k0UiJH4
-         d+yxSdfJmMzKN+H4IGCBLgq+80EegYaNK6EMHUa0Ix8A0VwDZZEmRN3ZqIu5bK3/ci6Q
-         jYXXxillsD0hm0AOQ+uecBN9rBLVdjqXaVTPxH0FOGGJOxsPGivhEYmJxOZhjrPnFzBh
-         Dmfw==
+        bh=XDAab3lFiT4oWPvDdIok5sqYK5jSVOc29GloIg/CLzs=;
+        b=M0srnKgPkJySL8mZ86biFhA5OuOllZTy3Ykf2nF4IdVq0ZwcscLBqGUA2U9AYumHGC
+         QgDx8Dj5zZYal/OguV/5ygwsWART5MfMI2creJnrsp7adnbljV7xcHcNb0Eml0GJur8w
+         RsSJyeZ+SEp0oSdN37ulcoQbqr6ZnqVdB/5BifgK06CbNLcbO6F5U8qbKi/XHQ0bRAN9
+         aa3q5QuIP8Zl0+7zKYErOrsUgpMXI0+Q4+eNJYrIPVthdQ59EbaZ/rCYwUpy1+WOJ/fj
+         YeZkTnppN78qT2LhPEpvrOIuaeezbKNaqoYkBJ7MDualrT1EQ5xskORqitfbRofS8yRY
+         Z3kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=nLavEAR5Aau9+5bXqJeGR1zfvkVlJijBBWww/pFaBdg=;
-        b=rsvmjC86sNRIKHo2Id3Nq1GdSajCqsSO0gUWGB4KggOUnw34fW6nHvOxRytwxU/N5F
-         grY5IBKO5iuNckTZQar94mC+LddO+OWBskMAf2+qQTNyZpzDiSvupFj4bp0JVt3T4Vc9
-         uWeSbTT7Sv+VY6oxWOcDBOdJJMwsB5ieeNAw2YXlQev/zGojMiXXZLByQtWqrCQciUc4
-         +I2/Us1JCaKeU7itdyEm6NXYsKfUoFXuz4DR4uk+x9mRJfEU0IfzBh85MXk84b5Zgpcs
-         TPCgfXaZBuPS6JD3SCTMI0UBxFy8WZk+w6Zf3xFFIQ18F7cvpoGbNFKcg/4unFv9RVAl
-         3Wbg==
-X-Gm-Message-State: AOAM530/sor9KB5xmBeXfduJNwZm7f7Ai9uXr14iW6f+Uu2UTXdcDMMC
-        ROhZj0lXaAeczSCiRigKdYyQiXRoCWU=
-X-Google-Smtp-Source: ABdhPJwAL9SNpzXTVp1tdxwwhH5G/VLDLEVuxCj8LbB+YdJbzhyKNyWGXs9xQgWc6JvYAu5gDUR13Q==
-X-Received: by 2002:a05:6a00:a94:b0:4fd:c14b:21cb with SMTP id b20-20020a056a000a9400b004fdc14b21cbmr1245258pfl.53.1651806967551;
-        Thu, 05 May 2022 20:16:07 -0700 (PDT)
-Received: from localhost ([152.70.90.187])
-        by smtp.gmail.com with ESMTPSA id q135-20020a632a8d000000b003c1c906048csm2084829pgq.88.2022.05.05.20.16.06
+        bh=XDAab3lFiT4oWPvDdIok5sqYK5jSVOc29GloIg/CLzs=;
+        b=GHewQKvmukx8sEL6KuU0WVuA+XuZdIjHWZE6oDEIKHWzp1i9MJYYQbbeoaohkROXjr
+         uOccOPN6B/k4ArhwE0e/uCGHX8mOTIqHg3MXxGNnlzmpIxioFSWNs0M2S13b+pyROuWr
+         a8XF4vgkJvx6vC3BvUSBB6TpNYx3a39KKH/0/FYodW6XUweIutjNkoth/2bAwhnKy18l
+         OtFBebQ4qLUN6JydbiUdjVNFBisDCHrFRevboPSDKpgUXOF6Rdxpq/KSm2W1h3Ar9p0g
+         VkGntjDSeOuOHJFd91WOByiz0hydc80YwBQh3lyyxjOpY90OZp59XpA+g95smSzOe3BJ
+         fIfA==
+X-Gm-Message-State: AOAM533d7/Q+46cMwrQRXXbaD2NwzIVXmcjCLXMnMdX6Q/ZIRU8jYXpR
+        7UJkb1So5Y9IQRdZxtFwylIosDkNhYRcQcjZ
+X-Google-Smtp-Source: ABdhPJyGhZMLU7kovwSB7RSCQTNkWr5ruVjbo0AhP9QogwaAMX2QH+ktw7ZhWEoESJ3wrYu7cDt7ng==
+X-Received: by 2002:a05:6808:92:b0:325:bdf6:f824 with SMTP id s18-20020a056808009200b00325bdf6f824mr4089983oic.147.1651807003107;
+        Thu, 05 May 2022 20:16:43 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id f97-20020a9d03ea000000b00606387601a2sm1226855otf.34.2022.05.05.20.16.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 20:16:07 -0700 (PDT)
-Date:   Fri, 6 May 2022 11:16:02 +0800
-From:   Wang Cheng <wanngchenng@gmail.com>
-To:     dan.carpenter@oracle.com, paskripkin@gmail.com
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] staging: rtl8712: fix uninit-value in
- r871xu_drv_init()
-Message-ID: <14c3886173dfa4597f0704547c414cfdbcd11d16.1651760402.git.wanngchenng@gmail.com>
-References: <cover.1651760402.git.wanngchenng@gmail.com>
+        Thu, 05 May 2022 20:16:42 -0700 (PDT)
+Date:   Thu, 5 May 2022 22:16:37 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 2/3] arm64: dts: qcom: Fix node names for sdhci
+ 'opp-table' nodes (across dts files)
+Message-ID: <YnSTFRuMDFYclHYh@builder.lan>
+References: <20220429214420.854335-1-bhupesh.sharma@linaro.org>
+ <20220429214420.854335-3-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1651760402.git.wanngchenng@gmail.com>
+In-Reply-To: <20220429214420.854335-3-bhupesh.sharma@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
-'mac[6]' will not be initialized.
+On Fri 29 Apr 16:44 CDT 2022, Bhupesh Sharma wrote:
 
-BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5358 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
- port_event drivers/usb/core/hub.c:5660 [inline]
- hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
- process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
- worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
- kthread+0x3c7/0x500 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
+> Since the Qualcomm sdhci-msm device-tree binding has been converted
+> to yaml format, 'make dtbs_check' reports a number of issues with
+> node names for sdhci 'opp-table' nodes, as it doesn't seem to like
+> any 'preceding text or numbers' before 'opp-table' pattern in the
+> node names.
+> 
+> Fix the same.
+> 
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Rob Herring <robh@kernel.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7180.dtsi | 4 ++--
+>  arch/arm64/boot/dts/qcom/sm6350.dtsi | 4 ++--
+>  arch/arm64/boot/dts/qcom/sm8150.dtsi | 2 +-
+>  arch/arm64/boot/dts/qcom/sm8250.dtsi | 2 +-
+>  4 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> index 86175d257b1e..b6df3186e94c 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> @@ -725,7 +725,7 @@ sdhc_1: sdhci@7c4000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc1_opp_table: sdhc1-opp-table {
+> +			sdhc1_opp_table: opp-table-sdhc1 {
 
-Local variable mac created at:
- r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+There's only a single opp-table child node of &sdhc_1, so I would prefer
+that these would just be:
 
-Reported-and-tested-by: syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
----
- drivers/staging/rtl8712/usb_intf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+			sdhc1_opp_table: opp-table {
 
-diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
-index ee4c61f85a07..50dcd3ecb685 100644
---- a/drivers/staging/rtl8712/usb_intf.c
-+++ b/drivers/staging/rtl8712/usb_intf.c
-@@ -538,13 +538,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
- 		} else {
- 			AutoloadFail = false;
- 		}
--		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
-+		if ((!AutoloadFail) ||
-+		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
- 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
- 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
- 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
- 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
--		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
--		     (!AutoloadFail)) {
-+		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
- 			mac[0] = 0x00;
- 			mac[1] = 0xe0;
- 			mac[2] = 0x4c;
--- 
-2.33.1
+Like  what you did in the sm8150 and sm8250 case below.
 
+Can you please update this accordingly?
+
+Thanks,
+Bjorn
+
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> @@ -2609,7 +2609,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table-sdhc2 {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm6350.dtsi b/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> index fb1a0f662575..87a5d72b2ca0 100644
+> --- a/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> @@ -497,7 +497,7 @@ sdhc_1: sdhci@7c4000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc1_opp_table: sdhc1-opp-table {
+> +			sdhc1_opp_table: opp-table-sdhc1 {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-19200000 {
+> @@ -941,7 +941,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table-sdhc2 {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-100000000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> index 2700a8145cb9..e265d61f7c05 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> @@ -3563,7 +3563,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-19200000 {
+> diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> index dc2562070336..5ca16f76ddeb 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> @@ -2937,7 +2937,7 @@ sdhc_2: sdhci@8804000 {
+>  
+>  			status = "disabled";
+>  
+> -			sdhc2_opp_table: sdhc2-opp-table {
+> +			sdhc2_opp_table: opp-table {
+>  				compatible = "operating-points-v2";
+>  
+>  				opp-19200000 {
+> -- 
+> 2.35.1
+> 
