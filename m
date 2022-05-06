@@ -2,95 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96244C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388908AbiEFDjW (ORCPT
+        id S1388822AbiEFDj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36818 "EHLO
+        Thu, 5 May 2022 23:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388648AbiEFDhN (ORCPT
+        with ESMTP id S1388896AbiEFDjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:37:13 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398AF63532;
-        Thu,  5 May 2022 20:33:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651808012; x=1683344012;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bybU1LR0dCz2wUxGc5274gqzruD0/zCUSImGb6leP60=;
-  b=IAQNocTLN94l0VS3DHn6FKeXYOByO+NBYshJs84kNgVn/vJcbgEJaXIW
-   KZXJ7/VNbTDM1IjCvNgOD8tYEC8doLzcHU5orZG0+DFVCTSyhnKgvhhoY
-   as+mStgZ0pScjzLMNQFmBPYoxWIhFhOWRWe8pdUStoknrqayi4sSQXEID
-   QqerWqvq9CFkAI9AX0pF+Udzo+LK8gipv1NVr8Rv5ODngrF2dPrH4JBYo
-   s+0DOjyDX8pGghPv1nTteMHGdkxs13as2veYg7H5sWIQmKQPn8TJ0oj0H
-   4WWayS/MphJsXu3NjaBr5PEwlygvlI9RZbf2NIZx0hMiyYCmrV83gK+QN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248241416"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="248241416"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:33:31 -0700
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="632745153"
-Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:33:30 -0700
-From:   Yang Weijiang <weijiang.yang@intel.com>
-To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
-        kan.liang@linux.intel.com, like.xu.linux@gmail.com,
-        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Like Xu <like.xu@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v11 02/16] perf/x86/lbr: Simplify the exposure check for the LBR_INFO registers
-Date:   Thu,  5 May 2022 23:32:51 -0400
-Message-Id: <20220506033305.5135-3-weijiang.yang@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220506033305.5135-1-weijiang.yang@intel.com>
-References: <20220506033305.5135-1-weijiang.yang@intel.com>
+        Thu, 5 May 2022 23:39:40 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE43766CA9
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:34:47 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id x52so5225192pfu.11
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=FFiNn28hsyBk4daR5wg/T0UPEe8cWAsBIukJqeiFwYM=;
+        b=m5y0OkwjFPsmA8sRuOa5BnRtcYcscKEYoFsh//Iukq4jpQ9SCJvtHEeUE1b3D9ZvkJ
+         uVXZvy2tLyorydqekBqhH0qkFA7VfuPsgSmVPj2igdy79pSl6f9kKoJ1ip7NjI1lsgv+
+         ieDvB7AKxMlGQMClYIffwkDFKl3fWRZMT5+sBQY40gRa8YM1rjpIgF1dLmexiGvAlzHK
+         h8mAf8+nZvWdaLKhM/CXEGUSTM8pSRIdjoIdZ2XUsLN4+teYPvynujQAQo8/eTizxnLF
+         awC1cgzp7bwhkCmsCgj8joXbnqf+QA1om2sWIkmzX7wMfd5XNnnjQGN5HuhFGK8JWzMa
+         yRTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FFiNn28hsyBk4daR5wg/T0UPEe8cWAsBIukJqeiFwYM=;
+        b=wvcFjrQ8ldj13i0Z/exdd2cX4GOnvlTGeTKz561TDpkABq+xqo+YQgXQnnVs54/qHR
+         Zct5RbpYOa2K1x9kLKRlxFU/Ikx2w3nUwTRtUpQUDO4zjAif6sD4C13qcbl1x6b/XvFv
+         EPv6RSMYMixUN2/yXgiZk4YLkdhXcd4GTFvi/DTKzIgxSPXLKwj40OtvH+og4/hEGFjR
+         KZXlyEDB2bet/721Usf2i7XM69OLEVVE8J5KTT5hN9KYJLgcUPPrcNYX1JDFADl8ipOe
+         PvtuGhqIxud4HktKECeW6LbQUNv9Vv22ZPqpHN+rrzkB1f0evSMNSrK3b8AEFeUVWTP1
+         B5tw==
+X-Gm-Message-State: AOAM531TIdHWzUnXqN8ijfrxpHy29BE2V7TsdK/8oX9winXlC2ljTtq5
+        KWXgqYe7qNP/Cl0KXaZOoFjX+A==
+X-Google-Smtp-Source: ABdhPJyQHmddut2poCsAvWVXA9udLP+Hzn3znsRmkEvS9rMfvpx/h+horXPxik2iLvgilZBQ3/1wCQ==
+X-Received: by 2002:a05:6a00:a0e:b0:4fd:fa6e:95fc with SMTP id p14-20020a056a000a0e00b004fdfa6e95fcmr1573732pfh.17.1651808086746;
+        Thu, 05 May 2022 20:34:46 -0700 (PDT)
+Received: from [10.254.202.109] ([139.177.225.232])
+        by smtp.gmail.com with ESMTPSA id r7-20020aa79627000000b0050dc76281f8sm2192758pfg.210.2022.05.05.20.34.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 20:34:46 -0700 (PDT)
+Message-ID: <4db027a7-1475-b86b-7852-9433efc01db4@bytedance.com>
+Date:   Fri, 6 May 2022 11:33:26 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: [PATCH] ftrace/fgraph: fix increased missing-prototypes warnings
+Content-Language: en-US
+To:     rostedt@goodmis.org, mark.rutland@arm.com, catalin.marinas@arm.com
+Cc:     linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
+        lkp@intel.com
+References: <20220506032737.23375-1-zhouchengming@bytedance.com>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220506032737.23375-1-zhouchengming@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <like.xu@linux.intel.com>
+On 2022/5/6 11:27, Chengming Zhou wrote:
+> After commit e999995c84c3 ("ftrace: cleanup ftrace_graph_caller enable
+> and disable") merged into the linux-next tree, the kernel test robot
+> (lkp@intel.com) has send out report that there are increased missing-prototypes
+> warnings caused by that commit.
+> 
+> COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 \
+> 	O=build_dir ARCH=sh SHELL=/bin/bash kernel/trace/
+> warning: no previous prototype for 'ftrace_enable_ftrace_graph_caller' [-Wmissing-prototypes]
+> warning: no previous prototype for 'ftrace_disable_ftrace_graph_caller' [-Wmissing-prototypes]
+> warning: no previous prototype for 'ftrace_return_to_handler' [-Wmissing-prototypes]
+> warning: no previous prototype for 'ftrace_graph_sleep_time_control' [-Wmissing-prototypes]
+> 
+> BTW there are so many missing-prototypes warnings if build kernel with "W=1".
+> 
+> The increased warnings for 'ftrace_[enable,disable]_ftrace_graph_caller'
+> is caused by CONFIG_FUNCTION_GRAPH_TRACER && !CONFIG_DYNAMIC_FTRACE,
+> so the declarations in <linux/ftrace.h> can't be seen in fgraph.c.
+> 
+> And this warning can't reproduce on x86_64 since x86_64 select
+> HAVE_FUNCTION_GRAPH_TRACER only when DYNAMIC_FTRACE, so fgraph.c will
+> always see the declarations in <linux/ftrace.h>.
+> 
+> This patch fix the increased warnings by put the definitions in
+> CONFIG_DYNAMIC_FTRACE although there are no real problems exist.
+> 
 
-The x86_pmu.lbr_info is 0 unless explicitly initialized, so there's
-no point checking x86_pmu.intel_cap.lbr_format.
+Sorry, forget to add:
+Reported-by: kernel test robot <lkp@intel.com>
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Like Xu <like.xu@linux.intel.com>
-Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
----
- arch/x86/events/intel/lbr.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index fe1742c4ca49..4529ce448b2e 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -1874,12 +1874,10 @@ void __init intel_pmu_arch_lbr_init(void)
-  */
- int x86_perf_get_lbr(struct x86_pmu_lbr *lbr)
- {
--	int lbr_fmt = x86_pmu.intel_cap.lbr_format;
--
- 	lbr->nr = x86_pmu.lbr_nr;
- 	lbr->from = x86_pmu.lbr_from;
- 	lbr->to = x86_pmu.lbr_to;
--	lbr->info = (lbr_fmt == LBR_FORMAT_INFO) ? x86_pmu.lbr_info : 0;
-+	lbr->info = x86_pmu.lbr_info;
- 
- 	return 0;
- }
--- 
-2.27.0
-
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> ---
+>  kernel/trace/fgraph.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
+> index 289311680c29..2cd374294be7 100644
+> --- a/kernel/trace/fgraph.c
+> +++ b/kernel/trace/fgraph.c
+> @@ -30,6 +30,7 @@ int ftrace_graph_active;
+>  /* Both enabled by default (can be cleared by function_graph tracer flags */
+>  static bool fgraph_sleep_time = true;
+>  
+> +#ifdef CONFIG_DYNAMIC_FTRACE
+>  /*
+>   * archs can override this function if they must do something
+>   * to enable hook for graph tracer.
+> @@ -47,6 +48,7 @@ int __weak ftrace_disable_ftrace_graph_caller(void)
+>  {
+>  	return 0;
+>  }
+> +#endif
+>  
+>  /**
+>   * ftrace_graph_stop - set to permanently disable function graph tracing
