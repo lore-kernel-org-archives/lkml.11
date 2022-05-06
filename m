@@ -2,139 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE58DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52527C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444589AbiEFV60 (ORCPT
+        id S1444608AbiEFV7B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
+        Fri, 6 May 2022 17:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234286AbiEFV6V (ORCPT
+        with ESMTP id S1357080AbiEFV6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:58:21 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C98A6FA15;
-        Fri,  6 May 2022 14:54:37 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id hf18so7030857qtb.0;
-        Fri, 06 May 2022 14:54:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RwE9cq9p0Nlb5WXcx6miQbDi/yCUsV/mHE4B3DAunEQ=;
-        b=XBjKjnmoAxI4U0zjITutiDy4hvb6gAkXbGpivr33VkTd3yXk046a9ztdGeEmoM8xmq
-         viKWdYYQfgz/9kE4Yg3VViyBRWrngMQ+CYisgxaF7Yy07Hm3KEs0CMQ3wAgV0y/jgMbw
-         hl0m2eg+knwyjh8UOWlDRShpxjXdFrw/zwBADtcDL51HoarIoYBNvfrvg6Fvq8owwl6I
-         03Kj+u1smm7ys8OGB+uymtUOQOY/zU6Oy7idBZl5LsucdrsafoofLKL4QmvpNdPjAYMG
-         a+M81ZX3QL10EVljZXaEtEP2ngXk0DRgDvME1Qrmr88QSHjs23rooxoYa+cgE7svNIBx
-         4pew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RwE9cq9p0Nlb5WXcx6miQbDi/yCUsV/mHE4B3DAunEQ=;
-        b=mcJVlRBXAKTqbmyGm/FppKgicHopPS7wVy9p15czdTYVpBtyGyQ2Jkj1dO9qFFSGbP
-         e+beocbA6ExEMBHufts2tv6sa/1ooQXxoMCB2LX5GfAdd3agaYzACxhd4m2Uud8Mo/WJ
-         x5GOOOdOu7ElAoBW+cPgYVWfLNdXXuxwqwSQw1z2v+wJVYfvqQr1wf09q3I6sirGhCaw
-         nf6l6RttoN+/CNnW0CCEZ1fX3ecq4ERLHUkcNZZj4EF/rThVkU9VuRRuv6ob2NyTShJE
-         fRyqf7giJe+MukCGtd+fAmM4MfdVKUBJULH2aO+fYiGf8UQwl/6WhtUtVB+pyVFsBVMI
-         LhUA==
-X-Gm-Message-State: AOAM533NFRpzSJC5lkCAkA52b4GNpK03/b2lvYgQFB/uJxgl6gZ7/1mk
-        I41PKmtun2n2HD3Gz3pvOHH5wGAVLOi4hZnq/II=
-X-Google-Smtp-Source: ABdhPJwxY/50SN1+xVwy4AdOMSL/WvUMQPV+2K5V61Yi3kCKeGyqxkZqly9+WDBG/E9q8eqf/qN7lNQrTbZltStTOzE=
-X-Received: by 2002:a05:622a:155:b0:2f3:9484:c38e with SMTP id
- v21-20020a05622a015500b002f39484c38emr4801986qtw.494.1651874076599; Fri, 06
- May 2022 14:54:36 -0700 (PDT)
+        Fri, 6 May 2022 17:58:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743376FA2B;
+        Fri,  6 May 2022 14:55:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01F4561222;
+        Fri,  6 May 2022 21:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69B31C385A8;
+        Fri,  6 May 2022 21:55:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YGZ0vAoA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1651874104;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/+N3dtA3i5IckHEcjuT6gSmWlIcyj5yxaCQLbE6VYwY=;
+        b=YGZ0vAoAPGWftMUyldlIFOgxtU85YLRLaLUI1VVgIzM5+Q8fCUTF3w/N2C6yJXjUaJE91h
+        MWZ7IH+gcztxIOiA7/OP7tZjZH796oeQ/ls6y/jyX3UUoqibAwTqR4UybxexyRpSaYlnNo
+        atvXpm5U9V0YLDfUvacnb0j6ON0HT0o=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 919a18bd (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 6 May 2022 21:55:04 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Filipe Manana <fdmanana@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>, Theodore Ts'o <tytso@mit.edu>
+Subject: [PATCH 2/3] random: do not use input pool from hard IRQs
+Date:   Fri,  6 May 2022 23:54:53 +0200
+Message-Id: <20220506215454.1671-2-Jason@zx2c4.com>
+In-Reply-To: <20220506215454.1671-1-Jason@zx2c4.com>
+References: <20220506215454.1671-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-References: <20220425182249.2753690-1-robimarko@gmail.com> <20220425182249.2753690-2-robimarko@gmail.com>
- <YnSW+mNgAp17e/YE@builder.lan>
-In-Reply-To: <YnSW+mNgAp17e/YE@builder.lan>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Fri, 6 May 2022 23:54:25 +0200
-Message-ID: <CAOX2RU4B6hqQtJCW3ifXfxd9dMCGE+FygDimGQOP49PRjp_y3g@mail.gmail.com>
-Subject: Re: [PATCH 2/7] clk: qcom: ipq8074: disable USB GDSC-s SW_COLLAPSE
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Abhishek Sahu <absahu@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-clk@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 6 May 2022 at 05:33, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
->
-> On Mon 25 Apr 13:22 CDT 2022, Robert Marko wrote:
->
-> > Like in IPQ6018 Qualcomm intentionally disables the SW_COLLAPSE on the USB
-> > GDSC-s in the downstream 5.4 kernel.
-> >
-> > This could potentially be better handled by utilizing the GDSC driver, but
-> > I am not familiar with it nor do I have datasheets.
->
-> Could you please give it a try before we pick this up?
-> Look at e.g. drivers/clk/qcom/gcc-sdm845.c how usb30_prim_gdsc and
-> usb30_sec_gdsc are defined, the offsets in specified in .gdscr should be
-> the same offsets you give below.
->
-> Then you specify an array of struct gdsc *, associating the two gdscs
-> you have specified to some identifier (USB30_PRIM_GDSC and
-> USB30_SEC_GDSC is used in sdm845) and reference this list as .gdscs and
-> num_gdscs in the gcc_ipq8074_desc.
->
-> The last part is to tie the USB controllers to the two GDSCs, this is
-> done by simply specifying:
->
->         power-domains = <&gcc USB30_PRIM_GDSC>;
->
-> and USB30_SEC_GDSC, in the two USB nodes in DeviceTree. SW_COLLAPSE will
-> be toggled by the PM state of the USB driver, like it's done on e.g.
-> sdm845.
+Years ago, a separate fast pool was added for interrupts, so that the
+cost associated with taking the input pool spinlocks and mixing into it
+would be avoided in places where latency is critical. However, one
+oversight was that add_input_randomness() and add_disk_randomness()
+still sometimes are called directly from the interrupt handler, rather
+than being deferred to a thread. This means that some unlucky interrupts
+will be caught doing a blake2s_compress() call and potentially spinning
+on input_pool.lock, which can also be taken by unprivileged users by
+writing into /dev/urandom.
 
-Hi Bjorn, thanks for the tips, it makes more sense now.
-The only thing I am not sure about are the feature flags for these GDSCs,
-how to figure out which ones are correct as I dont have datasheets and QCA
-does not use GDSCs in the downstream kernel?
-POLL_CFG_GDSCR will cause the GDSC not to get enabled, while VOTABLE
-seems to work.
+We also observe that the entropy estimation algorithm uses jiffies,
+which is rather coarse. In practice what this means that
+add_timer_randomness() will credit the first event called from an
+interrupt, but will skip the subsequent ones. However, if this is
+triggered by an interrupt, the first event will *also* hit
+add_interrupt_randomness(), which does its own crediting. So in essence
+we double-count these inputs. So this commit not only avoids calling the
+expensive functions from hard IRQ but also avoids this double counting.
 
-Regards,
-Robert
+In order to fix these issues, add_timer_randomness() now checks whether
+it is being called from a hard IRQ and if so, just mixes into the
+per-cpu IRQ fast pool using fast_mix(), which is much faster and can be
+done lock-free.  A nice consequence of this, as well, is that it means
+hard IRQ context FPU support is likely no longer useful.
 
->
-> Regards,
-> Bjorn
->
-> >
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > ---
-> >  drivers/clk/qcom/gcc-ipq8074.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-> > index 2ebd1462db78..65249a03a672 100644
-> > --- a/drivers/clk/qcom/gcc-ipq8074.c
-> > +++ b/drivers/clk/qcom/gcc-ipq8074.c
-> > @@ -4806,6 +4806,11 @@ static int gcc_ipq8074_probe(struct platform_device *pdev)
-> >       if (IS_ERR(regmap))
-> >               return PTR_ERR(regmap);
-> >
-> > +     /* Disable SW_COLLAPSE for USB0 GDSCR */
-> > +     regmap_update_bits(regmap, 0x3e078, BIT(0), 0x0);
-> > +     /* Disable SW_COLLAPSE for USB1 GDSCR */
-> > +     regmap_update_bits(regmap, 0x3f078, BIT(0), 0x0);
-> > +
-> >       clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
-> >       clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
-> >                               &nss_crypto_pll_config);
-> > --
-> > 2.35.1
-> >
+A downside of this, however, is that the num argument is potentially
+attacker controlled, which puts a bit more pressure on the fast_mix()
+sponge to do more than it's really intended to do. As a mitigating
+factor, the first 96 bits of input aren't attacker controlled (a cycle
+counter followed by zeros), which means it's essentially two rounds of
+siphash rather than one, which is somewhat better. It's also not that
+much different from add_interrupt_randomness()'s use of the irq stack
+instruction pointer register.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Filipe Manana <fdmanana@suse.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index d15f2133e804..818432638c18 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1227,6 +1227,12 @@ static void add_timer_randomness(struct timer_rand_state *state, unsigned int nu
+ 	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
+ 	long delta, delta2, delta3;
+ 
++	if (in_hardirq()) {
++		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
++			 (unsigned long[2]){ entropy, num });
++		return;
++	}
++
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+ 	_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	_mix_pool_bytes(&num, sizeof(num));
+-- 
+2.35.1
+
