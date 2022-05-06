@@ -2,141 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89196C43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FEC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245025AbiEFOvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 10:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
+        id S1442449AbiEFOvw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 10:51:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237385AbiEFOuy (ORCPT
+        with ESMTP id S237385AbiEFOvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 10:50:54 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21496AA5C;
-        Fri,  6 May 2022 07:47:11 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id C32391F468F5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651848427;
-        bh=utol468ApKu3UfEFy7x8r+aU8cRRwOmqk4bK/1Di3gM=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jBE3ytwUGToW06KmZyXbQlLMQh11EfcrZ6bdwLxbmA9KbTMiYuuNn3kvbqh632rH2
-         Jgx0CZHq1E9lNHGEsuRz21D8kAvAh8rFaR8jds1ArktyMwvqKLxX4GAkX19BTWUmPP
-         b1quvNeRnJpwzsGfRULjPmqW94UBaLvY+SdyGZ2o/bAt8UYAzh00sKV0zWBnlAl37N
-         VELNP3WacCdMrm2dk8Vabl3yhZXLesCAV/s6oeDX+kpR+1yBykPgcYSQODD7Vr7gKd
-         V7A6zoiXfzrqEzkhyai26Ys6RbYpjgl9Ni5GI2/IasHsLcZOIHlsySI8JROUyGnbmg
-         dahigOUrcy3KA==
-Message-ID: <f8075f97-4cc7-b802-97af-c0ef5a969624@collabora.com>
-Date:   Fri, 6 May 2022 17:46:57 +0300
+        Fri, 6 May 2022 10:51:50 -0400
+X-Greylist: delayed 12488 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 May 2022 07:48:07 PDT
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [96.44.175.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D866AA5C;
+        Fri,  6 May 2022 07:48:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1651848487;
+        bh=mYBYsb4+IcqpXrniKQp6OcZ7ENW1vFpyI82r9PoW1UM=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=e/Lc4cT6B8c1Tm4QY5U1muirjRqkwoPTuJpxSkWn+NQQX+Zs0JMVkQGKhHmgZP+WL
+         sfCmchYkopaUYYg5oHuh+nXDeHHhqwrdqPqUUjF2iA7mhSqcHby3gCAEqQrQCIJ1eT
+         nx63fKEamNyzn5K7zKaDf1h/08Wz0HrCFALN/CnU=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 0B9B3128694D;
+        Fri,  6 May 2022 10:48:07 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Hfu_FKLUTw1k; Fri,  6 May 2022 10:48:07 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1651848486;
+        bh=mYBYsb4+IcqpXrniKQp6OcZ7ENW1vFpyI82r9PoW1UM=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=pOXX8GI578qtb2rtCb9mYA7vAb4F3V/Ra/z6yIkl6XjdXSjbSetj+XStYQLIlev1g
+         GMVHeakSGIcSEO+4y6dxOljb5rFamXyuxaQah/3IeElP+vLNnpoCKnNMc8vmSabs48
+         OMm/TFP9ZkesKIvsvTtR1RCGP8R0fnPyY01AeBhY=
+Received: from lingrow.rcx-us.ibmmobiledemo.com (unknown [129.41.87.19])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id F0DC912868FE;
+        Fri,  6 May 2022 10:48:05 -0400 (EDT)
+Message-ID: <80715dbbf1f34853697e3aa6b3c74bc381000cc4.camel@HansenPartnership.com>
+Subject: Re: [PATCH v1 1/3] kallsyms: avoid hardcoding the buffer size
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Date:   Fri, 06 May 2022 10:48:04 -0400
+In-Reply-To: <CANiq72m0unKrwRrb-tnYZ5w5oodJQ+3wNHMaQazeUSCOfUBJiQ@mail.gmail.com>
+References: <20220505191704.22812-1-ojeda@kernel.org>
+         <20220505191704.22812-2-ojeda@kernel.org>
+         <7e20c844dadacb3dac822220ca108f4d786ceb7d.camel@HansenPartnership.com>
+         <CANiq72m0unKrwRrb-tnYZ5w5oodJQ+3wNHMaQazeUSCOfUBJiQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v7 04/20] kernel: Add combined power-off+restart handler
- call chain API
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Joshua Thompson <funaho@jurai.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        xen-devel@lists.xenproject.org,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <20220411233832.391817-1-dmitry.osipenko@collabora.com>
- <20220411233832.391817-5-dmitry.osipenko@collabora.com>
- <CAJZ5v0gnTSoeNP+QXwrZ45FQY4howVkJMuCjM=j+_-2BngJdQg@mail.gmail.com>
- <990621e7-9f8a-8b4a-02ec-fd6c1e1f48ff@collabora.com>
- <CAJZ5v0jxXtwot0qpib4UG8Tz8Hd1dEbgo58tEdPFboU8xwKHNw@mail.gmail.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <CAJZ5v0jxXtwot0qpib4UG8Tz8Hd1dEbgo58tEdPFboU8xwKHNw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/20/22 21:47, Rafael J. Wysocki wrote:
->>>> +/**
->>>> + *     devm_register_prioritized_power_off_handler - Register prioritized power-off callback
->>>> + *     @dev: Device that registers callback
->>>> + *     @priority: Callback's priority
->>>> + *     @callback: Callback function
->>>> + *     @cb_data: Callback's argument
->>>> + *
->>>> + *     Registers resource-managed power-off callback with a given priority.
->>>> + *     It will be called as last step of the power-off sequence. Callbacks
->>>> + *     chaining is disabled, i.e. further lower priority callbacks won't
->>>> + *     be executed if this @callback will fail to execute.
->>>> + *
->>>> + *     Returns zero on success, or error code on failure.
->>> What's the case in which this should be used instead of registering a
->>> full sys_off handler?
->> There are a lot of drivers that just want to register power-off handler
->> with a non-default priority and don't need to stop the chain or do
->> anything else special. This is a convinient helper for them.
->>
->> Please note that the callback here takes only the cb_data for the
->> argument, while sys_off uses "struct power_off_data".
->>
->> Similar for the reset of the convinient helpers.
-> So if there is a way to do this, why would anyone prefer to use the
-> full sys_off handler at all?
+On Fri, 2022-05-06 at 14:58 +0200, Miguel Ojeda wrote:
+> Hi James,
+> 
+> On Fri, May 6, 2022 at 1:19 PM James Bottomley
+> <James.Bottomley@hansenpartnership.com> wrote:
+> > When you raise KSYM_NAME_LEN to 512, this on stack allocation
+> > becomes 2049 bytes.  How did you manage not to trigger the frame
+> > size warning, which is 1024 on 32 bit and 2048 on 64 bit by
+> > default?
+> 
+> Thanks for taking a look!
+> 
+> If you mean `CONFIG_FRAME_WARN`, that applies to kernel objects, not
+> scripts.
 
-There are couple occurrences around kernel where there is no device
-available for the devm_ functions, like this for example [1].
+Oh, right, I missed that it was a script.  Forget the comment then; we
+only have a restricted stack inside the kernel not in userspace.
 
-[1]
-https://gitlab.collabora.com/dmitry.osipenko/linux-kernel-rd/-/commit/184dfd3983e774d3cf9050dc5b4ec23a662a9551
+James
 
--- 
-Best regards,
-Dmitry
+
