@@ -2,166 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444524AbiEFVgg (ORCPT
+        id S1444534AbiEFVhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:36:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        Fri, 6 May 2022 17:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444528AbiEFVgb (ORCPT
+        with ESMTP id S1444526AbiEFVhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:36:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE43B6F4AA
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:32:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651872766;
+        Fri, 6 May 2022 17:37:10 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74176F4A7;
+        Fri,  6 May 2022 14:33:26 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651872805;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dJbJbWsoyM+Ik6q37wpw5Oa4Nh86YRow8ddVHHmJk08=;
-        b=Mogfye/mTZEmePYp0uFboMftlTM2s/fjnz1kqqos0JeUBeMBKURC0xvXO7IJyTujOuZHp3
-        4ubpZwPTTmJ74P8NyjzSHJRzP/z+p/EkmQpaCZMqV4nyLKYIb2RF8YbazbUMj/KqCnrxaX
-        sgPgBZutuhdtlDpyU1KUmf3DeHr1Rds=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-75-T07rAprUMcKaleG2PLuxSA-1; Fri, 06 May 2022 17:32:44 -0400
-X-MC-Unique: T07rAprUMcKaleG2PLuxSA-1
-Received: by mail-qt1-f200.google.com with SMTP id l7-20020a05622a174700b002f3c49f49ffso3859012qtk.15
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 14:32:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=dJbJbWsoyM+Ik6q37wpw5Oa4Nh86YRow8ddVHHmJk08=;
-        b=o02RFvf0P5ZwFgRK48JB5/8WpWVyq4qIm4j/adzrCn9cnE1mu1KjRJ9T0FWV3N6SQR
-         JsItZ6m7QPn05nSdtAi1S+MxU/R7/GHAVoIPb6VXu4Jvh27zzhzPfJLqaMSvglE/ZtB5
-         wVtNdET8WRsqeEAp5W+8MX4VVHpg+PU4XSRmH1kAJn7Y4v+iq4Z2SgySvdL2Evx7/FWc
-         6eqO6+gcOPdq4OF9SfSo5evxbFgBBeDOCAtiXBNIcgDn8iacoh+A6r3oTDyJ09Un6gy2
-         GlESE9KkeXAzkxDLlmIOUuExv9fkxYlKO2lU3D17wDq4uDi3SmUkLo6gPGiCr6bRtGlo
-         1OkQ==
-X-Gm-Message-State: AOAM533oWh4pp5UoEslW6bV3zDCGM7Ig7KoVf9IwD9jUZjXkWqDDhJvx
-        wpBIK5XI1JbZKDs71aneMP+Ij3+1xQ/+g1Pb4nl6e5lO4fiWnQDtmfZ4ksROkJD9xG3spRwjTTQ
-        WnQhGb7V1ZW3RFEx9KFWBae8R
-X-Received: by 2002:a0c:ab09:0:b0:443:95d9:140c with SMTP id h9-20020a0cab09000000b0044395d9140cmr4170802qvb.84.1651872764248;
-        Fri, 06 May 2022 14:32:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwK5FWqqA+iA50nH6ppws5HNXmaCdaMsh8I0itmM43LaQ06P84wOxCI5Gl5CmLPygLNpGGy8Q==
-X-Received: by 2002:a0c:ab09:0:b0:443:95d9:140c with SMTP id h9-20020a0cab09000000b0044395d9140cmr4170789qvb.84.1651872763988;
-        Fri, 06 May 2022 14:32:43 -0700 (PDT)
-Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
-        by smtp.gmail.com with ESMTPSA id b3-20020ac85403000000b002f39b99f6adsm3164237qtq.71.2022.05.06.14.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 14:32:43 -0700 (PDT)
-Message-ID: <9b7eab5df5e63e3fe899bca9ea35f4be8bbff98c.camel@redhat.com>
-Subject: Re: [PATCH] drm/nouveau: Fix a potential theorical leak in
- nouveau_get_backlight_name()
-From:   Lyude Paul <lyude@redhat.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pierre Moreau <pierre.morrow@free.fr>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
-Date:   Fri, 06 May 2022 17:32:42 -0400
-In-Reply-To: <9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr>
-References: <9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Jeq5X8rBctwhIa1PWWHIqsjYqzv8yFjidcBuzCv/foM=;
+        b=RxKlV8jfy3G27pBeNxf1ljB+JSQCw9i5bGNEezGrA2mf3fAcKm7klSuuxt/tdmJAznnGeq
+        r0Yc2iqrlvhYo6led263WaMFE2R3pRmJI/3dOyDx3rD373mKFqDxfnQ0uikXcjE/gqbQcS
+        qdUCHVhHDayc4UJKCqIPUZqPelEgnh6Ropi2KCSxHevhgrjETFb9pqD8BbcrtkXV/tLcud
+        sK6OsNbo9R5xfXtP/9Hv4Xt3x/zo3jjPh9MCqthFqy5HKOKB4AzZy1eqmeKPC1oBD4pS83
+        T48LQsmXGhFGaTLdNDnGIadjzEhBN/LVPbllbK2N3soNfn/bhb/FXByt2T9uLw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651872805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Jeq5X8rBctwhIa1PWWHIqsjYqzv8yFjidcBuzCv/foM=;
+        b=3Qs9mj50WwC4qI0K86sJbOxn9gMgDSusBkQmxzHDuSMsV7Wp11akMswqQfYcUxBBovfx/2
+        Dri4+jp9g7hT4SBQ==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH next v1] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Fri,  6 May 2022 23:39:24 +0206
+Message-Id: <20220506213324.470461-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry I totally missed this patch up until now, noticed it while going through
-unread emails today. This is:
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
 
-FWIW, if there's something you need reviews on that hasn't gotten looked at
-after a few weeks feel free to poke the nouveau list/me.
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ Note: I checked the other serial drivers and this was the only
+       one that assumed interrupts off for write().
 
-Anyway, I will go ahead and push this to drm-misc-fixes in a moment. Thanks!
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-On Wed, 2022-02-09 at 07:03 +0100, Christophe JAILLET wrote:
-> If successful ida_simple_get() calls are not undone when needed, some
-> additional memory may be allocated and wasted.
-> 
-> Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
-> not taken into account and is wasted. It should be released.
-> 
-> Instead of calling ida_simple_remove(), take advantage of the 'max'
-> parameter to require the ID not to be too big. Should it be too big, it
-> is not allocated and don't need to be freed.
-> 
-> While at it, use ida_alloc_xxx()/ida_free() instead to
-> ida_simple_get()/ida_simple_remove().
-> The latter is deprecated and more verbose.
-> 
-> Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is more a clean-up than a fix.
-> It is unlikely than >= 100 backlight devices will be registered, and the
-> over allocation would occur even much later when the underlying xarray is
-> full.
-> 
-> I also think that the 'if (bl->id >= 0)' before the ida_simple_remove()
-> calls are useless. We don't store the id if a negative (i.e. error) is
-> returned by ida_simple_get().
-> 
-> Finally, having a '#define BL_MAX_MINORS 99' could be better than a
-> magic number in the code.
-> ---
->  drivers/gpu/drm/nouveau/nouveau_backlight.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> index ae2f2abc8f5a..ccd080ba30bf 100644
-> --- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> +++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> @@ -46,8 +46,8 @@ static bool
->  nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
->                            struct nouveau_backlight *bl)
->  {
-> -       const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
-> -       if (nb < 0 || nb >= 100)
-> +       const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
-> +       if (nb < 0)
->                 return false;
->         if (nb > 0)
->                 snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d",
-> nb);
-> @@ -414,7 +414,7 @@ nouveau_backlight_init(struct drm_connector *connector)
->                                             nv_encoder, ops, &props);
->         if (IS_ERR(bl->dev)) {
->                 if (bl->id >= 0)
-> -                       ida_simple_remove(&bl_ida, bl->id);
-> +                       ida_free(&bl_ida, bl->id);
->                 ret = PTR_ERR(bl->dev);
->                 goto fail_alloc;
->         }
-> @@ -442,7 +442,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
->                 return;
->  
->         if (bl->id >= 0)
-> -               ida_simple_remove(&bl_ida, bl->id);
-> +               ida_free(&bl_ida, bl->id);
->  
->         backlight_device_unregister(bl->dev);
->         nv_conn->backlight = NULL;
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 23c94b927776..e676ec761f18 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1599,6 +1599,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
+ {
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1616,6 +1617,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
+ 
++	local_irq_save(flags);
++
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1661,6 +1664,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
+ }
+ 
+ static void msm_console_write(struct console *co, const char *s,
 
+base-commit: 38a288f5941ef03752887ad86f2d85442358c99a
 -- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+2.30.2
 
