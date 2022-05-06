@@ -2,109 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 567A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 19:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DEA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 19:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390696AbiEFTTR (ORCPT
+        id S1390793AbiEFTTV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 15:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
+        Fri, 6 May 2022 15:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389906AbiEFTSs (ORCPT
+        with ESMTP id S1390660AbiEFTS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 15:18:48 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A226D384;
-        Fri,  6 May 2022 12:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=Ku2H0dVFHWUXAOXQaFLrRey8keVDfRjwZFcZZ6wIpDs=; b=N/Pp2hwpFN7sAM2zS2K/pZ3EpJ
-        Qk+IfyuXvAryDmhQjt1fr/IdKfckpAoDFPqGRy5lYW+TDiWD7iy+e9toVR/R+TtFrkJ1CYoSHaLAe
-        6oGUT05exbMUYvpSwisbtxboW+ciDzCYIDdV+MVHO/NK7WkCr2TYRibxqEO9rHxeLBX8wHEd5UUYX
-        /Z/BJGT3PsEXBSugervKTMytMynlSn4W4FXMSWLredYU+r0X840dnqcHEiHuq/NuMNtt5QlQIZEo0
-        OC5Q8L4LqVtzqNqVwGmP5ZCgfilXTpa+91IBqbHHyzj4cM4kux2mVRJtuV/zAH/kmdw+7+YsvJlb+
-        gDqThM4cAHZ6VuDBFiEY90QIxPAIEIkGOWkmMQEJxLIEgTMj0cmyfJlaJikkmwnberzYByblebhF+
-        8Tcexi7nF8naAYKpb1aQpzue5P6u4kSI0Ve3aIDj/LoXrSsEktdaviEl0n2cOomTvBiJOAbS8AJ34
-        8h9ozbb0Y+plpt43JUTwppAhi5CCY8MjbnFwC/HlqJJwAzNb+uUzKUCzo5Wo0dgWQrSsaQHhPjOr6
-        xGusBwbWn/de3G8RB3wd4zRCtJR+U5j3on4y/6hFuIj+1OXw/+AmpfUsWJFLvhAr4W9ZT6cE1cFQR
-        5dF9YfcStw9CrFhYlpivmpUSdPM7vjNTbIXj9BbgU=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     David Howells <dhowells@redhat.com>,
-        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark (was: 9p
- fscache Duplicate cookie detected))
-Date:   Fri, 06 May 2022 21:14:52 +0200
-Message-ID: <7091002.4ErQJAuLzZ@silver>
-In-Reply-To: <YnL0vzcdJjgyq8rQ@codewreck.org>
-References: <YmKp68xvZEjBFell@codewreck.org> <6688504.ZJKUV3z3ry@silver>
- <YnL0vzcdJjgyq8rQ@codewreck.org>
+        Fri, 6 May 2022 15:18:58 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22CE6D4E2;
+        Fri,  6 May 2022 12:15:14 -0700 (PDT)
+Received: from [192.168.1.30] (097-089-247-249.biz.spectrum.com [97.89.247.249])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id A85273F616;
+        Fri,  6 May 2022 19:15:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1651864512;
+        bh=AhY6XnbZGCaa4rZcAy/QJhv0KQphb6EX3UBpmJcYre4=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=IBsLG3MhrwhXcPHusLcHwEq1Qz0eU34L4OZe52BXOlw2nZXsjl456W8pvNW3AP6nA
+         r5y9ej4AwjYpB7jgKCVKQ3GeALz9KeKvxdxmxXzBILE5AVekW++Xj1Zk4fOKZTMwtm
+         9GK3100drIvlvEoS0qDLJosthdohnHwDg66yLFlWeN8lhZB8by9m2CrMGIrEoEcU++
+         zQeRjnGbABdFyZUAqQT3nt0Of7RbBhUZZadHrjhGkCdei+Awjeo34uI41QsW0trray
+         5tQY3xpOqFqs8B90+pxlJ9ncCU9IZBZCqzx/LUws2MsnNiByvonYRcnyoTWIvxf+RZ
+         Kgbx3TdYi7teA==
+Message-ID: <29829c01-f31e-2c4f-06e9-fc15c0261f93@canonical.com>
+Date:   Fri, 6 May 2022 15:15:09 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: Issue With real-time patches on 5.15.y
+Content-Language: en-US
+To:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, dave.hansen@linux.intel.com,
+        linux-rt-users@vger.kernel.org
+References: <bdb23fe5-51ae-8873-a3d7-85f377877c79@canonical.com>
+ <32803e0b-8ff6-ae8d-f9cb-ce2d3fd37229@intel.com>
+From:   Joseph Salisbury <joseph.salisbury@canonical.com>
+In-Reply-To: <32803e0b-8ff6-ae8d-f9cb-ce2d3fd37229@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mittwoch, 4. Mai 2022 23:48:47 CEST asmadeus@codewreck.org wrote:
-> Christian Schoenebeck wrote on Wed, May 04, 2022 at 08:33:36PM +0200:
-> > On Dienstag, 3. Mai 2022 12:21:23 CEST asmadeus@codewreck.org wrote:
-> > >  - add some complex code to track the exact byte range that got updated
-> > > 
-> > > in some conditions e.g. WRONLY or read fails?
-> > > That'd still be useful depending on how the backend tracks file mode,
-> > > qemu as user with security_model=mapped-file keeps files 600 but with
-> > > passthrough or none qemu wouldn't be able to read the file regardless of
-> > > what we do on client...
-> > > Christian, if you still have an old kernel around did that use to work?
-> > 
-> > Sorry, what was the question, i.e. what should I test / look for
-> > precisely? :)
-> I was curious if older kernel does not issue read at all, or issues read
-> on writeback fid correctly opened as root/RDRW
-> 
-> You can try either the append.c I pasted a few mails back or the dd
-> commands, as regular user.
-> 
-> $ dd if=/dev/zero of=test bs=1M count=1
-> $ chmod 400 test
-> # drop cache or remount
-> $ dd if=/dev/urandom of=test bs=102 seek=2 count=1 conv=notrunc
-> dd: error writing 'test': Bad file descriptor
-
-Seems you were right, the old kernel opens the file with O_RDWR.
-
-The following was taken with cache=loose, pre-netfs kernel version, using your
-append code and file to be appended already containing 34 bytes, relevant file is fid 7:
-
-  v9fs_open tag 0 id 12 fid 7 mode 2
-  v9fs_open_return tag 0 id 12 qid={type 0 version 1651854932 path 3108899} iounit 4096
-  v9fs_xattrwalk tag 0 id 30 fid 5 newfid 8 name security.capability
-  v9fs_rerror tag 0 id 30 err 95
-  v9fs_read tag 0 id 116 fid 7 off 0 max_count 4096
-  v9fs_read_return tag 0 id 116 count 34 err 45
-  v9fs_read tag 0 id 116 fid 7 off 34 max_count 4062
-  v9fs_read_return tag 0 id 116 count 0 err 11
-  v9fs_clunk tag 0 id 120 fid 6
-  v9fs_clunk tag 0 id 120 fid 4
-  [delay]
-  v9fs_write tag 0 id 118 fid 7 off 0 count 39 cnt 1
-  v9fs_write_return tag 0 id 118 total 39 err 11
-  v9fs_fsync tag 0 id 50 fid 7 datasync 0
-
-BTW to see this protocol debug output with QEMU:
-
-  cd qemu/build
-  ../configure --enable-trace-backends=log ...
-  make -jN
-  ./qemu-system-x86_64 -trace 'v9fs*' ...
-
-Best regards,
-Christian Schoenebeck
 
 
+On 5/5/22 19:35, Dave Hansen wrote:
+> On 5/5/22 16:18, Joseph Salisbury wrote:
+>> The real-time kernel build failure can be resolved by reverting commit
+>> b50854eca0e0.  The failure seems to be due to the removal of an include
+>> of xstate.h from pkru.h and caused spinlock_t to not be defined.  The
+>> commit would only be reverted for the real-time kernel and not any other
+>> kernels.  I wanted to see if reverting the commit is the proper
+>> approach, or if cherry-picking additional commits might be a better
+>> solution in preparation for additional changes that might be coming in
+>> the future?
+>>
+>> Any suggestions would be greatly appreciated.
+> I thought you distro folks were the franenkernel experts. :)
+>
+> But, seriously...  This isn't rocket science.  Just look at the pkru.h
+> in your tree and figure out what includes it needs.  If it needs FPU
+> gunk, include the FPU header.  If you get a compile error for spinlock_t
+> ...  well ...  find the code using spinlock_t and make sure it includes
+> spinlock.h.
+>
+Thanks for the advice, Dave.
+
+Your suggestion will probably be the easiest approach.  I was just 
+trying to limit the amount of frankenkernel changes, since there are 
+already so many  :-)  It's always best to stay as close to mainline as 
+possible.
