@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C637CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442719AbiEFPM5 (ORCPT
+        id S1442721AbiEFPND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
+        Fri, 6 May 2022 11:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384705AbiEFPMq (ORCPT
+        with ESMTP id S1442691AbiEFPMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:12:46 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18296D18A;
-        Fri,  6 May 2022 08:09:02 -0700 (PDT)
-Date:   Fri, 06 May 2022 15:09:00 -0000
+        Fri, 6 May 2022 11:12:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C306A6D186;
+        Fri,  6 May 2022 08:09:04 -0700 (PDT)
+Date:   Fri, 06 May 2022 15:09:02 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651849741;
+        s=2020; t=1651849743;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=U+sm8uFM7FbDhHcUsqKlMjO2L9gyZokheSMjZgtSp+U=;
-        b=wRDIGubs7mI17xtYSS0mLs6KbAY4NBlRX16QMExtxFuMtxX5tqPN6d/gr23dmn7cpZsDM9
-        p8oWgBOdibD9FQ3DXKiFDm/slsglbmyXTdoEh9oU2PXla2jA5KaRdoBWOggNivTGLUx+xI
-        K6QyQnjpBrTQvq0C+gs6ucAOrdXcQEE2kxmzNX/pf0nmGw6D5qONtDlPYC5aP49ua2nZ0R
-        WkB89YctWQkJUlP3gRj9C8F5UIlwhUCfNSlS0PiIUD8GpmYEXcdpqagxQGsNVcMDrhcGhi
-        08o+tH8UQOg90Iqx0ujyeVlO49MlxRetPV8xlpJ4+8kYcsOi+axVvpknuH/G0w==
+        bh=oHHTLxZ0y3dDL8rZhZ0/4b2CMBU/c9ZY1ilj9VRJaos=;
+        b=LoeSJ032In6KMScpHQq6yZRpwF5AP+JvaJ2XMCadWu30u331Fj5TXDlNFF1XMfruzCOnO/
+        3R0M1k9I1HYRQycigmK8rPHxeTLnVPlZdJfRn7dE7ctrQO5qzEtSng0Z5SfrQoHeOuPUYE
+        0AzLOo0V7rnFw1n3XQ15TFVbhTZiD8pHterB7VHUhhx/g2706CtcVCG5ONrxGJLUCPv9wU
+        KqoY+mlB0K/GiYyyuE8Up9HaYRHe7AGvvzjeCj8VkaLZCpP8sWvwqpvWkjo/DNbs4U7phP
+        90ad6DnQPXyoIQYU5QNXO0BkS1sbljkkzjSyyvlC40iN1xivW9M6qvwFXjR9Fg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651849741;
+        s=2020e; t=1651849743;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=U+sm8uFM7FbDhHcUsqKlMjO2L9gyZokheSMjZgtSp+U=;
-        b=MmYkwjCGJ9cT+OwLFXVCugTA+GwUgYytuVR4CV54sXbBve/aZK/PVrFLiwiu/KgmPG92AU
-        yeZcEOV2l0XaCmAw==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=oHHTLxZ0y3dDL8rZhZ0/4b2CMBU/c9ZY1ilj9VRJaos=;
+        b=SwSUFw6zCztrGFPyGHAse8e/nYFTz9NVHTqeTbO2FO1yi2czSk9+n1rXbQXNs8xNXdu6u+
+        ZJckcvHVauHA3/Cw==
+From:   "tip-bot2 for Linus Torvalds" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/asm] x86/entry: Remove skip_r11rcx
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+Subject: [tip: x86/asm] x86/entry: Simplify entry_INT80_compat()
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220506121631.365070674@infradead.org>
-References: <20220506121631.365070674@infradead.org>
+In-Reply-To: <20220506121631.221072885@infradead.org>
+References: <20220506121631.221072885@infradead.org>
 MIME-Version: 1.0
-Message-ID: <165184974055.4207.14612212537129433465.tip-bot2@tip-bot2>
+Message-ID: <165184974237.4207.13398999270463525244.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,73 +63,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/asm branch of tip:
 
-Commit-ID:     1b331eeea7b8676fc5dbdf80d0a07e41be226177
-Gitweb:        https://git.kernel.org/tip/1b331eeea7b8676fc5dbdf80d0a07e41be226177
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 06 May 2022 14:14:35 +02:00
+Commit-ID:     d205222eb6a8e5e70c21200beb81c6e19ec211d6
+Gitweb:        https://git.kernel.org/tip/d205222eb6a8e5e70c21200beb81c6e19ec211d6
+Author:        Linus Torvalds <torvalds@linux-foundation.org>
+AuthorDate:    Fri, 06 May 2022 14:14:33 +02:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Fri, 06 May 2022 15:58:19 +02:00
+CommitterDate: Fri, 06 May 2022 15:49:51 +02:00
 
-x86/entry: Remove skip_r11rcx
+x86/entry: Simplify entry_INT80_compat()
 
-Yes, r11 and rcx have been restored previously, but since they're being
-popped anyway (into rsi) might as well pop them into their own regs --
-setting them to the value they already are.
+Instead of playing silly games with rdi, use rax for simpler and more
+consistent code.
 
-Less magical code.
-
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220506121631.365070674@infradead.org
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220506121631.221072885@infradead.org
 ---
- arch/x86/entry/calling.h  | 10 +---------
- arch/x86/entry/entry_64.S |  3 +--
- 2 files changed, 2 insertions(+), 11 deletions(-)
+ arch/x86/entry/entry_64_compat.S | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
-index debbe94..a97cc78 100644
---- a/arch/x86/entry/calling.h
-+++ b/arch/x86/entry/calling.h
-@@ -120,27 +120,19 @@ For 32-bit we have the following conventions - kernel is built with
- 	CLEAR_REGS
- .endm
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index c5aeb08..d743eaa 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -362,26 +362,25 @@ SYM_CODE_START(entry_INT80_compat)
  
--.macro POP_REGS pop_rdi=1 skip_r11rcx=0
-+.macro POP_REGS pop_rdi=1
- 	popq %r15
- 	popq %r14
- 	popq %r13
- 	popq %r12
- 	popq %rbp
- 	popq %rbx
--	.if \skip_r11rcx
--	popq %rsi
--	.else
- 	popq %r11
--	.endif
- 	popq %r10
- 	popq %r9
- 	popq %r8
- 	popq %rax
--	.if \skip_r11rcx
--	popq %rsi
--	.else
- 	popq %rcx
--	.endif
- 	popq %rdx
- 	popq %rsi
- 	.if \pop_rdi
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 3121866..3a1e3f2 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -191,8 +191,7 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
- 	 * perf profiles. Nothing jumps here.
- 	 */
- syscall_return_via_sysret:
--	/* rcx and r11 are already restored (see code above) */
--	POP_REGS pop_rdi=0 skip_r11rcx=1
-+	POP_REGS pop_rdi=0
+ 	/* switch to thread stack expects orig_ax and rdi to be pushed */
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	pushq	%rdi			/* pt_regs->di */
  
- 	/*
- 	 * Now all regs are restored except RSP and RDI.
+ 	/* Need to switch before accessing the thread stack. */
+-	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdi
++	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
+ 
+ 	/* In the Xen PV case we already run on the thread stack. */
+ 	ALTERNATIVE "", "jmp .Lint80_keep_stack", X86_FEATURE_XENPV
+ 
+-	movq	%rsp, %rdi
++	movq	%rsp, %rax
+ 	movq	PER_CPU_VAR(cpu_current_top_of_stack), %rsp
+ 
+-	pushq	6*8(%rdi)		/* regs->ss */
+-	pushq	5*8(%rdi)		/* regs->rsp */
+-	pushq	4*8(%rdi)		/* regs->eflags */
+-	pushq	3*8(%rdi)		/* regs->cs */
+-	pushq	2*8(%rdi)		/* regs->ip */
+-	pushq	1*8(%rdi)		/* regs->orig_ax */
+-	pushq	(%rdi)			/* pt_regs->di */
++	pushq	5*8(%rax)		/* regs->ss */
++	pushq	4*8(%rax)		/* regs->rsp */
++	pushq	3*8(%rax)		/* regs->eflags */
++	pushq	2*8(%rax)		/* regs->cs */
++	pushq	1*8(%rax)		/* regs->ip */
++	pushq	0*8(%rax)		/* regs->orig_ax */
+ .Lint80_keep_stack:
+ 
++	pushq	%rdi			/* pt_regs->di */
+ 	pushq	%rsi			/* pt_regs->si */
+ 	xorl	%esi, %esi		/* nospec   si */
+ 	pushq	%rdx			/* pt_regs->dx */
