@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F982C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2423C433FE
 	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443284AbiEFQDw (ORCPT
+        id S1443292AbiEFQDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
+        Fri, 6 May 2022 12:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348539AbiEFQDf (ORCPT
+        with ESMTP id S1348385AbiEFQDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 12:03:35 -0400
-Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B62A6D845
+Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4B36D4D9
         for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:59:51 -0700 (PDT)
 Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwHp14YjzMq1Pq;
-        Fri,  6 May 2022 17:59:50 +0200 (CEST)
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwHn3VZxzMq1PY;
+        Fri,  6 May 2022 17:59:49 +0200 (CEST)
 Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwHn67n9zlhRVR;
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwHn1QqRzlhRVT;
         Fri,  6 May 2022 17:59:49 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651852790;
-        bh=ZKdObc4dUw8b1ppw9KF6MlLviIGEalnvEuIINAYEM+o=;
+        s=20191114; t=1651852789;
+        bh=5yiUmrh6mlYQh3DCfa434DsRAxQHhOjF2SlkOyGu7nQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eA96egW46rPu6iKJNmfwWCOXFRzp+ZVSbJ0AMdxdU5kSEzBL9zS+zxnjwu7B/RZcJ
-         doSlHACIFWkWTM4fL5RGJMrpgw9mfE5aF2Z+QrJjDE5FYn7m1M7GJV9CbM+fuMyShE
-         sBMgM4qWA+Obbr1ij98sMJMxnhvb4o6GpAHQJGmE=
+        b=mlLGK/j5Q05j0Zba83UJpnk9EeC64v9Hcgx5VPTsXhDL8JgYqxcuFGQgy+Rn8u54O
+         dX8jlQAZpYz5PlnejXbT+Tftdw0lkWcQ/Ljn8d/nYgOJKWKsi5nx4CjD8b+V//F6Js
+         AjVIqlagBiopynuqfBu7rWFUPsxiT0J9otE2CAog=
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     Miguel Ojeda <ojeda@kernel.org>
 Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
@@ -44,9 +44,9 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Nick Desaulniers <ndesaulniers@google.com>,
         Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
         linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH v2 3/5] clang-format: Fix goto labels indentation
-Date:   Fri,  6 May 2022 18:01:04 +0200
-Message-Id: <20220506160106.522341-4-mic@digikod.net>
+Subject: [PATCH v2 2/5] clang-format: Update to clang-format >= 6
+Date:   Fri,  6 May 2022 18:01:03 +0200
+Message-Id: <20220506160106.522341-3-mic@digikod.net>
 In-Reply-To: <20220506160106.522341-1-mic@digikod.net>
 References: <20220506160106.522341-1-mic@digikod.net>
 MIME-Version: 1.0
@@ -56,32 +56,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks to IndentGotoLabels introduced with clang-format-10 [1], we can
-avoid goto labels identation.  This follows the current coding style and
-it is then in line with the checkpatch.pl rules [2].
+We get new interesting formating with clang-format greater or equal to 6
+as stated in the removed comments.  Miguel Ojeda suggested to even move
+the minimal clang-format version to 11, which is the minimum LLVM
+supported at the moment [1].
 
-Link: https://clang.llvm.org/docs/ClangFormatStyleOptions.html [1]
-Link: https://lore.kernel.org/r/8b6b252b-47a6-9d52-f0bd-10d3bc4ad244@digikod.net [2]
+Automatically updated with:
+sed -i 's/^\(\s*\)#\(\S*\s\+\S*\) # Unknown to clang-format.*/\1\2/' .clang-format
+
+Link: https://lore.kernel.org/r/CANiq72nLOfmEt-CZBmm2ouEB_x6Jm9ggDVFCVJxYxKw7O0LTzQ@mail.gmail.com [1]
 Cc: Miguel Ojeda <ojeda@kernel.org>
 Cc: Tom Rix <trix@redhat.com>
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Link: https://lore.kernel.org/r/20220506160106.522341-4-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506160106.522341-3-mic@digikod.net
 ---
- .clang-format | 1 +
- 1 file changed, 1 insertion(+)
+
+Changes since v1:
+* Update documentation header with clang-format >= 6.
+---
+ .clang-format | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
 diff --git a/.clang-format b/.clang-format
-index 3bc1bdf0f3a1..30f68219c09e 100644
+index 70d4e7ec4cf9..3bc1bdf0f3a1 100644
 --- a/.clang-format
 +++ b/.clang-format
-@@ -633,6 +633,7 @@ IncludeCategories:
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ #
+-# clang-format configuration file. Intended for clang-format >= 4.
++# clang-format configuration file. Intended for clang-format >= 6.
+ #
+ # For more information, see:
+ #
+@@ -13,7 +13,7 @@ AccessModifierOffset: -4
+ AlignAfterOpenBracket: Align
+ AlignConsecutiveAssignments: false
+ AlignConsecutiveDeclarations: false
+-#AlignEscapedNewlines: Left # Unknown to clang-format-4.0
++AlignEscapedNewlines: Left
+ AlignOperands: true
+ AlignTrailingComments: false
+ AllowAllParametersOfDeclarationOnNextLine: false
+@@ -37,24 +37,24 @@ BraceWrapping:
+   AfterObjCDeclaration: false
+   AfterStruct: false
+   AfterUnion: false
+-  #AfterExternBlock: false # Unknown to clang-format-5.0
++  AfterExternBlock: false
+   BeforeCatch: false
+   BeforeElse: false
+   IndentBraces: false
+-  #SplitEmptyFunction: true # Unknown to clang-format-4.0
+-  #SplitEmptyRecord: true # Unknown to clang-format-4.0
+-  #SplitEmptyNamespace: true # Unknown to clang-format-4.0
++  SplitEmptyFunction: true
++  SplitEmptyRecord: true
++  SplitEmptyNamespace: true
+ BreakBeforeBinaryOperators: None
+ BreakBeforeBraces: Custom
+-#BreakBeforeInheritanceComma: false # Unknown to clang-format-4.0
++BreakBeforeInheritanceComma: false
+ BreakBeforeTernaryOperators: false
+ BreakConstructorInitializersBeforeComma: false
+-#BreakConstructorInitializers: BeforeComma # Unknown to clang-format-4.0
++BreakConstructorInitializers: BeforeComma
+ BreakAfterJavaFieldAnnotations: false
+ BreakStringLiterals: false
+ ColumnLimit: 80
+ CommentPragmas: '^ IWYU pragma:'
+-#CompactNamespaces: false # Unknown to clang-format-4.0
++CompactNamespaces: false
+ ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ ConstructorInitializerIndentWidth: 8
+ ContinuationIndentWidth: 8
+@@ -62,7 +62,7 @@ Cpp11BracedListStyle: false
+ DerivePointerAlignment: false
+ DisableFormat: false
+ ExperimentalAutoDetectBinPacking: false
+-#FixNamespaceComments: false # Unknown to clang-format-4.0
++FixNamespaceComments: false
+ 
+ # Taken from:
+ #   git grep -h '^#define [^[:space:]]*for_each[^[:space:]]*(' include/ tools/ \
+@@ -627,13 +627,13 @@ ForEachMacros:
+   - 'xbc_node_for_each_subkey'
+   - 'zorro_for_each_dev'
+ 
+-#IncludeBlocks: Preserve # Unknown to clang-format-5.0
++IncludeBlocks: Preserve
+ IncludeCategories:
+   - Regex: '.*'
      Priority: 1
  IncludeIsMainRegex: '(Test)?$'
  IndentCaseLabels: false
-+IndentGotoLabels: false
- IndentPPDirectives: None
+-#IndentPPDirectives: None # Unknown to clang-format-5.0
++IndentPPDirectives: None
  IndentWidth: 8
  IndentWrappedFunctionNames: false
+ JavaScriptQuotes: Leave
+@@ -643,13 +643,13 @@ MacroBlockBegin: ''
+ MacroBlockEnd: ''
+ MaxEmptyLinesToKeep: 1
+ NamespaceIndentation: None
+-#ObjCBinPackProtocolList: Auto # Unknown to clang-format-5.0
++ObjCBinPackProtocolList: Auto
+ ObjCBlockIndentWidth: 8
+ ObjCSpaceAfterProperty: true
+ ObjCSpaceBeforeProtocolList: true
+ 
+ # Taken from git's rules
+-#PenaltyBreakAssignment: 10 # Unknown to clang-format-4.0
++PenaltyBreakAssignment: 10
+ PenaltyBreakBeforeFirstCallParameter: 30
+ PenaltyBreakComment: 10
+ PenaltyBreakFirstLessLess: 0
+@@ -660,14 +660,14 @@ PenaltyReturnTypeOnItsOwnLine: 60
+ PointerAlignment: Right
+ ReflowComments: false
+ SortIncludes: false
+-#SortUsingDeclarations: false # Unknown to clang-format-4.0
++SortUsingDeclarations: false
+ SpaceAfterCStyleCast: false
+ SpaceAfterTemplateKeyword: true
+ SpaceBeforeAssignmentOperators: true
+-#SpaceBeforeCtorInitializerColon: true # Unknown to clang-format-5.0
+-#SpaceBeforeInheritanceColon: true # Unknown to clang-format-5.0
++SpaceBeforeCtorInitializerColon: true
++SpaceBeforeInheritanceColon: true
+ SpaceBeforeParens: ControlStatements
+-#SpaceBeforeRangeBasedForLoopColon: true # Unknown to clang-format-5.0
++SpaceBeforeRangeBasedForLoopColon: true
+ SpaceInEmptyParentheses: false
+ SpacesBeforeTrailingComments: 1
+ SpacesInAngles: false
 -- 
 2.35.1
 
