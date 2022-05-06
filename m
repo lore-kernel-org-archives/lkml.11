@@ -2,119 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  4 May 2022 17:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4192CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352855AbiEDR4t (ORCPT
+        id S1388890AbiEFELS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 4 May 2022 13:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
+        Fri, 6 May 2022 00:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359125AbiEDRvd (ORCPT
+        with ESMTP id S1351670AbiEFELP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 4 May 2022 13:51:33 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15484C439;
-        Wed,  4 May 2022 10:11:30 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8BD9B1F38D;
-        Wed,  4 May 2022 17:11:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651684289; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N6EMoP13+uuDakjMHpvxy4PBHA2cakQS2VfsX4a/x94=;
-        b=DJBXlAYyuYbusnoUszCA+AfMUUtGYehcgNX/lQ0qb1pMGVJ8Y/wB2k+YBRDIZuhTeQqd7b
-        tHvLMy5QORZQYIpA9gIeZd+FIbx6yExh/jX0dTQhrTHcfqHSr/rMyA45YxKum1K9WKH687
-        TFFcsHo0sSle3EgUEzEdaFr8d2K/Tio=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651684289;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N6EMoP13+uuDakjMHpvxy4PBHA2cakQS2VfsX4a/x94=;
-        b=5hv3tExqNVDL20PvtwaVNk13uh5hLvjqypg4NlyuP/W5i/E/1fSmlov7z3Q727EOdt2Ymq
-        Cgfxb1jhrkiVgADw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 272C0131BD;
-        Wed,  4 May 2022 17:11:23 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id eGrpOruzcmIsWwAAMHmgww
-        (envelope-from <hare@suse.de>); Wed, 04 May 2022 17:11:23 +0000
-Message-ID: <2586cd78-cd54-97ed-86b0-8f78a444387a@suse.de>
-Date:   Wed, 4 May 2022 10:11:22 -0700
+        Fri, 6 May 2022 00:11:15 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676964B1DD
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 21:07:33 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id p4so7352080edx.0
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 21:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=cLcttw2920SMZ2n3SvaPxUs5yeqm04dyc2xN9TwYgGg=;
+        b=H0rUhC/o61g+LPERuMJDEwuzobWN7hEXMEAVbqwLU4GgZXPU4LVCQOQi+4GEah1j+Z
+         PkzTBpYrAdApKrKW1U8j7bVri8W2sY2DAsBEHHFFmj89FB5ICYNuCn0GXYpeuoxDmlZ0
+         u0emupYpj0g5LSKXIsbZ5LII/5KSKEW2nXlenDvUT+HFuGVuSRu8dGvicLCC1hXofx65
+         gh051ykeIndWqX3fhshCr/aM5gFpclqai00hmokkPAKHic3iycx2Z+vJuzdAuDVgWUFn
+         MgV60H62Zjy9WRcEoVIpwzX/FmB5Hz3tA5+Kql1s2rQa1FP5sXTFgPJveJOlo36oicuE
+         uL3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=cLcttw2920SMZ2n3SvaPxUs5yeqm04dyc2xN9TwYgGg=;
+        b=OxTTGDgm0kOTizCgeyV8I/kul3f+CgRNF4iwwjYxn5TeOdEB3kZNyyj2/kqte6Br5C
+         EmlGtf0T1/TFB3byWmnAiU76/R4G42WVgcGhIG5fmSF/iRCXiwxIARDiD9z5nQjIdQ9m
+         IGa7B4l91jiAuEiTcIRaWtOrRgwHfJK600taKO6o9daYT4x1YaWxekP+Kr2kLsBVkEd9
+         fVVD+4M/0JCCGLjhZ6d5CJG/S37Ao9IT/pYkj3W2V7vIQWVcrgQ5qf7WFowujgs80N2i
+         uB19lQlLKj5kKGmhdn4Pl99WXrl04twBIciALKc9lKEz1y0XFg28dKTDEdz8WU5PY7cf
+         Ns+A==
+X-Gm-Message-State: AOAM532FvWZydTWqPNbBOyvdljhnu+dBTBn+XkgTLjaMlW61PMQG0S+z
+        O6vdcHKEg6AO0KLeDELF/cxIwexnrgJEc2TkaPx2nIYizWW5/g==
+X-Google-Smtp-Source: ABdhPJwFg74w+azIwCGOdyFimmGh1zS5rojdBALGCLHvuKbQPhMvOvqk0h/4nvErkuD3/hrSDWlOAhxQxnRUd2jxy5o=
+X-Received: by 2002:aa7:dd91:0:b0:427:b2c4:1c7a with SMTP id
+ g17-20020aa7dd91000000b00427b2c41c7amr1540787edv.91.1651810051855; Thu, 05
+ May 2022 21:07:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 16/16] dm-zoned: ensure only power of 2 zone sizes are
- allowed
-Content-Language: en-US
-References: <20220427160255.300418-1-p.raghav@samsung.com>
- <CGME20220427160313eucas1p1feecf74ec15c8c3d9250444710fd1676@eucas1p1.samsung.com>
- <20220427160255.300418-17-p.raghav@samsung.com>
-From:   Hannes Reinecke <hare@suse.de>
-To:     undisclosed-recipients:;
-In-Reply-To: <20220427160255.300418-17-p.raghav@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From:   Dave Airlie <airlied@gmail.com>
+Date:   Fri, 6 May 2022 14:07:20 +1000
+Message-ID: <CAPM=9tyaQ8RSYwuh4muEefV3fbjio5gVvYipWVaKjqUycRkS+A@mail.gmail.com>
+Subject: 
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 09:02, Pankaj Raghav wrote:
-> From: Luis Chamberlain <mcgrof@kernel.org>
-> 
-> Today dm-zoned relies on the assumption that you have a zone size
-> with a power of 2. Even though the block layer today enforces this
-> requirement, these devices do exist and so provide a stop-gap measure
-> to ensure these devices cannot be used by mistake
-> 
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-> ---
->   drivers/md/dm-zone.c | 12 ++++++++++++
->   1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/md/dm-zone.c b/drivers/md/dm-zone.c
-> index 57daa86c19cf..221e0aa0f1a7 100644
-> --- a/drivers/md/dm-zone.c
-> +++ b/drivers/md/dm-zone.c
-> @@ -231,6 +231,18 @@ static int dm_revalidate_zones(struct mapped_device *md, struct dm_table *t)
->   	struct request_queue *q = md->queue;
->   	unsigned int noio_flag;
->   	int ret;
-> +	struct block_device *bdev = md->disk->part0;
-> +	sector_t zone_sectors;
-> +	char bname[BDEVNAME_SIZE];
-> +
-> +	zone_sectors = bdev_zone_sectors(bdev);
-> +
-> +	if (!is_power_of_2(zone_sectors)) {
-> +		DMWARN("%s: %s only power of two zone size supported\n",
-> +		       dm_device_name(md),
-> +		       bdevname(bdev, bname));
-> +		return 1;
-> +	}
->   
->   	/*
->   	 * Check if something changed. If yes, cleanup the current resources
+Hey Linus,
 
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+pretty quiet week, one fbdev, msm, kconfig, and 2 amdgpu fixes, about
+what I'd expect for rc6.
 
-Cheers,
+Regards,
+Dave.
 
-Hannes
--- 
-Dr. Hannes Reinecke                Kernel Storage Architect
-hare@suse.de                              +49 911 74053 688
-SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 Nürnberg
-HRB 36809 (AG Nürnberg), Geschäftsführer: Felix Imendörffer
+drm-fixes-2022-05-06:
+drm fixes for 5.18-rc6
+
+fbdev:
+- hotunplugging fix
+
+amdgpu:
+- Fix a xen dom0 regression on APUs
+- Fix a potential array overflow if a receiver were to
+  send an erroneous audio channel count
+
+msm:
+- lockdep fix.
+
+it6505:
+- kconfig fix
+The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a=
+:
+
+  Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
+
+are available in the Git repository at:
+
+  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-05-06
+
+for you to fetch changes up to 5727375215b0915f28806c337a7ba9835efd340b:
+
+  Merge tag 'drm-msm-fixes-2022-04-30' of
+https://gitlab.freedesktop.org/drm/msm into drm-fixes (2022-05-06
+11:22:03 +1000)
+
+----------------------------------------------------------------
+drm fixes for 5.18-rc6
+
+fbdev:
+- hotunplugging fix
+
+amdgpu:
+- Fix a xen dom0 regression on APUs
+- Fix a potential array overflow if a receiver were to
+  send an erroneous audio channel count
+
+msm:
+- lockdep fix.
+
+it6505:
+- kconfig fix
+
+----------------------------------------------------------------
+Dave Airlie (3):
+      Merge tag 'amd-drm-fixes-5.18-2022-05-04' of
+https://gitlab.freedesktop.org/agd5f/linux into drm-fixes
+      Merge tag 'drm-misc-fixes-2022-05-05' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
+      Merge tag 'drm-msm-fixes-2022-04-30' of
+https://gitlab.freedesktop.org/drm/msm into drm-fixes
+
+Fabien Parent (1):
+      drm/bridge: ite-it6505: add missing Kconfig option select
+
+Harry Wentland (1):
+      drm/amd/display: Avoid reading audio pattern past AUDIO_CHANNELS_COUN=
+T
+
+Javier Martinez Canillas (1):
+      fbdev: Make fb_release() return -ENODEV if fbdev was unregistered
+
+Kuogee Hsieh (1):
+      drm/msm/dp: remove fail safe mode related code
+
+Marek Marczykowski-G=C3=B3recki (1):
+      drm/amdgpu: do not use passthrough mode in Xen dom0
+
+ drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c         |  4 +++-
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |  2 +-
+ drivers/gpu/drm/bridge/Kconfig                   |  1 +
+ drivers/gpu/drm/msm/dp/dp_display.c              |  6 ------
+ drivers/gpu/drm/msm/dp/dp_panel.c                | 11 -----------
+ drivers/gpu/drm/msm/dp/dp_panel.h                |  1 -
+ drivers/video/fbdev/core/fbmem.c                 |  5 ++++-
+ 7 files changed, 9 insertions(+), 21 deletions(-)
