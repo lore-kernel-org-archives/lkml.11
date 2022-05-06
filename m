@@ -2,242 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDAB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443713AbiEFQ0S (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
+        id S240870AbiEFQ04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 12:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443750AbiEFQ0P (ORCPT
+        with ESMTP id S1443733AbiEFQ0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:26:15 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AE95B884;
-        Fri,  6 May 2022 09:22:31 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id w19so13426163lfu.11;
-        Fri, 06 May 2022 09:22:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xbKY8jh/UiGHp9uJjUJ79JKoPgZGdYvp+chJPWVOFS0=;
-        b=WmSkghHnUatfcUKVTsb2PRvHseUt/dU1KG3AD25dc0R4gIAdmkstGaw3AbycsQkXtY
-         ThFPpZ4V/6TSE2oTHgF/Y+l+7bAbZhm6INCc5Ho5hUjWBfGZ09K44Q0L35Up6CUztb/J
-         daF1BoSzqBWmz/Vcc2DV70ZsczseqTXLepyipwNzWsn2hnKLkyaUyuHO8LrxMvMFfqF0
-         vqTPsvlMiFWsgJtrTMabGgl7SHykt5A5UJjk2nLI+SzrJyCmHdLHGVIDuVJd1P5692UF
-         F4a73AMzrSJa3xKosXdH888jLVGAn2OyYoMGX859hqG/a+CjAR9933ppkrRsR8CrsLHH
-         gdVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xbKY8jh/UiGHp9uJjUJ79JKoPgZGdYvp+chJPWVOFS0=;
-        b=1SV/uQl0dAdkCnY94FGpOn203B/6gffQCVS5cfOuRC8m6uzyXgKSKVwIHwpkH7sqXG
-         RUtjfPJDLKMhqYSY+cinsiq0/HR/sj63LqAzZbL8k7tQlmWWj69MdPJQAZvRTAqsakqS
-         00HAg9wh1+/NENTTJbngIOOuLnuj0vktqoCy7ztwVCnbUevsOqCpBka5+iphnuY9EYse
-         ICwTwDrDS6zUQq6NgmwtWQnLc/OytMeQn91JYon9fh9J3kAUnc7EV83KyGwJef7JMh6h
-         aNa/hnNyn+18DHUuwKpy+RAwEVOrLQj8jwddDnt0WfCEuFZVzlSV0FB9WfncKtiUBDT6
-         zJBg==
-X-Gm-Message-State: AOAM530Li2ZFroz+3tqtMLRLBNkzjA1A232VRg3Pmep/eRejS1rWnxh+
-        9vBMk7JDtfTQ5xLhAGadvEY=
-X-Google-Smtp-Source: ABdhPJwfQTyd+s3xRi8xQ20wgoclMCMRNkPIcM2PyUJsa6AAJQQPSfDcvGPaSvnrPivdnouyF2dJ8A==
-X-Received: by 2002:a05:6512:398c:b0:473:ab45:1f7c with SMTP id j12-20020a056512398c00b00473ab451f7cmr2923005lfu.341.1651854149318;
-        Fri, 06 May 2022 09:22:29 -0700 (PDT)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id d26-20020ac2545a000000b0047255d21120sm741872lfn.79.2022.05.06.09.22.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 09:22:28 -0700 (PDT)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Fri, 6 May 2022 18:22:26 +0200
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>,
-        bigeasy@linutronix.de
-Subject: Re: [PATCH] rcu/nocb: Add an option to ON/OFF an offloading from RT
- context
-Message-ID: <YnVLQozNFvgk3olP@pc638.lan>
-References: <20220505101641.28472-1-urezki@gmail.com>
- <20220505190915.GW1790663@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 6 May 2022 12:26:52 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF2A6EB13;
+        Fri,  6 May 2022 09:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651854174; x=1683390174;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XqmorIv1cLgso2fok5qBHAiakVVMo2/9VPLX4xMg6pk=;
+  b=KuUDJpnWzwn89NTsrXcmSuzp/wlzFJkZp3hqmTFsKz5XirxA9obv6Noa
+   sP5Gh6iAofbjbBG5VN8ylJOT5TOQZf8c+gEPNqocbOonS57a4Riz3wJkV
+   nFJa688XyJ7XboJi5ruQ9reaPMZJzX2HKKWWN0TKx+4405qaRGCDqHfkM
+   mSALLj2le7RhSLhqdCXx6YJ3vCI8jvzMhDek+G4EaFlI7o8OceRKKuAO5
+   4EJQdxmQBTxQnwTiiEYgTvCi4oOPBl5m6TDhxJ4fjSergu6YnQ8u2lxub
+   oJSKTdLCFyaQYLiFBjof3kI3m/cWANqzFDmQ2BuLbeSKdVOEQ3fWOmxvm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268116885"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="268116885"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 09:13:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="735802900"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 06 May 2022 09:13:40 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nn0aJ-000Ddb-TK;
+        Fri, 06 May 2022 16:13:39 +0000
+Date:   Sat, 7 May 2022 00:12:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     kbuild-all@lists.01.org, mdf@kernel.org, hao.wu@intel.com,
+        yilun.xu@intel.com, trix@redhat.com, conor.dooley@microchip.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru,
+        Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Subject: Re: [PATCH v10 2/3] fpga: microchip-spi: add Microchip MPF FPGA
+ manager
+Message-ID: <202205070006.tWQ4lFSL-lkp@intel.com>
+References: <20220506125710.25550-3-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505190915.GW1790663@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220506125710.25550-3-i.bornyakov@metrotek.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Thu, May 05, 2022 at 12:16:41PM +0200, Uladzislau Rezki (Sony) wrote:
-> > Introduce a RCU_NOCB_CPU_CB_BOOST kernel option. So a user can
-> > decide if an offloading has to be done in a high-prio context or
-> > not. Please note an option depends on RCU_NOCB_CPU and RCU_BOOST
-> > parameters and by default it is off.
-> > 
-> > This patch splits the boosting preempted RCU readers and those
-> > kthreads which directly responsible for driving expedited grace
-> > periods forward with enabling/disabling the offloading from/to
-> > SCHED_FIFO/SCHED_OTHER contexts.
-> > 
-> > The main reason of such split is, for example on Android there
-> > are some workloads which require fast expedited grace period to
-> > be done whereas offloading in RT context can lead to starvation
-> > and hogging a CPU for a long time what is not acceptable for
-> > latency sensitive environment. For instance:
-> > 
-> > <snip>
-> > <...>-60 [006] d..1 2979.028717: rcu_batch_start: rcu_preempt CBs=34619 bl=270
-> > <snip>
-> > 
-> > invoking 34 619 callbacks will take time thus making other CFS
-> > tasks waiting in run-queue to be starved due to such behaviour.
-> > 
-> > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> 
-> All good points!
-> 
-> Some questions and comments below.
-> 
-> Adding Sebastian on CC for his perspective.
-> 
-> 						Thanx, Paul
-> 
-> > ---
-> >  kernel/rcu/Kconfig     | 14 ++++++++++++++
-> >  kernel/rcu/tree.c      |  5 ++++-
-> >  kernel/rcu/tree_nocb.h |  3 ++-
-> >  3 files changed, 20 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-> > index 27aab870ae4c..074630b94902 100644
-> > --- a/kernel/rcu/Kconfig
-> > +++ b/kernel/rcu/Kconfig
-> > @@ -275,6 +275,20 @@ config RCU_NOCB_CPU_DEFAULT_ALL
-> >  	  Say Y here if you want offload all CPUs by default on boot.
-> >  	  Say N here if you are unsure.
-> >  
-> > +config RCU_NOCB_CPU_CB_BOOST
-> > +	bool "Perform offloading from real-time kthread"
-> > +	depends on RCU_NOCB_CPU && RCU_BOOST
-> > +	default n
-> 
-> I understand that you need this to default to "n" on your systems.
-> However, other groups already using callback offloading should not see
-> a sudden change.  I don't see an Android-specific defconfig file, but
-> perhaps something in drivers/android/Kconfig?
-> 
-> One easy way to make this work would be to invert the sense of this
-> Kconfig option ("RCU_NOCB_CB_NO_BOOST"?), continue having it default to
-> "n", but then select it somewhere in drivers/android/Kconfig.  But I
-> would not be surprised if there is a better way.
-> 
-It was done deliberately, i mean off by default. Because the user has to
-think before enabling it for its workloads. It is not a big issue for
-kthreads which drive a grace period forward, because their context runtime
-i find pretty short. Whereas an offloading callback kthread can stuck
-for a long time depending on workloads.
+Hi Ivan,
 
-Also, i put it that way because initially those kthreads were staying
-as SCHED_NORMAL even though the RCU_BOOST was set in kernel config.
+Thank you for the patch! Yet something to improve:
 
-<snip>
-commit c8b16a65267e35ecc5621dbc81cbe7e5b0992fce
-Author: Alison Chaiken <achaiken@aurora.tech>
-Date:   Tue Jan 11 15:32:52 2022 -0800
+[auto build test ERROR on next-20220506]
+[cannot apply to robh/for-next linus/master v5.18-rc5 v5.18-rc4 v5.18-rc3 v5.18-rc5]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-    rcu: Elevate priority of offloaded callback threads
-    
-    When CONFIG_PREEMPT_RT=y, the rcutree.kthread_prio command-line
-    parameter signals initialization code to boost the priority of rcuc
-    callbacks to the designated value.  With the additional
-    CONFIG_RCU_NOCB_CPU=y configuration and an additional rcu_nocbs
-    command-line parameter, the callbacks on the listed cores are
-    offloaded to new rcuop kthreads that are not pinned to the cores whose
-    post-grace-period work is performed.  While the rcuop kthreads perform
-    the same function as the rcuc kthreads they offload, the kthread_prio
-    parameter only boosts the priority of the rcuc kthreads.  Fix this
-    inconsistency by elevating rcuop kthreads to the same priority as the rcuc
-    kthreads.
-    
-    Signed-off-by: Alison Chaiken <achaiken@aurora.tech>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-<snip>
+url:    https://github.com/intel-lab-lkp/linux/commits/Ivan-Bornyakov/Microchip-Polarfire-FPGA-manager/20220506-212355
+base:    38a288f5941ef03752887ad86f2d85442358c99a
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220507/202205070006.tWQ4lFSL-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9c87e90e1315e8a6028064516aef34a05f3f9625
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ivan-Bornyakov/Microchip-Polarfire-FPGA-manager/20220506-212355
+        git checkout 9c87e90e1315e8a6028064516aef34a05f3f9625
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/fpga/
 
-I have a doubt that it is needed for CONFIG_PREEMPT_RT=y. The reason i mentioned
-above it is a source of extra latency. That is why i have made it inactive by default.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Any thoughts?
+All errors (new ones prefixed by >>):
 
-> > +	help
-> > +	  Use this option to offload callbacks from the SCHED_FIFO context
-> > +	  to make the process faster. As a side effect of this approach is
-> > +	  a latency especially for the SCHED_OTHER tasks which will not be
-> > +	  able to preempt an offloading kthread. That latency depends on a
-> > +	  number of callbacks to be invoked.
-> > +
-> > +	  Say Y here if you want to set RT priority for offloading kthreads.
-> > +	  Say N here if you are unsure.
-> > +
-> >  config TASKS_TRACE_RCU_READ_MB
-> >  	bool "Tasks Trace RCU readers use memory barriers in user and idle"
-> >  	depends on RCU_EXPERT && TASKS_TRACE_RCU
-> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > index 9dc4c4e82db6..d769a15bc0e3 100644
-> > --- a/kernel/rcu/tree.c
-> > +++ b/kernel/rcu/tree.c
-> > @@ -154,7 +154,10 @@ static void sync_sched_exp_online_cleanup(int cpu);
-> >  static void check_cb_ovld_locked(struct rcu_data *rdp, struct rcu_node *rnp);
-> >  static bool rcu_rdp_is_offloaded(struct rcu_data *rdp);
-> >  
-> > -/* rcuc/rcub/rcuop kthread realtime priority */
-> > +/*
-> > + * rcuc/rcub/rcuop kthread realtime priority. The former
-> > + * depends on if CONFIG_RCU_NOCB_CPU_CB_BOOST is set.
-> 
-> Aren't the rcuo[ps] kthreads controlled by the RCU_NOCB_CPU_CB_BOOST
-> Kconfig option?  (As opposed to the "former", which is "rcuc".)
-> 
-The CONFIG_RCU_NOCB_CPU_CB_BOOST controls only the last what is
-the rcuo CB kthread or "rcuo%c/%d" name. Sorry it is not "former"
-it is the last in the rcuc/rcub/rcuop sequence. It was a typo :)
-
-> > + */
-> >  static int kthread_prio = IS_ENABLED(CONFIG_RCU_BOOST) ? 1 : 0;
-> >  module_param(kthread_prio, int, 0444);
-> >  
-> > diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-> > index 60cc92cc6655..a2823be9b1d0 100644
-> > --- a/kernel/rcu/tree_nocb.h
-> > +++ b/kernel/rcu/tree_nocb.h
-> > @@ -1315,8 +1315,9 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
-> >  	if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo CB kthread, OOM is now expected behavior\n", __func__))
-> >  		goto end;
-> >  
-> > -	if (kthread_prio)
-> > +	if (IS_ENABLED(CONFIG_RCU_NOCB_CPU_CB_BOOST))
-> 
-> Don't we need both non-zero kthread_prio and the proper setting of the
-> new Kconfig option before we run it at SCHED_FIFO?
-> 
-> Yes, we could rely on sched_setscheduler_nocheck() erroring out in
-> that case, but that sounds like an accident waiting to happen.
-> 
-As far as i see it is odd, because the "kthread_prio" is verified so
-there is a sanity check to check if the value is correct for SCHED_FIFO
-case and does some adjustment if not. There is sanitize_kthread_prio()
-that does all trick.
-
-Looking at the kthread_prio variable. If it is set all the code that
-takes into account of it switches to SCHED_FIFO class. Maybe rename it
-to something kthread_rt_prio? It might be a bad idea though because of
-former dependencies of distros and so on :)
+   drivers/fpga/microchip-spi.c: In function 'mpf_ops_parse_header':
+>> drivers/fpga/microchip-spi.c:118:31: error: implicit declaration of function 'get_unaligned_le32' [-Werror=implicit-function-declaration]
+     118 |                 block_start = get_unaligned_le32(buf + block_start_offset);
+         |                               ^~~~~~~~~~~~~~~~~~
+>> drivers/fpga/microchip-spi.c:152:26: error: implicit declaration of function 'get_unaligned_le16' [-Werror=implicit-function-declaration]
+     152 |         components_num = get_unaligned_le16(buf + MPF_DATA_SIZE_OFFSET);
+         |                          ^~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
+vim +/get_unaligned_le32 +118 drivers/fpga/microchip-spi.c
 
---
-Uladzislau Rezki
+    79	
+    80	static int mpf_ops_parse_header(struct fpga_manager *mgr,
+    81					struct fpga_image_info *info,
+    82					const char *buf, size_t count)
+    83	{
+    84		size_t component_size_byte_num, component_size_byte_off,
+    85		       components_size_start = 0, bitstream_start = 0,
+    86		       block_id_offset, block_start_offset, i;
+    87		u8 header_size, blocks_num, block_id;
+    88		u32 block_start, component_size;
+    89		u16 components_num;
+    90	
+    91		if (!buf) {
+    92			dev_err(&mgr->dev, "Image buffer is not provided\n");
+    93			return -EINVAL;
+    94		}
+    95	
+    96		header_size = *(buf + MPF_HEADER_SIZE_OFFSET);
+    97		if (header_size > count) {
+    98			info->header_size = header_size;
+    99			return -EAGAIN;
+   100		}
+   101	
+   102		/*
+   103		 * Go through look-up table to find out where actual bitstream starts
+   104		 * and where sizes of components of the bitstream lies.
+   105		 */
+   106		blocks_num = *(buf + header_size - 1);
+   107		block_id_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_ID_OFFSET;
+   108		block_start_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_START_OFFSET;
+   109	
+   110		header_size += blocks_num * MPF_LOOKUP_TABLE_RECORD_SIZE;
+   111		if (header_size > count) {
+   112			info->header_size = header_size;
+   113			return -EAGAIN;
+   114		}
+   115	
+   116		while (blocks_num--) {
+   117			block_id = *(buf + block_id_offset);
+ > 118			block_start = get_unaligned_le32(buf + block_start_offset);
+   119	
+   120			switch (block_id) {
+   121			case MPF_BITSTREAM_ID:
+   122				info->header_size = bitstream_start = block_start;
+   123				if (block_start > count)
+   124					return -EAGAIN;
+   125	
+   126				break;
+   127			case MPF_COMPONENTS_SIZE_ID:
+   128				components_size_start = block_start;
+   129				break;
+   130			default:
+   131				break;
+   132			}
+   133	
+   134			if (bitstream_start && components_size_start)
+   135				break;
+   136	
+   137			block_id_offset += MPF_LOOKUP_TABLE_RECORD_SIZE;
+   138			block_start_offset += MPF_LOOKUP_TABLE_RECORD_SIZE;
+   139		}
+   140	
+   141		if (!bitstream_start || !components_size_start) {
+   142			dev_err(&mgr->dev, "Failed to parse header look-up table\n");
+   143			return -EFAULT;
+   144		}
+   145	
+   146		/*
+   147		 * Parse bitstream size.
+   148		 * Sizes of components of the bitstream are 22-bits long placed next
+   149		 * to each other. Image header should be extended by now up to where
+   150		 * actual bitstream starts, so no need for overflow check anymore.
+   151		 */
+ > 152		components_num = get_unaligned_le16(buf + MPF_DATA_SIZE_OFFSET);
+   153	
+   154		for (i = 0; i < components_num; i++) {
+   155			component_size_byte_num =
+   156				(i * MPF_BITS_PER_COMPONENT_SIZE) / BITS_PER_BYTE;
+   157			component_size_byte_off =
+   158				(i * MPF_BITS_PER_COMPONENT_SIZE) % BITS_PER_BYTE;
+   159	
+   160			component_size = get_unaligned_le32(buf +
+   161							    components_size_start +
+   162							    component_size_byte_num);
+   163			component_size >>= component_size_byte_off;
+   164			component_size &= GENMASK(MPF_BITS_PER_COMPONENT_SIZE - 1, 0);
+   165	
+   166			info->data_size += component_size * MPF_SPI_FRAME_SIZE;
+   167		}
+   168	
+   169		return 0;
+   170	}
+   171	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
