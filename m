@@ -2,113 +2,436 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441999AbiEFXBR (ORCPT
+        id S1444949AbiEFW6z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 19:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
+        Fri, 6 May 2022 18:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444733AbiEFXBD (ORCPT
+        with ESMTP id S1444691AbiEFW6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 19:01:03 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D737C5C667;
-        Fri,  6 May 2022 15:57:13 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id ke5so6428180qvb.5;
-        Fri, 06 May 2022 15:57:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BGM4e8dlW2rnY5tjhs9oiiib3imBRnPsRxxY6qM+kZ4=;
-        b=Cv7nqR/tLqVTBsytmAQLGkwrOSuyqjm9iJALV8wRpxzyMxwLGuvaxVOBblpzJdiQkr
-         lCI6oDGbUiipN5u9wBh/WD5G3ZEVmbbk/NuaoAczXPucBVI/Q3/81679OvLoGosOn0Ms
-         6w+j96cFj08P6QyRK264+FYtPJZ+6b9HgAhOw5AJTysJudS+l1FZGCdcLUfxMCnCtVn0
-         OqDLaqgEFe189lgdb34G6dDmobZ0BtWgqv/HopPqRApa/OBc+bA2nM3l2JZfLkIqbPF5
-         tFQY+kx3Ji5mBO7mKOd1zNS+/3LeTKjkUSSA8r0bZA07+d0pM2JeJdOTA7gdXboJsey9
-         cAEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BGM4e8dlW2rnY5tjhs9oiiib3imBRnPsRxxY6qM+kZ4=;
-        b=MT0k+aNYlV7xaH+nhxi7xIFGueJqZ1Z15E9cIE6XDVBr/imvdXp/klgGpEYwqj/1EP
-         P1xPnl5BvUjf9hHtDtTA/fx41L3bojpZvOVZT01ixdifH8z5OgJUgYGiZZx09STGxbiZ
-         H3FQXAiOwm6CNG0z+71/dcNnJ7cEVeuSQ2vc/54pQX33yKUC0d1Mv2EpYSQsLXxMPaIo
-         HscahI9QmP1h4kqYn7jsR67t5+QShjPb2JWnRZ+hsEyWSCHrKlfiu8xZt0/K4b0fdgiY
-         Jmb+TFWUSdRrCW5DdyigP67bju1odsVkvoJltXi9Xwf2IQP9DZPpqdnODPIu/0LuB2et
-         y7Eg==
-X-Gm-Message-State: AOAM530Ag6u7nDR/jpX0/7TgvGRSSMgWBDR2Ad4E5MSxchL/vEWLShki
-        fvmxgFPx9PNrsyAXbeWBJfU=
-X-Google-Smtp-Source: ABdhPJyA6WWf4fVWUYojRIP+BmLp52WJkFjnyvtqNqoebTb6GRjKlflgRAV3EUUYrS3J1hQsfNXsxA==
-X-Received: by 2002:a05:6214:b94:b0:456:38b2:2d76 with SMTP id fe20-20020a0562140b9400b0045638b22d76mr4403222qvb.70.1651877833036;
-        Fri, 06 May 2022 15:57:13 -0700 (PDT)
-Received: from grrm.lan (bras-base-mtrlpq4809w-grc-17-70-53-205-21.dsl.bell.ca. [70.53.205.21])
-        by smtp.gmail.com with ESMTPSA id q188-20020a37a7c5000000b0069fc13ce208sm3187880qke.57.2022.05.06.15.57.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 15:57:12 -0700 (PDT)
-From:   Yannick Brosseau <yannick.brosseau@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
-        olivier.moysan@foss.st.com
-Cc:     paul@crapouillou.net, linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Yannick Brosseau <yannick.brosseau@gmail.com>
-Subject: [PATCH 2/2] iio: adc: stm32: Fix check for spurious IRQs on STM32F4
-Date:   Fri,  6 May 2022 18:56:17 -0400
-Message-Id: <20220506225617.1774604-3-yannick.brosseau@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220506225617.1774604-1-yannick.brosseau@gmail.com>
-References: <20220506225617.1774604-1-yannick.brosseau@gmail.com>
+        Fri, 6 May 2022 18:58:05 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234156D387;
+        Fri,  6 May 2022 15:54:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651877661; x=1683413661;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0+Vz2GGD9bCMgDIr3ULDxJycQekQ5mbXMGTRp+yyy8Y=;
+  b=i4ld9bVYMwDEgEEVCfJX28kTQxrzfbVPA+WICz/niC8VguZ7GYqDCP6x
+   z8GhJ1KFwmX4mDqAhnV+B93Lz8UB+iGu1NPRyQZOjcSYFJMayKM/G3o3G
+   UPuq/D/01F6CaFElPrs2Etp+YZNXLnJgefWIHycp0SGpNzJOd0/H+62Kl
+   m8cbkIj7L6wzHHfoLSa5/xU9/w+IVjpTKNPLWcGCYk9rmsZ3zOKF+7Kv1
+   WJkhNZWUbqhnMf1YvrTvzyEC0LO0P5rJClgeXNcRgYqnc6FByvu0rn++0
+   hiCgybnP6c5jfM/6Rsf5rMy3jgxOdXZhdrwhtkd8y8QG/J2T4QFXE5AtI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="256080801"
+X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
+   d="scan'208";a="256080801"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:20 -0700
+X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
+   d="scan'208";a="695383641"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:20 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     hdegoede@redhat.com, markgross@kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        corbet@lwn.net, gregkh@linuxfoundation.org,
+        andriy.shevchenko@linux.intel.com, jithu.joseph@intel.com,
+        ashok.raj@intel.com, tony.luck@intel.com, rostedt@goodmis.org,
+        dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        patches@lists.linux.dev, ravi.v.shankar@intel.com
+Subject: [PATCH v7 08/12] platform/x86/intel/ifs: Add scan test support
+Date:   Fri,  6 May 2022 15:54:06 -0700
+Message-Id: <20220506225410.1652287-9-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220506225410.1652287-1-tony.luck@intel.com>
+References: <20220506014035.1173578-1-tony.luck@intel.com>
+ <20220506225410.1652287-1-tony.luck@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
-in the control and status registers are aligned. This is true for the H7 and MP1
-version, but not the F4.
+From: Jithu Joseph <jithu.joseph@intel.com>
 
-Instead of comparing both registers bitwise, we check the bit in the status and control
-for each interrupt we are interested in.
+In a core, the scan engine is shared between sibling cpus.
 
-Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
+When a Scan test (for a particular core) is triggered by the user,
+the scan chunks are executed on all the threads on the core using
+stop_core_cpuslocked.
+
+Scan may be aborted by some reasons. Scan test will be aborted in certain
+circumstances such as when interrupt occurred or cpu does not have enough
+power budget for scan. In this case, the kernel restart scan from the chunk
+where it stopped. Scan will also be aborted when the test is failed. In
+this case, the test is immediately stopped without retry.
+
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
+Co-developed-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/stm32-adc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/platform/x86/intel/ifs/Makefile  |   2 +-
+ drivers/platform/x86/intel/ifs/ifs.h     |  44 ++++
+ drivers/platform/x86/intel/ifs/runtest.c | 247 +++++++++++++++++++++++
+ 3 files changed, 292 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/platform/x86/intel/ifs/runtest.c
 
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index a68ecbda6480..5b0f138333ee 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -1422,9 +1422,10 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
- 		return IRQ_HANDLED;
- 	}
+diff --git a/drivers/platform/x86/intel/ifs/Makefile b/drivers/platform/x86/intel/ifs/Makefile
+index 98b6fde15689..cedcb103f860 100644
+--- a/drivers/platform/x86/intel/ifs/Makefile
++++ b/drivers/platform/x86/intel/ifs/Makefile
+@@ -1,3 +1,3 @@
+ obj-$(CONFIG_INTEL_IFS)		+= intel_ifs.o
  
--	if (!(status & mask))
-+	if(!((status & regs->isr_eoc.mask) && (mask & regs->ier_eoc.mask)) ||
-+           ((status & regs->isr_ovr.mask) && (mask & regs->ier_ovr.mask)))
- 		dev_err_ratelimited(&indio_dev->dev,
--				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
-+				    "Unexpected IRQ: CR1/IER=0x%08x, SR/ISR=0x%08x\n",
- 				    mask, status);
+-intel_ifs-objs			:= core.o load.o
++intel_ifs-objs			:= core.o load.o runtest.o
+diff --git a/drivers/platform/x86/intel/ifs/ifs.h b/drivers/platform/x86/intel/ifs/ifs.h
+index bed70dc1e5b7..b648cccda3ec 100644
+--- a/drivers/platform/x86/intel/ifs/ifs.h
++++ b/drivers/platform/x86/intel/ifs/ifs.h
+@@ -11,6 +11,11 @@
+ #define MSR_SCAN_HASHES_STATUS			0x000002c3
+ #define MSR_AUTHENTICATE_AND_COPY_CHUNK		0x000002c4
+ #define MSR_CHUNKS_AUTHENTICATION_STATUS	0x000002c5
++#define MSR_ACTIVATE_SCAN			0x000002c6
++#define MSR_SCAN_STATUS				0x000002c7
++#define SCAN_NOT_TESTED				0
++#define SCAN_TEST_PASS				1
++#define SCAN_TEST_FAIL				2
  
- 	return IRQ_NONE;
-@@ -1438,7 +1439,9 @@ static irqreturn_t stm32_adc_isr(int irq, void *data)
- 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
- 	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
+ /* MSR_SCAN_HASHES_STATUS bit fields */
+ union ifs_scan_hashes_status {
+@@ -38,6 +43,40 @@ union ifs_chunks_auth_status {
+ 	};
+ };
  
--	if (!(status & mask))
-+	/* Check that we have the interrupt we care about are enabled and active */
-+        if(!((status & regs->isr_eoc.mask) && (mask & regs->ier_eoc.mask)) ||
-+           ((status & regs->isr_ovr.mask) && (mask & regs->ier_ovr.mask)))
- 		return IRQ_WAKE_THREAD;
++/* MSR_ACTIVATE_SCAN bit fields */
++union ifs_scan {
++	u64	data;
++	struct {
++		u32	start	:8;
++		u32	stop	:8;
++		u32	rsvd	:16;
++		u32	delay	:31;
++		u32	sigmce	:1;
++	};
++};
++
++/* MSR_SCAN_STATUS bit fields */
++union ifs_status {
++	u64	data;
++	struct {
++		u32	chunk_num		:8;
++		u32	chunk_stop_index	:8;
++		u32	rsvd1			:16;
++		u32	error_code		:8;
++		u32	rsvd2			:22;
++		u32	control_error		:1;
++		u32	signature_error		:1;
++	};
++};
++
++/*
++ * Driver populated error-codes
++ * 0xFD: Test timed out before completing all the chunks.
++ * 0xFE: not all scan chunks were executed. Maximum forward progress retries exceeded.
++ */
++#define IFS_SW_TIMEOUT				0xFD
++#define IFS_SW_PARTIAL_COMPLETION		0xFE
++
+ /**
+  * struct ifs_data - attributes related to intel IFS driver
+  * @integrity_cap_bit: MSR_INTEGRITY_CAPS bit enumerating this test
+@@ -45,6 +84,8 @@ union ifs_chunks_auth_status {
+  * @loaded: If a valid test binary has been loaded into the memory
+  * @loading_error: Error occurred on another CPU while loading image
+  * @valid_chunks: number of chunks which could be validated.
++ * @status: it holds simple status pass/fail/untested
++ * @scan_details: opaque scan status code from h/w
+  */
+ struct ifs_data {
+ 	int	integrity_cap_bit;
+@@ -52,6 +93,8 @@ struct ifs_data {
+ 	bool	loaded;
+ 	bool	loading_error;
+ 	int	valid_chunks;
++	int	status;
++	u64	scan_details;
+ };
  
- 	if (status & regs->isr_ovr.mask) {
+ struct ifs_work {
+@@ -73,5 +116,6 @@ static inline struct ifs_data *ifs_get_data(struct device *dev)
+ }
+ 
+ void ifs_load_firmware(struct device *dev);
++int do_core_test(int cpu, struct device *dev);
+ 
+ #endif
+diff --git a/drivers/platform/x86/intel/ifs/runtest.c b/drivers/platform/x86/intel/ifs/runtest.c
+new file mode 100644
+index 000000000000..7efcce35e0e9
+--- /dev/null
++++ b/drivers/platform/x86/intel/ifs/runtest.c
+@@ -0,0 +1,247 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright(c) 2022 Intel Corporation. */
++
++#include <linux/cpu.h>
++#include <linux/delay.h>
++#include <linux/fs.h>
++#include <linux/nmi.h>
++#include <linux/slab.h>
++#include <linux/stop_machine.h>
++
++#include "ifs.h"
++
++/*
++ * Note all code and data in this file is protected by
++ * ifs_sem. On HT systems all threads on a core will
++ * execute together, but only the first thread on the
++ * core will update results of the test.
++ */
++
++/* Max retries on the same chunk */
++#define MAX_IFS_RETRIES  5
++
++/*
++ * Number of TSC cycles that a logical CPU will wait for the other
++ * logical CPU on the core in the WRMSR(ACTIVATE_SCAN).
++ */
++#define IFS_THREAD_WAIT 100000
++
++enum ifs_status_err_code {
++	IFS_NO_ERROR				= 0,
++	IFS_OTHER_THREAD_COULD_NOT_JOIN		= 1,
++	IFS_INTERRUPTED_BEFORE_RENDEZVOUS	= 2,
++	IFS_POWER_MGMT_INADEQUATE_FOR_SCAN	= 3,
++	IFS_INVALID_CHUNK_RANGE			= 4,
++	IFS_MISMATCH_ARGUMENTS_BETWEEN_THREADS	= 5,
++	IFS_CORE_NOT_CAPABLE_CURRENTLY		= 6,
++	IFS_UNASSIGNED_ERROR_CODE		= 7,
++	IFS_EXCEED_NUMBER_OF_THREADS_CONCURRENT	= 8,
++	IFS_INTERRUPTED_DURING_EXECUTION	= 9,
++};
++
++static const char * const scan_test_status[] = {
++	[IFS_NO_ERROR] = "SCAN no error",
++	[IFS_OTHER_THREAD_COULD_NOT_JOIN] = "Other thread could not join.",
++	[IFS_INTERRUPTED_BEFORE_RENDEZVOUS] = "Interrupt occurred prior to SCAN coordination.",
++	[IFS_POWER_MGMT_INADEQUATE_FOR_SCAN] =
++	"Core Abort SCAN Response due to power management condition.",
++	[IFS_INVALID_CHUNK_RANGE] = "Non valid chunks in the range",
++	[IFS_MISMATCH_ARGUMENTS_BETWEEN_THREADS] = "Mismatch in arguments between threads T0/T1.",
++	[IFS_CORE_NOT_CAPABLE_CURRENTLY] = "Core not capable of performing SCAN currently",
++	[IFS_UNASSIGNED_ERROR_CODE] = "Unassigned error code 0x7",
++	[IFS_EXCEED_NUMBER_OF_THREADS_CONCURRENT] =
++	"Exceeded number of Logical Processors (LP) allowed to run Scan-At-Field concurrently",
++	[IFS_INTERRUPTED_DURING_EXECUTION] = "Interrupt occurred prior to SCAN start",
++};
++
++static void message_not_tested(struct device *dev, int cpu, union ifs_status status)
++{
++	if (status.error_code < ARRAY_SIZE(scan_test_status)) {
++		dev_info(dev, "CPU(s) %*pbl: SCAN operation did not start. %s\n",
++			 cpumask_pr_args(cpu_smt_mask(cpu)),
++			 scan_test_status[status.error_code]);
++	} else if (status.error_code == IFS_SW_TIMEOUT) {
++		dev_info(dev, "CPU(s) %*pbl: software timeout during scan\n",
++			 cpumask_pr_args(cpu_smt_mask(cpu)));
++	} else if (status.error_code == IFS_SW_PARTIAL_COMPLETION) {
++		dev_info(dev, "CPU(s) %*pbl: %s\n",
++			 cpumask_pr_args(cpu_smt_mask(cpu)),
++			 "Not all scan chunks were executed. Maximum forward progress retries exceeded");
++	} else {
++		dev_info(dev, "CPU(s) %*pbl: SCAN unknown status %llx\n",
++			 cpumask_pr_args(cpu_smt_mask(cpu)), status.data);
++	}
++}
++
++static void message_fail(struct device *dev, int cpu, union ifs_status status)
++{
++	/*
++	 * control_error is set when the microcode runs into a problem
++	 * loading the image from the reserved BIOS memory, or it has
++	 * been corrupted. Reloading the image may fix this issue.
++	 */
++	if (status.control_error) {
++		dev_err(dev, "CPU(s) %*pbl: could not execute from loaded scan image\n",
++			cpumask_pr_args(cpu_smt_mask(cpu)));
++	}
++
++	/*
++	 * signature_error is set when the output from the scan chains does not
++	 * match the expected signature. This might be a transient problem (e.g.
++	 * due to a bit flip from an alpha particle or neutron). If the problem
++	 * repeats on a subsequent test, then it indicates an actual problem in
++	 * the core being tested.
++	 */
++	if (status.signature_error) {
++		dev_err(dev, "CPU(s) %*pbl: test signature incorrect.\n",
++			cpumask_pr_args(cpu_smt_mask(cpu)));
++	}
++}
++
++static bool can_restart(union ifs_status status)
++{
++	enum ifs_status_err_code err_code = status.error_code;
++
++	/* Signature for chunk is bad, or scan test failed */
++	if (status.signature_error || status.control_error)
++		return false;
++
++	switch (err_code) {
++	case IFS_NO_ERROR:
++	case IFS_OTHER_THREAD_COULD_NOT_JOIN:
++	case IFS_INTERRUPTED_BEFORE_RENDEZVOUS:
++	case IFS_POWER_MGMT_INADEQUATE_FOR_SCAN:
++	case IFS_EXCEED_NUMBER_OF_THREADS_CONCURRENT:
++	case IFS_INTERRUPTED_DURING_EXECUTION:
++		return true;
++	case IFS_INVALID_CHUNK_RANGE:
++	case IFS_MISMATCH_ARGUMENTS_BETWEEN_THREADS:
++	case IFS_CORE_NOT_CAPABLE_CURRENTLY:
++	case IFS_UNASSIGNED_ERROR_CODE:
++		break;
++	}
++	return false;
++}
++
++/*
++ * Execute the scan. Called "simultaneously" on all threads of a core
++ * at high priority using the stop_cpus mechanism.
++ */
++static int doscan(void *data)
++{
++	int cpu = smp_processor_id();
++	u64 *msrs = data;
++	int first;
++
++	/* Only the first logical CPU on a core reports result */
++	first = cpumask_first(cpu_smt_mask(cpu));
++
++	/*
++	 * This WRMSR will wait for other HT threads to also write
++	 * to this MSR (at most for activate.delay cycles). Then it
++	 * starts scan of each requested chunk. The core scan happens
++	 * during the "execution" of the WRMSR. This instruction can
++	 * take up to 200 milliseconds (in the case where all chunks
++	 * are processed in a single pass) before it retires.
++	 */
++	wrmsrl(MSR_ACTIVATE_SCAN, msrs[0]);
++
++	if (cpu == first) {
++		/* Pass back the result of the scan */
++		rdmsrl(MSR_SCAN_STATUS, msrs[1]);
++	}
++
++	return 0;
++}
++
++/*
++ * Use stop_core_cpuslocked() to synchronize writing to MSR_ACTIVATE_SCAN
++ * on all threads of the core to be tested. Loop if necessary to complete
++ * run of all chunks. Include some defensive tests to make sure forward
++ * progress is made, and that the whole test completes in a reasonable time.
++ */
++static void ifs_test_core(int cpu, struct device *dev)
++{
++	union ifs_scan activate;
++	union ifs_status status;
++	unsigned long timeout;
++	struct ifs_data *ifsd;
++	u64 msrvals[2];
++	int retries;
++
++	ifsd = ifs_get_data(dev);
++
++	activate.rsvd = 0;
++	activate.delay = IFS_THREAD_WAIT;
++	activate.sigmce = 0;
++	activate.start = 0;
++	activate.stop = ifsd->valid_chunks - 1;
++
++	timeout = jiffies + HZ / 2;
++	retries = MAX_IFS_RETRIES;
++
++	while (activate.start <= activate.stop) {
++		if (time_after(jiffies, timeout)) {
++			status.error_code = IFS_SW_TIMEOUT;
++			break;
++		}
++
++		msrvals[0] = activate.data;
++		stop_core_cpuslocked(cpu, doscan, msrvals);
++
++		status.data = msrvals[1];
++
++		/* Some cases can be retried, give up for others */
++		if (!can_restart(status))
++			break;
++
++		if (status.chunk_num == activate.start) {
++			/* Check for forward progress */
++			if (--retries == 0) {
++				if (status.error_code == IFS_NO_ERROR)
++					status.error_code = IFS_SW_PARTIAL_COMPLETION;
++				break;
++			}
++		} else {
++			retries = MAX_IFS_RETRIES;
++			activate.start = status.chunk_num;
++		}
++	}
++
++	/* Update status for this core */
++	ifsd->scan_details = status.data;
++
++	if (status.control_error || status.signature_error) {
++		ifsd->status = SCAN_TEST_FAIL;
++		message_fail(dev, cpu, status);
++	} else if (status.error_code) {
++		ifsd->status = SCAN_NOT_TESTED;
++		message_not_tested(dev, cpu, status);
++	} else {
++		ifsd->status = SCAN_TEST_PASS;
++	}
++}
++
++/*
++ * Initiate per core test. It wakes up work queue threads on the target cpu and
++ * its sibling cpu. Once all sibling threads wake up, the scan test gets executed and
++ * wait for all sibling threads to finish the scan test.
++ */
++int do_core_test(int cpu, struct device *dev)
++{
++	int ret = 0;
++
++	/* Prevent CPUs from being taken offline during the scan test */
++	cpus_read_lock();
++
++	if (!cpu_online(cpu)) {
++		dev_info(dev, "cannot test on the offline cpu %d\n", cpu);
++		ret = -EINVAL;
++		goto out;
++	}
++
++	ifs_test_core(cpu, dev);
++out:
++	cpus_read_unlock();
++	return ret;
++}
 -- 
-2.36.0
+2.35.1
 
