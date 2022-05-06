@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4469C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32580C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387353AbiEFAEp (ORCPT
+        id S1387394AbiEFAEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
+        Thu, 5 May 2022 20:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387094AbiEFACl (ORCPT
+        with ESMTP id S1387227AbiEFAC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:02:41 -0400
+        Thu, 5 May 2022 20:02:26 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CE061637
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:58:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B47661627
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 16:58:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651795084; x=1683331084;
+  t=1651795081; x=1683331081;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=+ZwU4efMPyk6LipSXhNxIogBqScj1OvsPJuz+1wxs4g=;
-  b=VChzPwj/PQuOBhNK/FhVuRBaTubzzNmtuuak/CGOyFEvkjt7BZoOEWZa
-   ijOyLePElG0OcXdLw/IIx6loKGRAUzCGGfZRZV+rCWRt3XDjeskroXOHA
-   T5CMd3tkGN+Dzo4y/SG2WWQ0U+Ejk17gp6lVQqQYVfSPg+9hAeSC1O0Jj
-   gbRIdghndZqTnub6wxM1ZlEjGRJHfCXLp2LRt7rONW3hM15to1aCTuLu3
-   C4FS79WxFJ+ZX2YYaAsW4YpMqDUUBpXVjVbIiMu5hjzB2RtFGFKOVc53K
-   s/72sSx48eFdh6AWNq6CVjBwK0IKKgYszvwGUEYxDdHtEIu+EWIyyZbor
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283666"
+  bh=CEzigczvRyU1oQzEnVej8ViYVBfDe59Bvau/LRgGfAw=;
+  b=JD21qsHSBnCi18XMReoR2u3TNRwNJpyvZ4bq83K9XfJcxLgAbRDwfHL9
+   Plt7xfb4lLsjXs6eT0OuiXHKlkqRQ4uKI74LbXPtr25HDJRAMBj71t/aD
+   O1M0BP2xUt+dCstU7irXXrV0immxW80YN72EeUYVrqLRo9nMWI2C+uKD8
+   CURGybN8lFYGWE+kjba63VhPRqHff7NOdxlUW8r2kIePptQohiCncH8DV
+   XPZka48dte/4PpTQ0VU+2BIfoJCQKPemSnjYs9Cht+fyNBNvYIbiZJFP0
+   9JT3HY/Gxlteps9UK2qi658GCGp+UCoN2OXx/3gk7NIdOZoTNH1j55QBs
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250283662"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250283666"
+   d="scan'208";a="250283662"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:57 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 16:57:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="694914459"
+   d="scan'208";a="694914451"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:57 -0700
+  by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:56 -0700
 From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
@@ -54,9 +54,9 @@ Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
         iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org,
         Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [PATCH v6 29/29] x86/tsc: Switch to perf-based hardlockup detector if TSC become unstable
-Date:   Thu,  5 May 2022 17:00:08 -0700
-Message-Id: <20220506000008.30892-30-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 27/29] watchdog: Expose lockup_detector_reconfigure()
+Date:   Thu,  5 May 2022 17:00:06 -0700
+Message-Id: <20220506000008.30892-28-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -64,33 +64,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HPET-based hardlockup detector relies on the TSC to determine if an
-observed NMI interrupt was originated by HPET timer. Hence, this detector
-can no longer be used with an unstable TSC.
+When there are multiple implementations of the NMI watchdog, there may be
+situations in which switching from one to another is needed. If the time-
+stamp counter becomes unstable, the HPET-based NMI watchdog can no longer
+be used. Similarly, the HPET-based NMI watchdog relies on tsc_khz and
+needs to be informed when it is refined.
 
-In such case, permanently stop the HPET-based hardlockup detector and
-start the perf-based detector.
+Reloading the NMI watchdog or switching to another hardlockup detector can
+be done cleanly by updating the arch-specific stub and then reconfiguring
+the whole lockup detector.
+
+Expose lockup_detector_reconfigure() to achieve this goal.
 
 Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Nicholas Piggin <npiggin@gmail.com>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: x86@kernel.org
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
 Changes since v5:
- * Relocated the delcaration of hardlockup_detector_switch_to_perf() to
-   x86/nmi.h It does not depend on HPET.
- * Removed function stub. The shim hardlockup detector is always for x86.
+ * None
 
 Changes since v4:
- * Added a stub version of hardlockup_detector_switch_to_perf() for
-   !CONFIG_HPET_TIMER. (lkp)
- * Reconfigure the whole lockup detector instead of unconditionally
-   starting the perf-based hardlockup detector.
+ * Switching to the perf-based lockup detector under the hood is hacky.
+   Instead, reconfigure the whole lockup detector.
 
 Changes since v3:
  * None
@@ -101,53 +102,52 @@ Changes since v2:
 Changes since v1:
  * N/A
 ---
- arch/x86/include/asm/nmi.h     | 6 ++++++
- arch/x86/kernel/tsc.c          | 2 ++
- arch/x86/kernel/watchdog_hld.c | 6 ++++++
- 3 files changed, 14 insertions(+)
+ include/linux/nmi.h | 2 ++
+ kernel/watchdog.c   | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/nmi.h b/arch/x86/include/asm/nmi.h
-index 4a0d5b562c91..47752ff67d8b 100644
---- a/arch/x86/include/asm/nmi.h
-+++ b/arch/x86/include/asm/nmi.h
-@@ -63,4 +63,10 @@ void stop_nmi(void);
- void restart_nmi(void);
- void local_touch_nmi(void);
+diff --git a/include/linux/nmi.h b/include/linux/nmi.h
+index cf12380e51b3..73827a477288 100644
+--- a/include/linux/nmi.h
++++ b/include/linux/nmi.h
+@@ -16,6 +16,7 @@ void lockup_detector_init(void);
+ void lockup_detector_soft_poweroff(void);
+ void lockup_detector_cleanup(void);
+ bool is_hardlockup(void);
++void lockup_detector_reconfigure(void);
  
-+#ifdef CONFIG_X86_HARDLOCKUP_DETECTOR
-+void hardlockup_detector_switch_to_perf(void);
-+#else
-+static inline void hardlockup_detector_switch_to_perf(void) { }
-+#endif
-+
- #endif /* _ASM_X86_NMI_H */
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index cc1843044d88..74772ffc79d1 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1176,6 +1176,8 @@ void mark_tsc_unstable(char *reason)
+ extern int watchdog_user_enabled;
+ extern int nmi_watchdog_user_enabled;
+@@ -37,6 +38,7 @@ extern int sysctl_hardlockup_all_cpu_backtrace;
+ static inline void lockup_detector_init(void) { }
+ static inline void lockup_detector_soft_poweroff(void) { }
+ static inline void lockup_detector_cleanup(void) { }
++static inline void lockup_detector_reconfigure(void) { }
+ #endif /* !CONFIG_LOCKUP_DETECTOR */
  
- 	clocksource_mark_unstable(&clocksource_tsc_early);
- 	clocksource_mark_unstable(&clocksource_tsc);
-+
-+	hardlockup_detector_switch_to_perf();
+ #ifdef CONFIG_SOFTLOCKUP_DETECTOR
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index 6443841a755f..e5b67544f8c8 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -537,7 +537,7 @@ int lockup_detector_offline_cpu(unsigned int cpu)
+ 	return 0;
  }
  
- EXPORT_SYMBOL_GPL(mark_tsc_unstable);
-diff --git a/arch/x86/kernel/watchdog_hld.c b/arch/x86/kernel/watchdog_hld.c
-index ef11f0af4ef5..7940977c6312 100644
---- a/arch/x86/kernel/watchdog_hld.c
-+++ b/arch/x86/kernel/watchdog_hld.c
-@@ -83,3 +83,9 @@ void watchdog_nmi_start(void)
- 	if (detector_type == X86_HARDLOCKUP_DETECTOR_HPET)
- 		hardlockup_detector_hpet_start();
+-static void lockup_detector_reconfigure(void)
++void lockup_detector_reconfigure(void)
+ {
+ 	cpus_read_lock();
+ 	watchdog_nmi_stop();
+@@ -579,7 +579,7 @@ static __init void lockup_detector_setup(void)
  }
-+
-+void hardlockup_detector_switch_to_perf(void)
-+{
-+	detector_type = X86_HARDLOCKUP_DETECTOR_PERF;
-+	lockup_detector_reconfigure();
-+}
+ 
+ #else /* CONFIG_SOFTLOCKUP_DETECTOR */
+-static void lockup_detector_reconfigure(void)
++void lockup_detector_reconfigure(void)
+ {
+ 	cpus_read_lock();
+ 	watchdog_nmi_stop();
 -- 
 2.17.1
 
