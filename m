@@ -2,95 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A712CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:24:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389498AbiEFH1h (ORCPT
+        id S1389506AbiEFH2Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 03:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        Fri, 6 May 2022 03:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389505AbiEFH1Z (ORCPT
+        with ESMTP id S1352462AbiEFH2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 03:27:25 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A006129F
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:23:42 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id h29so11148239lfj.2
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 00:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=r6iyqv+O3BjR0LvvZ2kt+RAWyYOrOIyELEXvFaehkhY=;
-        b=avNdgqvAmXphqerrnxxbZNWJ4iRsKj5bc4yQpGTdt/8TuoqzPIXVSZhiLr4LI0bTvP
-         zn8r84hICJhVGtw8x94s3F6LNbBMkHpLwxuiHaIT5bcdF04TVYrh5sUOukguTSXUHGjz
-         MwAmw0OfmLqizYo8yOxGtiUeLCmMkhs36YIkOT1JXl/YiWLdOFKIuvT7cMx9yIufLdtU
-         BxtmFJYdljzsqXu5UPejTx0qPoTyhdb5gL6aM4iZw30/wgYe2WEz8ZwOCDPJglOQw2k3
-         oRYsEaJvOnCQJKV1Oewre/WpN0mr88A1w/5GNhVn6LtOVn9Ya4Td44jBvxTR6RU0Qhzc
-         2hpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=r6iyqv+O3BjR0LvvZ2kt+RAWyYOrOIyELEXvFaehkhY=;
-        b=YwJ4JAvk1YTJR7G0SwsoDrFCsFO7pM26ByM474pvYT2AxH6sAde6BYPx7hjbqQ2zt/
-         JL3O+tilY+Wqa6x2g+0tfoA/piZdyetT7dcEY61BtW6ZGFS/8vJ7MOF5kLn9fAkex5Lj
-         QdagEb0GUGHbYOJcxY7twRCaD36Tc1TSJWB73Z44E2xrAgrpLCidEGkXt2xHs9chm81z
-         pYOGOR5gmlaWFDq4vrDguvKU/zcYVLW4EHtIykJMfVcoLalp5EUk5Q560jlAbNhQ3JNP
-         MOcGAdYZ+zExczQ4uFYpdIlu5yKkdP0jZr5JgmT/VM1t4X+m0C2WAA+sKwue9f/4tD/M
-         6qnQ==
-X-Gm-Message-State: AOAM532WTqKpXbJROAu1c4cci9ecQO6dHBJXHqOMeuxAnwAkiMx285+e
-        HBWG+CGyDoAuyPxRtPLnB84=
-X-Google-Smtp-Source: ABdhPJwcESVaKWO2wnu9IRvlTmdKTIpQuIm3XGJanK0NWp68IunXwo+EYAUVloCDKeQgJugzRxhy4A==
-X-Received: by 2002:ac2:5e86:0:b0:473:d044:60f5 with SMTP id b6-20020ac25e86000000b00473d04460f5mr1589063lfq.87.1651821820922;
-        Fri, 06 May 2022 00:23:40 -0700 (PDT)
-Received: from [192.168.1.11] ([217.117.246.114])
-        by smtp.gmail.com with ESMTPSA id u2-20020a197902000000b004725b9da82asm559848lfc.303.2022.05.06.00.23.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 00:23:40 -0700 (PDT)
-Message-ID: <7dad295f-2ac4-d6ff-8d8a-17db8ef18c12@gmail.com>
-Date:   Fri, 6 May 2022 10:23:39 +0300
+        Fri, 6 May 2022 03:28:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407CB66FB6;
+        Fri,  6 May 2022 00:24:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF851B832C1;
+        Fri,  6 May 2022 07:24:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E86C385B1;
+        Fri,  6 May 2022 07:24:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651821878;
+        bh=StWfG862y0u2kQU0M4ZLAPlW/rb52wK1Pm4BbpZO+tE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=FPuuz+QYQLJsxFXdf+bWPOaMtjdb7DlpsLJjGzqAmr4sijr00SCJZOQ958vkODYIG
+         ecJxJo6UccWgEhFTEIDXXBAmSYRGQUfX95ch1ICCP4V6Q3rxF+eh8YagyL1VUS8FT+
+         VpMDAyAa2jPwihzq6+p24zAUuCHqeG/YXwd5xY7nKWdnnUtiM8cAfX2CFJfLkisUxl
+         5tK4bZY7vNa8Kchbwqf/jDMGqmn1ejSJ1lAGm01EbWRMmrPWIl2NmNMH0rn+LcKocY
+         g0uNR5dFzbLr52Vf86Gn9dFHEsETNLuJYYUJ+3fkRi9OgZbkcDtSkR3yrCQGBrIHG4
+         Gj3/WkbwlaZQA==
+Received: by mail-ot1-f41.google.com with SMTP id y14-20020a9d460e000000b00605ee347da1so4419805ote.8;
+        Fri, 06 May 2022 00:24:38 -0700 (PDT)
+X-Gm-Message-State: AOAM533g5E/XK4o1jpTV5GTW31tuJ3gjLnWa+1pMpWClXXcJw2PAH6L3
+        j0OatiyBW7hjHK+xXqwOrwnu9Mf55I5qZCmBZ6M=
+X-Google-Smtp-Source: ABdhPJwuFrRQYlf5wXREq8n4UegLU54tdjjmaysEtlWvqoHMsjkC01J7C/wN4KWbcr8LtHuSJmnoRa9yPqiRTKOk/YM=
+X-Received: by 2002:a05:6830:9c2:b0:606:1e0a:cc8d with SMTP id
+ y2-20020a05683009c200b006061e0acc8dmr598659ott.265.1651821877389; Fri, 06 May
+ 2022 00:24:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] staging: rtl8712: fix uninit-value in usb_read8()
- and friends
-Content-Language: en-US
-To:     Wang Cheng <wanngchenng@gmail.com>, dan.carpenter@oracle.com
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1651760402.git.wanngchenng@gmail.com>
- <b9b7a6ee02c02aa28054f5cf16129977775f3cd9.1651760402.git.wanngchenng@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <b9b7a6ee02c02aa28054f5cf16129977775f3cd9.1651760402.git.wanngchenng@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <202205031017.4TwMan3l-lkp@intel.com> <YnCXTPrbLhvfRVDm@e3a974050dc4>
+ <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com>
+ <8704209d-d487-a297-b05a-5db99f5f808c@intel.com> <YnR1OTpYADQy6Xa8@rli9-dbox>
+In-Reply-To: <YnR1OTpYADQy6Xa8@rli9-dbox>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Fri, 6 May 2022 09:24:26 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEznFy3GeJJwwyHCHTQoYKmE92BDHisqNM84FoyFFw7rg@mail.gmail.com>
+Message-ID: <CAMj1kXEznFy3GeJJwwyHCHTQoYKmE92BDHisqNM84FoyFFw7rg@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dove: fix returnvar.cocci warnings
+To:     Philip Li <philip.li@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wang,
+On Fri, 6 May 2022 at 03:12, Philip Li <philip.li@intel.com> wrote:
+>
+> On Thu, May 05, 2022 at 09:31:37AM -0700, Dave Hansen wrote:
+> > On 5/3/22 00:21, Arnd Bergmann wrote:
+> > > On Tue, May 3, 2022 at 4:45 AM kernel test robot <lkp@intel.com> wrote:
+> > >> From: kernel test robot <lkp@intel.com>
+> > >>
+> > >> arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
+> > >>
+> > >>  Remove unneeded variable used to store return value.
+> > >>
+> > >> Generated by: scripts/coccinelle/misc/returnvar.cocci
+> > >>
+> > >> Reported-by: kernel test robot <lkp@intel.com>
+> > >> Signed-off-by: kernel test robot <lkp@intel.com>
+> > > I checked the patch, and unfortunately it is wrong, the current code
+> > > needs to stay.
+> > > The problem is the SET_DMA_ERRATA() macro that accesses the
+> > > local 'errata' variable.
+> >
+> > 0day folks, do we have humans looking over these before they're going
+> > out to the list?  If not, can we add some?  If so, can the humans get a
+> > little more discerning? ;)
+>
+> Sorry all for the bad patch. So far, we pick up several cocci warnings that
+> we have confidence based on early result analysis and feedback, for these
+> warnings, 0day sends out patch automatically.
+>
 
-On 5/6/22 06:15, Wang Cheng wrote:
-> When r8712_usbctrl_vendorreq() returns negative, 'data' in
-> usb_read{8,16,32} will not be initialized.
+Could you please add a special header or something to such emails so I
+can filter them out? I am strongly opposed to such automatic spambot
+patch generation, as it wastes valuable reviewer bandwidth to save the
+bot operator some time, but it think it should be the other way
+around.
 
-[code snip]
-
-> +	status = r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index,
-> +					 &data, len, requesttype);
-> +	if (status < 0)
-> +		return 0;
->   	return le32_to_cpu(data);
->   }
->   
-
-Why do you believe that 0 is not valid register value? And if it's 
-possible then how you can identify an error?
-
-
-
-
-With regards,
-Pavel Skripkin
+We expect contributors to carefully prepare their patch submissions
+before sending them to the list, and automatically generated patches
+simply don't mesh with that. The fact that you use a bot does not mean
+you can ignore these rules.
