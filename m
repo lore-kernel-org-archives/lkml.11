@@ -2,239 +2,284 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A14A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 18:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A543EC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 18:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387628AbiEFSuo (ORCPT
+        id S1388463AbiEFSvD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 14:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
+        Fri, 6 May 2022 14:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386541AbiEFSul (ORCPT
+        with ESMTP id S1386541AbiEFSvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 14:50:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABB6856403
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 11:46:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651862816;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H9hyrJtgSJBROZmr5JA9E52TKsWkV2WqTP+Jz63/Ddo=;
-        b=Gd8yY2S9gt9wufkw5ZsPYD8d1mYEYZFo0hDMB/ZJ8LcKjOPASBPK/ZCGSB1SXFZT3g3Jow
-        g/ssbkFRwUSHQnyGTwHgj0E5EH6lMnSrmL1Nk5s0yVDah1jrSTGiRKQa6wQ/QOWVPpcpUy
-        KRxQV1ni11/TQypuKDExIpv6JS2aZ70=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-445--T9cKKHEPkyyc-nDhO56-Q-1; Fri, 06 May 2022 14:46:53 -0400
-X-MC-Unique: -T9cKKHEPkyyc-nDhO56-Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 6 May 2022 14:51:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9BA5F8E4;
+        Fri,  6 May 2022 11:47:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 35A0E39F9CA7;
-        Fri,  6 May 2022 18:46:53 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.22.50.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AE84841047E9;
-        Fri,  6 May 2022 18:46:51 +0000 (UTC)
-Date:   Fri, 6 May 2022 14:46:49 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Jan Kara <jack@suse.cz>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: Re: [PATCH v2 2/3] fanotify: define struct members to hold response
- decision context
-Message-ID: <YnVtGRmrZpvoaEKg@madcap2.tricolour.ca>
-References: <cover.1651174324.git.rgb@redhat.com>
- <17660b3f2817e5c0a19d1e9e5d40b53ff4561845.1651174324.git.rgb@redhat.com>
- <CAHC9VhQ3Qtpwhj6TeMR7rmdbUe_6VRHU9OymmDoDdsazeGuNKA@mail.gmail.com>
- <YnHX74E+COTp7AgY@madcap2.tricolour.ca>
- <20220505144456.nw6slyqw4pjizl5p@quack3.lan>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505144456.nw6slyqw4pjizl5p@quack3.lan>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C8E762171;
+        Fri,  6 May 2022 18:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D172C385A8;
+        Fri,  6 May 2022 18:47:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651862836;
+        bh=DlBOyewLLihF/iWcRWhcj+SVK/isx3rYo6ba8naJpzA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I9BrzcaezDnmBjKmkIIC2T4Am8w8xiOj2ppMdBTjvaWZNfVQKqp7ovEAG/XuPVomH
+         qlx+a41L4BgXe1Pjt8PwrqJoyszMjLB+WPp9y0kl35zygxqyM6ose0Qztc6K440/CL
+         pBdp8Se7d0GwUqmKe0ph4DjmQTlBwYpGV0ddVZ7jTXrhMfP44CEZmvCaU6nMrzOAZ6
+         J53wfLNJSQ6hX4TSeo28O+e59srXsGScjw1RafDqjXviB2WKMBwE0fGdhX/V85Qe87
+         dsjlBVe1bmvFUjZ2QeOaB2KztIFUTTslsfhB7CJ1jWkE+aBO/Ln9PtQcmMBtlhXxqz
+         lAmvvpHUxrLXw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nn2yw-009XK2-3e; Fri, 06 May 2022 19:47:14 +0100
+Date:   Fri, 06 May 2022 19:47:25 +0100
+Message-ID: <8735hmijlu.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/6] irqchip/armada-370-xp: Implement SoC Error interrupts
+In-Reply-To: <20220506183051.wimo7p4nuqfnl2aj@pali>
+References: <20220506134029.21470-1-pali@kernel.org>
+        <20220506134029.21470-3-pali@kernel.org>
+        <87mtfu7ccd.wl-maz@kernel.org>
+        <20220506183051.wimo7p4nuqfnl2aj@pali>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: pali@kernel.org, tglx@linutronix.de, robh+dt@kernel.org, bhelgaas@google.com, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, thomas.petazzoni@bootlin.com, lorenzo.pieralisi@arm.com, kw@linux.com, kabel@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-05 16:44, Jan Kara wrote:
-> On Tue 03-05-22 21:33:35, Richard Guy Briggs wrote:
-> > On 2022-05-02 20:16, Paul Moore wrote:
-> > > On Thu, Apr 28, 2022 at 8:45 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > This patch adds 2 structure members to the response returned from user
-> > > > space on a permission event. The first field is 16 bits for the context
-> > > > type.  The context type will describe what the meaning is of the second
-> > > > field. The default is none. The patch defines one additional context
-> > > > type which means that the second field is a 32-bit rule number. This
-> > > > will allow for the creation of other context types in the future if
-> > > > other users of the API identify different needs.  The second field size
-> > > > is defined by the context type and can be used to pass along the data
-> > > > described by the context.
-> > > >
-> > > > To support this, there is a macro for user space to check that the data
-> > > > being sent is valid. Of course, without this check, anything that
-> > > > overflows the bit field will trigger an EINVAL based on the use of
-> > > > FAN_INVALID_RESPONSE_MASK in process_access_response().
-> > > >
-> 
-> ...
-> 
-> > > >  static ssize_t fanotify_write(struct file *file, const char __user *buf, size_t count, loff_t *pos)
-> > > >  {
-> > > > -       struct fanotify_response response = { .fd = -1, .response = -1 };
-> > > > +       struct fanotify_response response;
-> > > >         struct fsnotify_group *group;
-> > > >         int ret;
-> > > > +       size_t size = min(count, sizeof(struct fanotify_response));
-> > > >
-> > > >         if (!IS_ENABLED(CONFIG_FANOTIFY_ACCESS_PERMISSIONS))
-> > > >                 return -EINVAL;
-> > > >
-> > > >         group = file->private_data;
-> > > >
-> > > > -       if (count < sizeof(response))
-> > > > +       if (count < offsetof(struct fanotify_response, extra_info_buf))
-> > > >                 return -EINVAL;
-> > > 
-> > > Is this why you decided to shrink the fanotify_response:response field
-> > > from 32-bits to 16-bits?  I hope not.  I would suggest both keeping
-> > > the existing response field as 32-bits and explicitly checking for
-> > > writes that are either the existing/compat length as well as the
-> > > newer, longer length.
-> > 
-> > No.  I shrank it at Jan's suggestion.  I think I agree with you that
-> > the response field should be kept at u32 as it is defined in userspace
-> > and purge the doubt about what would happen with a new userspace with
-> > an old kernel.
-> 
-> Hum, for the life of me I cannot find my response you mention here. Can you
-> send a link so that I can refresh my memory? It has been a long time...
+On Fri, 06 May 2022 19:30:51 +0100,
+Pali Roh=C3=A1r <pali@kernel.org> wrote:
+>=20
+> On Friday 06 May 2022 19:19:46 Marc Zyngier wrote:
+> > On Fri, 06 May 2022 14:40:25 +0100,
+> > Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> > >=20
+> > > MPIC IRQ 4 is used as SoC Error Summary interrupt and provides access=
+ to
+> > > another hierarchy of SoC Error interrupts. Implement a new IRQ chip a=
+nd
+> > > domain for accessing this IRQ hierarchy.
+> > >=20
+> > > Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+> > > ---
+> > >  drivers/irqchip/irq-armada-370-xp.c | 213 ++++++++++++++++++++++++++=
++-
+> > >  1 file changed, 210 insertions(+), 3 deletions(-)
+> > >=20
+> > > diff --git a/drivers/irqchip/irq-armada-370-xp.c b/drivers/irqchip/ir=
+q-armada-370-xp.c
+> > > index ebd76ea1c69b..71578b65f5c8 100644
+> > > --- a/drivers/irqchip/irq-armada-370-xp.c
+> > > +++ b/drivers/irqchip/irq-armada-370-xp.c
+> > > @@ -117,6 +117,8 @@
+> > >  /* Registers relative to main_int_base */
+> > >  #define ARMADA_370_XP_INT_CONTROL		(0x00)
+> > >  #define ARMADA_370_XP_SW_TRIG_INT_OFFS		(0x04)
+> > > +#define ARMADA_370_XP_INT_SOC_ERR_0_CAUSE_OFFS	(0x20)
+> > > +#define ARMADA_370_XP_INT_SOC_ERR_1_CAUSE_OFFS	(0x24)
+> > >  #define ARMADA_370_XP_INT_SET_ENABLE_OFFS	(0x30)
+> > >  #define ARMADA_370_XP_INT_CLEAR_ENABLE_OFFS	(0x34)
+> > >  #define ARMADA_370_XP_INT_SOURCE_CTL(irq)	(0x100 + irq*4)
+> > > @@ -130,6 +132,8 @@
+> > >  #define ARMADA_370_XP_CPU_INTACK_OFFS		(0x44)
+> > >  #define ARMADA_370_XP_INT_SET_MASK_OFFS		(0x48)
+> > >  #define ARMADA_370_XP_INT_CLEAR_MASK_OFFS	(0x4C)
+> > > +#define ARMADA_370_XP_INT_SOC_ERR_0_MASK_OFF	(0x50)
+> > > +#define ARMADA_370_XP_INT_SOC_ERR_1_MASK_OFF	(0x54)
+> > >  #define ARMADA_370_XP_INT_FABRIC_MASK_OFFS	(0x54)
+> > >  #define ARMADA_370_XP_INT_CAUSE_PERF(cpu)	(1 << cpu)
+> > > =20
+> > > @@ -146,6 +150,8 @@
+> > >  static void __iomem *per_cpu_int_base;
+> > >  static void __iomem *main_int_base;
+> > >  static struct irq_domain *armada_370_xp_mpic_domain;
+> > > +static struct irq_domain *armada_370_xp_soc_err_domain;
+> > > +static unsigned int soc_err_irq_num_regs;
+> > >  static u32 doorbell_mask_reg;
+> > >  static int parent_irq;
+> > >  #ifdef CONFIG_PCI_MSI
+> > > @@ -156,6 +162,8 @@ static DEFINE_MUTEX(msi_used_lock);
+> > >  static phys_addr_t msi_doorbell_addr;
+> > >  #endif
+> > > =20
+> > > +static void armada_370_xp_soc_err_irq_unmask(struct irq_data *d);
+> > > +
+> > >  static inline bool is_percpu_irq(irq_hw_number_t irq)
+> > >  {
+> > >  	if (irq <=3D ARMADA_370_XP_MAX_PER_CPU_IRQS)
+> > > @@ -509,6 +517,27 @@ static void armada_xp_mpic_reenable_percpu(void)
+> > >  		armada_370_xp_irq_unmask(data);
+> > >  	}
+> > > =20
+> > > +	/* Re-enable per-CPU SoC Error interrupts that were enabled before =
+suspend */
+> > > +	for (irq =3D 0; irq < soc_err_irq_num_regs * 32; irq++) {
+> > > +		struct irq_data *data;
+> > > +		int virq;
+> > > +
+> > > +		virq =3D irq_linear_revmap(armada_370_xp_soc_err_domain, irq);
+> > > +		if (virq =3D=3D 0)
+> > > +			continue;
+> > > +
+> > > +		data =3D irq_get_irq_data(virq);
+> > > +
+> > > +		if (!irq_percpu_is_enabled(virq))
+> > > +			continue;
+> > > +
+> > > +		armada_370_xp_soc_err_irq_unmask(data);
+> > > +	}
+> >=20
+> > So you do this loop and all these lookups, both here and in the resume
+> > function (duplicated code!) just to be able to call the unmask
+> > function?  This would be better served by two straight writes of the
+> > mask register, which you'd conveniently save on suspend.
+> >=20
+> > Yes, you have only duplicated the existing logic. But surely there is
+> > something better to do.
+>=20
+> Yes, I just used existing logic.
+>=20
+> I'm not rewriting driver or doing big refactor of it, as this is not in
+> the scope of the PCIe AER interrupt support.
 
-https://listman.redhat.com/archives/linux-audit/2020-October/017066.html
-https://listman.redhat.com/archives/linux-audit/2020-October/017067.html
+Fair enough. By the same logic, I'm not taking any change to the
+driver until it is put in a better shape. Your call.
 
-> > > > +
-> > > > +#define FANOTIFY_RESPONSE_EXTRA_LEN_MAX        \
-> > > > +       (sizeof(union { \
-> > > > +               struct fanotify_response_audit_rule r; \
-> > > > +               /* add other extra info structures here */ \
-> > > > +       }))
-> > > > +
-> > > >  struct fanotify_response {
-> > > >         __s32 fd;
-> > > > -       __u32 response;
-> > > > +       __u16 response;
-> > > > +       __u16 extra_info_type;
-> > > > +       char extra_info_buf[FANOTIFY_RESPONSE_EXTRA_LEN_MAX];
-> > > >  };
-> > > 
-> > > Since both the kernel and userspace are going to need to agree on the
-> > > content and formatting of the fanotify_response:extra_info_buf field,
-> > > why is it hidden behind a char array?  You might as well get rid of
-> > > that abstraction and put the union directly in the fanotify_response
-> > > struct.  It is possible you could also get rid of the
-> > > fanotify_response_audit_rule struct this way too and just access the
-> > > rule scalar directly.
-> > 
-> > This does make sense and my only concern would be a variable-length
-> > type.  There isn't any reason to hide it.  If userspace chooses to use
-> > the old interface and omit the type field then it defaults to NONE.
-> > 
-> > If future types with variable data are defined, the first field could be
-> > a u32 that unions with the rule number that won't change the struct
-> > size.
-> 
-> Struct fanotify_response size must not change, it is part of the kernel
-> ABI. In particular your above change would break userspace code that is
-> currently working just fine (e.g. allocating 8 bytes and expecting struct
-> fanotify_response fits there, or just writing sizeof(struct
-> fanotify_response) as a response while initializing only first 8 bytes).
+> > > +
+> > > +	/* Unmask summary SoC Error Interrupt */
+> > > +	if (soc_err_irq_num_regs > 0)
+> > > +		writel(4, per_cpu_int_base + ARMADA_370_XP_INT_CLEAR_MASK_OFFS);
+> > > +
+> > >  	ipi_resume();
+> > >  }
+> > > =20
+> > > @@ -546,8 +575,8 @@ static struct irq_chip armada_370_xp_irq_chip =3D=
+ {
+> > >  static int armada_370_xp_mpic_irq_map(struct irq_domain *h,
+> > >  				      unsigned int virq, irq_hw_number_t hw)
+> > >  {
+> > > -	/* IRQs 0 and 1 cannot be mapped, they are handled internally */
+> > > -	if (hw <=3D 1)
+> > > +	/* IRQs 0, 1 and 4 cannot be mapped, they are handled internally */
+> > > +	if (hw <=3D 1 || hw =3D=3D 4)
+> > >  		return -EINVAL;
+> > > =20
+> > >  	armada_370_xp_irq_mask(irq_get_irq_data(virq));
+> > > @@ -577,6 +606,99 @@ static const struct irq_domain_ops armada_370_xp=
+_mpic_irq_ops =3D {
+> > >  	.xlate =3D irq_domain_xlate_onecell,
+> > >  };
+> > > =20
+> > > +static DEFINE_RAW_SPINLOCK(armada_370_xp_soc_err_lock);
+> > > +
+> > > +static void armada_370_xp_soc_err_irq_mask(struct irq_data *d)
+> > > +{
+> > > +	irq_hw_number_t hwirq =3D irqd_to_hwirq(d);
+> > > +	u32 reg, mask;
+> > > +
+> > > +	reg =3D hwirq >=3D 32 ? ARMADA_370_XP_INT_SOC_ERR_1_MASK_OFF
+> > > +			  : ARMADA_370_XP_INT_SOC_ERR_0_MASK_OFF;
+> > > +
+> > > +	raw_spin_lock(&armada_370_xp_soc_err_lock);
+> > > +	mask =3D readl(per_cpu_int_base + reg);
+> > > +	mask &=3D ~BIT(hwirq % 32);
+> > > +	writel(mask, per_cpu_int_base + reg);
+> > > +	raw_spin_unlock(&armada_370_xp_soc_err_lock);
+> > > +}
+> > > +
+> > > +static void armada_370_xp_soc_err_irq_unmask(struct irq_data *d)
+> > > +{
+> > > +	irq_hw_number_t hwirq =3D irqd_to_hwirq(d);
+> > > +	u32 reg, mask;
+> > > +
+> > > +	reg =3D hwirq >=3D 32 ? ARMADA_370_XP_INT_SOC_ERR_1_MASK_OFF
+> > > +			  : ARMADA_370_XP_INT_SOC_ERR_0_MASK_OFF;
+> > > +
+> > > +	raw_spin_lock(&armada_370_xp_soc_err_lock);
+> > > +	mask =3D readl(per_cpu_int_base + reg);
+> > > +	mask |=3D BIT(hwirq % 32);
+> > > +	writel(mask, per_cpu_int_base + reg);
+> > > +	raw_spin_unlock(&armada_370_xp_soc_err_lock);
+> > > +}
+> > > +
+> > > +static int armada_370_xp_soc_err_irq_mask_on_cpu(void *par)
+> > > +{
+> > > +	struct irq_data *d =3D par;
+> > > +	armada_370_xp_soc_err_irq_mask(d);
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int armada_370_xp_soc_err_irq_unmask_on_cpu(void *par)
+> > > +{
+> > > +	struct irq_data *d =3D par;
+> > > +	armada_370_xp_soc_err_irq_unmask(d);
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int armada_xp_soc_err_irq_set_affinity(struct irq_data *d,
+> > > +					      const struct cpumask *mask,
+> > > +					      bool force)
+> > > +{
+> > > +	unsigned int cpu;
+> > > +
+> > > +	cpus_read_lock();
+> > > +
+> > > +	/* First disable IRQ on all cores */
+> > > +	for_each_online_cpu(cpu)
+> > > +		smp_call_on_cpu(cpu, armada_370_xp_soc_err_irq_mask_on_cpu, d, tru=
+e);
+> > > +
+> > > +	/* Select a single core from the affinity mask which is online */
+> > > +	cpu =3D cpumask_any_and(mask, cpu_online_mask);
+> > > +	smp_call_on_cpu(cpu, armada_370_xp_soc_err_irq_unmask_on_cpu, d, tr=
+ue);
+> > > +
+> > > +	cpus_read_unlock();
+> > > +
+> > > +	irq_data_update_effective_affinity(d, cpumask_of(cpu));
+> > > +
+> > > +	return IRQ_SET_MASK_OK;
+> > > +}
+> >=20
+> > Aren't these per-CPU interrupts anyway? What does it mean to set their
+> > affinity? /me rolls eyes...
+>=20
+> Yes, they are per-CPU interrupts. But to mask or unmask particular
+> interrupt for specific CPU is possible only from that CPU. CPU 0 just
+> cannot move interrupt from CPU 0 to CPU 1. CPU 0 can only mask that
+> interrupt and CPU 1 has to unmask it.
 
-Many kernel ABIs have been expanded without breaking them.
+And that's no different form other per-CPU interrupts that have the
+exact same requirements. NAK to this sort of hacks.
 
-Is it reasonable for a userspace program to use a kernel structure
-without also using its size for allocation and initialization?
+	M.
 
-> How I'd suggest doing it now (and I'd like to refresh my memory from my
-> past emails you mention because in the past I might have thought something
-> else ;)) is that you add another flag to 'response' field similar to
-> FAN_AUDIT - like FAN_EXTRA_INFO. If that is present, it means extra info is
-> to be expected after struct fanotify_response.
-
-That's an interesting possibility...  I'm trying to predict if that
-would be a problem for an old kernel...  In process_access_response() it
-would fallthrough to the default case of -EINVAL but do so safely.
-
-> The extra info would always start with a header like:
-> 
-> struct fanotify_response_info_header {
->         __u8 info_type;
->         __u8 pad;
->         __u16 len;		/* This is including the header itself */
-> }
-> 
-> And after such header there would be the 'blob' of data 'len - header size'
-> long.  We use this same scheme when passing fanotify events to userspace
-> and it has proven to be lightweight and extensible. It covers the situation
-> when in the future audit would decide it wants other data (just change data
-> type), it would also cover the situation when some other subsystem wants
-> its information passed as well - there can be more structures like this
-> attached at the end, we can process the response up to the length of the
-> write.
-
-This reminds me of the RFC2367 (PF_KEYv2, why is that still right there
-at the tip of my fingers?)
-
-> Now these are just possible future extensions making sure we can extend the
-> ABI without too much pain. In the current implementation I'd just return
-> EINVAL whenever more than FANOTIFY_RESPONSE_MAX_LEN (16 bytes) is written 
-> and do very strict checks on what gets passed in. It is also trivially
-> backwards compatible (old userspace on new kernel works just fine).
-
-Old userspace on new kernel would work fine with this idea, the v2 patch
-posted, or with leaving the response field of struct fanotify_response
-as __u32.
-
-> If you want to achieve compatibility of running new userspace on old kernel
-> (I guess that's desirable), we have group flags for that - like we
-> introduced FAN_ENABLE_AUDIT to allow for FAN_AUDIT flag in response we now
-> need to add a flag like FAN_EXTENDED_PERMISSION_INFO telling the kernel it
-> should expect an allow more info returning for permission events. At the
-> same time this is the way for userspace to be able to tell whether the
-> kernel supports this. I know this sounds tedious but that's the cost of
-> extending the ABI in the compatible way. We've made various API mistakes in
-> the past having to add weird workarounds to fanotify and we don't want to
-> repeat those mistakes :).
-> 
-> One open question I have is what should the kernel do with 'info_type' in
-> response it does not understand (in the future when there are possibly more
-> different info types). It could just skip it because this should be just
-> additional info for introspection (the only mandatory part is in
-> fanotify_response, however it could surprise userspace that passed info is
-> just getting ignored. To solve this we would have to somewhere report
-> supported info types (maybe in fanotify fdinfo in proc). I guess we'll
-> cross that bridge when we get to it.
-
-Well, one possibility is to return -EINVAL to signal the kernel is out
-of date.
-
-> Amir, what do you think?
-> 
-> Jan Kara <jack@suse.com>
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+--=20
+Without deviation from the norm, progress is not possible.
