@@ -2,84 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB52C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E99C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444026AbiEFU5A (ORCPT
+        id S1442821AbiEFVD1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 16:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
+        Fri, 6 May 2022 17:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346231AbiEFU45 (ORCPT
+        with ESMTP id S1444045AbiEFVDW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 16:56:57 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841DB6EB07;
-        Fri,  6 May 2022 13:53:13 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:37328)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nn4wo-008Pnb-Qf; Fri, 06 May 2022 14:53:10 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37272 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nn4wn-009MmH-Ri; Fri, 06 May 2022 14:53:10 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     chill <maximkabox13@gmail.com>
-Cc:     linux-arch@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <87mtfu4up3.fsf@email.froward.int.ebiederm.org>
-        <20220506141512.516114-1-ebiederm@xmission.com>
-        <CANpfEhNAQvazzCSN-dVgYmwNSRjqOrqZF0_j7GPLbCdEkogzSg@mail.gmail.com>
-Date:   Fri, 06 May 2022 15:53:01 -0500
-In-Reply-To: <CANpfEhNAQvazzCSN-dVgYmwNSRjqOrqZF0_j7GPLbCdEkogzSg@mail.gmail.com>
-        (chill's message of "Fri, 6 May 2022 14:51:30 +0000")
-Message-ID: <8735hm1iz6.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nn4wn-009MmH-Ri;;;mid=<8735hm1iz6.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/0RPxEyql+RbzaQX8b404dYmxPbZsYufU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 1/7] kthread: Don't allocate kthread_struct for init and
- umh
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+        Fri, 6 May 2022 17:03:22 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D0D6EB22;
+        Fri,  6 May 2022 13:59:14 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id e15so9373154iob.3;
+        Fri, 06 May 2022 13:59:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Nq1jhHTyUB0btWPNhxYltvYS+C1e550wDIkKCw2n7r8=;
+        b=lkHY4dcyhn0aLJYJtjuECXL00hq+a5aXvIQuS07AUtCk2pp5v+kL+zQEv1IEnqjjOO
+         mtbYsn1zwyFOUBBHPbiyHe+ysF5d7YabJD4V1h7rI2vrhjl8PZT8tncjWgYlcDNbgzsw
+         fQquVpRC0FSG1QjbxEgS6kiYOuBEsRlzr5ViJRgYEz3ng2GKTXX/6ca+jlEFEZZ2izsV
+         LvDovelBQEfAtvAkBH9OFhQv2LE7P263ta2DxvdRwfGIYj9qxD450fMUpweD7thuZUZG
+         nlm9B0P+ILI+t8zpOtHrON123wiBek/ha99cInddIIQ29URp1shIyEDKAphV7Vall/0G
+         8iKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Nq1jhHTyUB0btWPNhxYltvYS+C1e550wDIkKCw2n7r8=;
+        b=u3e2/5/leqs4ruLepg9do9r9MX2qYJtEmTQEosIP28Q3PJX5CheH1hLSTmRx0DCHJL
+         1/b308ZTZj7gX5W5tf4H6LtIJgVt7teVk4hsbCL0H8QO69lFOkMzHysJHOr9RnkASCJu
+         vo+VFfyx7xWaLIA5s45JJL3QNpUJv5fS2hdQptcJeAMnL5TFqPAFNbQCubwd4QsUUsbl
+         TxZ8MRgnv2WP+DThQ5OmMs3wItyeBtSemtHg5+/dZuiUKWE7wZmuGeC/x0smQDRi6/QC
+         R2X18sqPONYWwF6iSuu9z6+itHrlsq+WUUQANLeEj2grQUpuIt2r7LBKPpVWgQurDIcC
+         hIWw==
+X-Gm-Message-State: AOAM531LxwroQnXVnZebd76yU9J/qUxsaSZqyQi5u79vRP36YJ3wp7hs
+        otiFlOpQuB/CW8oMlrTDacs=
+X-Google-Smtp-Source: ABdhPJyNAi7sSCmw+K0BxgixB4ZYe/BbE15nYIBlfT3Fjv26X5cL9B+ZFQMdx+YQ0c+0dwiyNeXZJw==
+X-Received: by 2002:a05:6638:502:b0:32b:8c53:f737 with SMTP id i2-20020a056638050200b0032b8c53f737mr2223887jar.121.1651870754254;
+        Fri, 06 May 2022 13:59:14 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id b15-20020a5ea70f000000b0065a47e16f5bsm1485608iod.45.2022.05.06.13.59.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 13:59:13 -0700 (PDT)
+Date:   Fri, 06 May 2022 13:59:06 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Pu Lehui <pulehui@huawei.com>, bpf@vger.kernel.org,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Pu Lehui <pulehui@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Message-ID: <62758c1abea39_196b72087a@john.notmuch>
+In-Reply-To: <20220429014240.3434866-3-pulehui@huawei.com>
+References: <20220429014240.3434866-1-pulehui@huawei.com>
+ <20220429014240.3434866-3-pulehui@huawei.com>
+Subject: RE: [PATCH bpf-next v2 2/2] riscv, bpf: Support riscv jit to provide
+ bpf_line_info
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-chill <maximkabox13@gmail.com> writes:
+Pu Lehui wrote:
+> Add support for riscv jit to provide bpf_line_info.
+> We need to consider the prologue offset in ctx->offset,
+> but unlike x86 and arm64, ctx->offset of riscv does not
+> provide an extra slot for the prologue, so here we just
+> calculate the len of prologue and add it to ctx->offset
+> at the end. Both RV64 and RV32 have been tested.
+> 
+> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> ---
 
-> this looks like a real uaf vulnerability and can be executed by the user
-
-The potential to use memory after it has been freed appears completely
-real.  As such it is a bug and it should definitely be fixed.  That is
-as far as I can see.
-
-What I don't see, and I am very bad at this so I could be missing
-something, is what bad thing kthread_is_per_cpu could be tricked into
-doing.
-
-I see a window of a single instruction which reads a single bit
-that normally will return false.  If that bit instead reads true
-it looks like the scheduler will simply decide to not run the
-process on another cpu.
-
-
-So I will put this change in linux-next.  It will be tested and I will
-send it to Linus when the merge window for v5.19 opens.  After Linus
-merges this I expect after a week or so it will be backported to the
-various stable kernels.  Not that it needs to go farther than about
-v5.17 where I introduced the bug.
-
-Eric
+Looks reasonable to me, but would be good if someone with RISC
+knowledge takes a lookt hough.
