@@ -2,145 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3649DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388786AbiEFDmm (ORCPT
+        id S1388939AbiEFDof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        Thu, 5 May 2022 23:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388762AbiEFDmg (ORCPT
+        with ESMTP id S1388838AbiEFDoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:42:36 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EA1B3C;
-        Thu,  5 May 2022 20:38:55 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so9711570pjb.5;
-        Thu, 05 May 2022 20:38:55 -0700 (PDT)
+        Thu, 5 May 2022 23:44:11 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0CF12AD0
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:40:28 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-e2fa360f6dso6109950fac.2
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=Thh8y0B9U/Ip36Z1pHukPlR3kRPTnswuR34K+vKB1hc=;
-        b=jsSM5j5/VLW8HThEJQ93pP3WnLRDj8yZPD+jNB+uxemWTHylJixdD/TP2lI1S55jZy
-         KyB5sUKuBuNGn+2pyep9IjJX7VbnCLCVyR7UaUWiS+zKLAoms9MX+fECPaMmuANKm3Jo
-         rUkXmDyDBPG7addk/1Jd38sw3uKMAXnu2x3kTCFpunj8Nm92etBwD7TmsZhPp4R535oL
-         koYWD3EHcMX6efoKpmiZleep8nO5AWFeWCpkTesK07bW5CIecpNf8RfqmnThB+eXT1su
-         lfIIx4/ljqVoozDaIwYSA8QFGWqrI1wf25CJQLP6s9hIslttbGdAYDL5Tnub6v7jVYXW
-         fz6A==
+        bh=WNNx5SqqknTge4y9/eUvRrcsh9m9RTE+BK27SVwwwhs=;
+        b=Y3oK9ZklCqUyV2UCcurb2SZie0KVUZBoED2gV1ZMI54pHlaObR+Yu0zT/4B4URslXU
+         L6G/3lv1KbX/2evOvCIeoR+ixzyEP7ORlBdMS+PejkXygXxDWjojZ4QdbvqK5khV4Rg+
+         aXl6hBUofLH6/lhsMPnD+Gt3DCuNIGLHpSNROar9lyMsILkTt10qVoPg0fRQ0Hf0/KrI
+         Lj322x0AfrbEWjvlMqlNrdgw7jX0QnytRFVMrU9EEqlKnocZzr8VhMqvFztq1OGJQhvk
+         wfcTyWXHicx0+w5PgU+0YCbmio7sD6DwE8qEznkr0GpxszA/CS1dyVzU3Q/FoAIlePWV
+         74/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Thh8y0B9U/Ip36Z1pHukPlR3kRPTnswuR34K+vKB1hc=;
-        b=23NJWDVc4IygW6mQZXrPbrj8zq16Ppo1zJacVXTh8nM6hHQDBansInFCpb2AUjF8AP
-         VcP2xta5nZm235e0blTb02/FzfUXZ1cc6rrrG67Stykl2vO/sIJu0ikKbQKWmWTp2iNF
-         V+IGV2gHNfebeEt0pqk1NRy5AiOm8FWmNl1kG7V0RLH31mgtcpK9diUBo7R23bhpNr9l
-         jQ6eSkSKMyeGA0LsILqXpCaMpCg5QvmrLwrJv8P/N+IYNSDMenEqhap+A0zuFNKiJPZ/
-         kPtFLzyXLOmlHeCrtMdM2CJgqZNBtwDqlfyW/CscO3STnaUnLX2SSHH9NRU8nyGa/k2r
-         C9zQ==
-X-Gm-Message-State: AOAM531KcksQzF7wt0DcJszmveLMok/0bPCZo1A6TXSC7Uv7gOGUeza4
-        BrHdntbctytFsnxnTnxCfoA=
-X-Google-Smtp-Source: ABdhPJxD8Oz0oOTM/oDFE5euDEomfuAH3/F7pvBij12hDEABwIFX21X+VhyiYg8cC1T2dVdGBBo7qQ==
-X-Received: by 2002:a17:902:f684:b0:15e:8c4a:c54b with SMTP id l4-20020a170902f68400b0015e8c4ac54bmr1433588plg.21.1651808334809;
-        Thu, 05 May 2022 20:38:54 -0700 (PDT)
-Received: from sol ([118.209.204.33])
-        by smtp.gmail.com with ESMTPSA id t7-20020a170902e84700b0015e8d4eb242sm412700plg.140.2022.05.05.20.38.51
+        bh=WNNx5SqqknTge4y9/eUvRrcsh9m9RTE+BK27SVwwwhs=;
+        b=Fh8nlKDZpSZmYqj7dGxZz8fPJ9W2HaupuyX7EsBTvuCyFRmQN8fZpfXNVf+lSMROGp
+         i7RgbwBW4hVtLI6e23dg/TIDDZNhMUBrugWXOZ85t47pCLGHD2vBs0qnrGb0n0Z+vZ44
+         uSvI0GFbt5AE69HMp44DRDHYo9SA3SRqVP19qLlnDN3vwZQNUBQZ5LrmFzQfPtd3l1Md
+         SKsFE38jvvmSWa0yx08wbA+0KoERCqgGvg2+q4Bfhw/rParqOxaYKBTOm1boh2xPJOT0
+         ldEYMvKqGMK68Ew+DcVct3h/MrF08dp+7P1HgBgmNPWiC5URJN+Lxg2738PAm5LYUpmn
+         mQsw==
+X-Gm-Message-State: AOAM531jYt4qAvhB4Z4aYZMaSPd0ZNGiRIPFFFEAe4JgCSghQGIxkJyA
+        qmi2ZwbRzBuRDcjdH7mjdxu05Q==
+X-Google-Smtp-Source: ABdhPJydCEUimIJyazQBa8BRPeEcgTzNUlC4nBe5TecKYIwIBr2ZbEo9p+gDmXN3dQu5R6BUoL3UXg==
+X-Received: by 2002:a05:6870:f5a3:b0:e1:944b:6450 with SMTP id eh35-20020a056870f5a300b000e1944b6450mr526370oab.254.1651808428175;
+        Thu, 05 May 2022 20:40:28 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id p22-20020a056870831600b000eb0e40b4b8sm1260245oae.48.2022.05.05.20.40.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 20:38:54 -0700 (PDT)
-Date:   Fri, 6 May 2022 11:38:49 +0800
-From:   Kent Gibson <warthog618@gmail.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Yihao Han <hanyihao@vivo.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] gpiolib: cdev: fix stream_open.cocci warnings
-Message-ID: <20220506033849.GA12555@sol>
-References: <20220505115011.3435-1-hanyihao@vivo.com>
- <CAMRc=MdkbZVW_vFxyJbKh9oDo3mdud2omfS=cW5=Gn=nMrM37A@mail.gmail.com>
- <20220505122450.GA23659@sol>
+        Thu, 05 May 2022 20:40:27 -0700 (PDT)
+Date:   Thu, 5 May 2022 22:40:22 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7180-trogdor: Remove cros-ec
+ keyboard from detachables
+Message-ID: <YnSYppSYwaoZRXb4@builder.lan>
+References: <20220426225748.324759-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505122450.GA23659@sol>
+In-Reply-To: <20220426225748.324759-1-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 08:24:50PM +0800, Kent Gibson wrote:
-> On Thu, May 05, 2022 at 02:18:48PM +0200, Bartosz Golaszewski wrote:
-> > On Thu, May 5, 2022 at 1:50 PM Yihao Han <hanyihao@vivo.com> wrote:
-> > >
-> > > ./drivers/gpio/gpiolib-cdev.c:2498:7-23: WARNING:
-> > > gpio_fileops: .read() has stream semantic;
-> > > safe to change nonseekable_open -> stream_open.
-> > >
-> > > Generated by: scripts/coccinelle/api/stream_open.cocci
-> > >
-> > > Signed-off-by: Yihao Han <hanyihao@vivo.com>
-> > > ---
-> > >  drivers/gpio/gpiolib-cdev.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/gpio/gpiolib-cdev.c b/drivers/gpio/gpiolib-cdev.c
-> > > index f5aa5f93342a..d03c8e012c8c 100644
-> > > --- a/drivers/gpio/gpiolib-cdev.c
-> > > +++ b/drivers/gpio/gpiolib-cdev.c
-> > > @@ -2495,7 +2495,7 @@ static int gpio_chrdev_open(struct inode *inode, struct file *file)
-> > >         get_device(&gdev->dev);
-> > >         file->private_data = cdev;
-> > >
-> > > -       ret = nonseekable_open(inode, file);
-> > > +       ret = stream_open(inode, file);
-> > >         if (ret)
-> > >                 goto out_unregister_notifier;
-> > >
-> > > --
-> > > 2.17.1
-> > >
-> > 
-> > Cc'ing Kent.
-> > 
-> > This patch doesn't seem to target current master or rc1.
-> > 
-> > It also can't be right - we specifically mark all filesystem objects
-> > exposed by the GPIO character device as non-seekable.
-> > 
-> 
-> Agreed.  I took the coccinelle warning as being a false positive.
-> If I recall correctly I had a quick look to see if it could be disabled,
-> but didn't find anything, and so just ignored it.
+On Tue 26 Apr 17:57 CDT 2022, Stephen Boyd wrote:
+
+> Trogdor devices that have a detachable keyboard still have a
+> non-detachable keyboard input device present because we include the
+> cros-ec-keyboard.dtsi snippet in the top-level sc7180-trogdor.dtsi file
+> that every variant board includes. We do this because the
+> keyboard-controller node also provides some buttons like the power
+> button and volume buttons. Unfortunately, this means we register a
+> keyboard input device that doesn't do anything on boards with a
+> detachable keyboard. Let's delete the rows/columns properties of the
+> device node to indicate that there isn't a matrix keyboard on these
+> boards.
 > 
 
-Further to this...
+As this seems to directly relate to the final design of each device,
+would it make sense to push out the &keyboard_controller from
+trogdor.dtsi? Or do you think it would be too much duplication for it to
+be worth it?
 
-The coccinelle warning says:
+Regards,
+Bjorn
 
-// Search for stream-like files that are using nonseekable_open and convert
-// them to stream_open. A stream-like file is a file that does not use ppos in
-// its read and write. Rationale for the conversion is to avoid deadlock in
-// between read and write.
-
-The rationale is not applicable here, as all cdev files are non-writeable,
-as well as being non-seekable.
-But switching to stream_open(), as coccinelle suggests, is probably fine.
-
-The doco for stream_open() says:
-
- * stream_open is used by subsystems that want stream-like file descriptors.
- * Such file descriptors are not seekable and don't have notion of position
- * (file.f_pos is always 0 and ppos passed to .read()/.write() is always NULL).
- * Contrary to file descriptors of other regular files, .read() and .write()
- * can run simultaneously.
-
-so it would also produce nonseekable files.
-Comparing nonseekable_open() with stream_open(), the latter clears
-FMODE_ATOMIC_POS and sets FMODE_STREAM, neither of which are relevant for
-the cdev use cases, so that should be ok.
-So I would be ok with the patch if it were updated to apply to the
-current gpiolib-cdev.c.
-
-Cheers,
-Kent.
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+> Cc: "Joseph S. Barrera III" <joebar@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi   | 5 +++++
+>  arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi | 5 +++++
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi
+> index c81805ef2250..4173623cc241 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi
+> @@ -119,6 +119,11 @@ &i2c9 {
+>  	status = "disabled";
+>  };
+>  
+> +&keyboard_controller {
+> +	/delete-property/keypad,num-rows;
+> +	/delete-property/keypad,num-columns;
+> +};
+> +
+>  &panel {
+>  	compatible = "boe,nv110wtm-n61";
+>  };
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi
+> index bff2b556cc75..7205062e88b4 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi
+> @@ -121,6 +121,11 @@ &camcc {
+>  	status = "okay";
+>  };
+>  
+> +&keyboard_controller {
+> +	/delete-property/keypad,num-rows;
+> +	/delete-property/keypad,num-columns;
+> +};
+> +
+>  &panel {
+>  	compatible = "samsung,atna33xc20";
+>  	enable-gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+> -- 
+> https://chromeos.dev
+> 
