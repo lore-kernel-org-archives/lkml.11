@@ -2,122 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFCFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED170C433FE
 	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390022AbiEFIS5 (ORCPT
+        id S1390033AbiEFIS7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        Fri, 6 May 2022 04:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389919AbiEFISb (ORCPT
+        with ESMTP id S1389887AbiEFISe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:18:31 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B6B67D39
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:14:49 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x18so9016609wrc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:14:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VzjcV3LY0ywTAwJH4JJM1dmdhwuF1gWAWbVhUFafxbE=;
-        b=lQnSziesxGwRRS3eLO1dYR2Z6H0chCnrH52wKrTqzXXOk6KOHrMNx4Zc12TICzaZNf
-         9RFXRev2QMNjxgjnfB6S3GJ08E5IS5p1/2up/GslTn+1pi5JV63hFcS9zkF5Oo540t+O
-         JfOzpp3IOWrKsinXuiA+2bG7M2TTZkysPLh8eM9TeCGdFYIgnrDGoadKPNflKfGLan28
-         bTvWvTnvr6jJBWswp6lIEGqFkxdljfxxGh+sTIWyp8QDP4htG3OYiKVCDlvna7mG0Geu
-         K7Jo2bkwkS99NUQLgTOxk51IbdSJ6V1hnMlt65vNHOX5uNLTj0rDZy62Gx3LqJobwrXB
-         jp3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VzjcV3LY0ywTAwJH4JJM1dmdhwuF1gWAWbVhUFafxbE=;
-        b=L1xEw+KmOtS5OogomgcgUCnDJiENED6Wk7Qsum2NVftCmqEPQlRT8q4HdH5z6bLAUh
-         fIdvjHYbZyR+ANLnnPj6riUAgUWqJnXUssvy67esjuilbtgdieNezKrqBVD/QZMzGDe/
-         5iWxlDe/31tjEo2pqn5sXRMiJ86jsA/J6NVANitxjPKrtd6k9QbtCqaaYSWPqf266ch4
-         DyNsZPRJnBX/1xehvxOSOITt80JeT5nLNStXiiDVy+dU/b4ddStA9xDNAWORrkdTmk/j
-         fPGM+XsYoe/4JIJLJ0L4B96npGa1b/Q6CZEnOC35HoWXAIMxooqxegC96w9Pqrznsn2i
-         YIuw==
-X-Gm-Message-State: AOAM533WUkGkJniKZB8C7YWhcfTDVfYax9i8/vUPnGbdK4DPrpsKWgen
-        emCkjgj6ulksfT8b7ikXdNDaNw==
-X-Google-Smtp-Source: ABdhPJxIT75VOVNxVrXyV/CpcdD3WcMbUkR3GCMnaYIlEUIcJEiHczmJPK0JN0wQ9LqXLB2M8p2dkg==
-X-Received: by 2002:a05:6000:10c4:b0:20a:d4ee:d962 with SMTP id b4-20020a05600010c400b0020ad4eed962mr1662467wrx.649.1651824888080;
-        Fri, 06 May 2022 01:14:48 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c14-20020adffb0e000000b0020c6fa5a797sm3059657wrr.91.2022.05.06.01.14.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 01:14:47 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        arm@kernel.org, soc@kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [GIT PULL 5/6] arm64: dts: samsung: for v5.19, part two
-Date:   Fri,  6 May 2022 10:14:37 +0200
-Message-Id: <20220506081438.149192-5-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220506081438.149192-1-krzysztof.kozlowski@linaro.org>
-References: <20220506081438.149192-1-krzysztof.kozlowski@linaro.org>
+        Fri, 6 May 2022 04:18:34 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE8A53A53
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:14:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651824891; x=1683360891;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=L+4hvJSyARAbmutHP7vBVuwKFd7gJRIQrq17OPeLVUA=;
+  b=mw1nAPUpoPQxFpPihsRckcvaQpAnf7BPQNgpl043sJXJpKpydgPxt3i0
+   uINW1pM7zaZ9XFPtANlAjJABS8U5Q68mBukzoionhYkrTajerLRBmQqzf
+   l4OAK/4RoDzoX9YFS6j6V4xGuDuv+Nqi7OXA2N2TNLlbX366FeiPsujh9
+   c4Dk4LgBXRiQXFv7EvIF13VntrwA4p7hFUc5tm1EkkQtNT09l4Ax7tR6W
+   O5I4JxDF/HgQfxhCGRl89UyQ7g7UwxDjrS5Hl44dghwHkclIbW1bhYxu5
+   x8jxMWD0DVIX4PEsvAZdbOg932ev+AnrTMAhLkCD/gI0hGpQvZ0jnVHEg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="255872840"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="255872840"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 01:14:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="563704869"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.62.152])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 01:14:49 -0700
+Message-ID: <fed8d256-b214-e25f-9a5f-492442c4b849@intel.com>
+Date:   Fri, 6 May 2022 11:14:45 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH V1 13/23] perf evlist: Add evlist__add_system_wide_dummy()
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
+References: <20220505165639.361733-1-adrian.hunter@intel.com>
+ <20220505165639.361733-14-adrian.hunter@intel.com>
+ <CAP-5=fWKOYiOSs=TppGCD+k283rUUsexzVuJP17Pm76EMOs+xA@mail.gmail.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <CAP-5=fWKOYiOSs=TppGCD+k283rUUsexzVuJP17Pm76EMOs+xA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 6/05/22 02:56, Ian Rogers wrote:
+> On Thu, May 5, 2022 at 9:57 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>
+>> Add evlist__add_system_wide_dummy() to enable creating a system-wide dummy
+>> event that sets up the system-wide maps before map propagation.
+> 
+> Perhaps this should be:
+> evlist__add_dummy_on_all_online_cpus()
 
-On top of previous pull.
+Ok, but offline isn't an option, so I'll drop 'online' from the name.
 
-The clock bindings header, from my tree, was shared also with Samsung clk tree.
+> my thoughts being that a system wide dummy sounds like the dummy CPU
+> map, ie {-1} whilst what happens here is opening on all online CPUs
+> {0-35} on a 36 hyperthread system. Note also that the libperf
+> cpu_map__read_all_cpu_map code doesn't discover sysfs' mount properly,
+> as done in:
+> tools/lib/api/fs/fs.h
+> Some tech debt.
+> 
+>> For convenience, add evlist__add_aux_dummy() so that the logic can be used
+>> whether or not the event needs to be system-wide.
+>>
+>> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+>> ---
+>>  tools/perf/util/evlist.c | 40 ++++++++++++++++++++++++++++++++++++++++
+>>  tools/perf/util/evlist.h |  5 +++++
+>>  2 files changed, 45 insertions(+)
+>>
+>> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+>> index 78c47cbafbc2..58ea562ddbd2 100644
+>> --- a/tools/perf/util/evlist.c
+>> +++ b/tools/perf/util/evlist.c
+>> @@ -264,6 +264,46 @@ int evlist__add_dummy(struct evlist *evlist)
+>>         return 0;
+>>  }
+>>
+>> +static void evlist__add_system_wide(struct evlist *evlist, struct evsel *evsel)
+> 
+> This would be:
+> evlist__add_on_all_online_cpus(..)
+> 
+>> +{
+>> +       evsel->core.system_wide = true;
+>> +
+>> +       /* All CPUs */
+>> +       perf_cpu_map__put(evsel->core.own_cpus);
+>> +       evsel->core.own_cpus = perf_cpu_map__new(NULL);
+>> +       perf_cpu_map__put(evsel->core.cpus);
+>> +       evsel->core.cpus = perf_cpu_map__get(evsel->core.own_cpus);
+>> +
+>> +       /* No threads */
+>> +       perf_thread_map__put(evsel->core.threads);
+>> +       evsel->core.threads = perf_thread_map__new_dummy();
+>> +
+>> +       evlist__add(evlist, evsel);
+>> +}
+>> +
+>> +struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide)
+>> +{
+>> +       struct evsel *evsel = evlist__dummy_event(evlist);
+>> +
+>> +       if (!evsel)
+>> +               return NULL;
+>> +
+>> +       evsel->core.attr.exclude_kernel = 1;
+>> +       evsel->core.attr.exclude_guest = 1;
+>> +       evsel->core.attr.exclude_hv = 1;
+>> +       evsel->core.attr.freq = 0;
+>> +       evsel->core.attr.sample_period = 1;
+>> +       evsel->no_aux_samples = true;
+>> +       evsel->name = strdup("dummy:u");
+>> +
+>> +       if (system_wide)
+>> +               evlist__add_system_wide(evlist, evsel);
+>> +       else
+>> +               evlist__add(evlist, evsel);
+>> +
+>> +       return evsel;
+>> +}
+>> +
+>>  static int evlist__add_attrs(struct evlist *evlist, struct perf_event_attr *attrs, size_t nr_attrs)
+>>  {
+>>         struct evsel *evsel, *n;
+>> diff --git a/tools/perf/util/evlist.h b/tools/perf/util/evlist.h
+>> index 4062f5aebfc1..dd1af114e033 100644
+>> --- a/tools/perf/util/evlist.h
+>> +++ b/tools/perf/util/evlist.h
+>> @@ -114,6 +114,11 @@ int arch_evlist__add_default_attrs(struct evlist *evlist);
+>>  struct evsel *arch_evlist__leader(struct list_head *list);
+>>
+>>  int evlist__add_dummy(struct evlist *evlist);
+>> +struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide);
+>> +static inline struct evsel *evlist__add_system_wide_dummy(struct evlist *evlist)
+>> +{
+>> +       return evlist__add_aux_dummy(evlist, true);
+>> +}
+>>
+>>  int evlist__add_sb_event(struct evlist *evlist, struct perf_event_attr *attr,
+>>                          evsel__sb_cb_t cb, void *data);
+>> --
+>> 2.25.1
+>>
 
-Best regards,
-Krzysztof
-
-
-The following changes since commit 22cbcb8f4a17c194d208f686fc3ea37fc860bd71:
-
-  arm64: dts: tesla: add a specific compatible to MCT on FSD (2022-04-04 18:53:08 +0200)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/samsung-dt64-5.19-2
-
-for you to fetch changes up to 9882948322874b1ffdd559e6887397de4c903440:
-
-  arm64: dts: exynos: switch UFS clock node in ExynosAutov9 (2022-05-05 09:07:36 +0200)
-
-----------------------------------------------------------------
-Samsung DTS ARM64 changes for v5.19, part two
-
-1. Cleanups: unused and undocumented dma-channels and dma-requests.
-2. Add clock controllers to ExynosAutov9.
-
-----------------------------------------------------------------
-Chanho Park (5):
-      dt-bindings: clock: add clock binding definitions for Exynos Auto v9
-      dt-bindings: clock: add Exynos Auto v9 SoC CMU bindings
-      arm64: dts: exynos: add initial CMU clock nodes in ExynosAutov9
-      arm64: dts: exynos: switch USI clocks in ExynosAutov9
-      arm64: dts: exynos: switch UFS clock node in ExynosAutov9
-
-Krzysztof Kozlowski (4):
-      arm64: dts: exynos: move XTCXO clock frequency to board in Exynos Auto v9
-      arm64: dts: exynos: drop useless 'dma-channels/requests' properties
-      arm64: dts: fsd: drop useless 'dma-channels/requests' properties
-      Merge tag 'samsung-dt-bindings-clk-exynosautov9-5.19' into next/dt64
-
- .../bindings/clock/samsung,exynosautov9-clock.yaml | 219 +++++++++++++++
- arch/arm64/boot/dts/exynos/exynos5433.dtsi         |   6 -
- arch/arm64/boot/dts/exynos/exynos7.dtsi            |   4 -
- arch/arm64/boot/dts/exynos/exynosautov9-sadk.dts   |   4 +
- arch/arm64/boot/dts/exynos/exynosautov9.dtsi       | 116 ++++++--
- arch/arm64/boot/dts/tesla/fsd.dtsi                 |   8 -
- include/dt-bindings/clock/samsung,exynosautov9.h   | 299 +++++++++++++++++++++
- 7 files changed, 612 insertions(+), 44 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/samsung,exynosautov9-clock.yaml
- create mode 100644 include/dt-bindings/clock/samsung,exynosautov9.h
