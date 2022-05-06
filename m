@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8083FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441860AbiEFNpC (ORCPT
+        id S1441883AbiEFNpG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43114 "EHLO
+        Fri, 6 May 2022 09:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441814AbiEFNo3 (ORCPT
+        with ESMTP id S1441828AbiEFNoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:44:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68A32BE7;
-        Fri,  6 May 2022 06:40:45 -0700 (PDT)
+        Fri, 6 May 2022 09:44:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F381E3E6;
+        Fri,  6 May 2022 06:40:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF808B835AA;
-        Fri,  6 May 2022 13:40:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5040EC385A8;
-        Fri,  6 May 2022 13:40:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4519BB835D9;
+        Fri,  6 May 2022 13:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB000C385A8;
+        Fri,  6 May 2022 13:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651844442;
-        bh=RT1F1zNAaJmkdaF49UnBjI25nZ5pYOQV7wKcebKfjIA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=POIqY7hRPVqRnKVU7bJThf6D6fVf8sDOi3cAgufXdobV1guN0UAx5CuwtDzOr6hAg
-         x5h2CV9WPv54Fi//9WoyVx/vkWq0vBDV1+UlxFtpnnffzktD3rVPwXXJLBcqcQIz3/
-         TRNCEU4YH2I2m1gI1Wum1gVnaBQmIjD7ERe5yr5U24DS5SKCPHG1XLHkDttoXqUAsu
-         q9CFVaeXYz3BedK/5foq0NmU2AiyHqALDUe9MYJM3sDAUwSzJP8iJ463SO8h5VstVf
-         kt2tREwT+cfKXkdKcVvMgw4sOcKbjL5LTA4dlK9ykOlACMnza6G7zS1KfjnySkh/6B
-         oROnzoZTL0I5A==
+        s=k20201202; t=1651844445;
+        bh=p/76Cpg7L+kE6nwIYR/gHuuS0bPxpwnMHjpNEqVNkzo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LczEYx8x0TMX6svTAyzcQMwLj7PeeRpzOIgynCV5Mw5U5ep2b6b+SawhZLtbCDvSq
+         SUfNovmyWFH/IuyQgLwUVbkyGwXxU0KfDF45AHnduAKPomO29xmfSUjMZHy8PniByK
+         9onf0qbeJRuvPrCGopPgZhREEzUYdtTsaU+tH8fx/YupxfNVv3mSoOpQ1GGn8dA+1H
+         JJrK9faX78T9cI8m20sce9QPhDq4IjidD1JR7dFyaJMIhFr++2WHhmkDSnzFUEWvke
+         OYCny7LIgxweQXfuaAL1wqhzJDX8rF6jT74IqaJXW6C5AxqHolNIK/m/SZyJl84UR4
+         9i0l9U+DgCzXw==
 Received: by pali.im (Postfix)
-        id 8180D1141; Fri,  6 May 2022 15:40:39 +0200 (CEST)
+        id 067A713DC; Fri,  6 May 2022 15:40:42 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -49,10 +49,12 @@ To:     Thomas Gleixner <tglx@linutronix.de>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 0/6] PCI: mvebu: Add support for PME and AER interrupts
-Date:   Fri,  6 May 2022 15:40:23 +0200
-Message-Id: <20220506134029.21470-1-pali@kernel.org>
+Subject: [PATCH 6/6] ARM: dts: armada-385.dtsi: Add definitions for PCIe summary interrupts
+Date:   Fri,  6 May 2022 15:40:29 +0200
+Message-Id: <20220506134029.21470-7-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220506134029.21470-1-pali@kernel.org>
+References: <20220506134029.21470-1-pali@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -60,48 +62,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mvebu PCIe PME and AER interrupts are reported via PCIe summary
-interrupt. PCIe summary interrupt is reported via mvebu MPIC SoC error
-summary interrupt. And MPIC SoC error summary interrupt is reported via
-MPIC IRQ 4.
+PCIe summary interrupt is reported by MPIC SoC Error IRQ controller.
 
-This patch series implements support for interrupts in MPIC SoC error
-hierarchy in irq-armada-370-xp.c driver and support for interrupts in
-mvebu PCIe hierarchy in pci-mvebu.c.
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ arch/arm/boot/dts/armada-385.dtsi | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-Finally PCIe PME and AER interrupts are routed to the correct PCIe Root
-Port, which allows kernel PME and AER drivers to take care of them.
-
-Tested on A385 board and kernel PME and AER drivers works correctly:
-
-[    0.898482] pcieport 0000:00:01.0: PME: Signaling with IRQ 61
-[    0.904422] pcieport 0000:00:01.0: AER: enabled with IRQ 61
-[    0.910113] pcieport 0000:00:02.0: enabling device (0140 -> 0142)
-[    0.916299] pcieport 0000:00:02.0: PME: Signaling with IRQ 62
-[    0.922216] pcieport 0000:00:02.0: AER: enabled with IRQ 62
-[    0.927917] pcieport 0000:00:03.0: enabling device (0140 -> 0142)
-[    0.934090] pcieport 0000:00:03.0: PME: Signaling with IRQ 63
-[    0.940006] pcieport 0000:00:03.0: AER: enabled with IRQ 63
-
-This change finally allows to debug PCIe issues on A385 boards.
-
-Pali Rohár (6):
-  dt-bindings: irqchip: armada-370-xp: Update information about MPIC SoC
-    Error
-  irqchip/armada-370-xp: Implement SoC Error interrupts
-  ARM: dts: armada-38x.dtsi: Add node for MPIC SoC Error IRQ controller
-  dt-bindings: PCI: mvebu: Update information about summary interrupt
-  PCI: mvebu: Implement support for interrupts on emulated bridge
-  ARM: dts: armada-385.dtsi: Add definitions for PCIe summary interrupts
-
- .../marvell,armada-370-xp-mpic.txt            |   9 +
- .../devicetree/bindings/pci/mvebu-pci.txt     |   1 +
- arch/arm/boot/dts/armada-385.dtsi             |  20 +-
- arch/arm/boot/dts/armada-38x.dtsi             |   5 +
- drivers/irqchip/irq-armada-370-xp.c           | 213 +++++++++++++++++-
- drivers/pci/controller/pci-mvebu.c            | 208 +++++++++++++++--
- 6 files changed, 426 insertions(+), 30 deletions(-)
-
+diff --git a/arch/arm/boot/dts/armada-385.dtsi b/arch/arm/boot/dts/armada-385.dtsi
+index 83392b92dae2..b8219c13c93b 100644
+--- a/arch/arm/boot/dts/armada-385.dtsi
++++ b/arch/arm/boot/dts/armada-385.dtsi
+@@ -69,8 +69,9 @@
+ 				reg = <0x0800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+-				interrupt-names = "intx";
+-				interrupts-extended = <&gic GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-names = "intx", "summary";
++				interrupts-extended = <&gic GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
++						      <&soc_err 4>;
+ 				#interrupt-cells = <1>;
+ 				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x1 0 1 0>;
+@@ -97,8 +98,9 @@
+ 				reg = <0x1000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+-				interrupt-names = "intx";
+-				interrupts-extended = <&gic GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-names = "intx", "summary";
++				interrupts-extended = <&gic GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>,
++						      <&soc_err 5>;
+ 				#interrupt-cells = <1>;
+ 				ranges = <0x82000000 0 0 0x82000000 0x2 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x2 0 1 0>;
+@@ -125,8 +127,9 @@
+ 				reg = <0x1800 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+-				interrupt-names = "intx";
+-				interrupts-extended = <&gic GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-names = "intx", "summary";
++				interrupts-extended = <&gic GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
++						      <&soc_err 15>;
+ 				#interrupt-cells = <1>;
+ 				ranges = <0x82000000 0 0 0x82000000 0x3 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x3 0 1 0>;
+@@ -156,8 +159,9 @@
+ 				reg = <0x2000 0 0 0 0>;
+ 				#address-cells = <3>;
+ 				#size-cells = <2>;
+-				interrupt-names = "intx";
+-				interrupts-extended = <&gic GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-names = "intx", "summary";
++				interrupts-extended = <&gic GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
++						      <&soc_err 16>;
+ 				#interrupt-cells = <1>;
+ 				ranges = <0x82000000 0 0 0x82000000 0x4 0 1 0
+ 					  0x81000000 0 0 0x81000000 0x4 0 1 0>;
 -- 
 2.20.1
 
