@@ -2,114 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E976C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6A2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390892AbiEFKYL (ORCPT
+        id S1390893AbiEFKY3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 06:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
+        Fri, 6 May 2022 06:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238176AbiEFKYD (ORCPT
+        with ESMTP id S1390898AbiEFKYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 06:24:03 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EE571083;
-        Fri,  6 May 2022 03:20:19 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 245B192009C; Fri,  6 May 2022 12:20:17 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 1C7D492009B;
-        Fri,  6 May 2022 11:20:17 +0100 (BST)
-Date:   Fri, 6 May 2022 11:20:17 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Arnd Bergmann <arnd@kernel.org>
-cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
-        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        "open list:SUPERH" <linux-sh@vger.kernel.org>,
-        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
-        <sparclinux@vger.kernel.org>
-Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
- it as necessary
-In-Reply-To: <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2205061058540.52331@angie.orcam.me.uk>
-References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com> <20220505161028.GA492600@bhelgaas> <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Fri, 6 May 2022 06:24:14 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4F5751331;
+        Fri,  6 May 2022 03:20:30 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxENtn9nRiaBAMAA--.48713S3;
+        Fri, 06 May 2022 18:20:24 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/2] selftests/ftrace: Save kprobe_events to test log
+Date:   Fri,  6 May 2022 18:20:22 +0800
+Message-Id: <1651832423-7932-2-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1651832423-7932-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1651832423-7932-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9BxENtn9nRiaBAMAA--.48713S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7AF1fJF4kuFW8WFyfGF45ZFb_yoW8Gryfpa
+        93W3Z8Ka18J3W3JryxCw1DGFy09r4kArWUCr1rXry3Zwn5ZF9rJr1IgFWDGF93urZYgry3
+        Aw12yry7XFykJa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBS14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
+        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
+        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
+        IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
+        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Gw1l42xK82
+        IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC2
+        0s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMI
+        IF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF
+        0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
+        Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5UUUUUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022, Arnd Bergmann wrote:
+It may lead to kernel panic when execute the following testcase on mips:
 
-> > I'm hearing that generic powerpc kernels have to run both on machines
-> > that have I/O port space and those that don't.  That makes me think
-> > s390 could do something similar.
-> 
-> No, this is actually the current situation, and it makes absolutely no
-> sense. s390 has no way of implementing inb()/outb() because there
-> are no instructions for it and it cannot tunnel them through a virtual
-> address mapping like on most of the other architectures. (it has special
-> instructions for accessing memory space, which is not the same as
-> a pointer dereference here).
+  # cd tools/testing/selftests/ftrace
+  # ./ftracetest test.d/kprobe/multiple_kprobes.tc
 
- I think I'm missing something here.  IIUC we're talking about a PCI/PCIe 
-bus used with s390 hardware, right?
+A preliminary analysis shows that the issue is related with
 
- (It has to be PCI/PCIe, because other than x86/IA-64 host buses there are 
-only PCI/PCIe and EISA/ISA buses out there that define I/O access cycles 
-and EISA/ISA have long been obsoleted except perhaps from some niche use.)
+  echo 1 > events/kprobes/enable
 
- If this is PCI/PCIe indeed, then an I/O access is just a different bit 
-pattern put on the bus/in the TLP in the address phase.  So what is there 
-inherent to the s390 architecture that prevents that different bit pattern 
-from being used?
+after add the 256 probe points.
 
- If anything, I could imagine the same limitation as with current POWER9 
-implementations, that is whatever glue is used to wire PCI/PCIe to the 
-rest of the system does not implement a way to use said bit pattern (which 
-has nothing to do with the POWER9 processor instruction set).
+In order to find the root cause, I want to verify which probe point has
+problem, so it is necessary to save kprobe_events to test log.
 
- But that has nothing to do with the presence or absence of any specific 
-processor instructions.  It's just a limitation of bus glue.  So I guess 
-it's just that all PCI/PCIe glue logic implementations for s390 have such 
-a limitation, right?
+With this patch, we can get the 256 probe points in the test log through
+the following command:
 
-  Maciej
+  # ./ftracetest test.d/kprobe/multiple_kprobes.tc -vvv -k
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+---
+ tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc b/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc
+index 312d237..be754f5 100644
+--- a/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc
++++ b/tools/testing/selftests/ftrace/test.d/kprobe/multiple_kprobes.tc
+@@ -25,6 +25,8 @@ if [ $L -ne 256 ]; then
+   exit_fail
+ fi
+ 
++cat kprobe_events >> $testlog
++
+ echo 1 > events/kprobes/enable
+ echo 0 > events/kprobes/enable
+ echo > kprobe_events
+-- 
+2.1.0
+
