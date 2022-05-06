@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B01C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA84C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442616AbiEFPHG (ORCPT
+        id S1343877AbiEFPHN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59794 "EHLO
+        Fri, 6 May 2022 11:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442583AbiEFPG7 (ORCPT
+        with ESMTP id S1442587AbiEFPG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 11:06:59 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A226B08F
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:03:16 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-edeb6c3642so7471116fac.3
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 08:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0qc5WiAuUEgAI961Iey54vjzR4mT3/9jMiAzTzv9c9c=;
-        b=LfwknCCI51KXehuorHmo1h4eZ1nDENELZBU4f/tT5YE/eL8v7tncH5SV7EevPZ/CMA
-         BWMgC0PQHaGo+7pDL2ZKjnukpSA1n/+X6dGjc+bcK3z9ZMkKXzmn0UUzV7krbiNuA5ac
-         FVnDanHoD3yDn6iZnjVoNUpuTJaO5gry9AQcjo+CtC8u5o8IYWCQTVCBRppoaHPodWWF
-         6Yo4MFiM093odnhxlWpkebXupXMSnIirVHhpYJIkIB5j5kJsSwTtkR5FyZBzRry/lRAg
-         r4nBBZxHicbk4eA9kRomTdeMtF9CzFBA3W3AJoMBljLpEPqW+6HQzXX7+h2V+BauXidF
-         2nNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0qc5WiAuUEgAI961Iey54vjzR4mT3/9jMiAzTzv9c9c=;
-        b=hROK8G4TboZtsUKTg+510Ha4OGqtUnZdxnpRv+yEfvgHYdjyxHUjtTDkAoqlDAY4kk
-         b1tkSRDX2c0yJmLRKVRy1s345X6BOUi24ZPcgtMt/I5H8u2faK52M+aEXIXX9yE9QrjZ
-         1M8fgvdSuV0g4f6DB/wG4pRBpiH/JD49skdNCFHmzIQCvJYfiUHdKXwHaF7H7Nv8LKcm
-         hmvZEvaHf3TQeaJwnzdEQZNZjXV1vv5L+QbOtlwd0XV4O7qGXz/LL2I5czhi9170nwJE
-         iW9DXHao7EytLc8hpTXdJamAWWpSS3ZI1xhaRrX/fOWmpKD14tBzDMzjGFi8HAwfQA9w
-         lKfg==
-X-Gm-Message-State: AOAM533tSITyPMktzPYlVBxT8rpQwXejd6YX1GuFivJkzRE+UN3RY4qM
-        23yypy9oAFECq6nm0O6IETyUwtxL0sEL1Q==
-X-Google-Smtp-Source: ABdhPJzX1lmkjev1x/DxRJ5nX4fBig/x0JUfqjANRmtCN37kPJkEoPYJJfNHV/hHkI7PMNwCnj74XQ==
-X-Received: by 2002:a05:6870:a910:b0:e6:dca:5fd3 with SMTP id eq16-20020a056870a91000b000e60dca5fd3mr1470161oab.202.1651849395476;
-        Fri, 06 May 2022 08:03:15 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id e21-20020a056808111500b00325cda1ffb9sm1665311oih.56.2022.05.06.08.03.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 08:03:14 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-arm-msm@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bhupesh.linux@gmail.com,
-        Vinod Koul <vkoul@kernel.org>
-Subject: Re: (subset) [PATCH 1/1] arm64: dts: qcom: sa8155p-adp: Disable multiple Tx and Rx queues for ethernet IP
-Date:   Fri,  6 May 2022 10:03:04 -0500
-Message-Id: <165184936433.73465.5859927977964785560.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220423195003.353150-1-bhupesh.sharma@linaro.org>
-References: <20220423195003.353150-1-bhupesh.sharma@linaro.org>
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FD8B6B098;
+        Fri,  6 May 2022 08:03:16 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 022B79200C3; Fri,  6 May 2022 17:03:14 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id F242C9200C1;
+        Fri,  6 May 2022 16:03:14 +0100 (BST)
+Date:   Fri, 6 May 2022 16:03:14 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+cc:     David Laight <David.Laight@aculab.com>,
+        Arnd Bergmann <arnd@kernel.org>, Rich Felker <dalias@libc.org>,
+        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
+        "open list:SUPERH" <linux-sh@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
+        <sparclinux@vger.kernel.org>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        Will Deacon <will@kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Helge Deller <deller@gmx.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Matt Turner <mattst88@gmail.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
+ it as necessary
+In-Reply-To: <CAMuHMdVsjRUKYqS0nkKsT08A4a4ipuhn7AG+ZqcHBqZvVX02OQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2205061558430.52331@angie.orcam.me.uk>
+References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com> <20220505161028.GA492600@bhelgaas> <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com> <alpine.DEB.2.21.2205061058540.52331@angie.orcam.me.uk>
+ <CAK8P3a0NzG=3tDLCdPj2=A__2r_+xiiUTW=WJCBNp29x_A63Og@mail.gmail.com> <alpine.DEB.2.21.2205061314110.52331@angie.orcam.me.uk> <5239892986c94239a122ab2f7a18a7a5@AcuMS.aculab.com> <alpine.DEB.2.21.2205061412080.52331@angie.orcam.me.uk>
+ <3669a28a055344a792b51439c953fd30@AcuMS.aculab.com> <alpine.DEB.2.21.2205061440260.52331@angie.orcam.me.uk> <CAMuHMdVsjRUKYqS0nkKsT08A4a4ipuhn7AG+ZqcHBqZvVX02OQ@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 01:20:03 +0530, Bhupesh Sharma wrote:
-> Fix the issues seen with ethernet traffic getting stalled on SA8155p-ADP
-> board with default (or larger) mtu size of 1500 bytes, by disabling
-> multiple Tx and Rx queues for the stmmac IP block.
+Hi Geert,
+> >  Sane access would require a single CPU instruction to read or write from
+> > the configuration space.  To access the conventional PCI configuration
+> > space in a direct linear manner you need 256 * 21 * 8 * 256 = 10.5MiB of
+> > address space.  Such amount of address space seems affordable even with
+> > 32-bit systems.
 > 
-> With the single queue setup, the ethernet traffic is stable,
-> wget / curl can work well on the board and no ethernet stall is
-> observed even when longer netperf / iperf3 test are run. Also
-> a performance of ~940 Mbits/sec is observed on the 1G link, so
-> there is no observable degradation in performance as well.
-> 
-> [...]
+> Won't have fit in the legacy 1 MiB space ("640 KiB...").
 
-Applied, thanks!
+ Haha, but anyway you're supposed to use BIOS calls under DOS and the like 
+so it doesn't really matter.  You can't poke at the APIC in the legacy 
+space either.
 
-[1/1] arm64: dts: qcom: sa8155p-adp: Disable multiple Tx and Rx queues for ethernet IP
-      commit: 11a3f3dc2cf8d6127aae6183a69dcf3dde026305
-
-Best regards,
--- 
-Bjorn Andersson <bjorn.andersson@linaro.org>
+  Maciej
