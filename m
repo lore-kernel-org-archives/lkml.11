@@ -2,139 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5741BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16638C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444539AbiEFVhU (ORCPT
+        id S1444544AbiEFVj0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
+        Fri, 6 May 2022 17:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444538AbiEFVhS (ORCPT
+        with ESMTP id S1444570AbiEFVjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:37:18 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3596FA0B
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:33:32 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ks9so10284569ejb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 14:33:32 -0700 (PDT)
+        Fri, 6 May 2022 17:39:06 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372F1290;
+        Fri,  6 May 2022 14:35:20 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so7937216pjf.0;
+        Fri, 06 May 2022 14:35:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Zo9daRgMENoWgb46CKOdULHnCxF/Ml14SgBAmDBgwx8=;
-        b=JPR3xRXkaQhIjAMcIOg8/hg9FlzTH96vSm+GEO6s5SjXmTBOftGQZsm75mgh8QCgZM
-         oORNqtTSaS4QLD7M/8toYBmevqdTOyfGSk0hJMARhtBB5J0LmTrIb+yzXmsStAqXzjmC
-         hRuBl+OFSBSaOTRwN+kcFK1bIFvNc+JnAVPsE=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=i4ODuIClhs3mPszvinEDNPwzFTB2SCM7aKWWSn8J0uI=;
+        b=ZobUQTJx+NEoOz7HvidPGdMS7pGKQYEvaMWHSkM0LrrT6xvFzsqRlO8aabdUfk5mzA
+         WAA2gQ7JSMyXLNUMRob2kQl5ERwLxOJ2TkuCeceApSb8CPToTX5+rYaOc+1tcw5gg1Br
+         7SVE3oSloMmZlo6LHAFw4xmpUoIo3tI/ITUkxK5fr1rV84MGytDKKoGyceW6oPKJpYzu
+         /roz5hcWkLX7E2Wm1fgGGypKwUltKCTWHToCeXoq5qEMdzN1UN5eWqvyC1KKII/boOsN
+         9XxfX8biWIIfNEmkVv2/GQ0CM3ODhwDpG3bBlExPQabUZdRprNM2RcKRAcEsCwuNKBdJ
+         vnxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Zo9daRgMENoWgb46CKOdULHnCxF/Ml14SgBAmDBgwx8=;
-        b=poz7FVlw6z1ciktBzUfvPH+gs++y1cgdhXnQ5wktmQb4RAxOAmiZP7Q0wV7aaoOqBi
-         zItUUEDxjfJqIEIbdYv2aBzMfnaXKVL8wi+sKTpI84WjOeBflb9Z5cVfU12Wg9kuF+7z
-         ERXOdjoYOv6mH9Hya2o9+l8d+YSm3lYfrqUm6u6vkgsbah2BnbhQgEJ92+kola6a4rn4
-         u7ilf/lMBaXzB+VYk0heo7xCaTOb14w6D+P0ACREabb7wqhVtgqbFMTLpRc+zOTIoj96
-         uohED0nyzi4QVq/67heDRibHAgIKQ8nzPz7W9XAdaqA/shECyf+neEbmdzmdJt68K01M
-         /EAQ==
-X-Gm-Message-State: AOAM533wf26iEZjgLTHs7qbBqSnziW4doE4Q9mCFOleTlRG+cZXuQIkT
-        sxZPM5qoH8dNK/N0FpnRo0Pz6/EVHRQ9abAC40s=
-X-Google-Smtp-Source: ABdhPJzJoSV2kLduxVdkSd6X/agld5opykiDkMNdd3jHS4q3fiGs6C1k/ryRJB/aFSnZKKrI48o9VA==
-X-Received: by 2002:a17:907:6d25:b0:6f4:d753:f250 with SMTP id sa37-20020a1709076d2500b006f4d753f250mr4801386ejc.580.1651872810453;
-        Fri, 06 May 2022 14:33:30 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id f17-20020a50fc91000000b0042617ba63d3sm2717304edq.93.2022.05.06.14.33.29
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 14:33:29 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id d5so11543569wrb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 14:33:29 -0700 (PDT)
-X-Received: by 2002:a5d:42c8:0:b0:20a:d91f:87b5 with SMTP id
- t8-20020a5d42c8000000b0020ad91f87b5mr4251819wrr.301.1651872808982; Fri, 06
- May 2022 14:33:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=i4ODuIClhs3mPszvinEDNPwzFTB2SCM7aKWWSn8J0uI=;
+        b=1CokWBJ4/UWZYRM7o7AbkoYHJqqb3kOQ/yhizM3BYvJuYi2Z/yt8XvkAkgEJovZZa/
+         MRtpVCzn9MWwc61abQ5nScsX64bvrkg2H1KQESu60/e451xYexv45+/365rMYraKrJ8j
+         rcknpiEEm01PddEpH+6fq4tUUxmN8fdUT6v9vCgTkhuTEohO+MVveUE6Np98g5XNz8MG
+         shCRg91GTqls8r5lHcY/GuZFPPUrlPAXziedYxzleDECdrrwYUqlW0jkyEUcsMYK6aAi
+         eIaVwlBw9XVIf3gwdReQwNBz6Aphh78cdNVy0HMYJZ6DNkpfqopFcu4lbG+IHMXV6LvM
+         1F9w==
+X-Gm-Message-State: AOAM533yzY4HsDvfPFULcwUmW34XgfU1ryVfetLJbcElxKWcrUGqmg3O
+        KkAWXQLbnzF5r5qMfvh8ODliwRjWlec=
+X-Google-Smtp-Source: ABdhPJxfE2Zwmmn+Pr9mn2jUdfULvWEfYj/0IErCyVgFBWuR1SqIzLe8Zj3cUVEiQ+lBKOLIVVylRQ==
+X-Received: by 2002:a17:90a:9ea:b0:1dc:1c48:eda with SMTP id 97-20020a17090a09ea00b001dc1c480edamr14473942pjo.38.1651872919617;
+        Fri, 06 May 2022 14:35:19 -0700 (PDT)
+Received: from localhost (c-107-3-154-88.hsd1.ca.comcast.net. [107.3.154.88])
+        by smtp.gmail.com with ESMTPSA id n3-20020a056a0007c300b0050e0dadb28dsm3846324pfu.205.2022.05.06.14.35.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 14:35:19 -0700 (PDT)
+Date:   Fri, 6 May 2022 14:35:18 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
+        Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Subject: Re: [RFC PATCH v6 017/104] KVM: TDX: Add C wrapper functions for
+ SEAMCALLs to the TDX module
+Message-ID: <20220506213518.GB2145958@private.email.ne.jp>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+ <b4cfd2e1b4daf91899a95ab3e2a4e2ea1d25773c.1651774250.git.isaku.yamahata@intel.com>
+ <16632b27-7a0d-887b-c86e-9e1673840f55@intel.com>
 MIME-Version: 1.0
-References: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
- <a0eb6bf9-256a-29b1-2211-496df710f531@linaro.org> <CAD=FV=UjyLofXZqnj=bL89fza5JS6O5Np9W-A4V4WK+na0hdrw@mail.gmail.com>
- <b7ff08b8-60fb-7629-9399-3d5cca46ab9e@linaro.org> <CAD=FV=Vx5g_xTRZGc9wW=ZLnfsOcubTYFcnYQRC5jLm+n3en0w@mail.gmail.com>
- <606cc762-a0c2-49a4-3e5d-d2dbd4595bc7@linaro.org> <CAD=FV=W_SA-3PfDFi-Gkjk9pew5bchFNjQhXX8MkZyuy5UohEQ@mail.gmail.com>
- <CAJKOXPdt5WTg4VU-TEW3dmPHR76dKg63XVxRQfa7ZSKc_jz6Ag@mail.gmail.com>
- <CAD=FV=XQqQSQDNh-zXqEQkwsrax5Qb3OtfKZoQLkncJj_4mcQw@mail.gmail.com> <daf66d41-42ac-50dc-3f8d-c261da8e452d@linaro.org>
-In-Reply-To: <daf66d41-42ac-50dc-3f8d-c261da8e452d@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 6 May 2022 14:33:15 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WhA=n_=Ys6NfedPtNPddL81HnG6Qws_R+vq9w8Nrsn5A@mail.gmail.com>
-Message-ID: <CAD=FV=WhA=n_=Ys6NfedPtNPddL81HnG6Qws_R+vq9w8Nrsn5A@mail.gmail.com>
-Subject: Re: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     =?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski.k@gmail.com>,
-        Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Julius Werner <jwerner@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <16632b27-7a0d-887b-c86e-9e1673840f55@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, May 06, 2022 at 04:56:52PM +0800,
+Xiaoyao Li <xiaoyao.li@intel.com> wrote:
 
-On Wed, May 4, 2022 at 12:04 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> >>>> The most specific compatible identifies or, like recently Rob confirmed
-> >>>> in case of Renesas, the list of compatibles:
-> >>>> https://lore.kernel.org/linux-devicetree/Yk2%2F0Jf151gLuCGz@robh.at.kernel.org/
-> >>>
-> >>> I'm confused. If the device tree contains the compatibles:
-> >>>
-> >>> "google,lazor-rev4", "google,lazor-rev3", "google,lazor", "qualcomm,sc7180"
-> >>>
-> >>> You want to know what board you're on and you look at the compatible,
-> >>> right? You'll decide that you're on a "google,lazor-rev4" which is the
-> >>> most specific compatible. ...but you could have booted a
-> >>> "google,lazor-rev3". How do you know?
-> >>
-> >> Applying the wrong DTB on the wrong device will always give you the
-> >> wrong answer. You can try too boot google,lazor-rev3 on x86 PC and it
-> >> does not make it a google,lazor-rev3...
-> >
-> > I don't understand what you're saying here. If a device tree has the compatible:
-> >
-> > "google,lazor-rev4", "google,lazor-rev3", "google,lazor", "qualcomm,sc7180"
-> >
-> > You wouldn't expect to boot it on an x86 PC, but you would expect to
-> > boot it on either a "google,lazor-rev4" _or_ a "google,lazor-rev3".
->
-> Yes, but booting it does not mean that the hardware is rev3 or rev4.
-> Booting it means only that we are running DTB on a compatible hardware.
-> The DTB determines what is accessible to user-space, not what *really*
-> the hardware is. The user-space (since we are going now to original
-> question) reads it and can understand that it is running on hardware
-> compatible with rev3 - either rev3 or rev4 - and act accordingly.
->
-> > Correct? Now, after we've booted software wants to look at the
-> > compatible of the device tree that was booted. The most specific entry
-> > in that device tree is "google,lazor-rev4". ...but we could have
-> > booted it on a "google,lazor-rev3". How can you know?
->
-> No, providing and loading a rev4 DTB on a rev3 board is not correct and
-> does not make any sense. rev3 boards are not compatible with rev4, it's
-> the other way. Not every fruit is an apple, but every apple is a fruit.
-> This is why I used that example - if you load rev4 DTB on rev3 hardware
-> then you have totally wrong booting process.
+> On 5/6/2022 2:14 AM, isaku.yamahata@intel.com wrote:
+> > diff --git a/arch/x86/virt/vmx/tdx/seamcall.S b/arch/x86/virt/vmx/tdx/seamcall.S
+> > index 8df7a16f7685..b4fc8182e1cf 100644
+> > --- a/arch/x86/virt/vmx/tdx/seamcall.S
+> > +++ b/arch/x86/virt/vmx/tdx/seamcall.S
+> > @@ -50,3 +50,4 @@ SYM_FUNC_START(__seamcall)
+> >   	FRAME_END
+> >   	ret
+> >   SYM_FUNC_END(__seamcall)
+> > +EXPORT_SYMBOL_GPL(__seamcall)
+> 
+> It cannot compile, we need
+> 
+> #include <asm/export.h>
 
-I think this is the crux of the difference in opinion and there's no
-reasonable way I'm aware of to do what you're asking. If -rev3 and
--rev4 are identical from a software point of view it would be silly
-not to share a device tree for the two of them. The number of device
-trees we'd have to land in the kernel tree would be multiplied by
-several times and we'd have many that are identical except for this
-compatible string. I see no benefit here and lots of downside.
+Thanks, will fix it.
 
-
--Doug
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
