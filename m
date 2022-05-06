@@ -2,181 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11374C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 553D0C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392201AbiEFNBI (ORCPT
+        id S1392218AbiEFNCY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56298 "EHLO
+        Fri, 6 May 2022 09:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232907AbiEFNBE (ORCPT
+        with ESMTP id S1346526AbiEFNCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:01:04 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69ACE22BC4;
-        Fri,  6 May 2022 05:57:21 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246CrMBf016762;
-        Fri, 6 May 2022 12:56:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=i5+k77lUjCqEK3UnGdBp+j1ZK2ZiBqwNF9P/xBcssx8=;
- b=hdLVXCn614jWnu9BOgShS4X0SwKBt54/I/X6D8YoCUUCdptAKLuW2vQKQPouwJDU0702
- gaXq8F4SAg0nUYZfHIOHDRduz8HOWGuZJ1nDNYXzfZsSe3c4FYGZ8Yx6pavoXYCO+Wyr
- ubxbrakugGGGlmV9rsX3bbRh+ArWENvmlzNtbwLXBUjhGeJQBqKP5w67IUEX1oA9kaVF
- Z+BSKz58HXkui5VCTh43pp+MTZAmhvtA64Xi6b8l1ZURcy8QMUElDNsN5hCrggaICKv1
- XLkCPjcgR3sqm/gxeiKl9BBi/VFthi7xfaEIP1vR/+G0xAmOV+84VmjIvNmZxzPlNDmy pQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw42yr125-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 12:56:02 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 246CsZT8025820;
-        Fri, 6 May 2022 12:56:01 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw42yr11d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 12:56:00 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 246Cqo5L016411;
-        Fri, 6 May 2022 12:55:57 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fvg611ab7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 12:55:57 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246CttUK45678914
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 6 May 2022 12:55:55 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1EEBD4C044;
-        Fri,  6 May 2022 12:55:55 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2CDAD4C040;
-        Fri,  6 May 2022 12:55:53 +0000 (GMT)
-Received: from sig-9-145-46-59.uk.ibm.com (unknown [9.145.46.59])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  6 May 2022 12:55:53 +0000 (GMT)
-Message-ID: <2eba36c5dbfb0f92cd567237170fd235b7aa5e9c.camel@linux.ibm.com>
-Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
- it as necessary
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
-        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        "open list:SUPERH" <linux-sh@vger.kernel.org>,
-        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
-        <sparclinux@vger.kernel.org>
-Date:   Fri, 06 May 2022 14:55:52 +0200
-In-Reply-To: <alpine.DEB.2.21.2205061314110.52331@angie.orcam.me.uk>
-References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
-         <20220505161028.GA492600@bhelgaas>
-         <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
-         <alpine.DEB.2.21.2205061058540.52331@angie.orcam.me.uk>
-         <CAK8P3a0NzG=3tDLCdPj2=A__2r_+xiiUTW=WJCBNp29x_A63Og@mail.gmail.com>
-         <alpine.DEB.2.21.2205061314110.52331@angie.orcam.me.uk>
+        Fri, 6 May 2022 09:02:22 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6576868F86;
+        Fri,  6 May 2022 05:58:36 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id i20so7963740ion.0;
+        Fri, 06 May 2022 05:58:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jfCqPDeeSaGFFEME8Ca8+0Y3WqdQwWkIOfIAg0xgMNQ=;
+        b=qmDgoJ0izFpWUD+ROEjPOAPmt+1ewR7azB70xyNRmjxviEKMBdlPRCjCXKGqVtR0lL
+         6j3U5GRoU8o0sufHiyyjcS0H4NPPYeNtJDq2aR1cVv09J+pTSYsUbLWu3Fo2xCdDErBq
+         2qTisgxylEvpmJKPAKpl/J/oYsbBuBSzQm46vE6wMvCbJELMptrdHqWZwb0HRAX3viGS
+         eJYTFCXE8KdyfbHiLDPshzWY0JPYnpFd+HVO5fJmGQGHV/64d2b/xtcEATZhDn+7T8d2
+         F51mBRiRqMqLGXWfRUAFCrV8bsgCl1IFNBIYxoD4HARXp2AboZTfWb785s1JfA7kMO71
+         j+5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jfCqPDeeSaGFFEME8Ca8+0Y3WqdQwWkIOfIAg0xgMNQ=;
+        b=IBKs/6fsGzWbqpR+b3pSLqOakXbhO03uc2wk5yl/OSol5GcyJeX+R32Ts2xxc9Zp6y
+         3617vLdGCmSgGZ43Zhc3XGc0M2V/GGRdILJx9xgtKInA4SLtKJGD/00s8+ZD++RYLuRN
+         PqO5g2idtFTx6j0auSIDH/rgLt9TIYNtglWaDE5CG9xINiCQCcNKCrFGUV6W2QYLW9bA
+         KZ84NbOT16TW2rqNN1WrBJTbagLse1qXwK3ih9dJWiGqT79DGdFedY9PG3CuziZP5M0r
+         ztoncebghLVUWpuLDkh1BsIuYVZBDUW/rpdtJ2qoJHJSnqn4tP8i9ESAbVxDiASyQl11
+         0HBA==
+X-Gm-Message-State: AOAM532jLvCRJy7SvxDlT2fMal2WtM5fMApVTym2U0cFcjP3TjBT/RrB
+        23kgPYoL5iblnJP0oTCTyydSxYX8hSBPZCNraT4=
+X-Google-Smtp-Source: ABdhPJzPsUYCoRDJ7wUMHnrhe1fj8X/rzmYRw8AE0RtEIY/Z7nBJAiDrwvHeHpPQsI+z7YxbgmWteaiQd7H57FacCr8=
+X-Received: by 2002:a02:8624:0:b0:32b:397d:eeb1 with SMTP id
+ e33-20020a028624000000b0032b397deeb1mr1438879jai.264.1651841915781; Fri, 06
+ May 2022 05:58:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220505191704.22812-1-ojeda@kernel.org> <20220505191704.22812-2-ojeda@kernel.org>
+ <7e20c844dadacb3dac822220ca108f4d786ceb7d.camel@HansenPartnership.com>
+In-Reply-To: <7e20c844dadacb3dac822220ca108f4d786ceb7d.camel@HansenPartnership.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Fri, 6 May 2022 14:58:24 +0200
+Message-ID: <CANiq72m0unKrwRrb-tnYZ5w5oodJQ+3wNHMaQazeUSCOfUBJiQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/3] kallsyms: avoid hardcoding the buffer size
+To:     James Bottomley <James.Bottomley@hansenpartnership.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: LO5Fs2ZH5CDHRPnWqqh_0XjI6H68Lnqc
-X-Proofpoint-ORIG-GUID: moBRmecBSWCp7t42P_FpLJy7x8sPqg2i
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-06_04,2022-05-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 lowpriorityscore=0 spamscore=0 adultscore=0 bulkscore=0
- impostorscore=0 phishscore=0 mlxscore=0 mlxlogscore=993 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205060070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-06 at 13:27 +0100, Maciej W. Rozycki wrote:
-> On Fri, 6 May 2022, Arnd Bergmann wrote:
-> 
-> > >  If this is PCI/PCIe indeed, then an I/O access is just a different bit
-> > > pattern put on the bus/in the TLP in the address phase.  So what is there
-> > > inherent to the s390 architecture that prevents that different bit pattern
-> > > from being used?
-> > 
-> > The hardware design for PCI on s390 is very different from any other
-> > architecture, and more abstract. Rather than implementing MMIO register
-> > access as pointer dereference, this is a separate CPU instruction that
-> > takes a device/bar plus offset as arguments rather than a pointer, and
-> > Linux encodes this back into a fake __iomem token.
-> 
->  OK, that seems to me like a reasonable and quite a clean design (on the 
-> hardware side).
-> 
->  So what happens if the instruction is given an I/O rather than memory BAR 
-> as the relevant argument?  Is the address space indicator bit (bit #0) 
-> simply ignored or what?
+Hi James,
 
-See my answer to Arnd for some more background but there simply isn't a
-way to formulate an I/O access. In the old style PCI instructions the
-BAR number and the function handle are put in a register before the
-access. BAR number 15 is used to access config space. If there is no
-BAR for that number the instruction fails with a non-zero CC.
+On Fri, May 6, 2022 at 1:19 PM James Bottomley
+<James.Bottomley@hansenpartnership.com> wrote:
+>
+> When you raise KSYM_NAME_LEN to 512, this on stack allocation becomes
+> 2049 bytes.  How did you manage not to trigger the frame size warning,
+> which is 1024 on 32 bit and 2048 on 64 bit by default?
 
-> 
-> > >  But that has nothing to do with the presence or absence of any specific
-> > > processor instructions.  It's just a limitation of bus glue.  So I guess
-> > > it's just that all PCI/PCIe glue logic implementations for s390 have such
-> > > a limitation, right?
-> > 
-> > There are separate instructions for PCI memory and config space, but
-> > no instructions for I/O space, or for non-PCI MMIO that it could be mapped
-> > into.
-> 
->  The PCI configuration space was retrofitted into x86 systems (and is 
-> accessed in an awkward manner with them), but with a new design such a 
-> clean approach is most welcome IMHO.  Thank you for your explanation.
-> 
->   Maciej
+Thanks for taking a look!
 
-Well our design is a retrofit too considering s390x is a direct
-decendent of IBM System/360 which one could argue to have been the
-first ISA. But yes as PCI support was only added with PCIe and with a
-machine level hypervisor already in place we do get shielded a lot from
-the gritty details.
+If you mean `CONFIG_FRAME_WARN`, that applies to kernel objects, not scripts.
 
+If I enable it for `HOSTCC` with a 2048 threshold, we do get the warning:
+
+    scripts/kallsyms.c: In function 'read_symbol':
+    scripts/kallsyms.c:257:1: warning: the frame size of 2080 bytes is
+larger than 2048 bytes [-Wframe-larger-than=]
+     257 | }
+          | ^
+
+as well as in a few other places (e.g. for my config [0]), but given
+it is userspace it should be fine unless they happen to end up
+recursing quite a few times.
+
+Cheers,
+Miguel
+
+[0]
+    scripts/mod/modpost.c: In function 'main':
+    scripts/mod/modpost.c:2636:1: warning: the frame size of 4208
+bytes is larger than 2048 bytes [-Wframe-larger-than=]
+     2636 | }
+          | ^
+    scripts/mod/sumversion.c: In function 'get_src_version':
+    scripts/mod/sumversion.c:419:1: warning: the frame size of 4272
+bytes is larger than 2048 bytes [-Wframe-larger-than=]
+      419 | }
+          | ^
+    usr/gen_init_cpio.c: In function 'cpio_mkgeneric_line':
+    usr/gen_init_cpio.c:223:1: warning: the frame size of 4384 bytes
+is larger than 2048 bytes [-Wframe-larger-than=]
+      223 | }
+          | ^
+    usr/gen_init_cpio.c: In function 'cpio_mknod_line':
+    usr/gen_init_cpio.c:293:1: warning: the frame size of 4400 bytes
+is larger than 2048 bytes [-Wframe-larger-than=]
+      293 | }
+          | ^
+    usr/gen_init_cpio.c: In function 'cpio_mkfile_line':
+    usr/gen_init_cpio.c:456:1: warning: the frame size of 12560 bytes
+is larger than 2048 bytes [-Wframe-larger-than=]
+      456 | }
+          | ^
+    usr/gen_init_cpio.c: In function 'cpio_mkslink_line':
+    usr/gen_init_cpio.c:150:1: warning: the frame size of 8496 bytes
+is larger than 2048 bytes [-Wframe-larger-than=]
+      150 | }
+          | ^
+    usr/gen_init_cpio.c: In function 'main':
+    usr/gen_init_cpio.c:640:1: warning: the frame size of 8528 bytes
+is larger than 2048 bytes [-Wframe-larger-than=]
+      640 | }
+          | ^
+    drivers/tty/vt/conmakehash.c: In function 'main':
+    drivers/tty/vt/conmakehash.c:290:1: warning: the frame size of
+65584 bytes is larger than 2048 bytes [-Wframe-larger-than=]
+      290 | }
+          | ^
