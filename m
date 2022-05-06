@@ -2,157 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F353C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390791AbiEFKIT (ORCPT
+        id S1354841AbiEFKJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 06:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48844 "EHLO
+        Fri, 6 May 2022 06:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245092AbiEFKIS (ORCPT
+        with ESMTP id S1390796AbiEFKIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 06:08:18 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5095D5BD22
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 03:04:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651831474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Fri, 6 May 2022 06:08:51 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F07C5BD22;
+        Fri,  6 May 2022 03:05:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 091F51F8BD;
+        Fri,  6 May 2022 10:05:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651831508;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=bHY4VDg+ah70TicV7Rfgy/3c2lRATR8HIfCmkjcH/Oc=;
-        b=EBBF1w/tsdjvq9gqaANcNuvF+dcxYCX8kGzpyOtj10w/7SvIkfwfDBdXvhGA/bWTbEdxJI
-        65KY+iLnJwJzhns/l4G0P/rwIYzc3B65IUQady+K5xk5rN58CNOnqhZQUBxChoFntH7NTW
-        hbE9AArJ4O6qxvp7i6T9km8bLB3b10k=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-149-M18tM8b2OJy95Q0nzBIyHQ-1; Fri, 06 May 2022 06:04:33 -0400
-X-MC-Unique: M18tM8b2OJy95Q0nzBIyHQ-1
-Received: by mail-ed1-f70.google.com with SMTP id cf16-20020a0564020b9000b00425d543c75dso3751514edb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 03:04:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bHY4VDg+ah70TicV7Rfgy/3c2lRATR8HIfCmkjcH/Oc=;
-        b=iOVIlC8Fd2/hB6uwlvae/tTtLxT1iCqum8PyVGFr8qxqKtNPxZx46cr1vqzVGh4HSB
-         YdJ+GXzmPM9EtNhkWI9G3+vdcySCUaAUMyDupMXVuP5VvxTRtorZ8Unhai8oq5S+RL1A
-         drjhj41PASepcRzOljS0i7FrzyJYbIUlWyrmv+gEn8Z/MLiZwBp74edJCVJXXIwXq3fo
-         c/clZPTERnKWgFVoYoaU8H6xvpI2kgWFGUC2zxVlx5jEYitSC+fKa1kQlu12Olfexw5n
-         a2dfd3DeR+eVnZ9upHYiRmkvGyDuc6MebQVhlCUd5IM6Gm2DiucxmTfhULSNoTW4GUJ5
-         yeHA==
-X-Gm-Message-State: AOAM533TN6FgbzpfKTS8zmc5ChPgptam0solxFyvTaoOtY66IfsDvPxK
-        cM+1VQFDBRsISPpGG4/y3Z4pjIXKL6LuhpmWEbJoO3sWEghJWnRd/IdVAWUaJOAQv8bR5uAZ3In
-        md7F1UUTSzg77Pg6MAgcPz1gf
-X-Received: by 2002:a17:906:2989:b0:6f3:a215:8426 with SMTP id x9-20020a170906298900b006f3a2158426mr2179958eje.725.1651831470962;
-        Fri, 06 May 2022 03:04:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw00aYNt3RKDL8C1p1bUN4+NsjLxXRo4/823/OnQVTFKXu+rcbvHVRjmFNcVwCoe0MclOGQNA==
-X-Received: by 2002:a17:906:2989:b0:6f3:a215:8426 with SMTP id x9-20020a170906298900b006f3a2158426mr2179940eje.725.1651831470771;
-        Fri, 06 May 2022 03:04:30 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id zd9-20020a17090698c900b006f3ef214e28sm1814747ejb.142.2022.05.06.03.04.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 03:04:30 -0700 (PDT)
-Message-ID: <0d048b50-ee27-b5d6-11e2-f2f11ae17b79@redhat.com>
-Date:   Fri, 6 May 2022 12:04:29 +0200
+        bh=vOduMzov7LmnmWKc/9KVSmPz2a6N3lKrkrPH5TFQYIc=;
+        b=K4zZmj4v1fjdFM/RKx8Duu++qZaOr1W8AzpQcYAtGPMwOhjBprORx356zQus6XFWACBCQF
+        3q93GJMPIcNCGWf1Vqdj2ZqZfWSjk620OnmXjshIrIxUny7uRwTMBMu7qq+LU2Z1neP7Gi
+        IxTCtYC1flVRKGnh7NdXeIwsoAPvC6c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651831508;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vOduMzov7LmnmWKc/9KVSmPz2a6N3lKrkrPH5TFQYIc=;
+        b=emRyEKwz+9oRLLb8JPuF4fBjvsI2XyZaLLPkrB+CWkH8TWcBmagnWsk9b9EaOudwzxzjsW
+        uIsIGyYYtdhQ2ODA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6321513A1B;
+        Fri,  6 May 2022 10:05:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id uw3nFtPydGJYbwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Fri, 06 May 2022 10:05:07 +0000
+Date:   Fri, 6 May 2022 12:00:55 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Pankaj Raghav <p.raghav@samsung.com>
+Cc:     jaegeuk@kernel.org, hare@suse.de, dsterba@suse.com,
+        axboe@kernel.dk, hch@lst.de, damien.lemoal@opensource.wdc.com,
+        snitzer@kernel.org, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>, bvanassche@acm.org,
+        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
+        Jens Axboe <axboe@fb.com>, gost.dev@samsung.com,
+        jonathan.derrick@linux.dev, jiangbo.365@bytedance.com,
+        linux-nvme@lists.infradead.org, dm-devel@redhat.com,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Alasdair Kergon <agk@redhat.com>, linux-block@vger.kernel.org,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org
+Subject: Re: [PATCH v3 00/11] support non power of 2 zoned devices
+Message-ID: <20220506100054.GZ18596@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
+        jaegeuk@kernel.org, hare@suse.de, dsterba@suse.com, axboe@kernel.dk,
+        hch@lst.de, damien.lemoal@opensource.wdc.com, snitzer@kernel.org,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
+        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
+        gost.dev@samsung.com, jonathan.derrick@linux.dev,
+        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
+        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>, Alasdair Kergon <agk@redhat.com>,
+        linux-block@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org
+References: <CGME20220506081106eucas1p181e83ef352eb8bfb1752bee0cf84020f@eucas1p1.samsung.com>
+ <20220506081105.29134-1-p.raghav@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] platform/x86: thinkpad_acpi: Fix compilation without
- CONFIG_SUSPEND
-Content-Language: en-US
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Mark Pearson <markpearson@lenovo.com>
-Cc:     Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        Mark Gross <mgross@linux.intel.com>,
-        "open list:THINKPAD ACPI EXTRAS DRIVER" 
-        <ibm-acpi-devel@lists.sourceforge.net>,
-        "open list:THINKPAD ACPI EXTRAS DRIVER" 
-        <platform-driver-x86@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-References: <20220503012700.1273-1-mario.limonciello@amd.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220503012700.1273-1-mario.limonciello@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506081105.29134-1-p.raghav@samsung.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 5/3/22 03:27, Mario Limonciello wrote:
-> When compiled without `CONFIG_SUSPEND` the extra s2idle quirk handling
-> doesn't make any sense and causes a kernel build failure.
+On Fri, May 06, 2022 at 10:10:54AM +0200, Pankaj Raghav wrote:
+> - Open issue:
+> * btrfs superblock location for zoned devices is expected to be in 0,
+>   512GB(mirror) and 4TB(mirror) in the device. Zoned devices with po2
+>   zone size will naturally align with these superblock location but non
+>   po2 devices will not align with 512GB and 4TB offset.
 > 
-> Disable the new code with `CONFIG_SUSPEND` not set.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>   The current approach for npo2 devices is to place the superblock mirror
+>   zones near   512GB and 4TB that is **aligned to the zone size**.
 
-Thanks, since the original patch was still in my review-hans
-branch (and not yet in for-next) I've squashed this fix into
-the original patch.
+I don't like that, the offsets have been chosen so the values are fixed
+and also future proof in case the zone size increases significantly. The
+natural alignment of the pow2 zones makes it fairly trivial.
 
-Regards,
+If I understand correctly what you suggest, it would mean that if zone
+is eg. 5G and starts at 510G then the superblock should start at 510G,
+right? And with another device that has 7G zone size the nearest
+multiple is 511G. And so on.
 
-Hans
+That makes it all less predictable, depending on the physical device
+constraints that are affecting the logical data structures of the
+filesystem. We tried to avoid that with pow2, the only thing that
+depends on the device is that the range from the super block offsets is
+always 2 zones.
 
+I really want to keep the offsets for all zoned devices the same and
+adapt the code that's handling the writes. This is possible with the
+non-pow2 too, the first write is set to the expected offset, leaving the
+beginning of the zone unused.
 
+>   This
+>   is of no issue for normal operation as we keep track where the superblock
+>   mirror are placed but this can cause an issue with recovery tools for
+>   zoned devices as they expect mirror superblock to be in 512GB and 4TB.
 
+Yeah the tools need to be updated, btrfs-progs and suite of blk* in
+util-linux.
 
-> ---
->  drivers/platform/x86/thinkpad_acpi.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-> index f385450af864..2833609fade7 100644
-> --- a/drivers/platform/x86/thinkpad_acpi.c
-> +++ b/drivers/platform/x86/thinkpad_acpi.c
-> @@ -4482,6 +4482,7 @@ static const struct dmi_system_id fwbug_list[] __initconst = {
->  	{}
->  };
->  
-> +#ifdef CONFIG_SUSPEND
->  /*
->   * Lenovo laptops from a variety of generations run a SMI handler during the D3->D0
->   * transition that occurs specifically when exiting suspend to idle which can cause
-> @@ -4517,6 +4518,7 @@ static void thinkpad_acpi_amd_s2idle_restore(void)
->  static struct acpi_s2idle_dev_ops thinkpad_acpi_s2idle_dev_ops = {
->  	.restore = thinkpad_acpi_amd_s2idle_restore,
->  };
-> +#endif
->  
->  static const struct pci_device_id fwbug_cards_ids[] __initconst = {
->  	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x24F3) },
-> @@ -11569,8 +11571,10 @@ static void thinkpad_acpi_module_exit(void)
->  
->  	tpacpi_lifecycle = TPACPI_LIFE_EXITING;
->  
-> +#ifdef CONFIG_SUSPEND
->  	if (tp_features.quirks && tp_features.quirks->s2idle_bug_mmio)
->  		acpi_unregister_lps0_dev(&thinkpad_acpi_s2idle_dev_ops);
-> +#endif
->  	if (tpacpi_hwmon)
->  		hwmon_device_unregister(tpacpi_hwmon);
->  	if (tp_features.sensors_pdrv_registered)
-> @@ -11743,11 +11747,13 @@ static int __init thinkpad_acpi_module_init(void)
->  	dmi_id = dmi_first_match(fwbug_list);
->  	if (dmi_id) {
->  		tp_features.quirks = dmi_id->driver_data;
-> +#ifdef CONFIG_SUSPEND
->  		if (tp_features.quirks->s2idle_bug_mmio) {
->  			if (!acpi_register_lps0_dev(&thinkpad_acpi_s2idle_dev_ops))
->  				pr_info("Using s2idle quirk to avoid %s platform firmware bug\n",
->  					dmi_id->ident ? dmi_id->ident : "");
->  		}
-> +#endif
->  	}
->  
->  	return 0;
+>   Note that ATM, recovery tools such as `btrfs check` does not work for
+>   image dumps for zoned devices even for po2 zone sizes.
 
+I thought this worked, but if you find something that does not please
+report that to Johannes or Naohiro.
