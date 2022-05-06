@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351187AbiEFPvG (ORCPT
+        id S1443161AbiEFPvI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
+        Fri, 6 May 2022 11:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443144AbiEFPu6 (ORCPT
+        with ESMTP id S1443145AbiEFPu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:50:58 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6EC6D869;
-        Fri,  6 May 2022 08:47:14 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MulRf-1o4wUg07NL-00rrBI;
- Fri, 06 May 2022 17:47:01 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 19/24] ARM: dts: imx7-colibri: clean-up device enabling/disabling
-Date:   Fri,  6 May 2022 17:46:43 +0200
-Message-Id: <20220506154643.297078-1-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220506152809.295409-1-marcel@ziswiler.com>
-References: <20220506152809.295409-1-marcel@ziswiler.com>
+        Fri, 6 May 2022 11:50:59 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DB76D86E
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651852035; x=1683388035;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aDiBfOiDwdZ6M/ZLSnLFI3NJ0Q3N0RutUCa9RSdfJBc=;
+  b=TwiV9jcMd0q5vTGvFhSMyy9WB6K5sM8iUnPqlqFpDd7dZq3RJITHvE4C
+   dXh+DyoF5fIZgINVQAOOIcUl1mOaXv7P4H/Grn6kR7mtHsfdnqEpv35wx
+   xI+xuzjEZLMCE/C+9fjKruoHXaZFBGtNxtcNAC1cftsiSI/QASbqSTIfS
+   7us0WXHT5qs5O/BK555z+oL/BMWZAN4tX3+XvMSfbjS0w1xTHgc9ZRL3B
+   lRoLBdVgvtKx9Kn16K8/TRi/41ou/xfYvEsMWzSpo73x6yh20ngn2oGtS
+   +tps2uBl3YYsLF62Ll2eOS1SNx9UpSvdeWkT9ATIaW8tlySkkGeaxENE9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268396652"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="268396652"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:47:15 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="812435665"
+Received: from nnwaiwux-mobl.amr.corp.intel.com (HELO [10.212.56.26]) ([10.212.56.26])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:47:14 -0700
+Message-ID: <5183d528-2f70-4224-6c7d-a29cfa34a588@intel.com>
+Date:   Fri, 6 May 2022 08:47:35 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:ZalQCdbDt6il2RNQAglTtkGkXNwrkD/G8sAe4D+gev6ffBr0JrT
- TaOkmK/ZfIEnl5hDlNrO+Bg6bKGr3CRgkJFS7BfGECFJk0xHOpcTKhVcQuhXihbXL+DydqF
- zkylbfFKpsc4LEN+/vZ0wdeK5LHyPQNDpiWAkBJMJwrbAjGmsmkH2DWzHSZKhviNOlv1eOq
- 6si89bIBR+lVzw1czepDA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IG8Pk1MUVD0=:mu7e9d1ol3kW0ZvNzQo+L3
- hybNhWHpNHKum7FT82zoIHdNcVuQK7iDwP5IHqnAdW64PfwolI4ytHtQgC49gekyWHyxD11cB
- aCrFicYW8jKIAIyRf3Kx/IvFtSilCtnkU2YdBBuWBvkHE1QOLIg46uEXOoOgXUM1ywnRxma9A
- g1b3G4vpH9IeU7kH/71b1i5/05V9BPtIAuBZil9SoJwbBXwylIGN8lwacKYTbpgJNMwlomhYp
- Vlfe9cbIK6iwIsdk2oQJ1WRYJ916NkDTJO7aHdicmciC11uO1JsH+yyfNeL+l8jD5m65H+NPF
- Lj/K6EJYkCL6heU1eCbnokqBzkRfQziu/xhGVyJOTP+iz8wAixcQk8GjHzfi5C+WYDMLnMH0A
- G9rNroJpk+RmmdKwzzfOp1KSgOiU2SiJ6lInO+m54mqw1C+7+DeC3nve7yqcaORNpDKwBcPNl
- Iurza3U1xj2rcyNChDGvL5r4n5A9INxy6U8BGeF3ZQtqz+Pk30rgr/ntYvC3od3A4yOkP7Ct0
- FSufrb/UCbBkOW9LCD5IjjSw3xxZBzdGMBABAC+MxAfxecNWfmXNb2vjmM26XreI6HFNNcVUM
- nZ0iGUfvX2Tnlm3+CfLdGQ3Lw+eYG7G2mctthIVMg6gQ62FIBjqKtfpVqrFdzpDx0u/EA4MgP
- 26ytQZSMGVviTD3ZoYomUmIrfQyWkSIppVq8oBzAatPSeEhH/iYiOWi7qLhxNAfs3bfmNKlqr
- dBKxpyBrxDJ9Ypw9QX7MTvFmCuLuAPdPOPm0B1QnUf6giybYacl1pm0CBVjp8IxBeSxbmWxFY
- ztAFw5fr3uGBQmdDV2bXyWcG0ReIQ==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220501183500.2242828-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220501183500.2242828-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <243e918c523320ba3d216cbe22d24fe5ce33f370.camel@intel.com>
+ <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
+ <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
+ <40ccd0f0-35a1-5aa7-9e51-25ab196d79e5@linux.intel.com>
+ <2ed5c9cc316950a5a47ee714715b7980f358a140.camel@intel.com>
+ <ab17102c-0cb7-87d3-3494-969866d64573@linux.intel.com>
+ <d53696f85ada39a91a3685c61d177c582810772e.camel@intel.com>
+ <d63d2774-c44d-27da-74b6-550935a196fd@intel.com>
+ <c3003e378504d2cd034e54bca6cab4d6bb53e008.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <c3003e378504d2cd034e54bca6cab4d6bb53e008.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On 5/6/22 04:00, Kai Huang wrote:
+> However I may have missed something.  Kirill please help to confirm if you see
+> this.
 
-Disable most nodes on module-level to be enabled on carrier board-level.
+Kai, thanks for taking a more thorough look through this.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
-
- arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi | 1 -
- arch/arm/boot/dts/imx7-colibri.dtsi         | 5 -----
- 2 files changed, 6 deletions(-)
-
-diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-index fea6e4c0d4d6..826f13da5b81 100644
---- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-@@ -44,7 +44,6 @@ mcp2515: can@0 {
- 		spi-max-frequency = <10000000>;
- 		vdd-supply = <&reg_3v3>;
- 		xceiver-supply = <&reg_5v0>;
--		status = "okay";
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index f29096fca54d..065d8f55f326 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -140,9 +140,6 @@ &adc1 {
- };
- 
- /* ADC2 is not available as it conflicts with AD7879 resistive touchscreen. */
--&adc2 {
--	status = "disabled";
--};
- 
- &cpu0 {
- 	cpu-supply = <&reg_DCDC2>;
-@@ -191,13 +188,11 @@ ethphy0: ethernet-phy@0 {
- &flexcan1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_flexcan1>;
--	status = "disabled";
- };
- 
- &flexcan2 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_flexcan2>;
--	status = "disabled";
- };
- 
- &gpio1 {
--- 
-2.35.1
-
+No matter what mechanism is used here, I'd like to see some commit
+message material about the testing that was performed, including
+experimental confirmation that it doesn't affect the direct map.
