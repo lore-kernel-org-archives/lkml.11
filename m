@@ -2,436 +2,567 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E114DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444949AbiEFW6z (ORCPT
+        id S1444872AbiEFXBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 18:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
+        Fri, 6 May 2022 19:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444691AbiEFW6F (ORCPT
+        with ESMTP id S1444897AbiEFW61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 18:58:05 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234156D387;
-        Fri,  6 May 2022 15:54:21 -0700 (PDT)
+        Fri, 6 May 2022 18:58:27 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1998D6D959;
+        Fri,  6 May 2022 15:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651877661; x=1683413661;
+  t=1651877678; x=1683413678;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0+Vz2GGD9bCMgDIr3ULDxJycQekQ5mbXMGTRp+yyy8Y=;
-  b=i4ld9bVYMwDEgEEVCfJX28kTQxrzfbVPA+WICz/niC8VguZ7GYqDCP6x
-   z8GhJ1KFwmX4mDqAhnV+B93Lz8UB+iGu1NPRyQZOjcSYFJMayKM/G3o3G
-   UPuq/D/01F6CaFElPrs2Etp+YZNXLnJgefWIHycp0SGpNzJOd0/H+62Kl
-   m8cbkIj7L6wzHHfoLSa5/xU9/w+IVjpTKNPLWcGCYk9rmsZ3zOKF+7Kv1
-   WJkhNZWUbqhnMf1YvrTvzyEC0LO0P5rJClgeXNcRgYqnc6FByvu0rn++0
-   hiCgybnP6c5jfM/6Rsf5rMy3jgxOdXZhdrwhtkd8y8QG/J2T4QFXE5AtI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="256080801"
+  bh=c3oOL/8ctMHZbRdIKCYhP1D/us2d+lYV7lvX/LHH9uw=;
+  b=BNbQlqlEG2qZng+k0A6e8Efoz1+D4qxfvf84U1oNFTORkLNfliDW6ZGt
+   xOrgjwr9ZZ7dRIaKyHc3ZqtaTstJiS1ZzRiHoKm0/sEoY1acWiqKIKynI
+   QV4Ess/KWVEmeH500Ugk31IKhG/4RO7VHuGw+RHFgY9Z+9Rq4QtKhPO7B
+   oD/M3WMJuydacydrMujOdNtoS9syy6K2DokGiTmxqetOSlbLWgetH75yQ
+   01yOYUvU5O+XRJ534WaxxRZBWaSyTZorxWh/SJgUpHLfhphAdeUBcV2aT
+   bq2MisRagvi99N/ZtWqjgYFvs6DXeCsoZeMe0c8P6g/PSE9sjnOIs/ya1
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268736174"
 X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="256080801"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:20 -0700
+   d="scan'208";a="268736174"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:22 -0700
 X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="695383641"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:20 -0700
-From:   Tony Luck <tony.luck@intel.com>
-To:     hdegoede@redhat.com, markgross@kernel.org
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        corbet@lwn.net, gregkh@linuxfoundation.org,
-        andriy.shevchenko@linux.intel.com, jithu.joseph@intel.com,
-        ashok.raj@intel.com, tony.luck@intel.com, rostedt@goodmis.org,
-        dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        patches@lists.linux.dev, ravi.v.shankar@intel.com
-Subject: [PATCH v7 08/12] platform/x86/intel/ifs: Add scan test support
-Date:   Fri,  6 May 2022 15:54:06 -0700
-Message-Id: <20220506225410.1652287-9-tony.luck@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220506225410.1652287-1-tony.luck@intel.com>
-References: <20220506014035.1173578-1-tony.luck@intel.com>
- <20220506225410.1652287-1-tony.luck@intel.com>
+   d="scan'208";a="812594489"
+Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.212.152.127])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:21 -0700
+From:   Russ Weight <russell.h.weight@intel.com>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        lee.jones@linaro.org, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: [PATCH v18 5/5] fpga: cardbmc-sec: add card BMC secure update functions
+Date:   Fri,  6 May 2022 15:54:15 -0700
+Message-Id: <20220506225415.78763-6-russell.h.weight@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220506225415.78763-1-russell.h.weight@intel.com>
+References: <20220506225415.78763-1-russell.h.weight@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jithu Joseph <jithu.joseph@intel.com>
+Create firmware upload ops and call the Firmware Upload support of the
+Firmware Loader subsystem to enable FPGA image uploads for secure
+updates of BMC images, FPGA images, etc.
 
-In a core, the scan engine is shared between sibling cpus.
-
-When a Scan test (for a particular core) is triggered by the user,
-the scan chunks are executed on all the threads on the core using
-stop_core_cpuslocked.
-
-Scan may be aborted by some reasons. Scan test will be aborted in certain
-circumstances such as when interrupt occurred or cpu does not have enough
-power budget for scan. In this case, the kernel restart scan from the chunk
-where it stopped. Scan will also be aborted when the test is failed. In
-this case, the test is immediately stopped without retry.
-
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
-Co-developed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Russ Weight <russell.h.weight@intel.com>
 ---
- drivers/platform/x86/intel/ifs/Makefile  |   2 +-
- drivers/platform/x86/intel/ifs/ifs.h     |  44 ++++
- drivers/platform/x86/intel/ifs/runtest.c | 247 +++++++++++++++++++++++
- 3 files changed, 292 insertions(+), 1 deletion(-)
- create mode 100644 drivers/platform/x86/intel/ifs/runtest.c
+v18:
+  - Moved the firmware_upload_register() function here from an earlier
+    patch since this is where the required ops are provided.
+  - Moved the bmc_sec_remove() function here from an earlier patch to
+    unregister the firmware driver and do cleanup.
+v17:
+  - Change "m10bmc" in symbol names to "cardbmc" to reflect the fact that the
+    future devices will not necessarily use the MAX10.
+  - Change from image_load class driver to the new firmware_upload 
+    functionality of the firmware_loader.
+  - fw_upload_ops functions will return "enum fw_upload_err" data types
+    instead of integer values.
+v16:
+  - Use 0 instead of FPGA_IMAGE_ERR_NONE to indicate success.
+  - The size alignment check was moved from the FPGA Image Load framework
+    to the prepare() op.
+  - Added cancel_request boolean flag to struct m10bmc_sec.
+  - Moved the RSU cancellation logic from m10bmc_sec_cancel() to a new
+    rsu_cancel() function.
+  - The m10bmc_sec_cancel() function ONLY sets the cancel_request flag.
+    The cancel_request flag is checked at the beginning of the
+    m10bmc_sec_write() and m10bmc_sec_poll_complete() functions.
+  - Adapt to changed prototypes for the prepare() and write() ops. The
+    m10bmc_sec_write_blk() function has been renamed to
+    m10bmc_sec_write().
+  - Created a cleanup() op, m10bmc_sec_cleanup(), to attempt to cancel an
+    ongoing op during when exiting the update process.
+v15:
+  - Adapted to changes in the FPGA Image Load framework:
+    (1) All enum types (progress and errors) are now type u32
+    (2) m10bmc_sec_write_blk() adds *blk_size and max_size parameters
+        and uses *blk_size as provided by the caller.
+    (3) m10bmc_sec_poll_complete() no long checks the driver_unload
+        flag.
+v14:
+  - Changed symbol names to reflect the renaming of the Security Manager
+    Class driver to FPGA Image Load.
+v13:
+  - No change
+v12:
+  - Updated Date and KernelVersion fields in ABI documentation
+  - Removed size parameter from the write_blk() op. m10bmc_sec_write_blk()
+    no longer has a size parameter, and the block size is determined
+    in this (the lower-level) driver.
+v11:
+  - No change
+v10:
+  - No change
+v9:
+  - No change
+v8:
+  - Previously patch 5/6, otherwise no change
+v7:
+  - No change
+v6:
+  - Changed (size / stride) calculation to ((size + stride - 1) / stride)
+    to ensure that the proper count is passed to regmap_bulk_write().
+  - Removed unnecessary call to rsu_check_complete() in
+    m10bmc_sec_poll_complete() and changed while loop to
+    do/while loop.
+v5:
+  - No change
+v4:
+  - No change
+v3:
+  - Changed: iops -> sops, imgr -> smgr, IFPGA_ -> FPGA_, ifpga_ to fpga_
+  - Changed "MAX10 BMC Secure Engine driver" to "MAX10 BMC Secure Update
+    driver"
+  - Removed wrapper functions (m10bmc_raw_*, m10bmc_sys_*). The
+    underlying functions are now called directly.
+  - Changed calling functions of functions that return "enum fpga_sec_err"
+    to check for (ret != FPGA_SEC_ERR_NONE) instead of (ret)
+v2:
+  - Reworked the rsu_start_done() function to make it more readable
+  - Reworked while-loop condition/content in rsu_prog_ready()
+  - Minor code cleanup per review comments
+  - Added a comment to the m10bmc_sec_poll_complete() function to
+    explain the context (could take 30+ minutes to complete).
+  - Added m10bmc_ prefix to functions in m10bmc_iops structure
+  - Moved MAX10 BMC address and function definitions to a separate
+    patch.
+---
+ drivers/fpga/intel-cardbmc-sec-update.c | 377 ++++++++++++++++++++++++
+ 1 file changed, 377 insertions(+)
 
-diff --git a/drivers/platform/x86/intel/ifs/Makefile b/drivers/platform/x86/intel/ifs/Makefile
-index 98b6fde15689..cedcb103f860 100644
---- a/drivers/platform/x86/intel/ifs/Makefile
-+++ b/drivers/platform/x86/intel/ifs/Makefile
-@@ -1,3 +1,3 @@
- obj-$(CONFIG_INTEL_IFS)		+= intel_ifs.o
- 
--intel_ifs-objs			:= core.o load.o
-+intel_ifs-objs			:= core.o load.o runtest.o
-diff --git a/drivers/platform/x86/intel/ifs/ifs.h b/drivers/platform/x86/intel/ifs/ifs.h
-index bed70dc1e5b7..b648cccda3ec 100644
---- a/drivers/platform/x86/intel/ifs/ifs.h
-+++ b/drivers/platform/x86/intel/ifs/ifs.h
-@@ -11,6 +11,11 @@
- #define MSR_SCAN_HASHES_STATUS			0x000002c3
- #define MSR_AUTHENTICATE_AND_COPY_CHUNK		0x000002c4
- #define MSR_CHUNKS_AUTHENTICATION_STATUS	0x000002c5
-+#define MSR_ACTIVATE_SCAN			0x000002c6
-+#define MSR_SCAN_STATUS				0x000002c7
-+#define SCAN_NOT_TESTED				0
-+#define SCAN_TEST_PASS				1
-+#define SCAN_TEST_FAIL				2
- 
- /* MSR_SCAN_HASHES_STATUS bit fields */
- union ifs_scan_hashes_status {
-@@ -38,6 +43,40 @@ union ifs_chunks_auth_status {
- 	};
+diff --git a/drivers/fpga/intel-cardbmc-sec-update.c b/drivers/fpga/intel-cardbmc-sec-update.c
+index 41c828d6d65a..39d5590d582a 100644
+--- a/drivers/fpga/intel-cardbmc-sec-update.c
++++ b/drivers/fpga/intel-cardbmc-sec-update.c
+@@ -17,8 +17,14 @@
+ struct bmc_sec {
+ 	struct device *dev;
+ 	struct intel_m10bmc *m10bmc;
++	struct fw_upload *fwl;
++	char *fw_name;
++	u32 fw_name_id;
++	bool cancel_request;
  };
  
-+/* MSR_ACTIVATE_SCAN bit fields */
-+union ifs_scan {
-+	u64	data;
-+	struct {
-+		u32	start	:8;
-+		u32	stop	:8;
-+		u32	rsvd	:16;
-+		u32	delay	:31;
-+		u32	sigmce	:1;
-+	};
-+};
++static DEFINE_XARRAY_ALLOC(fw_upload_xa);
 +
-+/* MSR_SCAN_STATUS bit fields */
-+union ifs_status {
-+	u64	data;
-+	struct {
-+		u32	chunk_num		:8;
-+		u32	chunk_stop_index	:8;
-+		u32	rsvd1			:16;
-+		u32	error_code		:8;
-+		u32	rsvd2			:22;
-+		u32	control_error		:1;
-+		u32	signature_error		:1;
-+	};
-+};
-+
-+/*
-+ * Driver populated error-codes
-+ * 0xFD: Test timed out before completing all the chunks.
-+ * 0xFE: not all scan chunks were executed. Maximum forward progress retries exceeded.
-+ */
-+#define IFS_SW_TIMEOUT				0xFD
-+#define IFS_SW_PARTIAL_COMPLETION		0xFE
-+
- /**
-  * struct ifs_data - attributes related to intel IFS driver
-  * @integrity_cap_bit: MSR_INTEGRITY_CAPS bit enumerating this test
-@@ -45,6 +84,8 @@ union ifs_chunks_auth_status {
-  * @loaded: If a valid test binary has been loaded into the memory
-  * @loading_error: Error occurred on another CPU while loading image
-  * @valid_chunks: number of chunks which could be validated.
-+ * @status: it holds simple status pass/fail/untested
-+ * @scan_details: opaque scan status code from h/w
-  */
- struct ifs_data {
- 	int	integrity_cap_bit;
-@@ -52,6 +93,8 @@ struct ifs_data {
- 	bool	loaded;
- 	bool	loading_error;
- 	int	valid_chunks;
-+	int	status;
-+	u64	scan_details;
+ /* Root Entry Hash (REH) support */
+ #define REH_SHA256_SIZE		32
+ #define REH_SHA384_SIZE		48
+@@ -178,9 +184,349 @@ static const struct attribute_group *bmc_sec_attr_groups[] = {
+ 	NULL,
  };
  
- struct ifs_work {
-@@ -73,5 +116,6 @@ static inline struct ifs_data *ifs_get_data(struct device *dev)
- }
- 
- void ifs_load_firmware(struct device *dev);
-+int do_core_test(int cpu, struct device *dev);
- 
- #endif
-diff --git a/drivers/platform/x86/intel/ifs/runtest.c b/drivers/platform/x86/intel/ifs/runtest.c
-new file mode 100644
-index 000000000000..7efcce35e0e9
---- /dev/null
-+++ b/drivers/platform/x86/intel/ifs/runtest.c
-@@ -0,0 +1,247 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(c) 2022 Intel Corporation. */
-+
-+#include <linux/cpu.h>
-+#include <linux/delay.h>
-+#include <linux/fs.h>
-+#include <linux/nmi.h>
-+#include <linux/slab.h>
-+#include <linux/stop_machine.h>
-+
-+#include "ifs.h"
-+
-+/*
-+ * Note all code and data in this file is protected by
-+ * ifs_sem. On HT systems all threads on a core will
-+ * execute together, but only the first thread on the
-+ * core will update results of the test.
-+ */
-+
-+/* Max retries on the same chunk */
-+#define MAX_IFS_RETRIES  5
-+
-+/*
-+ * Number of TSC cycles that a logical CPU will wait for the other
-+ * logical CPU on the core in the WRMSR(ACTIVATE_SCAN).
-+ */
-+#define IFS_THREAD_WAIT 100000
-+
-+enum ifs_status_err_code {
-+	IFS_NO_ERROR				= 0,
-+	IFS_OTHER_THREAD_COULD_NOT_JOIN		= 1,
-+	IFS_INTERRUPTED_BEFORE_RENDEZVOUS	= 2,
-+	IFS_POWER_MGMT_INADEQUATE_FOR_SCAN	= 3,
-+	IFS_INVALID_CHUNK_RANGE			= 4,
-+	IFS_MISMATCH_ARGUMENTS_BETWEEN_THREADS	= 5,
-+	IFS_CORE_NOT_CAPABLE_CURRENTLY		= 6,
-+	IFS_UNASSIGNED_ERROR_CODE		= 7,
-+	IFS_EXCEED_NUMBER_OF_THREADS_CONCURRENT	= 8,
-+	IFS_INTERRUPTED_DURING_EXECUTION	= 9,
-+};
-+
-+static const char * const scan_test_status[] = {
-+	[IFS_NO_ERROR] = "SCAN no error",
-+	[IFS_OTHER_THREAD_COULD_NOT_JOIN] = "Other thread could not join.",
-+	[IFS_INTERRUPTED_BEFORE_RENDEZVOUS] = "Interrupt occurred prior to SCAN coordination.",
-+	[IFS_POWER_MGMT_INADEQUATE_FOR_SCAN] =
-+	"Core Abort SCAN Response due to power management condition.",
-+	[IFS_INVALID_CHUNK_RANGE] = "Non valid chunks in the range",
-+	[IFS_MISMATCH_ARGUMENTS_BETWEEN_THREADS] = "Mismatch in arguments between threads T0/T1.",
-+	[IFS_CORE_NOT_CAPABLE_CURRENTLY] = "Core not capable of performing SCAN currently",
-+	[IFS_UNASSIGNED_ERROR_CODE] = "Unassigned error code 0x7",
-+	[IFS_EXCEED_NUMBER_OF_THREADS_CONCURRENT] =
-+	"Exceeded number of Logical Processors (LP) allowed to run Scan-At-Field concurrently",
-+	[IFS_INTERRUPTED_DURING_EXECUTION] = "Interrupt occurred prior to SCAN start",
-+};
-+
-+static void message_not_tested(struct device *dev, int cpu, union ifs_status status)
++static void log_error_regs(struct bmc_sec *sec, u32 doorbell)
 +{
-+	if (status.error_code < ARRAY_SIZE(scan_test_status)) {
-+		dev_info(dev, "CPU(s) %*pbl: SCAN operation did not start. %s\n",
-+			 cpumask_pr_args(cpu_smt_mask(cpu)),
-+			 scan_test_status[status.error_code]);
-+	} else if (status.error_code == IFS_SW_TIMEOUT) {
-+		dev_info(dev, "CPU(s) %*pbl: software timeout during scan\n",
-+			 cpumask_pr_args(cpu_smt_mask(cpu)));
-+	} else if (status.error_code == IFS_SW_PARTIAL_COMPLETION) {
-+		dev_info(dev, "CPU(s) %*pbl: %s\n",
-+			 cpumask_pr_args(cpu_smt_mask(cpu)),
-+			 "Not all scan chunks were executed. Maximum forward progress retries exceeded");
-+	} else {
-+		dev_info(dev, "CPU(s) %*pbl: SCAN unknown status %llx\n",
-+			 cpumask_pr_args(cpu_smt_mask(cpu)), status.data);
-+	}
++	u32 auth_result;
++
++	dev_err(sec->dev, "RSU error status: 0x%08x\n", doorbell);
++
++	if (!m10bmc_sys_read(sec->m10bmc, M10BMC_AUTH_RESULT, &auth_result))
++		dev_err(sec->dev, "RSU auth result: 0x%08x\n", auth_result);
 +}
 +
-+static void message_fail(struct device *dev, int cpu, union ifs_status status)
++static enum fw_upload_err rsu_check_idle(struct bmc_sec *sec)
 +{
-+	/*
-+	 * control_error is set when the microcode runs into a problem
-+	 * loading the image from the reserved BIOS memory, or it has
-+	 * been corrupted. Reloading the image may fix this issue.
-+	 */
-+	if (status.control_error) {
-+		dev_err(dev, "CPU(s) %*pbl: could not execute from loaded scan image\n",
-+			cpumask_pr_args(cpu_smt_mask(cpu)));
++	u32 doorbell;
++	int ret;
++
++	ret = m10bmc_sys_read(sec->m10bmc, M10BMC_DOORBELL, &doorbell);
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	if (rsu_prog(doorbell) != RSU_PROG_IDLE &&
++	    rsu_prog(doorbell) != RSU_PROG_RSU_DONE) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_BUSY;
 +	}
 +
-+	/*
-+	 * signature_error is set when the output from the scan chains does not
-+	 * match the expected signature. This might be a transient problem (e.g.
-+	 * due to a bit flip from an alpha particle or neutron). If the problem
-+	 * repeats on a subsequent test, then it indicates an actual problem in
-+	 * the core being tested.
-+	 */
-+	if (status.signature_error) {
-+		dev_err(dev, "CPU(s) %*pbl: test signature incorrect.\n",
-+			cpumask_pr_args(cpu_smt_mask(cpu)));
-+	}
++	return FW_UPLOAD_ERR_NONE;
 +}
 +
-+static bool can_restart(union ifs_status status)
++static inline bool rsu_start_done(u32 doorbell)
 +{
-+	enum ifs_status_err_code err_code = status.error_code;
++	u32 status, progress;
 +
-+	/* Signature for chunk is bad, or scan test failed */
-+	if (status.signature_error || status.control_error)
++	if (doorbell & DRBL_RSU_REQUEST)
 +		return false;
 +
-+	switch (err_code) {
-+	case IFS_NO_ERROR:
-+	case IFS_OTHER_THREAD_COULD_NOT_JOIN:
-+	case IFS_INTERRUPTED_BEFORE_RENDEZVOUS:
-+	case IFS_POWER_MGMT_INADEQUATE_FOR_SCAN:
-+	case IFS_EXCEED_NUMBER_OF_THREADS_CONCURRENT:
-+	case IFS_INTERRUPTED_DURING_EXECUTION:
++	status = rsu_stat(doorbell);
++	if (status == RSU_STAT_ERASE_FAIL || status == RSU_STAT_WEAROUT)
 +		return true;
-+	case IFS_INVALID_CHUNK_RANGE:
-+	case IFS_MISMATCH_ARGUMENTS_BETWEEN_THREADS:
-+	case IFS_CORE_NOT_CAPABLE_CURRENTLY:
-+	case IFS_UNASSIGNED_ERROR_CODE:
-+		break;
-+	}
++
++	progress = rsu_prog(doorbell);
++	if (progress != RSU_PROG_IDLE && progress != RSU_PROG_RSU_DONE)
++		return true;
++
 +	return false;
 +}
 +
-+/*
-+ * Execute the scan. Called "simultaneously" on all threads of a core
-+ * at high priority using the stop_cpus mechanism.
-+ */
-+static int doscan(void *data)
++static enum fw_upload_err rsu_update_init(struct bmc_sec *sec)
 +{
-+	int cpu = smp_processor_id();
-+	u64 *msrs = data;
-+	int first;
++	u32 doorbell, status;
++	int ret;
 +
-+	/* Only the first logical CPU on a core reports result */
-+	first = cpumask_first(cpu_smt_mask(cpu));
++	ret = regmap_update_bits(sec->m10bmc->regmap,
++				 M10BMC_SYS_BASE + M10BMC_DOORBELL,
++				 DRBL_RSU_REQUEST | DRBL_HOST_STATUS,
++				 DRBL_RSU_REQUEST |
++				 FIELD_PREP(DRBL_HOST_STATUS,
++					    HOST_STATUS_IDLE));
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
 +
-+	/*
-+	 * This WRMSR will wait for other HT threads to also write
-+	 * to this MSR (at most for activate.delay cycles). Then it
-+	 * starts scan of each requested chunk. The core scan happens
-+	 * during the "execution" of the WRMSR. This instruction can
-+	 * take up to 200 milliseconds (in the case where all chunks
-+	 * are processed in a single pass) before it retires.
-+	 */
-+	wrmsrl(MSR_ACTIVATE_SCAN, msrs[0]);
++	ret = regmap_read_poll_timeout(sec->m10bmc->regmap,
++				       M10BMC_SYS_BASE + M10BMC_DOORBELL,
++				       doorbell,
++				       rsu_start_done(doorbell),
++				       NIOS_HANDSHAKE_INTERVAL_US,
++				       NIOS_HANDSHAKE_TIMEOUT_US);
 +
-+	if (cpu == first) {
-+		/* Pass back the result of the scan */
-+		rdmsrl(MSR_SCAN_STATUS, msrs[1]);
++	if (ret == -ETIMEDOUT) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_TIMEOUT;
++	} else if (ret) {
++		return FW_UPLOAD_ERR_RW_ERROR;
 +	}
 +
++	status = rsu_stat(doorbell);
++	if (status == RSU_STAT_WEAROUT) {
++		dev_warn(sec->dev, "Excessive flash update count detected\n");
++		return FW_UPLOAD_ERR_WEAROUT;
++	} else if (status == RSU_STAT_ERASE_FAIL) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_HW_ERROR;
++	}
++
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static enum fw_upload_err rsu_prog_ready(struct bmc_sec *sec)
++{
++	unsigned long poll_timeout;
++	u32 doorbell, progress;
++	int ret;
++
++	ret = m10bmc_sys_read(sec->m10bmc, M10BMC_DOORBELL, &doorbell);
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	poll_timeout = jiffies + msecs_to_jiffies(RSU_PREP_TIMEOUT_MS);
++	while (rsu_prog(doorbell) == RSU_PROG_PREPARE) {
++		msleep(RSU_PREP_INTERVAL_MS);
++		if (time_after(jiffies, poll_timeout))
++			break;
++
++		ret = m10bmc_sys_read(sec->m10bmc, M10BMC_DOORBELL, &doorbell);
++		if (ret)
++			return FW_UPLOAD_ERR_RW_ERROR;
++	}
++
++	progress = rsu_prog(doorbell);
++	if (progress == RSU_PROG_PREPARE) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_TIMEOUT;
++	} else if (progress != RSU_PROG_READY) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_HW_ERROR;
++	}
++
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static enum fw_upload_err rsu_send_data(struct bmc_sec *sec)
++{
++	u32 doorbell;
++	int ret;
++
++	ret = regmap_update_bits(sec->m10bmc->regmap,
++				 M10BMC_SYS_BASE + M10BMC_DOORBELL,
++				 DRBL_HOST_STATUS,
++				 FIELD_PREP(DRBL_HOST_STATUS,
++					    HOST_STATUS_WRITE_DONE));
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	ret = regmap_read_poll_timeout(sec->m10bmc->regmap,
++				       M10BMC_SYS_BASE + M10BMC_DOORBELL,
++				       doorbell,
++				       rsu_prog(doorbell) != RSU_PROG_READY,
++				       NIOS_HANDSHAKE_INTERVAL_US,
++				       NIOS_HANDSHAKE_TIMEOUT_US);
++
++	if (ret == -ETIMEDOUT) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_TIMEOUT;
++	} else if (ret) {
++		return FW_UPLOAD_ERR_RW_ERROR;
++	}
++
++	switch (rsu_stat(doorbell)) {
++	case RSU_STAT_NORMAL:
++	case RSU_STAT_NIOS_OK:
++	case RSU_STAT_USER_OK:
++	case RSU_STAT_FACTORY_OK:
++		break;
++	default:
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_HW_ERROR;
++	}
++
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static int rsu_check_complete(struct bmc_sec *sec, u32 *doorbell)
++{
++	if (m10bmc_sys_read(sec->m10bmc, M10BMC_DOORBELL, doorbell))
++		return -EIO;
++
++	switch (rsu_stat(*doorbell)) {
++	case RSU_STAT_NORMAL:
++	case RSU_STAT_NIOS_OK:
++	case RSU_STAT_USER_OK:
++	case RSU_STAT_FACTORY_OK:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (rsu_prog(*doorbell)) {
++	case RSU_PROG_IDLE:
++	case RSU_PROG_RSU_DONE:
++		return 0;
++	case RSU_PROG_AUTHENTICATING:
++	case RSU_PROG_COPYING:
++	case RSU_PROG_UPDATE_CANCEL:
++	case RSU_PROG_PROGRAM_KEY_HASH:
++		return -EAGAIN;
++	default:
++		return -EINVAL;
++	}
++}
++
++static enum fw_upload_err rsu_cancel(struct bmc_sec *sec)
++{
++	u32 doorbell;
++	int ret;
++
++	ret = m10bmc_sys_read(sec->m10bmc, M10BMC_DOORBELL, &doorbell);
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	if (rsu_prog(doorbell) != RSU_PROG_READY)
++		return FW_UPLOAD_ERR_BUSY;
++
++	ret = regmap_update_bits(sec->m10bmc->regmap,
++				 M10BMC_SYS_BASE + M10BMC_DOORBELL,
++				 DRBL_HOST_STATUS,
++				 FIELD_PREP(DRBL_HOST_STATUS,
++					    HOST_STATUS_ABORT_RSU));
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	return FW_UPLOAD_ERR_CANCELED;
++}
++
++static enum fw_upload_err bmc_sec_prepare(struct fw_upload *fwl,
++					  const u8 *data, u32 size)
++{
++	struct bmc_sec *sec = fwl->dd_handle;
++	u32 ret;
++
++	sec->cancel_request = false;
++
++	if (!size || size & 0x3 || size > M10BMC_STAGING_SIZE)
++		return FW_UPLOAD_ERR_INVALID_SIZE;
++
++	ret = rsu_check_idle(sec);
++	if (ret != FW_UPLOAD_ERR_NONE)
++		return ret;
++
++	ret = rsu_update_init(sec);
++	if (ret != FW_UPLOAD_ERR_NONE)
++		return ret;
++
++	ret = rsu_prog_ready(sec);
++	if (ret != FW_UPLOAD_ERR_NONE)
++		return ret;
++
++	if (sec->cancel_request)
++		return rsu_cancel(sec);
++
++	return FW_UPLOAD_ERR_NONE;
++}
++
++#define WRITE_BLOCK_SIZE 0x4000	/* Default write-block size is 0x4000 bytes */
++
++static enum fw_upload_err bmc_sec_write(struct fw_upload *fwl, const u8 *data,
++					u32 offset, u32 size, u32 *written)
++{
++	struct bmc_sec *sec = fwl->dd_handle;
++	unsigned int stride = regmap_get_reg_stride(sec->m10bmc->regmap);
++	u32 blk_size, doorbell;
++	int ret;
++
++	if (sec->cancel_request)
++		return rsu_cancel(sec);
++
++	ret = m10bmc_sys_read(sec->m10bmc, M10BMC_DOORBELL, &doorbell);
++	if (ret) {
++		return FW_UPLOAD_ERR_RW_ERROR;
++	} else if (rsu_prog(doorbell) != RSU_PROG_READY) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_HW_ERROR;
++	}
++
++	blk_size = min_t(u32, WRITE_BLOCK_SIZE, size);
++	ret = regmap_bulk_write(sec->m10bmc->regmap,
++				M10BMC_STAGING_BASE + offset,
++				(void *)data + offset,
++				(blk_size + stride - 1) / stride);
++
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	*written = blk_size;
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static enum fw_upload_err bmc_sec_poll_complete(struct fw_upload *fwl)
++{
++	struct bmc_sec *sec = fwl->dd_handle;
++	unsigned long poll_timeout;
++	u32 doorbell, result;
++	int ret;
++
++	if (sec->cancel_request)
++		return rsu_cancel(sec);
++
++	result = rsu_send_data(sec);
++	if (result != FW_UPLOAD_ERR_NONE)
++		return result;
++
++	poll_timeout = jiffies + msecs_to_jiffies(RSU_COMPLETE_TIMEOUT_MS);
++	do {
++		msleep(RSU_COMPLETE_INTERVAL_MS);
++		ret = rsu_check_complete(sec, &doorbell);
++	} while (ret == -EAGAIN && !time_after(jiffies, poll_timeout));
++
++	if (ret == -EAGAIN) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_TIMEOUT;
++	} else if (ret == -EIO) {
++		return FW_UPLOAD_ERR_RW_ERROR;
++	} else if (ret) {
++		log_error_regs(sec, doorbell);
++		return FW_UPLOAD_ERR_HW_ERROR;
++	}
++
++	return FW_UPLOAD_ERR_NONE;
++}
++
++/*
++ * bmc_sec_cancel() may be called asynchronously with an on-going update.
++ * All other functions are called sequentially in a single thread. To avoid
++ * contention on register accesses, bmc_sec_cancel() must only update
++ * the cancel_request flag. Other functions will check this flag and handle
++ * the cancel request synchronously.
++ */
++static void bmc_sec_cancel(struct fw_upload *fwl)
++{
++	struct bmc_sec *sec = fwl->dd_handle;
++
++	sec->cancel_request = true;
++}
++
++static void bmc_sec_cleanup(struct fw_upload *fwl)
++{
++	struct bmc_sec *sec = fwl->dd_handle;
++
++	(void)rsu_cancel(sec);
++}
++
++static const struct fw_upload_ops cardbmc_ops = {
++	.prepare = bmc_sec_prepare,
++	.write = bmc_sec_write,
++	.poll_complete = bmc_sec_poll_complete,
++	.cancel = bmc_sec_cancel,
++	.cleanup = bmc_sec_cleanup,
++};
++
+ #define SEC_UPDATE_LEN_MAX 32
+ static int bmc_sec_probe(struct platform_device *pdev)
+ {
++	char buf[SEC_UPDATE_LEN_MAX];
++	struct fw_upload *fwl;
++	unsigned int len, ret;
+ 	struct bmc_sec *sec;
+ 
+ 	sec = devm_kzalloc(&pdev->dev, sizeof(*sec), GFP_KERNEL);
+@@ -191,6 +537,36 @@ static int bmc_sec_probe(struct platform_device *pdev)
+ 	sec->m10bmc = dev_get_drvdata(pdev->dev.parent);
+ 	dev_set_drvdata(&pdev->dev, sec);
+ 
++	ret = xa_alloc(&fw_upload_xa, &sec->fw_name_id, sec,
++		       xa_limit_32b, GFP_KERNEL);
++	if (ret)
++		return ret;
++
++	len = scnprintf(buf, SEC_UPDATE_LEN_MAX, "secure-update%d",
++			sec->fw_name_id);
++	sec->fw_name = kmemdup_nul(buf, len, GFP_KERNEL);
++
++	fwl = firmware_upload_register(THIS_MODULE, sec->dev, sec->fw_name,
++				       &cardbmc_ops, sec);
++	if (IS_ERR(fwl)) {
++		dev_err(sec->dev, "Firmware Upload driver failed to start\n");
++		kfree(sec->fw_name);
++		xa_erase(&fw_upload_xa, sec->fw_name_id);
++		return PTR_ERR(fwl);
++	}
++
++	sec->fwl = fwl;
 +	return 0;
 +}
 +
-+/*
-+ * Use stop_core_cpuslocked() to synchronize writing to MSR_ACTIVATE_SCAN
-+ * on all threads of the core to be tested. Loop if necessary to complete
-+ * run of all chunks. Include some defensive tests to make sure forward
-+ * progress is made, and that the whole test completes in a reasonable time.
-+ */
-+static void ifs_test_core(int cpu, struct device *dev)
++static int bmc_sec_remove(struct platform_device *pdev)
 +{
-+	union ifs_scan activate;
-+	union ifs_status status;
-+	unsigned long timeout;
-+	struct ifs_data *ifsd;
-+	u64 msrvals[2];
-+	int retries;
++	struct bmc_sec *sec = dev_get_drvdata(&pdev->dev);
 +
-+	ifsd = ifs_get_data(dev);
++	firmware_upload_unregister(sec->fwl);
++	kfree(sec->fw_name);
++	xa_erase(&fw_upload_xa, sec->fw_name_id);
 +
-+	activate.rsvd = 0;
-+	activate.delay = IFS_THREAD_WAIT;
-+	activate.sigmce = 0;
-+	activate.start = 0;
-+	activate.stop = ifsd->valid_chunks - 1;
-+
-+	timeout = jiffies + HZ / 2;
-+	retries = MAX_IFS_RETRIES;
-+
-+	while (activate.start <= activate.stop) {
-+		if (time_after(jiffies, timeout)) {
-+			status.error_code = IFS_SW_TIMEOUT;
-+			break;
-+		}
-+
-+		msrvals[0] = activate.data;
-+		stop_core_cpuslocked(cpu, doscan, msrvals);
-+
-+		status.data = msrvals[1];
-+
-+		/* Some cases can be retried, give up for others */
-+		if (!can_restart(status))
-+			break;
-+
-+		if (status.chunk_num == activate.start) {
-+			/* Check for forward progress */
-+			if (--retries == 0) {
-+				if (status.error_code == IFS_NO_ERROR)
-+					status.error_code = IFS_SW_PARTIAL_COMPLETION;
-+				break;
-+			}
-+		} else {
-+			retries = MAX_IFS_RETRIES;
-+			activate.start = status.chunk_num;
-+		}
-+	}
-+
-+	/* Update status for this core */
-+	ifsd->scan_details = status.data;
-+
-+	if (status.control_error || status.signature_error) {
-+		ifsd->status = SCAN_TEST_FAIL;
-+		message_fail(dev, cpu, status);
-+	} else if (status.error_code) {
-+		ifsd->status = SCAN_NOT_TESTED;
-+		message_not_tested(dev, cpu, status);
-+	} else {
-+		ifsd->status = SCAN_TEST_PASS;
-+	}
-+}
-+
-+/*
-+ * Initiate per core test. It wakes up work queue threads on the target cpu and
-+ * its sibling cpu. Once all sibling threads wake up, the scan test gets executed and
-+ * wait for all sibling threads to finish the scan test.
-+ */
-+int do_core_test(int cpu, struct device *dev)
-+{
-+	int ret = 0;
-+
-+	/* Prevent CPUs from being taken offline during the scan test */
-+	cpus_read_lock();
-+
-+	if (!cpu_online(cpu)) {
-+		dev_info(dev, "cannot test on the offline cpu %d\n", cpu);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	ifs_test_core(cpu, dev);
-+out:
-+	cpus_read_unlock();
-+	return ret;
-+}
+ 	return 0;
+ }
+ 
+@@ -203,6 +579,7 @@ static const struct platform_device_id intel_cardbmc_sec_ids[] = {
+ 
+ static struct platform_driver intel_cardbmc_sec_driver = {
+ 	.probe = bmc_sec_probe,
++	.remove = bmc_sec_remove,
+ 	.driver = {
+ 		.name = "intel-cardbmc-sec-update",
+ 		.dev_groups = bmc_sec_attr_groups,
 -- 
-2.35.1
+2.25.1
 
