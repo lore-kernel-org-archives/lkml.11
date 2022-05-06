@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC29C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C347CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443454AbiEFQKu (ORCPT
+        id S1443462AbiEFQKz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
+        Fri, 6 May 2022 12:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443434AbiEFQKr (ORCPT
+        with ESMTP id S1443436AbiEFQKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:10:47 -0400
-Received: from smtp-42af.mail.infomaniak.ch (smtp-42af.mail.infomaniak.ch [IPv6:2001:1600:3:17::42af])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7197C3B026
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:06:59 -0700 (PDT)
+        Fri, 6 May 2022 12:10:48 -0400
+Received: from smtp-bc0d.mail.infomaniak.ch (smtp-bc0d.mail.infomaniak.ch [45.157.188.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D885517F8
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:07:00 -0700 (PDT)
 Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwS14sS9zMqpmv;
-        Fri,  6 May 2022 18:06:57 +0200 (CEST)
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwS34MJqzMqwSp;
+        Fri,  6 May 2022 18:06:59 +0200 (CEST)
 Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwS05F2nzlhMBg;
-        Fri,  6 May 2022 18:06:56 +0200 (CEST)
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwS32l31zlhMBg;
+        Fri,  6 May 2022 18:06:59 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651853217;
-        bh=+g6nltvqYNf1CZKZic5eqqeCIzlw7XGV0BEiW9ZEQ80=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Z2fF1yW2U0IXfjgHxAffPLaWEtBpl7E9tuO99BpdDQsBtPy3tYzbF7JvW1ckSMkwT
-         S158RLiD1+HeLu/ewGy2lH2+VoVjfCK4Kc9B3HUT3LIq4fbLKT+PrS8cLL+IhNZssy
-         3D+ddN+4+RpU+hMlGtCKQFrdvfh0069sREXUGhKg=
+        s=20191114; t=1651853219;
+        bh=vG2/gV61tHlvAQI7l0YN0fWRhamXraC0NU13ogkNew8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Os1dbOKVHJH6OgKRepFmxVJILBwJPunGoO4Sy2WNKH97mrfPsTIEzcFH0Mjwxim/b
+         ksMkkR91Slkhru/HYTxEEQsa4Jjkfq4yjv1XJf+malOmArZ5xsgrEzb7hzs5Ytbyzy
+         wQ+jzsaT8LzH9u2AffxJbHLUdk/e4veUFpIHyEB8=
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     James Morris <jmorris@namei.org>,
         "Serge E . Hallyn" <serge@hallyn.com>
@@ -41,9 +41,11 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Paul Moore <paul@paul-moore.com>,
         Shuah Khan <shuah@kernel.org>, linux-api@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH v2 00/10] Minor Landlock fixes and new tests
-Date:   Fri,  6 May 2022 18:08:10 +0200
-Message-Id: <20220506160820.524344-1-mic@digikod.net>
+Subject: [PATCH v2 03/10] selftests/landlock: Extend tests for minimal valid attribute size
+Date:   Fri,  6 May 2022 18:08:13 +0200
+Message-Id: <20220506160820.524344-4-mic@digikod.net>
+In-Reply-To: <20220506160820.524344-1-mic@digikod.net>
+References: <20220506160820.524344-1-mic@digikod.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,56 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+This might be useful when the struct landlock_ruleset_attr will get more
+fields.
 
-This series contains some minor code and documentation fixes.  There is
-also some miscellaneous new tests to improve coverage and that may help
-for future access types (e.g. networking).
+Cc: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Link: https://lore.kernel.org/r/20220506160820.524344-4-mic@digikod.net
+---
 
-The important new patches are the last three ones.  They change the
-landlock_add_rule(2) and landlock_restrict_self(2) check orderings to
-make them more consistent according to future Landlock rule types (e.g.
-networking).
+Changes since v1:
+* Format with clang-format and rebase.
+---
+ tools/testing/selftests/landlock/base_test.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-As suggested by Alejandro Colomar [1], I removed the
-landlock_add_rule(2) signature fix.  I added a new patch to test O_PATH
-behavior.
-
-Test coverage for security/landlock was 94.4% of 500 lines, and it is
-now 94.4% of 504 lines according to gcc/gcov-11.
-
-I also fixed some typos and formatted the code with clang-format.  This
-series can be applied on top of
-https://lore.kernel.org/r/20220506160513.523257-1-mic@digikod.net
-
-[1] https://lore.kernel.org/r/ae52c028-05c7-c22e-fc47-d97ee4a2f6c7@gmail.com
-
-Previous version:
-https://lore.kernel.org/r/20220221155311.166278-1-mic@digikod.net
-
-Regards,
-
-Mickaël Salaün (10):
-  landlock: Fix landlock_add_rule(2) documentation
-  selftests/landlock: Make tests build with old libc
-  selftests/landlock: Extend tests for minimal valid attribute size
-  selftests/landlock: Add tests for unknown access rights
-  selftests/landlock: Extend access right tests to directories
-  selftests/landlock: Fully test file rename with "remove" access
-  selftests/landlock: Add tests for O_PATH
-  landlock: Change landlock_add_rule(2) argument check ordering
-  landlock: Change landlock_restrict_self(2) check ordering
-  selftests/landlock: Test landlock_create_ruleset(2) argument check
-    ordering
-
- include/uapi/linux/landlock.h                |   5 +-
- security/landlock/syscalls.c                 |  37 +++---
- tools/testing/selftests/landlock/base_test.c | 107 +++++++++++++++--
- tools/testing/selftests/landlock/fs_test.c   | 120 ++++++++++++++++---
- 4 files changed, 218 insertions(+), 51 deletions(-)
-
-
-base-commit: 763c5dc0e990fbd803c3c2b1ae832366ab7d207f
+diff --git a/tools/testing/selftests/landlock/base_test.c b/tools/testing/selftests/landlock/base_test.c
+index 3faeae4233a4..be9b937256ac 100644
+--- a/tools/testing/selftests/landlock/base_test.c
++++ b/tools/testing/selftests/landlock/base_test.c
+@@ -35,6 +35,8 @@ TEST(inconsistent_attr)
+ 	ASSERT_EQ(EINVAL, errno);
+ 	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, 1, 0));
+ 	ASSERT_EQ(EINVAL, errno);
++	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, 7, 0));
++	ASSERT_EQ(EINVAL, errno);
+ 
+ 	ASSERT_EQ(-1, landlock_create_ruleset(NULL, 1, 0));
+ 	/* The size if less than sizeof(struct landlock_attr_enforce). */
+@@ -47,6 +49,9 @@ TEST(inconsistent_attr)
+ 	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, page_size + 1, 0));
+ 	ASSERT_EQ(E2BIG, errno);
+ 
++	/* Checks minimal valid attribute size. */
++	ASSERT_EQ(-1, landlock_create_ruleset(ruleset_attr, 8, 0));
++	ASSERT_EQ(ENOMSG, errno);
+ 	ASSERT_EQ(-1, landlock_create_ruleset(
+ 			      ruleset_attr,
+ 			      sizeof(struct landlock_ruleset_attr), 0));
 -- 
 2.35.1
 
