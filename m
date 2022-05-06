@@ -2,97 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E01CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0557C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443797AbiEFQ3R (ORCPT
+        id S1443803AbiEFQcN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        Fri, 6 May 2022 12:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443785AbiEFQ3O (ORCPT
+        with ESMTP id S1348771AbiEFQcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:29:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DEF1B7F2
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:25:27 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91746113E;
-        Fri,  6 May 2022 09:25:27 -0700 (PDT)
-Received: from donnerap.arm.com (donnerap.cambridge.arm.com [10.1.197.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5123F3F885;
-        Fri,  6 May 2022 09:25:26 -0700 (PDT)
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] clocksource/drivers/sp804: avoid error on multiple instances
-Date:   Fri,  6 May 2022 17:25:22 +0100
-Message-Id: <20220506162522.3675399-1-andre.przywara@arm.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 6 May 2022 12:32:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B7956D97E
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651854506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Afy3LRmgbTX/W4kOJBv51V2x19c9yS1eYu85zuJRd9c=;
+        b=gWUvg6N7La++DUgnKPV9d+0zxmCQI4hNRcCQX0n3lsONKH/Ji0geA+1aMkEgF1rWIRpMdv
+        ZYnEqX+awXtUsqJhhRVeBfQNtf8dmziNpD6E1Eie81HVuYA4/o+3zOyis8f1BDHPoSnIDv
+        nxf0ER7wAwZpbQS5dv7oxowX1EO0urA=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-164-2i-8go06MgSme212aB9cKQ-1; Fri, 06 May 2022 12:28:24 -0400
+X-MC-Unique: 2i-8go06MgSme212aB9cKQ-1
+Received: by mail-qk1-f200.google.com with SMTP id bk23-20020a05620a1a1700b0067b32f93b90so5252260qkb.16
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:28:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=Afy3LRmgbTX/W4kOJBv51V2x19c9yS1eYu85zuJRd9c=;
+        b=zcPlAhHvMWRFxoNEpKpHAverqEEujYRdK54tzTrC4qFjsTs9TJ5kJ9MC8qYapaZjjl
+         h47c2URzHifrv2nNxdbN/yo4UEKq7qRUmPQdTkm/lYqU+3pYOTfw133MGa0uuvuViCeo
+         0BY/jQDx/Rulk1tPWWUygVzWzsJwK4T8kO514DHMxukeo+dqCMofa9J0DImIe9cjZbc5
+         JZ9pNaYBJK0AsSYb0Ik8DrGspQPQorz1GBYyRAmm/f4WX6SCiwCjrWtRKyBiXqWaseNs
+         6xUWy8f1gPaV7acfcbFa48Hmch0ItrOnb0eUQxM/5LRJuid0b8LGEm7GOuIG8mqGCve6
+         YmbA==
+X-Gm-Message-State: AOAM530XkBtFrRnGz7JB1+Lw4cMtB9YRLj0SWw4J43BLZXi6wp496h7C
+        J0UUOmDAA5FEYyF5+Cys1fNidZ4lQkrtLUF+vygCzWsVjJ7uRGcK+3jB+S5o8r60uUlnFZaGmby
+        YEMDIrgrbjaqOA0DDvpD60GhQ
+X-Received: by 2002:a05:620a:4405:b0:6a0:30b7:7d5b with SMTP id v5-20020a05620a440500b006a030b77d5bmr2843343qkp.482.1651854504221;
+        Fri, 06 May 2022 09:28:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy9mEOuQZwJEmFcxWadpmKCBaw0BWvAOMjoo5GmSP6daGuDLSFXPHz5F/LLg72a11CQ2+pb/A==
+X-Received: by 2002:a05:620a:4405:b0:6a0:30b7:7d5b with SMTP id v5-20020a05620a440500b006a030b77d5bmr2843324qkp.482.1651854503954;
+        Fri, 06 May 2022 09:28:23 -0700 (PDT)
+Received: from [10.23.153.165] ([46.248.132.196])
+        by smtp.gmail.com with ESMTPSA id l1-20020ae9f001000000b0069fd35d2abcsm2638745qkg.112.2022.05.06.09.28.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 09:28:23 -0700 (PDT)
+Message-ID: <ac3fc5b9-d09c-5fb6-998d-f7c655d7fa00@redhat.com>
+Date:   Fri, 6 May 2022 18:28:11 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 3/4] mm/memofy-failure.c: optimize hwpoison_filter
+Content-Language: en-US
+To:     zhenwei pi <pizhenwei@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>
+Cc:     akpm@linux-foundation.org, naoya.horiguchi@nec.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Wu Fengguang <fengguang.wu@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+References: <20220429142206.294714-1-pizhenwei@bytedance.com>
+ <20220429142206.294714-4-pizhenwei@bytedance.com>
+ <20220506085920.GC1356094@u2004>
+ <3c0e25fb-695d-4a29-6de4-c892f89cea7a@bytedance.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <3c0e25fb-695d-4a29-6de4-c892f89cea7a@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+On 06.05.22 15:38, zhenwei pi wrote:
+> 
+> 
+> On 5/6/22 16:59, Naoya Horiguchi wrote:
+>> On Fri, Apr 29, 2022 at 10:22:05PM +0800, zhenwei pi wrote:
+>>> In the memory failure procedure, hwpoison_filter has higher priority,
+>>> if memory_filter() filters the error event, there is no need to do
+>>> the further work.
+>>
+>> Could you clarify what problem you are trying to solve (what does
+>> "optimize" mean in this context or what is the benefit)?
+>>
+> 
+> OK. The background of this work:
+> As well known, the memory failure mechanism handles memory corrupted 
+> event, and try to send SIGBUS to the user process which uses this 
+> corrupted page.
+> 
+> For the virtualization case, QEMU catches SIGBUS and tries to inject MCE 
+> into the guest, and the guest handles memory failure again. Thus the 
+> guest gets the minimal effect from hardware memory corruption.
+> 
+> The further step I'm working on:
+> 1, try to modify code to decrease poisoned pages in a single place 
+> (mm/memofy-failure.c: simplify num_poisoned_pages_dec in this series).
+> 
+> 2, try to use page_handle_poison() to handle SetPageHWPoison() and 
+> num_poisoned_pages_inc() together. It would be best to call 
+> num_poisoned_pages_inc() in a single place too. I'm not sure if this is 
+> possible or not, please correct me if I misunderstand.
+> 
+> 3, introduce memory failure notifier list in memory-failure.c: notify 
+> the corrupted PFN to someone who registers this list.
+> If I can complete [1] and [2] part, [3] will be quite easy(just call 
+> notifier list after increasing poisoned page).
+> 
+> 4, introduce memory recover VQ for memory balloon device, and registers 
+> memory failure notifier list. During the guest kernel handles memory 
+> failure, balloon device gets notified by memory failure notifier list, 
+> and tells the host to recover the corrupted PFN(GPA) by the new VQ.
 
-Replace the -EINVAL return with a debug message and return 0 instead.
+Most probably you might want to do that asynchronously, and once the
+callback succeeds, un-poison the page.
 
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
+> 
+> 5, host side remaps the corrupted page(HVA), and tells the guest side to 
+> unpoison the PFN(GPA). Then the guest fixes the corrupted page(GPA) 
+> dynamically.
 
-This fixes a long standing bogus error when booting ARM's fastmodels.
+I think QEMU already does that during reboots. Now it would be triggered
+by the guest for individual pages.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
-Changelog v1 .. v2:
-- demote pr_info() to pr_debug(), to avoid output at all
-- use %pOF and reword message
+> 
+> Because [4] and [5] are related to balloon device, also CC Michael, 
+> David and Jason.
 
- drivers/clocksource/timer-sp804.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Doesn't sound too crazy for me, although it's a shame that we always
+have to use virtio-balloon for such fairly balloon-unrelated things.
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index 401d592e85f5a..e6a87f4af2b50 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -259,6 +259,11 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
- 
-+	if (initialized) {
-+		pr_debug("%pOF: skipping further SP804 timer device\n", np);
-+		return 0;
-+	}
-+
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -270,11 +275,6 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	writel(0, timer1_base + timer->ctrl);
- 	writel(0, timer2_base + timer->ctrl);
- 
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
 -- 
-2.25.1
+Thanks,
+
+David / dhildenb
 
