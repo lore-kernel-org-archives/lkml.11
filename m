@@ -2,153 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D13C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD25FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443914AbiEFQxF (ORCPT
+        id S1390396AbiEFQxp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        Fri, 6 May 2022 12:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243362AbiEFQxB (ORCPT
+        with ESMTP id S243362AbiEFQxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:53:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DAF6D4F7
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:49:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 545BE61FBE
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 16:49:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6231DC385A8;
-        Fri,  6 May 2022 16:49:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651855756;
-        bh=kMsGmkJ+Xrc4/MbwXnnOKyG6OyT2xeuPISMz+O+QKcE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oEftss9Q2h8A2+YSwXVGNqSkK4QcwTxCLONQ0JuSrd88r4+q8VBxcyv7TYY7HfKAk
-         eQ1qySDJYXm9b0mxaCUrLHG2MokdUFTUL0lex8C0mLuCoc+LMa3PEhdTIy/rPIYTd1
-         CyFJvWL4StYqLyOOFzSzgJpDP/w/GvT5tEGUDKElKemL1JblCLsetRyXDc8Z1xIx2w
-         +rGQIZgmK29pqhYj95EGkYyA20f5sMV0ZUWriY1WWodmLZCWwpahn+GCfEReULdzAu
-         D34t4xX0wAzsOLOz1nf/2Sp5pWxpFmZ7v4t6OBbJyELrO1qr5T7hWs4EN9t1gv9D4c
-         HIiBxio4/L1Hg==
-Date:   Fri, 6 May 2022 09:49:14 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Leonardo Bras Soares Passos <leobras@redhat.com>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: ld.lld: error: inline assembly requires more registers than
- available at line 523
-Message-ID: <YnVRiiTeDjmcuo4o@dev-arch.thelio-3990X>
-References: <202205020637.JVJo3blw-lkp@intel.com>
- <YnK8f7cqMoHxSi0C@dev-arch.thelio-3990X>
- <CAJ6HWG5P6LXEY80tcXxtfvnPnhiNcqUvV+xyKygLbcw37UFvyw@mail.gmail.com>
- <YnL/BVvd78zIkwil@dev-arch.thelio-3990X>
+        Fri, 6 May 2022 12:53:38 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7645D6D4F7;
+        Fri,  6 May 2022 09:49:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1OQQcDvkkNEvQjZeojL1nuOEg0Y+VYhEkbCVfA+kmTo=; b=YHhJLGXcJyZqOMkJOE8Dag5i08
+        g0dqaKtodBoEnfVxpLJkDLuuY4RQFOKwt1W82mB7Gv+Y9CONq1KLjXKAi7njaRiHYJcsvtmMhaP1I
+        kv10Ywx1whOA422jqTC3odMIGw+stJQHilp0F0b4TypEqfxeycAc+vKMKBncKeQrCuSs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nn19K-001Y7t-Fm; Fri, 06 May 2022 18:49:50 +0200
+Date:   Fri, 6 May 2022 18:49:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org, nm@ti.com,
+        ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, rogerq@kernel.org,
+        grygorii.strashko@ti.com, vigneshr@ti.com, kishon@ti.com,
+        robh+dt@kernel.org, afd@ti.com
+Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Message-ID: <YnVRrk7fjPeme/JU@lunn.ch>
+References: <20220506052433.28087-1-p-mohan@ti.com>
+ <20220506052433.28087-3-p-mohan@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnL/BVvd78zIkwil@dev-arch.thelio-3990X>
+In-Reply-To: <20220506052433.28087-3-p-mohan@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 03:32:37PM -0700, Nathan Chancellor wrote:
-> Hi Leo,
-> 
-> On Wed, May 04, 2022 at 03:13:56PM -0300, Leonardo Bras Soares Passos wrote:
-> > On Wed, May 4, 2022 at 2:55 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > >
-> > > On Mon, May 02, 2022 at 06:29:38AM +0800, kernel test robot wrote:
-> > > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > > > head:   672c0c5173427e6b3e2a9bbb7be51ceeec78093a
-> > > > commit: ba1f77c546966c12d86220d078e5838dcaeab348 x86/kvm: Fix compilation warning in non-x86_64 builds
-> > > > date:   2 months ago
-> > > > config: i386-randconfig-a012-20220502 (https://download.01.org/0day-ci/archive/20220502/202205020637.JVJo3blw-lkp@intel.com/config)
-> > > > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 09325d36061e42b495d1f4c7e933e260eac260ed)
-> > > > reproduce (this is a W=1 build):
-> > > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > > >         chmod +x ~/bin/make.cross
-> > > >         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ba1f77c546966c12d86220d078e5838dcaeab348
-> > > >         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > > >         git fetch --no-tags linus master
-> > > >         git checkout ba1f77c546966c12d86220d078e5838dcaeab348
-> > > >         # save the config file
-> > > >         mkdir build_dir && cp config build_dir/.config
-> > > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-> > > >
-> > > > If you fix the issue, kindly add following tag as appropriate
-> > > > Reported-by: kernel test robot <lkp@intel.com>
-> > > >
-> > > > All errors (new ones prefixed by >>):
-> > > >
-> > > > >> ld.lld: error: inline assembly requires more registers than available at line 523
-> > > > >> ld.lld: error: inline assembly requires more registers than available at line 523
-> > > >
-> > >
-> > > I don't think this bisection result is correct; this error is visible at
-> > > v5.17-rc3, which this commit is based on. This is likely the same root
-> > > cause as https://github.com/ClangBuiltLinux/linux/issues/1589, just with
-> > > LTO. I'll reduce something down and comment there if it turns out to be
-> > > different.
-> > >
-> > > Cheers,
-> > > Nathan
-> > >
-> > 
-> > Hello Nathan,
-> > I went down on this issue, but I have no idea how to proceed. These
-> > are my findings:
-> > - This commit (ba1f77c546966c12d86220d078e5838dcaeab348) fixes the
-> > build, thus allowing this error to happen later (in LTO stage)
-> > - The commit that introduced this issue was 69d0db01e210, due to removing :
-> >    ubsan-cflags-$(CONFIG_UBSAN_OBJECT_SIZE)       += -fsanitize=object-size
-> > - Only by having this flag enabled in ubsan-cflags-y on
-> > torvalds/master causes the build to succeed
-> 
-> Ah, thanks for that investigation!
-> 
-> > At this point, given the commit message in 69d0db01e210 I was thinking
-> > of finding & fixing the code that causes the ld.lld error to happen,
-> > but I was lacking the skills to extract any filename from LTO step.
-> 
-> Right, this is not always easy with full LTO :( unfortunately, this
-> issue is not reproducible with either no LTO or ThinLTO... When issues
-> like this have come up in the past, I have had success linking
-> individual object files/archives but that has not worked for this issue.
-> I am going to try and bisect this randconfig against a defconfig and see
-> if there is a minimal set of configs that reproduces this issue, which
-> might make it easier to see what is going on here.
-> 
-> > But it's also possible to create a patch just adding
-> > 'ubsan-cflags-$(CONFIG_SOMETHING)      += -fsanitize=object-size'
-> > and fix this build.
-> 
-> Right, although that is basically reverting 69d0db01e210 for just that
-> configuration, which we don't want to do for the reasons outlined in
-> that commit message.
-> 
-> I'll see what comes of this config bisect.
+> +static int prueth_config_rgmiidelay(struct prueth *prueth,
+> +				    struct device_node *eth_np,
+> +				    phy_interface_t phy_if)
+> +{
+> +	struct device *dev = prueth->dev;
+> +	struct regmap *ctrl_mmr;
+> +	u32 rgmii_tx_id = 0;
+> +	u32 icssgctrl_reg;
+> +
+> +	if (!phy_interface_mode_is_rgmii(phy_if))
+> +		return 0;
+> +
+> +	ctrl_mmr = syscon_regmap_lookup_by_phandle(eth_np, "ti,syscon-rgmii-delay");
+> +	if (IS_ERR(ctrl_mmr)) {
+> +		dev_err(dev, "couldn't get ti,syscon-rgmii-delay\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (of_property_read_u32_index(eth_np, "ti,syscon-rgmii-delay", 1,
+> +				       &icssgctrl_reg)) {
+> +		dev_err(dev, "couldn't get ti,rgmii-delay reg. offset\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
+> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
+> +
+> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
 
-i386_defconfig + CONFIG_LTO_CLANG_FULL=y + CONFIG_X86_GENERIC=y is
-enough to reproduce this:
+I know we discussed this before. Why are you adding a delay here in
+the MAC? If you do add the delay here, you need to mask what you pass
+to phy_connect(), otherwise the PHY is also going to add a delay for
+"id" and "txid".
 
-$ make -skj"$(nproc)" ARCH=i386 LLVM=1 mrproper defconfig
+In general, it is best to leave all delays to the PHY.
 
-$ scripts/config -d LTO_NONE -e LTO_CLANG_FULL -e X86_GENERIC
-
-$ make -skj"$(nproc)" ARCH=i386 LLVM=1 olddefconfig all
-ld.lld: error: inline assembly requires more registers than available at line 538
-ld.lld: error: inline assembly requires more registers than available at line 538
-
-We have a known issue with 32-bit x86 '-march='/'-mtune=' and running
-out of registers can be reproduced without LTO:
-
-https://github.com/ClangBuiltLinux/linux/issues/1589
-
-Until there is a fix for that, I don't think that it is worth
-investigating this further.
-
-Cheers,
-Nathan
+     Andrew
