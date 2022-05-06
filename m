@@ -2,135 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C35C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443012AbiEFU3v (ORCPT
+        id S1442840AbiEFUbW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 16:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
+        Fri, 6 May 2022 16:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390768AbiEFU3t (ORCPT
+        with ESMTP id S1350446AbiEFUbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 16:29:49 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B25640908;
-        Fri,  6 May 2022 13:26:04 -0700 (PDT)
-Date:   Fri, 06 May 2022 20:26:00 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651868762;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8zhEGxu9Qe8Vn+eFv5mNxMHu1foq3HFRkw2NwvHHB3I=;
-        b=WyR9g8LFjuKkSFY1KlQcs14YgHOpRMEcO5Ol+28d6NTnbikKFbypdbaanucblBbjCdK7A6
-        kdv+WkxJmUZeF9QFPYGKcDkYGSVjxa1hOz2jEzoP4RJAmKq3XI0zbbng4Sdmei3Ms3bUV5
-        MSV44YKPu+hgZiKoj9EVAXdv7fVOOruKSUC01ZkIopS6qFXfKb8QrLn5tUzUCZAnxEGkpj
-        uvgiEygRY5rCWUFhJo0k2yMNaLvTEnD9oezAlABSBn53RSNh+w1W6iN/DF7RGywxn+gQwU
-        0++IWNZalhNEgrURFqZlxuxgb3wdQmKNWbHAMOnYklGuJKv13hvg1D3k5uJn+w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651868762;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8zhEGxu9Qe8Vn+eFv5mNxMHu1foq3HFRkw2NwvHHB3I=;
-        b=HYxtCz95LztbcrH8rPsSonhk99qHJL4UAoneDCrDEl5qHbMbsBIr+v5q7dwHy2BB5gGbNa
-        BBOm/0cnANiQ2mAQ==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/asm] objtool: Fix STACK_FRAME_NON_STANDARD reloc type
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220506121631.508692613@infradead.org>
-References: <20220506121631.508692613@infradead.org>
+        Fri, 6 May 2022 16:31:11 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ADF6A057
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 13:27:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=czAlBvzGbZIiieZ5UZZ63q2z8wPsspdCeY3abw324QU=; b=ZCoAnbkwYBTgxOM2i5+SxhF0oT
+        FjXaIuDh2A5i3qdLrLLaVeBi4fAYf2XUkvVjf5Fqqng9Wd2mzAFGxjhKxiYVynmSFrM9OkeOsnec+
+        Q040G62RwaJ+WAyvWAZKeByECdQXYXST4ApnbByxHL0G2UFCofCqm8rsiCpLTosfwtDRfr/oJD9Ps
+        r9rhes/DokrlBWml28xl5hr8ZUfrB/ENFIgdn8+DOOchjK52C7UlEjk7j//pVLJXsrtXj85CeX88/
+        Nxv+OIpOxEUvrntlU3lvVhM2/byLSiLycG6qFQBWkx7GByOshunAw+WRBvIH13g3Wt0AuRLk+JNo5
+        8cLzFr+g==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nn4Xl-00BlIL-1g; Fri, 06 May 2022 20:27:17 +0000
+Message-ID: <056303ce-1837-4d1e-a9fb-3e20e3686d59@infradead.org>
+Date:   Fri, 6 May 2022 13:27:11 -0700
 MIME-Version: 1.0
-Message-ID: <165186876093.4207.5445867612554580816.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 3/3] block: remove last remaining traces of IDE
+ documentation
+Content-Language: en-US
+To:     Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Phillip Potter <phil@philpotter.co.uk>
+Cc:     Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>
+References: <20220427132436.12795-1-paul.gortmaker@windriver.com>
+ <20220427132436.12795-4-paul.gortmaker@windriver.com>
+ <87wnfaa8ce.fsf@meer.lwn.net> <20220427165917.GE12977@windriver.com>
+ <YmsmnGb3JNjH54Xb@equinox> <20220506153241.GH12977@windriver.com>
+ <YnVgxEcRTQPu/DHE@equinox> <20220506202434.GJ12977@windriver.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220506202434.GJ12977@windriver.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/asm branch of tip:
 
-Commit-ID:     e2ef115813c34ea5380ac5b4879f515070150210
-Gitweb:        https://git.kernel.org/tip/e2ef115813c34ea5380ac5b4879f515070150210
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 06 May 2022 14:14:37 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 06 May 2022 22:20:43 +02:00
 
-objtool: Fix STACK_FRAME_NON_STANDARD reloc type
+On 5/6/22 13:24, Paul Gortmaker wrote:
+> [Re: [PATCH 3/3] block: remove last remaining traces of IDE documentation] On 06/05/2022 (Fri 18:54) Phillip Potter wrote:
+> 
+>> On Fri, May 06, 2022 at 11:32:41AM -0400, Paul Gortmaker wrote:
+> 
+> [...]
+> 
+>>> Are you working off linux-next?  If not, what is your baseline and what
+>>> are you running and what do you see?  For example, the commands below:
+>>>
+>>> The ecb86 that I sent in this e-mail still applies on linux-next of
+>>> today which contains Jens next as you can see:
+>>>
+>>
+>> I was yes, the point I was trying to make (poorly) is that your patch
+>> conflicts with Randy's patch which itself is not yet in linux-next, as
+>> normally I send everything together at the start of the merge window to
+>> Jens, as I don't have my own kernel.org tree yet, and usually I only get
+>> one or two patches in a cycle anyway.
+>>
+>> This is not your fault, you couldn't have been expected to know this in
+>> retrospect, and I should probably look into getting my own tree/GPG key
+>> sorted to alleviate this problem in future.
+>>
+>> In the meantime, if you're comfortable with the idea, I can just resolve
+>> the conflict myself when I send the patches onto Jens this time and
+>> include patch 3/3 pre-fixed up. Merge window will be fairly soon anyway.
+> 
+> Sure, go ahead - just fix up things so all the last bits are gone; don't
+> even worry about patch attribution; I don't care about that.
 
-STACK_FRAME_NON_STANDARD results in inconsistent relocation types
-depending on .c or .S usage:
+Thank for the cleanups, Paul.
 
-  Relocation section '.rela.discard.func_stack_frame_non_standard' at offset 0x3c01090 contains 5 entries:
-  Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-  0000000000000000  00020c2200000002 R_X86_64_PC32          0000000000047b40 do_suspend_lowlevel + 0
-  0000000000000008  0002461e00000001 R_X86_64_64            00000000000480a0 machine_real_restart + 0
-  0000000000000010  0000001400000001 R_X86_64_64            0000000000000000 .rodata + b3d4
-  0000000000000018  0002444600000002 R_X86_64_PC32          00000000000678a0 __efi64_thunk + 0
-  0000000000000020  0002659d00000001 R_X86_64_64            0000000000113160 __crash_kexec + 0
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220506121631.508692613@infradead.org
----
- include/linux/objtool.h       | 4 +++-
- tools/include/linux/objtool.h | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index 586d357..b9c1474 100644
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -40,6 +40,8 @@ struct unwind_hint {
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
-+#include <asm/asm.h>
-+
- #ifndef __ASSEMBLY__
- 
- #define UNWIND_HINT(sp_reg, sp_offset, type, end)		\
-@@ -137,7 +139,7 @@ struct unwind_hint {
- 
- .macro STACK_FRAME_NON_STANDARD func:req
- 	.pushsection .discard.func_stack_frame_non_standard, "aw"
--		.long \func - .
-+	_ASM_PTR \func
- 	.popsection
- .endm
- 
-diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
-index 586d357..b9c1474 100644
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -40,6 +40,8 @@ struct unwind_hint {
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
-+#include <asm/asm.h>
-+
- #ifndef __ASSEMBLY__
- 
- #define UNWIND_HINT(sp_reg, sp_offset, type, end)		\
-@@ -137,7 +139,7 @@ struct unwind_hint {
- 
- .macro STACK_FRAME_NON_STANDARD func:req
- 	.pushsection .discard.func_stack_frame_non_standard, "aw"
--		.long \func - .
-+	_ASM_PTR \func
- 	.popsection
- .endm
- 
+-- 
+~Randy
