@@ -2,89 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443314AbiEFQFQ (ORCPT
+        id S1443320AbiEFQFn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36570 "EHLO
+        Fri, 6 May 2022 12:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392246AbiEFQFO (ORCPT
+        with ESMTP id S245722AbiEFQFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:05:14 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104CD2F005;
-        Fri,  6 May 2022 09:01:31 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651852889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wJBPtOUuNGrHC5/SIZntmXtYnpjE0lXfTrqYkqCo5pQ=;
-        b=CBRYzpdKZZWT8ytV6rdLyCTJAwiIN2rDkMGzmpPv6H/tLdWpFMd0OVu51xFn2g+pD0JXff
-        nn9WCQx/GgXK4oaq3X7ULoHpGW0qtqJS/meB2ZCxtbkYbiXeru1XCrcqzJXOMTiaLtx78I
-        DhLroSR+vkZsqD7zlSvvm2j236SioBZu+QS0eeJB5nfPZ6BiGkjxvNdXGMBO/RanCr7iKa
-        35Tx4Eig/PIVdZ4o1vXWx0YQhY1usKFh4bOyQXHJn5tnTiq3JNNTNnlMUIWkIcJdJ+qAAn
-        cyFSF54QcGwIuSHnDq7xRaCTkb6ysRFJ/SWrCNOmYirRbgWiqF6PCJHBFUEsGg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651852889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wJBPtOUuNGrHC5/SIZntmXtYnpjE0lXfTrqYkqCo5pQ=;
-        b=AXBihZhZn5hV8VcQ9uLilDw48pxRojGFGEGM7trGpG072E3p97DGWqIo6FNwOcqlKrzLrW
-        ZOOhrNn/8XuZybCQ==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        0day robot <lkp@intel.com>, Arnd Bergmann <arnd@arndb.de>,
-        Theodore Ts'o <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        linux-crypto@vger.kernel.org, nathan@kernel.org
-Subject: Re: [timekeeping]  3aeaac747d: PANIC:early_exception
-In-Reply-To: <YnT0dDFtq7HnRC7n@zx2c4.com>
-References: <20220506032023.GA23061@xsang-OptiPlex-9020>
- <8735hnhz1q.ffs@tglx> <YnT0dDFtq7HnRC7n@zx2c4.com>
-Date:   Fri, 06 May 2022 18:01:29 +0200
-Message-ID: <87o80ahcpy.ffs@tglx>
+        Fri, 6 May 2022 12:05:37 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABD04FC76;
+        Fri,  6 May 2022 09:01:53 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id d5so10620121wrb.6;
+        Fri, 06 May 2022 09:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AwSYpzjiuqhVZgVPF7sxtuhyEtMKkN0i872NpkdZC/o=;
+        b=K4ZCXudwqosKXBiPTFH14TBwZpj5m6O78LEVT7YneZpZBQiBG19Qbwn/jB0RIQHD5V
+         bCi1BEccpXG0iBXo+uYUcTbcDyXZmgBM/G1XPXH01W4KzzfMKtG/sd1hU5cg7xIdwstC
+         tg9pfsTRDvhwMViw4CnA1TukBbBilgJUq4T2nrBHiNhqGU1asEXvV2yyQhFCQl4huUTv
+         Hi4zlJagsH3CD3gbwcKbjIuLufD+UlF9rE/xS81VH8zJz49qrg2nMw3A5NwIrG3IQQZ0
+         2Ei3TU1eI5thG0LYe6hP+m/gAWzvZ7IqdpbZq6N9wNfUSDm6U1iGjERhywvMsM4S1zqJ
+         gbWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AwSYpzjiuqhVZgVPF7sxtuhyEtMKkN0i872NpkdZC/o=;
+        b=HVXbf2QFfHRDNxIXcSnZyrvMgxOFc6s76McXMsPIa7tdYDYiIOQGsY178MNPv8TAQ+
+         LkyOCp81TEiVnImXOQdt8W8qneYwEH8iqYtKEYf5uq1mbCTI3Gt2/AeeElkS479Erti5
+         RBu8SIIGfWKIhEr+HSEfIOuZ0yRT6fzpfP87hrN2Jof+Aly1THdYyqLL4uKG8e/hM9H0
+         Ws0lgpiB9IJDLoppdfQT5HhMVSdB6rILg2tispx5nIoF1OXcyCyuRvkbb76lpO54tWsE
+         UG/pCJHTTpee5Sg+dlj/DjbbMU9nisEZish29I/Qs2QlEIf31J7A9qG8+meMi2n3hxLI
+         O1wQ==
+X-Gm-Message-State: AOAM530Kr4PuHW/SaW4HxxO7Kdpz+TN1b5BsFYzc14bYS+IWfO/u5uDJ
+        cT3KmOpQhUtLT9vchE1/mSI=
+X-Google-Smtp-Source: ABdhPJzL7lS0966E7B6W4dvbvOQeEUGgPCOuIk2MX/tVqezgIyS8z33FYy1vbahu5shC4On0eo14eA==
+X-Received: by 2002:adf:d1ec:0:b0:20c:61ef:93b6 with SMTP id g12-20020adfd1ec000000b0020c61ef93b6mr3263663wrd.694.1651852912296;
+        Fri, 06 May 2022 09:01:52 -0700 (PDT)
+Received: from [192.168.8.198] ([85.255.237.75])
+        by smtp.gmail.com with ESMTPSA id x18-20020adfdd92000000b0020c5253d915sm3907343wrl.97.2022.05.06.09.01.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 09:01:51 -0700 (PDT)
+Message-ID: <3f940dad-73ce-4ea6-dc76-f877c64dbb9a@gmail.com>
+Date:   Fri, 6 May 2022 17:01:25 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 0/5] fast poll multishot mode
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>, Hao Xu <haoxu.linux@gmail.com>,
+        io-uring@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220506070102.26032-1-haoxu.linux@gmail.com>
+ <b4d23f42-36f4-353a-1f44-c12178f0a2b3@gmail.com>
+ <5ce3d6c7-42f9-28c3-0800-4da399adaaea@kernel.dk>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <5ce3d6c7-42f9-28c3-0800-4da399adaaea@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06 2022 at 12:12, Jason A. Donenfeld wrote:
-> On Fri, May 06, 2022 at 09:59:13AM +0200, Thomas Gleixner wrote:
->> +/**
->> + * random_get_entropy_fallback - Returns the raw clock source value,
->> + * used by random.c for platforms with no valid random_get_entropy().
->> + */
->> +unsigned long random_get_entropy_fallback(void)
->> +{
->> +	struct tk_read_base *tkr = &tk_core.timekeeper.tkr_mono;
->> +	struct clocksource *clock = READ_ONCE(tkr->clock);
->> +
->> +	if (!timekeeping_suspended && clock)
->> +		return clock->read(clock);
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
->
-> I tried to address this already in
-> <https://lore.kernel.org/lkml/20220505002910.IAcnpEOE2zR2ibERl4Lh3Y_PMmtb0Rf43lVevgztJiM@z/>,
-> though yours looks better with the READ_ONCE() around clock, and I'll
-> send a v8 doing it that way. I didn't realize that clock could become
-> NULL again after becoming non-NULL.
+On 5/6/22 15:18, Jens Axboe wrote:
+> On 5/6/22 1:36 AM, Hao Xu wrote:
+>> Hi All,
+>> I actually had a question about the current poll code, from the code it
+>> seems when we cancel a poll-like request, it will ignore the existing
+>> events and just raise a -ECANCELED cqe though I haven't tested it. Is
+>> this by design or am I missing something?
+> 
+> That's by design, but honestly I don't think anyone considered the case
+> where it's being canceled but has events already. For that case, I think
+> we should follow the usual logic of only returning an error (canceled)
+> if we don't have events, if we have events just return them. For
+> multi-shot, obviously also terminate, but same logic there.
 
-This happens at early boot where clock is NULL.
+Why would we care? It's inherently racy in any case and any
+user not handling this is already screwed.
 
-> I'm not quite sure I understand the purpose of !timekeeping_suspended
-> there, though. I'm not seeing the path where reading with it suspended
-> negatively affects things. I'll take your word for it though.
-
-Some clocks are not accessible during suspend.
-
-Thanks,
-
-        tglx
+-- 
+Pavel Begunkov
