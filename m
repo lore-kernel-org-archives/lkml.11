@@ -2,183 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 379B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:59:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A37C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 02:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388257AbiEFCDR (ORCPT
+        id S1358735AbiEFCET (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 22:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
+        Thu, 5 May 2022 22:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388226AbiEFCCx (ORCPT
+        with ESMTP id S1388289AbiEFCDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 22:02:53 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F9312AB2;
-        Thu,  5 May 2022 18:59:11 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5D4E2200AA9;
-        Fri,  6 May 2022 03:59:10 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id EF474200AAB;
-        Fri,  6 May 2022 03:59:09 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 4CE72180031E;
-        Fri,  6 May 2022 09:59:08 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        broonie@kernel.org, lorenzo.pieralisi@arm.com,
-        jingoohan1@gmail.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v9 7/8] PCI: imx6: Move the phy driver callbacks to the proper places
-Date:   Fri,  6 May 2022 09:47:08 +0800
-Message-Id: <1651801629-30223-8-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Thu, 5 May 2022 22:03:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFCC13F35;
+        Thu,  5 May 2022 19:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AFAE62043;
+        Fri,  6 May 2022 02:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C6FADC385A4;
+        Fri,  6 May 2022 02:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651802412;
+        bh=xDruWFRHuePEkAyV8YC+1fdTRTDjM7xot3ryjvi6KmY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sbOW0MbyCW31eK0pDQ2MeiM2gCoK4YqlEd/QIuCsUXSqGMOgEOT8lnqSvxondDESh
+         Ker5wyE0kEGYzJQ+rVHEhofS26vW1IuqOb8WsJl4DTUXUEfndYefT1SEYz0qOEv+G6
+         97PGWxh1bpQoWlXtnzLiNTtI7hMqQkooYTZaEJ0CP1QRhHrjEWi8PQ+Kj4xeY8AUaE
+         GAv61+aYExyDEYhjcdT068TWbmhbDwKwdcw4PddUeJ5yl82oUUeTvZXJ7Mm1yEOKHk
+         TR/+hmtilVRx9s+Z4t+sl/cOFnidMx3GuV6XTWNa+OD/fvK71Cakr+j+akD+9b/Gzn
+         WOkd7KEKTHQrw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A4809F03874;
+        Fri,  6 May 2022 02:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 1/1] firmware: tee_bnxt: Use UUID API for exporting the
+ UUID
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165180241267.2024.13062789128039053176.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 May 2022 02:00:12 +0000
+References: <20220504091407.70661-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220504091407.70661-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     apais@linux.microsoft.com, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zajec5@gmail.com, michael.chan@broadcom.com, f.fainelli@gmail.com,
+        hch@lst.de
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To make it more reasonable, move the phy_power_on/phy_init callbacks to
-the proper places.
-- move the phy_power_on() out of imx6_pcie_clk_enable().
-- move the phy_init() out of imx6_pcie_deassert_core_reset().
+Hello:
 
-In order to save power consumption, turn off the clocks and regulators when
-the imx6_pcie_host_init() return error.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 77 +++++++++++++++++++++------
- 1 file changed, 61 insertions(+), 16 deletions(-)
+On Wed,  4 May 2022 12:14:07 +0300 you wrote:
+> There is export_uuid() function which exports uuid_t to the u8 array.
+> Use it instead of open coding variant.
+> 
+> This allows to hide the uuid_t internals.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> 
+> [...]
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index d122c12193a6..f0ffd9011975 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -497,14 +497,6 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
- 		goto err_ref_clk;
- 	}
- 
--	switch (imx6_pcie->drvdata->variant) {
--	case IMX8MM:
--		if (phy_power_on(imx6_pcie->phy))
--			dev_err(dev, "unable to power on PHY\n");
--		break;
--	default:
--		break;
--	}
- 	/* allow the clocks to stabilize */
- 	usleep_range(200, 500);
- 	return 0;
-@@ -597,10 +589,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MQ:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
--		break;
- 	case IMX8MM:
--		if (phy_init(imx6_pcie->phy))
--			dev_err(dev, "waiting for phy ready timeout!\n");
- 		break;
- 	case IMX7D:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
-@@ -918,15 +907,38 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
- 
- 	imx6_pcie_assert_core_reset(imx6_pcie);
- 	imx6_pcie_init_phy(imx6_pcie);
-+	if (imx6_pcie->phy != NULL) {
-+		ret = phy_power_on(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "pcie phy power up failed.\n");
-+			return ret;
-+		}
-+	}
-+
- 	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
- 	if (ret < 0) {
- 		dev_err(dev, "pcie host init failed: %d.\n", ret);
--		return ret;
-+		goto err_exit0;
-+	} else if (imx6_pcie->phy != NULL) {
-+		ret = phy_init(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "waiting for phy ready timeout!\n");
-+			goto err_exit1;
-+		}
- 	}
- 
- 	imx6_setup_phy_mpll(imx6_pcie);
- 
- 	return 0;
-+
-+err_exit1:
-+	imx6_pcie_clk_disable(imx6_pcie);
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
-+err_exit0:
-+	if (imx6_pcie->phy != NULL)
-+		phy_power_off(imx6_pcie->phy);
-+	return ret;
- }
- 
- static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
-@@ -1031,14 +1043,47 @@ static int imx6_pcie_resume_noirq(struct device *dev)
- 		regulator_disable(imx6_pcie->vpcie);
- 
- 	imx6_pcie_init_phy(imx6_pcie);
--	imx6_pcie_deassert_core_reset(imx6_pcie);
--	dw_pcie_setup_rc(pp);
-+	if (imx6_pcie->phy != NULL) {
-+		ret = phy_power_on(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "pcie phy power up failed.\n");
-+			return ret;
-+		}
-+	}
-+
-+	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
-+	if (ret < 0) {
-+		dev_err(dev, "pcie deassert core reset failed: %d.\n", ret);
-+		goto err_exit0;
-+	} else if (imx6_pcie->phy != NULL) {
-+		ret = phy_init(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "pcie phy init failed.\n");
-+			goto err_exit1;
-+		}
-+	}
- 
-+	dw_pcie_setup_rc(pp);
- 	ret = imx6_pcie_start_link(imx6_pcie->pci);
--	if (ret < 0)
--		dev_info(dev, "pcie link is down after resume.\n");
-+	if (ret < 0) {
-+		/*
-+		 * Return ret directly, since there are error exit
-+		 * handle in imx6_pcie_start_link()
-+		 */
-+		dev_err(dev, "pcie link is down after resume.\n");
-+		return ret;
-+	}
- 
- 	return 0;
-+
-+err_exit1:
-+	imx6_pcie_clk_disable(imx6_pcie);
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
-+err_exit0:
-+	if (imx6_pcie->phy != NULL)
-+		phy_power_off(imx6_pcie->phy);
-+	return ret;
- }
- #endif
- 
+Here is the summary with links:
+  - [v4,1/1] firmware: tee_bnxt: Use UUID API for exporting the UUID
+    https://git.kernel.org/netdev/net-next/c/10b4a11fe70f
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
