@@ -2,116 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8853C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442274AbiEFOmY (ORCPT
+        id S1442281AbiEFOms (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 10:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        Fri, 6 May 2022 10:42:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442261AbiEFOmU (ORCPT
+        with ESMTP id S1442284AbiEFOmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 10:42:20 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4467E6A42A;
-        Fri,  6 May 2022 07:38:37 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:59348)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmz6G-001ZSP-LU; Fri, 06 May 2022 08:38:32 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37214 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmz6E-007LHT-AD; Fri, 06 May 2022 08:38:32 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <20220506141403.GA16084@redhat.com>
-Date:   Fri, 06 May 2022 09:38:21 -0500
-In-Reply-To: <20220506141403.GA16084@redhat.com> (Oleg Nesterov's message of
-        "Fri, 6 May 2022 16:14:30 +0200")
-Message-ID: <87fslm3ew2.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 6 May 2022 10:42:40 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3D16AA46
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 07:38:49 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id r185so2854558oih.5
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 07:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=cB9ZCuVuahLmpF6pofX3h+no54YYEypOmQHJlUOz5K8=;
+        b=GL8hyS2FGDXBjm+SHhoR461YRKq7ho9wpxyLIDmYxlg/kzeg9Fv3zv46XR1ANz3sqk
+         9aVF+pDJV8sESH1nCmmbvOnl5DnpGQBmDxuXbHR4Ck6iFkkSfmG8HlhF9pDgX1W46oCC
+         UkHNYX6AYriqe85qlmGIovPgsPOKrg4+rkAbE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=cB9ZCuVuahLmpF6pofX3h+no54YYEypOmQHJlUOz5K8=;
+        b=5dv/C/TvkQtIpgMdXCTC6rbxwMHJM7+A8JLHGmlDG7XnonSXEINTVmEc/NL6W3jnXW
+         79/5nGtO9hPv3CVbaYk7QpUFpBSHi7u3YvUz/3Krtg3lG9TlMQNUM1x9O+nvJ4+ol/ht
+         rpiLHU7LRAgCpNMoSEs3m+hWtx38iB0ev9Xjk/h6a/TJqa0YVRUDJIP5QNYGcK658TJU
+         NSN4wrjvuJ6L20PaD0G+wxtGOVzN1nLndDl/P0bOBqTVTzTHwmANdhPl8SZDz+dLJlwk
+         CQmqN/P9BMZrB97iCbHDTl+GwzpcoaTGZDyNgBIgU+6gMw26N5cynKnwO88b93tz4ty0
+         55hA==
+X-Gm-Message-State: AOAM5311fzHHcmkEYld0Vlv2hm+3VXSa3AoY5pdjTTDViIZWGSI0D4xl
+        VV6vw4uYJh2ZAJgv7ZwkfVSOSgjeS5PT9hEBvWdtdA==
+X-Google-Smtp-Source: ABdhPJz76yFzp2gDcKwnVNH1wIr3RsCoOICVyiedCXHmMDJuQW2+wl9pA4RkmCSmIZxUvWt6tqB+SfcHp56U/IJY7No=
+X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
+ n62-20020acabd41000000b002ecff42814fmr1613561oif.63.1651847929242; Fri, 06
+ May 2022 07:38:49 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 6 May 2022 10:38:48 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nmz6E-007LHT-AD;;;mid=<87fslm3ew2.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+j4tyNBNO0MDOlgRiPNBZzf/o1+r5DdvI=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+In-Reply-To: <1651742739-12338-5-git-send-email-quic_c_skakit@quicinc.com>
+References: <1651742739-12338-1-git-send-email-quic_c_skakit@quicinc.com> <1651742739-12338-5-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 6 May 2022 10:38:48 -0400
+Message-ID: <CAE-0n51i9+JPMR91EzXtCXQdL__TWanWwJ3Y4H=ip-POb=a=vw@mail.gmail.com>
+Subject: Re: [PATCH V11 4/9] mfd: pm8008: Add reset-gpios
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
-
-> On 05/05, Eric W. Biederman wrote:
->>
->> Eric W. Biederman (11): signal: Rename send_signal send_signal_locked
->> signal: Replace __group_send_sig_info with send_signal_locked
->> ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP ptrace/xtensa:
->> Replace PT_SINGLESTEP with TIF_SINGLESTEP ptrace: Remove
->> arch_ptrace_attach signal: Use lockdep_assert_held instead of
->> assert_spin_locked ptrace: Reimplement PTRACE_KILL by always sending
->> SIGKILL ptrace: Document that wait_task_inactive can't fail ptrace:
->> Admit ptrace_stop can generate spuriuos SIGTRAPs ptrace: Don't change
->> __state ptrace: Always take siglock in ptrace_resume
->>
->> Peter Zijlstra (1):
->>       sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
+Quoting Satya Priya (2022-05-05 02:25:34)
+> Add the reset-gpio toggling in the pm8008_probe() to bring
+> pm8008 chip out of reset instead of doing it in DT node using
+> "output-high" property.
 >
-> I can't comment 5/12. to be honest I didn't even try to look into
-> arch/ia64/.
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
 
-I just looked at arch_ptrace_attach again and I spotted what looks like
-a fairly easy analysis that is mostly arch-generic code that shows this
-is dead code on ia64.
-
-On ia64 arch_ptrace_attach is ptrace_attach_sync_user_rbs, and does
-nothing if __state is not TASK_STOPPED.
-
-When arch_ptrace_attach is called after ptrace_traceme __state is
-TASK_RUNNING pretty much by definition as we are running in the
-child.  Therefore ptrace_attach_sync_user_rbs does nothing in that case.
-
-When arch_ptrace_attach is called after ptrace_attach __state there
-are two possibilities.  If the tracee was already in TASK_STOPPED
-before the ptrace_attach, the tracee will be in TASK_TRACED.
-Otherwise the tracee will be in TASK_TRACED or on it's way to stopping
-in TASK_TRACED.
-
-Unless I totally misread ptrace_attach.  There is no way that after
-a successful ptrace_attach for the tracee to be in TASK_STOPPED.
-This makes ptrace_attach_sync_user_rbs a big noop, AKA dead code.
-So it can be removed.
-
-> But other than that I see no problems in this version. However, I'd
-> like to actually apply the whole series and read the changed code
-> carefully, but sorry, I don't think I can do this before Monday.
-
-No rush.  I don't expect the merge window will open for a while yet.
-
-Eric
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
