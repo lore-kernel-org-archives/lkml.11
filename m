@@ -2,26 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91399C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442890AbiEFPcy (ORCPT
+        id S1442901AbiEFPc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53054 "EHLO
+        Fri, 6 May 2022 11:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442846AbiEFPch (ORCPT
+        with ESMTP id S1442852AbiEFPci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:32:37 -0400
+        Fri, 6 May 2022 11:32:38 -0400
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C246D1B1;
-        Fri,  6 May 2022 08:28:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33DA6D382;
+        Fri,  6 May 2022 08:28:52 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MpE2t-1oARSy3KZD-00qhR9;
- Fri, 06 May 2022 17:28:32 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MQ5CG-1nR3Bf3amu-00M4no;
+ Fri, 06 May 2022 17:28:40 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -32,97 +33,275 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 02/24] ARM: dts: imx7-colibri: add mdio phy node
-Date:   Fri,  6 May 2022 17:27:47 +0200
-Message-Id: <20220506152809.295409-3-marcel@ziswiler.com>
+Subject: [PATCH v1 05/24] ARM: dts: imx7-colibri: improve licensing and compatible strings
+Date:   Fri,  6 May 2022 17:27:50 +0200
+Message-Id: <20220506152809.295409-6-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220506152809.295409-1-marcel@ziswiler.com>
 References: <20220506152809.295409-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:oVrkLLgygwWKvFTplELyCAW33WTzbFbsXbnpKbLKnd1GGvNvLC4
- JQkrrOraOdfcZUwewFg/6ZUW/QB3bn1Qgf9gVZ0r+IdWaZ5go6lo6AXdAEQFymz29TaIF4G
- Bvv3oYI1HEIhoUowBsHaQ9VaCfdQxlrP2yukwLTUyAL6pAihNxiz2vyJ4q2iw2E27+uN07j
- cZLuKCZcd0M6Z1Ahm/SDw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oCyVUsQyThk=:mAtEvTMhBtv/d3XevJvliU
- DIbKP6Cs+mzoi7ntuMhr2EFVnmDN42cuyWc/hzerRwMemIm2b3ZQEAJf6fX6+8qJCKZd3+tw4
- 1XjF2deIOhjvecfv7IDCZOdwdMQvUOVQTb6pttyEz/PRfcgmGlFSlN/LawTZgDYzMFphx9F5J
- CCTTjPPksW/0G87rAnMCrtw2JHK3BNS7KvzSQNu3M75D5Bt4JzhLXKnDj783w4+1v/9oeDst4
- sgWr/4041TsF5x1gi1cHVSQH6HEck3jSNgnQGf7DLwdJAzzrLOKhGW4mjB+xn6rjbGAe0FmmQ
- zTEbpbJw/JQcfgWu/tVoS55+mKyi0V9aoXL8uDWaTG7BxM3UCunrnDiDuQL4oyiQActBtVx9z
- NWxTqCiLaUxTdlQcVzSiQto2ofEu5+AEjVpcW6RenyV80oneO8YCbnbasXHMIJP8qtLWx5BOD
- 350jro+MV2eVDCRYAZb/a849bmm76ygXTlouluMzNBRBe15gFp2wfNxXHFC5o8hhfSztoePV9
- qciiMDnUttkNHYjtgfPsamNRK4ovLLCptUgWnQPTRFOiBVfm5Pj/vmsE2RY2h9blonIB0bmjg
- ewA5leIVkgMveqUzYlpJOabmZI1iBITJLXsaAxnnLSvAVbkcilQuSahTWik34X6N6WMDd4HGE
- 1PlyAmqPKqsDrsSGsD1hVBjBZ070mqZ3CWUZLbZ1e7SmKnfNwQM05lWk0JeUXIGnHQYw=
+X-Provags-ID: V03:K1:d5LpR8ixDO+rUCo7GZh4qB7+vstRQ8G8dMfLVMbpf3bPC7a2P0E
+ dDSsVenzGfrc4nnDgFQbLTHytjWBP0mHAZ2s/b8cZUNMbw9t262Bx/Z6M8FFD6+dWel7D96
+ AKzYOFymZ8i9qcxNCPZDvgx8QqkYUUwtbAiSxmA3xUfcIX3Wo89WqZ3C7tuno9J1EVdJ5jT
+ Ls2++XGdRJUev/G19VRjg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AvrW69UeUFw=:j7/XNAVkDcqqvAGo8vEdRR
+ fIvh6j90dfuvNoeHeyV5s3DD1Yj56xsLr/aNdPo2EAhhEmWIybWZPFJ3RPy+DihSFhdR7Oii3
+ Yq/mrRWYLiUJJGUOLp0DuZlIhA4tZcuMcS3wAEtXwEIvAPhkrGJHgo+OvEh4ussQFmJTJHDGS
+ GZYpC39Qa0wGiPz9Cv0TY1b5IREcsTDIW1CfoTAyYXg2tzhFkNzBXn0tSm4yq4t3B0nT8zhgK
+ e03AyMXFwG1lAXV3XeytUERofkShaGQ8iF2wXqeUh32s3e9WlptYGFDd7gxZzt58K2eO7shsn
+ N1p6j2TE+DpG5fwytHbBv1g0JfnO98z6LOh70G8PuU0bVAPihyj6bGKJWhdlPGnss1Jzyx1Pp
+ 3Jc5Cg6d2JKB3EEW1QotI6vAXs5+peKn8sOKCSCxkb6noqy51SeAPVUzwBRi5CBAYU0MrRTgU
+ XvAuRd4A0NA3f5YB6jYRDO1B+Aavp2i5WczWrxHSXH4XZbl99zilhcYFs6722ATX+Knan+ojG
+ jbCim5PkuFuFE2RH0AMTJFh+0ZNFLX53aSIqLymjm6xt9CcstnVL+TP5/8qlLoFdcYatQ4Uqp
+ kZ0iIGtiH/IFLyP2za5MWURjRVBJboPzFGP8FF6RO7yGkjG1O/f6H7sG9RgZqsFvUHzBPi3QU
+ D5EH9069r013MkuAYFI6PX+IlYVgbtHv1wl3SUP/lGvi3wcrAQkvqQrgmAqe33Ie9/64=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 
-Add the MDIO bus with the respective PHY to allow for making changes to
-that easier.
+Migrate to the latest SPDX license identifier, update copyright period
+and improve compatible strings.
 
-While at it also alphabetically re-order properties and improve
-indentation.
-
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- arch/arm/boot/dts/imx7-colibri.dtsi | 35 ++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 11 deletions(-)
+ arch/arm/boot/dts/imx7-colibri-aster.dtsi        | 5 ++---
+ arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi      | 4 ++--
+ arch/arm/boot/dts/imx7-colibri.dtsi              | 4 ++--
+ arch/arm/boot/dts/imx7d-colibri-aster.dts        | 7 ++++---
+ arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts   | 8 +++++---
+ arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts | 8 +++++---
+ arch/arm/boot/dts/imx7d-colibri-emmc.dtsi        | 4 ++--
+ arch/arm/boot/dts/imx7d-colibri-eval-v3.dts      | 7 ++++---
+ arch/arm/boot/dts/imx7d-colibri.dtsi             | 4 ++--
+ arch/arm/boot/dts/imx7s-colibri-aster.dts        | 7 ++++---
+ arch/arm/boot/dts/imx7s-colibri-eval-v3.dts      | 7 ++++---
+ arch/arm/boot/dts/imx7s-colibri.dtsi             | 4 ++--
+ 12 files changed, 38 insertions(+), 31 deletions(-)
 
+diff --git a/arch/arm/boot/dts/imx7-colibri-aster.dtsi b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
+index 950b4e5f6cf4..bfadb3a3124a 100644
+--- a/arch/arm/boot/dts/imx7-colibri-aster.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
+@@ -1,7 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017-2020 Toradex AG
+- *
++ * Copyright 2017-2022 Toradex
+  */
+ 
+ / {
+diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
+index 17ad9065646d..074c96f09191 100644
+--- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2016-2020 Toradex
++ * Copyright 2016-2022 Toradex
+  */
+ 
+ / {
 diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index e20b0977f38f..074ebb0f8001 100644
+index 6df82a67953a..fa615379a117 100644
 --- a/arch/arm/boot/dts/imx7-colibri.dtsi
 +++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -83,21 +83,34 @@ &ecspi3 {
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2016-2020 Toradex
++ * Copyright 2016-2022 Toradex
+  */
+ 
+ #include <dt-bindings/pwm/pwm.h>
+diff --git a/arch/arm/boot/dts/imx7d-colibri-aster.dts b/arch/arm/boot/dts/imx7d-colibri-aster.dts
+index ce0e6bb7db37..2ed1823c4805 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-aster.dts
++++ b/arch/arm/boot/dts/imx7d-colibri-aster.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017-2020 Toradex AG
++ * Copyright 2017-2022 Toradex
+  *
+  */
+ 
+@@ -10,7 +10,8 @@
+ 
+ / {
+ 	model = "Toradex Colibri iMX7D on Aster Carrier Board";
+-	compatible = "toradex,colibri-imx7d-aster", "toradex,colibri-imx7d",
++	compatible = "toradex,colibri-imx7d-aster",
++		     "toradex,colibri-imx7d",
+ 		     "fsl,imx7d";
  };
  
- &fec1 {
--	pinctrl-names = "default", "sleep";
--	pinctrl-0 = <&pinctrl_enet1>;
--	pinctrl-1 = <&pinctrl_enet1_sleep>;
--	clocks = <&clks IMX7D_ENET_AXI_ROOT_CLK>,
--		<&clks IMX7D_ENET_AXI_ROOT_CLK>,
--		<&clks IMX7D_ENET1_TIME_ROOT_CLK>,
--		<&clks IMX7D_PLL_ENET_MAIN_50M_CLK>;
--	clock-names = "ipg", "ahb", "ptp", "enet_clk_ref";
--	assigned-clocks = <&clks IMX7D_ENET1_TIME_ROOT_SRC>,
--			  <&clks IMX7D_ENET1_TIME_ROOT_CLK>;
- 	assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
- 	assigned-clock-rates = <0>, <100000000>;
-+	assigned-clocks = <&clks IMX7D_ENET1_TIME_ROOT_SRC>,
-+			  <&clks IMX7D_ENET1_TIME_ROOT_CLK>;
-+	clock-names = "ipg", "ahb", "ptp", "enet_clk_ref";
-+	clocks = <&clks IMX7D_ENET_AXI_ROOT_CLK>,
-+		 <&clks IMX7D_ENET_AXI_ROOT_CLK>,
-+		 <&clks IMX7D_ENET1_TIME_ROOT_CLK>,
-+		 <&clks IMX7D_PLL_ENET_MAIN_50M_CLK>;
-+	fsl,magic-packet;
-+	phy-handle = <&ethphy0>;
- 	phy-mode = "rmii";
- 	phy-supply = <&reg_LDO1>;
--	fsl,magic-packet;
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&pinctrl_enet1>;
-+	pinctrl-1 = <&pinctrl_enet1_sleep>;
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy0: ethernet-phy@0 {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			max-speed = <100>;
-+			micrel,led-mode = <0>;
-+			reg = <0>;
-+		};
-+	};
+diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts b/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts
+index 20480276cb0e..33e1034b75a4 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts
++++ b/arch/arm/boot/dts/imx7d-colibri-emmc-aster.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017-2020 Toradex AG
++ * Copyright 2017-2022 Toradex
+  *
+  */
+ 
+@@ -11,7 +11,9 @@
+ / {
+ 	model = "Toradex Colibri iMX7D 1GB (eMMC) on Aster Carrier Board";
+ 	compatible = "toradex,colibri-imx7d-emmc-aster",
+-		     "toradex,colibri-imx7d-emmc", "fsl,imx7d";
++		     "toradex,colibri-imx7d-emmc",
++		     "toradex,colibri-imx7d",
++		     "fsl,imx7d";
  };
  
- &flexcan1 {
+ &usbotg2 {
+diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts b/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts
+index 8ee73c870b12..25d8d4583289 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts
++++ b/arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017 Toradex AG
++ * Copyright 2017-2022 Toradex
+  */
+ 
+ /dts-v1/;
+@@ -10,7 +10,9 @@
+ / {
+ 	model = "Toradex Colibri iMX7D 1GB (eMMC) on Colibri Evaluation Board V3";
+ 	compatible = "toradex,colibri-imx7d-emmc-eval-v3",
+-		     "toradex,colibri-imx7d-emmc", "fsl,imx7d";
++		     "toradex,colibri-imx7d-emmc",
++		     "toradex,colibri-imx7d",
++		     "fsl,imx7d";
+ };
+ 
+ &usbotg2 {
+diff --git a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
+index af39e5370fa1..198e08409d59 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
++++ b/arch/arm/boot/dts/imx7d-colibri-emmc.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017 Toradex AG
++ * Copyright 2017-2022 Toradex
+  */
+ 
+ #include "imx7d.dtsi"
+diff --git a/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts b/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts
+index c610c50c003a..51561388fac5 100644
+--- a/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts
++++ b/arch/arm/boot/dts/imx7d-colibri-eval-v3.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2016-2020 Toradex
++ * Copyright 2016-2022 Toradex
+  */
+ 
+ /dts-v1/;
+@@ -9,7 +9,8 @@
+ 
+ / {
+ 	model = "Toradex Colibri iMX7D on Colibri Evaluation Board V3";
+-	compatible = "toradex,colibri-imx7d-eval-v3", "toradex,colibri-imx7d",
++	compatible = "toradex,colibri-imx7d-eval-v3",
++		     "toradex,colibri-imx7d",
+ 		     "fsl,imx7d";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx7d-colibri.dtsi b/arch/arm/boot/dts/imx7d-colibri.dtsi
+index 219a0404a058..90d25c604de2 100644
+--- a/arch/arm/boot/dts/imx7d-colibri.dtsi
++++ b/arch/arm/boot/dts/imx7d-colibri.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2016-2020 Toradex
++ * Copyright 2016-2022 Toradex
+  */
+ 
+ #include "imx7d.dtsi"
+diff --git a/arch/arm/boot/dts/imx7s-colibri-aster.dts b/arch/arm/boot/dts/imx7s-colibri-aster.dts
+index 87f9e0e079a8..58ebb02d948a 100644
+--- a/arch/arm/boot/dts/imx7s-colibri-aster.dts
++++ b/arch/arm/boot/dts/imx7s-colibri-aster.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2017-2020 Toradex AG
++ * Copyright 2017-2022 Toradex
+  *
+  */
+ 
+@@ -10,7 +10,8 @@
+ 
+ / {
+ 	model = "Toradex Colibri iMX7S on Aster Carrier Board";
+-	compatible = "toradex,colibri-imx7s-aster", "toradex,colibri-imx7s",
++	compatible = "toradex,colibri-imx7s-aster",
++		     "toradex,colibri-imx7s",
+ 		     "fsl,imx7s";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx7s-colibri-eval-v3.dts b/arch/arm/boot/dts/imx7s-colibri-eval-v3.dts
+index 81956c16b95b..6589c4179177 100644
+--- a/arch/arm/boot/dts/imx7s-colibri-eval-v3.dts
++++ b/arch/arm/boot/dts/imx7s-colibri-eval-v3.dts
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2016-2020 Toradex
++ * Copyright 2016-2022 Toradex
+  */
+ 
+ /dts-v1/;
+@@ -9,7 +9,8 @@
+ 
+ / {
+ 	model = "Toradex Colibri iMX7S on Colibri Evaluation Board V3";
+-	compatible = "toradex,colibri-imx7s-eval-v3", "toradex,colibri-imx7s",
++	compatible = "toradex,colibri-imx7s-eval-v3",
++		     "toradex,colibri-imx7s",
+ 		     "fsl,imx7s";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx7s-colibri.dtsi b/arch/arm/boot/dts/imx7s-colibri.dtsi
+index 94de220a5965..2ce102b7f5d4 100644
+--- a/arch/arm/boot/dts/imx7s-colibri.dtsi
++++ b/arch/arm/boot/dts/imx7s-colibri.dtsi
+@@ -1,6 +1,6 @@
+-// SPDX-License-Identifier: GPL-2.0+ OR MIT
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+ /*
+- * Copyright 2016-2020 Toradex
++ * Copyright 2016-2022 Toradex
+  */
+ 
+ #include "imx7s.dtsi"
 -- 
 2.35.1
 
