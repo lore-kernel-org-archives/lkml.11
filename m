@@ -2,93 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 112F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444520AbiEFVg2 (ORCPT
+        id S1444524AbiEFVgg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
+        Fri, 6 May 2022 17:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444485AbiEFVgV (ORCPT
+        with ESMTP id S1444528AbiEFVgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:36:21 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E795DBEC;
-        Fri,  6 May 2022 14:32:37 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id ABEA51F46F19
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651872756;
-        bh=7/ruMOw9euAiDMHjfy/tYPDDLSQ2ojwszbkys9iXdo8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cyOHKSKEm0Xl8bq7Ms0QZLOsaU/N6hUKUV6TpMGAReQ1A6WY6leaqWNUJfgviOnCf
-         OGPhAvVL2lmDWpsdiWjVz1H2p6ldfa6xpevW8ZbRn1mxDuZ94NLQAaOQPoBW5kr24W
-         JMAMXFneC5iwv/XgHH5+bM8WBp9BUnCbIkEtXoAkp0u7rtVpm0J1FIRG2Uu3dcDGEo
-         47l3VZSE78ZM+jmj3HORqEXuoP4c4P5vN/OTavCHPbTPxXq782c4mM6cDAs+nS7lxM
-         j7G/gtFGS0OMz4IQA2kjs/Mit4Za3N11h5GPJXSUIy4wj7lZ2rn/Bi/4MdreXeugE/
-         lRe86rpNYlZRA==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org
-Subject: [PATCH v4 2/2] dt-bindings: remoteproc: mediatek: Add optional memory-region to mtk,scp
-Date:   Fri,  6 May 2022 17:32:26 -0400
-Message-Id: <20220506213226.257859-3-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220506213226.257859-1-nfraprado@collabora.com>
-References: <20220506213226.257859-1-nfraprado@collabora.com>
+        Fri, 6 May 2022 17:36:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE43B6F4AA
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651872766;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dJbJbWsoyM+Ik6q37wpw5Oa4Nh86YRow8ddVHHmJk08=;
+        b=Mogfye/mTZEmePYp0uFboMftlTM2s/fjnz1kqqos0JeUBeMBKURC0xvXO7IJyTujOuZHp3
+        4ubpZwPTTmJ74P8NyjzSHJRzP/z+p/EkmQpaCZMqV4nyLKYIb2RF8YbazbUMj/KqCnrxaX
+        sgPgBZutuhdtlDpyU1KUmf3DeHr1Rds=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-75-T07rAprUMcKaleG2PLuxSA-1; Fri, 06 May 2022 17:32:44 -0400
+X-MC-Unique: T07rAprUMcKaleG2PLuxSA-1
+Received: by mail-qt1-f200.google.com with SMTP id l7-20020a05622a174700b002f3c49f49ffso3859012qtk.15
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 14:32:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=dJbJbWsoyM+Ik6q37wpw5Oa4Nh86YRow8ddVHHmJk08=;
+        b=o02RFvf0P5ZwFgRK48JB5/8WpWVyq4qIm4j/adzrCn9cnE1mu1KjRJ9T0FWV3N6SQR
+         JsItZ6m7QPn05nSdtAi1S+MxU/R7/GHAVoIPb6VXu4Jvh27zzhzPfJLqaMSvglE/ZtB5
+         wVtNdET8WRsqeEAp5W+8MX4VVHpg+PU4XSRmH1kAJn7Y4v+iq4Z2SgySvdL2Evx7/FWc
+         6eqO6+gcOPdq4OF9SfSo5evxbFgBBeDOCAtiXBNIcgDn8iacoh+A6r3oTDyJ09Un6gy2
+         GlESE9KkeXAzkxDLlmIOUuExv9fkxYlKO2lU3D17wDq4uDi3SmUkLo6gPGiCr6bRtGlo
+         1OkQ==
+X-Gm-Message-State: AOAM533oWh4pp5UoEslW6bV3zDCGM7Ig7KoVf9IwD9jUZjXkWqDDhJvx
+        wpBIK5XI1JbZKDs71aneMP+Ij3+1xQ/+g1Pb4nl6e5lO4fiWnQDtmfZ4ksROkJD9xG3spRwjTTQ
+        WnQhGb7V1ZW3RFEx9KFWBae8R
+X-Received: by 2002:a0c:ab09:0:b0:443:95d9:140c with SMTP id h9-20020a0cab09000000b0044395d9140cmr4170802qvb.84.1651872764248;
+        Fri, 06 May 2022 14:32:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwK5FWqqA+iA50nH6ppws5HNXmaCdaMsh8I0itmM43LaQ06P84wOxCI5Gl5CmLPygLNpGGy8Q==
+X-Received: by 2002:a0c:ab09:0:b0:443:95d9:140c with SMTP id h9-20020a0cab09000000b0044395d9140cmr4170789qvb.84.1651872763988;
+        Fri, 06 May 2022 14:32:43 -0700 (PDT)
+Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
+        by smtp.gmail.com with ESMTPSA id b3-20020ac85403000000b002f39b99f6adsm3164237qtq.71.2022.05.06.14.32.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 14:32:43 -0700 (PDT)
+Message-ID: <9b7eab5df5e63e3fe899bca9ea35f4be8bbff98c.camel@redhat.com>
+Subject: Re: [PATCH] drm/nouveau: Fix a potential theorical leak in
+ nouveau_get_backlight_name()
+From:   Lyude Paul <lyude@redhat.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pierre Moreau <pierre.morrow@free.fr>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Date:   Fri, 06 May 2022 17:32:42 -0400
+In-Reply-To: <9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr>
+References: <9ba85bca59df6813dc029e743a836451d5173221.1644386541.git.christophe.jaillet@wanadoo.fr>
+Organization: Red Hat Inc.
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SCP co-processor can optionally be passed a reserved memory region
-to use. Add this property in the dt-binding.
+Sorry I totally missed this patch up until now, noticed it while going through
+unread emails today. This is:
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
 
----
+FWIW, if there's something you need reviews on that hasn't gotten looked at
+after a few weeks feel free to poke the nouveau list/me.
 
-(no changes since v2)
+Anyway, I will go ahead and push this to drm-misc-fixes in a moment. Thanks!
 
-Changes in v2:
-- Dropped type and description since it's a well-known property
-- Set maxItems to 1
+On Wed, 2022-02-09 at 07:03 +0100, Christophe JAILLET wrote:
+> If successful ida_simple_get() calls are not undone when needed, some
+> additional memory may be allocated and wasted.
+> 
+> Here, an ID between 0 and MAX_INT is required. If this ID is >=100, it is
+> not taken into account and is wasted. It should be released.
+> 
+> Instead of calling ida_simple_remove(), take advantage of the 'max'
+> parameter to require the ID not to be too big. Should it be too big, it
+> is not allocated and don't need to be freed.
+> 
+> While at it, use ida_alloc_xxx()/ida_free() instead to
+> ida_simple_get()/ida_simple_remove().
+> The latter is deprecated and more verbose.
+> 
+> Fixes: db1a0ae21461 ("drm/nouveau/bl: Assign different names to interfaces")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> This patch is more a clean-up than a fix.
+> It is unlikely than >= 100 backlight devices will be registered, and the
+> over allocation would occur even much later when the underlying xarray is
+> full.
+> 
+> I also think that the 'if (bl->id >= 0)' before the ida_simple_remove()
+> calls are useless. We don't store the id if a negative (i.e. error) is
+> returned by ida_simple_get().
+> 
+> Finally, having a '#define BL_MAX_MINORS 99' could be better than a
+> magic number in the code.
+> ---
+>  drivers/gpu/drm/nouveau/nouveau_backlight.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> index ae2f2abc8f5a..ccd080ba30bf 100644
+> --- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> +++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> @@ -46,8 +46,8 @@ static bool
+>  nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
+>                            struct nouveau_backlight *bl)
+>  {
+> -       const int nb = ida_simple_get(&bl_ida, 0, 0, GFP_KERNEL);
+> -       if (nb < 0 || nb >= 100)
+> +       const int nb = ida_alloc_max(&bl_ida, 99, GFP_KERNEL);
+> +       if (nb < 0)
+>                 return false;
+>         if (nb > 0)
+>                 snprintf(backlight_name, BL_NAME_SIZE, "nv_backlight%d",
+> nb);
+> @@ -414,7 +414,7 @@ nouveau_backlight_init(struct drm_connector *connector)
+>                                             nv_encoder, ops, &props);
+>         if (IS_ERR(bl->dev)) {
+>                 if (bl->id >= 0)
+> -                       ida_simple_remove(&bl_ida, bl->id);
+> +                       ida_free(&bl_ida, bl->id);
+>                 ret = PTR_ERR(bl->dev);
+>                 goto fail_alloc;
+>         }
+> @@ -442,7 +442,7 @@ nouveau_backlight_fini(struct drm_connector *connector)
+>                 return;
+>  
+>         if (bl->id >= 0)
+> -               ida_simple_remove(&bl_ida, bl->id);
+> +               ida_free(&bl_ida, bl->id);
+>  
+>         backlight_device_unregister(bl->dev);
+>         nv_conn->backlight = NULL;
 
- Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-index e1793a85e610..b0503146d7fe 100644
---- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-@@ -42,6 +42,9 @@ properties:
-   interrupts:
-     maxItems: 1
- 
-+  memory-region:
-+    maxItems: 1
-+
- required:
-   - compatible
-   - reg
 -- 
-2.36.0
+Cheers,
+ Lyude Paul (she/her)
+ Software Engineer at Red Hat
 
