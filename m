@@ -2,194 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C36C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392161AbiEFMtO (ORCPT
+        id S1392126AbiEFMvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 08:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
+        Fri, 6 May 2022 08:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392132AbiEFMtJ (ORCPT
+        with ESMTP id S245378AbiEFMvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 08:49:09 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6F6B7D2;
-        Fri,  6 May 2022 05:45:25 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246CMvCJ017710;
-        Fri, 6 May 2022 12:43:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=J7I3iBXxV8Z1vr0f0ee5d83OYFPlyGPJ3t86KJAK5og=;
- b=a+27yxjQlIlvY+o7rUFP54VO5tTHsDGp8dwAiXZ56/zPPArGGAJBRVhaoNpZHmJTYGCT
- 6o52YBfjV/6zZRmbR5my/gYLeeritzodIh1DLipssx8c6i6eFhYS3JKQD2EpPcy9rSjx
- 0QgSTdjX1qGn9nUNpkTs/C+rgb0ILKyerdVO9aofpxXsz5WH1mw1ghH6I01WNTuxKw3y
- fWGDgstZwQ8AOEB876CgShDaiMpBwNNbKFAETz4TWaiGXeCfsmvVf+viXrj+w2R+uOkV
- z6/V3+P7uT5o6M+bwnFe7JjDAXVhPXD/H/NDwqoqsOyLzCZSsYegNs/hWwH13yOGWgkH oA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw3mprd4c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 12:43:06 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 246CgdYg005869;
-        Fri, 6 May 2022 12:43:05 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw3mprd3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 12:43:05 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 246CblB5028764;
-        Fri, 6 May 2022 12:43:03 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3fuyn7a1ck-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 12:43:03 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246Ch1jP49873194
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 6 May 2022 12:43:01 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DBA31A4053;
-        Fri,  6 May 2022 12:43:00 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 14F5CA4040;
-        Fri,  6 May 2022 12:42:59 +0000 (GMT)
-Received: from sig-9-145-46-59.uk.ibm.com (unknown [9.145.46.59])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  6 May 2022 12:42:59 +0000 (GMT)
-Message-ID: <48b81eb280d949e9321eb304d0ee36abb0075709.camel@linux.ibm.com>
-Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
- it as necessary
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
-        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        "open list:SUPERH" <linux-sh@vger.kernel.org>,
-        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
-        <sparclinux@vger.kernel.org>
-Date:   Fri, 06 May 2022 14:42:58 +0200
-In-Reply-To: <CAK8P3a0NzG=3tDLCdPj2=A__2r_+xiiUTW=WJCBNp29x_A63Og@mail.gmail.com>
-References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
-         <20220505161028.GA492600@bhelgaas>
-         <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
-         <alpine.DEB.2.21.2205061058540.52331@angie.orcam.me.uk>
-         <CAK8P3a0NzG=3tDLCdPj2=A__2r_+xiiUTW=WJCBNp29x_A63Og@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gOwZPZ2fjiFdDkZpJhuCBJIjnnIu-PuZ
-X-Proofpoint-ORIG-GUID: iES7GOmcIZaSIEyxg01Yx8qsHLACB5lz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-06_04,2022-05-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 bulkscore=0 clxscore=1015 phishscore=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 suspectscore=0 adultscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205060070
+        Fri, 6 May 2022 08:51:10 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A9911A19;
+        Fri,  6 May 2022 05:47:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651841247; x=1683377247;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1JBwQExLjRf+shqSc42QfV8mXfEQe1cLSimGmvbq6XQ=;
+  b=WMtueZu5wxcA7fvc6SS8kjFq9azBoI9+qlUoIJZ0Uvgd2wAHcGyUfsD8
+   8EnLrcZgRsOt5/KK77gz0R2bLU7Hti5eFfYcYO5HW8JympOqSAvFUgKQN
+   uI2IL1AkMmv28n+V8O6sXZ7hlJZEX6pEOlXPyGAX6tS5dyr+Xmvttr9pj
+   aPYn9aD++pYLcos5Vv4bqLNP8wI8pqOsmJ1aLUR8shIuftD+mTG3lUydn
+   LhOku1tofd9GCwVufDo232otP5HjxnA1R76ox2ahWRPkUgWv8xyAg/nzo
+   b1S9CEIqac7vuNt/BxHFUE1OQqJs95TepumbMqHCTypntSBDBYieFfXzb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293664437"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="293664437"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 05:47:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="537872611"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 06 May 2022 05:47:25 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nmxMi-000DTq-IJ;
+        Fri, 06 May 2022 12:47:24 +0000
+Date:   Fri, 6 May 2022 20:47:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hao Xu <haoxu.linux@gmail.com>, io-uring@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] io_uring: add a helper for poll clean
+Message-ID: <202205062033.yS62xm5Z-lkp@intel.com>
+References: <20220506070102.26032-5-haoxu.linux@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506070102.26032-5-haoxu.linux@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-06 at 13:33 +0200, Arnd Bergmann wrote:
-> On Fri, May 6, 2022 at 12:20 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
-> > On Thu, 5 May 2022, Arnd Bergmann wrote:
-> >  I think I'm missing something here.  IIUC we're talking about a PCI/PCIe
-> > bus used with s390 hardware, right?
-> > 
-> >  (It has to be PCI/PCIe, because other than x86/IA-64 host buses there are
-> > only PCI/PCIe and EISA/ISA buses out there that define I/O access cycles
-> > and EISA/ISA have long been obsoleted except perhaps from some niche use.)
-> > 
-> >  If this is PCI/PCIe indeed, then an I/O access is just a different bit
-> > pattern put on the bus/in the TLP in the address phase.  So what is there
-> > inherent to the s390 architecture that prevents that different bit pattern
-> > from being used?
-> 
-> The hardware design for PCI on s390 is very different from any other
-> architecture, and more abstract. Rather than implementing MMIO register
-> access as pointer dereference, this is a separate CPU instruction that
-> takes a device/bar plus offset as arguments rather than a pointer, and
-> Linux encodes this back into a fake __iomem token.
+Hi Hao,
 
-Correct, we have since gained new PCI load/store instructions that
-actually do take a virtual address that gets address translated to a
-"physical address" for the PCI BARs. The "physical address" we get from
-the platform (again via special instructions). I put "physical address"
-in quotes because while they are conceptually physical addresses and
-they are translated to by MMU translation tables, accessing their
-virtual mapping with any instruction other then the special PCI
-load/store instructions will cause addressing exceptions. So we still
-don't have real MMIO but something that looks a lot more like MMIO than
-we used to.
+Thank you for the patch! Yet something to improve:
 
-> 
-> >  If anything, I could imagine the same limitation as with current POWER9
-> > implementations, that is whatever glue is used to wire PCI/PCIe to the
-> > rest of the system does not implement a way to use said bit pattern (which
-> > has nothing to do with the POWER9 processor instruction set).
-> > 
-> >  But that has nothing to do with the presence or absence of any specific
-> > processor instructions.  It's just a limitation of bus glue.  So I guess
-> > it's just that all PCI/PCIe glue logic implementations for s390 have such
-> > a limitation, right?
-> 
-> There are separate instructions for PCI memory and config space, but
-> no instructions for I/O space, or for non-PCI MMIO that it could be mapped
-> into.
-> 
->        Arnd
+[auto build test ERROR on f2e030dd7aaea5a937a2547dc980fab418fbc5e7]
 
-The config space is still accessed with the old style PCI load/store
-instructions via a special extra BAR.
+url:    https://github.com/intel-lab-lkp/linux/commits/Hao-Xu/fast-poll-multishot-mode/20220506-150750
+base:   f2e030dd7aaea5a937a2547dc980fab418fbc5e7
+config: mips-pic32mzda_defconfig (https://download.01.org/0day-ci/archive/20220506/202205062033.yS62xm5Z-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e004fb787698440a387750db7f8028e7cb14cfc)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/acb232e81643bd097278ebdc17038e6f280e7212
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Hao-Xu/fast-poll-multishot-mode/20220506-150750
+        git checkout acb232e81643bd097278ebdc17038e6f280e7212
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-But yes overall on s390x we can only access PCI(e) devices via special
-instructions not via real MMIO and also the OS has no direct access to
-the registers of the PHB which are only accessible to firmware. 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Maybe as a bit of further background it's also important to note that
-on s390x all Operating Systems run inside a hypervisor. On the lowest
-level any OS can run this is a non-paging machine level hypervisor. For
-PCI that means that we always have a kind of pass-through access though
-without paging and hardware support for the memory partitioning this is
-of course relatively simple.
+All errors (new ones prefixed by >>):
 
+>> fs/io_uring.c:6067:2: error: call to undeclared function '__io_poll_clean'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           __io_poll_clean(req);
+           ^
+   fs/io_uring.c:6067:2: note: did you mean '__io_fill_cqe'?
+   fs/io_uring.c:2141:20: note: '__io_fill_cqe' declared here
+   static inline bool __io_fill_cqe(struct io_ring_ctx *ctx, u64 user_data,
+                      ^
+   1 error generated.
+
+
+vim +/__io_poll_clean +6067 fs/io_uring.c
+
+  6058	
+  6059	static void io_apoll_task_func(struct io_kiocb *req, bool *locked)
+  6060	{
+  6061		int ret;
+  6062	
+  6063		ret = io_poll_check_events(req, locked);
+  6064		if (ret > 0)
+  6065			return;
+  6066	
+> 6067		__io_poll_clean(req);
+  6068	
+  6069		if (!ret)
+  6070			io_req_task_submit(req, locked);
+  6071		else
+  6072			io_req_complete_failed(req, ret);
+  6073	}
+  6074	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
