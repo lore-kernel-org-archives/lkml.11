@@ -2,26 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A22C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75911C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:30:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442905AbiEFPdl (ORCPT
+        id S1442961AbiEFPdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
+        Fri, 6 May 2022 11:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442911AbiEFPcz (ORCPT
+        with ESMTP id S1442865AbiEFPcz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 11:32:55 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369C16D3AD;
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BA46D3B5;
         Fri,  6 May 2022 08:29:10 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MRSm1-1nPfjz0fmH-00NSFR;
- Fri, 06 May 2022 17:28:58 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1M1IF4-1npjiB0NZq-002llS;
+ Fri, 06 May 2022 17:28:53 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -32,122 +33,93 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 12/24] ARM: dts: imx7-colibri: move rtc node
-Date:   Fri,  6 May 2022 17:27:57 +0200
-Message-Id: <20220506152809.295409-13-marcel@ziswiler.com>
+Subject: [PATCH v1 10/24] ARM: dts: imx7-colibri: add delay for on-module phy supply
+Date:   Fri,  6 May 2022 17:27:55 +0200
+Message-Id: <20220506152809.295409-11-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220506152809.295409-1-marcel@ziswiler.com>
 References: <20220506152809.295409-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:xjSlamvLAi6Uw+RHd6U7taVRuhpg5MGJ0CqVYOoEcJK0tG/8mnh
- dlWDNmWtpbQG/hrJb5pTWgqDuSVfUHy7QJgUNI1tYBukX6ON0WmhTWqCqTkjK3vxEoXT2Z+
- 1qeSl82wRRlZ5up5aIJgWoOqoTJ5FprcmbUcuEUmqT/zgJTDn04ii9HbAwys3quN9/nUEju
- VJeorvkTZIkz0dCw0WJsg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:A5chbVZ63TA=:RUoK36KABzWuVZd1KXUPNH
- 4AvDavS2YQ75WjH3nkYKEGrxhzcle/FYYKlC05Hv52oGxFALJYaUyhwL5MXlmueP+hzpXoxQd
- oDRiJ1y/MdFXjpsd+dpmNAA3A/zc2Vp/FIXOSPd/TJ8drV8IApfWnUQcGKntm5iPV5RVtzEXv
- RkkEn7SEbPr92g1pFEPySGQ92Di8NShlzukAZGO/jwW3z2wdxxT0W5yr51Poyho5umO+AD4y3
- fNZR9fEJz1qL1Masl6X9uo1WYgpVqXMvlaBnRHaeVAJzAZ78ZZpqvQsnRhY7H15gL5o+I7pLb
- PMe6Ht9s3AHgbIBiNRACtI+nRvW3EWrtB5zIPRLbz5qwdW2ebJ0cuOZHBUP9b2i3Kag0OYd/u
- Pm4IxtF4BRYVqoDCf8SaahrsU6I/f1864moQlQvEysTOqp4vF16V9LZ9ncXj/ob4roNtbv8ZF
- l1lsCms64q4YuXIaCVSzTfPfXOqkEntw1ir8xyR6LtQDZ/B3Ke8MOLz6FZ3mPJYQ22vGUZjfG
- tGSDeSxjxt16bawhL+0ounImbvi85L8yjDmM7ZOaeB9CIaIbtN0440/8QgWrTo32Xl26GsK1y
- jnU/mxTE3aUvd7XOwAj8XfECLiWgirk1HqDqoJTfOLTOUPcA+lECPt3WB8CdNh3tfc+wPVBv1
- Gbb1BqN76oQUszATbIZuMNiSkZT4W7pez8sPqxgmWhx0wmtMzglAsuzwhu8ociQZGpzrWf2BB
- rIBWvo47wOKV03Ra
+X-Provags-ID: V03:K1:prmmGjODMASiwQejOwpv0+0U+9fTCcyS5sPOIBvSBXEiafxEZ7b
+ r+JpfOV9IvW0/ap3plhwe4q3Up2MHeEAGG8QJZ3oUw6HDc6kbn/PPgkTbI6smr3BlrhN95r
+ i7maoZADPFMHcOWslw+8toWzBv1Q4z1tpVG4mBdNgWdUyMnenmC917ojFMWyrcPbPtkeSWE
+ JgdvgE+PWlRzk4AwMzpcQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:QgdhHhQYsaU=:YquTNlcSgdxRp4GmRwPkBJ
+ +v2rhl1QYWfndIu4pexiXn7kP+QNGjW5GfGDb4xNfBnN8EeYFaER6oiB3ySNH6K8kaBvXeNu6
+ 68NINcI2s1CzU9/koc1OZoboGg32SaqZtPmnfwxBdpSZnOGAXSqb0vstkDpj69W6zQLU+czOp
+ 8XFlkzOLLbCiZ0whYoLXTaVugZUWrpSgPUvCPgPogyx5S8kWtoPOF9sIcqR13g/xmlTD8Athr
+ Vl1OH9xbQwA/Y1FZjhgegoHvikrEOgp7r2yjz/5v3qCUo5LI3WjymWOdhwI8qTCOKx0lb/vcu
+ 5mmBX1BZ2XSo4ZlNElv3LmBl7ludFj7OjGXWqAoZMtM2IF4HHubhlRomChYI4LN+7quwmTrGa
+ yOOLxqTSFRYQVbwrY4hhyv0Ctia8S2yu3MbNnRoC0WQmLBj9RKsN3hN06SCpoFMRScIGwsDq5
+ hRrle0Wh7Vzqv9ajlAusonZOh4eoH0Ri8L/gauv5p9YysKjvEdQW/efznVy0Nvlequalcc+9J
+ LJbS6rZgnfViX9WSKUiqvzm7iwUz4ZPY5TYimCVE7Gcfgofx6l+Gf00ohSDwSltO6E86VkQaP
+ 7DzWlzREGRqAcl2IBRXoBGMx9dzfAsO1CRcErcy9zzvBrv1JcUQCeRGxieY46uYh00yUTlgtf
+ BZ3eSJh6IBArnBfSXqFyMk8JIZWQ7ChL7nP6ZGksN/deoybXSeY4KlPJNc58FeZnn0UA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 
-Move I2C RTC to module-level to be enabled on carrier board-level.
+There is a significant time required for PHY Micrel KSZ8041 to power up.
+Add a delay on start-up/wake-up before the FEC starts communicating with
+the PHY.
 
+LDO1 takes 6 ms, R39 + C44 takes ~100ms, the KSZ8041 datasheet asks for
+~11 ms before starting any programming on the MIIM.
+
+Counting that, add a 200 ms delay to be sure the PHY is ready for
+programming. Also, add the same off delay time to give the capacitor
+time to discharge in order to properly reset.
+
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- arch/arm/boot/dts/imx7-colibri-aster.dtsi   | 11 +++++------
- arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi | 11 +++++------
- arch/arm/boot/dts/imx7-colibri.dtsi         |  7 +++++++
- 3 files changed, 17 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/imx7-colibri.dtsi | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri-aster.dtsi b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-index f3a5cb7d6a0c..9796bfabe241 100644
---- a/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-@@ -21,12 +21,6 @@ &fec1 {
- 
- &i2c4 {
- 	status = "okay";
--
--	/* M41T0M6 real time clock on carrier board */
--	rtc: rtc@68 {
--		compatible = "st,m41t0";
--		reg = <0x68>;
--	};
- };
- 
- &pwm1 {
-@@ -45,6 +39,11 @@ &pwm4 {
- 	status = "okay";
- };
- 
-+/* M41T0M6 real time clock */
-+&rtc {
-+	status = "okay";
-+};
-+
- &uart1 {
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-index 618831e89ce8..e3aac56aece8 100644
---- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-@@ -56,12 +56,6 @@ &fec1 {
- 
- &i2c4 {
- 	status = "okay";
--
--	/* M41T0M6 real time clock on carrier board */
--	rtc: rtc@68 {
--		compatible = "st,m41t0";
--		reg = <0x68>;
--	};
- };
- 
- &pwm1 {
-@@ -80,6 +74,11 @@ &pwm4 {
- 	status = "okay";
- };
- 
-+/* M41T0M6 real time clock */
-+&rtc {
-+	status = "okay";
-+};
-+
- &uart1 {
- 	status = "okay";
- };
 diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 3da9ddc06aae..da3df00c7d67 100644
+index 329638985db6..09dbd262dad1 100644
 --- a/arch/arm/boot/dts/imx7-colibri.dtsi
 +++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -507,6 +507,13 @@ atmel_mxt_ts: touchscreen@4a {
- 		reset-gpios = <&gpio2 28 GPIO_ACTIVE_LOW>;      /* SODIMM 106 / RST */
- 		status = "disabled";
+@@ -94,6 +94,17 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
+ 		regulator-name = "+V3.3_AVDD_AUDIO";
  	};
-+
-+	/* M41T0M6 real time clock on carrier board */
-+	rtc: rtc@68 {
-+		compatible = "st,m41t0";
-+		reg = <0x68>;
-+		status = "disabled";
-+	};
- };
  
- &lcdif {
++	reg_module_3v3_eth: regulator-module-3v3-eth {
++		compatible = "regulator-fixed";
++		off-on-delay-us = <200000>;
++		regulator-name = "+V3.3_ETH";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++		startup-delay-us = <200000>;
++		vin-supply = <&reg_LDO1>;
++	};
++
+ 	reg_usbh_vbus: regulator-usbh-vbus {
+ 		compatible = "regulator-fixed";
+ 		gpio = <&gpio4 7 GPIO_ACTIVE_LOW>; /* SODIMM 129 / USBH_PEN */
+@@ -153,7 +164,7 @@ &fec1 {
+ 	fsl,magic-packet;
+ 	phy-handle = <&ethphy0>;
+ 	phy-mode = "rmii";
+-	phy-supply = <&reg_LDO1>;
++	phy-supply = <&reg_module_3v3_eth>;
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&pinctrl_enet1>;
+ 	pinctrl-1 = <&pinctrl_enet1_sleep>;
+@@ -440,7 +451,7 @@ reg_DCDC4: DCDC4 { /* V1.35_DRAM */
+ 			};
+ 
+ 			reg_LDO1: LDO1 { /* PWR_EN_+V3.3_ETH */
+-				regulator-min-microvolt = <1800000>;
++				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-boot-on;
+ 			};
 -- 
 2.35.1
 
