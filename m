@@ -2,219 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40795C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F18C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442888AbiEFPdJ (ORCPT
+        id S1442876AbiEFPdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
+        Fri, 6 May 2022 11:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442856AbiEFPcm (ORCPT
+        with ESMTP id S1442857AbiEFPcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 11:32:42 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7386D1AC;
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBED6D1BE;
         Fri,  6 May 2022 08:28:58 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1M6mQM-1nkDOl0XAk-008Fws;
- Fri, 06 May 2022 17:28:45 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 07/24] ARM: dts: imx7-colibri: move aliases, chosen, extcon and gpio-keys
-Date:   Fri,  6 May 2022 17:27:52 +0200
-Message-Id: <20220506152809.295409-8-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220506152809.295409-1-marcel@ziswiler.com>
-References: <20220506152809.295409-1-marcel@ziswiler.com>
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id A73061F46AFF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651850936;
+        bh=36GvcdSB/pf30ZP9RtiH75vOy9s3MxY1/p1dsQRCX00=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=j4PWvQ+KBo4etBUy0FbW/p7HgcgQKy32GPpN6vjoThFzS1+RGmcEmteL2lFd/bVBT
+         AknDobZqw5O4tK0BEn0jni1jZ1Y8w81F2B2OWV3FF7FrvJT7Y7bQUJJnPaIFMtFHn0
+         reKyy4wB8Xbrn+puiesHuayZefx8p/F1dSlMuhF2rKVyTgZW8aR+4U0aGftdyXJz/m
+         3XXXthcoiK77QOv1j4fPfZKN7nj7ru6E9U9WMrpUGrEUEDI35YvC+Jqrddc9aKOX41
+         7IjiAmfXml1CMKMBOqZ8jj6SNKFVNBjY8WGAT41UAfMzpF3zkqjQi1yQ9WbfUjIX3x
+         36sMhgh0cdItw==
+Message-ID: <296e6f6f-e96d-2db1-77b9-288dc47d1b98@collabora.com>
+Date:   Fri, 6 May 2022 18:28:49 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:QpzcMql6/IF9Ghd25BqVELfMBiROsYBtZvrZcCggmh/Z/3Y/UHT
- qdnG/5xR91+LxeEhPXtZHuUvejGPASBJTUVkKlCYw8rcNij6EYqttQQGQFkGz/oYwTecXob
- MOkwCd9pS+UcT2oz+je6IftzTZM5wMED4vhWEuOjh3gggy7TFFra2uTu4qQxNgDIri+uMRi
- 0rV7CX7dcMYLD1XtGADxg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vzG8wR6IQIs=:/afAHazV92YtBBW/gmEwHN
- t42ghNMTK/oNR1cc19ra4/kjN0voZ1LA53OgYUoo6LhgX+4cPe15vWTZw8RRbrMukzIMEPaTK
- KQrkGdP56k8UvhHqncUm8fBw1uasu886LHKb9ZEsmEixcDlaS5dZQWTgP85eUPDlvW2A1pQ9D
- sjUOM/GawU4Z3t5Aha1sm9NjgcZ7oSW21WQvmUGUGWcwtX/32aDKe5I0+SLzt0czsxsyCMyJO
- uNhzQuQ7yIV1tr5I+Ko7sITiAkm2qkR9Kggn/i5dHFbleFm6b5iwYGu4jGolllg//uMh2me5Q
- QpyygG4ZxDiIoX6E8k7gWR7b1FKMWtZyI5l923Kjsxbs9/WyNICP/vjYIXTJM9F0doiTxAinc
- HJfwN/7bMVz3fe1A7t+itbUwYMwv65AYRF8cM7M4Ek3e2TNY8qqnGKcOfRDL/TSh3w01XqrLv
- qVYAyh8wyfJbiIuYaoGxL2igTA5THkaCPy2jCSvflv06jND82ArkXd1hadozQIGfs7NI5pj9t
- 9MrH59Lj7NFtpCIEAaJ/VQMtTuJFr3vvlew6aWuysh1T/fQchDG8p6NdsPbXYdoNnb6EmA8Pj
- QNlRQ5duu0332StWz2buBJl5Nohi0jb38uES4PTL/59ImOs2Bjjaousc4rbJBumsGAHwMMEzJ
- 35FYnK0b7bdxR0rkc2ilToWwfgx9nF3eGwUx9rv7EMVNelVOxyDI/cdtsT/AaT58AmWufkIWI
- wsgw4aDQfykREBnR
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v7 04/20] kernel: Add combined power-off+restart handler
+ call chain API
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+References: <20220411233832.391817-1-dmitry.osipenko@collabora.com>
+ <20220411233832.391817-5-dmitry.osipenko@collabora.com>
+ <CAJZ5v0gnTSoeNP+QXwrZ45FQY4howVkJMuCjM=j+_-2BngJdQg@mail.gmail.com>
+ <990621e7-9f8a-8b4a-02ec-fd6c1e1f48ff@collabora.com>
+ <CAJZ5v0jxXtwot0qpib4UG8Tz8Hd1dEbgo58tEdPFboU8xwKHNw@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAJZ5v0jxXtwot0qpib4UG8Tz8Hd1dEbgo58tEdPFboU8xwKHNw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On 4/20/22 21:47, Rafael J. Wysocki wrote:
+>>>> +       spin_unlock(&platform_power_off_lock);
+>>>> +
+>>>> +       if (ret)
+>>>> +               return ret;
+>>>> +
+>>>> +       ret = register_power_off_handler(&priv->power_off_nb);
+>>>> +       if (ret)
+>>>> +               priv->platform_power_off_cb = NULL;
+>>>> +
+>>>> +       return ret;
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(register_platform_power_off);
+>>>> +
+>>>> +/**
+>>>> + *     unregister_platform_power_off - Unregister platform-level power-off callback
+>>>> + *     @power_off: Power-off callback
+>>>> + *
+>>>> + *     Unregisters previously registered platform power-off callback.
+>>>> + *
+>>>> + *     Returns zero on success, or error code on failure.
+>>>> + */
+>>>> +int unregister_platform_power_off(void (*power_off)(void))
+>>>> +{
+>>>> +       struct sys_off_handler_private_data *priv;
+>>>> +       int ret;
+>>>> +
+>>>> +       priv = sys_off_handler_private_data(&platform_power_off_handler);
+>>>> +
+>>>> +       if (priv->platform_power_off_cb != power_off)
+>>>> +               return -EINVAL;
+>>>> +
+>>>> +       ret = unregister_power_off_handler(&priv->power_off_nb);
+>>>> +       priv->platform_power_off_cb = NULL;
+>>>> +
+>>>> +       return ret;
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(unregister_platform_power_off);
+>>>> +
+>>>> +/**
+>>>> + *     do_kernel_power_off - Execute kernel power-off handler call chain
+>>>> + *
+>>>> + *     Calls functions registered with register_power_off_handler.
+>>>> + *
+>>>> + *     Expected to be called as last step of the power-off sequence.
+>>>> + *
+>>>> + *     Powers off the system immediately if a power-off handler function has
+>>>> + *     been registered. Otherwise does nothing.
+>>>> + */
+>>>> +void do_kernel_power_off(void)
+>>>> +{
+>>>> +       /* legacy pm_power_off() is unchained and has highest priority */
+>>>> +       if (pm_power_off && pm_power_off != dummy_pm_power_off)
+>>>> +               return pm_power_off();
+>>>> +
+>>>> +       blocking_notifier_call_chain(&power_off_handler_list, POWEROFF_NORMAL,
+>>>> +                                    NULL);
+>>>> +}
+>>>> +
+>>>> +static void do_kernel_power_off_prepare(void)
+>>>> +{
+>>>> +       /* legacy pm_power_off_prepare() is unchained and has highest priority */
+>>>> +       if (pm_power_off_prepare)
+>>>> +               return pm_power_off_prepare();
+>>>> +
+>>>> +       blocking_notifier_call_chain(&power_off_handler_list, POWEROFF_PREPARE,
+>>>> +                                    NULL);
+>>>> +}
+>>>> +
+>>>>  /**
+>>>>   *     kernel_power_off - power_off the system
+>>>>   *
+>>>> @@ -304,8 +893,7 @@ EXPORT_SYMBOL_GPL(kernel_halt);
+>>>>  void kernel_power_off(void)
+>>>>  {
+>>>>         kernel_shutdown_prepare(SYSTEM_POWER_OFF);
+>>>> -       if (pm_power_off_prepare)
+>>>> -               pm_power_off_prepare();
+>>>> +       do_kernel_power_off_prepare();
+>>>>         migrate_to_reboot_cpu();
+>>>>         syscore_shutdown();
+>>>>         pr_emerg("Power down\n");
+>>>> @@ -314,6 +902,16 @@ void kernel_power_off(void)
+>>>>  }
+>>>>  EXPORT_SYMBOL_GPL(kernel_power_off);
+>>>>
+>>>> +bool kernel_can_power_off(void)
+>>>> +{
+>>>> +       if (!pm_power_off &&
+>>>> +           blocking_notifier_call_chain_is_empty(&power_off_handler_list))
+>>>> +               return false;
+>>>> +
+>>>> +       return true;
+>>> return pm_power_off ||
+>>> blocking_notifier_call_chain_is_empty(&power_off_handler_list);
+>> Thank you for the thorough review!
+> You're very welcome!
 
-Move aliases, chosen, extcon and gpio-keys to module-level device tree
-given they are standard Colibri functionalities.
+Thanks again for taking a look at the patches. I don't have strong
+preferences about the names and etc, so I'll update it all in v8 like
+you suggested.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
-
- arch/arm/boot/dts/imx7-colibri-aster.dtsi   | 18 ------------
- arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi | 31 --------------------
- arch/arm/boot/dts/imx7-colibri.dtsi         | 32 +++++++++++++++++++++
- 3 files changed, 32 insertions(+), 49 deletions(-)
-
-diff --git a/arch/arm/boot/dts/imx7-colibri-aster.dtsi b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-index 9148c54403f3..c12de1861c05 100644
---- a/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
-@@ -4,24 +4,6 @@
-  */
- 
- / {
--	chosen {
--		stdout-path = "serial0:115200n8";
--	};
--
--	gpio-keys {
--		compatible = "gpio-keys";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_gpiokeys>;
--
--		power {
--			label = "Wake-Up";
--			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
--			linux,code = <KEY_WAKEUP>;
--			debounce-interval = <10>;
--			wakeup-source;
--		};
--	};
--
- 	reg_3v3: regulator-3v3 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "3.3V";
-diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-index 4a7e593e9ac6..2e6678f81af6 100644
---- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
-@@ -4,15 +4,6 @@
-  */
- 
- / {
--	aliases {
--		rtc0 = &rtc;
--		rtc1 = &snvs_rtc;
--	};
--
--	chosen {
--		stdout-path = "serial0:115200n8";
--	};
--
- 	/* fixed crystal dedicated to mpc258x */
- 	clk16m: clk16m {
- 		compatible = "fixed-clock";
-@@ -20,27 +11,6 @@ clk16m: clk16m {
- 		clock-frequency = <16000000>;
- 	};
- 
--	extcon_usbc_det: usbc-det {
--		compatible = "linux,extcon-usb-gpio";
--		id-gpio = <&gpio7 14 GPIO_ACTIVE_HIGH>;
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_usbc_det>;
--	};
--
--	gpio-keys {
--		compatible = "gpio-keys";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_gpiokeys>;
--
--		power {
--			label = "Wake-Up";
--			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
--			linux,code = <KEY_WAKEUP>;
--			debounce-interval = <10>;
--			wakeup-source;
--		};
--	};
--
- 	reg_3v3: regulator-3v3 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "3.3V";
-@@ -148,7 +118,6 @@ &uart3 {
- };
- 
- &usbotg1 {
--	extcon = <0>, <&extcon_usbc_det>;
- 	status = "okay";
- };
- 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index fa615379a117..c5a58949d664 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -6,6 +6,11 @@
- #include <dt-bindings/pwm/pwm.h>
- 
- / {
-+	aliases {
-+		rtc0 = &rtc;
-+		rtc1 = &snvs_rtc;
-+	};
-+
- 	backlight: backlight {
- 		brightness-levels = <0 45 63 88 119 158 203 255>;
- 		compatible = "pwm-backlight";
-@@ -18,6 +23,32 @@ backlight: backlight {
- 		status = "disabled";
- 	};
- 
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	extcon_usbc_det: usbc-det {
-+		compatible = "linux,extcon-usb-gpio";
-+		debounce = <25>;
-+		id-gpio = <&gpio7 14 GPIO_ACTIVE_HIGH>; /* SODIMM 137 / USBC_DET */
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_usbc_det>;
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_gpiokeys>;
-+
-+		wakeup {
-+			debounce-interval = <10>;
-+			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* SODIMM 45 */
-+			label = "Wake-Up";
-+			linux,code = <KEY_WAKEUP>;
-+			wakeup-source;
-+		};
-+	};
-+
- 	panel_dpi: panel-dpi {
- 		backlight = <&backlight>;
- 		compatible = "edt,et057090dhu";
-@@ -513,6 +544,7 @@ &uart3 {
- 
- &usbotg1 {
- 	dr_mode = "otg";
-+	extcon = <0>, <&extcon_usbc_det>;
- };
- 
- &usdhc1 {
 -- 
-2.35.1
-
+Best regards,
+Dmitry
