@@ -2,125 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC1DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 19:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC72C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 19:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390221AbiEFTSW (ORCPT
+        id S1390370AbiEFTSt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 15:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
+        Fri, 6 May 2022 15:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389700AbiEFTSV (ORCPT
+        with ESMTP id S1390383AbiEFTSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 15:18:21 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AC26B0BD
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 12:14:37 -0700 (PDT)
-Received: from pps.filterd (m0134425.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246ICwXW019955;
-        Fri, 6 May 2022 19:14:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : subject :
- date : message-id : in-reply-to : references : mime-version; s=pps0720;
- bh=uOg+takIEq6ct6utqy5j7cy1UWZ+qVx642ODf/ZVR3s=;
- b=FXZ6b6xizK4NeC/WHICaPiOt3kK0Coym3sW4nYS4zcOqq61zeGzruJFOUr6i0OuxMq1Y
- 19T8eUeBjj4SBCP3+P5LEiD17JIED50j1n+OaG5Kc7yxSDl/nQayS91vxoyn13BTq6Mw
- xADJYuIGEtUPNx0JAGHut64hn2/P/Dge32hHqvl0g9T+DgLRsKCsMt74OZ5vwZPGN69m
- jiATmrf8WzosO9JCKpvMAidEmfKLWk2iyYWwjxClrO6+GtPRDnJ+2hqIG6f5xl4eqO8I
- B7Wf0e0QOadqPPGP1csg+uVnXHAEO8yW/PVpNQE6n83dmvvPRNPuLUyjhQ+UG1R18Gv9 mQ== 
-Received: from g9t5009.houston.hpe.com (g9t5009.houston.hpe.com [15.241.48.73])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fw8rcgcw9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 19:14:32 +0000
-Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g9t5009.houston.hpe.com (Postfix) with ESMTP id 3614151;
-        Fri,  6 May 2022 19:14:32 +0000 (UTC)
-Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 07E864A;
-        Fri,  6 May 2022 19:14:32 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     verdun@hpe.com, nick.hawkins@hpe.com, joel@jms.id.au,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v7 8/8] MAINTAINERS: Introduce HPE GXP Architecture
-Date:   Fri,  6 May 2022 14:13:39 -0500
-Message-Id: <20220506191339.78617-8-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220506191339.78617-1-nick.hawkins@hpe.com>
-References: <20220506191339.78617-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: T2gyNkOD5_wo-EZ5lm7JMPthUkAc4uz4
-X-Proofpoint-ORIG-GUID: T2gyNkOD5_wo-EZ5lm7JMPthUkAc4uz4
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-06_07,2022-05-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 clxscore=1015
- mlxlogscore=999 spamscore=0 phishscore=0 lowpriorityscore=0 mlxscore=0
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205060097
+        Fri, 6 May 2022 15:18:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2916F48C;
+        Fri,  6 May 2022 12:14:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87C3A621B4;
+        Fri,  6 May 2022 19:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F04CCC385A9;
+        Fri,  6 May 2022 19:14:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651864494;
+        bh=F/9jPRzu6LORMt13X5oeMdS+FWzPGSwKkpcgSI/FGmA=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=o33nd9l8zt0+cbKQTdCyGbZpfOglld8BZxUXsl0IGy4Fnrelr0b+0qbWYggF8cpzO
+         xIeLbsYOt6wis7BC5bVgwcWD/tzK/gO8FUk8biwGxKcia5Rs/Z0M/3VOrgqwD5JdBc
+         4YnrF22h2EDtlBG5u0aKsElQYQ7l9+h1bHsBolUYGJqiDiqp88nmt0mPpYrYYXguhe
+         x/RHfgoGYbicbPpT3LXwr+DcQmaj1CFYURgwAcgwR+0LsvnyKG197VOBoKenq2PSBO
+         QUpe1ziC8LYBAhGq8oI6JlcOvxTchlzYv78uByDQb/3oz7JArFVv2vQ9NXHnMDKyiv
+         BfQ94JfywiVQg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D78C3F03912;
+        Fri,  6 May 2022 19:14:53 +0000 (UTC)
+Subject: Re: [GIT PULL] KVM fixes for Linux 5.18-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220506171649.1426392-1-pbonzini@redhat.com>
+References: <20220506171649.1426392-1-pbonzini@redhat.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220506171649.1426392-1-pbonzini@redhat.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+X-PR-Tracked-Commit-Id: 053d2290c0307e3642e75e0185ddadf084dc36c1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: bce58da1f39843d47ccd6d9839fadbf898b72358
+Message-Id: <165186449387.13372.14469142481679770324.pr-tracker-bot@kernel.org>
+Date:   Fri, 06 May 2022 19:14:53 +0000
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+The pull request you sent on Fri,  6 May 2022 13:16:49 -0400:
 
-Create a section in MAINTAINERS for the GXP HPE architecture.
+> https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
 
-Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/bce58da1f39843d47ccd6d9839fadbf898b72358
 
----
-v7:
-* Changed arch/arm/boot/dts/hpe-bmc-dl360gen10.dts to
-  arch/arm/boot/hpe-bmc*
-* Changed arch/arm/boot/dts/hpe-gxp.dtsi to arch/arm/boot/dts/hpe-gxp*
-* Changed arch/arm/mach-hpe/gxp.c to arch/arm/mach-hpe/
-v6:
-* Fixed subject to match other commits
-* Removed hpe,gxp-wdt.yaml from file list
-v5:
-* Fixed commit message to list all previous changes
-v4:
-* Added ARM/ before HPE Title
-* Changed MAINTAINED to Maintained
-* Renamed gxp-timer.c to timer-gxp.c
-* Renamed gxp.yaml to hpe,gxp.yaml
+Thank you!
 
-v3:
-* Removed uncessary files
-* Used proper patch-set format
-
-v2:
-* Fixed email address
-* Removed multiple entries in favor of one
----
- MAINTAINERS | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 40fa1955ca3f..ce28eb2843c6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2130,6 +2130,18 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kristoffer/linux-hpc.git
- F:	arch/arm/mach-sa1100/include/mach/jornada720.h
- F:	arch/arm/mach-sa1100/jornada720.c
- 
-+ARM/HPE GXP ARCHITECTURE
-+M:	Jean-Marie Verdun <verdun@hpe.com>
-+M:	Nick Hawkins <nick.hawkins@hpe.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/arm/hpe,gxp.yaml
-+F:	Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
-+F:	arch/arm/boot/dts/hpe-bmc*
-+F:	arch/arm/boot/dts/hpe-gxp*
-+F:	arch/arm/mach-hpe/
-+F:	drivers/clocksource/timer-gxp.c
-+F:	drivers/watchdog/gxp-wdt.c
-+
- ARM/IGEP MACHINE SUPPORT
- M:	Enric Balletbo i Serra <eballetbo@gmail.com>
- M:	Javier Martinez Canillas <javier@dowhile0.org>
 -- 
-2.17.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
