@@ -2,114 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0585DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391468AbiEFLpq (ORCPT
+        id S1391467AbiEFLtO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 07:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
+        Fri, 6 May 2022 07:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391464AbiEFLpn (ORCPT
+        with ESMTP id S1391462AbiEFLs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 07:45:43 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146DF64708;
-        Fri,  6 May 2022 04:41:56 -0700 (PDT)
-Received: from mail-yw1-f170.google.com ([209.85.128.170]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M7aqD-1njNRn3nA5-0086j6; Fri, 06 May 2022 13:41:55 +0200
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2f7d19cac0bso77892637b3.13;
-        Fri, 06 May 2022 04:41:54 -0700 (PDT)
-X-Gm-Message-State: AOAM531Sjh7Q45UDmZ/dNzvtvCSOV36srmPmVSs1ZzLT/GQ/8p7NsjAU
-        gZeYQxQPAejOjygOBOJnNyoZuWeMWkbGlVwPzx4=
-X-Google-Smtp-Source: ABdhPJywspxQxLYUg/eOOLFrgtyTJ05Ld5wI7gPuDubfD9OWObUtSEcGtfhDxXCtuquUvGM12QufsEjCeeQ7Z/PAEvg=
-X-Received: by 2002:a81:2305:0:b0:2f7:dadb:2162 with SMTP id
- j5-20020a812305000000b002f7dadb2162mr2092280ywj.42.1651837313474; Fri, 06 May
- 2022 04:41:53 -0700 (PDT)
+        Fri, 6 May 2022 07:48:57 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BD658E40;
+        Fri,  6 May 2022 04:45:14 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KvpXY6LH2zXdjf;
+        Fri,  6 May 2022 19:40:29 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 6 May 2022 19:45:12 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 6 May 2022 19:45:10 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        <kexec@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Will Deacon" <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: [PATCH v24 3/6] arm64: kdump: Reimplement crashkernel=X
+Date:   Fri, 6 May 2022 19:43:59 +0800
+Message-ID: <20220506114402.365-4-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
+In-Reply-To: <20220506114402.365-1-thunder.leizhen@huawei.com>
+References: <20220506114402.365-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
- <20220430090518.3127980-21-chenhuacai@loongson.cn> <CAK8P3a2SPTLLrZtSz0LT0LqMpq4SKCScD4vLvr+DJn+u5W_CdA@mail.gmail.com>
- <CAMj1kXEDpJwLDD4ZGLwzdo1KcJG_90iD9MnBVamCK06YKF7BdA@mail.gmail.com>
- <CAAhV-H4eR5YvhABp9L4FBmofWwH+XM3V_nOjatQTV_M7Gihs7g@mail.gmail.com>
- <CAMj1kXFD8_CuijJFgQbrxvY4MVBLmKQKFKmYhD1NBFLn3v=+FQ@mail.gmail.com> <a6afaa3f-cb9f-2086-0e02-5ec21ba535d4@xen0n.name>
-In-Reply-To: <a6afaa3f-cb9f-2086-0e02-5ec21ba535d4@xen0n.name>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 6 May 2022 13:41:36 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0xuh1aAM7iwE-jiBbR-OOF5YVfhmU0Nygbpviso3tmbQ@mail.gmail.com>
-Message-ID: <CAK8P3a0xuh1aAM7iwE-jiBbR-OOF5YVfhmU0Nygbpviso3tmbQ@mail.gmail.com>
-Subject: Re: [PATCH V9 20/24] LoongArch: Add efistub booting support
-To:     WANG Xuerui <kernel@xen0n.name>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:3kKuw8Z9zKIZX8wYjoygIzYKmuNhyVykuNFk32CspPPPKzWZaZ/
- vZz7HsCc6h4T+l8r2NDeBOt0mALrlv0pJNaEPm0fbFc5DN0Ec7tlLl6RBAmffvmFvZ4jqhY
- ep3CKqyWVhpaOBxUfAN1ajsW0ByffWC/0uw1JFwQSZDdMwUOJ5tTjyALIe2YfdXT6xdJtSL
- hvQAIVNpZGylF2FsfVT7A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NslH1lIbwxo=:Cnfd57ShCXlhhGYkGMK+HD
- HoAru0SImj9csa9RXP9VJwG5mzMN4eqOF54dXYFgY3IFkfLQ4UnDM/SKh/viKP86iw0wTRDwS
- KporuMOFJUZfO+B7qNo4LgMimx5xiEMhzpu3wV1lHoGMISrdxmCHm081LhpB3D0h1qdELPQ5a
- SxcwQqPDXG1NVoC06S5cIbLdR7JUhoIzZ3Jf59wRiRCAb3TMAuHhqK+yBFv8XBf6egf10tvU4
- 2/etMN6cKuVEA28aarV6mul/mEvMrIfy9DbUJzjutRoVJ3r00ZFCtjBbR608YBwBtUV/IkRt5
- Hj+ZkxhrFDNR1IXr/azix0XQdRix2yQWqXhlk8GJK57pvygLkoFioGAjRHwBRH6f5upkepGg+
- gttEH/I+nX0S8GiXy7u7MkmWLEPkLyycGNMipAUzbfu+H0c4u9jNO9UG1Oq7LDOKXO2GcJ5iu
- SjM4jkDknL5HrzlxHZNLb2ZSkx0b2bjDCps30BduYiJEPMXfi+psROiR5kvGQGgg63/CJgD/Q
- gP1wElCblVptrpiEYwDkn+7JLj1SoSPosCVyBi8DkJLeg+ilM1BoqEQn4QANuMVymH2O3oSuP
- eNz0giC31VdwElnGFOC5DqGocUi6uPPozbWFMSn3GgiTc4iLXmp68gpjGOOR1s8eMo9AXO1DL
- s1pJk2EKyYHKVOM7RxyH8H5XZ/SJxH69/fB4itmo02kkCgKsK83v98EKWjs91I/+swLY=
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 1:26 PM WANG Xuerui <kernel@xen0n.name> wrote:
-> On 5/6/22 16:14, Ard Biesheuvel wrote:
+From: Chen Zhou <chenzhou10@huawei.com>
 
-> Or is there compatibility at all?
->
-> It turns out that this port is already incompatible with shipped
-> systems, in other ways, at least since the March revision or so.
+There are following issues in arm64 kdump:
+1. We use crashkernel=X to reserve crashkernel in DMA zone, which
+will fail when there is not enough low memory.
+2. If reserving crashkernel above DMA zone, in this case, crash dump
+kernel will fail to boot because there is no low memory available
+for allocation.
 
-I think we can treat user space compatibility separately from firmware
-compatibility.
+To solve these issues, introduce crashkernel=X,[high,low].
+The "crashkernel=X,high" is used to select a region above DMA zone, and
+the "crashkernel=Y,low" is used to allocate specified size low memory.
 
-> So, in effect, this port is starting from scratch, and taking the chance
-> to fix early mistakes and oversights all over; hence my opinion is,
-> better do the Right Thing (tm) and give the generic codepath a chance.
->
-> For the Loongson devs: at least, declare the struct boot_params flow
-> deprecated from day one, then work to eliminate it from future products,
-> if you really don't want to delay merging even further (it's already
-> unlikely to land in 5.19, given the discussion happening in LKML [3]).
-> It's not embarrassing to admit mistakes; we all make mistakes, and
-> what's important is to learn from them so we don't collectively repeat
-> ourselves.
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+Co-developed-by: Zhen Lei <thunder.leizhen@huawei.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ arch/arm64/kernel/machine_kexec.c      |  9 +++-
+ arch/arm64/kernel/machine_kexec_file.c | 12 ++++-
+ arch/arm64/mm/init.c                   | 63 +++++++++++++++++++++++---
+ 3 files changed, 74 insertions(+), 10 deletions(-)
 
-Agreed. I think there can be limited compatibility support for old
-firmware though, at least to help with the migration: As long as
-the interface between grub and linux has a proper definition following
-the normal UEFI standard, there can be both a modern grub
-that is booted using the same protocol and a backwards-compatible
-grub that can be booted from existing firmware and that is able
-to boot the kernel.
+diff --git a/arch/arm64/kernel/machine_kexec.c b/arch/arm64/kernel/machine_kexec.c
+index e16b248699d5c3c..19c2d487cb08feb 100644
+--- a/arch/arm64/kernel/machine_kexec.c
++++ b/arch/arm64/kernel/machine_kexec.c
+@@ -329,8 +329,13 @@ bool crash_is_nosave(unsigned long pfn)
+ 
+ 	/* in reserved memory? */
+ 	addr = __pfn_to_phys(pfn);
+-	if ((addr < crashk_res.start) || (crashk_res.end < addr))
+-		return false;
++	if ((addr < crashk_res.start) || (crashk_res.end < addr)) {
++		if (!crashk_low_res.end)
++			return false;
++
++		if ((addr < crashk_low_res.start) || (crashk_low_res.end < addr))
++			return false;
++	}
+ 
+ 	if (!kexec_crash_image)
+ 		return true;
+diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
+index 59c648d51848886..889951291cc0f9c 100644
+--- a/arch/arm64/kernel/machine_kexec_file.c
++++ b/arch/arm64/kernel/machine_kexec_file.c
+@@ -65,10 +65,18 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+ 
+ 	/* Exclude crashkernel region */
+ 	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
++	if (ret)
++		goto out;
++
++	if (crashk_low_res.end) {
++		ret = crash_exclude_mem_range(cmem, crashk_low_res.start, crashk_low_res.end);
++		if (ret)
++			goto out;
++	}
+ 
+-	if (!ret)
+-		ret =  crash_prepare_elf64_headers(cmem, true, addr, sz);
++	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
+ 
++out:
+ 	kfree(cmem);
+ 	return ret;
+ }
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 51863f1448c6989..18ba66c90991ea0 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -90,6 +90,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ #endif
+ 
++/* Current arm64 boot protocol requires 2MB alignment */
++#define CRASH_ALIGN			SZ_2M
++
++#define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
++#define CRASH_ADDR_HIGH_MAX		(PHYS_MASK + 1)
++
++static int __init reserve_crashkernel_low(unsigned long long low_size)
++{
++	unsigned long long low_base;
++
++	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
++	if (!low_base) {
++		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
++		return -ENOMEM;
++	}
++
++	pr_info("crashkernel low memory reserved: 0x%08llx - 0x%08llx (%lld MB)\n",
++		low_base, low_base + low_size, low_size >> 20);
++
++	crashk_low_res.start = low_base;
++	crashk_low_res.end   = low_base + low_size - 1;
++	insert_resource(&iomem_resource, &crashk_low_res);
++
++	return 0;
++}
++
+ /*
+  * reserve_crashkernel() - reserves memory for crash kernel
+  *
+@@ -100,17 +126,35 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ static void __init reserve_crashkernel(void)
+ {
+ 	unsigned long long crash_base, crash_size;
+-	unsigned long long crash_max = arm64_dma_phys_limit;
++	unsigned long long crash_low_size = 0;
++	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
++	char *cmdline = boot_command_line;
+ 	int ret;
+ 
+ 	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
+ 		return;
+ 
+-	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
++	/* crashkernel=X[@offset] */
++	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
+ 				&crash_size, &crash_base);
+-	/* no crashkernel= or invalid value specified */
+-	if (ret || !crash_size)
++	if (ret == -ENOENT) {
++		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
++		if (ret || !crash_size)
++			return;
++
++		/*
++		 * crashkernel=Y,low can be specified or not, but invalid value
++		 * is not allowed.
++		 */
++		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
++		if (ret && (ret != -ENOENT))
++			return;
++
++		crash_max = CRASH_ADDR_HIGH_MAX;
++	} else if (ret || !crash_size) {
++		/* The specified value is invalid */
+ 		return;
++	}
+ 
+ 	crash_size = PAGE_ALIGN(crash_size);
+ 
+@@ -118,8 +162,7 @@ static void __init reserve_crashkernel(void)
+ 	if (crash_base)
+ 		crash_max = crash_base + crash_size;
+ 
+-	/* Current arm64 boot protocol requires 2MB alignment */
+-	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
++	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+ 					       crash_base, crash_max);
+ 	if (!crash_base) {
+ 		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+@@ -127,6 +170,11 @@ static void __init reserve_crashkernel(void)
+ 		return;
+ 	}
+ 
++	if (crash_low_size && reserve_crashkernel_low(crash_low_size)) {
++		memblock_phys_free(crash_base, crash_size);
++		return;
++	}
++
+ 	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+ 		crash_base, crash_base + crash_size, crash_size >> 20);
+ 
+@@ -135,6 +183,9 @@ static void __init reserve_crashkernel(void)
+ 	 * map. Inform kmemleak so that it won't try to access it.
+ 	 */
+ 	kmemleak_ignore_phys(crash_base);
++	if (crashk_low_res.end)
++		kmemleak_ignore_phys(crashk_low_res.start);
++
+ 	crashk_res.start = crash_base;
+ 	crashk_res.end = crash_base + crash_size - 1;
+ 	insert_resource(&iomem_resource, &crashk_res);
+-- 
+2.25.1
 
-The compatibility version of grub can be retired after the firmware
-itself is able to speak the normal boot protocol.
-
-       Arnd
