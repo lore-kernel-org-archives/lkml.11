@@ -2,111 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D02CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71108C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389958AbiEFIRw (ORCPT
+        id S1350853AbiEFISd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
+        Fri, 6 May 2022 04:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390020AbiEFIRb (ORCPT
+        with ESMTP id S1351853AbiEFIS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:17:31 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCE2689A8
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:13:13 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id y21so7832647edo.2
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:13:13 -0700 (PDT)
+        Fri, 6 May 2022 04:18:28 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FFA67D3B
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:14:45 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id i5so8968362wrc.13
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:14:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=48nMT+gnh1vkPS6WcET22AquP1bwix2Jf1ru/W7jPF0=;
-        b=IbrYmItb1Lwf9ZtD0tkpri3RJ99v62ia17YxLpggBwo/VDMDe1Ih5cYt7l1XNud4Wt
-         RLP7ykYKZ1toxZIj8GYyTDh5v4Y1YXumWCCqv4+blU/qCeqYrOSl6U0+YdllXrDZBWRk
-         VoQm4xJTCGGR+pbuWS8Ql7SqkviUCoRy7B/MFqRZ7S3qCCRYYui1N5cd13Gl8lJ9JvHz
-         3tBQEVPh1Adm0NplEjXWdn8LiuGyqpyjIJ/atYzZzorngDy1gyG4jgl1qZp4QkR9FVkY
-         ae0j32HSF9IIpSv3S5OL8MAyV6A17UPBHK38D53THuUVNcHIfXAEpOQ35Wem0hgUnQGN
-         PMKA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/88PareT3FwqgQqeieGvN6EcUA+3T4c6k7+dT7Kdhd8=;
+        b=r/cxdJ5nHqykOS3JTkfrKs4GPwUNikKhRZp8payZC+QEejHrBpvXEH58/a03wbuBG/
+         VY18f5njTHTnREExBBbT8yoX8BkLGu7N16h+DjFCWqMFG3xDB270EhI1rlwGKAzuQlEN
+         X3fTLBW0xyo+MKwnQPF2D0XC63IgshFLpfN68y6s4iSSCRDY94NOOTR/4QDZrwPWFo6l
+         Qs+iZt42jCocGmcsWYUAXQffneDbJcE5NTusAxkvn0iaVptGu1ellbDdgE+kLysBhiQO
+         lpxatkNrnyak7cyI+ooUnSqad9//ghnbngagLntZaL3SQupdnsIyot2DUFUPKNKMbVZG
+         wj/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=48nMT+gnh1vkPS6WcET22AquP1bwix2Jf1ru/W7jPF0=;
-        b=eEoCElGf/lVguHx6fYnzR3AR4iqYBqtvmI3M5qGKvLF8LqEEidwHwV1yYu2fXRDjxx
-         tozyl30p6DszCxe5agF0tJkogWomz1xAeaAUz/6TTA9xoRc3bRBORf2SaY5OM1Onssx3
-         sEf3qcHS55dTy6gGM+84Cj8C8I6RnnlOOPMIcexiTYeGaJFogB5auLdWc01hVF9yJyXA
-         QIF5k7VqfkfU3zNuJTXFerle/5z1wiexCfGw9OEeUtCEGpjo5jhgtxJ9fTFOyZc5uSdD
-         bcHQvMqWvwFeB41TPL6l265FhmzpHeJKJjUKR3qiox/Vjq/SAs82/pkRTPuhaEhRfg9Q
-         qSlw==
-X-Gm-Message-State: AOAM530HTirFQ6Sda2ISnrmACB2M02kHhnjqD6NKOvD67VoLwqdyRMPA
-        +Pv1J6K0ktNj2YSBGz6j4QZeX1DcAWyK7esqoIo=
-X-Google-Smtp-Source: ABdhPJxIFQMjjNdAGODnpdwMXhA+ZLqwYfEpmReeo1+QFMSEzYOfnbnjWCAwmWbcvLH9QkTWfefCdwcPh7x+UX7xDoM=
-X-Received: by 2002:a05:6402:1a42:b0:424:20bb:3e37 with SMTP id
- bf2-20020a0564021a4200b0042420bb3e37mr2214361edb.29.1651824792251; Fri, 06
- May 2022 01:13:12 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/88PareT3FwqgQqeieGvN6EcUA+3T4c6k7+dT7Kdhd8=;
+        b=c7MeCJPJ6YfLKHxzOOIIS1ZOHW/tQ3yj95nSsk055JlugY51gbVUvPZTtRnSHFeXZG
+         PfNc6PuHajoJgYic0DfV7eHKTEn788jVSx206crZWysa39t8pGmgVCBi93HiwH+TeoAe
+         nnd+hUTTbPmtEwYyqu/gtwaH3HW29O8OW2fy+ulAT8Ecjz7IQE4bSVVRLDqTBp1byRHF
+         uTKilhW47Ly/xtDKppfoaGCEGZr8tGaQ/l/mR8LP9LoCVVbhEr14kd4T7EAIgJ8QxX47
+         Dp43G/sL1vI/PEA4kYxjH5WEMgVgpMu07ZafWq4FN+YyZEpDu5IuD5W2POfHWvXvGch6
+         Nhnw==
+X-Gm-Message-State: AOAM531yAzv/z5+ZAnWfB5zgOgvSd2YgJnGwjs9VAtgdPHzWdH7aNU/x
+        g7RriMxmIeJwRzadZFpc2QU1Hw==
+X-Google-Smtp-Source: ABdhPJwYp8Fq7iZ8niSaeSO+xK9EyZuxtnwlwi33jbqc92ETr6vConll0/LoWvaQT2kFOsd2gYwKyA==
+X-Received: by 2002:a5d:5051:0:b0:20c:884b:2347 with SMTP id h17-20020a5d5051000000b0020c884b2347mr1684270wrt.224.1651824883839;
+        Fri, 06 May 2022 01:14:43 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id c14-20020adffb0e000000b0020c6fa5a797sm3059657wrr.91.2022.05.06.01.14.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 01:14:43 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [GIT PULL 1/6] arm64: dts: various cleanup for v5.19
+Date:   Fri,  6 May 2022 10:14:33 +0200
+Message-Id: <20220506081438.149192-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220506073623.2679-1-puyou.lu@gmail.com>
-In-Reply-To: <20220506073623.2679-1-puyou.lu@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 6 May 2022 10:12:36 +0200
-Message-ID: <CAHp75Ve4ez0HKqXTqrtRYPv5T04CtDGafA3UoU1Wzt_DZOHbBA@mail.gmail.com>
-Subject: Re: [PATCH v2] lib/string_helpers: fix not adding strarray to
- device's resource list.
-To:     Puyou Lu <puyou.lu@gmail.com>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chris Down <chris@chrisdown.name>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 9:36 AM Puyou Lu <puyou.lu@gmail.com> wrote:
->
-> Add allocated strarray to device's resource list. This is a must to
-> automatically release strarray when the device disappears.
+Hi,
 
-LGTM,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Thanks!
+Set of cleanup patches for various ARM64 archs.  Some of them were acked by
+respective maintainers, some were waiting a bit so I decided to push through my
+tree.
 
-> Fixes: acdb89b6c87a ("lib/string_helpers: Introduce managed variant of kasprintf_strarray()")
-> Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
->
-> ---
->
-> Change since v1:
-> also set 'n' of strarray https://lore.kernel.org/lkml/20220506022845.26750-1-puyou.lu@gmail.com/
->
-> ---
->  lib/string_helpers.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-> index 4f877e9551d5..5ed3beb066e6 100644
-> --- a/lib/string_helpers.c
-> +++ b/lib/string_helpers.c
-> @@ -757,6 +757,9 @@ char **devm_kasprintf_strarray(struct device *dev, const char *prefix, size_t n)
->                 return ERR_PTR(-ENOMEM);
->         }
->
-> +       ptr->n = n;
-> +       devres_add(dev, ptr);
-> +
->         return ptr->array;
->  }
->  EXPORT_SYMBOL_GPL(devm_kasprintf_strarray);
-> --
-> 2.17.1
->
+Best regards,
+Krzysztof
 
 
--- 
-With Best Regards,
-Andy Shevchenko
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/dt64-cleanup-5.19
+
+for you to fetch changes up to 8dba791a7280542bc125b68b3547bfa2680bc1af:
+
+  arm64: dts: broadcom: drop useless 'dma-channels/requests' properties (2022-05-04 10:26:56 +0200)
+
+----------------------------------------------------------------
+Minor cleanup of ARM64 DTS for v5.19
+
+Align SPI NOR node names and freq-table-hz to DT schema. Drop
+unused/undocumented dma-channels/dma-requests.
+
+----------------------------------------------------------------
+Krzysztof Kozlowski (5):
+      arm64: dts: hisilicon: align 'freq-table-hz' with dtschema in UFS
+      arm64: dts: microchip: align SPI NOR node name with dtschema
+      arm64: dts: marvell: align SPI NOR node name with dtschema
+      arm64: dts: stratix10/agilex: drop useless 'dma-channels/requests' properties
+      arm64: dts: broadcom: drop useless 'dma-channels/requests' properties
+
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi          | 2 --
+ arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi           | 2 --
+ arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi        | 2 --
+ arch/arm64/boot/dts/hisilicon/hi3660.dtsi                  | 4 ++--
+ arch/arm64/boot/dts/hisilicon/hi3670.dtsi                  | 4 ++--
+ arch/arm64/boot/dts/intel/socfpga_agilex.dtsi              | 2 --
+ arch/arm64/boot/dts/marvell/armada-3720-db.dts             | 2 +-
+ arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts     | 2 +-
+ arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts           | 2 +-
+ arch/arm64/boot/dts/marvell/armada-7040-db.dts             | 4 ++--
+ arch/arm64/boot/dts/marvell/armada-7040-mochabin.dts       | 2 +-
+ arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts | 2 +-
+ arch/arm64/boot/dts/marvell/armada-8040-db.dts             | 4 ++--
+ arch/arm64/boot/dts/marvell/armada-8040-mcbin.dtsi         | 2 +-
+ arch/arm64/boot/dts/marvell/armada-8040-puzzle-m801.dts    | 2 +-
+ arch/arm64/boot/dts/marvell/cn9130-crb.dtsi                | 2 +-
+ arch/arm64/boot/dts/marvell/cn9130-db.dtsi                 | 2 +-
+ arch/arm64/boot/dts/marvell/cn9131-db.dtsi                 | 2 +-
+ arch/arm64/boot/dts/microchip/sparx5_nand.dtsi             | 2 +-
+ arch/arm64/boot/dts/microchip/sparx5_pcb125.dts            | 4 ++--
+ arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi     | 4 ++--
+ arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi     | 4 ++--
+ 22 files changed, 25 insertions(+), 33 deletions(-)
