@@ -2,93 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E65C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A600C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389535AbiEFIkQ (ORCPT
+        id S1390189AbiEFIl1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
+        Fri, 6 May 2022 04:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238317AbiEFIkO (ORCPT
+        with ESMTP id S233691AbiEFIlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:40:14 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C2CB24BCA
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:36:10 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24042:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 06 May 2022 16:34:24 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.6; Fri, 6 May 2022 16:34:17 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2507.006; Fri, 6 May 2022 16:34:17 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Russell King - ARM Linux" <linux@armlinux.org.uk>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v14 0/9] Add Sunplus SP7021 SoC Support
-Thread-Topic: [PATCH v14 0/9] Add Sunplus SP7021 SoC Support
-Thread-Index: AQHYYPmpoyLFCwENCkOMTsBsGD1pya0Q7muAgACVJHA=
-Date:   Fri, 6 May 2022 08:34:17 +0000
-Message-ID: <23e22e4e8b9e4d7ab02caaa1c3f7b599@cqplus1.com>
-References: <cover.1651805790.git.qinjian@cqplus1.com>
- <CAK8P3a0W4wpVwDmCXDkm_u9W=JozrnCnxW7zK3h2XD8f_ODy6w@mail.gmail.com>
-In-Reply-To: <CAK8P3a0W4wpVwDmCXDkm_u9W=JozrnCnxW7zK3h2XD8f_ODy6w@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 6 May 2022 04:41:25 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B08124BCA
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:37:43 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id s27so8448868ljd.2
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 01:37:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=aBTMT471I9stUbpF2UehdHUpsXmRCKk3eSoYzUSJuAk=;
+        b=CzymT0keOAYq12hGiC9tdUPQ+0cbAR90o88Qaqegg+N9B43VyAFIxespm3LzMUVyio
+         buGgFfOdndcJv+JlqyjTo6csz3qIr8IrXGbque9gxX6eB/WwKvysxFqnIsSJ3+n1txdw
+         oqttcvlX/H50Jy+OQp2sk9DjEjxmPYusG9gOF+uwE74MXlduAS5Uh0GNTguObFy+l+M7
+         Rw3tdHe2g/k5IljLNqdhHU90r92CBV7/v5jJa6X0G5EM4agu91pZoDdGy9R9bQKawB+f
+         dKCYNoJyk+PeBe6AmMQ+3xnKwiddLgAQaCUCZUYf+duZb7t5B+m2+ubZ1xnHvsUjLAZT
+         iMqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aBTMT471I9stUbpF2UehdHUpsXmRCKk3eSoYzUSJuAk=;
+        b=NZoc8B/SF/RVGDujl2xoxTdYAVs0wtVh0B3gnX/Io3392f56+cC6Uz15AGCAnBo7Cs
+         PV8la+YoRB7f6X67qJ/w30g8xsn8zJ7Rsg6aLjWhyOgHSPcYeXW4JtftocggPgSpQQE3
+         GjjX5tPnaJWzrKQttxS/SV7gcy3lXEinXEf4MRhkd60a2VS4+GQ/exLjnusUCcrQT5vh
+         1DfVhwi33Ba72HTAWqiO65XidF0SSfFF/HZ1V8usn07R+qJB1yxzEcdeDWcG/LFK9bae
+         Uea/h9pt9hPfJiXtahL/pLLEw81pcJbWCrXmoOgSttoYnatOhIDRvhR9KG+oC9R0LjZj
+         u3Yw==
+X-Gm-Message-State: AOAM530LoR87e0g4644Q8pSAT6xs4IZ3p6fVFmgY3pRmaNduEYOcaGc9
+        F383uSgT93DsTjJ1/RURXuvosA==
+X-Google-Smtp-Source: ABdhPJzMuT19wgcsc6rd68Jx5RXNq7aryoQ/BwgKtYwBkrQmhjany5+obcXU2zmzKrWTjcPv40Whbg==
+X-Received: by 2002:a2e:8692:0:b0:24f:c81:5d63 with SMTP id l18-20020a2e8692000000b0024f0c815d63mr1377913lji.517.1651826261838;
+        Fri, 06 May 2022 01:37:41 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id g20-20020a056512119400b0047255d211fesm585120lfr.301.2022.05.06.01.37.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 01:37:41 -0700 (PDT)
+Message-ID: <1aa4cd22-fcb6-0e8d-a1c6-23661d618864@openvz.org>
+Date:   Fri, 6 May 2022 11:37:40 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: kernfs memcg accounting
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tejun Heo <tj@kernel.org>
+References: <7e867cb0-89d6-402c-33d2-9b9ba0ba1523@openvz.org>
+ <20220427140153.GC9823@blackbody.suse.cz>
+ <7509fa9f-9d15-2f29-cb2f-ac0e8d99a948@openvz.org>
+ <YnBLge4ZQNbbxufc@blackbook>
+ <52a9f35b-458b-44c4-7fc8-d05c8db0c73f@openvz.org>
+ <20220504141001.GA10890@blackbody.suse.cz>
+ <65244222-02c5-6e8d-7f4b-83651f378ce2@openvz.org>
+ <20220505094704.GB10890@blackbody.suse.cz>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <20220505094704.GB10890@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiANCj4gT24gRnJpLCBNYXkgNiwgMjAyMiBhdCA1OjIzIEFNIFFpbiBKaWFuIDxxaW5qaWFuQGNx
-cGx1czEuY29tPiB3cm90ZToNCj4gPg0KPiA+IFRoaXMgcGF0Y2ggc2VyaWVzIGFkZCBTdW5wbHVz
-IFNQNzAyMSBTb0Mgc3VwcG9ydC4NCj4gPg0KPiA+IFN1bnBsdXMgU1A3MDIxIGlzIGFuIEFSTSBD
-b3J0ZXggQTcgKDQgY29yZXMpIGJhc2VkIFNvQy4gSXQgaW50ZWdyYXRlcyBtYW55DQo+ID4gcGVy
-aXBoZXJhbHMgKGV4OiBVQVJULCBJMkMsIFNQSSwgU0RJTywgZU1NQywgVVNCLCBTRCBjYXJkIGFu
-ZCBldGMuKSBpbnRvIGENCj4gPiBzaW5nbGUgY2hpcC4gSXQgaXMgZGVzaWduZWQgZm9yIGluZHVz
-dHJpYWwgY29udHJvbC4NCj4gPg0KPiA+IFNQNzAyMSBjb25zaXN0cyBvZiB0d28gY2hpcHMgKGRp
-ZXMpIGluIGEgcGFja2FnZS4gT25lIGlzIGNhbGxlZCBDLWNoaXANCj4gPiAoY29tcHV0aW5nIGNo
-aXApLiBJdCBpcyBhIDQtY29yZSBBUk0gQ29ydGV4IEE3IENQVS4gSXQgYWRvcHRzIGhpZ2gtbGV2
-ZWwNCj4gPiBwcm9jZXNzICgyMiBubSkgZm9yIGhpZ2ggcGVyZm9ybWFuY2UgY29tcHV0aW5nLiBU
-aGUgb3RoZXIgaXMgY2FsbGVkIFAtDQo+ID4gY2hpcCAocGVyaXBoZXJhbCBjaGlwKS4gSXQgaGFz
-IG1hbnkgcGVyaXBoZXJhbHMgYW5kIGFuIEFSTSBBOTI2IGFkZGVkDQo+ID4gZXNwZWNpYWxseSBm
-b3IgcmVhbC10aW1lIGNvbnRyb2wuIFAtY2hpcCBpcyBtYWRlIGZvciBjdXN0b21lcnMuIEl0IGFk
-b3B0cw0KPiA+IGxvdy1sZXZlbCBwcm9jZXNzIChleDogMC4xMSB1bSkgdG8gcmVkdWNlIGNvc3Qu
-DQo+IA0KPiBKdXN0IGFuIHVwZGF0ZSBmcm9tIG15IHNpZGUgYWJvdXQgbWVyZ2luZyB0aGUgcGxh
-dGZvcm0gY29kZTogdGhlDQo+IHN1Ym1pc3Npb24gbG9va3MgbW9zdGx5IHNlbnNpYmxlIHRvIG1l
-LCBidXQgYXMgbG9uZyBhcyB0aGUgY2xrIGFuZCBpcnFjaGlwDQo+IGRyaXZlcnMgaGF2ZSBub3Qg
-ZmluaXNoZWQgdGhlIHJldmlldywgSSBjYW5ub3QgdGFrZSB0aGlzIHRocm91Z2ggdGhlIHNvYw0K
-PiB0cmVlLiBXZSBjb3VsZCBjb25zaWRlciBtZXJnaW5nIHRoZSBwbGF0Zm9ybSBjb2RlIHdpdGhv
-dXQgdGhvc2UgdHdvDQo+IGRyaXZlcnMsIGJ1dCB0aGF0IHNlZW1zIHBvaW50bGVzcyBiZWNhdXNl
-IGl0IHdpbGwgbm90IGJvb3QuDQo+IA0KDQpUaGUgcmV2aWV3ZXJzIG5vIHJlcGx5LCBJIGRvbuKA
-mXQga25vdyB3aHkuDQoNCj4gV2hhdCBpcyB0aGUgcmVhc29uIHlvdSBkb24ndCBpbmNsdWRlIGEg
-LmR0c2kgZmlsZSBpbiB0aGlzIHNlcmllcz8gVXN1YWxseQ0KPiB0aGVyZSBzaG91bGQgYmUgYXQg
-bGVhc3Qgb25lIGJvYXJkIGFuZCB0aGUgZGVzY3JpcHRpb24gb2YgdGhlIFNvQyBpdHNlbGYuDQo+
-IEFnYWluLCB3aXRob3V0IHRob3NlIEknbSBub3Qgc3VyZSBpdCdzIHdvcnRoIG1lcmdpbmcuDQo+
-IA0KDQpTb3JyeSwgSSdsbCBhZGQgdGhlIGR0cyBmaWxlIGluIG5leHQgcGF0Y2guDQoNCj4gRm9y
-IHRoZSB0aW1pbmcsIHdlIGFyZSBnZXR0aW5nIGNsb3NlIHRvIHRoZSA1LjE5IG1lcmdlIHdpbmRv
-dyB0aGF0DQo+IHN0YXJ0cyBvbmNlIHY1LjE4IGlzIG91dCwgYW5kIEkgZG9uJ3QgZXhwZWN0IHRo
-YXQgYWxsIHRoZSBhYm92ZSB3aWxsDQo+IGJlIHJlc29sdmVkIGluIHRpbWUsIHNvIGl0IGxvb2tz
-IHdlIHdpbGwgaGF2ZSB0byBkZWZlciBpdCBieSBvbmUgbW9yZQ0KPiByZWxlYXNlIHRvIDUuMjAu
-DQo+IA0KPiAgICAgICAgICAgQXJuZA0K
+On 5/5/22 12:47, Michal Koutný wrote:
+> On Thu, May 05, 2022 at 12:16:12AM +0300, Vasily Averin <vvs@openvz.org> wrote:
+>> I think it should allocate at least 2 pages.
+> 
+> After decoding kmalloc_type(), I agree this falls into a global
+> (unaccouted) kmalloc_cache.
+> 
+>> However if cgroup_mkdir() calls mem_cgroup_alloc() it correctly account huge percpu
+>> allocations but ignores neighbour multipage allocation.
+> 
+> So, the spillover is bound and proportional to memcg limit (same ration
+> like these two sizes).
+> But it may be better to account it properly, especially if it's
+> contribution form an offlined mem_cgroup.
+
+I've traced mkdir /sys/fs/cgroup/vvs.test on 4cpu VM with Fedora 
+and self-complied upstream kernel, see table with results below.
+These calculations are not precise, it depends on kernel config options,
+number of cpus, enabled controllers, ignores possible page allocations etc
+However I think this is enough to clarify the general situation.
+
+Results:
+- Total sum of accounted memory is ~60Kb.
+- Accounted only 2 huge percpu allocation marked '=', ~18Kb.
+  (and can be 0 without memory controller)
+- kernfs nodes and iattrs are among the main memory consumers.
+   they are marked '++' to be accounted first
+- cgroup_mkdir always allocates 4Kb,
+   so I think it should be accounted first too.
+- mem_cgroup_css_alloc allocations consumes 10K,
+   it's enough to be accounted, especially for VMs with 1-2 CPUs
+- Almost all other allocations are quite small and can be ignored.
+  Exceptions are percpu allocations in alloc_fair_sched_group(),
+   this can consume a significant amount of memory on nodes
+   with multiple processors.
+   marked by '+', can be accounted later.
+- kernfs nodes consumes ~6Kb memory inside simple_xattr_set() 
+   and simple_xattr_alloc(). This is quite high numbers,
+   but is not critical, and I think we can ignore it at the moment.
+- If all proposed memory will be accounted it gives us ~47Kb, 
+   or ~75% of all allocated memory.
+
+Any comments are welcome.
+
+Thank you,
+	Vasily Averin
+
+number	bytes	$1*$2	sum	note	call_site
+of	alloc
+allocs
+------------------------------------------------------------
+1       14448   14448   14448   =       percpu_alloc_percpu:
+1       8192    8192    22640   ++      (mem_cgroup_css_alloc+0x54)
+49      128     6272    28912   ++      (__kernfs_new_node+0x4e)
+49      96      4704    33616   ?       (simple_xattr_alloc+0x2c)
+49      88      4312    37928   ++      (__kernfs_iattrs+0x56)
+1       4096    4096    42024   ++      (cgroup_mkdir+0xc7)
+1       3840    3840    45864   =       percpu_alloc_percpu:
+4       512     2048    47912   +       (alloc_fair_sched_group+0x166)
+4       512     2048    49960   +       (alloc_fair_sched_group+0x139)
+1       2048    2048    52008   ++      (mem_cgroup_css_alloc+0x109)
+49      32      1568    53576   ?       (simple_xattr_set+0x5b)
+2       584     1168    54744           (radix_tree_node_alloc.constprop.0+0x8d)
+1       1024    1024    55768           (cpuset_css_alloc+0x30)
+1       1024    1024    56792           (alloc_shrinker_info+0x79)
+1       768     768     57560           percpu_alloc_percpu:
+1       640     640     58200           (sched_create_group+0x1c)
+33      16      528     58728           (__kernfs_new_node+0x31)
+1       512     512     59240           (pids_css_alloc+0x1b)
+1       512     512     59752           (blkcg_css_alloc+0x39)
+9       48      432     60184           percpu_alloc_percpu:
+13      32      416     60600           (__kernfs_new_node+0x31)
+1       384     384     60984           percpu_alloc_percpu:
+1       256     256     61240           (perf_cgroup_css_alloc+0x1c)
+1       192     192     61432           percpu_alloc_percpu:
+1       64      64      61496           (mem_cgroup_css_alloc+0x363)
+1       32      32      61528           (ioprio_alloc_cpd+0x39)
+1       32      32      61560           (ioc_cpd_alloc+0x39)
+1       32      32      61592           (blkcg_css_alloc+0x6b)
+1       32      32      61624           (alloc_fair_sched_group+0x52)
+1       32      32      61656           (alloc_fair_sched_group+0x2e)
+3       8       24      61680           (__kernfs_new_node+0x31)
+3       8       24      61704           (alloc_cpumask_var_node+0x1b)
+1       24      24      61728           percpu_alloc_percpu:
