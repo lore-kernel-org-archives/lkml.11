@@ -2,57 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D01BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE777C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388553AbiEFDbF (ORCPT
+        id S1388552AbiEFDcJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58164 "EHLO
+        Thu, 5 May 2022 23:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388542AbiEFDa6 (ORCPT
+        with ESMTP id S1388539AbiEFDcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:30:58 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4C35EBD8
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:27:13 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id i24-20020a056e021d1800b002cf0541f514so3527681ila.13
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:27:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=fHKEKHdPjoZhYVJRZoCAKKckDq3mCm+7VXF61UEPMbE=;
-        b=SDvk3W1u3Y5B3AQr8NZuKkn9xySkn0Ipmm0MIefyhkC+2uJOe56NOHIJPoCcS/7jJL
-         MI3gzQ4/J2VracVKo05bxV+bnRPmOwF3gbBaq82FEOog9y+Ty+2RbKU72SUTBPyU0cwx
-         kezhTxa5ErPD9LXqmrPjtoL0ps+3bjCyW/vP0NKm46CytrFErkjxlhzlqrUs8kc+fdCi
-         TbXPOdTLu0VOAComEKvsB0i89t4MfedNgI5KTf5Fstl4KkRzyU5MzrPD05elOPnEr+sT
-         mAbjPsl2KGDtKMxx7FQ9SnZIz6Tqc2EwdDh66ppb5azuOVB/mwprzS2SZ103KKLzpriS
-         3LNw==
-X-Gm-Message-State: AOAM530F+Qq3wQKUjJ+jIzouBAKsi5vBo0MCQu+o026yRx1ff0hwAIBT
-        9KxGlA9m3n4IpenINVahebdIF8vbLdz3kcwo0By8U1EMD1s5
-X-Google-Smtp-Source: ABdhPJyasqX5oxM5Yv8PbXwSyn0fWRPp2AgQrPVu+ljQ1EikqoQmL5VHB/sAxMXahjzDLdO69sBE/BYzVYlJGUCz/AlQ6T3dWt+e
+        Thu, 5 May 2022 23:32:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B15644C0;
+        Thu,  5 May 2022 20:28:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 219B5B832C4;
+        Fri,  6 May 2022 03:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 685DEC385AC;
+        Fri,  6 May 2022 03:28:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651807698;
+        bh=/Busav/MercVn3U7qos3BeCdpeFW+y8S+aaQ9UEgLOg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jsBG26qh+s213Ai58L/c76nzSly7WUrMn1CW1KN9i9Ky51OURpsDA8Sue2D1CJ9Sq
+         D8CjECh08aUOh24sOOD33Rszb5HqzS3oCrMHt7J9QZ5KK7ThbTIN8fWjSxQGvAxN6Q
+         wdSWi/aFNzQ4Fsh/B+YFmhpQTvm3gFaA7Eu/Kznm3H/n3c1g3DKxwrUj8NDa4bbkUr
+         dTaDkNqV1drIVgG1E8DYViBhnnKaMxvcP6cr9gNLtlfs6p8gtWeqONXKRInUx3IuES
+         matYNYW+DmzRSrK9oWJeilQ6ahPS2ea5Mt7yGypTxX+HYFgfWH2LN7Lpta8o7j2xya
+         hf/isN0EBWRXQ==
+Message-ID: <366d529e-6149-423a-e012-dbfd9c41baac@kernel.org>
+Date:   Thu, 5 May 2022 20:28:16 -0700
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:194e:b0:2cc:4e4c:fc9a with SMTP id
- x14-20020a056e02194e00b002cc4e4cfc9amr526421ilu.178.1651807633045; Thu, 05
- May 2022 20:27:13 -0700 (PDT)
-Date:   Thu, 05 May 2022 20:27:13 -0700
-In-Reply-To: <000000000000b07a8c05b35e5f65@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000347cd305de4f6fa1@google.com>
-Subject: Re: KCSAN: data-race in do_epoll_ctl / do_epoll_wait
-From:   syzbot <syzbot+19480160ef25c9ffa29d@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, alexander.h.duyck@intel.com,
-        dave@stgolabs.net, kuni1840@gmail.com, kuniyu@amazon.co.jp,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        soheil@google.com, sridhar.samudrala@intel.com,
-        syzkaller-upstream-moderation@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: [net PATCH] ipv4: drop dst in multicast routing path
+Content-Language: en-US
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, tgraf@suug.ch,
+        lokesh.dhoundiyal@alliedtelesis.co.nz
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Auto-closing this bug as obsolete.
-Crashes did not happen for a while, no reproducer and no activity.
+On 5/4/22 7:00 PM, Chris Packham wrote:
+> From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+> 
+> kmemleak reports the following when routing multicast traffic over an
+> ipsec tunnel.
+> 
+> Kmemleak output:
+> unreferenced object 0x8000000044bebb00 (size 256):
+>   comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+>     80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+>     [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+>     [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+>     [<00000000824f6cf1>] gre_rcv+0x178/0x540
+>     [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+>     [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+>     [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+>     [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+>     [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+>     [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+>     [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+>     [<00000000013d7914>] irq_exit+0xc4/0xe0
+>     [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+>     [<000000000751eb8e>] handle_int+0x16c/0x178
+>     [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
+> 
+> The metadata dst is leaked when ip_route_input_mc() updates the dst for
+> the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+> handled dropping the dst in ip_route_input_slow() but missed the
+> multicast case which is handled by ip_route_input_mc(). Drop the dst in
+> ip_route_input_mc() avoiding the leak.
+> 
+> Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+> Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
+> 
+> Notes:
+>     We started seeing this leak in our scenario after commit c0d59da79534
+>     ("ip_gre: Make none-tun-dst gre tunnel store tunnel info as metadat_dst
+>     in recv") but there may be other paths that hit the leak so I've set the
+>     fixes tag as f38a9eb1f77b ("dst: Metadata destinations").
+> 
+>  net/ipv4/route.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
+
