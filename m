@@ -2,161 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8985C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CCAC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392613AbiEFNln (ORCPT
+        id S1392622AbiEFNnb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40404 "EHLO
+        Fri, 6 May 2022 09:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237300AbiEFNll (ORCPT
+        with ESMTP id S237300AbiEFNna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:41:41 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1105766FB7;
-        Fri,  6 May 2022 06:37:58 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id fv2so7050563pjb.4;
-        Fri, 06 May 2022 06:37:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xpUwgl4aDlBvgfFaUzZZ4RtkgUszldjbiZ0FW6duKQE=;
-        b=F3k+r7LmfI5yB6/WMwrvPKq3VhYjXOXQut0WJRNSXP81M/iZDb1DGL1CyvccvuQCB4
-         5RANE1wp92MuvyKP8bGC0C1b58jg5yzn0UE4uSkJKFruDXbq0mqbSZWd7+jFwRu3e0ft
-         bt491lGqJjWy9O0LGB/LlogMfNrJtWJQZRltanTYu1dY1sq0ytMz2Jdta05DC2LzdCdY
-         vXrjwgUo9FvfsIgC9f0vrk5qy+39a9MBQWSdcsVDQfoMbtQRVRpmSFrc9gzrjdGRX9VI
-         jyEhT3SRILAqeP/IP0WFq5FYBObOPxE5GXesp+P14woeRhnQVaHg+PbtaWcyj+VYK+aS
-         cdYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xpUwgl4aDlBvgfFaUzZZ4RtkgUszldjbiZ0FW6duKQE=;
-        b=vD4UQdduII7qOyJWTicLrT7cyJrEOfvWY4fymrdYSTlGglrAHPrlgfllIYoJd7XBAD
-         dTIbGgmHn5xhpxJvNSwNNYbnUq3ISXin1aneOG/tDYDdR8MPsL9hiMqLAUdwPV3bhGok
-         8VNAhhmLi4Jg9A5d4c7B44ssfN1rU2fF1wsV8mwpVQ4/z3PGmugsGqc4y9zU9L5jMJDX
-         4/U1imgx085n8wA2ruXxpSqIa6S6HwLf9DbpEl1iLNIIVYdn0MEoGfaObwWXIEyMgqrP
-         2R4MgeXWYR9RoCve459dF1Hvm8HqtEabwi17LVOptZjV13f4qaKZjVdnSxVYK4ZbzBIh
-         2kGQ==
-X-Gm-Message-State: AOAM5316Y0JEM9YJJvmbHt09P2mU31JV5JC4cs2OUUFSZi2tShW76QTM
-        uhUj4WSJsXciCcGDdfW7rdk=
-X-Google-Smtp-Source: ABdhPJzIaN+YCVs9SoYiT+GtQpw5HvZZa9Zv3Cfx9JL1Nm9ck9LOBYoJmU07Ko3CitO4/pwiOaO8dA==
-X-Received: by 2002:a17:903:22cb:b0:15e:d715:1bd8 with SMTP id y11-20020a17090322cb00b0015ed7151bd8mr3643431plg.159.1651844277633;
-        Fri, 06 May 2022 06:37:57 -0700 (PDT)
-Received: from localhost ([166.111.139.123])
-        by smtp.gmail.com with ESMTPSA id ot16-20020a17090b3b5000b001dc4d22c0a7sm3643256pjb.10.2022.05.06.06.37.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 06:37:57 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH] drivers: net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Fri,  6 May 2022 21:37:48 +0800
-Message-Id: <20220506133748.2799853-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 6 May 2022 09:43:30 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F249E5C876;
+        Fri,  6 May 2022 06:39:46 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9264E1F8DA;
+        Fri,  6 May 2022 13:39:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651844385; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h4aY0Lsx3imt0jV3NDC4D9DAhwDOGA7UNL6mxEQqvk4=;
+        b=X4nrqHBV1THKLZX+AmrUU5ZyxIQU1PB9IsN8b9QwwaDPhd6+Z4c+oS4Ocjb9LPpIsAF5F2
+        JZOaHhPjg9J+9WhWWS+CItSypznJqJqu/9PClF43R+FLoEw19AVPrRPQNh3uv/cqkSRses
+        4UniK8daBoPVd60cEBzsI0LPIdYt5g0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651844385;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h4aY0Lsx3imt0jV3NDC4D9DAhwDOGA7UNL6mxEQqvk4=;
+        b=U+Zh/EVZ0Ewh4JbElwUDlv6+0fiuZItz5QBS8KyhFTHB41xBnX8djaDeZCEkI95219CZIh
+        DRhi2al9+6LAisAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6093713AA2;
+        Fri,  6 May 2022 13:39:45 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id FLieFiEldWLmWQAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 06 May 2022 13:39:45 +0000
+Message-ID: <c2dcaff2-df32-b4a8-2f28-c31cbf2c5715@suse.de>
+Date:   Fri, 6 May 2022 15:39:44 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] fbdev: efifb: Fix a use-after-free due early fb_info
+ cleanup
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>, Peter Jones <pjones@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20220506132225.588379-1-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220506132225.588379-1-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------mhL0gUPSrk4f7zq6G9SeQHiX"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails, 
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls 
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(), 
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------mhL0gUPSrk4f7zq6G9SeQHiX
+Content-Type: multipart/mixed; boundary="------------O92hj00bA01kfyO5mM0pT6ih";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: Andrzej Hajda <andrzej.hajda@intel.com>,
+ =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+ intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Helge Deller <deller@gmx.de>, Peter Jones <pjones@redhat.com>,
+ dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Message-ID: <c2dcaff2-df32-b4a8-2f28-c31cbf2c5715@suse.de>
+Subject: Re: [PATCH] fbdev: efifb: Fix a use-after-free due early fb_info
+ cleanup
+References: <20220506132225.588379-1-javierm@redhat.com>
+In-Reply-To: <20220506132225.588379-1-javierm@redhat.com>
 
-To fix this possible bug, an if statement is added to check whether 
-rq->rx_ring[ring_idx].base is NULL in vmxnet3_rq_cleanup().
+--------------O92hj00bA01kfyO5mM0pT6ih
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-The error log in our fault-injection testing is shown as follows:
+DQpBbSAwNi4wNS4yMiB1bSAxNToyMiBzY2hyaWViIEphdmllciBNYXJ0aW5leiBDYW5pbGxh
+czoNCj4gQ29tbWl0IGQyNThkMDBmYjljNyAoImZiZGV2OiBlZmlmYjogQ2xlYW51cCBmYl9p
+bmZvIGluIC5mYl9kZXN0cm95IHJhdGhlcg0KPiB0aGFuIC5yZW1vdmUiKSBhdHRlbXB0ZWQg
+dG8gZml4IGEgdXNlLWFmdGVyLWZyZWUgZXJyb3IgZHVlIGRyaXZlciBmcmVlaW5nDQo+IHRo
+ZSBmYl9pbmZvIGluIHRoZSAucmVtb3ZlIGhhbmRsZXIgaW5zdGVhZCBvZiBkb2luZyBpdCBp
+biAuZmJfZGVzdHJveS4NCj4gDQo+IEJ1dCBpcm9uaWNhbGx5IHRoYXQgY2hhbmdlIGludHJv
+ZHVjZWQgeWV0IGFub3RoZXIgdXNlLWFmdGVyLWZyZWUgc2luY2UgdGhlDQo+IGZiX2luZm8g
+d2FzIHN0aWxsIHVzZWQgYWZ0ZXIgdGhlIGZyZWUuDQo+IA0KPiBUaGlzIHNob3VsZCBmaXgg
+Zm9yIGdvb2QgYnkgZnJlZWluZyB0aGUgZmJfaW5mbyBhdCB0aGUgZW5kIG9mIHRoZSBoYW5k
+bGVyLg0KPiANCj4gRml4ZXM6IGQyNThkMDBmYjljNyAoImZiZGV2OiBlZmlmYjogQ2xlYW51
+cCBmYl9pbmZvIGluIC5mYl9kZXN0cm95IHJhdGhlciB0aGFuIC5yZW1vdmUiKQ0KPiBSZXBv
+cnRlZC1ieTogVmlsbGUgU3lyasOkbMOkIDx2aWxsZS5zeXJqYWxhQGxpbnV4LmludGVsLmNv
+bT4NCj4gUmVwb3J0ZWQtYnk6IEFuZHJ6ZWogSGFqZGEgPGFuZHJ6ZWouaGFqZGFAaW50ZWwu
+Y29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBKYXZpZXIgTWFydGluZXogQ2FuaWxsYXMgPGphdmll
+cm1AcmVkaGF0LmNvbT4NCg0KUmV2aWV3ZWQtYnk6IFRob21hcyBaaW1tZXJtYW5uIDx0emlt
+ZW1ybWFubkBzdXNlLmRlPg0KDQo+IC0tLQ0KPiANCj4gICBkcml2ZXJzL3ZpZGVvL2ZiZGV2
+L2VmaWZiLmMgfCA0ICsrLS0NCj4gICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCsp
+LCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vZmJk
+ZXYvZWZpZmIuYyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYvZWZpZmIuYw0KPiBpbmRleCBjZmEz
+ZGMwYjRlZWUuLmIzZDVmODg0YzU0NCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy92aWRlby9m
+YmRldi9lZmlmYi5jDQo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYvZWZpZmIuYw0KPiBA
+QCAtMjU5LDEyICsyNTksMTIgQEAgc3RhdGljIHZvaWQgZWZpZmJfZGVzdHJveShzdHJ1Y3Qg
+ZmJfaW5mbyAqaW5mbykNCj4gICAJCQltZW11bm1hcChpbmZvLT5zY3JlZW5fYmFzZSk7DQo+
+ICAgCX0NCj4gICANCj4gLQlmcmFtZWJ1ZmZlcl9yZWxlYXNlKGluZm8pOw0KPiAtDQo+ICAg
+CWlmIChyZXF1ZXN0X21lbV9zdWNjZWVkZWQpDQo+ICAgCQlyZWxlYXNlX21lbV9yZWdpb24o
+aW5mby0+YXBlcnR1cmVzLT5yYW5nZXNbMF0uYmFzZSwNCj4gICAJCQkJICAgaW5mby0+YXBl
+cnR1cmVzLT5yYW5nZXNbMF0uc2l6ZSk7DQo+ICAgCWZiX2RlYWxsb2NfY21hcCgmaW5mby0+
+Y21hcCk7DQo+ICsNCj4gKwlmcmFtZWJ1ZmZlcl9yZWxlYXNlKGluZm8pOw0KPiAgIH0NCj4g
+ICANCj4gICBzdGF0aWMgY29uc3Qgc3RydWN0IGZiX29wcyBlZmlmYl9vcHMgPSB7DQoNCi0t
+IA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0Ug
+U29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkg
+TsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOk
+ZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
 
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
+--------------O92hj00bA01kfyO5mM0pT6ih--
 
+--------------mhL0gUPSrk4f7zq6G9SeQHiX
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 42 ++++++++++++++++---------------
- 1 file changed, 22 insertions(+), 20 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index d9d90baac72a..247fbdfe834a 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1667,28 +1667,30 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	struct Vmxnet3_RxDesc *rxd;
- 
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
--		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
--#ifdef __BIG_ENDIAN_BITFIELD
--			struct Vmxnet3_RxDesc rxDesc;
--#endif
--			vmxnet3_getRxDesc(rxd,
--				&rq->rx_ring[ring_idx].base[i].rxd, &rxDesc);
--
--			if (rxd->btype == VMXNET3_RXD_BTYPE_HEAD &&
--					rq->buf_info[ring_idx][i].skb) {
--				dma_unmap_single(&adapter->pdev->dev, rxd->addr,
--						 rxd->len, DMA_FROM_DEVICE);
--				dev_kfree_skb(rq->buf_info[ring_idx][i].skb);
--				rq->buf_info[ring_idx][i].skb = NULL;
--			} else if (rxd->btype == VMXNET3_RXD_BTYPE_BODY &&
--					rq->buf_info[ring_idx][i].page) {
--				dma_unmap_page(&adapter->pdev->dev, rxd->addr,
--					       rxd->len, DMA_FROM_DEVICE);
--				put_page(rq->buf_info[ring_idx][i].page);
--				rq->buf_info[ring_idx][i].page = NULL;
-+		if (rq->rx_ring[ring_idx].base) {
-+			for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
-+	#ifdef __BIG_ENDIAN_BITFIELD
-+				struct Vmxnet3_RxDesc rxDesc;
-+	#endif
-+				vmxnet3_getRxDesc(rxd,
-+					&rq->rx_ring[ring_idx].base[i].rxd, &rxDesc);
-+
-+				if (rxd->btype == VMXNET3_RXD_BTYPE_HEAD &&
-+						rq->buf_info[ring_idx][i].skb) {
-+					dma_unmap_single(&adapter->pdev->dev, rxd->addr,
-+							 rxd->len, DMA_FROM_DEVICE);
-+					dev_kfree_skb(rq->buf_info[ring_idx][i].skb);
-+					rq->buf_info[ring_idx][i].skb = NULL;
-+				} else if (rxd->btype == VMXNET3_RXD_BTYPE_BODY &&
-+						rq->buf_info[ring_idx][i].page) {
-+					dma_unmap_page(&adapter->pdev->dev, rxd->addr,
-+						       rxd->len, DMA_FROM_DEVICE);
-+					put_page(rq->buf_info[ring_idx][i].page);
-+					rq->buf_info[ring_idx][i].page = NULL;
-+				}
- 			}
- 		}
--
-+
- 		rq->rx_ring[ring_idx].gen = VMXNET3_INIT_GEN;
- 		rq->rx_ring[ring_idx].next2fill =
- 					rq->rx_ring[ring_idx].next2comp = 0;
--- 
-2.25.1
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJ1JSAFAwAAAAAACgkQlh/E3EQov+BI
+OxAAlt52zYzL0xgU7QkrsxpiPGjP98De5tt7Or57DiB41jN8xNPWI/mtxgi00UOiWsjLPaY1VRFc
++b4LdABtJzjnw6g8Kif9qNLKPxvCfMSCvXqxSKXA/gFfSbn9vG7otaahsSij8t2M8tLJ7dl5zc87
+mYA/8dshv1xj6E16kkl0zmTnqfGf91tI4pGuVfB9BcpA50OMOECzCdleL5Mq9sqTvcbHdMvWaos4
+lBfW+puArXa1d3kMi3yodwX5F8mcRipXVRxfPZ7JBk6NaSZiXsrUydaZeMHl55ZShowE9cUWAejZ
+4MiS+4H8kkMGPz4HAxyzfFgL0iDdr1Re+jcpT7j+gDFSGxYh9ov3YIPr/HPUpCSZSfGcVUopxwN1
+BLl+lALTRkZZZQYudqBT6mBnN8shPKx5rT7LNdemqj7RjHAxtZ4qMvudMB2HhoiQNqRV0N3hYCYA
+HzUsNxBN1PryQbmvJr6jmAliFVrkfisVRTqHM2qLv37jobmjbOPIcVdGsgF3qQmNhsU831fL5nkF
+QYgyJh8itZwfxXLizf7gY/K4PzBGCJdkEkxAH/KETNerqj7pdgtVCuUGU0uHK6IeZic3GTLIT+mz
+BHlGEJxrVb9Cc1fOm/4GKwyxL1aqiKf3XoWBRKwFJc/DmcMOezvqfMly4c7qPqVdPzHryR35Wqro
+/Vo=
+=pjpy
+-----END PGP SIGNATURE-----
 
+--------------mhL0gUPSrk4f7zq6G9SeQHiX--
