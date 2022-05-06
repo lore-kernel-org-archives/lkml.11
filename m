@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58217C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388999AbiEFE2M (ORCPT
+        id S1389004AbiEFE2P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 00:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
+        Fri, 6 May 2022 00:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388928AbiEFE1w (ORCPT
+        with ESMTP id S1388947AbiEFE1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 00:27:52 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0533B6004D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C77460077
         for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 21:24:10 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nmpVY-0001Xq-Po; Fri, 06 May 2022 06:24:01 +0200
+        id 1nmpVY-0001Xv-Pq; Fri, 06 May 2022 06:24:00 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nmpVY-000ddQ-DX; Fri, 06 May 2022 06:23:59 +0200
+        id 1nmpVZ-000ddg-6a; Fri, 06 May 2022 06:23:59 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nmpVV-003s8o-Sv; Fri, 06 May 2022 06:23:57 +0200
+        id 1nmpVV-003s9O-VR; Fri, 06 May 2022 06:23:57 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -37,9 +37,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 2/7] net: phy: introduce genphy_c45_pma_baset1_setup_master_slave()
-Date:   Fri,  6 May 2022 06:23:52 +0200
-Message-Id: <20220506042357.923026-3-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 6/7] net: phy: export genphy_c45_baset1_read_status()
+Date:   Fri,  6 May 2022 06:23:56 +0200
+Message-Id: <20220506042357.923026-7-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220506042357.923026-1-o.rempel@pengutronix.de>
 References: <20220506042357.923026-1-o.rempel@pengutronix.de>
@@ -53,95 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move baset1 specific part of genphy_c45_pma_setup_forced() code to
-separate function to make it reusable by PHY drivers.
+Export genphy_c45_baset1_read_status() to make it reusable by PHY drivers.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy-c45.c | 49 ++++++++++++++++++++++++---------------
- include/linux/phy.h       |  1 +
- 2 files changed, 31 insertions(+), 19 deletions(-)
+ drivers/net/phy/phy-c45.c | 3 ++-
+ include/linux/phy.h       | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index 0014aa6e73c0..ffa2d5cd09fc 100644
+index a0684c716a2e..29b1df03f3e8 100644
 --- a/drivers/net/phy/phy-c45.c
 +++ b/drivers/net/phy/phy-c45.c
-@@ -70,6 +70,35 @@ int genphy_c45_pma_suspend(struct phy_device *phydev)
+@@ -785,7 +785,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_pma_read_abilities);
+  * is forced or not, it is read from BASE-T1 AN advertisement
+  * register 7.514.
+  */
+-static int genphy_c45_baset1_read_status(struct phy_device *phydev)
++int genphy_c45_baset1_read_status(struct phy_device *phydev)
+ {
+ 	int ret;
+ 	int cfg;
+@@ -815,6 +815,7 @@ static int genphy_c45_baset1_read_status(struct phy_device *phydev)
+ 
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(genphy_c45_pma_suspend);
++EXPORT_SYMBOL_GPL(genphy_c45_baset1_read_status);
  
-+/**
-+ * genphy_c45_pma_baset1_setup_master_slave - configures forced master/slave
-+ * role of BaseT1 devices.
-+ * @phydev: target phy_device struct
-+ */
-+int genphy_c45_pma_baset1_setup_master_slave(struct phy_device *phydev)
-+{
-+	int ctl = 0;
-+
-+	switch (phydev->master_slave_set) {
-+	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-+	case MASTER_SLAVE_CFG_MASTER_FORCE:
-+		ctl = MDIO_PMA_PMD_BT1_CTRL_CFG_MST;
-+		break;
-+	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-+	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-+	case MASTER_SLAVE_CFG_UNKNOWN:
-+	case MASTER_SLAVE_CFG_UNSUPPORTED:
-+		break;
-+	default:
-+		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL,
-+			     MDIO_PMA_PMD_BT1_CTRL_CFG_MST, ctl);
-+}
-+EXPORT_SYMBOL_GPL(genphy_c45_pma_baset1_setup_master_slave);
-+
  /**
-  * genphy_c45_pma_setup_forced - configures a forced speed
-  * @phydev: target phy_device struct
-@@ -141,25 +170,7 @@ int genphy_c45_pma_setup_forced(struct phy_device *phydev)
- 		return ret;
- 
- 	if (genphy_c45_baset1_able(phydev)) {
--		int ctl = 0;
--
--		switch (phydev->master_slave_set) {
--		case MASTER_SLAVE_CFG_MASTER_PREFERRED:
--		case MASTER_SLAVE_CFG_MASTER_FORCE:
--			ctl = MDIO_PMA_PMD_BT1_CTRL_CFG_MST;
--			break;
--		case MASTER_SLAVE_CFG_SLAVE_FORCE:
--		case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
--		case MASTER_SLAVE_CFG_UNKNOWN:
--		case MASTER_SLAVE_CFG_UNSUPPORTED:
--			break;
--		default:
--			phydev_warn(phydev, "Unsupported Master/Slave mode\n");
--			return -EOPNOTSUPP;
--		}
--
--		ret = phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL,
--				     MDIO_PMA_PMD_BT1_CTRL_CFG_MST, ctl);
-+		ret = genphy_c45_pma_baset1_setup_master_slave(phydev);
- 		if (ret < 0)
- 			return ret;
- 	}
+  * genphy_c45_read_status - read PHY status
 diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 2d12054932ba..d3f924d3b235 100644
+index 4713c95d65fb..508f1149665b 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -1614,6 +1614,7 @@ int genphy_c45_read_link(struct phy_device *phydev);
- int genphy_c45_read_lpa(struct phy_device *phydev);
- int genphy_c45_read_pma(struct phy_device *phydev);
- int genphy_c45_pma_setup_forced(struct phy_device *phydev);
-+int genphy_c45_pma_baset1_setup_master_slave(struct phy_device *phydev);
- int genphy_c45_an_config_aneg(struct phy_device *phydev);
- int genphy_c45_an_disable_aneg(struct phy_device *phydev);
- int genphy_c45_read_mdix(struct phy_device *phydev);
+@@ -1621,6 +1621,7 @@ int genphy_c45_read_mdix(struct phy_device *phydev);
+ int genphy_c45_pma_read_abilities(struct phy_device *phydev);
+ int genphy_c45_pma_baset1_read_master_slave(struct phy_device *phydev);
+ int genphy_c45_read_status(struct phy_device *phydev);
++int genphy_c45_baset1_read_status(struct phy_device *phydev);
+ int genphy_c45_config_aneg(struct phy_device *phydev);
+ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
+ int genphy_c45_pma_resume(struct phy_device *phydev);
 -- 
 2.30.2
 
