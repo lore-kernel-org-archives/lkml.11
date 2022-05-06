@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2623C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F93C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:24:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388971AbiEFE1z (ORCPT
+        id S1388973AbiEFE2A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 00:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
+        Fri, 6 May 2022 00:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241323AbiEFE1v (ORCPT
+        with ESMTP id S1357039AbiEFE1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 00:27:51 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAD05F270
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1C05E766
         for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 21:24:09 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nmpVY-0001Xp-Pi; Fri, 06 May 2022 06:24:00 +0200
+        id 1nmpVY-0001Xr-Po; Fri, 06 May 2022 06:24:00 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nmpVY-000ddO-Bf; Fri, 06 May 2022 06:23:59 +0200
+        id 1nmpVY-000ddT-F6; Fri, 06 May 2022 06:23:59 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nmpVV-003s8x-Tc; Fri, 06 May 2022 06:23:57 +0200
+        id 1nmpVV-003s8f-SB; Fri, 06 May 2022 06:23:57 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -37,9 +37,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 3/7] net: phy: genphy_c45_pma_baset1_setup_master_slave: do no set unknown configuration
-Date:   Fri,  6 May 2022 06:23:53 +0200
-Message-Id: <20220506042357.923026-4-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 1/7] net: phy: genphy_c45_baset1_an_config_aneg: do no set unknown configuration
+Date:   Fri,  6 May 2022 06:23:51 +0200
+Message-Id: <20220506042357.923026-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220506042357.923026-1-o.rempel@pengutronix.de>
 References: <20220506042357.923026-1-o.rempel@pengutronix.de>
@@ -53,31 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not change default master/slave forced configuration if no changes was
-requested.
+Do not change default master/slave autoneg configuration if no
+changes was requested.
 
+Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy-c45.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy-c45.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index ffa2d5cd09fc..b1f7c63f66cd 100644
+index eefdd67d5556..0014aa6e73c0 100644
 --- a/drivers/net/phy/phy-c45.c
 +++ b/drivers/net/phy/phy-c45.c
-@@ -86,9 +86,10 @@ int genphy_c45_pma_baset1_setup_master_slave(struct phy_device *phydev)
- 		break;
- 	case MASTER_SLAVE_CFG_SLAVE_FORCE:
+@@ -191,8 +191,12 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+ 	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
  	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-+		break;
- 	case MASTER_SLAVE_CFG_UNKNOWN:
- 	case MASTER_SLAVE_CFG_UNSUPPORTED:
--		break;
+ 		break;
++	case MASTER_SLAVE_CFG_UNKNOWN:
++	case MASTER_SLAVE_CFG_UNSUPPORTED:
 +		return 0;
  	default:
- 		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
- 		return -EOPNOTSUPP;
+-		break;
++		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
++		return -EOPNOTSUPP;
+ 	}
+ 
+ 	switch (phydev->master_slave_set) {
 -- 
 2.30.2
 
