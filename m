@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE81CC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E884C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443442AbiEFQL1 (ORCPT
+        id S1443475AbiEFQLc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
+        Fri, 6 May 2022 12:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443456AbiEFQKt (ORCPT
+        with ESMTP id S1443426AbiEFQKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:10:49 -0400
-Received: from smtp-8fa9.mail.infomaniak.ch (smtp-8fa9.mail.infomaniak.ch [83.166.143.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C61212ACE
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:07:03 -0700 (PDT)
+        Fri, 6 May 2022 12:10:48 -0400
+Received: from smtp-190b.mail.infomaniak.ch (smtp-190b.mail.infomaniak.ch [IPv6:2001:1600:3:17::190b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B606D95C
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:07:02 -0700 (PDT)
 Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwS65N6wzMqwTG;
-        Fri,  6 May 2022 18:07:02 +0200 (CEST)
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwS46QNyzMqwSk;
+        Fri,  6 May 2022 18:07:00 +0200 (CEST)
 Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwS63lzQzlhMC1;
-        Fri,  6 May 2022 18:07:02 +0200 (CEST)
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwS44KfTzlhMBg;
+        Fri,  6 May 2022 18:07:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651853222;
-        bh=Hg4YQ+otf1y+p9E8hTp3CeAQR8NMqxwgFOwDNjJcoQ8=;
+        s=20191114; t=1651853220;
+        bh=pONfXKuTok6YIRXg0U1RNOakHlPIXE+u75ZPbnhzYa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7UlI8BxD2zPKHjUL1ft+VN0+qnGaU9s54EZZlpKSv1kRpOClg28Jr7jGGod4RsxK
-         USs9BZQdEO/cWGj8dPb6Nhu4WHfj0gfB/r85IbBtqMQr90Yr6SWE+8OVwo6TCUcVHB
-         d5Ah1CmRLgxooy/PgV35ICT9JEIxZoOT/5MgQiCw=
+        b=hv2Ir+vmvtKtiuC9n4RKClUnQhQr5W0pO/QvwpWvSuNkUhbbO8wuZ9HJQZ/Vwc3P0
+         suzrm9VvRcg12NvvQHM6LfnS491uWLDhaJVcpYXOUqkKN4uB+862aX/w4kUd+N8TG5
+         6/9QMWZSk9nYJ4P99NykEfUndW7VkHhXhlKePVCY=
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     James Morris <jmorris@namei.org>,
         "Serge E . Hallyn" <serge@hallyn.com>
@@ -41,9 +41,9 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Paul Moore <paul@paul-moore.com>,
         Shuah Khan <shuah@kernel.org>, linux-api@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH v2 08/10] landlock: Change landlock_add_rule(2) argument check ordering
-Date:   Fri,  6 May 2022 18:08:18 +0200
-Message-Id: <20220506160820.524344-9-mic@digikod.net>
+Subject: [PATCH v2 05/10] selftests/landlock: Extend access right tests to directories
+Date:   Fri,  6 May 2022 18:08:15 +0200
+Message-Id: <20220506160820.524344-6-mic@digikod.net>
 In-Reply-To: <20220506160820.524344-1-mic@digikod.net>
 References: <20220506160820.524344-1-mic@digikod.net>
 MIME-Version: 1.0
@@ -53,118 +53,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This makes more sense to first check the ruleset FD and then the rule
-attribute.  It will be useful to factor out code for other rule types.
+Make sure that all filesystem access rights can be tied to directories.
 
-Add inval_add_rule_arguments tests, extension of empty_path_beneath_attr
-tests, to also check error ordering for landlock_add_rule(2).
+Rename layout1.file_access_rights to layout1.file_and_dir_access_rights
+to reflect this change.
 
+Cc: Shuah Khan <shuah@kernel.org>
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Link: https://lore.kernel.org/r/20220506160820.524344-9-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506160820.524344-6-mic@digikod.net
 ---
 
 Changes since v1:
-* New patch.
+* Format with clang-format and rebase.
 ---
- security/landlock/syscalls.c                 | 22 +++++++------
- tools/testing/selftests/landlock/base_test.c | 34 ++++++++++++++++++--
- 2 files changed, 45 insertions(+), 11 deletions(-)
+ tools/testing/selftests/landlock/fs_test.c | 30 ++++++++++++++++------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
 
-diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-index 7edc1d50e2bf..a7396220c9d4 100644
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -318,20 +318,24 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
- 	if (flags)
- 		return -EINVAL;
+diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
+index f293b7e2a1a7..75f9358512df 100644
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -418,11 +418,12 @@ TEST_F_FORK(layout1, inval)
  
--	if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
--		return -EINVAL;
--
--	/* Copies raw user space buffer, only one type for now. */
--	res = copy_from_user(&path_beneath_attr, rule_attr,
--			     sizeof(path_beneath_attr));
--	if (res)
--		return -EFAULT;
--
- 	/* Gets and checks the ruleset. */
- 	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
- 	if (IS_ERR(ruleset))
- 		return PTR_ERR(ruleset);
+ /* clang-format on */
  
-+	if (rule_type != LANDLOCK_RULE_PATH_BENEATH) {
-+		err = -EINVAL;
-+		goto out_put_ruleset;
-+	}
-+
-+	/* Copies raw user space buffer, only one type for now. */
-+	res = copy_from_user(&path_beneath_attr, rule_attr,
-+			     sizeof(path_beneath_attr));
-+	if (res) {
-+		err = -EFAULT;
-+		goto out_put_ruleset;
-+	}
-+
- 	/*
- 	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
- 	 * are ignored in path walks.
-diff --git a/tools/testing/selftests/landlock/base_test.c b/tools/testing/selftests/landlock/base_test.c
-index be9b937256ac..18b779471dcb 100644
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -121,20 +121,50 @@ TEST(inval_create_ruleset_flags)
- 	ASSERT_EQ(EINVAL, errno);
- }
- 
--TEST(empty_path_beneath_attr)
-+/* Tests ordering of syscall argument checks. */
-+TEST(add_rule_checks_ordering)
+-TEST_F_FORK(layout1, file_access_rights)
++TEST_F_FORK(layout1, file_and_dir_access_rights)
  {
- 	const struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE,
+ 	__u64 access;
+ 	int err;
+-	struct landlock_path_beneath_attr path_beneath = {};
++	struct landlock_path_beneath_attr path_beneath_file = {},
++					  path_beneath_dir = {};
+ 	struct landlock_ruleset_attr ruleset_attr = {
+ 		.handled_access_fs = ACCESS_ALL,
  	};
-+	struct landlock_path_beneath_attr path_beneath_attr = {
-+		.allowed_access = LANDLOCK_ACCESS_FS_EXECUTE,
-+		.parent_fd = -1,
-+	};
- 	const int ruleset_fd =
- 		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
- 
+@@ -432,20 +433,33 @@ TEST_F_FORK(layout1, file_access_rights)
  	ASSERT_LE(0, ruleset_fd);
  
--	/* Similar to struct landlock_path_beneath_attr.parent_fd = 0 */
-+	/* Checks invalid flags. */
-+	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 1));
-+	ASSERT_EQ(EINVAL, errno);
+ 	/* Tests access rights for files. */
+-	path_beneath.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
+-	ASSERT_LE(0, path_beneath.parent_fd);
++	path_beneath_file.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
++	ASSERT_LE(0, path_beneath_file.parent_fd);
 +
-+	/* Checks invalid ruleset FD. */
-+	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 0));
-+	ASSERT_EQ(EBADF, errno);
++	/* Tests access rights for directories. */
++	path_beneath_dir.parent_fd =
++		open(dir_s1d2, O_PATH | O_DIRECTORY | O_CLOEXEC);
++	ASSERT_LE(0, path_beneath_dir.parent_fd);
 +
-+	/* Checks invalid rule type. */
-+	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 0, NULL, 0));
-+	ASSERT_EQ(EINVAL, errno);
+ 	for (access = 1; access <= ACCESS_LAST; access <<= 1) {
+-		path_beneath.allowed_access = access;
++		path_beneath_dir.allowed_access = access;
++		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
++					       LANDLOCK_RULE_PATH_BENEATH,
++					       &path_beneath_dir, 0));
 +
-+	/* Checks invalid rule attr. */
- 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
- 					NULL, 0));
- 	ASSERT_EQ(EFAULT, errno);
-+
-+	/* Checks invalid path_beneath.parent_fd. */
-+	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
-+					&path_beneath_attr, 0));
-+	ASSERT_EQ(EBADF, errno);
-+
-+	/* Checks valid call. */
-+	path_beneath_attr.parent_fd =
-+		open("/tmp", O_PATH | O_NOFOLLOW | O_DIRECTORY | O_CLOEXEC);
-+	ASSERT_LE(0, path_beneath_attr.parent_fd);
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
-+				       &path_beneath_attr, 0));
-+	ASSERT_EQ(0, close(path_beneath_attr.parent_fd));
- 	ASSERT_EQ(0, close(ruleset_fd));
++		path_beneath_file.allowed_access = access;
+ 		err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
+-					&path_beneath, 0);
+-		if ((access | ACCESS_FILE) == ACCESS_FILE) {
++					&path_beneath_file, 0);
++		if (access & ACCESS_FILE) {
+ 			ASSERT_EQ(0, err);
+ 		} else {
+ 			ASSERT_EQ(-1, err);
+ 			ASSERT_EQ(EINVAL, errno);
+ 		}
+ 	}
+-	ASSERT_EQ(0, close(path_beneath.parent_fd));
++	ASSERT_EQ(0, close(path_beneath_file.parent_fd));
++	ASSERT_EQ(0, close(path_beneath_dir.parent_fd));
++	ASSERT_EQ(0, close(ruleset_fd));
  }
  
+ TEST_F_FORK(layout1, unknown_access_rights)
 -- 
 2.35.1
 
