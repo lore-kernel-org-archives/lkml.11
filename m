@@ -2,87 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A368C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442755AbiEFPNX (ORCPT
+        id S1442803AbiEFPNe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        Fri, 6 May 2022 11:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442724AbiEFPNF (ORCPT
+        with ESMTP id S1442745AbiEFPNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:13:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8651C6D1A6
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:09:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651849757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uan3YSckKD+F0UyoMcwlRwcC7eK4puADfdJggDA8Ug8=;
-        b=J4LFNwMTAVdNxv0smgzrWR17rQGXWplFC5KJpNtrOzNuvPgJJF4SYgQSHRiQf/Ot+EKEMT
-        zof64U+s/TQLPxWH5uKGQKBPijbJwBL+u01Q91gwEYaCTZRvHbuasv4vgjXfwEHRn8Qsb/
-        8asoskWQSARsAPXWYevuNHavPbNdCxM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-152-9PYLU4-DOXGJvQCz3IoESg-1; Fri, 06 May 2022 11:09:13 -0400
-X-MC-Unique: 9PYLU4-DOXGJvQCz3IoESg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 6 May 2022 11:13:14 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508626D1AD;
+        Fri,  6 May 2022 08:09:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651849771; x=1683385771;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=ozT16fP9uZM5368h+nOi7loe0DpIGRiHdi5VvAV0IK0=;
+  b=ixlA1t7lhVSKaLRBZ2tkL+gkRCScTiCGL6gtkn/AnoXOgYwsNT2qM1Wp
+   S2Ufn4+WDykSy+TlYbSCH/LAm+oiUCeET7KUnWeux4dmwYQExpPFCqtrT
+   pFjHa2Aw0ZEtj0b7xlxipWfauMUJZc6rnBSsHfpcQ1DcupWt5Ydq8ucwm
+   wt06347UjV9lVgeoVwc1bhu6NDTFffbhJHPlYsxRZsyqmVYX7dSwF20sQ
+   TuSgqIQgIcfR0w198pvwZmjHzhB27TCPrNOZfN4QRiw3slYIGp6bz0AW0
+   AOuu9k6kAQ2DXLBxIbhYbjZ8RvLSHMbJZikEkUPicNjy0gGFFfuPB5HAk
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="250492651"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="250492651"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:09:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="654731889"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 06 May 2022 08:09:02 -0700
+Received: from [10.252.212.236] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 549788039D7;
-        Fri,  6 May 2022 15:09:11 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.95])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 91E7440CF8E8;
-        Fri,  6 May 2022 15:09:05 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Fri,  6 May 2022 17:09:11 +0200 (CEST)
-Date:   Fri, 6 May 2022 17:09:04 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v4 10/12] ptrace: Don't change __state
-Message-ID: <20220506150903.GB16084@redhat.com>
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
- <20220505182645.497868-10-ebiederm@xmission.com>
+        by linux.intel.com (Postfix) with ESMTPS id 9FD8558093E;
+        Fri,  6 May 2022 08:09:00 -0700 (PDT)
+Message-ID: <d2d17aa4-58fc-3621-59bb-0c9ce751ebd1@linux.intel.com>
+Date:   Fri, 6 May 2022 11:08:59 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505182645.497868-10-ebiederm@xmission.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v11 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest
+ state change
+Content-Language: en-US
+To:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
+        jmattson@google.com, seanjc@google.com, like.xu.linux@gmail.com,
+        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220506033305.5135-1-weijiang.yang@intel.com>
+ <20220506033305.5135-15-weijiang.yang@intel.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220506033305.5135-15-weijiang.yang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05, Eric W. Biederman wrote:
->
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -103,7 +103,7 @@ struct task_group;
->  /* Convenience macros for the sake of set_current_state: */
->  #define TASK_KILLABLE			(TASK_WAKEKILL | TASK_UNINTERRUPTIBLE)
->  #define TASK_STOPPED			(TASK_WAKEKILL | __TASK_STOPPED)
-> -#define TASK_TRACED			(TASK_WAKEKILL | __TASK_TRACED)
-> +#define TASK_TRACED			__TASK_TRACED
 
-however I personally still dislike this change. But let me read the
-code with this series applied, perhaps I will change my mind. If not,
-I will argue ;)
 
-Oleg.
+On 5/5/2022 11:33 PM, Yang Weijiang wrote:
+> Per spec:"IA32_LBR_CTL.LBREn is saved and cleared on #SMI, and restored
+> on RSM. On a warm reset, all LBR MSRs, including IA32_LBR_DEPTH, have their
+> values preserved. However, IA32_LBR_CTL.LBREn is cleared to 0, disabling
+> LBRs." So clear Arch LBREn bit on #SMI and restore it on RSM manully, also
+> clear the bit when guest does warm reset.
+> 
+> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+
+> ---
+>   arch/x86/kvm/vmx/vmx.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 6d6ee9cf82f5..b38f58868905 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -4593,6 +4593,8 @@ static void vmx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+>   	if (!init_event) {
+>   		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
+>   			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
+> +	} else {
+> +		flip_arch_lbr_ctl(vcpu, false);
+>   	}
+>   }
+>   
+> @@ -7704,6 +7706,7 @@ static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+>   	vmx->nested.smm.vmxon = vmx->nested.vmxon;
+>   	vmx->nested.vmxon = false;
+>   	vmx_clear_hlt(vcpu);
+> +	flip_arch_lbr_ctl(vcpu, false);
+>   	return 0;
+>   }
+>   
+> @@ -7725,6 +7728,7 @@ static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+>   		vmx->nested.nested_run_pending = 1;
+>   		vmx->nested.smm.guest_mode = false;
+>   	}
+> +	flip_arch_lbr_ctl(vcpu, true);
+>   	return 0;
+>   }
+>   
