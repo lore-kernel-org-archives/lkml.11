@@ -2,482 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F19CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 06:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82415C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 06:49:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386520AbiEFGxL (ORCPT
+        id S1386558AbiEFGxf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 02:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
+        Fri, 6 May 2022 02:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbiEFGxI (ORCPT
+        with ESMTP id S1386546AbiEFGxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 02:53:08 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0249366C8F
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 23:49:26 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id i38so11285791ybj.13
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 23:49:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=weHGg5UCU8E3S0rXn0FmJqBvYZnpJng/4vwpZ6z6tgw=;
-        b=V1BclOkuFKbUOjIDISvHG3QiN40ycpMYleJAtaCckYJH2XbP0BwjaY0vwYLMnehqk2
-         dXXtMGHoy/FzIxANpNLeScoWO8oUW2zezQM8VdAi+9JJmqq3GGA652292/eqBDaH6gb2
-         JgdLQCxw72KbtOKi8iAd/Md9KyaLi8AhNceWg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=weHGg5UCU8E3S0rXn0FmJqBvYZnpJng/4vwpZ6z6tgw=;
-        b=NYH4RmKeNofS4Isj4jz5dRGyPUkKpl/pZSy2//F34TDf5M4oDTWO/DgsyUVkHAg1dA
-         7zBnyN2UrvxdKazcBqKidgCV2ha3cJT74Fn1/BEhH4Z4TZgMrExigWeJsnr4tviD+Ovf
-         XG62SEEHhApmn65uWhKNsmzkaGkYs0JztgSFtzxmxXWpWy4/rmoLekFJOS4smQe2JP83
-         GrMN+aN4eD8VDr7CJp3G/19TIHo05YXG2JnE35nBwyzg4xQzo/ZVtNKFAIPWYIDEdvIM
-         U4syItj/i2iO4p71u0VaCsSbUwfCgFElPeGG620/sGOZ+4oYDBt5S/6dBWrJwIjHwT6D
-         L52g==
-X-Gm-Message-State: AOAM531V/veaYQLmekw49nS4Qu3BTbgqZsbkkTrUgyqifar3K3FDTdJU
-        H/tWpsOvmU0qT0qr2/JdEI9rMpE1aSXZcgMn9zy3
-X-Google-Smtp-Source: ABdhPJzWNfCWXn+zGDITWtxh8FfQCoFMhyExrdDlozXPFr8ol8Vo2gbl9KwQHNcX/9OmL2PV2PXLR7j4J6fnxCkitaY=
-X-Received: by 2002:a25:9247:0:b0:645:ddd5:a182 with SMTP id
- e7-20020a259247000000b00645ddd5a182mr1246046ybo.289.1651819765188; Thu, 05
- May 2022 23:49:25 -0700 (PDT)
+        Fri, 6 May 2022 02:53:30 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B591866C8F
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 23:49:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651819787; x=1683355787;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=aYE24qPED0HjtZVYA9KjE8bzePgNrPcN9TujawE5UZQ=;
+  b=WSbhZzOFTrjCYN1ptcXXAw0xW/Xup3UaDBlcsSNjtcmScVZfGbJxvgKt
+   K1T0TIthlCQGdzbdf2+m1zrPTG1ZZJ3T8ho7WUXPzc/fOw1UlW1Yfz8vD
+   lArXs77PCACumk3y0pTNU5dpOj/ik2sSx6VskXBG/WH5OHiAHLWlZjiCd
+   Sj7JUJtG1tBoV4rw3OIKRubqiRWH6G7nKoTcoks4Nhtzkcpi+kRXb5ek/
+   TK6XEGnQr3BxDCR/4f9pZUc3JEhttYDfhxvOEi4PZasNtME5HSSqBvtTL
+   3tC32HK++2K10uvTbTbOntu9emq51Lr/EeX+zBKSuo4yjGFgR6m6rsqqZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="267211299"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="267211299"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 23:49:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="654577929"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by FMSMGA003.fm.intel.com with ESMTP; 05 May 2022 23:49:46 -0700
+Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 5 May 2022 23:49:45 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Thu, 5 May 2022 23:49:45 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.45) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Thu, 5 May 2022 23:49:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oYmQ+j0vx+07b48NIetF6DXYFT/EaYvnj+0Mb5jZEuS4H2q2WQEf1dyexs9Ra8xWfqsNwwb7xvwuMWxu6O3hWWu598f9gAi6Kq0Ju7SY5FSz+ZTy4obhZ+CEMsllWIHbdM2uT8iihWeuJQcqh1zdadAOvvyl1FlkaNK0XC2EDZHVBzQRrmRqy0M+72hREIDBKu9q+Yx2x1FQMPzJook4ZjyaoPDc2niA63GujXOr4IpwOYw4wDeJ/zlioc64DnRe6YE/AcCYZdnPoUtyZmkxJMv0OJx8HMpur3XmACaKGkqsAduvOE2K2oAHEfFKtNZfmq0aDHItwxbiJ5cA08cUZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aYE24qPED0HjtZVYA9KjE8bzePgNrPcN9TujawE5UZQ=;
+ b=aX2C7UON5ZP5qFrz1tmGN4xQaxNRPpz+VCzJ8cZYBrPkA5unfXInxKP+dUvOqIiQX8dgBgyKeq119yc6C7KLEHSvKYoNjw0tw1NrY3sZEjdNNVUyeaBoPrWHoHwxMBraiBQJ9lgx4eQRUbNMnIhlhnyy4BD82/hBNX3d8o4EY6oHWr7EDYFPXASRVVJJm9wSS0TL6m2XrH0M8KCpXGozap8lEi5Zx6/GvvKu6eAxm87K5VgxBN7/MwYZLHwfpOQbi5Cj79iurjIMXlEbqwGmokJbBVA3ROGEq5W2Wx5guIRTYzjUoM4Y3aua7CmFcIYBKZtmlfdALo3eoyYjDbUTuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BN9PR11MB5548.namprd11.prod.outlook.com (2603:10b6:408:105::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Fri, 6 May
+ 2022 06:49:44 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5206.027; Fri, 6 May 2022
+ 06:49:44 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Baolu Lu <baolu.lu@linux.intel.com>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        "Rodel, Jorg" <jroedel@suse.de>,
+        Kyung Min Park <kyung.min.park@intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+CC:     Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        "Anderson, Russ" <russ.anderson@hpe.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] iommu/vt-d: Increase DMAR_UNITS_SUPPORTED
+Thread-Topic: [PATCH] iommu/vt-d: Increase DMAR_UNITS_SUPPORTED
+Thread-Index: AQHYYLnAHmosHc2CfUSQkp312mWw2q0RWsAAgAAL7nA=
+Date:   Fri, 6 May 2022 06:49:43 +0000
+Message-ID: <BN9PR11MB5276F4D5F8AD33293233B9AB8CC59@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220505194658.246121-1-steve.wahl@hpe.com>
+ <e2afd89c-b1cf-9fde-4ce2-4be3c1fdaf07@linux.intel.com>
+In-Reply-To: <e2afd89c-b1cf-9fde-4ce2-4be3c1fdaf07@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 457d8204-2289-473d-2689-08da2f2c9a4b
+x-ms-traffictypediagnostic: BN9PR11MB5548:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BN9PR11MB55489965C8418BD11E0F753E8CC59@BN9PR11MB5548.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4XKtnUhe2+st2rv2TiXUf4IXYScMGN+hIcgNZM7UVSpYON/slbqbCR/+GJ2wjuAerI1ADWqbxy53wfj1NmKwDeaM4xQNfJK5RusC0pzPyQPYWKtfZBbB7AkHq26/ceblKiogg+ypwSuhmiMIvfkgQDLZPv6W9U2njpDJwa+j3oeHcFXDVsJP0+g4MoUUsXrDVUli6yWfhLCAUYd36+PnfctfZTGOiU8WKeJ3r5/0PXAOgZN4yaSdCoNrmcVgM2mz0PoWePqwlAYWhXemI2lfOwh9RqRFivJy8Qyz9gTOvmm69134vdyDaKXhT6vLxPX2K09hNeLu27tm04jJW1woeLlZoKkB++koiE29O9AmKtYTVeEY6HOfemqvtoMUsCy/roP4zNu/S/je8kj3N3YXgEYze8ZbZAI9PF5H1lugV1GIDvTpxDOtdurAbxPseXSkrZbJm9SR0Gkh22rlOAg328FWWgKzN5LMtDGtLsNBSz2Dg7mLjn9FzlrrwfvkxdWcPWYh7A1m6BC4mzDpXFfZRDP3xX/zENW/R7/CmMQWfKQLdsHQfFK29PGNvACt77uPR0CUTxg2av8d03kYY1ZnT3r3BC52FuHMOt1kEInxizx1+RwarSbbLfLlJDJrD9xkGiy/i5VEGmVFMODGTH+0+Y1f3bM3TaNxOqxQ3Lxkw+fCXGGhEDMNflQeBq9SAh3gAVACveAY5FHjCHxJKr2tOw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(66556008)(122000001)(4326008)(33656002)(64756008)(2906002)(52536014)(66446008)(66476007)(7696005)(8676002)(76116006)(8936002)(38070700005)(55016003)(71200400001)(38100700002)(82960400001)(7416002)(5660300002)(508600001)(316002)(83380400001)(186003)(54906003)(110136005)(26005)(9686003)(6506007)(53546011)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WTgxK1lvZHZqcDlnSDA2RnVRVFZ1L0RQZ3JTeG1hK3F1NDhtb2drbWxHa0ZQ?=
+ =?utf-8?B?NHYySWJkc2tPdXVnVlJLUGtiTzQzWUltMitrRXVzVktBdmg4UGJVbWJ2K3NP?=
+ =?utf-8?B?WFJzMTJWVFNKNGlnYmJPL05OWDFxaVhzUmhOaVVwT1JjbE90K29ZNjNEdjI0?=
+ =?utf-8?B?QVJHa08yZE9TbVplclR6c1ZlWXZaQnpNNEFkcDVJMzFpUzdkcW5xM0RPYVNj?=
+ =?utf-8?B?SzBKR2E0WkxROVpFMGx3MzBzQ0pYdFI5NlUwMzNoQmRZakNjL2QxbTVmNGhr?=
+ =?utf-8?B?TVZWLyt6YThhUk1Cb09VVmtaek95WkQ4Z0I1b0FZZ1dHWTVrSzgydklZcFI2?=
+ =?utf-8?B?bHVxa0V5cWZ6QWNOdVYrUXNYUWV1OFJ0WVRmUERiUHoyaDJ1aFEwMGNOOEZW?=
+ =?utf-8?B?OFA1NWNBb1d6Z2V2d1REK1Awc2xPMFArT2ZQOXpwTnRCWVNPbFV6TFFzK1F1?=
+ =?utf-8?B?aDUzK1VPOVpXV0dJQ2V0cENlcHJwOEUzN1RKR01sZGo1TVM0ZVBseEFKNjFn?=
+ =?utf-8?B?enVpN2ZkWlB2aHF2SzkrbjdQdTFzQ0VIVWVJcTZRd3dXNXlyb2dTcUw2ejM2?=
+ =?utf-8?B?aGc2T1lSa2dqR3JJa2cwYkVEVTV2R1pxTUNwRzlkRTl1MFRZc093TFBlajMv?=
+ =?utf-8?B?aytjeUJodTJmcjRIMDhTUHVELzZnN2ZtNStESTM4ZmwyMmdLc3FwUExmOElh?=
+ =?utf-8?B?QWUxQlllL0VPRGo3MmZzejlBN2FraDBSWEFUNVZkMThQNjY4TFYyeWNKcnd2?=
+ =?utf-8?B?aEFyWk50RE5abkQzRnFXbFZwcEU0NnM1ek1vMENUQnVHNXJ6YTBRZFV3ZlE0?=
+ =?utf-8?B?Z1I0bDkwUXcyNy9vZHlEZHlIbkIyemQycmZGVStqamU3QzFnNG5jRTdqb3B4?=
+ =?utf-8?B?cjNZNzdkNGphQnlQaHFqYUwvSzVHbVJQcDN0TFVhOWloekFlVEdkZy9USmMv?=
+ =?utf-8?B?Y0UwdkdUc0JPcEc4WVRCLzQ1L2FPR3k3R2JyOGVWTVFZUGp1N1d0UUE4Nm9p?=
+ =?utf-8?B?SG9oTHg4QUtWTmpyTlJCd1c1RXBBbjRqRWVnbDNBWDQzSGhLQld6Ni81Z2RV?=
+ =?utf-8?B?Y21zV2ZBM1pTcE11bWI1bnFuMXZYd2lzSmhjeCtqSE9jQ2Q3TnMvdVVnYnNz?=
+ =?utf-8?B?RGxVaGNnTEtTTnE4WmVjU0JQT0cvYlIwSTRaMkNVN0IyK2pydWNVczRFZ2sw?=
+ =?utf-8?B?dUs0NEZMM0tZZ1pYOHBqeVVxcXhvNkNyUEN2SFlPUWYxcGFBQmVNWU1DaHZl?=
+ =?utf-8?B?NnpJTUFGbUdOZnIxMEhQWkZrWFdwNlM2eEF1SVBLTkxFR2RweHlTMk9TUER1?=
+ =?utf-8?B?OTVGVC94TjBVWURweW1UZ25OdlowUUZMc21xaVZabm9rczZnanZVUUEyVjZ2?=
+ =?utf-8?B?M0dpbEwveXp6NFdqVldHcUd1dHo0RGk4V2g5M2c3MEFXR1NnK09FOHBMa21l?=
+ =?utf-8?B?RldkeW10RUxxNXBiQVNMWlVyalhiRmJkSUZxdDdTQ0R2ejJxVldKdE5TOW5K?=
+ =?utf-8?B?OFJKQmFLeVZNUlNDQTZWR1lacVZJWnRPQUNTUXhjU0RKT1ZmZ1A0c05pUU5o?=
+ =?utf-8?B?K0l2N1JvQ1IvWHViTkhuZExNaDZLaTMxa1B4dHRDOTZzMDFvOTRPVS9ka3du?=
+ =?utf-8?B?aCs2M3NWTlBDdHNvbm1oQjUxRUJ4QWZ6aW05TzFuTXBnZDZ2Z0NMc2FoMWho?=
+ =?utf-8?B?aDFWTTRjckZ0SGtGb2tRUnNrRGJKaWQzenA0TkExbTBrSHFqL1ZKK25kUzBI?=
+ =?utf-8?B?NEtZWjd4c3JDWUVQWURoeVcrZmYyYytNUUhNUzRyMWxLSVpmN1NWOC9DMW1H?=
+ =?utf-8?B?MG1WdWJRUFVNbjJ6RzI4QmJ4bU9xUkUwL0NoWG1Rc3l5ay9qWkswSk9yWFE4?=
+ =?utf-8?B?NFFJdERBYTFPR1VqZDIrd3ZuUEljUFA3NlVhbWc5bE1oRU1QK3d3SmR6ZXVa?=
+ =?utf-8?B?RGYveWVnMTFxWk9tMnBpQjdnNlNack1oaVdTRXZkMHdBdER0OGpsK2U3dnVB?=
+ =?utf-8?B?YW53djZWWXV2eVQyYzlwMUlGUWhrVy9JdmMrMjlaSHlER0VhRGk0THlDb3hX?=
+ =?utf-8?B?ZklZci9qeURRTFMrTmg4d2MvQTdtWFJGWFRXZExlK2wreVltWUhEYkUyNTFl?=
+ =?utf-8?B?ajdINmM3YVZqVnBYazlGblgwczdPL04vNkFOWjU1bkRNZW16ckxkdVJuVmJp?=
+ =?utf-8?B?VXBDVFBRanNJM0JyU29pTWFWenp1TFlycHVXYkZiVnppQWtmQ3pMT0ZQQTdW?=
+ =?utf-8?B?ay92QVZNRmdDQTArUTQyaCtwbWdJZTBuaGQyZnJLVGNBNlM4Njh1a3dhYTRl?=
+ =?utf-8?B?SmNHSjU1RGhtVlpXRnlIZzB1M0ZoWFZsYytPT2l3TkM4RWF0bFV6dz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220420112450.155624-1-apatel@ventanamicro.com> <20220420112450.155624-5-apatel@ventanamicro.com>
-In-Reply-To: <20220420112450.155624-5-apatel@ventanamicro.com>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Thu, 5 May 2022 23:49:14 -0700
-Message-ID: <CAOnJCULvR3xwUY7LT1ALpnovujEM44aC2P4tcFDe0-18D=KENg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/7] RISC-V: KVM: Introduce range based local HFENCE functions
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        KVM General <kvm@vger.kernel.org>,
-        kvm-riscv@lists.infradead.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 457d8204-2289-473d-2689-08da2f2c9a4b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2022 06:49:43.9826
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eNaP3jaIHBApyxAce9n12TacGOKiu0UcGW66S8Ez1YzBzdD691mRlkpFAot/mIzDD8Fu4CVfSHXx3F3pL24GVA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5548
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 4:25 AM Anup Patel <apatel@ventanamicro.com> wrote:
->
-> Various  __kvm_riscv_hfence_xyz() functions implemented in the
-> kvm/tlb.S are equivalent to corresponding HFENCE.GVMA instructions
-> and we don't have range based local HFENCE functions.
->
-> This patch provides complete set of local HFENCE functions which
-> supports range based TLB invalidation and supports HFENCE.VVMA
-> based functions. This is also a preparatory patch for upcoming
-> Svinval support in KVM RISC-V.
->
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> ---
->  arch/riscv/include/asm/kvm_host.h |  25 +++-
->  arch/riscv/kvm/mmu.c              |   4 +-
->  arch/riscv/kvm/tlb.S              |  74 -----------
->  arch/riscv/kvm/tlb.c              | 213 ++++++++++++++++++++++++++++++
->  arch/riscv/kvm/vcpu.c             |   2 +-
->  arch/riscv/kvm/vmid.c             |   2 +-
->  6 files changed, 237 insertions(+), 83 deletions(-)
->  delete mode 100644 arch/riscv/kvm/tlb.S
->  create mode 100644 arch/riscv/kvm/tlb.c
->
-> diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
-> index 3e2cbbd7d1c9..806f74dc0bfc 100644
-> --- a/arch/riscv/include/asm/kvm_host.h
-> +++ b/arch/riscv/include/asm/kvm_host.h
-> @@ -204,11 +204,26 @@ static inline void kvm_arch_sched_in(struct kvm_vcpu *vcpu, int cpu) {}
->
->  #define KVM_ARCH_WANT_MMU_NOTIFIER
->
-> -void __kvm_riscv_hfence_gvma_vmid_gpa(unsigned long gpa_divby_4,
-> -                                     unsigned long vmid);
-> -void __kvm_riscv_hfence_gvma_vmid(unsigned long vmid);
-> -void __kvm_riscv_hfence_gvma_gpa(unsigned long gpa_divby_4);
-> -void __kvm_riscv_hfence_gvma_all(void);
-> +#define KVM_RISCV_GSTAGE_TLB_MIN_ORDER         12
-> +
-> +void kvm_riscv_local_hfence_gvma_vmid_gpa(unsigned long vmid,
-> +                                         gpa_t gpa, gpa_t gpsz,
-> +                                         unsigned long order);
-> +void kvm_riscv_local_hfence_gvma_vmid_all(unsigned long vmid);
-> +void kvm_riscv_local_hfence_gvma_gpa(gpa_t gpa, gpa_t gpsz,
-> +                                    unsigned long order);
-> +void kvm_riscv_local_hfence_gvma_all(void);
-> +void kvm_riscv_local_hfence_vvma_asid_gva(unsigned long vmid,
-> +                                         unsigned long asid,
-> +                                         unsigned long gva,
-> +                                         unsigned long gvsz,
-> +                                         unsigned long order);
-> +void kvm_riscv_local_hfence_vvma_asid_all(unsigned long vmid,
-> +                                         unsigned long asid);
-> +void kvm_riscv_local_hfence_vvma_gva(unsigned long vmid,
-> +                                    unsigned long gva, unsigned long gvsz,
-> +                                    unsigned long order);
-> +void kvm_riscv_local_hfence_vvma_all(unsigned long vmid);
->
->  int kvm_riscv_gstage_map(struct kvm_vcpu *vcpu,
->                          struct kvm_memory_slot *memslot,
-> diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
-> index 8823eb32dcde..1e07603c905b 100644
-> --- a/arch/riscv/kvm/mmu.c
-> +++ b/arch/riscv/kvm/mmu.c
-> @@ -745,7 +745,7 @@ void kvm_riscv_gstage_update_hgatp(struct kvm_vcpu *vcpu)
->         csr_write(CSR_HGATP, hgatp);
->
->         if (!kvm_riscv_gstage_vmid_bits())
-> -               __kvm_riscv_hfence_gvma_all();
-> +               kvm_riscv_local_hfence_gvma_all();
->  }
->
->  void kvm_riscv_gstage_mode_detect(void)
-> @@ -768,7 +768,7 @@ void kvm_riscv_gstage_mode_detect(void)
->  skip_sv48x4_test:
->
->         csr_write(CSR_HGATP, 0);
-> -       __kvm_riscv_hfence_gvma_all();
-> +       kvm_riscv_local_hfence_gvma_all();
->  #endif
->  }
->
-> diff --git a/arch/riscv/kvm/tlb.S b/arch/riscv/kvm/tlb.S
-> deleted file mode 100644
-> index 899f75d60bad..000000000000
-> --- a/arch/riscv/kvm/tlb.S
-> +++ /dev/null
-> @@ -1,74 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 */
-> -/*
-> - * Copyright (C) 2019 Western Digital Corporation or its affiliates.
-> - *
-> - * Authors:
-> - *     Anup Patel <anup.patel@wdc.com>
-> - */
-> -
-> -#include <linux/linkage.h>
-> -#include <asm/asm.h>
-> -
-> -       .text
-> -       .altmacro
-> -       .option norelax
-> -
-> -       /*
-> -        * Instruction encoding of hfence.gvma is:
-> -        * HFENCE.GVMA rs1, rs2
-> -        * HFENCE.GVMA zero, rs2
-> -        * HFENCE.GVMA rs1
-> -        * HFENCE.GVMA
-> -        *
-> -        * rs1!=zero and rs2!=zero ==> HFENCE.GVMA rs1, rs2
-> -        * rs1==zero and rs2!=zero ==> HFENCE.GVMA zero, rs2
-> -        * rs1!=zero and rs2==zero ==> HFENCE.GVMA rs1
-> -        * rs1==zero and rs2==zero ==> HFENCE.GVMA
-> -        *
-> -        * Instruction encoding of HFENCE.GVMA is:
-> -        * 0110001 rs2(5) rs1(5) 000 00000 1110011
-> -        */
-> -
-> -ENTRY(__kvm_riscv_hfence_gvma_vmid_gpa)
-> -       /*
-> -        * rs1 = a0 (GPA >> 2)
-> -        * rs2 = a1 (VMID)
-> -        * HFENCE.GVMA a0, a1
-> -        * 0110001 01011 01010 000 00000 1110011
-> -        */
-> -       .word 0x62b50073
-> -       ret
-> -ENDPROC(__kvm_riscv_hfence_gvma_vmid_gpa)
-> -
-> -ENTRY(__kvm_riscv_hfence_gvma_vmid)
-> -       /*
-> -        * rs1 = zero
-> -        * rs2 = a0 (VMID)
-> -        * HFENCE.GVMA zero, a0
-> -        * 0110001 01010 00000 000 00000 1110011
-> -        */
-> -       .word 0x62a00073
-> -       ret
-> -ENDPROC(__kvm_riscv_hfence_gvma_vmid)
-> -
-> -ENTRY(__kvm_riscv_hfence_gvma_gpa)
-> -       /*
-> -        * rs1 = a0 (GPA >> 2)
-> -        * rs2 = zero
-> -        * HFENCE.GVMA a0
-> -        * 0110001 00000 01010 000 00000 1110011
-> -        */
-> -       .word 0x62050073
-> -       ret
-> -ENDPROC(__kvm_riscv_hfence_gvma_gpa)
-> -
-> -ENTRY(__kvm_riscv_hfence_gvma_all)
-> -       /*
-> -        * rs1 = zero
-> -        * rs2 = zero
-> -        * HFENCE.GVMA
-> -        * 0110001 00000 00000 000 00000 1110011
-> -        */
-> -       .word 0x62000073
-> -       ret
-> -ENDPROC(__kvm_riscv_hfence_gvma_all)
-> diff --git a/arch/riscv/kvm/tlb.c b/arch/riscv/kvm/tlb.c
-> new file mode 100644
-> index 000000000000..e2d4fd610745
-> --- /dev/null
-> +++ b/arch/riscv/kvm/tlb.c
-> @@ -0,0 +1,213 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2022 Ventana Micro Systems Inc.
-> + */
-> +
-> +#include <linux/bitops.h>
-> +#include <linux/errno.h>
-> +#include <linux/err.h>
-> +#include <linux/module.h>
-> +#include <linux/kvm_host.h>
-> +#include <asm/csr.h>
-> +
-> +/*
-> + * Instruction encoding of hfence.gvma is:
-> + * HFENCE.GVMA rs1, rs2
-> + * HFENCE.GVMA zero, rs2
-> + * HFENCE.GVMA rs1
-> + * HFENCE.GVMA
-> + *
-> + * rs1!=zero and rs2!=zero ==> HFENCE.GVMA rs1, rs2
-> + * rs1==zero and rs2!=zero ==> HFENCE.GVMA zero, rs2
-> + * rs1!=zero and rs2==zero ==> HFENCE.GVMA rs1
-> + * rs1==zero and rs2==zero ==> HFENCE.GVMA
-> + *
-> + * Instruction encoding of HFENCE.GVMA is:
-> + * 0110001 rs2(5) rs1(5) 000 00000 1110011
-> + */
-> +
-> +void kvm_riscv_local_hfence_gvma_vmid_gpa(unsigned long vmid,
-> +                                         gpa_t gpa, gpa_t gpsz,
-> +                                         unsigned long order)
-> +{
-> +       gpa_t pos;
-> +
-> +       if (PTRS_PER_PTE < (gpsz >> order)) {
-> +               kvm_riscv_local_hfence_gvma_vmid_all(vmid);
-> +               return;
-> +       }
-> +
-> +       for (pos = gpa; pos < (gpa + gpsz); pos += BIT(order)) {
-> +               /*
-> +                * rs1 = a0 (GPA >> 2)
-> +                * rs2 = a1 (VMID)
-> +                * HFENCE.GVMA a0, a1
-> +                * 0110001 01011 01010 000 00000 1110011
-> +                */
-> +               asm volatile ("srli a0, %0, 2\n"
-> +                             "add a1, %1, zero\n"
-> +                             ".word 0x62b50073\n"
-> +                             :: "r" (pos), "r" (vmid)
-> +                             : "a0", "a1", "memory");
-> +       }
-> +}
-> +
-> +void kvm_riscv_local_hfence_gvma_vmid_all(unsigned long vmid)
-> +{
-> +       /*
-> +        * rs1 = zero
-> +        * rs2 = a0 (VMID)
-> +        * HFENCE.GVMA zero, a0
-> +        * 0110001 01010 00000 000 00000 1110011
-> +        */
-> +       asm volatile ("add a0, %0, zero\n"
-> +                     ".word 0x62a00073\n"
-> +                     :: "r" (vmid) : "a0", "memory");
-> +}
-> +
-> +void kvm_riscv_local_hfence_gvma_gpa(gpa_t gpa, gpa_t gpsz,
-> +                                    unsigned long order)
-> +{
-> +       gpa_t pos;
-> +
-> +       if (PTRS_PER_PTE < (gpsz >> order)) {
-> +               kvm_riscv_local_hfence_gvma_all();
-> +               return;
-> +       }
-> +
-> +       for (pos = gpa; pos < (gpa + gpsz); pos += BIT(order)) {
-> +               /*
-> +                * rs1 = a0 (GPA >> 2)
-> +                * rs2 = zero
-> +                * HFENCE.GVMA a0
-> +                * 0110001 00000 01010 000 00000 1110011
-> +                */
-> +               asm volatile ("srli a0, %0, 2\n"
-> +                             ".word 0x62050073\n"
-> +                             :: "r" (pos) : "a0", "memory");
-> +       }
-> +}
-> +
-> +void kvm_riscv_local_hfence_gvma_all(void)
-> +{
-> +       /*
-> +        * rs1 = zero
-> +        * rs2 = zero
-> +        * HFENCE.GVMA
-> +        * 0110001 00000 00000 000 00000 1110011
-> +        */
-> +       asm volatile (".word 0x62000073" ::: "memory");
-> +}
-> +
-> +/*
-> + * Instruction encoding of hfence.gvma is:
-> + * HFENCE.VVMA rs1, rs2
-> + * HFENCE.VVMA zero, rs2
-> + * HFENCE.VVMA rs1
-> + * HFENCE.VVMA
-> + *
-> + * rs1!=zero and rs2!=zero ==> HFENCE.VVMA rs1, rs2
-> + * rs1==zero and rs2!=zero ==> HFENCE.VVMA zero, rs2
-> + * rs1!=zero and rs2==zero ==> HFENCE.VVMA rs1
-> + * rs1==zero and rs2==zero ==> HFENCE.VVMA
-> + *
-> + * Instruction encoding of HFENCE.VVMA is:
-> + * 0010001 rs2(5) rs1(5) 000 00000 1110011
-> + */
-> +
-> +void kvm_riscv_local_hfence_vvma_asid_gva(unsigned long vmid,
-> +                                         unsigned long asid,
-> +                                         unsigned long gva,
-> +                                         unsigned long gvsz,
-> +                                         unsigned long order)
-> +{
-> +       unsigned long pos, hgatp;
-> +
-> +       if (PTRS_PER_PTE < (gvsz >> order)) {
-> +               kvm_riscv_local_hfence_vvma_asid_all(vmid, asid);
-> +               return;
-> +       }
-> +
-> +       hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
-> +
-> +       for (pos = gva; pos < (gva + gvsz); pos += BIT(order)) {
-> +               /*
-> +                * rs1 = a0 (GVA)
-> +                * rs2 = a1 (ASID)
-> +                * HFENCE.VVMA a0, a1
-> +                * 0010001 01011 01010 000 00000 1110011
-> +                */
-> +               asm volatile ("add a0, %0, zero\n"
-> +                             "add a1, %1, zero\n"
-> +                             ".word 0x22b50073\n"
-> +                             :: "r" (pos), "r" (asid)
-> +                             : "a0", "a1", "memory");
-> +       }
-> +
-> +       csr_write(CSR_HGATP, hgatp);
-> +}
-> +
-> +void kvm_riscv_local_hfence_vvma_asid_all(unsigned long vmid,
-> +                                         unsigned long asid)
-> +{
-> +       unsigned long hgatp;
-> +
-> +       hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
-> +
-> +       /*
-> +        * rs1 = zero
-> +        * rs2 = a0 (ASID)
-> +        * HFENCE.VVMA zero, a0
-> +        * 0010001 01010 00000 000 00000 1110011
-> +        */
-> +       asm volatile ("add a0, %0, zero\n"
-> +                     ".word 0x22a00073\n"
-> +                     :: "r" (asid) : "a0", "memory");
-> +
-> +       csr_write(CSR_HGATP, hgatp);
-> +}
-> +
-> +void kvm_riscv_local_hfence_vvma_gva(unsigned long vmid,
-> +                                    unsigned long gva, unsigned long gvsz,
-> +                                    unsigned long order)
-> +{
-> +       unsigned long pos, hgatp;
-> +
-> +       if (PTRS_PER_PTE < (gvsz >> order)) {
-> +               kvm_riscv_local_hfence_vvma_all(vmid);
-> +               return;
-> +       }
-> +
-> +       hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
-> +
-> +       for (pos = gva; pos < (gva + gvsz); pos += BIT(order)) {
-> +               /*
-> +                * rs1 = a0 (GVA)
-> +                * rs2 = zero
-> +                * HFENCE.VVMA a0
-> +                * 0010001 00000 01010 000 00000 1110011
-> +                */
-> +               asm volatile ("add a0, %0, zero\n"
-> +                             ".word 0x22050073\n"
-> +                             :: "r" (pos) : "a0", "memory");
-> +       }
-> +
-> +       csr_write(CSR_HGATP, hgatp);
-> +}
-> +
-> +void kvm_riscv_local_hfence_vvma_all(unsigned long vmid)
-> +{
-> +       unsigned long hgatp;
-> +
-> +       hgatp = csr_swap(CSR_HGATP, vmid << HGATP_VMID_SHIFT);
-> +
-> +       /*
-> +        * rs1 = zero
-> +        * rs2 = zero
-> +        * HFENCE.VVMA
-> +        * 0010001 00000 00000 000 00000 1110011
-> +        */
-> +       asm volatile (".word 0x22000073" ::: "memory");
-> +
-> +       csr_write(CSR_HGATP, hgatp);
-> +}
-> diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-> index e87af6480dfd..2b7e27bc946c 100644
-> --- a/arch/riscv/kvm/vcpu.c
-> +++ b/arch/riscv/kvm/vcpu.c
-> @@ -693,7 +693,7 @@ static void kvm_riscv_check_vcpu_requests(struct kvm_vcpu *vcpu)
->                         kvm_riscv_gstage_update_hgatp(vcpu);
->
->                 if (kvm_check_request(KVM_REQ_TLB_FLUSH, vcpu))
-> -                       __kvm_riscv_hfence_gvma_all();
-> +                       kvm_riscv_local_hfence_gvma_all();
->         }
->  }
->
-> diff --git a/arch/riscv/kvm/vmid.c b/arch/riscv/kvm/vmid.c
-> index 01fdc342ad76..8987e76aa6db 100644
-> --- a/arch/riscv/kvm/vmid.c
-> +++ b/arch/riscv/kvm/vmid.c
-> @@ -33,7 +33,7 @@ void kvm_riscv_gstage_vmid_detect(void)
->         csr_write(CSR_HGATP, old);
->
->         /* We polluted local TLB so flush all guest TLB */
-> -       __kvm_riscv_hfence_gvma_all();
-> +       kvm_riscv_local_hfence_gvma_all();
->
->         /* We don't use VMID bits if they are not sufficient */
->         if ((1UL << vmid_bits) < num_possible_cpus())
-> --
-> 2.25.1
->
-
-LGTM.
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
-
--- 
-Regards,
-Atish
+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBGcmlk
+YXksIE1heSA2LCAyMDIyIDE6NTcgUE0NCj4gDQo+IE9uIDIwMjIvNS82IDAzOjQ2LCBTdGV2ZSBX
+YWhsIHdyb3RlOg0KPiA+IEluY3JlYXNlIERNQVJfVU5JVFNfU1VQUE9SVEVEIHRvIHN1cHBvcnQg
+NjQgc29ja2V0cyB3aXRoIDEwIERNQVINCj4gdW5pdHMNCj4gPiBlYWNoLCBmb3IgYSB0b3RhbCBv
+ZiA2NDAuDQo+ID4NCj4gPiBJZiB0aGUgYXZhaWxhYmxlIGhhcmR3YXJlIGV4Y2VlZHMgRE1BUl9V
+TklUU19TVVBQT1JURUQgKHByZXZpb3VzbHkNCj4gc2V0DQo+ID4gdG8gTUFYX0lPX0FQSUNTLCBv
+ciAxMjgpLCBpdCBjYXVzZXMgdGhlc2UgbWVzc2FnZXM6ICJETUFSOiBGYWlsZWQgdG8NCj4gPiBh
+bGxvY2F0ZSBzZXFfaWQiLCAiRE1BUjogUGFyc2UgRE1BUiB0YWJsZSBmYWlsdXJlLiIsIGFuZCAi
+eDJhcGljOiBJUlENCj4gPiByZW1hcHBpbmcgZG9lc24ndCBzdXBwb3J0IFgyQVBJQyBtb2RlIHgy
+YXBpYyBkaXNhYmxlZCI7IGFuZCB0aGUgc3lzdGVtDQo+ID4gZmFpbHMgdG8gYm9vdC4NCj4gPg0K
+PiA+IFNpZ25lZC1vZmYtYnk6IFN0ZXZlIFdhaGwgPHN0ZXZlLndhaGxAaHBlLmNvbT4NCj4gPiBS
+ZXZpZXdlZC1ieTogTWlrZSBUcmF2aXMgPG1pa2UudHJhdmlzQGhwZS5jb20+DQo+ID4gLS0tDQo+
+ID4NCj4gPiBOb3RlIHRoYXQgd2UgY291bGQgbm90IGZpbmQgYSByZWFzb24gZm9yIGNvbm5lY3Rp
+bmcNCj4gPiBETUFSX1VOSVRTX1NVUFBPUlRFRCB0byBNQVhfSU9fQVBJQ1MgYXMgd2FzIGRvbmUg
+cHJldmlvdXNseS4NCj4gUGVyaGFwcw0KPiA+IGl0IHNlZW1lZCBsaWtlIHRoZSB0d28gd291bGQg
+Y29udGludWUgdG8gbWF0Y2ggb24gZWFybGllciBwcm9jZXNzb3JzLg0KPiA+IFRoZXJlIGRvZXNu
+J3QgYXBwZWFyIHRvIGJlIGtlcm5lbCBjb2RlIHRoYXQgYXNzdW1lcyB0aGF0IHRoZSB2YWx1ZSBv
+Zg0KPiA+IG9uZSBpcyByZWxhdGVkIHRvIHRoZSBvdGhlci4NCj4gDQo+ICtLZXZpbg0KPiANCj4g
+VGhpcyBtYXhpbXVtIHZhbHVlIHdhcyBpbnRyb2R1Y2VkIGJ5IGJlbG93IGNvbW1pdC4gQW5kIEkg
+ZG9uJ3Qgc2VlIGFueQ0KPiBoYXJkd2FyZS9zb2Z0d2FyZSByZXN0cmljdGlvbnMgdGhhdCB3ZSBj
+YW4ndCBlbmxhcmdlIGl0IGFmdGVyIHRlbiB5ZWFycy4NCg0KSSBkb24ndCBzZWUgYSByYXRpb25h
+bGUgZWl0aGVyLCBidXQuLi4NCg0KPiANCj4gY29tbWl0IDFiMTk4YmIwNGFkNzI2NjlkNGJkNjU3
+NWZjOTk0NWVkNTk1YmZlZTANCj4gQXV0aG9yOiBNaWtlIFRyYXZpcyA8dHJhdmlzQHNnaS5jb20+
+DQo+IERhdGU6ICAgTW9uIE1hciA1IDE1OjA1OjE2IDIwMTIgLTA4MDANCj4gDQo+ICAgICAgeDg2
+L2lvbW11L2ludGVsOiBJbmNyZWFzZSB0aGUgbnVtYmVyIG9mIGlvbW11cyBzdXBwb3J0ZWQgdG8N
+Cj4gTUFYX0lPX0FQSUNTDQo+IA0KPiAgICAgIFRoZSBudW1iZXIgb2YgSU9NTVVzIHN1cHBvcnRl
+ZCBzaG91bGQgYmUgdGhlIHNhbWUgYXMgdGhlIG51bWJlcg0KPiAgICAgIG9mIElPIEFQSUNTLiAg
+VGhpcyBsaW1pdCBjb21lcyBpbnRvIHBsYXkgd2hlbiB0aGUgSU9NTVVzIGFyZQ0KPiAgICAgIGlk
+ZW50aXR5IG1hcHBlZCwgdGh1cyB0aGUgbnVtYmVyIG9mIHBvc3NpYmxlIElPTU1VcyBpbiB0aGUN
+Cj4gICAgICAic3RhdGljIGlkZW50aXR5IiAoc2kpIGRvbWFpbiBzaG91bGQgYmUgdGhpcyBzYW1l
+IG51bWJlci4NCj4gWy4uLl0NCj4gDQo+ID4NCj4gPiAgIGluY2x1ZGUvbGludXgvZG1hci5oIHwg
+MiArLQ0KPiA+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0p
+DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9kbWFyLmggYi9pbmNsdWRlL2xp
+bnV4L2RtYXIuaA0KPiA+IGluZGV4IDQ1ZTkwM2Q4NDczMy4uOWQ0ODY3YjhmNDJlIDEwMDY0NA0K
+PiA+IC0tLSBhL2luY2x1ZGUvbGludXgvZG1hci5oDQo+ID4gKysrIGIvaW5jbHVkZS9saW51eC9k
+bWFyLmgNCj4gPiBAQCAtMTksNyArMTksNyBAQA0KPiA+ICAgc3RydWN0IGFjcGlfZG1hcl9oZWFk
+ZXI7DQo+ID4NCj4gPiAgICNpZmRlZglDT05GSUdfWDg2DQo+ID4gLSMgZGVmaW5lCURNQVJfVU5J
+VFNfU1VQUE9SVEVECU1BWF9JT19BUElDUw0KPiA+ICsjIGRlZmluZQlETUFSX1VOSVRTX1NVUFBP
+UlRFRAk2NDANCj4gPiAgICNlbHNlDQo+ID4gICAjIGRlZmluZQlETUFSX1VOSVRTX1NVUFBPUlRF
+RAk2NA0KPiA+ICAgI2VuZGlmDQo+IA0KDQouLi4gaXMgaXQgbmVjZXNzYXJ5IHRvIHBlcm1hbmVu
+dGx5IGRvIDEweCBpbmNyZWFzZSB3aGljaCB3YXN0ZXMgbWVtb3J5DQpvbiBtb3N0IHBsYXRmb3Jt
+cyB3aGljaCB3b24ndCBoYXZlIHN1Y2ggbmVlZC4NCg0KRG9lcyBpdCBtYWtlIG1vcmUgc2Vuc2Ug
+dG8gaGF2ZSBhIGNvbmZpZ3VyYWJsZSBhcHByb2FjaCBzaW1pbGFyIHRvDQpDT05GSUdfTlJfQ1BV
+Uz8gb3IgZXZlbiBiZXR0ZXIgY2FuIHdlIGp1c3QgcmVwbGFjZSB0aG9zZSBzdGF0aWMNCmFycmF5
+cyB3aXRoIGR5bmFtaWMgYWxsb2NhdGlvbiBzbyByZW1vdmluZyB0aGlzIHJlc3RyaWN0aW9uDQpj
+b21wbGV0ZWx5Pw0KDQphbm90aGVyIG5pdDogZG1hciBpcyBpbnRlbCBzcGVjaWZpYyB0aHVzIENP
+TkZJR19YODYgaXMgYWx3YXlzIHRydWUuDQoNClRoYW5rcw0KS2V2aW4NCg==
