@@ -2,151 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4192CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C33C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388890AbiEFELS (ORCPT
+        id S1444376AbiEFVQP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 00:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        Fri, 6 May 2022 17:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351670AbiEFELP (ORCPT
+        with ESMTP id S234769AbiEFVQN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 00:11:15 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676964B1DD
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 21:07:33 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id p4so7352080edx.0
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 21:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=cLcttw2920SMZ2n3SvaPxUs5yeqm04dyc2xN9TwYgGg=;
-        b=H0rUhC/o61g+LPERuMJDEwuzobWN7hEXMEAVbqwLU4GgZXPU4LVCQOQi+4GEah1j+Z
-         PkzTBpYrAdApKrKW1U8j7bVri8W2sY2DAsBEHHFFmj89FB5ICYNuCn0GXYpeuoxDmlZ0
-         u0emupYpj0g5LSKXIsbZ5LII/5KSKEW2nXlenDvUT+HFuGVuSRu8dGvicLCC1hXofx65
-         gh051ykeIndWqX3fhshCr/aM5gFpclqai00hmokkPAKHic3iycx2Z+vJuzdAuDVgWUFn
-         MgV60H62Zjy9WRcEoVIpwzX/FmB5Hz3tA5+Kql1s2rQa1FP5sXTFgPJveJOlo36oicuE
-         uL3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=cLcttw2920SMZ2n3SvaPxUs5yeqm04dyc2xN9TwYgGg=;
-        b=OxTTGDgm0kOTizCgeyV8I/kul3f+CgRNF4iwwjYxn5TeOdEB3kZNyyj2/kqte6Br5C
-         EmlGtf0T1/TFB3byWmnAiU76/R4G42WVgcGhIG5fmSF/iRCXiwxIARDiD9z5nQjIdQ9m
-         IGa7B4l91jiAuEiTcIRaWtOrRgwHfJK600taKO6o9daYT4x1YaWxekP+Kr2kLsBVkEd9
-         fVVD+4M/0JCCGLjhZ6d5CJG/S37Ao9IT/pYkj3W2V7vIQWVcrgQ5qf7WFowujgs80N2i
-         uB19lQlLKj5kKGmhdn4Pl99WXrl04twBIciALKc9lKEz1y0XFg28dKTDEdz8WU5PY7cf
-         Ns+A==
-X-Gm-Message-State: AOAM532FvWZydTWqPNbBOyvdljhnu+dBTBn+XkgTLjaMlW61PMQG0S+z
-        O6vdcHKEg6AO0KLeDELF/cxIwexnrgJEc2TkaPx2nIYizWW5/g==
-X-Google-Smtp-Source: ABdhPJwFg74w+azIwCGOdyFimmGh1zS5rojdBALGCLHvuKbQPhMvOvqk0h/4nvErkuD3/hrSDWlOAhxQxnRUd2jxy5o=
-X-Received: by 2002:aa7:dd91:0:b0:427:b2c4:1c7a with SMTP id
- g17-20020aa7dd91000000b00427b2c41c7amr1540787edv.91.1651810051855; Thu, 05
- May 2022 21:07:31 -0700 (PDT)
+        Fri, 6 May 2022 17:16:13 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C627C6F4A6
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:12:23 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651871541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OR1pmM4x5cpd2mA4k9e/aWIlSPAQ7vdjsY8tgTejLzI=;
+        b=oyF7PEmPteS/Ij/pjSpG2vUJ+F9MWnjT60Q7Em5LJxgEcgdV2Keo97S3wPx7/J5E+txgUk
+        JCojiqTYydfRy2QOfNub+Z6GCtf5iqJ95IrYyVrXU94wRA891K8qGTKu4kMrONDEj3t2xI
+        wCxkleNZMeXe1/LgpV4XvplOoKFaZn2h2Dl1FzoVtMKW2jBHJlfhIWbjQPIGNfO2Pi7uAj
+        DKSr6s0Xz47aEJt6wfPtWXi8IsfQLaSxpHv37/gGewZf4jpFxR8Ho2GkHDTqeBU4A8ImgG
+        SYlksuHxEF3mZZSNUbvq7CwBHaeStS+M10UHzWT6KuBuUylRXxV8qYgVGLXNuQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651871541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OR1pmM4x5cpd2mA4k9e/aWIlSPAQ7vdjsY8tgTejLzI=;
+        b=9ITl2ylmsUv+bZnup01fSsbtCNbIJHb2Vl+xV5ebZckGAGMVOE04FOZX36z7AudwqlokLy
+        CoePs/joVdcnuxDw==
+To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        x86@kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
+In-Reply-To: <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+Date:   Fri, 06 May 2022 23:12:20 +0200
+Message-ID: <87zgjufjrf.ffs@tglx>
 MIME-Version: 1.0
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Fri, 6 May 2022 14:07:20 +1000
-Message-ID: <CAPM=9tyaQ8RSYwuh4muEefV3fbjio5gVvYipWVaKjqUycRkS+A@mail.gmail.com>
-Subject: 
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Linus,
+On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> Vectors are meaningless when allocating IRQs with NMI as the delivery
+> mode.
 
-pretty quiet week, one fbdev, msm, kconfig, and 2 amdgpu fixes, about
-what I'd expect for rc6.
+Vectors are not meaningless. NMI has a fixed vector.
 
-Regards,
-Dave.
+The point is that for a fixed vector there is no vector management
+required.
 
-drm-fixes-2022-05-06:
-drm fixes for 5.18-rc6
+Can you spot the difference?
 
-fbdev:
-- hotunplugging fix
+> In such case, skip the reservation of IRQ vectors. Do it in the lowest-
+> level functions where the actual IRQ reservation takes place.
+>
+> Since NMIs target specific CPUs, keep the functionality to find the best
+> CPU.
 
-amdgpu:
-- Fix a xen dom0 regression on APUs
-- Fix a potential array overflow if a receiver were to
-  send an erroneous audio channel count
+Again. What for?
+  
+> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> +		cpu = irq_matrix_find_best_cpu(vector_matrix, dest);
+> +		apicd->cpu = cpu;
+> +		vector = 0;
+> +		goto no_vector;
+> +	}
 
-msm:
-- lockdep fix.
+Why would a NMI ever end up in this code? There is no vector management
+required and this find cpu exercise is pointless.
 
-it6505:
-- kconfig fix
-The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a=
-:
+>  	vector = irq_matrix_alloc(vector_matrix, dest, resvd, &cpu);
+>  	trace_vector_alloc(irqd->irq, vector, resvd, vector);
+>  	if (vector < 0)
+>  		return vector;
+>  	apic_update_vector(irqd, vector, cpu);
+> +
+> +no_vector:
+>  	apic_update_irq_cfg(irqd, vector, cpu);
+>  
+>  	return 0;
+> @@ -321,12 +330,22 @@ assign_managed_vector(struct irq_data *irqd, const struct cpumask *dest)
+>  	/* set_affinity might call here for nothing */
+>  	if (apicd->vector && cpumask_test_cpu(apicd->cpu, vector_searchmask))
+>  		return 0;
+> +
+> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
+> +		apicd->cpu = cpu;
+> +		vector = 0;
+> +		goto no_vector;
+> +	}
 
-  Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
+This code can never be reached for a NMI delivery. If so, then it's a
+bug.
 
-are available in the Git repository at:
+This all is special purpose for that particular HPET NMI watchdog use
+case and we are not exposing this to anything else at all.
 
-  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-05-06
+So why are you sprinkling this NMI nonsense all over the place? Just
+because? There are well defined entry points to all of this where this
+can be fenced off.
 
-for you to fetch changes up to 5727375215b0915f28806c337a7ba9835efd340b:
+If at some day the hardware people get their act together and provide a
+proper vector space for NMIs then we have to revisit that, but then
+there will be a separate NMI vector management too.
 
-  Merge tag 'drm-msm-fixes-2022-04-30' of
-https://gitlab.freedesktop.org/drm/msm into drm-fixes (2022-05-06
-11:22:03 +1000)
+What you want is the below which also covers the next patch. Please keep
+an eye on the comments I added/modified.
 
-----------------------------------------------------------------
-drm fixes for 5.18-rc6
+Thanks,
 
-fbdev:
-- hotunplugging fix
-
-amdgpu:
-- Fix a xen dom0 regression on APUs
-- Fix a potential array overflow if a receiver were to
-  send an erroneous audio channel count
-
-msm:
-- lockdep fix.
-
-it6505:
-- kconfig fix
-
-----------------------------------------------------------------
-Dave Airlie (3):
-      Merge tag 'amd-drm-fixes-5.18-2022-05-04' of
-https://gitlab.freedesktop.org/agd5f/linux into drm-fixes
-      Merge tag 'drm-misc-fixes-2022-05-05' of
-git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
-      Merge tag 'drm-msm-fixes-2022-04-30' of
-https://gitlab.freedesktop.org/drm/msm into drm-fixes
-
-Fabien Parent (1):
-      drm/bridge: ite-it6505: add missing Kconfig option select
-
-Harry Wentland (1):
-      drm/amd/display: Avoid reading audio pattern past AUDIO_CHANNELS_COUN=
-T
-
-Javier Martinez Canillas (1):
-      fbdev: Make fb_release() return -ENODEV if fbdev was unregistered
-
-Kuogee Hsieh (1):
-      drm/msm/dp: remove fail safe mode related code
-
-Marek Marczykowski-G=C3=B3recki (1):
-      drm/amdgpu: do not use passthrough mode in Xen dom0
-
- drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c         |  4 +++-
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |  2 +-
- drivers/gpu/drm/bridge/Kconfig                   |  1 +
- drivers/gpu/drm/msm/dp/dp_display.c              |  6 ------
- drivers/gpu/drm/msm/dp/dp_panel.c                | 11 -----------
- drivers/gpu/drm/msm/dp/dp_panel.h                |  1 -
- drivers/video/fbdev/core/fbmem.c                 |  5 ++++-
- 7 files changed, 9 insertions(+), 21 deletions(-)
+        tglx
+---
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -42,6 +42,7 @@ EXPORT_SYMBOL_GPL(x86_vector_domain);
+ static DEFINE_RAW_SPINLOCK(vector_lock);
+ static cpumask_var_t vector_searchmask;
+ static struct irq_chip lapic_controller;
++static struct irq_chip lapic_nmi_controller;
+ static struct irq_matrix *vector_matrix;
+ #ifdef CONFIG_SMP
+ static DEFINE_PER_CPU(struct hlist_head, cleanup_list);
+@@ -451,6 +452,10 @@ static int x86_vector_activate(struct ir
+ 	trace_vector_activate(irqd->irq, apicd->is_managed,
+ 			      apicd->can_reserve, reserve);
+ 
++	/* NMI has a fixed vector. No vector management required */
++	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
++		return 0;
++
+ 	raw_spin_lock_irqsave(&vector_lock, flags);
+ 	if (!apicd->can_reserve && !apicd->is_managed)
+ 		assign_irq_vector_any_locked(irqd);
+@@ -472,6 +477,10 @@ static void vector_free_reserved_and_man
+ 	trace_vector_teardown(irqd->irq, apicd->is_managed,
+ 			      apicd->has_reserved);
+ 
++	/* NMI has a fixed vector. No vector management required */
++	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
++		return;
++
+ 	if (apicd->has_reserved)
+ 		irq_matrix_remove_reserved(vector_matrix);
+ 	if (apicd->is_managed)
+@@ -568,6 +577,24 @@ static int x86_vector_alloc_irqs(struct
+ 		irqd->hwirq = virq + i;
+ 		irqd_set_single_target(irqd);
+ 
++		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
++			/*
++			 * NMIs have a fixed vector and need their own
++			 * interrupt chip so nothing can end up in the
++			 * regular local APIC management code except the
++			 * MSI message composing callback.
++			 */
++			irqd->chip = &lapic_nmi_controller;
++			/*
++			 * Don't allow affinity setting attempts for NMIs.
++			 * This cannot work with the regular affinity
++			 * mechanisms and for the intended HPET NMI
++			 * watchdog use case it's not required.
++			 */
++			irqd_set_no_balance(irqd);
++			continue;
++		}
++
+ 		/*
+ 		 * Prevent that any of these interrupts is invoked in
+ 		 * non interrupt context via e.g. generic_handle_irq()
+@@ -921,6 +948,11 @@ static struct irq_chip lapic_controller
+ 	.irq_retrigger		= apic_retrigger_irq,
+ };
+ 
++static struct irq_chip lapic_nmi_controller = {
++	.name			= "APIC-NMI",
++	.irq_compose_msi_msg	= x86_vector_msi_compose_msg,
++};
++
+ #ifdef CONFIG_SMP
+ 
+ static void free_moved_vector(struct apic_chip_data *apicd)
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -261,6 +261,11 @@ static inline bool irqd_is_per_cpu(struc
+ 	return __irqd_to_state(d) & IRQD_PER_CPU;
+ }
+ 
++static inline void irqd_set_no_balance(struct irq_data *d)
++{
++	__irqd_to_state(d) |= IRQD_NO_BALANCING;
++}
++
+ static inline bool irqd_can_balance(struct irq_data *d)
+ {
+ 	return !(__irqd_to_state(d) & (IRQD_PER_CPU | IRQD_NO_BALANCING));
