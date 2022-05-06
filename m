@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A368C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442803AbiEFPNe (ORCPT
+        id S1442748AbiEFPNm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        Fri, 6 May 2022 11:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442745AbiEFPNO (ORCPT
+        with ESMTP id S1442777AbiEFPNc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:13:14 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508626D1AD;
-        Fri,  6 May 2022 08:09:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651849771; x=1683385771;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=ozT16fP9uZM5368h+nOi7loe0DpIGRiHdi5VvAV0IK0=;
-  b=ixlA1t7lhVSKaLRBZ2tkL+gkRCScTiCGL6gtkn/AnoXOgYwsNT2qM1Wp
-   S2Ufn4+WDykSy+TlYbSCH/LAm+oiUCeET7KUnWeux4dmwYQExpPFCqtrT
-   pFjHa2Aw0ZEtj0b7xlxipWfauMUJZc6rnBSsHfpcQ1DcupWt5Ydq8ucwm
-   wt06347UjV9lVgeoVwc1bhu6NDTFffbhJHPlYsxRZsyqmVYX7dSwF20sQ
-   TuSgqIQgIcfR0w198pvwZmjHzhB27TCPrNOZfN4QRiw3slYIGp6bz0AW0
-   AOuu9k6kAQ2DXLBxIbhYbjZ8RvLSHMbJZikEkUPicNjy0gGFFfuPB5HAk
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="250492651"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250492651"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:09:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="654731889"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 May 2022 08:09:02 -0700
-Received: from [10.252.212.236] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 9FD8558093E;
-        Fri,  6 May 2022 08:09:00 -0700 (PDT)
-Message-ID: <d2d17aa4-58fc-3621-59bb-0c9ce751ebd1@linux.intel.com>
-Date:   Fri, 6 May 2022 11:08:59 -0400
+        Fri, 6 May 2022 11:13:32 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0516D3A8
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:09:44 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id k1so7711931pll.4
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 08:09:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=12UMdmYoYrrFYK3VfNeGnEK3WmXz254CwsHVBYebRMk=;
+        b=LASvZd/kr+O0L5A3bEKuR8CTk3fHm5Tsd9lUjfYwpqn33d7k3Q1zsMSLxqM2Wvmjfi
+         U9X9eV7HuBPN5VQdn6QkXC7TyhZPYAzEmjTJjpaD5GIOeD6QowBVqIADEj4QvOrPEVtg
+         ixMVdzrHVAvfbZZWmaW4tVERpTCm8iDa/gmWxbCttBjaVWUI+z2M45U6eU6/izM7UmEw
+         06W6+xGWjrV9ntNXVSJcxZeWZPlDMQeHyRKnhuxcRvfzKtHy8hThyvLAr/AALg2Mc12H
+         wnFPOPC2IlEl29O2OH/A+ASOIh9PPps0VTvp/TnkmuOcnlQwc43q1Oz0o8B4VKCBOUQ8
+         GpDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=12UMdmYoYrrFYK3VfNeGnEK3WmXz254CwsHVBYebRMk=;
+        b=RRBBGJCUXlDxdC6EPQ8IlvOS/8GXdjUMo5rAg4lyVCdHGJN+HV7sJJYrUbg4xGThNK
+         P9lBqdwsxh9N4jPApoBGbq827KCDZzA28fHHBWDkywGryof1ignGtPfxAzmEG829kawS
+         iE2qN/9uAxBjRdSBWjWUsAhgiXEQmfgXqu9JNtmxo7ZffTRYhiqMSmjKJ4GYNqKy2RfE
+         pfQHzAVkS/5hFW0JEYbzKQn7MXA7bpqFOpvmgPm3n5UBQj0mmZK2RSBRSWk4Uy6pu/2y
+         vn+1XG9vwW9toenWlMmnaiZcFUpVPXIIQgFppZuI0YK2PICejpE71UbFXm3AjjjeST5K
+         OReg==
+X-Gm-Message-State: AOAM533V5vCP7cfvp0uRsgogo0VKNkk/oTmC/XPskiOmMayo5CZ+BYLm
+        Tqqs01rqSejH+JS1yhPAIJld2w==
+X-Google-Smtp-Source: ABdhPJyXNCnjMbf233x1TRm9Ax9LXKujaxCcbwMHpOtAWrTw2hiA71j0kvmsMI4qbPaIDzeMtLIaSQ==
+X-Received: by 2002:a17:902:ec83:b0:15e:b5d2:a81b with SMTP id x3-20020a170902ec8300b0015eb5d2a81bmr4083716plg.64.1651849783670;
+        Fri, 06 May 2022 08:09:43 -0700 (PDT)
+Received: from [192.168.4.166] (cpe-72-132-29-68.dc.res.rr.com. [72.132.29.68])
+        by smtp.gmail.com with ESMTPSA id d15-20020a170902b70f00b0015ea0a679ddsm1868392pls.251.2022.05.06.08.09.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 08:09:43 -0700 (PDT)
+Message-ID: <4a87c2d9-89fa-2cec-7707-08fc78c88bf8@kernel.dk>
+Date:   Fri, 6 May 2022 09:09:41 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v11 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest
- state change
+Subject: Re: [PATCH] nvme: Ensure ret is always initialized in
 Content-Language: en-US
-To:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
-        jmattson@google.com, seanjc@google.com, like.xu.linux@gmail.com,
-        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220506033305.5135-1-weijiang.yang@intel.com>
- <20220506033305.5135-15-weijiang.yang@intel.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220506033305.5135-15-weijiang.yang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Nathan Chancellor <nathan@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Kanchan Joshi <joshi.k@samsung.com>,
+        Anuj Gupta <anuj20.g@samsung.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, kernel test robot <lkp@intel.com>
+References: <20220506150357.2443040-1-nathan@kernel.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220506150357.2443040-1-nathan@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/5/2022 11:33 PM, Yang Weijiang wrote:
-> Per spec:"IA32_LBR_CTL.LBREn is saved and cleared on #SMI, and restored
-> on RSM. On a warm reset, all LBR MSRs, including IA32_LBR_DEPTH, have their
-> values preserved. However, IA32_LBR_CTL.LBREn is cleared to 0, disabling
-> LBRs." So clear Arch LBREn bit on #SMI and restore it on RSM manully, also
-> clear the bit when guest does warm reset.
+On 5/6/22 9:03 AM, Nathan Chancellor wrote:
+> Clang warns:
 > 
-> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-
-> ---
->   arch/x86/kvm/vmx/vmx.c | 4 ++++
->   1 file changed, 4 insertions(+)
+>   drivers/nvme/host/ioctl.c:674:6: error: variable 'ret' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+>           if (ns)
+>               ^~
+>   drivers/nvme/host/ioctl.c:677:9: note: uninitialized use occurs here
+>           return ret;
+>                  ^~~
+>   drivers/nvme/host/ioctl.c:674:2: note: remove the 'if' if its condition is always true
+>           if (ns)
+>           ^~~~~~~
+>   drivers/nvme/host/ioctl.c:672:9: note: initialize the variable 'ret' to silence this warning
+>           int ret;
+>                  ^
+>                   = 0
+>   1 error generated.
 > 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 6d6ee9cf82f5..b38f58868905 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -4593,6 +4593,8 @@ static void vmx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
->   	if (!init_event) {
->   		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
->   			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
-> +	} else {
-> +		flip_arch_lbr_ctl(vcpu, false);
->   	}
->   }
->   
-> @@ -7704,6 +7706,7 @@ static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
->   	vmx->nested.smm.vmxon = vmx->nested.vmxon;
->   	vmx->nested.vmxon = false;
->   	vmx_clear_hlt(vcpu);
-> +	flip_arch_lbr_ctl(vcpu, false);
->   	return 0;
->   }
->   
-> @@ -7725,6 +7728,7 @@ static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
->   		vmx->nested.nested_run_pending = 1;
->   		vmx->nested.smm.guest_mode = false;
->   	}
-> +	flip_arch_lbr_ctl(vcpu, true);
->   	return 0;
->   }
->   
+> Initialize ret to zero so that it cannot be used uninitialized.
+
+Thanks, will fold this in.
+
+> Or alternatively, remove the 'if (ns)' if ns can never be NULL; I tried
+> going down the rabbit hole to see if that is possible but I got a little
+> lost :^)
+
+For the admin queue, ns can be NULL.
+
+-- 
+Jens Axboe
+
