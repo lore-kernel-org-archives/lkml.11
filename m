@@ -2,185 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389433AbiEFHRF (ORCPT
+        id S1389446AbiEFHTB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 03:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
+        Fri, 6 May 2022 03:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231860AbiEFHQ7 (ORCPT
+        with ESMTP id S1381648AbiEFHS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 03:16:59 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.133.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E6EB66C9F
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651821197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wF7V0cy+5NmHtlR+AevB2EM+3Bo1396k7w5TO77QWRY=;
-        b=HYU4gGoOlVW7WvBiTbGkOcNOMSZYfy4zqnabjKUKXBER4tEWsPhNq/r9kiJqkPG3tKQz7T
-        Q17Ub9Od2AsWeDPjzQO0RtFzc/+ObnyQaKgaGTG5ZsetbAN1R+bXzrtLJtkUL5I4WKSOYm
-        KeJjkfs+DZ0KzE+20M5EOw4gsxDvbIc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-148-5poZo9rePxGItojSckpQ4A-1; Fri, 06 May 2022 03:13:11 -0400
-X-MC-Unique: 5poZo9rePxGItojSckpQ4A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 355EB2999B44;
-        Fri,  6 May 2022 07:13:10 +0000 (UTC)
-Received: from localhost (ovpn-13-105.pek2.redhat.com [10.72.13.105])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C9DCC111E3FD;
-        Fri,  6 May 2022 07:12:53 +0000 (UTC)
-Date:   Fri, 6 May 2022 15:12:50 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v8 3/7] crash: add generic infrastructure for crash
- hotplug support
-Message-ID: <YnTKcvkCoRBxqGSW@MiWiFi-R3L-srv>
-References: <20220505184603.1548-1-eric.devolder@oracle.com>
- <20220505184603.1548-4-eric.devolder@oracle.com>
+        Fri, 6 May 2022 03:18:59 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E052012E
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:15:15 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id dk23so12753024ejb.8
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 00:15:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=BeRODHN5BKHdYqCpyT3vOELgLz8mBkeltgcKtiKMp4w=;
+        b=g4TlTYxLR3HgIll7nXj0AF8/r89vyRr8TehXbuimjjfEYJccXGgABWYlPWVPZr3PYW
+         g2VAiB6F3XUnbACivG4wyIHzNoFUNpjcaiA9kScMgL7fSMJzihnSNEqyOO88Apxph3/l
+         G4URVFL2tqrQdjLTkPvZApvG0KAocTJPRzCwwj9ncv9ILchN5blI27jqGplvHCyVc/JH
+         FbO529vOx597xt77lw6dgm5980DDVRJx2sLJcnexgLGqpMpEEZXImo9/n4+j2ZdTDIsX
+         9jDzhNjlO/o/QZlfMpBHPfEUDB9P0gpwBGGu1/xrrq2mUVVgfSHqz7RXsiPCwJc3vAPI
+         HAHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BeRODHN5BKHdYqCpyT3vOELgLz8mBkeltgcKtiKMp4w=;
+        b=5wYM6B66wCuDBtTT8E06aMq6nvL+jENzLyqX5sQ6U1/fThClenvyyUbDIhbIDEgUEt
+         Y0kMPpXo2C8Ryv+hG6UGWz+RwzEhfeYZyb8Sjle3rXvXr2qN/XbuDnEIGf3a937/pMHT
+         pY0coWX9622yjaEbyqKEgzQqKoKMzenQWGXNwo8RRz/+ADMVw7mxPiDLfsqKdmYKhGQJ
+         MWme3towLGRj97d+leJPcZTZ0p1nceZ0jbH0VNPWeLvMfxkqXolDL4Rq5HBWRHIJxXdP
+         IYAhcjX3TFAVAaTYuYlbvN32G8/RA1iIqFSEeW63RytZTpICqs7ttIjrILjXoc5kiQLL
+         3oAA==
+X-Gm-Message-State: AOAM532jL76Y+g2HzPxJyNqrTqereZS+VXZlyAIFY6oA35nhTIDHG1yf
+        nOETx+S7q6iKPJ8NGYTFLakJ8A==
+X-Google-Smtp-Source: ABdhPJw+9MHfJJlxEEjx+RbBnEi8cHVQYqz5vIyQL24y5z6dfIvIfMX1LfWdV4dF8kIRqorulfWLkw==
+X-Received: by 2002:a17:907:2da5:b0:6f4:7cd1:8cf5 with SMTP id gt37-20020a1709072da500b006f47cd18cf5mr1769503ejc.328.1651821314516;
+        Fri, 06 May 2022 00:15:14 -0700 (PDT)
+Received: from [192.168.0.223] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id w16-20020a170907271000b006f3ef214e42sm1559641ejk.168.2022.05.06.00.15.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 00:15:13 -0700 (PDT)
+Message-ID: <ac70ae6d-7e1a-d6b9-e33e-793035d5606e@linaro.org>
+Date:   Fri, 6 May 2022 09:15:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505184603.1548-4-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: Aw: Re: [RFC v2] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Content-Language: en-US
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+References: <20220505150008.126627-1-linux@fw-web.de>
+ <6d45f060-85e6-f3ff-ef00-6c68a2ada7a1@linaro.org>
+ <trinity-12061c77-38b6-4b56-bccd-3b54cf9dc0e8-1651819574078@3c-app-gmx-bs21>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <trinity-12061c77-38b6-4b56-bccd-3b54cf9dc0e8-1651819574078@3c-app-gmx-bs21>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05/22 at 02:45pm, Eric DeVolder wrote:
-......
-> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-> index 256cf6db573c..f197af50def6 100644
-> --- a/kernel/crash_core.c
-> +++ b/kernel/crash_core.c
-> @@ -9,12 +9,17 @@
->  #include <linux/init.h>
->  #include <linux/utsname.h>
->  #include <linux/vmalloc.h>
-> +#include <linux/highmem.h>
-
-Wondering where highmem.h is needed. Just curious.
-
-> +#include <linux/memory.h>
-> +#include <linux/cpuhotplug.h>
->  
->  #include <asm/page.h>
->  #include <asm/sections.h>
->  
->  #include <crypto/sha1.h>
->  
-> +#include "kexec_internal.h"
-> +
->  /* vmcoreinfo stuff */
->  unsigned char *vmcoreinfo_data;
->  size_t vmcoreinfo_size;
-> @@ -491,3 +496,90 @@ static int __init crash_save_vmcoreinfo_init(void)
->  }
->  
->  subsys_initcall(crash_save_vmcoreinfo_init);
-> +
-> +#if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_MEMORY_HOTPLUG)
-> +void __weak arch_crash_handle_hotplug_event(struct kimage *image,
-> +							unsigned int hp_action, unsigned int cpu)
-> +{
-> +	WARN(1, "crash hotplug handler not implemented");
-> +}
-> +
-> +static void handle_hotplug_event(unsigned int hp_action, unsigned int cpu)
-> +{
-> +	/* Obtain lock while changing crash information */
-> +	if (!mutex_trylock(&kexec_mutex))
-> +		return;
-> +
-> +	/* Check kdump is loaded */
-> +	if (kexec_crash_image) {
-> +		pr_debug("crash hp: hp_action %u, cpu %u", hp_action, cpu);
-> +
-> +		/* Needed in order for the segments to be updated */
-> +		arch_kexec_unprotect_crashkres();
-> +
-> +		/* Flag to differentiate between normal load and hotplug */
-> +		kexec_crash_image->hotplug_event = true;
-> +
-> +		/* Now invoke arch-specific update handler */
-> +		arch_crash_handle_hotplug_event(kexec_crash_image, hp_action, cpu);
-> +
-> +		/* No longer handling a hotplug event */
-> +		kexec_crash_image->hotplug_event = false;
-> +
-> +		/* Change back to read-only */
-> +		arch_kexec_protect_crashkres();
-> +	}
-> +
-> +	/* Release lock now that update complete */
-> +	mutex_unlock(&kexec_mutex);
-> +}
-> +
-> +static int crash_memhp_notifier(struct notifier_block *nb, unsigned long val, void *v)
-> +{
-> +	switch (val) {
-> +	case MEM_ONLINE:
-> +		handle_hotplug_event(KEXEC_CRASH_HP_ADD_MEMORY, 0);
-> +		break;
-> +
-> +	case MEM_OFFLINE:
-> +		handle_hotplug_event(KEXEC_CRASH_HP_REMOVE_MEMORY, 0);
-> +		break;
-> +	}
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static struct notifier_block crash_memhp_nb = {
-> +	.notifier_call = crash_memhp_notifier,
-> +	.priority = 0
-> +};
-> +
-> +static int crash_cpuhp_online(unsigned int cpu)
-> +{
-> +	handle_hotplug_event(KEXEC_CRASH_HP_ADD_CPU, cpu);
-> +	return 0;
-> +}
-> +
-> +static int crash_cpuhp_offline(unsigned int cpu)
-> +{
-> +	handle_hotplug_event(KEXEC_CRASH_HP_REMOVE_CPU, cpu);
-> +	return 0;
-> +}
-> +
-> +static int __init crash_hotplug_init(void)
-> +{
-> +	int result = 0;
-> +
-> +	if (IS_ENABLED(CONFIG_MEMORY_HOTPLUG))
-> +		register_memory_notifier(&crash_memhp_nb);
-> +
-> +	if (IS_ENABLED(CONFIG_HOTPLUG_CPU))
-> +		result = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
-> +									"crash/cpuhp",
-> +									crash_cpuhp_online,
-> +									crash_cpuhp_offline);
-> +
-> +	return result;
-> +}
-> +
-> +subsys_initcall(crash_hotplug_init);
-> +#endif
-> -- 
-> 2.27.0
+On 06/05/2022 08:46, Frank Wunderlich wrote:
+>>> +    const: 1
+>>> +
+>>> +  "#size-cells":
+>>> +    const: 0
+>>> +
+>>> +  core-supply:
+>>> +    description: |
+>>
+>> Drop | everywhere where it is not needed (so in all places, AFAICT)
 > 
+> is it necessary for multiline-descriptions or is indentation enough?
 
+It's necessary only when YAML syntax characters appear in description or
+when you want specific formatting.
+
+https://elixir.bootlin.com/linux/v5.18-rc5/source/Documentation/devicetree/bindings/example-schema.yaml#L97
+
+https://yaml-multiline.info/
+
+>>> +
+>>> +patternProperties:
+>>
+>> patternProperties go before allOf, just after regular properties.
+> 
+> after required, right?
+
+properties do not go after required, so neither patternProperties
+should. Something like: propertes -> patternProperties -> dependencies
+-> required -> allOf -> additionalProperties -> examples
+
+> 
+>>> +  "^(ethernet-)?ports$":
+>>> +    type: object
+>>
+>> Also on this level:
+>>     unevaluatedProperties: false
+> 
+> this is imho a bit redundant because in dsa.yaml (which is included now after patternProperties)
+> it is already set on both levels.
+
+dsa.yaml does not set it on ethernet-ports.
+
+> Adding it here will fail in examples because of size/address-cells which are already defined in dsa.yaml...
+> so i need to define them here again.
+
+You're right, it cannot be set here.
+
+Best regards,
+Krzysztof
