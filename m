@@ -2,64 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 06:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 061E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 06:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345548AbiEFGfC (ORCPT
+        id S1346699AbiEFGgj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 02:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        Fri, 6 May 2022 02:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235845AbiEFGe5 (ORCPT
+        with ESMTP id S232158AbiEFGgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 02:34:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE485DA63;
-        Thu,  5 May 2022 23:31:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36252B83341;
-        Fri,  6 May 2022 06:31:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFDA8C385A8;
-        Fri,  6 May 2022 06:31:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651818671;
-        bh=y7POrv73PpQHvD+HJqu0OGbIrN/X8i4wShhzutDoNX0=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=OzcstYxVxRaqjttZMVdNB/j1mObbqE26OxUEAA2qJZYcM2u4QbvmEcghtJeyGINiO
-         gPh2qi+Socw1tNeBI98qtmTGTTr7CBIY9L+jU+tBKTQfih5c4VI18EhORwB23fKv7r
-         tpnE+Pw1YCUPE/9OeW0mu66c6lO7O4vTw4AOMxjjyV+1CcBMw7i2AeOx6/mrpKi6Nl
-         8jFeaG0SWoFcIy791OM5hPgWgH5dWq6I+556eYoZTSaGr4914uMxOhSKjCjusk7mUJ
-         lCNv7NU72CSQTdL9frxahIbu6VkuowbHbkd1Vs5j6zughZPVRjpZCEdI7Ys354oibo
-         KIu0Y3EWfH+fw==
-Date:   Fri, 6 May 2022 08:31:08 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     frank zago <frank@zago.net>
-cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] HID: Add support for Mega World controller force
- feedback
-In-Reply-To: <20220421024041.98786-1-frank@zago.net>
-Message-ID: <nycvar.YFH.7.76.2205060830550.28985@cbobk.fhfr.pm>
-References: <20220421024041.98786-1-frank@zago.net>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Fri, 6 May 2022 02:36:37 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DDE62A08;
+        Thu,  5 May 2022 23:32:54 -0700 (PDT)
+X-UUID: 06ef59586b5d40c19dc70f7a48510ac6-20220506
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:9ec7d882-4f38-4e8d-9457-fda0c0d399a8,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:9229cbb2-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 06ef59586b5d40c19dc70f7a48510ac6-20220506
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 552796857; Fri, 06 May 2022 14:32:45 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 6 May 2022 14:32:44 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 6 May 2022 14:32:44 +0800
+Message-ID: <86851bd03128cc61082d516ebff929d3637063cb.camel@mediatek.com>
+Subject: Re: [PATCH v6 00/10] cpufreq: mediatek: Cleanup and support MT8183
+ and MT8186
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
+        <roger.lu@mediatek.com>, <hsinyi@google.com>,
+        <khilman@baylibre.com>, <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 6 May 2022 14:32:44 +0800
+In-Reply-To: <20220506042004.hqzpb66shak4y7rz@vireshk-i7>
+References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+         <20220506042004.hqzpb66shak4y7rz@vireshk-i7>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022, frank zago wrote:
+On Fri, 2022-05-06 at 09:50 +0530, Viresh Kumar wrote:
+> On 05-05-22, 19:52, Rex-BC Chen wrote:
+> > Cpufreq is a DVFS driver used for power saving to scale the clock
+> > frequency
+> > and supply the voltage for CPUs. This series do some cleanup for
+> > MediaTek
+> > cpufreq drivers and add support for MediaTek SVS[2] and MediaTek
+> > CCI
+> > devfreq[3] which are supported in MT8183 and MT8186.
+> 
+> Applied 2-5, rest of them depend on the binding and dts patches to be
+> Acked.
+> 
 
-> This patch adds support for one of the several Mega World USB game
-> controller with integrated force feedback. It is a HID based
-> memory-less game controller, with a weak motor on the left, and a
-> strong one on the right.
+Hello Viresh,
 
-Applied, thanks.
+Thanks for accepting our patches.
 
--- 
-Jiri Kosina
-SUSE Labs
+As for rest patch:
+The cci series [1] is still under reviewing and it depends on chanwoo's
+series [2].
+Therefore, I think it won't be so quick to be acked for these patches
+in my series.
+
+[1]: cci: 
+https://lore.kernel.org/all/20220425125546.4129-1-johnson.wang@mediatek.com/
+
+[2]: chanwoo's passive governor support for devfreq: 
+https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing
+
+BRs,
+Rex
 
