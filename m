@@ -2,105 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F10AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF87C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387450AbiEFAPA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        id S243309AbiEFARA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 20:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387441AbiEFAOx (ORCPT
+        with ESMTP id S241333AbiEFAQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:14:53 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417D23A5DB
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 17:11:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651795872; x=1683331872;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PDsnw3ASTnR8ThsfVBTdSrYjKJCXtE4HRyK2jWA9t1s=;
-  b=K1Iu71Ggz2xxVpRg1du8fYPm3cwK4jof4vDob2kVE2NpCJ7t2xHcDQoj
-   RvVt65O1Bq4RA/TPHeXeJSLRBWnftgEQyVyyalBhD5nYI+460yLITC/C1
-   IX8kzinmdcNhUhdZUIKH+fM0+mh7K3TvtISOYX2U9tyxGvoMu5365pE1X
-   dj89mMQozGEGnPIiCh3B0gY6BkMu61DaZ01aPNQQSgxL1hzpbx2Ex1HZP
-   6N/fVoA9tOEq+eLCTrrguYaXmcm5sZF9IeZ3+TH7dn3PCBR4d9kNFSVKO
-   OV+6DRLmUSSieyElsbiTp795p62lAH21Q1/Kx1NwvNdXfb/gD89IgYfMm
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="331285498"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="331285498"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 17:11:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="585649802"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 05 May 2022 17:11:10 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmlYr-000Cru-GR;
-        Fri, 06 May 2022 00:11:09 +0000
-Date:   Fri, 6 May 2022 08:10:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [intel-tdx:kvm-upstream-workaround 99/361]
- arch/x86/kvm/vmx/vmx.c:4410:5: error: no previous prototype for function
- 'vmx_get_pid_table_order'
-Message-ID: <202205060807.LvZYGFIP-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 5 May 2022 20:16:52 -0400
+Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21B225132C
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 17:13:09 -0700 (PDT)
+Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
+        by 156.147.23.51 with ESMTP; 6 May 2022 09:13:07 +0900
+X-Original-SENDERIP: 156.147.1.125
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
+        by 156.147.1.125 with ESMTP; 6 May 2022 09:13:07 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     torvalds@linux-foundation.org
+Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        mingo@redhat.com, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
+        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
+        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
+        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
+        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
+        amir73il@gmail.com, gregkh@linuxfoundation.org,
+        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
+        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
+        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
+        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
+        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
+        linux-block@vger.kernel.org, paolo.valente@linaro.org,
+        josef@toxicpanda.com, linux-fsdevel@vger.kernel.org,
+        viro@zeniv.linux.org.uk, jack@suse.cz, jack@suse.com,
+        jlayton@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
+        djwong@kernel.org, dri-devel@lists.freedesktop.org,
+        airlied@linux.ie, rodrigosiqueiramelo@gmail.com,
+        melissa.srw@gmail.com, hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
+Subject: Re: [PATCH RFC v6 00/21] DEPT(Dependency Tracker)
+Date:   Fri,  6 May 2022 09:11:35 +0900
+Message-Id: <1651795895-8641-1-git-send-email-byungchul.park@lge.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <CAHk-=whnPePcffsNQM+YSHMGttLXvpf8LbBQ8P7HEdqFXaV7Lg@mail.gmail.com>
+References: <CAHk-=whnPePcffsNQM+YSHMGttLXvpf8LbBQ8P7HEdqFXaV7Lg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   3b5b338cdf10dca7a2435d1f86b2dd9f1a3ad833
-commit: 833404c859e4357ba656b2d19d5a405ba7bf4ec4 [99/361] KVM: VMX: enable IPI virtualization
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220506/202205060807.LvZYGFIP-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e004fb787698440a387750db7f8028e7cb14cfc)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/833404c859e4357ba656b2d19d5a405ba7bf4ec4
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout 833404c859e4357ba656b2d19d5a405ba7bf4ec4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kvm/
+Linus wrote:
+>
+> On Wed, May 4, 2022 at 1:19 AM Byungchul Park <byungchul.park@lge.com> wrote:
+> >
+> > Hi Linus and folks,
+> >
+> > I've been developing a tool for detecting deadlock possibilities by
+> > tracking wait/event rather than lock(?) acquisition order to try to
+> > cover all synchonization machanisms.
+> 
+> So what is the actual status of reports these days?
+> 
+> Last time I looked at some reports, it gave a lot of false positives
+> due to mis-understanding prepare_to_sleep().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, it was. I handled the case in the following way:
 
-All errors (new ones prefixed by >>):
+1. Stage the wait at prepare_to_sleep(), which might be used at commit.
+   Which has yet to be an actual wait that Dept considers.
+2. If the condition for sleep is true, the wait will be committed at
+   __schedule(). The wait becomes an actual one that Dept considers.
+3. If the condition is false and the task gets back to TASK_RUNNING,
+   clean(=reset) the staged wait.
 
->> arch/x86/kvm/vmx/vmx.c:4410:5: error: no previous prototype for function 'vmx_get_pid_table_order' [-Werror,-Wmissing-prototypes]
-   int vmx_get_pid_table_order(struct kvm *kvm)
-       ^
-   arch/x86/kvm/vmx/vmx.c:4410:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int vmx_get_pid_table_order(struct kvm *kvm)
-   ^
-   static 
-   1 error generated.
+That way, Dept only works with what actually hits to __schedule() for
+the waits through sleep.
 
+> For this all to make sense, it would need to not have false positives
+> (or at least a very small number of them together with a way to sanely
 
-vim +/vmx_get_pid_table_order +4410 arch/x86/kvm/vmx/vmx.c
+Yes. I agree with you. I got rid of them that way I described above.
 
-  4409	
-> 4410	int vmx_get_pid_table_order(struct kvm *kvm)
-  4411	{
-  4412		return get_order(kvm->arch.max_vcpu_ids * sizeof(*to_kvm_vmx(kvm)->pid_table));
-  4413	}
-  4414	
+> get rid of them), and also have a track record of finding things that
+> lockdep doesn't.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I have some reports that wait_for_completion or waitqueue is involved.
+It's worth noting those are not tracked by Lockdep. I'm checking if
+those are true positive or not. I will share those reports once I get
+more convinced for that.
+
+> Maybe such reports have been sent out with the current situation, and
+> I haven't seen them.
+
+Dept reports usually have been sent to me privately, not in LKML. As I
+told you, I'm planning to share them.
+
+	Byungchul
+
+> 
+>                  Linus
+> 
