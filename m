@@ -2,109 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D18C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 361CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391571AbiEFMAy (ORCPT
+        id S1391577AbiEFMBz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 08:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
+        Fri, 6 May 2022 08:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391558AbiEFMAv (ORCPT
+        with ESMTP id S1391569AbiEFMBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 08:00:51 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F344A918
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 04:57:07 -0700 (PDT)
-Received: from mail-yb1-f178.google.com ([209.85.219.178]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mqrs9-1o8r8S2abx-00mwN1 for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022
- 13:57:05 +0200
-Received: by mail-yb1-f178.google.com with SMTP id m190so884450ybf.4
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 04:57:05 -0700 (PDT)
-X-Gm-Message-State: AOAM532x9jium+iJfrl6mTL2WOFvW664RnwpGTbaMHF2E0FTOeNFGUsP
-        Ol+Hq2vFy57QVMVsMG+fatpz+AZwFRkvixUXtYU=
-X-Google-Smtp-Source: ABdhPJxRJvVp4WSdDwMumBobaUVH2AKop8JezHcIZ3thL7fqDYwNyZ/neaZTOOGPQg//WN+9ZbOU1lJxM8I51kYcvzY=
-X-Received: by 2002:a25:c50a:0:b0:647:b840:df2c with SMTP id
- v10-20020a25c50a000000b00647b840df2cmr1936326ybe.106.1651838224389; Fri, 06
- May 2022 04:57:04 -0700 (PDT)
+        Fri, 6 May 2022 08:01:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7AF59305
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 04:58:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8400BB83581
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 11:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B46D6C385A9;
+        Fri,  6 May 2022 11:58:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651838287;
+        bh=NbglcX/+F1uw7EVijJDP4rVc7MSUQC0I21PVajSQ5zo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HTabSuFf8FZppO4c7WZRyYGXIuW1kUdGfeYFnFW7W9t54WjiGmNfZIIdnVCGN+Jsg
+         rXn/jZIgdktf+erz/gGBU9cr1Wwcs2KZlcffNIlNQlILBuQ1EV1fn+jdvNvrX4+eN5
+         +ksos/qargFxGQneFnr6escszritn8u48pk8kk6zqwI0KDuRrIgEqDMKqSfSnFSqkY
+         pNphUq98SxXsswrxoZM9L2YAVND/WWlwAK1yYr8W7Q3VjCkJPS1EVETARKbSmFW5A9
+         3GhxI8AG6uQFlCNMua+fYdYZfk+bFJuUOaO21XA5DZYKux2G11PzRHJqRBEg/6tBGq
+         chK2o9J/B19Mg==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] f2fs: avoid to select pinned section during checkpoint=disable
+Date:   Fri,  6 May 2022 19:58:00 +0800
+Message-Id: <20220506115800.2605-1-chao@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220506091338.GE4031@kadam>
-In-Reply-To: <20220506091338.GE4031@kadam>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 6 May 2022 13:56:48 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0DY2b15yyzpwsjOCqOALfTbsmYf1kTnQZF5wPW8mtFbQ@mail.gmail.com>
-Message-ID: <CAK8P3a0DY2b15yyzpwsjOCqOALfTbsmYf1kTnQZF5wPW8mtFbQ@mail.gmail.com>
-Subject: Re: [Ksummit-discuss] uninitialized variables bugs
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     ksummit <ksummit-discuss@lists.linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        kbuild@lists.01.org, kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:/1Uq3+YDH0S131NswzFnt0uttIf9AzV+f6Wyn8DwSSkvLyRkQ2B
- KjydhfMR0QYhERCX1makarGN3KCnewpW4Lp4SylbzKyUCwjHB6c9JBmQYEO6CMrV5BD+y/a
- NR25O9ZaAjrPmybBwvsN4k2IjtB9MxU/8N9iEe+n5T2R4k1jxxLfjwg0YENTtfpK52OoW4E
- J8sdlRsL7WozqW8u9nvWA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bUfXL/3JsyQ=:QFgPssFkSAi/p9K2i9aR9A
- /caWEQenuhoZgHSivEG5b5SV6WzzwsjR9MZfmXQLuX7+ImJkStpo0SFXELNuH9wJyy3ZTeCHP
- +5OTi9osYeWvR7bfvsWa5myRDqqF+bZVblHlZMI2fgwSlN+wKQgUZq+2PxVLEd+Pb7iSMGWQG
- 8jWP23iUlOo3WFLQq+qQPxMb+/uQSXMDa3BtqhIodmhaVS4hV8lmQJNAVd2aDlJNgWjHYHpcg
- KhAIcYPKkv5OnErVv/7CVIG13Swi391BZwgJFXkDp6P9esROXCZ5lnsiWsXjcEaXyG80/9OBz
- QKUNuqEMnNAcNCnSBnYBOaisb4LpOqpK3I6t+PhzD8kTVIWClEY26XncEb9hv1j9Mo6RWn7gm
- aAJdjVsH+P6jSsAvPHl5JsdpXiYoCw3gS6Es+d8TvJBaSdefiQgA5MhV6ZSCKgjKegjgCPDhy
- HRjEYhXwOn6NBCfaxHqYtW96VzDgyWONBh0S6IGQWeE72ATqAW40HohYoZ9bSdb6h4oKkcDat
- hnx91Z+Fd54UglrUXVe7yZTtGdutgJm27G2DWKSI+YRmJC7cZUXMxkrgKs184Okq4msZHfS8B
- ofd/7iNYSBz6VpN3uONAN6a82xszGX9aR/dcmhfkNeV2UEIBSW0DRX9ittw8GYRKK/K4+9FQV
- SMBdgBz6VKC7fJe6qFs5j8S8r4d4O81po5z2D6GGowJoHQWiPoqM/rOkIE2qhw20MXBptx0YB
- DdgWPpw/NB8iSwv0nWPfybEHZCRtNhWOhB7uITsSSgRhQNSuL2qNoutmrfFPowSX6Muyxi6BP
- vTE94eoaZhHoljkrd9uHfCBZ+wJs3ZieBKiIIcxfnHtslXkpAQ=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 11:13 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
->
-> It's frustrating.  Sometimes the false positives are hard to analyse
-> because I have to read through multiple functions.  A lot of times
-> when I write a patch and a commit message Nathan has already fixed it
-> so it's just a waste of time.
+The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
+chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
+segment as a victim all the time, resulting in checkpoint=disable failure.
+Let's pick another one, if we fail to collect it.
 
-Agreed. I'm not actually checking for those warnings on gcc any more,
-but just the clang warnings point to a bigger problem.
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+v4:
+- use sec_freed instead of total_freed
+ fs/f2fs/f2fs.h    |  2 +-
+ fs/f2fs/file.c    |  8 ++++----
+ fs/f2fs/gc.c      | 17 +++++++++++------
+ fs/f2fs/segment.c |  2 +-
+ fs/f2fs/super.c   |  2 +-
+ 5 files changed, 18 insertions(+), 13 deletions(-)
 
-> It's risky as well.  The Smatch check for uninitialized variables was
-> broken for most of 2021.  Nathan sometimes goes on vacation.
->
-> I guess I would hope that one day we can turn on the GCC uninitialized
-> variable warnings again.  That would mean silencing false positives
-> which a lot of people don't want to do...  Maybe Clang has fewer false
-> positives than GCC?
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 56adc3b68e14..0f8c426aed50 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -3787,7 +3787,7 @@ int f2fs_start_gc_thread(struct f2fs_sb_info *sbi);
+ void f2fs_stop_gc_thread(struct f2fs_sb_info *sbi);
+ block_t f2fs_start_bidx_of_node(unsigned int node_ofs, struct inode *inode);
+ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync, bool background, bool force,
+-			unsigned int segno);
++			unsigned int segno, unsigned int nr_section);
+ void f2fs_build_gc_manager(struct f2fs_sb_info *sbi);
+ int f2fs_resize_fs(struct f2fs_sb_info *sbi, __u64 block_count);
+ int __init f2fs_create_garbage_collection_cache(void);
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index e4cf8b7b23aa..07d2fa6c774b 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1684,7 +1684,7 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
+ 		if (has_not_enough_free_secs(sbi, 0,
+ 			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
+ 			f2fs_down_write(&sbi->gc_lock);
+-			err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
++			err = f2fs_gc(sbi, true, false, false, NULL_SEGNO, 0);
+ 			if (err && err != -ENODATA && err != -EAGAIN)
+ 				goto out_err;
+ 		}
+@@ -2472,7 +2472,7 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
+ 		f2fs_down_write(&sbi->gc_lock);
+ 	}
+ 
+-	ret = f2fs_gc(sbi, sync, true, false, NULL_SEGNO);
++	ret = f2fs_gc(sbi, sync, true, false, NULL_SEGNO, 0);
+ out:
+ 	mnt_drop_write_file(filp);
+ 	return ret;
+@@ -2509,7 +2509,7 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
+ 	}
+ 
+ 	ret = f2fs_gc(sbi, range->sync, true, false,
+-				GET_SEGNO(sbi, range->start));
++				GET_SEGNO(sbi, range->start), 0);
+ 	if (ret) {
+ 		if (ret == -EBUSY)
+ 			ret = -EAGAIN;
+@@ -2966,7 +2966,7 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
+ 		sm->last_victim[GC_CB] = end_segno + 1;
+ 		sm->last_victim[GC_GREEDY] = end_segno + 1;
+ 		sm->last_victim[ALLOC_NEXT] = end_segno + 1;
+-		ret = f2fs_gc(sbi, true, true, true, start_segno);
++		ret = f2fs_gc(sbi, true, true, true, start_segno, 0);
+ 		if (ret == -EAGAIN)
+ 			ret = 0;
+ 		else if (ret < 0)
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index 3009c0a97ab4..d13a86272e8b 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -142,7 +142,7 @@ static int gc_thread_func(void *data)
+ 			sync_mode = false;
+ 
+ 		/* if return value is not zero, no victim was selected */
+-		if (f2fs_gc(sbi, sync_mode, !foreground, false, NULL_SEGNO))
++		if (f2fs_gc(sbi, sync_mode, !foreground, false, NULL_SEGNO, 0))
+ 			wait_ms = gc_th->no_gc_sleep_time;
+ 
+ 		if (foreground)
+@@ -1754,7 +1754,8 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
+ }
+ 
+ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+-			bool background, bool force, unsigned int segno)
++			bool background, bool force, unsigned int segno,
++			unsigned int nr_section)
+ {
+ 	int gc_type = sync ? FG_GC : BG_GC;
+ 	int sec_freed = 0, seg_freed = 0, total_freed = 0;
+@@ -1841,11 +1842,15 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+ 	if (gc_type == FG_GC)
+ 		sbi->cur_victim_sec = NULL_SEGNO;
+ 
+-	if (sync)
+-		goto stop;
+-
+-	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
++	if (sync || !has_not_enough_free_secs(sbi, sec_freed, 0)) {
++		/*
++		 * f2fs_disable_checkpoint() needs to migrate enough section
++		 * before f2fs_gc() exits.
++		 */
++		if (sec_freed < nr_section)
++			goto gc_more;
+ 		goto stop;
++	}
+ 
+ 	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
+ 
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 8c17fed8987e..3a3e2cec2ac4 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -524,7 +524,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
+ 			finish_wait(&sbi->gc_thread->fggc_wq, &wait);
+ 		} else {
+ 			f2fs_down_write(&sbi->gc_lock);
+-			f2fs_gc(sbi, false, false, false, NULL_SEGNO);
++			f2fs_gc(sbi, false, false, false, NULL_SEGNO, 0);
+ 		}
+ 	}
+ }
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index d06a577a1208..2f0ad9ffbf17 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2076,7 +2076,7 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
+ 
+ 	while (!f2fs_time_over(sbi, DISABLE_TIME)) {
+ 		f2fs_down_write(&sbi->gc_lock);
+-		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
++		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO, 1);
+ 		if (err == -ENODATA) {
+ 			err = 0;
+ 			break;
+-- 
+2.32.0
 
-I think for the gcc warnings to become useful again, we may have to
-wait for a future compiler release. I have not checked gcc-12 for this,
-but it's a very old topic.
-
-Fundamentally, it's impossible for any compiler to do this correctly,
-because of the halting problem. gcc apparently has some heuristics
-that worked well enough in the past, but it misses some obvious
-cases and causes false positives in unexpected places, often
-depending on optimization flags.
-
-Recent gcc versions are much worse than older ones, since the
-inlining changed in a way that caused a ton of false-positives.
-
-clang is generally better at catching the simple cases reliably,
-and it does this independent of optimization flags. However, it
-stops at the function boundary, so it never catches some of the
-cases that gcc was good at.
-
-The gcc static analyzer apparently gained an option[1] that
-works similarly to what you have in smatch. I have not tried
-using this, but this may be something we can do in CI
-systems that may not want to run smatch for some reason.
-
-        Arnd
-
-[1] https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Static-Analyzer-Options.html#index-Wanalyzer-use-of-uninitialized-value
