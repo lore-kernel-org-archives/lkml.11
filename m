@@ -2,135 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE97C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6206DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444306AbiEFVDg (ORCPT
+        id S1444319AbiEFVFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
+        Fri, 6 May 2022 17:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444314AbiEFVD0 (ORCPT
+        with ESMTP id S1386740AbiEFVFb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:03:26 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B976F494
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 13:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651870776; x=1683406776;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=x13dD3VLjjzATCduoANTxtyBjtiJnWJBZDCR6LHKV9E=;
-  b=fTw8t3cDIf50fH8IH7Wjy+BJ/jye6zna+UXIdbQUOKHjUb2U7zTLhl5+
-   bX9j3UAAZjCk7ZpyatK6MZrY/GgxeOTbDZ33mECEli/EB2PVEUTSoJjXa
-   8ZSJn/J5n3xNzA3diLeHYX1PRcMt98D4ALfmnEgpejDurQFYru/EC8N/j
-   ARuQKAL13W87XvLM++kLmWo4v4BL7R2tksLICqC+eEB+6317iA7uI0ZIq
-   2wiEQj7hppVttPzI/mTUj5zF+bW6B+Gizkghbk4vL3o+dbASDG/ZQqFhs
-   ngv81NRzvQoq0mPEvpArecmEJNRCX4Mmp7bsuChv+JQaaqmf+7icdtgCs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="248477860"
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="248477860"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 13:59:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="709626014"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 06 May 2022 13:59:35 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nn530-000Dtl-V8;
-        Fri, 06 May 2022 20:59:34 +0000
-Date:   Sat, 7 May 2022 04:58:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mnyman-xhci:for-usb-next 8/8] drivers/usb/host/xhci-ring.c:1473:24:
- warning: variable 'drop_flags' set but not used
-Message-ID: <202205070456.Hl6TmJVF-lkp@intel.com>
+        Fri, 6 May 2022 17:05:31 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D42E67D2A;
+        Fri,  6 May 2022 14:01:47 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id e194so9348844iof.11;
+        Fri, 06 May 2022 14:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1YZT8Q5gNPdhz2HKcCZACwGlpa3VPKGgoNpznG8DFQ0=;
+        b=izKO7nbMwlnej8sDjsX1Kx9zFvAM8LzHFHHc+t+TfIv9ivhXrTaviRvKNmKLh0BYug
+         gG216cohLbLuqkS+AVVQ1W6RSKxZY43s0Esua2tjB/2q4DyiUIFAUC9uf0h0jcmG5nri
+         TRd7EivPenyKB8p1WsO0pVJAnSoN02PeZh3MVXEDoyA1YItQQDjU9/GIHM7KebsccJ/k
+         sNh0horTbWmC/ZXx4SJ99uLbiBtiVqRwUUjRkgnLZ0tnNVn7trMF28vwkRuDpQkm0b0b
+         7JbZ5vgv3kv79fUC5ghAyfhA1mct8qvdpRlPYzpbrByqq1uClylgxOGGwLSrlP1QzlIL
+         0TTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1YZT8Q5gNPdhz2HKcCZACwGlpa3VPKGgoNpznG8DFQ0=;
+        b=1wKH6wA+DybzNyr0V0ixYuE2/xfytWTsmT8Qkv45Ky+CAxbuwajOo3cPftxBRecMMO
+         ifXx5TEF6adjgFIDr9nmjWHLojYfunWejKrbr2CBwVg0HYog4tu7YsQ0Ru8id/KWkzVX
+         PULLQDSTTkCLixblC0DNDZVH7MOEdISdcFJ8s5ButmXe5XXydh3ht3xdTBtfcPHs3dSJ
+         JxPT1Plsc/wmW0FgN0JSh3q7NUYi0a5ffg/kxa0L/I48g72AbZHFMXZobktuNw1Ykwrp
+         EzEOkRQL1A6geC+1AvPpS3VhtjJFugg/6TdLQjWfq3pejyplAc8MbJE5fm11z/KTVDaX
+         k5fg==
+X-Gm-Message-State: AOAM533FooMdP9Ue/AmtDngTLiPKbmPCa9eDwgRUBMKJEdwPNsdpiERx
+        innDwbKh74c4njrOaaXA6TtnpBe48E1p4cTZT38=
+X-Google-Smtp-Source: ABdhPJwd4wUYX8+IWkqoEimKTpfwS/3lXAvq8zfZnEvIJyoTUy27SqnBGylGFnellmYWJIlFEvAgnmpiT9uzvzWxgGs=
+X-Received: by 2002:a5e:8e42:0:b0:657:bc82:64e5 with SMTP id
+ r2-20020a5e8e42000000b00657bc8264e5mr2032977ioo.112.1651870906577; Fri, 06
+ May 2022 14:01:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220426140924.3308472-1-pulehui@huawei.com> <20220426140924.3308472-2-pulehui@huawei.com>
+ <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com> <f1777267-7904-e993-24f9-8071cd4b5bf7@huawei.com>
+In-Reply-To: <f1777267-7904-e993-24f9-8071cd4b5bf7@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 May 2022 14:01:35 -0700
+Message-ID: <CAEf4BzZ-eDcdJZgJ+Np7Y=V-TVjDDvOMqPwzKjyWrh=i5juv4w@mail.gmail.com>
+Subject: Re: [PATCH -next 1/2] bpf: Unify data extension operation of
+ jited_ksyms and jited_linfo
+To:     Pu Lehui <pulehui@huawei.com>
+Cc:     bpf <bpf@vger.kernel.org>, linux-riscv@lists.infradead.org,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git for-usb-next
-head:   3eacb1f2e43e3cb7344e4a80721bdbfcb52cb7db
-commit: 3eacb1f2e43e3cb7344e4a80721bdbfcb52cb7db [8/8] xhci: Remove quirk for over 10 year old evaluation hardware
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220507/202205070456.Hl6TmJVF-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/commit/?id=3eacb1f2e43e3cb7344e4a80721bdbfcb52cb7db
-        git remote add mnyman-xhci https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git
-        git fetch --no-tags mnyman-xhci for-usb-next
-        git checkout 3eacb1f2e43e3cb7344e4a80721bdbfcb52cb7db
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/usb/host/
+On Thu, Apr 28, 2022 at 2:47 AM Pu Lehui <pulehui@huawei.com> wrote:
+>
+> Hi Andrii,
+>
+> On 2022/4/28 6:33, Andrii Nakryiko wrote:
+> > On Tue, Apr 26, 2022 at 6:40 AM Pu Lehui <pulehui@huawei.com> wrote:
+> >>
+> >> We found that 32-bit environment can not print bpf line info due
+> >> to data inconsistency between jited_ksyms[0] and jited_linfo[0].
+> >>
+> >> For example:
+> >> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
+> >>
+> >> We know that both of them store bpf func address, but due to the
+> >> different data extension operations when extended to u64, they may
+> >> not be the same. We need to unify the data extension operations of
+> >> them.
+> >>
+> >> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> >> ---
+> >>   kernel/bpf/syscall.c                         |  5 ++++-
+> >>   tools/lib/bpf/bpf_prog_linfo.c               |  8 ++++----
+> >>   tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
+> >
+> > please split kernel changes, libbpf changes, and selftests/bpf changes
+> > into separate patches
+> Thanks for your review. Alright, I will split it next time.
+>
+> >
+> >>   3 files changed, 17 insertions(+), 14 deletions(-)
+> >>
+> >> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> >> index e9621cfa09f2..4c417c806d92 100644
+> >> --- a/kernel/bpf/syscall.c
+> >> +++ b/kernel/bpf/syscall.c
+> >> @@ -3868,13 +3868,16 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+> >>                  info.nr_jited_line_info = 0;
+> >>          if (info.nr_jited_line_info && ulen) {
+> >>                  if (bpf_dump_raw_ok(file->f_cred)) {
+> >> +                       unsigned long jited_linfo_addr;
+> >>                          __u64 __user *user_linfo;
+> >>                          u32 i;
+> >>
+> >>                          user_linfo = u64_to_user_ptr(info.jited_line_info);
+> >>                          ulen = min_t(u32, info.nr_jited_line_info, ulen);
+> >>                          for (i = 0; i < ulen; i++) {
+> >> -                               if (put_user((__u64)(long)prog->aux->jited_linfo[i],
+> >> +                               jited_linfo_addr = (unsigned long)
+> >> +                                       prog->aux->jited_linfo[i];
+> >> +                               if (put_user((__u64) jited_linfo_addr,
+> >>                                               &user_linfo[i]))
+> >>                                          return -EFAULT;
+> >>                          }
+> Please let me to explain more detail, sorry if I'm wordy.
+> The main reason that 32-bit env does not print bpf line info is here:
+>
+> kernel/bpf/syscall.c:
+> bpf_prog_get_info_by_fd {
+>         ...
+>         user_ksyms = u64_to_user_ptr(info.jited_ksyms);
+>         ksym_addr = (unsigned long)prog->aux->func[i]->bpf_func;
+>         if (put_user((u64) ksym_addr, &user_ksyms[i]))
+>         ...
+>
+>         user_linfo = u64_to_user_ptr(info.jited_line_info);
+>         if (put_user((__u64)(long)prog->aux->jited_linfo[i],
+>                      &user_linfo[i]))
+>         ...
+> }
+>
+> In 32-bit env, ksym_addr and prog->aux->jited_linfo[0] both store the
+> 32-bit address of bpf_func, but the first one is zero-extension to u64,
+> while the other is sign-extension to u64.
+> For example:
+>         prog->aux->func[0]->bpf_func = 0xb800067c
+>         user_ksyms[0] = 0xb800067c, user_linfo[0] = 0xffffffffb800067c
+>
+> Both zero-extension and sign-extension are fine, but if operating
+> directly between them without casting in 32-bit env, there will have
+> some potential problems. Such as:
+>
+> tools/lib/bpf/bpf_prog_linfo.c:
+> dissect_jited_func {
+>         ...
+>         if (ksym_func[0] != *jited_linfo) //always missmatch in 32 env
+>                 goto errout;
+>         ...
+>         if (ksym_func[f] == *jited_linfo) {
+>         ...
+>         last_jited_linfo = *jited_linfo;
+>         if (last_jited_linfo - ksym_func[f - 1] + 1 >
+>             ksym_len[f - 1])
+>         ...
+> }
+>
+> We could cast them to 32-bit data type, but I think unify data extension
+> operation will be better.
+>
+> >> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
+> >> index 5c503096ef43..5cf41a563ef5 100644
+> >> --- a/tools/lib/bpf/bpf_prog_linfo.c
+> >> +++ b/tools/lib/bpf/bpf_prog_linfo.c
+> >> @@ -127,7 +127,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+> >>          prog_linfo->raw_linfo = malloc(data_sz);
+> >>          if (!prog_linfo->raw_linfo)
+> >>                  goto err_free;
+> >> -       memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
+> >> +       memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info, data_sz);
+> >>
+> >>          nr_jited_func = info->nr_jited_ksyms;
+> >>          if (!nr_jited_func ||
+> >> @@ -148,7 +148,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+> >>          if (!prog_linfo->raw_jited_linfo)
+> >>                  goto err_free;
+> >>          memcpy(prog_linfo->raw_jited_linfo,
+> >> -              (void *)(long)info->jited_line_info, data_sz);
+> >> +              (void *)(unsigned long)info->jited_line_info, data_sz);
+> >>
+> >>          /* Number of jited_line_info per jited func */
+> >>          prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
+> >> @@ -166,8 +166,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+> >>                  goto err_free;
+> >>
+> >>          if (dissect_jited_func(prog_linfo,
+> >> -                              (__u64 *)(long)info->jited_ksyms,
+> >> -                              (__u32 *)(long)info->jited_func_lens))
+> >> +                              (__u64 *)(unsigned long)info->jited_ksyms,
+> >> +                              (__u32 *)(unsigned long)info->jited_func_lens))
+> >
+> > so I'm trying to understand how this is changing anything for 32-bit
+> > architecture and I must be missing something, sorry if I'm being
+> > dense. The example you used below
+> >
+> > jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
+> >
+> > Wouldn't (unsigned long)0xffffffffb800067c == (long)0xffffffffb800067c
+> > == 0xb800067c ?
+> If I understand correctly, info->jited_ksyms or info->jited_func_lens is
+> just a u64 address that point to the corresponding space. The bpf_func
+> address is stored in the item of info->jited_ksyms but not
+> info->jited_ksyms.
+>
+> And here, I may have misled you. Both (__u64 *)(long)info->jited_ksyms
+> and (__u64 *)(unsigned long)info->jited_ksyms are the same, I just want
+> to unify the style. I will remove them in v2.
+>
+> Please let me know if there is any problem with my understanding.
+>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/usb/host/xhci-ring.c: In function 'xhci_handle_cmd_config_ep':
->> drivers/usb/host/xhci-ring.c:1473:24: warning: variable 'drop_flags' set but not used [-Wunused-but-set-variable]
-    1473 |         u32 add_flags, drop_flags;
-         |                        ^~~~~~~~~~
-   drivers/usb/host/xhci-ring.c:1472:22: warning: unused variable 'ep_state' [-Wunused-variable]
-    1472 |         unsigned int ep_state;
-         |                      ^~~~~~~~
+Thanks for explanation. I guess in my mind I was always sign extending
+32-bit to 64-bit, but I think memory addresses are conceptually
+unsigned, so (unsigned long) casting makes more sense, and u64
+representation of 0xb800067c should be 0x00000000b800067c and not
+0xffffffffb800067c. So your changes make sense, and I agree that
+libbpf-side changes for conceptual uniformity are also good.
 
 
-vim +/drop_flags +1473 drivers/usb/host/xhci-ring.c
-
-6c02dd147a7a3d Xenia Ragiadakou 2013-09-09  1464  
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1465  static void xhci_handle_cmd_config_ep(struct xhci_hcd *xhci, int slot_id,
-a181030703df18 Mathias Nyman    2021-01-29  1466  		u32 cmd_comp_code)
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1467  {
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1468  	struct xhci_virt_device *virt_dev;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1469  	struct xhci_input_control_ctx *ctrl_ctx;
-19a7d0d65c4a81 Felipe Balbi     2017-04-07  1470  	struct xhci_ep_ctx *ep_ctx;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1471  	unsigned int ep_index;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1472  	unsigned int ep_state;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09 @1473  	u32 add_flags, drop_flags;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1474  
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1475  	/*
-3eacb1f2e43e3c Mathias Nyman    2022-05-02  1476  	 * Configure endpoint commands can come from the USB core configuration
-3eacb1f2e43e3c Mathias Nyman    2022-05-02  1477  	 * or alt setting changes, or when streams were being configured.
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1478  	 */
-3eacb1f2e43e3c Mathias Nyman    2022-05-02  1479  
-9ea1833e4c210a Mathias Nyman    2014-05-08  1480  	virt_dev = xhci->devs[slot_id];
-03ed579d9d51aa Mathias Nyman    2021-01-29  1481  	if (!virt_dev)
-03ed579d9d51aa Mathias Nyman    2021-01-29  1482  		return;
-4daf9df51fbfb0 Lin Wang         2015-01-09  1483  	ctrl_ctx = xhci_get_input_control_ctx(virt_dev->in_ctx);
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1484  	if (!ctrl_ctx) {
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1485  		xhci_warn(xhci, "Could not get input context, bad type.\n");
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1486  		return;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1487  	}
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1488  
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1489  	add_flags = le32_to_cpu(ctrl_ctx->add_flags);
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1490  	drop_flags = le32_to_cpu(ctrl_ctx->drop_flags);
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1491  	/* Input ctx add_flags are the endpoint index plus one */
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1492  	ep_index = xhci_last_valid_endpoint(add_flags) - 1;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1493  
-19a7d0d65c4a81 Felipe Balbi     2017-04-07  1494  	ep_ctx = xhci_get_ep_ctx(xhci, virt_dev->out_ctx, ep_index);
-19a7d0d65c4a81 Felipe Balbi     2017-04-07  1495  	trace_xhci_handle_cmd_config_ep(ep_ctx);
-19a7d0d65c4a81 Felipe Balbi     2017-04-07  1496  
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1497  	return;
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1498  }
-6ed46d3337b1f4 Xenia Ragiadakou 2013-09-09  1499  
-
-:::::: The code at line 1473 was first introduced by commit
-:::::: 6ed46d3337b1f4a8f9fa7438589cab5f1bb75e98 xhci: refactor TRB_CONFIG_EP case into function
-
-:::::: TO: Xenia Ragiadakou <burzalodowa@gmail.com>
-:::::: CC: Sarah Sharp <sarah.a.sharp@linux.intel.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> Thanks,
+> Lehui
+> >
+> > isn't sizeof(long) == sizeof(void*) == 4?
+> >
+> > It would be nice if you could elaborate a bit more on what problems
+> > did you see in practice?
+> >
+> >>                  goto err_free;
+> >>
+> >>          return prog_linfo;
+> >> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+> >> index 84aae639ddb5..d9ba1ec1d5b3 100644
+> >> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
+> >> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+> >> @@ -6451,8 +6451,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+> >>                    info.nr_jited_line_info, jited_cnt,
+> >>                    info.line_info_rec_size, rec_size,
+> >>                    info.jited_line_info_rec_size, jited_rec_size,
+> >> -                 (void *)(long)info.line_info,
+> >> -                 (void *)(long)info.jited_line_info)) {
+> >> +                 (void *)(unsigned long)info.line_info,
+> >> +                 (void *)(unsigned long)info.jited_line_info)) {
+> >>                  err = -1;
+> >>                  goto done;
+> >>          }
+> >> @@ -6500,8 +6500,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+> >>          }
+> >>
+> >>          if (CHECK(jited_linfo[0] != jited_ksyms[0],
+> >> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
+> >> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
+> >> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
+> >> +                 jited_linfo[0], jited_ksyms[0])) {
+> >>                  err = -1;
+> >>                  goto done;
+> >>          }
+> >> @@ -6519,16 +6519,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+> >>                  }
+> >>
+> >>                  if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
+> >> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
+> >> -                         i, (long)jited_linfo[i],
+> >> -                         i - 1, (long)(jited_linfo[i - 1]))) {
+> >> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
+> >> +                         i, jited_linfo[i],
+> >> +                         i - 1, (jited_linfo[i - 1]))) {
+> >>                          err = -1;
+> >>                          goto done;
+> >>                  }
+> >>
+> >>                  if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
+> >> -                         "jited_linfo[%u]:%lx - %lx > %u",
+> >> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
+> >> +                         "jited_linfo[%u]:%llx - %llx > %u",
+> >> +                         i, jited_linfo[i], cur_func_ksyms,
+> >>                            cur_func_len)) {
+> >>                          err = -1;
+> >>                          goto done;
+> >> --
+> >> 2.25.1
+> >>
+> > .
+> >
