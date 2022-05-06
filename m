@@ -2,104 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1879C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60442C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443209AbiEFP5p (ORCPT
+        id S1443222AbiEFQAW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
+        Fri, 6 May 2022 12:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391204AbiEFP5m (ORCPT
+        with ESMTP id S242211AbiEFQAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:57:42 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFB868F93;
-        Fri,  6 May 2022 08:53:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651852439; x=1683388439;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=b8YvVwwiHGF9H0n+2KLSOuiyjG1C33LqDP8DdORMsgM=;
-  b=Dfv4058Dm0bIA9jdRy2EAvB3cr1I/kr4GR52QjVqxj+EBOInarRrjnoY
-   kVBdxMGWW0wy+ZxmH671XXDFG3n1TFxNTx4VDYRW+A/5DpuWMxR/lCO7z
-   jM9H6ThHteUzDzWZqc7xr0UX4Erv3RXbSnOx0JfdyZLxdBsVhnLX123fL
-   CJIJ7Q4ScK1V1Ajjf2oBrOG62F+yc/lobvku7KVFPxhzc0s6/NtLbYiZ+
-   VpR4EZ+ONlE4NTHYjPw8w3TO69TXSCy/h81K9ZHpn5vpYQPMivpbRecwt
-   wHDYh8Q2tFSyK8q+gyX6Ob8wRbgoOxUczDvdaqlyLRnRo02TpjSQhYwBs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="331492319"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="331492319"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:53:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="549916619"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga002.jf.intel.com with ESMTP; 06 May 2022 08:53:58 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 6 May 2022 08:53:57 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 6 May 2022 08:53:57 -0700
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
- Fri, 6 May 2022 08:53:57 -0700
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>, Borislav Petkov <bp@alien8.de>
-CC:     "markgross@kernel.org" <markgross@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "Joseph, Jithu" <jithu.joseph@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
-Subject: RE: [PATCH v5 00/10] Introduce In Field Scan driver
-Thread-Topic: [PATCH v5 00/10] Introduce In Field Scan driver
-Thread-Index: AQHYWxYVdsKdZt61BUSHj1qB1cqAT60MLiKAgAGW8wCABKLQAP//o/BA
-Date:   Fri, 6 May 2022 15:53:56 +0000
-Message-ID: <15cca88b82cd46a3a2a98b7cf336a6ed@intel.com>
-References: <20220422200219.2843823-1-tony.luck@intel.com>
- <20220428153849.295779-1-tony.luck@intel.com>
- <13054c5c-ed48-b7a2-a800-25b9b1b1ab0d@redhat.com> <YnFK+gXFx0jQB1dz@zn.tnic>
- <b18234d7-a1f4-d5a4-e59b-f5439c38c2d0@redhat.com>
-In-Reply-To: <b18234d7-a1f4-d5a4-e59b-f5439c38c2d0@redhat.com>
-Accept-Language: en-US
+        Fri, 6 May 2022 12:00:19 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B990F6A41C;
+        Fri,  6 May 2022 08:56:35 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246FNOwM009394;
+        Fri, 6 May 2022 15:56:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=KhmnJeFSyRF4LtoXVy47PTVBdagm8XSy/kBl/ANo8hU=;
+ b=ZOA7jZzjf7S57v+PLpk2JcawivlF+GwJoCz7MK6MrqWEGpXjK+/stS37+cLp/1RnGcR5
+ sOOk7T75hA6KoB9knJCKGzOmOzeA/Zmw6yftAyNQX+D1k4wgnyQt8S3sczpzM7TkXMLq
+ 0MeHFR2MGBzpJ3tSJI+LPtUtvlh1xixH9dP5VNBrVHhEqcg5MlzfHEoeyDFrp3bSCo2b
+ NsO1Wgwp4y48iVeu8VyBlqVs3dN4Nj8uSYHBySilRJvJi2+QCjMdvG438lPkRCBOev+A
+ gWY//fxDNvnrEoVD9CNfxrb9wT/IKQBi6/R58WOuD2g0S4uskHYYu0r1xBqQL5/HFQiu VQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw699rk1w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 15:56:32 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 246FqR8d015392;
+        Fri, 6 May 2022 15:56:32 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw699rk15-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 15:56:32 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 246FdPBd021558;
+        Fri, 6 May 2022 15:56:30 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3ftp7fwpys-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 15:56:30 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246FuRiB59113872
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 6 May 2022 15:56:27 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 19527A4054;
+        Fri,  6 May 2022 15:56:27 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 14B6EA405C;
+        Fri,  6 May 2022 15:56:26 +0000 (GMT)
+Received: from [9.171.60.83] (unknown [9.171.60.83])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  6 May 2022 15:56:26 +0000 (GMT)
+Message-ID: <8c48614a-4e93-a575-1a08-ead955ad2a91@linux.ibm.com>
+Date:   Fri, 6 May 2022 17:56:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v6 16/21] vfio-pci/zdev: add open/close device hooks
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
+        pmorel@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220426200842.98655-1-mjrosato@linux.ibm.com>
+ <20220426200842.98655-17-mjrosato@linux.ibm.com>
+ <20220427140410.GX2125828@nvidia.com>
+ <f6c78792-9cf7-0cde-f760-76166f9b7eb7@linux.ibm.com>
+ <20220427150138.GA2512703@nvidia.com>
+ <1bca5de9-88aa-6abc-88b7-cbd2a11e5c85@linux.ibm.com>
+ <20220427153924.GZ2125828@nvidia.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <20220427153924.GZ2125828@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: U5wlWa-tosuxYXfAN6YtnIWo1GItx_tq
+X-Proofpoint-ORIG-GUID: zBZHDZW7t4jg2L8cmt_0T_sg0WGos1B8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-06_04,2022-05-06_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 impostorscore=0 lowpriorityscore=0 adultscore=0
+ phishscore=0 spamscore=0 mlxlogscore=971 malwarescore=0 clxscore=1015
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205060082
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBJJ2xsIGdpdmUgaXQgc29tZSBtb3JlIHRpbWUgZm9yIHJldmlldyBmb3IgdjYgYW5kIHRoZW4g
-cGljayB1cCB2Ng0KPiAob3IgdjcgaWYgcmV2aWV3IGxlYWRzIHRvIG1vcmUgY2hhbmdlcykuDQoN
-CkhhbnMsDQoNClRob21hcyBoYXMgZm91bmQgb25lIHN1YnN0YW50aXZlIHByb2JsZW0sIGFuZCBh
-IGZldyBtaW5vciB0aGluZ3MgKHNvIGZhciAuLi4gaGUNCnN0aWxsIHNlZW1zIHRvIGJlIHdvcmtp
-bmcgdGhyb3VnaCB2NikuIA0KDQpTbyB0aGVyZSB3aWxsIGJlIGEgdjcuIExpa2VseSBlYXJseSBu
-ZXh0IHdlZWsuIElzIHRoYXQgT0s/IERvIHlvdSBzdGlsbCB0YWtlIHBhdGNoZXMgYWZ0ZXIgLXJj
-Nj8NCg0KLVRvbnkNCg==
+
+
+Am 27.04.22 um 17:39 schrieb Jason Gunthorpe:
+> On Wed, Apr 27, 2022 at 11:26:40AM -0400, Matthew Rosato wrote:
+>>>> zPCI devices (zpci_dev) exist regardless of whether kvm is configured or
+>>>> not, and you can e.g. bind the associated PCI device to vfio-pci when KVM is
+>>>> not configured (or module not loaded) and get the existing vfio-pci-zdev
+>>>> extensions for that device (extra VFIO_DEVICE_INFO response data).  Making a
+>>>> direct dependency on KVM would remove that; this was discussed in a prior
+>>>> version because this extra info is not used today outside of a KVM usecase
+>>>> are not specific to kvm that need vfio-pci-zdev).
+>>>
+>>> I'm a bit confused, what is the drawback of just having a direct
+>>> symbol dependency here? It means vfio loads a little extra kernel
+>>> module code, but is that really a big worry given almost all vfio
+>>> users on s390 will be using it with kvm?
+>>
+>> It's about trying to avoid loading unnecessary code (or at least giving a
+>> way to turn it off).
+>>
+>> Previously I did something like....
+>>
+>> https://lore.kernel.org/kvm/20220204211536.321475-15-mjrosato@linux.ibm.com/
+>>
+>> And could do so again; as discussed in the thread there, I can use e.g.
+>> CONFIG_VFIO_PCI_ZDEV_KVM and make vfio-pci-zdev depend on KVM in this
+>> series.  You only get the vfio-pci-zdev extensions when you configure KVM.
+> 
+> That make sense to me, I'd rather see that then the symbol_get/put here
+
+I agree with Jason here.
