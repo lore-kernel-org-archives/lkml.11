@@ -2,113 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0919C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D3DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442798AbiEFPPZ (ORCPT
+        id S1347213AbiEFPPp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
+        Fri, 6 May 2022 11:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236500AbiEFPPX (ORCPT
+        with ESMTP id S233837AbiEFPPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:15:23 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0DD4B413;
-        Fri,  6 May 2022 08:11:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651849900; x=1683385900;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=L6YWQuIIM2FGNzZ5T5KGst2uxyEzMB7IDJnANo650r0=;
-  b=J1p2FyM3gUWyGpsTzWJ1gK2eVIX57ialmQsWTFqXljveww2J13TDLI2g
-   5r+2hBW3N1SjP2DJVdMoMqZarJRUBc6t36hxywfZsGbzaZh1PI8HfvTRW
-   qwMYQbdPUA/ZFCx7G7xFqIefpgdEk79WoN4R9nxSvfK9QvwcN6nbHVUzE
-   MYmnQ0s2xh4oRqCPQxTj5gbbHq9vRbY1SSU3HLd8Ag0qoAkt9UeUqMSBx
-   jCJECpqVbsnaTs+hS0zCxizfaMYmhIr2r9y5iTB/RL4SynTtdJeGu12qc
-   EM8UXYYG3CYUZoFZXRO42bdhur+jW522UO7mDHOtqMdlueFdwrSWkxdqz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="293701085"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="293701085"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:11:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="812422765"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga006.fm.intel.com with ESMTP; 06 May 2022 08:11:40 -0700
-Received: from [10.252.212.236] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id A6C7B58093E;
-        Fri,  6 May 2022 08:11:33 -0700 (PDT)
-Message-ID: <6838c7ec-82c2-1e92-2210-1252f9336df0@linux.intel.com>
-Date:   Fri, 6 May 2022 11:11:32 -0400
+        Fri, 6 May 2022 11:15:42 -0400
+Received: from conuserg-07.nifty.com (conuserg-07.nifty.com [210.131.2.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E4B47575
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:11:59 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-07.nifty.com with ESMTP id 246F8tNF028085;
+        Sat, 7 May 2022 00:08:55 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 246F8tNF028085
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651849736;
+        bh=VWu6RNovZZlWzjVI82T26ZkYKFtgzo8H7rKhNuRBvqE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JjukZl1ajjnROurCI7d4tVD2V+auAAoaTV8eCoq4+DaujU3yMVuUEyuyr6LwWj0L3
+         JWLl97Veyic5o1T/O+yEvgIbnvD2oJ53WvLFTekEPE2XGlzuuwxIbV475fhVzZUTXb
+         9vLIZRPiAdYKUjzvkJReF1rlOeVZMxRfyRAF8MDhq9pS5gdoENYbaH2VnIlFS3dfVe
+         +cJXIXolT3MfRNa6j+tnmjv1arylMYNLmbAsql7Cq51Q/lNrwbg//b+CWaVLXATVox
+         aveENEtZzaDGhZeLMdoGW21mQ/qpWaTPmycNecnftbuY+/21XlrCkT0zIcFshfJR8j
+         CPEHCRkuH/Ilg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?q?Breno=20Leit=C3=A3o?= <leitao@debian.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v2] crypto: vmx - Align the short log with Makefile cleanups
+Date:   Sat,  7 May 2022 00:08:20 +0900
+Message-Id: <20220506150820.1310802-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v11 15/16] KVM: x86: Add Arch LBR data MSR access
- interface
-Content-Language: en-US
-To:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
-        jmattson@google.com, seanjc@google.com, like.xu.linux@gmail.com,
-        vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220506033305.5135-1-weijiang.yang@intel.com>
- <20220506033305.5135-16-weijiang.yang@intel.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220506033305.5135-16-weijiang.yang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+I notieced the log is not properly aligned:
 
+  PERL drivers/crypto/vmx/aesp8-ppc.S
+  CC [M]  fs/xfs/xfs_reflink.o
+  PERL drivers/crypto/vmx/ghashp8-ppc.S
+  CC [M]  drivers/crypto/vmx/aes.o
 
-On 5/5/2022 11:33 PM, Yang Weijiang wrote:
-> Arch LBR MSRs are xsave-supported, but they're operated as "independent"
-> xsave feature by PMU code, i.e., during thread/process context switch,
-> the MSRs are saved/restored with perf_event_task_sched_{in|out} instead
-> of generic kernel fpu switch code, i.e.,save_fpregs_to_fpstate() and
-> restore_fpregs_from_fpstate(). When vcpu guest/host fpu state swap happens,
-> Arch LBR MSRs are retained so they can be accessed directly.
-> 
-> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+Add some spaces after 'PERL'.
 
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+While I was here, I cleaned up the Makefile:
 
-> ---
->   arch/x86/kvm/vmx/pmu_intel.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-> index 3adc8f28d142..c2eab6272b35 100644
-> --- a/arch/x86/kvm/vmx/pmu_intel.c
-> +++ b/arch/x86/kvm/vmx/pmu_intel.c
-> @@ -431,6 +431,11 @@ static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->   	case MSR_ARCH_LBR_CTL:
->   		msr_info->data = vmcs_read64(GUEST_IA32_LBR_CTL);
->   		return 0;
-> +	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
-> +	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
-> +	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
-> +		rdmsrl(msr_info->index, msr_info->data);
-> +		return 0;
->   	default:
->   		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
->   		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
-> @@ -512,6 +517,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->   		    (data & ARCH_LBR_CTL_LBREN))
->   			intel_pmu_create_guest_lbr_event(vcpu);
->   		return 0;
-> +	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
-> +	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
-> +	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
-> +		wrmsrl(msr_info->index, msr_info->data);
-> +		return 0;
->   	default:
->   		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
->   		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
+ - Merge the two similar rules
+
+ - Remove redundant 'clean-files' (Having 'targets' is enough)
+
+ - Move the flavour into the build command
+
+This still avoids the build failures fixed by commit 4ee812f6143d
+("crypto: vmx - Avoid weird build failures").
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+Changes in v2:
+  - Fix CONFIG_LITTLE_ENDIAN -> CONFIG_CPU_LITTLE_ENDIAN
+
+ drivers/crypto/vmx/Makefile | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/crypto/vmx/Makefile b/drivers/crypto/vmx/Makefile
+index 709670d2b553..2560cfea1dec 100644
+--- a/drivers/crypto/vmx/Makefile
++++ b/drivers/crypto/vmx/Makefile
+@@ -2,21 +2,10 @@
+ obj-$(CONFIG_CRYPTO_DEV_VMX_ENCRYPT) += vmx-crypto.o
+ vmx-crypto-objs := vmx.o aesp8-ppc.o ghashp8-ppc.o aes.o aes_cbc.o aes_ctr.o aes_xts.o ghash.o
+ 
+-ifeq ($(CONFIG_CPU_LITTLE_ENDIAN),y)
+-override flavour := linux-ppc64le
+-else
+-override flavour := linux-ppc64
+-endif
+-
+-quiet_cmd_perl = PERL $@
+-      cmd_perl = $(PERL) $(<) $(flavour) > $(@)
++quiet_cmd_perl = PERL    $@
++      cmd_perl = $(PERL) $< $(if $(CONFIG_CPU_LITTLE_ENDIAN), linux-ppc64le, linux-ppc64) > $@
+ 
+ targets += aesp8-ppc.S ghashp8-ppc.S
+ 
+-$(obj)/aesp8-ppc.S: $(src)/aesp8-ppc.pl FORCE
+-	$(call if_changed,perl)
+-  
+-$(obj)/ghashp8-ppc.S: $(src)/ghashp8-ppc.pl FORCE
++$(obj)/aesp8-ppc.S $(obj)/ghashp8-ppc.S: $(obj)/%.S: $(src)/%.pl FORCE
+ 	$(call if_changed,perl)
+-
+-clean-files := aesp8-ppc.S ghashp8-ppc.S
+-- 
+2.32.0
+
