@@ -2,117 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD22C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9E8C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388576AbiEFDcw (ORCPT
+        id S1388585AbiEFDeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59268 "EHLO
+        Thu, 5 May 2022 23:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388559AbiEFDco (ORCPT
+        with ESMTP id S1388559AbiEFDd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:32:44 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80EE644C9
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:29:02 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d22so6181063plr.9
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:29:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ObGYuo/jzq0kKJukFUQR7QwaI4Kz9Z4PyfnQhlw6wC8=;
-        b=FH5bfMFwxWVOcCcK1H7vci7vjZllv7QZZuVaFyXVqPTdJUSlmaGKhReLpWEfoGgzqB
-         yGhrAFmvtly4AH1gcK716aGkF4RRIr5ik6iHxB/yFq/FYoiY9rkDljXeZYkU8u57GLoK
-         I/Axk1ELhvF8NVjmPopww1or1npjxaH2Tp3jQd/QsEOg05n40QAsyuF0nD+kN5B2aSUI
-         ADURSrK5W+VgR4KTZ2AZAmONT3B0wZ33ZF1h1skwAEaECwJv9kUfrEK8nxQmeC0ey7z6
-         RPnSkrzk4YuVb0P73S4Po3/IY3ftF8Ic6dOxuh4Ua8j7vaRGcI8rV+iKCh5bd+6f5L+L
-         L/7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ObGYuo/jzq0kKJukFUQR7QwaI4Kz9Z4PyfnQhlw6wC8=;
-        b=NXnPzF1Z7VN0PImZyyK58abYGut50Et8+6epyjYwyVjJn4VBYT3J5rfsU1SOGX+UQ/
-         YRkWW0R1YR9F0B3K/R0GDRzcHWW+/qG+O/BCubbDF0erdWfiEuxU6JeL6uBGlR06ElNW
-         Q8GTjQLxX3wfM17+lyLWeNIwBqDb//FoqEGbhjZSrMKXF8+4pLKiX29lrrMUUtTIzfd7
-         toR03cv0/PwzElcbkdjZ4PX3eTIZurWFTP63bniIbWX0LnIDACngyXPoi6hWUueFnwju
-         izApg65ZMHgP/5N0h/K/pNwqX5CaK/7JoSSwahlDdQIwYAi+4P6KsdylXaU0ikmGjQwd
-         8cFw==
-X-Gm-Message-State: AOAM533dZ4hyu93mm+JQGjLe7dwJsORAtVjvaFZoeRRdpzQKBdDfQJDQ
-        VPAtjtNgEzIF4mChvFQZWwzEEQ==
-X-Google-Smtp-Source: ABdhPJwIr4coEHbie1ZiXIT/MWIZue8W7Smk/8+HtWenFSnceXzzUfrw05O7OwocPT4aA/z+T637AQ==
-X-Received: by 2002:a17:90a:8d82:b0:1d8:a5a9:5489 with SMTP id d2-20020a17090a8d8200b001d8a5a95489mr1787634pjo.102.1651807742426;
-        Thu, 05 May 2022 20:29:02 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.232])
-        by smtp.gmail.com with ESMTPSA id j19-20020a634a53000000b003c14af50610sm2233048pgl.40.2022.05.05.20.28.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 20:29:01 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     rostedt@goodmis.org, mark.rutland@arm.com, catalin.marinas@arm.com
-Cc:     linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
-        lkp@intel.com, zhouchengming@bytedance.com
-Subject: [PATCH] ftrace/fgraph: fix increased missing-prototypes warnings
-Date:   Fri,  6 May 2022 11:27:37 +0800
-Message-Id: <20220506032737.23375-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 5 May 2022 23:33:56 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CF89644DE
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:30:08 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24048:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 06 May 2022 11:23:27 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     krzysztof.kozlowski@linaro.org
+Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        tglx@linutronix.de, maz@kernel.org, p.zabel@pengutronix.de,
+        linux@armlinux.org.uk, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>
+Subject: [PATCH v14 1/9] dt-bindings: arm: sunplus: Add bindings for Sunplus SP7021 SoC boards
+Date:   Fri,  6 May 2022 11:23:15 +0800
+Message-Id: <ffc80a25a51be602a1093351994dc9adad4e8949.1651805790.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1651805790.git.qinjian@cqplus1.com>
+References: <cover.1651805790.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit e999995c84c3 ("ftrace: cleanup ftrace_graph_caller enable
-and disable") merged into the linux-next tree, the kernel test robot
-(lkp@intel.com) has send out report that there are increased missing-prototypes
-warnings caused by that commit.
+This introduces bindings for boards based Sunplus SP7021 SoC.
 
-COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 \
-	O=build_dir ARCH=sh SHELL=/bin/bash kernel/trace/
-warning: no previous prototype for 'ftrace_enable_ftrace_graph_caller' [-Wmissing-prototypes]
-warning: no previous prototype for 'ftrace_disable_ftrace_graph_caller' [-Wmissing-prototypes]
-warning: no previous prototype for 'ftrace_return_to_handler' [-Wmissing-prototypes]
-warning: no previous prototype for 'ftrace_graph_sleep_time_control' [-Wmissing-prototypes]
-
-BTW there are so many missing-prototypes warnings if build kernel with "W=1".
-
-The increased warnings for 'ftrace_[enable,disable]_ftrace_graph_caller'
-is caused by CONFIG_FUNCTION_GRAPH_TRACER && !CONFIG_DYNAMIC_FTRACE,
-so the declarations in <linux/ftrace.h> can't be seen in fgraph.c.
-
-And this warning can't reproduce on x86_64 since x86_64 select
-HAVE_FUNCTION_GRAPH_TRACER only when DYNAMIC_FTRACE, so fgraph.c will
-always see the declarations in <linux/ftrace.h>.
-
-This patch fix the increased warnings by put the definitions in
-CONFIG_DYNAMIC_FTRACE although there are no real problems exist.
-
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- kernel/trace/fgraph.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/arm/sunplus,sp7021.yaml          | 28 +++++++++++++++++++
+ MAINTAINERS                                   |  7 +++++
+ 2 files changed, 35 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
 
-diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-index 289311680c29..2cd374294be7 100644
---- a/kernel/trace/fgraph.c
-+++ b/kernel/trace/fgraph.c
-@@ -30,6 +30,7 @@ int ftrace_graph_active;
- /* Both enabled by default (can be cleared by function_graph tracer flags */
- static bool fgraph_sleep_time = true;
+diff --git a/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml b/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+new file mode 100644
+index 000000000..ef48fb270
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+@@ -0,0 +1,28 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/sunplus,sp7021.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 Boards Device Tree Bindings
++
++maintainers:
++  - qinjian <qinjian@cqplus1.com>
++
++description: |
++  ARM platforms using Sunplus SP7021, an ARM Cortex A7 (4-cores) based SoC.
++  Wiki: https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
++
++properties:
++  $nodename:
++    const: '/'
++  compatible:
++    items:
++      - enum:
++          - sunplus,sp7021-achip
++      - const: sunplus,sp7021
++
++additionalProperties: true
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cd0f68d4a..8b5e2e639 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2738,6 +2738,13 @@ F:	drivers/clocksource/armv7m_systick.c
+ N:	stm32
+ N:	stm
  
-+#ifdef CONFIG_DYNAMIC_FTRACE
- /*
-  * archs can override this function if they must do something
-  * to enable hook for graph tracer.
-@@ -47,6 +48,7 @@ int __weak ftrace_disable_ftrace_graph_caller(void)
- {
- 	return 0;
- }
-+#endif
- 
- /**
-  * ftrace_graph_stop - set to permanently disable function graph tracing
++ARM/SUNPLUS SP7021 SOC SUPPORT
++M:	Qin Jian <qinjian@cqplus1.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
++S:	Maintained
++W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
++F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++
+ ARM/Synaptics SoC support
+ M:	Jisheng Zhang <jszhang@kernel.org>
+ M:	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 -- 
-2.36.0
+2.33.1
 
