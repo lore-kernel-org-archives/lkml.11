@@ -2,141 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C488C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D5ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444607AbiEFV7L (ORCPT
+        id S1444617AbiEFV7a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
+        Fri, 6 May 2022 17:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444600AbiEFV6z (ORCPT
+        with ESMTP id S1388588AbiEFV73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:58:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F096FA2B;
-        Fri,  6 May 2022 14:55:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 388FAB8366B;
-        Fri,  6 May 2022 21:55:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A40E1C385AE;
-        Fri,  6 May 2022 21:55:07 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="qGymX2Ei"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651874107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CONQnGrvBNWtmRRVvjvt2kXQXjMlbIs+TFZyt6Ucsf8=;
-        b=qGymX2Eibsn2o4UdhibapvaTTC06Wi+MyevGLHQ1Gm0qPrf4ffHotjJyeKRxdj+NDxKImc
-        +sySvsdxdwmvXt3YRGJgWrWJvabwHvdRI8+q7Ad53uG6YTr9YgwlERr6etAyPHt3nB6wAv
-        SW5LOEFp+OcNx0HdsIF68CJ/JNPoeS8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 55c62685 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 6 May 2022 21:55:06 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 3/3] random: help compiler out with fast_mix() by using simpler arguments
-Date:   Fri,  6 May 2022 23:54:54 +0200
-Message-Id: <20220506215454.1671-3-Jason@zx2c4.com>
-In-Reply-To: <20220506215454.1671-1-Jason@zx2c4.com>
-References: <20220506215454.1671-1-Jason@zx2c4.com>
+        Fri, 6 May 2022 17:59:29 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106BCFD2E;
+        Fri,  6 May 2022 14:55:45 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:51392)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nn5vI-002qGu-RE; Fri, 06 May 2022 15:55:40 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37284 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nn5vH-009fTk-Lj; Fri, 06 May 2022 15:55:40 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     linux-arch@vger.kernel.org, kbuild-all@lists.01.org,
+        Tejun Heo <tj@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+References: <20220506141512.516114-2-ebiederm@xmission.com>
+        <202205070451.wstjDYm7-lkp@intel.com>
+Date:   Fri, 06 May 2022 16:52:14 -0500
+In-Reply-To: <202205070451.wstjDYm7-lkp@intel.com> (kernel test robot's
+        message of "Sat, 7 May 2022 04:38:03 +0800")
+Message-ID: <87r156z5v5.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nn5vH-009fTk-Lj;;;mid=<87r156z5v5.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18wpx3bMD1y5ayFn901iqPauFSXlIozA08=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 2/7] fork: Pass struct kernel_clone_args into copy_thread
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that fast_mix() has more than one caller, gcc no longer inlines it.
-That's fine. But it also doesn't handle the compound literal argument we
-pass it very efficiently, nor does it handle the loop as well as it
-could. So just expand the code to spell out this function so that it
-generates the same code as it did before. Performance-wise, this now
-behaves as it did before the last commit. The difference in actual code
-size on x86 is 45 bytes, which is less than a cache line.
+kernel test robot <lkp@intel.com> writes:
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 44 ++++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+> Hi "Eric,
+>
+> Thank you for the patch! Yet something to improve:
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 818432638c18..a04ecfcb4f1e 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1101,25 +1101,30 @@ static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
-  * and therefore this has no security on its own. s represents the
-  * four-word SipHash state, while v represents a two-word input.
-  */
--static void fast_mix(unsigned long s[4], const unsigned long v[2])
-+static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
- {
--	size_t i;
--
--	for (i = 0; i < 2; ++i) {
--		s[3] ^= v[i];
- #ifdef CONFIG_64BIT
--		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
--		s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
-+	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
-+} while (0)
- #else
--		s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16);
--		s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
-+	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
-+} while (0)
- #endif
--		s[0] ^= v[i];
--	}
-+
-+	s[3] ^= v1;
-+	PERM();
-+	s[0] ^= v1;
-+	s[3] ^= v2;
-+	PERM();
-+	s[0] ^= v2;
- }
- 
- #ifdef CONFIG_SMP
-@@ -1187,10 +1192,8 @@ void add_interrupt_randomness(int irq)
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned int new_count;
- 
--	fast_mix(fast_pool->pool, (unsigned long[2]){
--		entropy,
--		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
--	});
-+	fast_mix(fast_pool->pool, entropy,
-+		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
- 	new_count = ++fast_pool->count;
- 
- 	if (new_count & MIX_INFLIGHT)
-@@ -1228,8 +1231,7 @@ static void add_timer_randomness(struct timer_rand_state *state, unsigned int nu
- 	long delta, delta2, delta3;
- 
- 	if (in_hardirq()) {
--		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
--			 (unsigned long[2]){ entropy, num });
-+		fast_mix(this_cpu_ptr(&irq_randomness)->pool, entropy, num);
- 		return;
- 	}
- 
--- 
-2.35.1
+Fixed in my tree now.  Thank you.
 
+Eric
+
+>
+> [auto build test ERROR on deller-parisc/for-next]
+> [also build test ERROR on linus/master v5.18-rc5]
+> [cannot apply to tip/x86/core next-20220506]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Eric-W-Biederman/kthread-Don-t-allocate-kthread_struct-for-init-and-umh/20220506-221832
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git for-next
+> config: h8300-randconfig-r025-20220506 (https://download.01.org/0day-ci/archive/20220507/202205070451.wstjDYm7-lkp@intel.com/config)
+> compiler: h8300-linux-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/22689080e2beece6919f918620e4c780cf7320eb
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Eric-W-Biederman/kthread-Don-t-allocate-kthread_struct-for-init-and-umh/20220506-221832
+>         git checkout 22689080e2beece6919f918620e4c780cf7320eb
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=h8300 SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    arch/h8300/kernel/process.c:58:6: warning: no previous prototype for 'arch_cpu_idle' [-Wmissing-prototypes]
+>       58 | void arch_cpu_idle(void)
+>          |      ^~~~~~~~~~~~~
+>>> arch/h8300/kernel/process.c:108:46: error: unknown type name 'kernel_cloen_args'
+>      108 | int copy_thread(struct task_struct *p, const kernel_cloen_args *args)
+>          |                                              ^~~~~~~~~~~~~~~~~
+>>> arch/h8300/kernel/process.c:108:5: error: conflicting types for 'copy_thread'; have 'int(struct task_struct *, const int *)'
+>      108 | int copy_thread(struct task_struct *p, const kernel_cloen_args *args)
+>          |     ^~~~~~~~~~~
+>    In file included from arch/h8300/kernel/process.c:30:
+>    include/linux/sched/task.h:71:12: note: previous declaration of 'copy_thread' with type 'int(struct task_struct *, const struct kernel_clone_args *)'
+>       71 | extern int copy_thread(struct task_struct *, const struct kernel_clone_args *);
+>          |            ^~~~~~~~~~~
+>    arch/h8300/kernel/process.c: In function 'copy_thread':
+>>> arch/h8300/kernel/process.c:110:33: error: request for member 'stack' in something not a structure or union
+>      110 |         unsigned long usp = args->stack;
+>          |                                 ^~
+>    arch/h8300/kernel/process.c:111:36: error: request for member 'stack_size' in something not a structure or union
+>      111 |         unsigned long topstk = args->stack_size;
+>          |                                    ^~
+>    arch/h8300/kernel/process.c: At top level:
+>    arch/h8300/kernel/process.c:153:16: warning: no previous prototype for 'sys_clone' [-Wmissing-prototypes]
+>      153 | asmlinkage int sys_clone(unsigned long __user *args)
+>          |                ^~~~~~~~~
+>
+>
+> vim +/kernel_cloen_args +108 arch/h8300/kernel/process.c
+>
+>    107	
+>  > 108	int copy_thread(struct task_struct *p, const kernel_cloen_args *args)
+>    109	{
+>  > 110		unsigned long usp = args->stack;
+>    111		unsigned long topstk = args->stack_size;
+>    112		struct pt_regs *childregs;
+>    113	
+>    114		childregs = (struct pt_regs *) (THREAD_SIZE + task_stack_page(p)) - 1;
+>    115	
+>    116		if (unlikely(p->flags & (PF_KTHREAD | PF_IO_WORKER))) {
+>    117			memset(childregs, 0, sizeof(struct pt_regs));
+>    118			childregs->retpc = (unsigned long) ret_from_kernel_thread;
+>    119			childregs->er4 = topstk; /* arg */
+>    120			childregs->er5 = usp; /* fn */
+>    121		}  else {
+>    122			*childregs = *current_pt_regs();
+>    123			childregs->er0 = 0;
+>    124			childregs->retpc = (unsigned long) ret_from_fork;
+>    125			p->thread.usp = usp ?: rdusp();
+>    126		}
+>    127		p->thread.ksp = (unsigned long)childregs;
+>    128	
+>    129		return 0;
+>    130	}
+>    131	
