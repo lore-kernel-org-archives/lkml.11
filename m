@@ -2,108 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF87C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76561C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243309AbiEFARA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
+        id S1387453AbiEFARU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 20:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241333AbiEFAQw (ORCPT
+        with ESMTP id S1387500AbiEFARM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:16:52 -0400
-Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21B225132C
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 17:13:09 -0700 (PDT)
-Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
-        by 156.147.23.51 with ESMTP; 6 May 2022 09:13:07 +0900
-X-Original-SENDERIP: 156.147.1.125
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.125 with ESMTP; 6 May 2022 09:13:07 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     torvalds@linux-foundation.org
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, paolo.valente@linaro.org,
-        josef@toxicpanda.com, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, jack@suse.cz, jack@suse.com,
-        jlayton@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
-        djwong@kernel.org, dri-devel@lists.freedesktop.org,
-        airlied@linux.ie, rodrigosiqueiramelo@gmail.com,
-        melissa.srw@gmail.com, hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
-Subject: Re: [PATCH RFC v6 00/21] DEPT(Dependency Tracker)
-Date:   Fri,  6 May 2022 09:11:35 +0900
-Message-Id: <1651795895-8641-1-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <CAHk-=whnPePcffsNQM+YSHMGttLXvpf8LbBQ8P7HEdqFXaV7Lg@mail.gmail.com>
-References: <CAHk-=whnPePcffsNQM+YSHMGttLXvpf8LbBQ8P7HEdqFXaV7Lg@mail.gmail.com>
+        Thu, 5 May 2022 20:17:12 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D135546A2
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 17:13:28 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id 63so2233464uaw.10
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 17:13:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oLJ9FJ32m3bBcXwGOFaicCplk/peelZWNu/fkW2GFKc=;
+        b=IP/HfqSpU0+jYTEqaLVCKt5A5zpfAvfIlGjU0U9jQybjQIG3TrIDef08EqwJtodwjw
+         Jd5hgQfwOSKKwaegblUxfIOx6ol3yoej6QUNLkB4zt8torAmTe/wET+CbhAsB6nn3aQ3
+         X/pBTzG2+6+C3gMy2aRd4IOj89lDyhAbZrafu7nU4iiFK0D+6fcG99FMIL3iNw9By2EN
+         t8yU7/bGKuHe7lum3dLKPgxK1K77ZUJApU+M/kI0cnSZvO9lONkyOLwd0HJqzEI2qFU/
+         HHaIHwEIX4XN7h8EjMc+Jaypj2HSnJbImVH/cQI7BYygfhjiuHoTyGMAZB9xq10p1joj
+         729A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oLJ9FJ32m3bBcXwGOFaicCplk/peelZWNu/fkW2GFKc=;
+        b=edfdHL52B3u3AkTyxMPQvdn7iZkePczmdJC93eHHWmtK8hzf1iglZcYs30Cmm6BXON
+         EiPvmdGIllKSSf47+IDIYRyzEY3yRWnf2MvEjWEcwJFpMbatTg2QBuY/WF8JSPnXTd3g
+         wZn47TRP3Fu/3baRPpT0FiK5vCAlJZlszcDQ9cMdkV0izJyia3yDegZzjBdYJ2EaMgXM
+         iL+TrRlGhBWyfVYhT/lOXp2a76bel72+CqtwySZFAOs0NZe4wy5GutlPys5A/gREYGbz
+         bminu1H8aWDUuJBqGTAyCaOBStA8u8UHjASy5b8lva6uGXqU1wbm61Y47/IpQtfnDrmo
+         aeUQ==
+X-Gm-Message-State: AOAM533DppTWALoeVy6v8YFKCuFuDfhs++qcrCHr3CHUln230LheV4yf
+        idlB1F2mmvT98mqn1PllYtNoRVqHu6l6HcElNPpXKw==
+X-Google-Smtp-Source: ABdhPJwxAKL8x7RCvjWu54CLInqqajTsKbdvD7+ivdbAzy9AWSKPYbQdwB2evhUAhzg8AZlLSWZj+TNdE5O3WkHy5lA=
+X-Received: by 2002:ab0:2a87:0:b0:362:9cdb:8b64 with SMTP id
+ h7-20020ab02a87000000b003629cdb8b64mr201222uar.83.1651796007533; Thu, 05 May
+ 2022 17:13:27 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220505165639.361733-1-adrian.hunter@intel.com> <20220505165639.361733-20-adrian.hunter@intel.com>
+In-Reply-To: <20220505165639.361733-20-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 5 May 2022 17:13:14 -0700
+Message-ID: <CAP-5=fUOomWXpd6we7DpNcJ7GpFCqN2Kf2AV9otvBaZ87UmpCA@mail.gmail.com>
+Subject: Re: [PATCH V1 19/23] libperf evlist: Check nr_mmaps is correct
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus wrote:
+On Thu, May 5, 2022 at 9:58 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
 >
-> On Wed, May 4, 2022 at 1:19 AM Byungchul Park <byungchul.park@lge.com> wrote:
-> >
-> > Hi Linus and folks,
-> >
-> > I've been developing a tool for detecting deadlock possibilities by
-> > tracking wait/event rather than lock(?) acquisition order to try to
-> > cover all synchonization machanisms.
-> 
-> So what is the actual status of reports these days?
-> 
-> Last time I looked at some reports, it gave a lot of false positives
-> due to mis-understanding prepare_to_sleep().
+> Print an error message if the predetermined number of mmaps is
+> incorrect.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> ---
+>  tools/lib/perf/evlist.c                | 11 +++++++++--
+>  tools/lib/perf/include/internal/mmap.h |  5 +++++
+>  2 files changed, 14 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
+> index 0acf43946479..8a82b4b94b99 100644
+> --- a/tools/lib/perf/evlist.c
+> +++ b/tools/lib/perf/evlist.c
+> @@ -23,6 +23,7 @@
+>  #include <perf/cpumap.h>
+>  #include <perf/threadmap.h>
+>  #include <api/fd/array.h>
+> +#include "internal.h"
+>
+>  void perf_evlist__init(struct perf_evlist *evlist)
+>  {
+> @@ -424,7 +425,7 @@ static void perf_evlist__set_mmap_first(struct perf_evlist *evlist, struct perf_
+>  static int
+>  mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+>                int idx, struct perf_mmap_param *mp, int cpu_idx,
+> -              int thread, int *_output, int *_output_overwrite)
+> +              int thread, int *_output, int *_output_overwrite, int *nr_mmaps)
+>  {
+>         struct perf_cpu evlist_cpu = perf_cpu_map__cpu(evlist->all_cpus, cpu_idx);
+>         struct perf_evsel *evsel;
+> @@ -480,6 +481,8 @@ mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+>                         if (ops->mmap(map, mp, *output, evlist_cpu) < 0)
+>                                 return -1;
+>
+> +                       *nr_mmaps += 1;
+> +
+>                         if (!idx)
+>                                 perf_evlist__set_mmap_first(evlist, map, overwrite);
+>                 } else {
+> @@ -514,6 +517,7 @@ mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+>  {
+>         int nr_threads = perf_thread_map__nr(evlist->threads);
+>         int nr_cpus    = perf_cpu_map__nr(evlist->all_cpus);
+> +       int nr_mmaps = 0;
+>         int cpu, thread;
+>
+>         for (cpu = 0; cpu < nr_cpus; cpu++) {
+> @@ -522,11 +526,14 @@ mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
+>
+>                 for (thread = 0; thread < nr_threads; thread++) {
+>                         if (mmap_per_evsel(evlist, ops, cpu, mp, cpu,
+> -                                          thread, &output, &output_overwrite))
+> +                                          thread, &output, &output_overwrite, &nr_mmaps))
+>                                 goto out_unmap;
+>                 }
+>         }
+>
+> +       if (nr_mmaps != evlist->nr_mmaps)
+> +               pr_err("Miscounted nr_mmaps %d vs %d\n", nr_mmaps, evlist->nr_mmaps);
+> +
+>         return 0;
+>
+>  out_unmap:
+> diff --git a/tools/lib/perf/include/internal/mmap.h b/tools/lib/perf/include/internal/mmap.h
+> index 5a062af8e9d8..9b00828e70ef 100644
+> --- a/tools/lib/perf/include/internal/mmap.h
+> +++ b/tools/lib/perf/include/internal/mmap.h
+> @@ -56,4 +56,9 @@ u64 perf_mmap__read_head(struct perf_mmap *map);
+>
+>  int perf_mmap__read_self(struct perf_mmap *map, struct perf_counts_values *count);
+>
+> +static inline bool perf_mmap__is_mmapped(struct perf_mmap *map)
+> +{
+> +       return map->base;
+> +}
+> +
 
-Yes, it was. I handled the case in the following way:
+This function is added here but not actually used by the patch.
 
-1. Stage the wait at prepare_to_sleep(), which might be used at commit.
-   Which has yet to be an actual wait that Dept considers.
-2. If the condition for sleep is true, the wait will be committed at
-   __schedule(). The wait becomes an actual one that Dept considers.
-3. If the condition is false and the task gets back to TASK_RUNNING,
-   clean(=reset) the staged wait.
+Thanks,
+Ian
 
-That way, Dept only works with what actually hits to __schedule() for
-the waits through sleep.
-
-> For this all to make sense, it would need to not have false positives
-> (or at least a very small number of them together with a way to sanely
-
-Yes. I agree with you. I got rid of them that way I described above.
-
-> get rid of them), and also have a track record of finding things that
-> lockdep doesn't.
-
-I have some reports that wait_for_completion or waitqueue is involved.
-It's worth noting those are not tracked by Lockdep. I'm checking if
-those are true positive or not. I will share those reports once I get
-more convinced for that.
-
-> Maybe such reports have been sent out with the current situation, and
-> I haven't seen them.
-
-Dept reports usually have been sent to me privately, not in LKML. As I
-told you, I'm planning to share them.
-
-	Byungchul
-
-> 
->                  Linus
-> 
+>  #endif /* __LIBPERF_INTERNAL_MMAP_H */
+> --
+> 2.25.1
+>
