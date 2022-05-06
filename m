@@ -2,159 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC25C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443279AbiEFQEj (ORCPT
+        id S1443296AbiEFQE7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
+        Fri, 6 May 2022 12:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392246AbiEFQEf (ORCPT
+        with ESMTP id S1387752AbiEFQEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:04:35 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB624D636;
-        Fri,  6 May 2022 09:00:49 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 246FeEnw028532;
-        Fri, 6 May 2022 16:00:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=bRmWHothJ44idqRxRc2b4VvG+NnDl/cNT8TjtLNF0oA=;
- b=qj1uWR9hKfdHIXUpYuovn0sRaVNrm0WqBoQwyDIBr9xYlP46hgM9ZrPKbjxUysPrV2p0
- NZ9z5uQ0KdeTKyvr5SduHtYvEJx0DodtNVtjtkkQdA0wUAR4uwq2FjkllkX14b01EyiF
- T+sP4EAKOwo9XMebeVwbQ6Xz6jrSiYhmWsOPRUVbVeOUW27erfz+NPs3JYWU6m4Cf+DQ
- Fns15BFUbiWlvFi4T4zjU4rJgxmJh410mde+wLJbZl9/niOjaQyJmrTsSD8/cfI8CWVA
- TPzkvaYqChyU7HrN1oOy+Srj36LNDs/lKTb0Lwq5ppsnHOA+edwOyuwzpraMyw0WP+21 Sw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw5b4a1kh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 16:00:44 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 246FxA5I007140;
-        Fri, 6 May 2022 16:00:43 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw5b4a1k8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 16:00:43 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 246FeR5F018164;
-        Fri, 6 May 2022 15:55:39 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma04dal.us.ibm.com with ESMTP id 3frvrabh39-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 May 2022 15:55:39 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246FtcBB34800094
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 6 May 2022 15:55:38 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5A5AB78060;
-        Fri,  6 May 2022 15:55:38 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 080DA7805F;
-        Fri,  6 May 2022 15:55:36 +0000 (GMT)
-Received: from [9.211.41.182] (unknown [9.211.41.182])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri,  6 May 2022 15:55:35 +0000 (GMT)
-Message-ID: <6e3f4d81-dcb5-9a64-a9f8-2c9b319574ef@linux.ibm.com>
-Date:   Fri, 6 May 2022 11:55:35 -0400
+        Fri, 6 May 2022 12:04:55 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A88869CC8
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:01:09 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id s14so7858460plk.8
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:01:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DJQuHSIAlHGIpor5c5dPdkEnVxEx8DbE7jmudCub3d4=;
+        b=jQ7xZaZTB7N7rBpIHs/0CElGn01l9AQXdNaX6k8jXrAaJqQ25NEB9BM5bbodgfv0cZ
+         o8v4laiuonAI3gk+YGqelG0OD+DVySSMRg63uSIqREDRrPhJMR3KSuT35wwaUS8YFYch
+         rOrxpkfD5RuaAn4QY/2lg91WF1zOptOKzMP2JKXphcGymjOcFefW0nQQh9kP7UJMY1GG
+         OiLAM9wX+KmK/RtQGaobXp58jVCwVZnXJF4OhYZCQMkQfwBS7mr1AOvo0j7jY7pfCkbU
+         dUVjbhAvhfetI4VuQjiWvUUR2qZuZOW3KhYQrFs63jjEkTtnpgJAig8xUxU2zRQZBPk2
+         my1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DJQuHSIAlHGIpor5c5dPdkEnVxEx8DbE7jmudCub3d4=;
+        b=gqNMv787Z90ixO/5YErw1NS/s7O6EH10ZvnOiyYWqDCbsepLj2UGIcLWpZQA5xNiMx
+         R0/VQOChlsQT6mPAulgvkDx3fLNEZG21GBNKKLL32GW9oV2BgmHlMw/PILZANWAjpQNv
+         poJ8uCO26V7McElZX3rtC50jktID8LGQfiWEXiCgwbuNstYm346UmlD4mxfwgl68e5FL
+         vHCJqWDsYJfvMv5BHJfN+bwk3uGgqv7bc2gUbCWyQq3aB6ZFS9/JXa/HP2OFYxbAKg4D
+         libYgZWvduCYH6p77g/fv8YVa2Hntdp/iNEWoZI0FeN4mvSoiQ+MwvvxIpnPxPd9T9hi
+         SPmQ==
+X-Gm-Message-State: AOAM53368gHi3GofSP9Ou64M8pm5NqZTUwwtfJMZz7mV46uSAgcsWyX+
+        OCu5QMSl1/OECPI2I7ViKRyybQadoOQYDcSD9Cbudg==
+X-Google-Smtp-Source: ABdhPJzetNCcmtdzsuA7MVysj4PUmFLJT04ZeXbzfGR3fv4T/RqwwNln8yT470KW1ll1x94sH07JlabaHewBC2MmUDk=
+X-Received: by 2002:a17:902:da8b:b0:15e:c0e8:d846 with SMTP id
+ j11-20020a170902da8b00b0015ec0e8d846mr4360481plx.34.1651852868602; Fri, 06
+ May 2022 09:01:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v6 14/21] KVM: s390: pci: provide routines for
- enabling/disabling interrupt forwarding
-Content-Language: en-US
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220426200842.98655-1-mjrosato@linux.ibm.com>
- <20220426200842.98655-15-mjrosato@linux.ibm.com>
- <28395b98-3489-342a-970a-5358e4405f22@linux.ibm.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <28395b98-3489-342a-970a-5358e4405f22@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ZYJdC1IPRRb3XJnAspOlOwIp7kSxSB3-
-X-Proofpoint-ORIG-GUID: 1Tvfo-boab2yO5F4ca5zEB0e4uWca6Lx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-06_04,2022-05-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- adultscore=0 phishscore=0 priorityscore=1501 impostorscore=0 spamscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205060082
+References: <20220429201717.1946178-1-martin.fernandez@eclypsium.com>
+ <YnKr+aMf4PspDpHZ@zn.tnic> <CAKgze5YDD02AsrF0yESv2sptZ4qxyTMgCDmnOKcbQWjKQsJRsw@mail.gmail.com>
+ <YnUYLDjIThbIz/Uf@zn.tnic> <6d90c832-af4a-7ed6-4f72-dae08bb69c37@intel.com>
+In-Reply-To: <6d90c832-af4a-7ed6-4f72-dae08bb69c37@intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 6 May 2022 09:00:57 -0700
+Message-ID: <CAPcyv4i73m6iPPfJE9CBdxf-OWGXahvGqvh6G-pqVO=3LB6ktQ@mail.gmail.com>
+Subject: Re: [PATCH v8 0/8] x86: Show in sysfs if a memory node is able to do encryption
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Martin Fernandez <martin.fernandez@eclypsium.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        daniel.gutson@eclypsium.com, hughsient@gmail.com,
+        alex.bazhaniuk@eclypsium.com,
+        "Schofield, Alison" <alison.schofield@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        "Huang, Kai" <kai.huang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/6/22 11:35 AM, Christian Borntraeger wrote:
-> 
-> 
-> Am 26.04.22 um 22:08 schrieb Matthew Rosato:
-> [...]
->> +static inline void unaccount_mem(unsigned long nr_pages)
->> +{
->> +    struct user_struct *user = get_uid(current_user());
->> +
->> +    if (user)
->> +        atomic_long_sub(nr_pages, &user->locked_vm);
->> +    if (current->mm)
->> +        atomic64_sub(nr_pages, &current->mm->pinned_vm);
->> +}
->> +
->> +static inline int account_mem(unsigned long nr_pages)
->> +{
->> +    struct user_struct *user = get_uid(current_user());
->> +    unsigned long page_limit, cur_pages, new_pages;
->> +
->> +    page_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
->> +
->> +    do {
->> +        cur_pages = atomic_long_read(&user->locked_vm);
->> +        new_pages = cur_pages + nr_pages;
->> +        if (new_pages > page_limit)
->> +            return -ENOMEM;
->> +    } while (atomic_long_cmpxchg(&user->locked_vm, cur_pages,
->> +                    new_pages) != cur_pages);
->> +
->> +    atomic64_add(nr_pages, &current->mm->pinned_vm);
->> +
->> +    return 0;
-> 
-> user->locked_vm is not available unconditionally. Shall we add
-> 
-> CONFIG_S390 && CONFIG_KVM here?
-> 
-> include/linux/sched/user.h
-> #if defined(CONFIG_PERF_EVENTS) || defined(CONFIG_BPF_SYSCALL) || \
->      defined(CONFIG_NET) || defined(CONFIG_IO_URING)
->          atomic_long_t locked_vm;
-> #endif
-> Or we could get rid of the user memlock checking for now until this is 
-> more ubiquitous.
+On Fri, May 6, 2022 at 8:32 AM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> On 5/6/22 05:44, Borislav Petkov wrote:
+> >> Dave Hansen pointed those out in a previuos patch serie, here is the
+> >> quote:
+> >>
+> >>> CXL devices will have normal RAM on them, be exposed as "System RAM" and
+> >>> they won't have encryption capabilities.  I think these devices were
+> >>> probably the main motivation for EFI_MEMORY_CPU_CRYPTO.
+> > So this would mean that if a system doesn't have CXL devices and has
+> > TME/SME/SEV-* enabled, then it is running with encrypted memory.
+> >
+> > Which would then also mean, you don't need any of that code - you only
+> > need to enumerate CXL devices which, it seems, do not support memory
+> > encryption, and then state that memory encryption is enabled on the
+> > whole system, except for the memory of those devices.
+>
+> CXL devices are just the easiest example to explain, but they are not
+> the only problem.
+>
+> For example, Intel NVDIMMs don't support TDX (or MKTME with integrity)
+> since TDX requires integrity protection and NVDIMMs don't have metadata
+> space available.
+>
+> Also, if this were purely a CXL problem, I would have expected this to
+> have been dealt with in the CXL spec alone.  But, this series is
+> actually driven by an ACPI spec.  That tells me that we'll see these
+> mismatched encryption capabilities in many more places than just CXL
+> devices.
 
-Oh, good catch.  Per my conversation with Jason in a thread on patch 16, 
-we will end up with a CONFIG_VFIO_PCI_ZDEV_KVM (or something like that) 
--- this could be used instead of CONFIG_S390 && CONFIG_KVM and would 
-imply both of those anyway
-
-> 
-> 
-> Otherwise this looks sane
-> 
-> Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-
+Yes, the problem is that encryption capabilities cut across multiple
+specifications. For example, you might need to consult a CPU
+vendor-specific manual, ACPI, EFI, PCI, and CXL specifications for a
+single security feature.
