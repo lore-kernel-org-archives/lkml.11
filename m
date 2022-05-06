@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A803BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442703AbiEFPMv (ORCPT
+        id S1442719AbiEFPM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37442 "EHLO
+        Fri, 6 May 2022 11:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiEFPMp (ORCPT
+        with ESMTP id S1384705AbiEFPMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:12:45 -0400
+        Fri, 6 May 2022 11:12:46 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734A96D185;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18296D18A;
         Fri,  6 May 2022 08:09:02 -0700 (PDT)
-Date:   Fri, 06 May 2022 15:08:58 -0000
+Date:   Fri, 06 May 2022 15:09:00 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651849740;
+        s=2020; t=1651849741;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Wc2bzqI42oIckbUmFpKNjycPjcAyrjA3sg0Rb2QcJts=;
-        b=Wqdhb52Ai+U0KWwyxU/wWUfVqzJgQxXp5XYqh1WA95BIXQrZ0Qf1ShdDOWa4JGhlAJEFxz
-        9mxuCEUWkEwAhUX6OeTRYl8t+WA4zIuZmLccT+ZNOllYSBPtky27F4syrhF00BRVILU6RV
-        f7qLGoiALPbZ0221h58kP9IeQuDj0/56f5igsVQi9RatEJgNzXnVlp5aSsiW3Gr1b4iFyw
-        tOdPWa/Fp8y0iDUkWNMXTHlsGL9fH4+xR5ULVSjqMsDPUL6EKabEGg3pDUAfDDCRadC6HF
-        DholtdF2roUQg7pE6EUoKrpPiVtM/YA7tP5lSXs7MlqwgG4WLotndxpstwJxdA==
+        bh=U+sm8uFM7FbDhHcUsqKlMjO2L9gyZokheSMjZgtSp+U=;
+        b=wRDIGubs7mI17xtYSS0mLs6KbAY4NBlRX16QMExtxFuMtxX5tqPN6d/gr23dmn7cpZsDM9
+        p8oWgBOdibD9FQ3DXKiFDm/slsglbmyXTdoEh9oU2PXla2jA5KaRdoBWOggNivTGLUx+xI
+        K6QyQnjpBrTQvq0C+gs6ucAOrdXcQEE2kxmzNX/pf0nmGw6D5qONtDlPYC5aP49ua2nZ0R
+        WkB89YctWQkJUlP3gRj9C8F5UIlwhUCfNSlS0PiIUD8GpmYEXcdpqagxQGsNVcMDrhcGhi
+        08o+tH8UQOg90Iqx0ujyeVlO49MlxRetPV8xlpJ4+8kYcsOi+axVvpknuH/G0w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651849740;
+        s=2020e; t=1651849741;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Wc2bzqI42oIckbUmFpKNjycPjcAyrjA3sg0Rb2QcJts=;
-        b=nqo6nFxwc0dBI0+fNBv4wYkjWtSZI05tBoJ6KRRD4Eo3jCXKFPLjVg9zMsYLfPqwPOd568
-        /q2ownWBMKCnaVDw==
+        bh=U+sm8uFM7FbDhHcUsqKlMjO2L9gyZokheSMjZgtSp+U=;
+        b=MmYkwjCGJ9cT+OwLFXVCugTA+GwUgYytuVR4CV54sXbBve/aZK/PVrFLiwiu/KgmPG92AU
+        yeZcEOV2l0XaCmAw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/asm] objtool: Fix STACK_FRAME_NON_STANDARD reloc type
+Subject: [tip: x86/asm] x86/entry: Remove skip_r11rcx
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220506121631.508692613@infradead.org>
-References: <20220506121631.508692613@infradead.org>
+In-Reply-To: <20220506121631.365070674@infradead.org>
+References: <20220506121631.365070674@infradead.org>
 MIME-Version: 1.0
-Message-ID: <165184973857.4207.8156849772792716816.tip-bot2@tip-bot2>
+Message-ID: <165184974055.4207.14612212537129433465.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,75 +62,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/asm branch of tip:
 
-Commit-ID:     38f3803fb4fa588ef7645048285493efbe264d79
-Gitweb:        https://git.kernel.org/tip/38f3803fb4fa588ef7645048285493efbe264d79
+Commit-ID:     1b331eeea7b8676fc5dbdf80d0a07e41be226177
+Gitweb:        https://git.kernel.org/tip/1b331eeea7b8676fc5dbdf80d0a07e41be226177
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 06 May 2022 14:14:37 +02:00
+AuthorDate:    Fri, 06 May 2022 14:14:35 +02:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Fri, 06 May 2022 16:07:06 +02:00
+CommitterDate: Fri, 06 May 2022 15:58:19 +02:00
 
-objtool: Fix STACK_FRAME_NON_STANDARD reloc type
+x86/entry: Remove skip_r11rcx
 
-STACK_FRAME_NON_STANDARD results in inconsistent relocation types
-depending on .c or .S usage:
+Yes, r11 and rcx have been restored previously, but since they're being
+popped anyway (into rsi) might as well pop them into their own regs --
+setting them to the value they already are.
 
-  Relocation section '.rela.discard.func_stack_frame_non_standard' at offset 0x3c01090 contains 5 entries:
-  Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-  0000000000000000  00020c2200000002 R_X86_64_PC32          0000000000047b40 do_suspend_lowlevel + 0
-  0000000000000008  0002461e00000001 R_X86_64_64            00000000000480a0 machine_real_restart + 0
-  0000000000000010  0000001400000001 R_X86_64_64            0000000000000000 .rodata + b3d4
-  0000000000000018  0002444600000002 R_X86_64_PC32          00000000000678a0 __efi64_thunk + 0
-  0000000000000020  0002659d00000001 R_X86_64_64            0000000000113160 __crash_kexec + 0
+Less magical code.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220506121631.508692613@infradead.org
+Link: https://lore.kernel.org/r/20220506121631.365070674@infradead.org
 ---
- include/linux/objtool.h       | 4 +++-
- tools/include/linux/objtool.h | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/entry/calling.h  | 10 +---------
+ arch/x86/entry/entry_64.S |  3 +--
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index 586d357..c68d81d 100644
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_OBJTOOL_H
- #define _LINUX_OBJTOOL_H
- 
-+#include <asm/asm.h>
-+
- #ifndef __ASSEMBLY__
- 
- #include <linux/types.h>
-@@ -137,7 +139,7 @@ struct unwind_hint {
- 
- .macro STACK_FRAME_NON_STANDARD func:req
- 	.pushsection .discard.func_stack_frame_non_standard, "aw"
--		.long \func - .
-+	_ASM_PTR \func
- 	.popsection
+diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
+index debbe94..a97cc78 100644
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -120,27 +120,19 @@ For 32-bit we have the following conventions - kernel is built with
+ 	CLEAR_REGS
  .endm
  
-diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
-index 586d357..c68d81d 100644
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_OBJTOOL_H
- #define _LINUX_OBJTOOL_H
+-.macro POP_REGS pop_rdi=1 skip_r11rcx=0
++.macro POP_REGS pop_rdi=1
+ 	popq %r15
+ 	popq %r14
+ 	popq %r13
+ 	popq %r12
+ 	popq %rbp
+ 	popq %rbx
+-	.if \skip_r11rcx
+-	popq %rsi
+-	.else
+ 	popq %r11
+-	.endif
+ 	popq %r10
+ 	popq %r9
+ 	popq %r8
+ 	popq %rax
+-	.if \skip_r11rcx
+-	popq %rsi
+-	.else
+ 	popq %rcx
+-	.endif
+ 	popq %rdx
+ 	popq %rsi
+ 	.if \pop_rdi
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 3121866..3a1e3f2 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -191,8 +191,7 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
+ 	 * perf profiles. Nothing jumps here.
+ 	 */
+ syscall_return_via_sysret:
+-	/* rcx and r11 are already restored (see code above) */
+-	POP_REGS pop_rdi=0 skip_r11rcx=1
++	POP_REGS pop_rdi=0
  
-+#include <asm/asm.h>
-+
- #ifndef __ASSEMBLY__
- 
- #include <linux/types.h>
-@@ -137,7 +139,7 @@ struct unwind_hint {
- 
- .macro STACK_FRAME_NON_STANDARD func:req
- 	.pushsection .discard.func_stack_frame_non_standard, "aw"
--		.long \func - .
-+	_ASM_PTR \func
- 	.popsection
- .endm
- 
+ 	/*
+ 	 * Now all regs are restored except RSP and RDI.
