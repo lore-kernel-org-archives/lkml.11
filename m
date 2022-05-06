@@ -2,208 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE81C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388649AbiEFDf1 (ORCPT
+        id S1388607AbiEFDgR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60102 "EHLO
+        Thu, 5 May 2022 23:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388607AbiEFDeV (ORCPT
+        with ESMTP id S1346609AbiEFDgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:34:21 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54AB0D65
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:30:14 -0700 (PDT)
-X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
-        LIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24048:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Fri, 06 May 2022 11:23:28 +0800 (CST)
-From:   Qin Jian <qinjian@cqplus1.com>
-To:     krzysztof.kozlowski@linaro.org
-Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        tglx@linutronix.de, maz@kernel.org, p.zabel@pengutronix.de,
-        linux@armlinux.org.uk, arnd@arndb.de,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Qin Jian <qinjian@cqplus1.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v14 2/9] dt-bindings: reset: Add bindings for SP7021 reset driver
-Date:   Fri,  6 May 2022 11:23:16 +0800
-Message-Id: <454127e7321ff107d868421edd8fffc86480831c.1651805790.git.qinjian@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1651805790.git.qinjian@cqplus1.com>
-References: <cover.1651805790.git.qinjian@cqplus1.com>
+        Thu, 5 May 2022 23:36:09 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BC03FBCC
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:32:27 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id i1so6196411plg.7
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=asq1GsK2iP60zPURDoJiaqZrj1b/oRYrh2NIL66ASXY=;
+        b=A5R+QgbkQY/b9pt/zpN4FQSLdc75DJtMIayyn5WIe1M8RAn5/H92sELF5NQSRbYwaP
+         h0KnGXdji5cdjXEl9Yeo1eDyfPEoc99H3bfSd+F2l1ihlR0cRc7LocmA+Y34+hwQK+jD
+         HS3mTrHBIyHs+ZjqKGJOW5PhD31HK0S5UWooJflZSS6AFdyPyOJBx6bB9btEWOO6itiy
+         /vB8Ko49CwAQdUxK2/kXLOTaBNOg0l6Y2hRBXFaKs/NKtibrZF3z/ExqnnKwe4jXlAXX
+         QAhuM9HqDlFQUeQX+3+N0zz9U6TNDtN5J8MmqWLNa7xUSBLFpBitD68Kx81P7nKR445K
+         ETQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=asq1GsK2iP60zPURDoJiaqZrj1b/oRYrh2NIL66ASXY=;
+        b=3azAW9SkeNATUntF76pw2W7t9ghcFp2SCWyp+BJsAnFIQ/yDz11RJStiViX6aZPpI4
+         P0w0DmTdN7cQdWHAEVJYsaJ6lX6NND4QIYrYK3g7WMJEdTT2R/2ITh9RGnBF0BEvmyrv
+         KSwSysFaWmrXT2LxgD4FOz1nr8il5pkBW/de/jqK3o9Do/l2SFK4ck74JbZFogzO1gT3
+         f7ymGBqegQi0h1vkUGeTHwbWgwAm/ANF3ZICUmII09BTLBt+Wjy+hBA4mtHyqVgZTrhN
+         YcuAGn7o12I2SF/l7SnCMAOvctKZIWu+dvlsIwYXxO2WZHiE4nHNuE87L4uPvAAu/ZAQ
+         y7vA==
+X-Gm-Message-State: AOAM53306kGAev2EO3ouvW+sFye2ysxr98oFFDhaSv1sEQPSba3VtYqs
+        EcB43k2n8SONSIG5ecROakpMtzA0On8qaA==
+X-Google-Smtp-Source: ABdhPJzUQR4zLt0S+U3opN35Ejwzugn4AwM70j+cIKNxj/BkVwRUQvHT3NOFZ9B0ZDH+yZ1YttAyDw==
+X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr1578557plh.156.1651807947447;
+        Thu, 05 May 2022 20:32:27 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id s17-20020a170902c65100b0015e8d4eb2a3sm383395pls.237.2022.05.05.20.32.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 20:32:26 -0700 (PDT)
+Date:   Fri, 6 May 2022 09:02:23 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Chen-Yu Tsai <wenst@chromium.org>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, matthias.bgg@gmail.com,
+        jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
+        hsinyi@google.com, khilman@baylibre.com,
+        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
+Subject: Re: [PATCH v6 05/10] cpufreq: mediatek: Add opp notification support
+Message-ID: <20220506033223.6ixlse3psixfeec7@vireshk-i7>
+References: <20220505115226.20130-1-rex-bc.chen@mediatek.com>
+ <20220505115226.20130-6-rex-bc.chen@mediatek.com>
+ <89dc58a34ea080ca50a94187e24cabc22aba3304.camel@mediatek.com>
+ <CAGXv+5EOdXFjwbtZWY4_KBdp6BaQdp389JqUS18ifAgdcQiAtQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGXv+5EOdXFjwbtZWY4_KBdp6BaQdp389JqUS18ifAgdcQiAtQ@mail.gmail.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation to describe Sunplus SP7021 reset driver bindings.
++Konstantin
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Qin Jian <qinjian@cqplus1.com>
----
- .../bindings/reset/sunplus,reset.yaml         | 38 ++++++++
- MAINTAINERS                                   |  2 +
- include/dt-bindings/reset/sp-sp7021.h         | 87 +++++++++++++++++++
- 3 files changed, 127 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
- create mode 100644 include/dt-bindings/reset/sp-sp7021.h
+On 06-05-22, 11:22, Chen-Yu Tsai wrote:
+> On Fri, May 6, 2022 at 9:56 AM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
+> >
+> > On Thu, 2022-05-05 at 19:52 +0800, Rex-BC Chen wrote:
+> > > From this opp notifier, cpufreq should listen to opp notification and
+> > > do
+> >
+> > Hello Viresh,
+> >
+> > There is still ">" in this patch...
+> > I think the root cause could be the "From" word in the beginning of
+> > this message.
+> > I will not use "From" in next version..
+> 
+> Could this be a bug in lore?
+> 
+> I'm not seeing this extra ">" in either the email in my inbox, viewed
+> raw, nor the patch downloaded from patchwork [1].
+> 
+> 
+> ChenYu
+> 
+> [1] https://patchwork.kernel.org/project/linux-mediatek/patch/20220505115226.20130-6-rex-bc.chen@mediatek.com/mbox/
 
-diff --git a/Documentation/devicetree/bindings/reset/sunplus,reset.yaml b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-new file mode 100644
-index 000000000..f24646ba9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/reset/sunplus,reset.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Sunplus SoC Reset Controller
-+
-+maintainers:
-+  - Qin Jian <qinjian@cqplus1.com>
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-reset
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#reset-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#reset-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    rstc: reset@9c000054 {
-+      compatible = "sunplus,sp7021-reset";
-+      reg = <0x9c000054 0x28>;
-+      #reset-cells = <1>;
-+    };
-+
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8b5e2e639..a8be86b25 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2744,6 +2744,8 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
- S:	Maintained
- W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
- F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
-+F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-+F:	include/dt-bindings/reset/sp-sp7021.h
- 
- ARM/Synaptics SoC support
- M:	Jisheng Zhang <jszhang@kernel.org>
-diff --git a/include/dt-bindings/reset/sp-sp7021.h b/include/dt-bindings/reset/sp-sp7021.h
-new file mode 100644
-index 000000000..ab4867073
---- /dev/null
-+++ b/include/dt-bindings/reset/sp-sp7021.h
-@@ -0,0 +1,87 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/*
-+ * Copyright (C) Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+#ifndef _DT_BINDINGS_RST_SUNPLUS_SP7021_H
-+#define _DT_BINDINGS_RST_SUNPLUS_SP7021_H
-+
-+#define RST_SYSTEM              0
-+#define RST_RTC                 1
-+#define RST_IOCTL               2
-+#define RST_IOP                 3
-+#define RST_OTPRX               4
-+#define RST_NOC                 5
-+#define RST_BR                  6
-+#define RST_RBUS_L00            7
-+#define RST_SPIFL               8
-+#define RST_SDCTRL0             9
-+#define RST_PERI0               10
-+#define RST_A926                11
-+#define RST_UMCTL2              12
-+#define RST_PERI1               13
-+#define RST_DDR_PHY0            14
-+#define RST_ACHIP               15
-+#define RST_STC0                16
-+#define RST_STC_AV0             17
-+#define RST_STC_AV1             18
-+#define RST_STC_AV2             19
-+#define RST_UA0                 20
-+#define RST_UA1                 21
-+#define RST_UA2                 22
-+#define RST_UA3                 23
-+#define RST_UA4                 24
-+#define RST_HWUA                25
-+#define RST_DDC0                26
-+#define RST_UADMA               27
-+#define RST_CBDMA0              28
-+#define RST_CBDMA1              29
-+#define RST_SPI_COMBO_0         30
-+#define RST_SPI_COMBO_1         31
-+#define RST_SPI_COMBO_2         32
-+#define RST_SPI_COMBO_3         33
-+#define RST_AUD                 34
-+#define RST_USBC0               35
-+#define RST_USBC1               36
-+#define RST_UPHY0               37
-+#define RST_UPHY1               38
-+#define RST_I2CM0               39
-+#define RST_I2CM1               40
-+#define RST_I2CM2               41
-+#define RST_I2CM3               42
-+#define RST_PMC                 43
-+#define RST_CARD_CTL0           44
-+#define RST_CARD_CTL1           45
-+#define RST_CARD_CTL4           46
-+#define RST_BCH                 47
-+#define RST_DDFCH               48
-+#define RST_CSIIW0              49
-+#define RST_CSIIW1              50
-+#define RST_MIPICSI0            51
-+#define RST_MIPICSI1            52
-+#define RST_HDMI_TX             53
-+#define RST_VPOST               54
-+#define RST_TGEN                55
-+#define RST_DMIX                56
-+#define RST_TCON                57
-+#define RST_INTERRUPT           58
-+#define RST_RGST                59
-+#define RST_GPIO                60
-+#define RST_RBUS_TOP            61
-+#define RST_MAILBOX             62
-+#define RST_SPIND               63
-+#define RST_I2C2CBUS            64
-+#define RST_SEC                 65
-+#define RST_DVE                 66
-+#define RST_GPOST0              67
-+#define RST_OSD0                68
-+#define RST_DISP_PWM            69
-+#define RST_UADBG               70
-+#define RST_DUMMY_MASTER        71
-+#define RST_FIO_CTL             72
-+#define RST_FPGA                73
-+#define RST_L2SW                74
-+#define RST_ICM                 75
-+#define RST_AXI_GLOBAL          76
-+
-+#endif
+Interesting.
+
+Konstantin, we are witnessing an additional ">" symbol in the first
+line of the commit log for this particular patch for some reason.
+
+https://lore.kernel.org/lkml/20220505115226.20130-6-rex-bc.chen@mediatek.com/raw
+
+Any idea ?
+
 -- 
-2.33.1
-
+viresh
