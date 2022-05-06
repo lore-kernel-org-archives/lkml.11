@@ -2,118 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D22C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E06E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 13:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392450AbiEFN0e (ORCPT
+        id S1392424AbiEFN0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 09:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        Fri, 6 May 2022 09:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392424AbiEFN02 (ORCPT
+        with ESMTP id S1392440AbiEFN0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 09:26:28 -0400
-Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF94C69711
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 06:22:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651843364;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ntfBkmjNjhrxvA8xhvwrtXUPZhy6WpJ5yDdT5A+/C00=;
-        b=Wtk74G+V7aYi6mde13y1K7Fa8NuxGF0Hyf731kBLC7M2YKnml3AvC1mXkIUeofmlOzFPmE
-        LfJo3q/yMVR8D2N6cZXjkfjbgMMnNYAClohUQp2YVR23vtAw8NYmeoyyssHLL6wZdrccQW
-        qptb008pMC8Y+307xBhxDRoyT+tqnmM=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-ypFVaWaVNYqy1yIqEEoILA-1; Fri, 06 May 2022 09:22:43 -0400
-X-MC-Unique: ypFVaWaVNYqy1yIqEEoILA-1
-Received: by mail-wr1-f70.google.com with SMTP id w11-20020adf8bcb000000b0020c550ba8d7so2582389wra.1
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 06:22:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ntfBkmjNjhrxvA8xhvwrtXUPZhy6WpJ5yDdT5A+/C00=;
-        b=wy4LGJ+M1ecrJUPUDus+xcBwP5L8UWWgtnMiz7zAyKAmHNqzSkZYA/+AZiV2/vQInQ
-         M5VWj6szW8iyA8gfWqZ2eeiw8XCcaUPHKfSEIh24MeLUo67qIIQkjAihOzHMJtMeBTHQ
-         jtBHy5kdz/PDCLGcVE0ptXX8T9uQjUk5zZWvvw3MMMRBAAAvBZrAwpHhVLbIjIl8jSwc
-         qk5A+W5iCpq9FJOt5K5h6okusgcUihuwWCdb06J2xjYsg9+o6zYhQw9azOBtM/zniaMn
-         bZMiIzdzMk8CD/8HoYkRTnEg0M+7mZMoOrnreWuy8doMtnjGjk1HJnQIdtWdxjerpcei
-         WFHg==
-X-Gm-Message-State: AOAM533v6cQLTBfET1tPW9mEfLofSCU9MQL/5xrJcn2c2CJZZr1w1AYG
-        IhwvBE2H75COqN188fwxZBg4YWsCyq1aSwtMGebM+r0MVvse4sn3kcvzLBxWoJLglv9V9n2wNLn
-        C95o5WWZq6KdxUBUpO97mpW3EXp/io/fzinYwvJ8ZXavBuWeT8OjCLC9TLLVM3wYkgmKmEdPgVE
-        s=
-X-Received: by 2002:a05:600c:20e:b0:394:2985:6d0c with SMTP id 14-20020a05600c020e00b0039429856d0cmr9784124wmi.106.1651843362262;
-        Fri, 06 May 2022 06:22:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxoBGIqiXlxsybVbyUOYtj+ac6M3xoMutesjNKS5Waxldl///9zmVAj4E/EHzyx2X+CmF9+Qw==
-X-Received: by 2002:a05:600c:20e:b0:394:2985:6d0c with SMTP id 14-20020a05600c020e00b0039429856d0cmr9784085wmi.106.1651843361915;
-        Fri, 06 May 2022 06:22:41 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id l16-20020a7bcf10000000b003942a244f54sm10378255wmg.45.2022.05.06.06.22.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 06:22:41 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, intel-gfx@lists.freedesktop.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, Peter Jones <pjones@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH] fbdev: efifb: Fix a use-after-free due early fb_info cleanup
-Date:   Fri,  6 May 2022 15:22:25 +0200
-Message-Id: <20220506132225.588379-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 6 May 2022 09:26:46 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CFD6830B;
+        Fri,  6 May 2022 06:23:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651843382; x=1683379382;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YQat1rkbwME50is2lwrsUzhjqH7wUUl1ZMLcbuIXkx8=;
+  b=zgVZ5SwgQrQJohv4cumKrXn6JnJb0sOR4JnGl2RAF/G8OHucCJhHjLqN
+   86inPMp+0gq43gpEMMVZkACqXAJQ9TkJwSNz+3JCPGf0hcDRDV1mZVUCg
+   AX/QsEYi79CEn8V9+9m8sDAyJqmc5R0uX0wTqSw2KD8p5SWV5iRQJhprL
+   4=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 06 May 2022 06:23:02 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 06:23:01 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 6 May 2022 06:23:01 -0700
+Received: from [10.50.57.95] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 6 May 2022
+ 06:22:56 -0700
+Message-ID: <f41e8177-dbda-a03a-299e-d18ee5a5f459@quicinc.com>
+Date:   Fri, 6 May 2022 18:52:51 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCHv14 2/9] coresight: etm4x: Use asm-generic IO memory
+ barriers
+Content-Language: en-US
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>, <arnd@arndb.de>,
+        <catalin.marinas@arm.com>, <rostedt@goodmis.org>
+CC:     <gregkh@linuxfoundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <maz@kernel.org>, <quic_psodagud@quicinc.com>,
+        <quic_tsoni@quicinc.com>, <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+References: <cover.1651663123.git.quic_saipraka@quicinc.com>
+ <0d76de0ecc0aa7cb01fd8b8863a8e567abd4410b.1651663123.git.quic_saipraka@quicinc.com>
+ <483bb401-13e6-8c52-4b5f-f3c635b9ad46@arm.com>
+ <b44a0e0b-ee86-3b08-0103-3ccee94e3270@quicinc.com>
+ <687b78b5-5671-5317-ce9e-98720bb533fa@arm.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <687b78b5-5671-5317-ce9e-98720bb533fa@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d258d00fb9c7 ("fbdev: efifb: Cleanup fb_info in .fb_destroy rather
-than .remove") attempted to fix a use-after-free error due driver freeing
-the fb_info in the .remove handler instead of doing it in .fb_destroy.
+On 5/6/2022 2:51 PM, Suzuki K Poulose wrote:
+> On 06/05/2022 04:02, Sai Prakash Ranjan wrote:
+>> Hi Suzuki,
+>>
+>> On 5/6/2022 5:14 AM, Suzuki K Poulose wrote:
+>>> Hi,
+>>>
+>>> On 04/05/2022 12:28, Sai Prakash Ranjan wrote:
+>>>> Per discussion in [1], it was decided to move to using architecture
+>>>> independent/asm-generic IO memory barriers to have just one set of
+>>>> them and deprecate use of arm64 specific IO memory barriers in driver
+>>>> code. So replace current usage of __io_rmb()/__iowmb() in drivers to
+>>>> __io_ar()/__io_bw().
+>>>>
+>>>> [1] https://lore.kernel.org/lkml/CAK8P3a0L2tLeF1Q0+0ijUxhGNaw+Z0fyPC1oW6_ELQfn0=i4iw@mail.gmail.com/
+>>>>
+>>>
+>>> Looking at the dis-assembly it looks like in effect they are slightly
+>>> different for arm64.
+>>>
+>>> i.e., before this patch we had
+>>>
+>>> "dmb osh{ld/st}"
+>>>
+>>> and after the patch we have :
+>>>
+>>> "dsb {ld/st}"
+>>>
+>>> Is this really what we want ? I don't think this is desirable.
+>>>
+>>> Suzuki
+>>>
+>>
+>> No, this is not supposed to happen and I do not see how it could happen.
+>> __io_ar() is defined as __iormb() and __io_bw() is __iowmb().
+>>
+>> I checked the disassembly in both case with MMIO trace off/on with __etm4_cpu_save()
+>> as below and saw the same number of "dmb"s.
+>>
+>> aarch64-linux-gnu-gdb -batch -ex "disassemble/rs __etm4_cpu_save" vmlinux-without-mmio
+>> aarch64-linux-gnu-gdb -batch -ex "disassemble/rs __etm4_cpu_save" vmlinux-with-mmio
+>>
+>> Can you tell me how are you validating if I am missing something?
+>
+> Apologies, I was missing the patch in this series, which adds
+> the arm64 definition for __io_ar/__io_bw. (hint: Please Cc
+> the affected subsystem in the Cover letter for the series, so
+> we know what the intention of the changes are).
+>
 
-But ironically that change introduced yet another use-after-free since the
-fb_info was still used after the free.
+Sure, I will keep this in mind, apologies for the confusion.
 
-This should fix for good by freeing the fb_info at the end of the handler.
+> With the patch1, yes this makes sense to me. Otherwise, __io_ar()
+> is default to rmb() which implies dsb ld.
+>
+> With that said,
+>
+> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-Fixes: d258d00fb9c7 ("fbdev: efifb: Cleanup fb_info in .fb_destroy rather than .remove")
-Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Reported-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
-
- drivers/video/fbdev/efifb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index cfa3dc0b4eee..b3d5f884c544 100644
---- a/drivers/video/fbdev/efifb.c
-+++ b/drivers/video/fbdev/efifb.c
-@@ -259,12 +259,12 @@ static void efifb_destroy(struct fb_info *info)
- 			memunmap(info->screen_base);
- 	}
- 
--	framebuffer_release(info);
--
- 	if (request_mem_succeeded)
- 		release_mem_region(info->apertures->ranges[0].base,
- 				   info->apertures->ranges[0].size);
- 	fb_dealloc_cmap(&info->cmap);
-+
-+	framebuffer_release(info);
- }
- 
- static const struct fb_ops efifb_ops = {
--- 
-2.35.1
-
+Thanks,
+Sai
