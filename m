@@ -2,116 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09098C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353234AbiEFHfv (ORCPT
+        id S1389580AbiEFHgQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 03:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53446 "EHLO
+        Fri, 6 May 2022 03:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231643AbiEFHfk (ORCPT
+        with ESMTP id S1389578AbiEFHgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 03:35:40 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D606F5D1B1;
-        Fri,  6 May 2022 00:31:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651822317; x=1683358317;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SkwnacsNYIuKuqUXcnje2/FShCNjGYncVyvTKO9Qoz4=;
-  b=DxQulxvfjkQmf2kZEqMPCMGYgcLKjLr0cqiBFUzSbcH9cG5hbl5I3UOV
-   tf50Fw9QgJueTPphn3GyaovCGjlpNIISHI1TYmS+BDcO5vyizbEW4vdw3
-   p56SWaH8i5Cya7VYbhEvUzTb8U/0JeMufZnTwQhajM8ivQnLRKB7evzGh
-   /ioC0nm4Mz6eeJ1zhOSvOOxxJQC/Gk2Oclm/KzRVYUYsZLu48KdrXYBpu
-   bNpzoI3AZU7ofs9wAdfhZRstnYXS/6KHFAYQf+gjNPkjoAgqMQdIAqfJA
-   FpvDYZukra/FYDePJZsheFaIcdKz023yBnCCQj9YA6xfNpX5iQcsfwgOw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="268527422"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="268527422"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 00:31:57 -0700
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="563686566"
-Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 00:31:54 -0700
-Date:   Fri, 6 May 2022 15:30:05 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Dave Hansen <dave.hansen@intel.com>, Arnd Bergmann <arnd@arndb.de>,
-        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ARM: dove: fix returnvar.cocci warnings
-Message-ID: <YnTOff2tzQIjREd2@rli9-dbox>
-References: <202205031017.4TwMan3l-lkp@intel.com>
- <YnCXTPrbLhvfRVDm@e3a974050dc4>
- <CAK8P3a1xMeLa72YKMufdej6KguDwiSXtZmMqRxOt5B05x_fx3A@mail.gmail.com>
- <8704209d-d487-a297-b05a-5db99f5f808c@intel.com>
- <YnR1OTpYADQy6Xa8@rli9-dbox>
- <CAMj1kXEznFy3GeJJwwyHCHTQoYKmE92BDHisqNM84FoyFFw7rg@mail.gmail.com>
+        Fri, 6 May 2022 03:36:12 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 345975D671
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:32:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651822349;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Esh+VtFiG4BswDTMwa1WxXaR2Q4vfRjhnN3ZC2gg1v4=;
+        b=YlOwHYaGgReuULOXTpbgRy8AAAwEbbKGv8n5IGZ6DcwjO88GUsPTv9VkB4fEOdJg5iAG0s
+        QtRXSLWvo7pGCeZMOl6VdR4EfeYAxUXWi2leK9lV6ZIa0PSO2rpeWWCw4lLkSTOdX/Vnr0
+        IXj4CBsFN6zhumttKCEnU32LmAlr9eU=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-661-xwhKSIc_OPGvm0Zleix7Og-1; Fri, 06 May 2022 03:32:28 -0400
+X-MC-Unique: xwhKSIc_OPGvm0Zleix7Og-1
+Received: by mail-wm1-f71.google.com with SMTP id m186-20020a1c26c3000000b003943e12185dso2506244wmm.7
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 00:32:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Esh+VtFiG4BswDTMwa1WxXaR2Q4vfRjhnN3ZC2gg1v4=;
+        b=hazNf6+KE8Avqy57YnkiLhlRCaOHeEPy20RtiLEj51A7wg/rVJS70POgxXVY0agusz
+         SMSlxqGpMRSjK+SPHskInZWYL43WM5KtELxE8ddvoF/7n7l7zWdX+PMdlLa5Y/nmTX+g
+         6a+mDdY2ZJkmsW1tg3Vbhgevph4iJP01OoppoWE6Ut5SnzKYFA2mjrJlWcLFCFq5klu8
+         2nEIc6Y3sm7EQirLz9a8YWrgPW8Kp/5azx6tyQz0C/6uWHg2PEtsWA5QQ3KHfdr4iNvq
+         g+mMN0mJ6ja4zTzHdkXaxPxIY1OOEX7hBVbOU0RI6ITCCRfqREr3GLgmItFhovQT+S2D
+         54uA==
+X-Gm-Message-State: AOAM532eJRsq8zWKhEGidmSkvP8cQ1odSuzW+/kl99vhQurFKM0DNT5l
+        y6OG42XSVzrxz5IbZTUgq3uqK/1gib2SZi6T+TI7rRjfy9uTMHGHFNKcDOVEW5h1IFA+56MsXBP
+        AFcuH7w4itWi4FVxcuJR1aRdMw5fDyfmYZhvCYpRHLiKOWy+4yVz43EPb4tHmy4i7r/bmBpy/BR
+        o=
+X-Received: by 2002:a05:600c:4e86:b0:394:1cac:4146 with SMTP id f6-20020a05600c4e8600b003941cac4146mr8436334wmq.130.1651822346957;
+        Fri, 06 May 2022 00:32:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx3wzAqzDwdh+znVgqwfq+00rTuhWA2qWcgd56hBPkF6MqkT23hcfOtTlTn8ls2dSsXhVzhqg==
+X-Received: by 2002:a05:600c:4e86:b0:394:1cac:4146 with SMTP id f6-20020a05600c4e8600b003941cac4146mr8436273wmq.130.1651822346271;
+        Fri, 06 May 2022 00:32:26 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id r10-20020a5d4e4a000000b0020c5253d921sm2803889wrt.109.2022.05.06.00.32.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 00:32:25 -0700 (PDT)
+Message-ID: <642f515e-aa71-7c90-a715-e49dcf12baee@redhat.com>
+Date:   Fri, 6 May 2022 09:32:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXEznFy3GeJJwwyHCHTQoYKmE92BDHisqNM84FoyFFw7rg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2] Revert "fbdev: Make fb_release() return -ENODEV if
+ fbdev was unregistered"
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20220504115917.758787-1-javierm@redhat.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220504115917.758787-1-javierm@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 09:24:26AM +0200, Ard Biesheuvel wrote:
-> On Fri, 6 May 2022 at 03:12, Philip Li <philip.li@intel.com> wrote:
-> >
-> > On Thu, May 05, 2022 at 09:31:37AM -0700, Dave Hansen wrote:
-> > > On 5/3/22 00:21, Arnd Bergmann wrote:
-> > > > On Tue, May 3, 2022 at 4:45 AM kernel test robot <lkp@intel.com> wrote:
-> > > >> From: kernel test robot <lkp@intel.com>
-> > > >>
-> > > >> arch/arm/mach-omap2/dma.c:82:10-16: Unneeded variable: "errata". Return "0" on line 161
-> > > >>
-> > > >>  Remove unneeded variable used to store return value.
-> > > >>
-> > > >> Generated by: scripts/coccinelle/misc/returnvar.cocci
-> > > >>
-> > > >> Reported-by: kernel test robot <lkp@intel.com>
-> > > >> Signed-off-by: kernel test robot <lkp@intel.com>
-> > > > I checked the patch, and unfortunately it is wrong, the current code
-> > > > needs to stay.
-> > > > The problem is the SET_DMA_ERRATA() macro that accesses the
-> > > > local 'errata' variable.
-> > >
-> > > 0day folks, do we have humans looking over these before they're going
-> > > out to the list?  If not, can we add some?  If so, can the humans get a
-> > > little more discerning? ;)
-> >
-> > Sorry all for the bad patch. So far, we pick up several cocci warnings that
-> > we have confidence based on early result analysis and feedback, for these
-> > warnings, 0day sends out patch automatically.
-> >
+On 5/4/22 13:59, Javier Martinez Canillas wrote:
+> This reverts commit aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a. That commit
+> attempted to fix a NULL pointer dereference, caused by the struct fb_info
+> associated with a framebuffer device to not longer be valid when the file
+> descriptor was closed.
 > 
-> Could you please add a special header or something to such emails so I
-> can filter them out? I am strongly opposed to such automatic spambot
-> patch generation, as it wastes valuable reviewer bandwidth to save the
-> bot operator some time, but it think it should be the other way
-> around.
-
-Sorry for the trouble, we will stop sending the patch automatically and
-only send out patch after human confirmed/reviewed.
-
+> The issue was exposed by commit 27599aacbaef ("fbdev: Hot-unplug firmware
+> fb devices on forced removal"), which added a new path that goes through
+> the struct device removal instead of directly unregistering the fb.
 > 
-> We expect contributors to carefully prepare their patch submissions
-> before sending them to the list, and automatically generated patches
-> simply don't mesh with that. The fact that you use a bot does not mean
-> you can ignore these rules.
+> Most fbdev drivers have issues with the fb_info lifetime, because call to
+> framebuffer_release() from their driver's .remove callback, rather than
+> doing from fbops.fb_destroy callback. This meant that due to this switch,
+> the fb_info was now destroyed too early, while references still existed,
+> while before it was simply leaked.
+> 
+> The patch we're reverting here reinstated that leak, hence "fixed" the
+> regression. But the proper solution is to fix the drivers to not release
+> the fb_info too soon.
+> 
+> Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> ---
+> 
 
-Got it, we will improve this to follow the right way to send out patches.
+Pushed this to drm-misc (drm-misc-fixes).
 
-Thanks
+-- 
+Best regards,
 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
