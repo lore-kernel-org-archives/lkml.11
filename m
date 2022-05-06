@@ -2,70 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C118C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69096C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391158AbiEFLGF (ORCPT
+        id S1391099AbiEFLIE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 07:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        Fri, 6 May 2022 07:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390649AbiEFLFx (ORCPT
+        with ESMTP id S233719AbiEFLIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 07:05:53 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F31CA66F9E;
-        Fri,  6 May 2022 04:02:09 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxMNorAHViuhoMAA--.48869S2;
-        Fri, 06 May 2022 19:02:04 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/2] Modify some code about kprobe
-Date:   Fri,  6 May 2022 19:02:01 +0800
-Message-Id: <1651834923-31573-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9BxMNorAHViuhoMAA--.48869S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYY7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aV
-        CY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAq
-        x4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6x
-        CaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY
-        02Avz4vE14v_Gw4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q
-        6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-        kF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv
-        67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyT
-        uYvjfU0PEfUUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Fri, 6 May 2022 07:08:00 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECB366F9C
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 04:04:17 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ef5380669cso77053147b3.9
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 04:04:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4tHVHA8aVbeVaFoDlPql88Q/9NJ6rAQwn4GhNFwxTwM=;
+        b=Y9CFhcWaUhjrECjyuSeOchnKMM/ukpyTQez4VqVCH4TtE9eAnEld+/aUwLzu6PDSaT
+         ITUMkpj0Pq0svMYhThzFdRj8XblDNogk1iUv15ZpiS6X4YsqXQb101vDE7JxA4TT7Rdi
+         3cQH5mDUrSBM6buak1ZnZKR89mpRc9JsOJAeY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4tHVHA8aVbeVaFoDlPql88Q/9NJ6rAQwn4GhNFwxTwM=;
+        b=0X/bnlXSkfRnc4Ahkmv4MMNnvMI8f+3ZJQiMmUAbDxteGnxfMc4yfbDs7TZoIPP0ka
+         8K+0kPjpXQDC1DtcOGl9D9jQV7Q1MlY0SH6XkEyqXIDtYHaeWmRfC1FlpUTdvBAyHXOT
+         IyWVPTPDB8TDu0sR7pnseci6qcGJI9xVUq6aBYMokdvH/dvU/bDqT6ZbETwQ60uLNJw3
+         61rRIW4afKsEe2KkP/cgvuGU50dHCcpYxc5Hp6BYhTcTickD3JtvUp/MB3U6s22JT6Ro
+         EdsFAbV3T/ravLRtB2SkRMNSfdzWH3ReSZPl02Lq+gr8cx6dTgB5eUUxvEdXRgTzCA7l
+         jWjg==
+X-Gm-Message-State: AOAM532o1H0bpQZZ0aBGoh72ylb/qpjM95JOY/+SNj8gyuYma8plWVLM
+        7HJa4gYZZFFvf+pXyqHgXxakpXpHXFVeH/w89Ws8Ew==
+X-Google-Smtp-Source: ABdhPJzrxlYT0o+pbPyAyvmWw1o6bUmiDPRnLGsburai31NprtPoykzH2hgAePXKTKi3HgMgQsIV/TZZ2+XmP9IUnSc=
+X-Received: by 2002:a81:998a:0:b0:2f9:5d24:e362 with SMTP id
+ q132-20020a81998a000000b002f95d24e362mr2181373ywg.161.1651835056969; Fri, 06
+ May 2022 04:04:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220505194550.3094656-1-nfraprado@collabora.com> <20220505194550.3094656-9-nfraprado@collabora.com>
+In-Reply-To: <20220505194550.3094656-9-nfraprado@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Fri, 6 May 2022 19:04:06 +0800
+Message-ID: <CAGXv+5H4r+OjFrtxQwoBBHttLo+YJa2+LWveVcL6YMhP0-xF2w@mail.gmail.com>
+Subject: Re: [PATCH v2 08/16] arm64: dts: mediatek: asurada: Add keyboard
+ mapping for the top row
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v3: no need to change post_kprobe_handler() in patch #2 now,
-    sorry for the carelessness.
+Hi,
 
-v2:
-  -- only replace __kprobes with NOKPROBE_SYMBOL() in patch #2
-  -- update the commit messages
+On Fri, May 6, 2022 at 3:46 AM N=C3=ADcolas F. R. A. Prado
+<nfraprado@collabora.com> wrote:
+>
+> Chromebooks' embedded keyboards differ from standard layouts for the
+> top row in that they have shortcuts in place of the standard function
+> keys. Map these keys to achieve the functionality that is pictured on
+> the printouts.
+>
+> Signed-off-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collab=
+ora.com>
+> ---
+>
+> (no changes since v1)
+>
+>  .../boot/dts/mediatek/mt8192-asurada.dtsi     | 29 +++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm6=
+4/boot/dts/mediatek/mt8192-asurada.dtsi
+> index 662207d0eb75..a1cbf7a375b6 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
+> @@ -525,3 +525,32 @@ &uart0 {
+>
+>  #include <arm/cros-ec-keyboard.dtsi>
+>  #include <arm/cros-ec-sbs.dtsi>
+> +
+> +&keyboard_controller {
+> +       function-row-physmap =3D <
+> +               MATRIX_KEY(0x00, 0x02, 0)       /* T1 */
+> +               MATRIX_KEY(0x03, 0x02, 0)       /* T2 */
+> +               MATRIX_KEY(0x02, 0x02, 0)       /* T3 */
+> +               MATRIX_KEY(0x01, 0x02, 0)       /* T4 */
+> +               MATRIX_KEY(0x03, 0x04, 0)       /* T5 */
+> +               MATRIX_KEY(0x02, 0x04, 0)       /* T6 */
+> +               MATRIX_KEY(0x01, 0x04, 0)       /* T7 */
+> +               MATRIX_KEY(0x02, 0x09, 0)       /* T8 */
+> +               MATRIX_KEY(0x01, 0x09, 0)       /* T9 */
+> +               MATRIX_KEY(0x00, 0x04, 0)       /* T10 */
+> +       >;
+> +       linux,keymap =3D <
+> +               MATRIX_KEY(0x00, 0x02, KEY_BACK)
+> +               MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
+> +               MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
+> +               MATRIX_KEY(0x01, 0x02, KEY_SCALE)
+> +               MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
+> +               MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
+> +               MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
+> +               MATRIX_KEY(0x02, 0x09, KEY_MUTE)
+> +               MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
+> +               MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
 
-Tiezhu Yang (2):
-  selftests/ftrace: Save kprobe_events to test log
-  MIPS: Use NOKPROBE_SYMBOL() instead of __kprobes annotation
+There's a slight nuance here, the keyboards for Hayato and Spherion
+are not the same one. Hayato follows the keyboard design of older
+Chromebooks, such as Kevin:
 
- arch/mips/kernel/kprobes.c                         | 36 ++++++++++++++--------
- arch/mips/mm/fault.c                               |  6 ++--
- .../ftrace/test.d/kprobe/multiple_kprobes.tc       |  2 ++
- 3 files changed, 30 insertions(+), 14 deletions(-)
+    back, forward, refresh, zoom, scale, brightness up ...
+    (the right side part is the same)
 
--- 
-2.1.0
+Spherion's keyboard layout matches what you have above.
 
+Also, "zoom" should probably be full-screen, even though the two
+map to the same keycode.
+
+
+Regards
+ChenYu
+
+> +
+> +               CROS_STD_MAIN_KEYMAP
+> +       >;
+> +};
+> --
+> 2.36.0
+>
