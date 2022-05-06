@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37879C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2893CC4332F
 	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443778AbiEFQON (ORCPT
+        id S1443766AbiEFQOJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
+        Fri, 6 May 2022 12:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443607AbiEFQNb (ORCPT
+        with ESMTP id S1443548AbiEFQNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:13:31 -0400
-Received: from smtp-bc0c.mail.infomaniak.ch (smtp-bc0c.mail.infomaniak.ch [45.157.188.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB3F6E8F6
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:09:44 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwWB71K8zMqT97;
-        Fri,  6 May 2022 18:09:42 +0200 (CEST)
+        Fri, 6 May 2022 12:13:30 -0400
+Received: from smtp-42ae.mail.infomaniak.ch (smtp-42ae.mail.infomaniak.ch [84.16.66.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572D06E8CC
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:09:42 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwW873gBzMqT9B;
+        Fri,  6 May 2022 18:09:40 +0200 (CEST)
 Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwWB0WxwzlhMCD;
-        Fri,  6 May 2022 18:09:42 +0200 (CEST)
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwW85MffzlhSM0;
+        Fri,  6 May 2022 18:09:40 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651853382;
-        bh=b5lWOGyqbT8zcn7hnQNEb4CQX/FmgRw1H4bzPQKGJyU=;
+        s=20191114; t=1651853380;
+        bh=2txkbKyK29AkSCNNTThxy/R8rlErhcknhk6fEDBlaNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CbyDGM7AXAkJCl97UG6ucyopswscsHddqEjcb+yitepZtIUTujo5MzJx4jzsuoVj/
-         VHpSs/3/Bi8Dv9OF5O/FcHUGUJTT26bpnYStpE2AFC9pXwD0zqAPwqvwXba0fnuy0B
-         MBvlLOSByZn3iLMnBKho7sAewRH4PHPac7RMbQ9E=
+        b=rsSTUMPFYEiFgKVYLn+cGStRURD9ozdklV1Lkljnbuf3tJ/doT0TRIpZeL63qj2z1
+         1UODYJBPN5hS/hTObWdWLVv3WfzQccx2hZwygLfaCiK3DPGCw2CZ6Lb0ISDbaPRO4P
+         zHpdyhxhHq//MDpk97MYLknby3xzoCLIuvjtEisU=
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     James Morris <jmorris@namei.org>,
         "Serge E . Hallyn" <serge@hallyn.com>
@@ -42,12 +42,10 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Shuah Khan <shuah@kernel.org>,
         Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
         linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Kentaro Takeda <takedakn@nttdata.co.jp>
-Subject: [PATCH v3 06/12] LSM: Remove double path_rename hook calls for RENAME_EXCHANGE
-Date:   Fri,  6 May 2022 18:10:56 +0200
-Message-Id: <20220506161102.525323-7-mic@digikod.net>
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH v3 04/12] landlock: Fix same-layer rule unions
+Date:   Fri,  6 May 2022 18:10:54 +0200
+Message-Id: <20220506161102.525323-5-mic@digikod.net>
 In-Reply-To: <20220506161102.525323-1-mic@digikod.net>
 References: <20220506161102.525323-1-mic@digikod.net>
 MIME-Version: 1.0
@@ -57,217 +55,317 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to be able to identify a file exchange with renameat2(2) and
-RENAME_EXCHANGE, which will be useful for Landlock [1], propagate the
-rename flags to LSMs.  This may also improve performance because of the
-switch from two set of LSM hook calls to only one, and because LSMs
-using this hook may optimize the double check (e.g. only one lock,
-reduce the number of path walks).
+The original behavior was to check if the full set of requested accesses
+was allowed by at least a rule of every relevant layer.  This didn't
+take into account requests for multiple accesses and same-layer rules
+allowing the union of these accesses in a complementary way.  As a
+result, multiple accesses requested on a file hierarchy matching rules
+that, together, allowed these accesses, but without a unique rule
+allowing all of them, was illegitimately denied.  This case should be
+rare in practice and it can only be triggered by the path_rename or
+file_open hook implementations.
 
-AppArmor, Landlock and Tomoyo are updated to leverage this change.  This
-should not change the current behavior (same check order), except
-(different level of) speed boosts.
+For instance, if, for the same layer, a rule allows execution
+beneath /a/b and another rule allows read beneath /a, requesting access
+to read and execute at the same time for /a/b should be allowed for this
+layer.
 
-[1] https://lore.kernel.org/r/20220221212522.320243-1-mic@digikod.net
+This was an inconsistency because the union of same-layer rule accesses
+was already allowed if requested once at a time anyway.
 
-Cc: James Morris <jmorris@namei.org>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: Serge E. Hallyn <serge@hallyn.com>
-Acked-by: John Johansen <john.johansen@canonical.com>
-Acked-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+This fix changes the way allowed accesses are gathered over a path walk.
+To take into account all these rule accesses, we store in a matrix all
+layer granting the set of requested accesses, according to the handled
+accesses.  To avoid heap allocation, we use an array on the stack which
+is 2*13 bytes.  A following commit bringing the LANDLOCK_ACCESS_FS_REFER
+access right will increase this size to reach 112 bytes (2*14*4) in case
+of link or rename actions.
+
+Add a new layout1.layer_rule_unions test to check that accesses from
+different rules pertaining to the same layer are ORed in a file
+hierarchy.  Also test that it is not the case for rules from different
+layers.
+
 Reviewed-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Link: https://lore.kernel.org/r/20220506161102.525323-7-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506161102.525323-5-mic@digikod.net
 ---
 
 Changes since v2:
-* Add Reviewed-by: Paul Moore.
-* Format security/landlock/fs.c with clang-format.
+* Fix commit message about stack size.
+* Format with clang-format and rebase.
 
 Changes since v1:
-* Import patch from
-  https://lore.kernel.org/r/20220222175332.384545-1-mic@digikod.net
-* Add Acked-by: Tetsuo Handa.
-* Add Acked-by: John Johansen.
+* Add Reviewed-by: Paul Moore.
+* Small cosmetic comment cleanup.
 ---
- include/linux/lsm_hook_defs.h |  2 +-
- include/linux/lsm_hooks.h     |  1 +
- security/apparmor/lsm.c       | 30 +++++++++++++++++++++++++-----
- security/landlock/fs.c        | 11 ++++++++++-
- security/security.c           |  9 +--------
- security/tomoyo/tomoyo.c      | 11 ++++++++++-
- 6 files changed, 48 insertions(+), 16 deletions(-)
+ security/landlock/fs.c                     |  78 ++++++++++-----
+ security/landlock/ruleset.h                |   2 +
+ tools/testing/selftests/landlock/fs_test.c | 107 +++++++++++++++++++++
+ 3 files changed, 161 insertions(+), 26 deletions(-)
 
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index db924fe379c9..eafa1d2489fd 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -100,7 +100,7 @@ LSM_HOOK(int, 0, path_link, struct dentry *old_dentry,
- 	 const struct path *new_dir, struct dentry *new_dentry)
- LSM_HOOK(int, 0, path_rename, const struct path *old_dir,
- 	 struct dentry *old_dentry, const struct path *new_dir,
--	 struct dentry *new_dentry)
-+	 struct dentry *new_dentry, unsigned int flags)
- LSM_HOOK(int, 0, path_chmod, const struct path *path, umode_t mode)
- LSM_HOOK(int, 0, path_chown, const struct path *path, kuid_t uid, kgid_t gid)
- LSM_HOOK(int, 0, path_chroot, const struct path *path)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 419b5febc3ca..9acf5e368d73 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -358,6 +358,7 @@
-  *	@old_dentry contains the dentry structure of the old link.
-  *	@new_dir contains the path structure for parent of the new link.
-  *	@new_dentry contains the dentry structure of the new link.
-+ *	@flags may contain rename options such as RENAME_EXCHANGE.
-  *	Return 0 if permission is granted.
-  * @path_chmod:
-  *	Check for permission to change a mode of the file @path. The new
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 4f0eecb67dde..900bc540656a 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -354,13 +354,16 @@ static int apparmor_path_link(struct dentry *old_dentry, const struct path *new_
- }
- 
- static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_dentry,
--				const struct path *new_dir, struct dentry *new_dentry)
-+				const struct path *new_dir, struct dentry *new_dentry,
-+				const unsigned int flags)
- {
- 	struct aa_label *label;
- 	int error = 0;
- 
- 	if (!path_mediated_fs(old_dentry))
- 		return 0;
-+	if ((flags & RENAME_EXCHANGE) && !path_mediated_fs(new_dentry))
-+		return 0;
- 
- 	label = begin_current_label_crit_section();
- 	if (!unconfined(label)) {
-@@ -374,10 +377,27 @@ static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_d
- 			d_backing_inode(old_dentry)->i_mode
- 		};
- 
--		error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
--				     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
--				     AA_MAY_SETATTR | AA_MAY_DELETE,
--				     &cond);
-+		if (flags & RENAME_EXCHANGE) {
-+			struct path_cond cond_exchange = {
-+				i_uid_into_mnt(mnt_userns, d_backing_inode(new_dentry)),
-+				d_backing_inode(new_dentry)->i_mode
-+			};
-+
-+			error = aa_path_perm(OP_RENAME_SRC, label, &new_path, 0,
-+					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
-+					     AA_MAY_SETATTR | AA_MAY_DELETE,
-+					     &cond_exchange);
-+			if (!error)
-+				error = aa_path_perm(OP_RENAME_DEST, label, &old_path,
-+						     0, MAY_WRITE | AA_MAY_SETATTR |
-+						     AA_MAY_CREATE, &cond_exchange);
-+		}
-+
-+		if (!error)
-+			error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
-+					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
-+					     AA_MAY_SETATTR | AA_MAY_DELETE,
-+					     &cond);
- 		if (!error)
- 			error = aa_path_perm(OP_RENAME_DEST, label, &new_path,
- 					     0, MAY_WRITE | AA_MAY_SETATTR |
 diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-index 7b7860039a08..30b42cdee52e 100644
+index 20953bff8fd5..c5749301b37d 100644
 --- a/security/landlock/fs.c
 +++ b/security/landlock/fs.c
-@@ -622,10 +622,12 @@ static int hook_path_link(struct dentry *const old_dentry,
- static int hook_path_rename(const struct path *const old_dir,
- 			    struct dentry *const old_dentry,
- 			    const struct path *const new_dir,
--			    struct dentry *const new_dentry)
-+			    struct dentry *const new_dentry,
-+			    const unsigned int flags)
- {
- 	const struct landlock_ruleset *const dom =
- 		landlock_get_current_domain();
-+	u32 exchange_access = 0;
- 
- 	if (!dom)
- 		return 0;
-@@ -633,12 +635,19 @@ static int hook_path_rename(const struct path *const old_dir,
- 	if (old_dir->dentry != new_dir->dentry)
- 		/* Gracefully forbids reparenting. */
- 		return -EXDEV;
-+	if (flags & RENAME_EXCHANGE) {
-+		if (unlikely(d_is_negative(new_dentry)))
-+			return -ENOENT;
-+		exchange_access =
-+			get_mode_access(d_backing_inode(new_dentry)->i_mode);
-+	}
- 	if (unlikely(d_is_negative(old_dentry)))
- 		return -ENOENT;
- 	/* RENAME_EXCHANGE is handled because directories are the same. */
- 	return check_access_path(
- 		dom, old_dir,
- 		maybe_remove(old_dentry) | maybe_remove(new_dentry) |
-+			exchange_access |
- 			get_mode_access(d_backing_inode(old_dentry)->i_mode));
+@@ -207,45 +207,67 @@ find_rule(const struct landlock_ruleset *const domain,
+ 	return rule;
  }
  
-diff --git a/security/security.c b/security/security.c
-index b7cf5cbfdc67..c9bfc0b70b28 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -1197,15 +1197,8 @@ int security_path_rename(const struct path *old_dir, struct dentry *old_dentry,
- 		     (d_is_positive(new_dentry) && IS_PRIVATE(d_backing_inode(new_dentry)))))
- 		return 0;
+-static inline layer_mask_t unmask_layers(const struct landlock_rule *const rule,
+-					 const access_mask_t access_request,
+-					 layer_mask_t layer_mask)
++/*
++ * @layer_masks is read and may be updated according to the access request and
++ * the matching rule.
++ *
++ * Returns true if the request is allowed (i.e. relevant layer masks for the
++ * request are empty).
++ */
++static inline bool
++unmask_layers(const struct landlock_rule *const rule,
++	      const access_mask_t access_request,
++	      layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+ {
+ 	size_t layer_level;
  
--	if (flags & RENAME_EXCHANGE) {
--		int err = call_int_hook(path_rename, 0, new_dir, new_dentry,
--					old_dir, old_dentry);
--		if (err)
--			return err;
--	}
++	if (!access_request || !layer_masks)
++		return true;
+ 	if (!rule)
+-		return layer_mask;
++		return false;
+ 
+ 	/*
+ 	 * An access is granted if, for each policy layer, at least one rule
+-	 * encountered on the pathwalk grants the requested accesses,
+-	 * regardless of their position in the layer stack.  We must then check
++	 * encountered on the pathwalk grants the requested access,
++	 * regardless of its position in the layer stack.  We must then check
+ 	 * the remaining layers for each inode, from the first added layer to
+-	 * the last one.
++	 * the last one.  When there is multiple requested accesses, for each
++	 * policy layer, the full set of requested accesses may not be granted
++	 * by only one rule, but by the union (binary OR) of multiple rules.
++	 * E.g. /a/b <execute> + /a <read> => /a/b <execute + read>
+ 	 */
+ 	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
+ 		const struct landlock_layer *const layer =
+ 			&rule->layers[layer_level];
+ 		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
++		const unsigned long access_req = access_request;
++		unsigned long access_bit;
++		bool is_empty;
+ 
+-		/* Checks that the layer grants access to the full request. */
+-		if ((layer->access & access_request) == access_request) {
+-			layer_mask &= ~layer_bit;
 -
- 	return call_int_hook(path_rename, 0, old_dir, old_dentry, new_dir,
--				new_dentry);
-+				new_dentry, flags);
+-			if (layer_mask == 0)
+-				return layer_mask;
++		/*
++		 * Records in @layer_masks which layer grants access to each
++		 * requested access.
++		 */
++		is_empty = true;
++		for_each_set_bit(access_bit, &access_req,
++				 ARRAY_SIZE(*layer_masks)) {
++			if (layer->access & BIT_ULL(access_bit))
++				(*layer_masks)[access_bit] &= ~layer_bit;
++			is_empty = is_empty && !(*layer_masks)[access_bit];
+ 		}
++		if (is_empty)
++			return true;
+ 	}
+-	return layer_mask;
++	return false;
  }
- EXPORT_SYMBOL(security_path_rename);
  
-diff --git a/security/tomoyo/tomoyo.c b/security/tomoyo/tomoyo.c
-index b6a31901f289..71e82d855ebf 100644
---- a/security/tomoyo/tomoyo.c
-+++ b/security/tomoyo/tomoyo.c
-@@ -264,17 +264,26 @@ static int tomoyo_path_link(struct dentry *old_dentry, const struct path *new_di
-  * @old_dentry: Pointer to "struct dentry".
-  * @new_parent: Pointer to "struct path".
-  * @new_dentry: Pointer to "struct dentry".
-+ * @flags: Rename options.
-  *
-  * Returns 0 on success, negative value otherwise.
-  */
- static int tomoyo_path_rename(const struct path *old_parent,
- 			      struct dentry *old_dentry,
- 			      const struct path *new_parent,
--			      struct dentry *new_dentry)
-+			      struct dentry *new_dentry,
-+			      const unsigned int flags)
+ static int check_access_path(const struct landlock_ruleset *const domain,
+ 			     const struct path *const path,
+ 			     const access_mask_t access_request)
  {
- 	struct path path1 = { .mnt = old_parent->mnt, .dentry = old_dentry };
- 	struct path path2 = { .mnt = new_parent->mnt, .dentry = new_dentry };
+-	bool allowed = false;
++	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
++	bool allowed = false, has_access = false;
+ 	struct path walker_path;
+-	layer_mask_t layer_mask;
+ 	size_t i;
  
-+	if (flags & RENAME_EXCHANGE) {
-+		const int err = tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path2,
-+				&path1);
+ 	if (!access_request)
+@@ -265,13 +287,20 @@ static int check_access_path(const struct landlock_ruleset *const domain,
+ 		return -EACCES;
+ 
+ 	/* Saves all layers handling a subset of requested accesses. */
+-	layer_mask = 0;
+ 	for (i = 0; i < domain->num_layers; i++) {
+-		if (domain->fs_access_masks[i] & access_request)
+-			layer_mask |= BIT_ULL(i);
++		const unsigned long access_req = access_request;
++		unsigned long access_bit;
 +
-+		if (err)
-+			return err;
-+	}
- 	return tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path1, &path2);
++		for_each_set_bit(access_bit, &access_req,
++				 ARRAY_SIZE(layer_masks)) {
++			if (domain->fs_access_masks[i] & BIT_ULL(access_bit)) {
++				layer_masks[access_bit] |= BIT_ULL(i);
++				has_access = true;
++			}
++		}
+ 	}
+ 	/* An access request not handled by the domain is allowed. */
+-	if (layer_mask == 0)
++	if (!has_access)
+ 		return 0;
+ 
+ 	walker_path = *path;
+@@ -283,14 +312,11 @@ static int check_access_path(const struct landlock_ruleset *const domain,
+ 	while (true) {
+ 		struct dentry *parent_dentry;
+ 
+-		layer_mask =
+-			unmask_layers(find_rule(domain, walker_path.dentry),
+-				      access_request, layer_mask);
+-		if (layer_mask == 0) {
++		allowed = unmask_layers(find_rule(domain, walker_path.dentry),
++					access_request, &layer_masks);
++		if (allowed)
+ 			/* Stops when a rule from each layer grants access. */
+-			allowed = true;
+ 			break;
+-		}
+ 
+ jump_up:
+ 		if (walker_path.dentry == walker_path.mnt->mnt_root) {
+diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+index 521af2848951..d43231b783e4 100644
+--- a/security/landlock/ruleset.h
++++ b/security/landlock/ruleset.h
+@@ -22,6 +22,8 @@
+ typedef u16 access_mask_t;
+ /* Makes sure all filesystem access rights can be stored. */
+ static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
++/* Makes sure for_each_set_bit() and for_each_clear_bit() calls are OK. */
++static_assert(sizeof(unsigned long) >= sizeof(access_mask_t));
+ 
+ typedef u16 layer_mask_t;
+ /* Makes sure all layers can be checked. */
+diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
+index e13f046a172a..a4fdcda62bde 100644
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -758,6 +758,113 @@ TEST_F_FORK(layout1, ruleset_overlap)
+ 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
  }
  
++TEST_F_FORK(layout1, layer_rule_unions)
++{
++	const struct rule layer1[] = {
++		{
++			.path = dir_s1d2,
++			.access = LANDLOCK_ACCESS_FS_READ_FILE,
++		},
++		/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). */
++		{
++			.path = dir_s1d3,
++			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
++		},
++		{},
++	};
++	const struct rule layer2[] = {
++		/* Doesn't change anything from layer1. */
++		{
++			.path = dir_s1d2,
++			.access = LANDLOCK_ACCESS_FS_READ_FILE |
++				  LANDLOCK_ACCESS_FS_WRITE_FILE,
++		},
++		{},
++	};
++	const struct rule layer3[] = {
++		/* Only allows write (but not read) to dir_s1d3. */
++		{
++			.path = dir_s1d2,
++			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
++		},
++		{},
++	};
++	int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, layer1);
++
++	ASSERT_LE(0, ruleset_fd);
++	enforce_ruleset(_metadata, ruleset_fd);
++	ASSERT_EQ(0, close(ruleset_fd));
++
++	/* Checks s1d1 hierarchy with layer1. */
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Checks s1d2 hierarchy with layer1. */
++	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Checks s1d3 hierarchy with layer1. */
++	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
++	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
++	/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). */
++	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Doesn't change anything from layer1. */
++	ruleset_fd = create_ruleset(_metadata, ACCESS_RW, layer2);
++	ASSERT_LE(0, ruleset_fd);
++	enforce_ruleset(_metadata, ruleset_fd);
++	ASSERT_EQ(0, close(ruleset_fd));
++
++	/* Checks s1d1 hierarchy with layer2. */
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Checks s1d2 hierarchy with layer2. */
++	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Checks s1d3 hierarchy with layer2. */
++	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
++	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
++	/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). */
++	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Only allows write (but not read) to dir_s1d3. */
++	ruleset_fd = create_ruleset(_metadata, ACCESS_RW, layer3);
++	ASSERT_LE(0, ruleset_fd);
++	enforce_ruleset(_metadata, ruleset_fd);
++	ASSERT_EQ(0, close(ruleset_fd));
++
++	/* Checks s1d1 hierarchy with layer3. */
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Checks s1d2 hierarchy with layer3. */
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
++	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++
++	/* Checks s1d3 hierarchy with layer3. */
++	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_RDONLY));
++	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
++	/* dir_s1d3 should now deny READ_FILE and WRITE_FILE (O_RDWR). */
++	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_RDWR));
++	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
++}
++
+ TEST_F_FORK(layout1, non_overlapping_accesses)
+ {
+ 	const struct rule layer1[] = {
 -- 
 2.35.1
 
