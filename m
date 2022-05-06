@@ -2,84 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9EE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDF8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 01:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388204AbiEFCB3 (ORCPT
+        id S1388214AbiEFCCq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 22:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+        Thu, 5 May 2022 22:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349212AbiEFCBZ (ORCPT
+        with ESMTP id S1349212AbiEFCCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 22:01:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4016615D;
-        Thu,  5 May 2022 18:57:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 495C561B96;
-        Fri,  6 May 2022 01:57:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDC3C385AC;
-        Fri,  6 May 2022 01:57:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651802263;
-        bh=GeHdkr2ZO4kmGx/9U2bw97L/SWe5YfhsVGtl0N4MQus=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NhqDevJKpqzSnUuqL/tpGdvIFH11cZzDNm5Hm500j1Wo0EVqgV37EO4yHfCAgyjQ5
-         2k+mh9p8Kq2G/n5Scg+2++7nS69cctsbfozfwkaVabsRskVhOSYM4RTZ+pOaExpnRd
-         g6FpeWxeuBufeVTDsh+9dq6EU4iZWBt5GAyO5H7dliy2LaFHMuKUUL4Mxz6oPImxLP
-         iyxvVwgqN+GN1plq9fT2fId8SKcyFIqFl2teJsgh+mbnUWAPaDakv4rrsx+B23QCcp
-         hAb7ljc6jM9LzLviskcnArIlz/FcFgYOJJ+hzVIsXsxe+R29Vju/eZ8PMUc8bxhQBP
-         ktRJocE9mHXEQ==
-Date:   Thu, 5 May 2022 18:57:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     richardcochran@gmail.com, lee.jones@linaro.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net v4 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
- support
-Message-ID: <20220505185742.1246d738@kernel.org>
-In-Reply-To: <1651697455-1588-1-git-send-email-min.li.xe@renesas.com>
-References: <1651697455-1588-1-git-send-email-min.li.xe@renesas.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 5 May 2022 22:02:45 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B836B861;
+        Thu,  5 May 2022 18:59:03 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 02B5A1A0A38;
+        Fri,  6 May 2022 03:59:02 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 933EC1A0A1F;
+        Fri,  6 May 2022 03:59:01 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id E090A180031D;
+        Fri,  6 May 2022 09:58:59 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
+        broonie@kernel.org, lorenzo.pieralisi@arm.com,
+        jingoohan1@gmail.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v9 0/8] PCI: imx6: refine codes and add compliance tests mode support 
+Date:   Fri,  6 May 2022 09:47:01 +0800
+Message-Id: <1651801629-30223-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  4 May 2022 16:50:54 -0400 Min Li wrote:
-> Use TOD_READ_SECONDARY for extts to keep TOD_READ_PRIMARY
-> for gettime and settime exclusively
+This series patches refine pci-imx6 driver and do the following main changes.
+- Encapsulate the clock enable into one standalone function
+- Add the error propagation from host_init
+- Disable the regulators and clocks when link never comes up
+- Add the compliance tests mode support
+- Move the phy driver callbacks to the proper places
 
-Can you fill in more details about what the user visible problem is?
-Judging by the fact that you haven't tagged the patch as 
-[PATCH net-next] after my previous explanation you do think this 
-is a fix. But "Add xyz support" sounds like a feature, not a fix.
+Main changes from v8 to v9:
+- Don't change pcie-designware codes, and do the error exit process only in
+  pci-imx6 driver internally.
+- Move the phy driver callbacks to the proper places
 
-> Signed-off-by: Min Li <min.li.xe@renesas.com>
-> Acked-by: Richard Cochran <richardcochran@gmail.com>
+Main changes from v7 to v8:
+Regarding Bjorn's review comments.
+- Align the format of the dev_info message and refine commit log of
+  #6/7/8 patches.
+- Rename the err_reset_phy label, since there is no PHY reset in the out
 
-> -	err = char_array_to_timespec(buf, sizeof(buf), ts);
-> -
-> -	return err;
-> +	return char_array_to_timespec(buf, sizeof(buf), ts);
+Main changes from v6 to v7:
+- Keep the regulator usage counter balance in the #5 patch of v6 series.
 
-I don't think you were modifying this code, so no need to clean it up
-in this commit. It's unrelated to the change you're making now.
+Main changes from v5 to v6:
+- Refer to the following discussion with Fabio, fix the dump by his patch.
+  https://patchwork.kernel.org/project/linux-pci/patch/1641368602-20401-6-git-send-email-hongxing.zhu@nxp.com/
+  Refine and rebase this patch-set after Fabio' dump fix patch is merged.
+- Add one new #4 patch to disable i.MX6QDL REF clock too when disable clocks
+- Split the regulator refine codes into one standalone patch #5 in this version.
 
->  }
+Main changes from v4 to v5:
+- Since i.MX8MM PCIe support had been merged. Based on Lorenzo's git repos,
+  resend the patch-set after rebase.
 
-> -	/* Re-enable extts */
-> -	if (extts_mask)
-> -		idtcm_enable_extts_mask(channel, extts_mask, true);
-> +	err = _idtcm_gettime(channel, ts, 10);
->  
->  	return err;
->  }
+Main changes from v3 to v4:
+- Regarding Mark's comments, delete the regulator_is_enabled() check.
+- Squash #3 and #6 of v3 patch into #5 patch of v4 set.
 
-Here, tho, you are changing the code, and yet you haven't done what 
-I asked.
+Main changes from v2 to v3:
+- Add "Reviewed-by: Lucas Stach <l.stach@pengutronix.de>" tag into
+  first two patches.
+- Add a Fixes tag into #3 patch.
+- Split the #4 of v2 to two patches, one is clock disable codes move,
+  the other one is the acutal clock unbalance fix.
+- Add a new host_exit() callback into dw_pcie_host_ops, then it could be
+  invoked to handle the unbalance issue in the error handling after
+  host_init() function when link is down.
+- Add a new host_exit() callback for i.MX PCIe driver to handle this case
+  in the error handling after host_init.
 
+Main changes from v1 to v2:
+Regarding Lucas' comments.
+  - Move the placement of the new imx6_pcie_clk_enable() to avoid the
+    forward declarition.
+  - Seperate the second patch of v1 patch-set to three patches.
+  - Use the module_param to replace the kernel command line.
+Regarding Bjorn's comments:
+  - Use the cover-letter for a multi-patch series.
+  - Correct the subject line, and refine the commit logs. For example,
+    remove the timestamp of the logs.
+
+drivers/pci/controller/dwc/pci-imx6.c | 277 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------
+1 file changed, 188 insertions(+), 89 deletions(-)
+
+[PATCH v9 1/8] PCI: imx6: Encapsulate the clock enable into one
+[PATCH v9 2/8] PCI: imx6: Add the error propagation from host_init
+[PATCH v9 3/8] PCI: imx6: Move imx6_pcie_clk_disable() earlier
+[PATCH v9 4/8] PCI: imx6: Disable iMX6QDL PCIe REF clock when disable
+[PATCH v9 5/8] PCI: imx6: Refine the regulator usage
+[PATCH v9 6/8] PCI: imx6: Disable clocks and regulators after link is
+[PATCH v9 7/8] PCI: imx6: Move the phy driver callbacks to the proper
+[PATCH v9 8/8] PCI: imx6: Add compliance tests mode support
