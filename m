@@ -2,195 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA03C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 06:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 06:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbiEFG3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 02:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
+        id S241113AbiEFGae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 02:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiEFG3Q (ORCPT
+        with ESMTP id S237196AbiEFGa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 02:29:16 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D72513CF7
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 23:25:31 -0700 (PDT)
-Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvgXV3m3WzhYs5;
-        Fri,  6 May 2022 14:24:58 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 14:25:29 +0800
-Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 6 May
- 2022 14:25:29 +0800
-Subject: Re: [PATCH v5 2/2] Documentation: Add document for UltraSoc SMB
- drivers
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        <mathieu.poirier@linaro.org>
-CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>,
-        <Jonathan_Lucas@mentor.com>
-References: <20220416083953.52610-1-liuqi115@huawei.com>
- <20220416083953.52610-3-liuqi115@huawei.com>
- <2c5761ce-6520-9101-e7de-69731114eea0@arm.com>
-From:   "liuqi (BA)" <liuqi115@huawei.com>
-Message-ID: <ce4e4fe6-fe20-22de-2443-d0d199a973c4@huawei.com>
-Date:   Fri, 6 May 2022 14:25:29 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Fri, 6 May 2022 02:30:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC68065D1C
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 23:26:40 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nmrPo-0005oB-Mb; Fri, 06 May 2022 08:26:13 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nmrPh-000edW-Sp; Fri, 06 May 2022 08:26:04 +0200
+Received: from afa by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nmrPf-004Tvp-I9; Fri, 06 May 2022 08:26:03 +0200
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+To:     =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     kernel@pengutronix.de, Michael Walle <michael@walle.cc>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        David Gstir <david@sigma-star.at>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH v9 3/7] crypto: caam - determine whether CAAM supports blob encap/decap
+Date:   Fri,  6 May 2022 08:25:49 +0200
+Message-Id: <20220506062553.1068296-4-a.fatoum@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220506062553.1068296-1-a.fatoum@pengutronix.de>
+References: <20220506062553.1068296-1-a.fatoum@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <2c5761ce-6520-9101-e7de-69731114eea0@arm.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.101.67]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: afa@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Depending on SoC variant, a CAAM may be available, but with some futures
+fused out. The LS1028A (non-E) SoC is one such SoC and while it
+indicates BLOB support, BLOB operations will ultimately fail, because
+there is no AES support. Add a new blob_present member to reflect
+whether both BLOB support and the AES support it depends on is
+available.
 
-Hi Suzuki,
+These will be used in a follow-up commit to allow blob driver
+initialization to error out on SoCs without the necessary hardware
+support instead of failing at runtime with a cryptic
 
-thanks for your review, some replies inline.
+  caam_jr 8020000.jr: 20000b0f: CCB: desc idx 11: : Invalid CHA selected.
 
-On 2022/5/6 0:22, Suzuki K Poulose wrote:
-> On 16/04/2022 09:39, Qi Liu wrote:
->> This patch bring in a documentation for UltraSoc SMB drivers.
->> It simple descripts the device, sysfs interface and the
->> firmware bindings.
->>
->> Signed-off-by: Qi Liu <liuqi115@huawei.com>
->> ---
->>   .../trace/coresight/ultrasoc-smb.rst          | 79 +++++++++++++++++++
->>   1 file changed, 79 insertions(+)
->>   create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
->>
->> diff --git a/Documentation/trace/coresight/ultrasoc-smb.rst 
->> b/Documentation/trace/coresight/ultrasoc-smb.rst
->> new file mode 100644
->> index 000000000000..024fa4492f42
->> --- /dev/null
->> +++ b/Documentation/trace/coresight/ultrasoc-smb.rst
->> @@ -0,0 +1,79 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +======================================
->> +UltraSoc - HW Assisted Tracing on SoC
->> +======================================
->> +   :Author:   Qi Liu <liuqi115@huawei.com>
->> +   :Date:     March 2022
->> +
->> +Introduction
->> +------------
->> +
->> +UltraSoc SMB is a per SCCL hardware, and it provides a way to buffer 
->> and store
-> 
-> nit: what is SCCL ?
+Co-developed-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
 
-SCCL is super CPU cluster, I'll add the full name next time.
+---
+v8 -> v9:
+  - New patch
 
-> 
->> +CPU trace messages in a region of shared system memory. SMB is 
->> plugged as
->> +a coresight sink device and the corresponding trace generators (ETM) are
->> +plugged in as source devices.
->> +
->> +Sysfs files and directories
->> +---------------------------
->> +
->> +The SMB devices appear on the existing coresight bus alongside the other
->> +coresight devices::
->> +
->> +    $# ls /sys/bus/coresight/devices/
->> +    ultra_smb0   ultra_smb1   ultra_smb2   ultra_smb3
->> +
->> +The ``ultra_smb<N>`` named SMB associated with SCCL.::
->> +
->> +    $# ls /sys/bus/coresight/devices/ultra_smb0
->> +    enable_sink   mgmt
->> +    $# ls /sys/bus/coresight/devices/ultra_smb0/mgmt
->> +    buf_size  buf_status  read_pos  write_pos
->> +
->> +*Key file items are:-*
->> +   * ``read_pos``: Shows the value held by UltraSoc SMB Read Pointer 
->> register.
->> +   * ``write_pos``: Shows the value held by UltraSoc SMB Write 
->> Pointer register.
->> +   * ``buf_status``: Shows the value held by UltraSoc SMB status 
->> register.
->> +             BIT(0) is zero means buffer is empty.
->> +   * ``buf_size``: Shows the buffer size of each UltraSoc SMB device.
->> +
->> +Firmware Bindings
->> +---------------------------
->> +
->> +Firmware binding of SMB device describes SMB device indentifier, 
->> resource
->> +information and graph structure.
->> +
->> +SMB is platform device and device id is "HISI03A1", resource of 
->> device is
->> +declared using the _CRS method. Each SMB must present two base address,
->> +the first one is the configuration base address of SMB device, the 
->> second
->> +one is the base address of shared system memory.
->> +
->> +examples::
->> +
->> +    Device(USMB) {                                               \
->> +      Name(_HID, "HISI03A1")                                     \
->> +      Name(_CRS, ResourceTemplate() {                            \
->> +          MEM_RESRC(0x95100000, 0x951FFFFF, 0x100000)            \
->> +          MEM_RESRC(0x50000000, 0x53FFFFFF, 0x4000000)           \
->> +      })                                                         \
-> 
-> 
->> +      Name(_DSD, Package() {                                     \
->> +        ToUUID("ab02a46b-74c7-45a2-bd68-f7d344ef2153"),          \
-> 
-> nit: May be add a comment here to explain, use Arm CoreSight Graph
-> ACPI bindings to describe the connections.
+To: "Horia Geantă" <horia.geanta@nxp.com>
+To: Pankaj Gupta <pankaj.gupta@nxp.com>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+To: "David S. Miller" <davem@davemloft.net>
+Cc: James Bottomley <jejb@linux.ibm.com>
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Mimi Zohar <zohar@linux.ibm.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: James Morris <jmorris@namei.org>
+Cc: Eric Biggers <ebiggers@kernel.org>
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Cc: Jan Luebbe <j.luebbe@pengutronix.de>
+Cc: David Gstir <david@sigma-star.at>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Franck LENORMAND <franck.lenormand@nxp.com>
+Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc: Sumit Garg <sumit.garg@linaro.org>
+Cc: Michael Walle <michael@walle.cc>
+Cc: linux-integrity@vger.kernel.org
+Cc: keyrings@vger.kernel.org
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+---
+ drivers/crypto/caam/ctrl.c   | 10 ++++++++--
+ drivers/crypto/caam/intern.h |  1 +
+ drivers/crypto/caam/regs.h   |  4 +++-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-got it, will add a comment above, thanks.
-> 
->> +        Package() {                                              \
->> +          0,                                                     \
->> +          1,                                                     \
->> +          Package() {                                            \
->> +            1,                                                   \
->> +            ToUUID("3ecbc8b6-1d0e-4fb3-8107-e627f805c6cd"),      \
->> +            8,                                                   \
->> +            Package() {0x8, 0, \_SB.S00.SL11.CL28.F008, 0},       \
->> +            Package() {0x9, 0, \_SB.S00.SL11.CL29.F009, 0},       \
->> +            Package() {0xa, 0, \_SB.S00.SL11.CL2A.F010, 0},       \
->> +            Package() {0xb, 0, \_SB.S00.SL11.CL2B.F011, 0},       \
->> +            Package() {0xc, 0, \_SB.S00.SL11.CL2C.F012, 0},       \
->> +            Package() {0xd, 0, \_SB.S00.SL11.CL2D.F013, 0},       \
->> +            Package() {0xe, 0, \_SB.S00.SL11.CL2E.F014, 0},       \
->> +            Package() {0xf, 0, \_SB.S00.SL11.CL2F.F015, 0},       \
->> +          }                                                      \
-> 
-> Interesting, are there multiple input ports for the SMB ? We haven't
-> seen an instance of a "sink" that supports this. So, would be
-> interesting to see how the driver copes with that scenario.
-> 
-> Suzuki
-> 
-> yes, as there are 8 clusters in a SCCL, and each cluster use one funnel 
-device to transmit core trace data, so SMB has 8 input funnel ports.
+diff --git a/drivers/crypto/caam/ctrl.c b/drivers/crypto/caam/ctrl.c
+index ca0361b2dbb0..6426ffec5980 100644
+--- a/drivers/crypto/caam/ctrl.c
++++ b/drivers/crypto/caam/ctrl.c
+@@ -820,12 +820,18 @@ static int caam_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	if (ctrlpriv->era < 10)
++	comp_params = rd_reg32(&ctrl->perfmon.comp_parms_ls);
++	ctrlpriv->blob_present = !!(comp_params & CTPR_LS_BLOB);
++
++	if (ctrlpriv->era < 10) {
+ 		rng_vid = (rd_reg32(&ctrl->perfmon.cha_id_ls) &
+ 			   CHA_ID_LS_RNG_MASK) >> CHA_ID_LS_RNG_SHIFT;
+-	else
++	} else {
+ 		rng_vid = (rd_reg32(&ctrl->vreg.rng) & CHA_VER_VID_MASK) >>
+ 			   CHA_VER_VID_SHIFT;
++		ctrlpriv->blob_present = ctrlpriv->blob_present &&
++			(rd_reg32(&ctrl->vreg.aesa) & CHA_VER_MISC_AES_NUM_MASK);
++	}
+ 
+ 	/*
+ 	 * If SEC has RNG version >= 4 and RNG state handle has not been
+diff --git a/drivers/crypto/caam/intern.h b/drivers/crypto/caam/intern.h
+index 7d45b21bd55a..e92210e2ab76 100644
+--- a/drivers/crypto/caam/intern.h
++++ b/drivers/crypto/caam/intern.h
+@@ -92,6 +92,7 @@ struct caam_drv_private {
+ 	 */
+ 	u8 total_jobrs;		/* Total Job Rings in device */
+ 	u8 qi_present;		/* Nonzero if QI present in device */
++	u8 blob_present;	/* Nonzero if BLOB support present in device */
+ 	u8 mc_en;		/* Nonzero if MC f/w is active */
+ 	int secvio_irq;		/* Security violation interrupt number */
+ 	int virt_en;		/* Virtualization enabled in CAAM */
+diff --git a/drivers/crypto/caam/regs.h b/drivers/crypto/caam/regs.h
+index 3738625c0250..66d6dad841bb 100644
+--- a/drivers/crypto/caam/regs.h
++++ b/drivers/crypto/caam/regs.h
+@@ -320,7 +320,8 @@ struct version_regs {
+ #define CHA_VER_VID_MASK	(0xffull << CHA_VER_VID_SHIFT)
+ 
+ /* CHA Miscellaneous Information - AESA_MISC specific */
+-#define CHA_VER_MISC_AES_GCM	BIT(1 + CHA_VER_MISC_SHIFT)
++#define CHA_VER_MISC_AES_NUM_MASK	GENMASK(7, 0)
++#define CHA_VER_MISC_AES_GCM		BIT(1 + CHA_VER_MISC_SHIFT)
+ 
+ /* CHA Miscellaneous Information - PKHA_MISC specific */
+ #define CHA_VER_MISC_PKHA_NO_CRYPT	BIT(7 + CHA_VER_MISC_SHIFT)
+@@ -414,6 +415,7 @@ struct caam_perfmon {
+ #define CTPR_MS_PG_SZ_MASK	0x10
+ #define CTPR_MS_PG_SZ_SHIFT	4
+ 	u32 comp_parms_ms;	/* CTPR - Compile Parameters Register	*/
++#define CTPR_LS_BLOB           BIT(1)
+ 	u32 comp_parms_ls;	/* CTPR - Compile Parameters Register	*/
+ 	u64 rsvd1[2];
+ 
+-- 
+2.30.2
 
-Thanks,
-Qi
-> 
->> +        }                                                        \
->> +      })                                                         \
->> +    }
-> 
-> .
