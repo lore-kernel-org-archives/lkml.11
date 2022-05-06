@@ -2,282 +2,506 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E71C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA5F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388484AbiEFDVW (ORCPT
+        id S1388493AbiEFDWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
+        Thu, 5 May 2022 23:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbiEFDVR (ORCPT
+        with ESMTP id S234788AbiEFDWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:21:17 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3565524976
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:17:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651807055; x=1683343055;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kdeCz0yd4ZI6vM/JdgropWQDsZKYrG1FI8NeGzafxBs=;
-  b=QfcLyx7vrHKBf6yiowjx/r8m6O0QDj0NvMFNZpHlejj6nSk3X278AuwG
-   0/G1Obk0DWSICfKo2CB51VeLQr0ly1OLjxGYZaHO8v7itZYwmNNu4BGJy
-   KuVbocfFWptRR9FJ6yDlvzYXweqOvBb+uixGPVtsUHniEBbF7K/sKhrZ0
-   tUpwJsVLQBy/czCummafQruhZNjwgaSq7rZbg5UuygI1mYI7TkrQOEZYP
-   IYihdgOc3LMC0SOWSINEysGrDoar7QX/nPoSe9C1Ya62gDAdrgICDRtGA
-   iBMELwKIb521C0EvZ1E1DDc6PH5nLQtRpKH79Kevv+a5uuETFyDhuCRnx
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248868559"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="248868559"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:17:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="709256079"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 05 May 2022 20:17:33 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmoSa-000D21-Vk;
-        Fri, 06 May 2022 03:16:52 +0000
-Date:   Fri, 6 May 2022 11:16:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Allison Henderson <allison.henderson@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dave Chinner <dchinner@redhat.com>
-Subject: [allisonhenderson-xfs-work:xfs-5.19-compose_pptrs 25/32]
- fs/xfs/libxfs/xfs_attr.c:571:44: warning: this statement may fall through
-Message-ID: <202205061123.lsXtfPqy-lkp@intel.com>
+        Thu, 5 May 2022 23:22:52 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8903124976;
+        Thu,  5 May 2022 20:19:10 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id c11so6166373plg.13;
+        Thu, 05 May 2022 20:19:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=603vZ5SzqWeeTlyO76QDiHCh6GdqcwGK8rRQCpHNegA=;
+        b=hHf+cpz3z0sqe7qRNNEMqy12zs1AGdQzzWXH1sCKxzt7qQdyGHNowKyIUh/uHfS706
+         GQQda466U1/2zotrnwzczJq6rKnLCHSAnIlO/DCXcRAEJPWEHciEKK1C+6U2H8qXv75o
+         elf6BR6se/TzMzgW8CuQMbzSzNhAoikIm1NhxdAb2d7Q2qDEZTfp0BATtflrAm+/25uN
+         5F5z7PZzjS/W826y8EBUtpiXYrAOgTWStBWxSAYxWzPyyH/18kRLuv2GxrHDGjwBZB4R
+         BCB5OYfPR5/IOAiXyLNWTDUTLExL48z8/pkyJmk2TBe9Lpji/i3qDy8kfkQyOC0N4G+G
+         zXRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=603vZ5SzqWeeTlyO76QDiHCh6GdqcwGK8rRQCpHNegA=;
+        b=HpOiT8b4WzbUNDqTKnPC25+L3nH7ctjxmF+NaM2bvRQDNSsf4TyOSxBBZxP5RaPmi9
+         x/iKJHMeT1YkzXZN3RDAy0GllM/6xHG8aQ3ynC68UuuUJ/XuURBKSZ0E2aAHMIbXOORB
+         vvutMr3+lbsyjwDiBd6wxgy7gsGmmwHBaKQ8mexrKNoO+Fv223LUY31Ok6+8a0FzS0l0
+         rIybJvYWI50PwdQAgIXei7k7eZlPFkgW9s00f092V2zG9f9dUduxITujnedrVnIp8bTi
+         RWHZ1TGelV6ZGAAzxKF7lwE5FIbohbHEVpf9hLaEwzPZ9rCnIumI6sYkFqHfojYqeWE0
+         WIzQ==
+X-Gm-Message-State: AOAM530ssteyHkjIcaFNhjJMZpo+ZDGEYpue5dQtdaAa0aJdZmJkUtYL
+        fhYEM5oZJPAUyPeMCz441HoCLHjZN6U=
+X-Google-Smtp-Source: ABdhPJwAviaoEhZ8o2JXesE/ijiRdFW2TvTPExii1kzV+QSYe+7btil1SlnxhPnbFDPk4bQuqCE3ig==
+X-Received: by 2002:a17:902:e841:b0:15e:b10a:9f40 with SMTP id t1-20020a170902e84100b0015eb10a9f40mr1449505plg.128.1651807149947;
+        Thu, 05 May 2022 20:19:09 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 28-20020a17090a1a5c00b001cd4989ff41sm2300273pjl.8.2022.05.05.20.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 20:19:09 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: yang.yang29@zte.com.cn
+To:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com
+Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, hughd@google.com, songmuchun@bytedance.com,
+        surenb@google.com, vbabka@suse.cz, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, cgroups@vger.kernel.org,
+        william.kucharski@oracle.com, peterx@redhat.com,
+        Yang Yang <yang.yang29@zte.com.cn>
+Subject: [PATCH v2] mm/memcg: support control THP behaviour in cgroup
+Date:   Fri,  6 May 2022 03:18:05 +0000
+Message-Id: <20220506031804.437642-1-yang.yang29@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/allisonhenderson/xfs_work.git xfs-5.19-compose_pptrs
-head:   74ecccf0e89a132c2490f3a63661c535974c6a08
-commit: 7a5d447970de2d3b003b9015e2bce3bf0d15e3db [25/32] xfs: parent pointer attribute creation
-config: arc-randconfig-r001-20220505 (https://download.01.org/0day-ci/archive/20220506/202205061123.lsXtfPqy-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/allisonhenderson/xfs_work/commit/7a5d447970de2d3b003b9015e2bce3bf0d15e3db
-        git remote add allisonhenderson-xfs-work https://github.com/allisonhenderson/xfs_work.git
-        git fetch --no-tags allisonhenderson-xfs-work xfs-5.19-compose_pptrs
-        git checkout 7a5d447970de2d3b003b9015e2bce3bf0d15e3db
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash fs/xfs/
+From: Yang Yang <yang.yang29@zte.com.cn> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Using THP may promote the performance of memory, but increase memory
+footprint. Applications may use madvise to decrease footprint, but
+not all applications support using madvise, and it takes much costs
+to re-code all the applications. And we notice container becomes more
+and more popular to manage a set of tasks.
 
-All warnings (new ones prefixed by >>):
+So add support for cgroup to control THP behaviour will provide much
+convenience, administrator may only enable THP for important containers,
+and disable it for other containers. Then we can enjoy the high performance
+of THP while minimize memory footprint without re-coding any application.
 
-   fs/xfs/libxfs/xfs_attr.c: In function 'xfs_attr_set_iter':
-   fs/xfs/libxfs/xfs_attr.c:559:42: warning: unused variable 'mp' [-Wunused-variable]
-     559 |         struct xfs_mount                *mp = args->dp->i_mount;
-         |                                          ^~
-   fs/xfs/libxfs/xfs_attr.c:558:50: warning: unused variable 'forkoff' [-Wunused-variable]
-     558 |         int                             sf_size, forkoff, error = 0;
-         |                                                  ^~~~~~~
-   fs/xfs/libxfs/xfs_attr.c:557:42: warning: unused variable 'bp' [-Wunused-variable]
-     557 |         struct xfs_buf                  *bp = NULL;
-         |                                          ^~
-   fs/xfs/libxfs/xfs_attr.c:556:42: warning: unused variable 'dp' [-Wunused-variable]
-     556 |         struct xfs_inode                *dp = args->dp;
-         |                                          ^~
-   fs/xfs/libxfs/xfs_attr.c: In function 'xfs_attr_set':
-   fs/xfs/libxfs/xfs_attr.c:824:72: warning: bitwise comparison always evaluates to true [-Wtautological-compare]
-     824 |         rsvd = ((args->attr_filter & XFS_ATTR_ROOT) | XFS_ATTR_PARENT) != 0;
-         |                                                                        ^~
-   fs/xfs/libxfs/xfs_attr.c: In function 'xfs_attr_set_iter':
->> fs/xfs/libxfs/xfs_attr.c:571:44: warning: this statement may fall through [-Wimplicit-fallthrough=]
-     571 |                 args->dp->i_afp->if_format = XFS_DINODE_FMT_EXTENTS;
-         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
-   fs/xfs/libxfs/xfs_attr.c:572:9: note: here
-     572 |         case XFS_DAS_SF_ADD:
-         |         ^~~~
-   At top level:
-   fs/xfs/libxfs/xfs_attr.c:1477:1: warning: 'xfs_attr_refillstate' defined but not used [-Wunused-function]
-    1477 | xfs_attr_refillstate(xfs_da_state_t *state)
-         | ^~~~~~~~~~~~~~~~~~~~
---
->> fs/xfs/libxfs/xfs_parent.c:55:1: warning: no previous prototype for 'xfs_init_parent_name_rec' [-Wmissing-prototypes]
-      55 | xfs_init_parent_name_rec(
-         | ^~~~~~~~~~~~~~~~~~~~~~~~
->> fs/xfs/libxfs/xfs_parent.c:70:1: warning: no previous prototype for 'xfs_init_parent_name_irec' [-Wmissing-prototypes]
-      70 | xfs_init_parent_name_irec(
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
+Cgroupv1 is used for many distributions, so and this it.
 
+Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+---
+v2:
+- fix compile error when CONFIG_ARCH_ENABLE_THP_MIGRATION is not set
+- let thp_flag controls by CONFIG_TRANSPARENT_HUGEPAGE
+---
+ include/linux/huge_mm.h    | 33 +--------------
+ include/linux/khugepaged.h | 19 +++------
+ include/linux/memcontrol.h | 57 +++++++++++++++++++++++++
+ mm/huge_memory.c           | 33 +++++++++++++++
+ mm/khugepaged.c            | 36 +++++++++++++++-
+ mm/memcontrol.c            | 86 +++++++++++++++++++++++++++++++++++++-
+ 6 files changed, 217 insertions(+), 47 deletions(-)
 
-vim +571 fs/xfs/libxfs/xfs_attr.c
-
-   542	
-   543	/*
-   544	 * Run the attribute operation specified in @attr.
-   545	 *
-   546	 * This routine is meant to function as a delayed operation and will set the
-   547	 * state to XFS_DAS_DONE when the operation is complete.  Calling functions will
-   548	 * need to handle this, and recall the function until either an error or
-   549	 * XFS_DAS_DONE is detected.
-   550	 */
-   551	int
-   552	xfs_attr_set_iter(
-   553		struct xfs_attr_item		*attr)
-   554	{
-   555		struct xfs_da_args              *args = attr->xattri_da_args;
-   556		struct xfs_inode		*dp = args->dp;
-   557		struct xfs_buf			*bp = NULL;
-   558		int				sf_size, forkoff, error = 0;
-   559		struct xfs_mount		*mp = args->dp->i_mount;
-   560	
-   561	
-   562		/* State machine switch */
-   563	next_state:
-   564		switch (attr->xattri_dela_state) {
-   565		case XFS_DAS_UNINIT:
-   566			sf_size = sizeof(struct xfs_attr_sf_hdr) +
-   567				  xfs_attr_sf_entsize_byname(args->namelen,
-   568								     args->valuelen);
-   569			xfs_bmap_set_attrforkoff(args->dp, sf_size, NULL);
-   570			args->dp->i_afp = kmem_cache_zalloc(xfs_ifork_cache, 0);
- > 571			args->dp->i_afp->if_format = XFS_DINODE_FMT_EXTENTS;
-   572		case XFS_DAS_SF_ADD:
-   573			return xfs_attr_sf_addname(attr);
-   574		case XFS_DAS_LEAF_ADD:
-   575			return xfs_attr_leaf_addname(attr);
-   576		case XFS_DAS_NODE_ADD:
-   577			return xfs_attr_node_addname(attr);
-   578	
-   579		case XFS_DAS_SF_REMOVE:
-   580			error = xfs_attr_sf_removename(args);
-   581			attr->xattri_dela_state = xfs_attr_complete_op(attr,
-   582							xfs_attr_init_add_state(args));
-   583			break;
-   584		case XFS_DAS_LEAF_REMOVE:
-   585			error = xfs_attr_leaf_removename(args);
-   586			attr->xattri_dela_state = xfs_attr_complete_op(attr,
-   587							xfs_attr_init_add_state(args));
-   588			break;
-   589		case XFS_DAS_NODE_REMOVE:
-   590			error = xfs_attr_node_removename_setup(attr);
-   591			if (error)
-   592				return error;
-   593			attr->xattri_dela_state = XFS_DAS_NODE_REMOVE_RMT;
-   594			if (args->rmtblkno == 0)
-   595				attr->xattri_dela_state++;
-   596			break;
-   597	
-   598		case XFS_DAS_LEAF_SET_RMT:
-   599		case XFS_DAS_NODE_SET_RMT:
-   600			error = xfs_attr_rmtval_find_space(attr);
-   601			if (error)
-   602				return error;
-   603			attr->xattri_dela_state++;
-   604			fallthrough;
-   605	
-   606		case XFS_DAS_LEAF_ALLOC_RMT:
-   607		case XFS_DAS_NODE_ALLOC_RMT:
-   608			error = xfs_attr_rmtval_alloc(attr);
-   609			if (error)
-   610				return error;
-   611			/*
-   612			 * If there is still more to allocate we need to roll the
-   613			 * transaction so we have a full transaction reservation for
-   614			 * the next allocation.
-   615			 */
-   616			if (attr->xattri_blkcnt > 0)
-   617				break;
-   618			if (attr->xattri_dela_state == XFS_DAS_DONE)
-   619				break;
-   620	
-   621			goto next_state;
-   622	
-   623		case XFS_DAS_LEAF_REPLACE:
-   624		case XFS_DAS_NODE_REPLACE:
-   625			/*
-   626			 * We must "flip" the incomplete flags on the "new" and "old"
-   627			 * attribute/value pairs so that one disappears and one appears
-   628			 * atomically.
-   629			 */
-   630			error = xfs_attr3_leaf_flipflags(args);
-   631			if (error)
-   632				return error;
-   633			/*
-   634			 * We must commit the flag value change now to make it atomic
-   635			 * and then we can start the next trans in series at REMOVE_OLD.
-   636			 */
-   637			attr->xattri_dela_state++;
-   638			break;
-   639	
-   640		case XFS_DAS_LEAF_REMOVE_OLD:
-   641		case XFS_DAS_NODE_REMOVE_OLD:
-   642			/*
-   643			 * If we have a remote attr, start the process of removing it
-   644			 * by invalidating any cached buffers.
-   645			 *
-   646			 * If we don't have a remote attr, we skip the remote block
-   647			 * removal state altogether with a second state increment.
-   648			 */
-   649			xfs_attr_restore_rmt_blk(args);
-   650			if (args->rmtblkno) {
-   651				error = xfs_attr_rmtval_invalidate(args);
-   652				if (error)
-   653					return error;
-   654			} else {
-   655				attr->xattri_dela_state++;
-   656			}
-   657	
-   658			attr->xattri_dela_state++;
-   659			goto next_state;
-   660	
-   661		case XFS_DAS_LEAF_REMOVE_RMT:
-   662		case XFS_DAS_NODE_REMOVE_RMT:
-   663			error = xfs_attr_rmtval_remove(attr);
-   664			if (error == -EAGAIN) {
-   665				error = 0;
-   666				break;
-   667			}
-   668			if (error)
-   669				return error;
-   670	
-   671			/*
-   672			 * We've finished removing the remote attr blocks, so commit the
-   673			 * transaction and move on to removing the attr name from the
-   674			 * leaf/node block. Removing the attr might require a full
-   675			 * transaction reservation for btree block freeing, so we
-   676			 * can't do that in the same transaction where we removed the
-   677			 * remote attr blocks.
-   678			 */
-   679			attr->xattri_dela_state++;
-   680			break;
-   681	
-   682		case XFS_DAS_LEAF_REMOVE_ATTR:
-   683			error = xfs_attr_leaf_remove_attr(attr);
-   684			attr->xattri_dela_state = xfs_attr_complete_op(attr,
-   685							xfs_attr_init_add_state(args));
-   686			break;
-   687	
-   688		case XFS_DAS_NODE_REMOVE_ATTR:
-   689			error = xfs_attr_node_remove_attr(attr);
-   690			attr->xattri_dela_state = xfs_attr_complete_op(attr,
-   691							xfs_attr_init_add_state(args));
-   692			break;
-   693		default:
-   694			ASSERT(0);
-   695			break;
-   696		}
-   697	
-   698		trace_xfs_attr_set_iter_return(attr->xattri_dela_state, args->dp);
-   699		return error;
-   700	}
-   701	
-
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index fbf36bb1be22..fa2cb3d06ecb 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -141,38 +141,6 @@ static inline bool transhuge_vma_enabled(struct vm_area_struct *vma,
+ 	return true;
+ }
+ 
+-/*
+- * to be used on vmas which are known to support THP.
+- * Use transparent_hugepage_active otherwise
+- */
+-static inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma)
+-{
+-
+-	/*
+-	 * If the hardware/firmware marked hugepage support disabled.
+-	 */
+-	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_NEVER_DAX))
+-		return false;
+-
+-	if (!transhuge_vma_enabled(vma, vma->vm_flags))
+-		return false;
+-
+-	if (vma_is_temporary_stack(vma))
+-		return false;
+-
+-	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_FLAG))
+-		return true;
+-
+-	if (vma_is_dax(vma))
+-		return true;
+-
+-	if (transparent_hugepage_flags &
+-				(1 << TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
+-		return !!(vma->vm_flags & VM_HUGEPAGE);
+-
+-	return false;
+-}
+-
+ bool transparent_hugepage_active(struct vm_area_struct *vma);
+ 
+ #define transparent_hugepage_use_zero_page()				\
+@@ -302,6 +270,7 @@ static inline struct list_head *page_deferred_list(struct page *page)
+ 	 */
+ 	return &page[2].deferred_list;
+ }
++inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma);
+ 
+ #else /* CONFIG_TRANSPARENT_HUGEPAGE */
+ #define HPAGE_PMD_SHIFT ({ BUILD_BUG(); 0; })
+diff --git a/include/linux/khugepaged.h b/include/linux/khugepaged.h
+index 2fcc01891b47..b77b065ebf16 100644
+--- a/include/linux/khugepaged.h
++++ b/include/linux/khugepaged.h
+@@ -26,16 +26,9 @@ static inline void collapse_pte_mapped_thp(struct mm_struct *mm,
+ }
+ #endif
+ 
+-#define khugepaged_enabled()					       \
+-	(transparent_hugepage_flags &				       \
+-	 ((1<<TRANSPARENT_HUGEPAGE_FLAG) |		       \
+-	  (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG)))
+-#define khugepaged_always()				\
+-	(transparent_hugepage_flags &			\
+-	 (1<<TRANSPARENT_HUGEPAGE_FLAG))
+-#define khugepaged_req_madv()					\
+-	(transparent_hugepage_flags &				\
+-	 (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
++extern inline int khugepaged_enabled(void);
++extern inline int khugepaged_always(struct vm_area_struct *vma);
++extern inline int khugepaged_req_madv(struct vm_area_struct *vma);
+ #define khugepaged_defrag()					\
+ 	(transparent_hugepage_flags &				\
+ 	 (1<<TRANSPARENT_HUGEPAGE_DEFRAG_KHUGEPAGED_FLAG))
+@@ -57,9 +50,9 @@ static inline int khugepaged_enter(struct vm_area_struct *vma,
+ 				   unsigned long vm_flags)
+ {
+ 	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
+-		if ((khugepaged_always() ||
+-		     (shmem_file(vma->vm_file) && shmem_huge_enabled(vma)) ||
+-		     (khugepaged_req_madv() && (vm_flags & VM_HUGEPAGE))) &&
++		if ((khugepaged_always(vma) ||
++		    (shmem_file(vma->vm_file) && shmem_huge_enabled(vma)) ||
++		    (khugepaged_req_madv(vma) && (vm_flags & VM_HUGEPAGE))) &&
+ 		    !(vm_flags & VM_NOHUGEPAGE) &&
+ 		    !test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
+ 			if (__khugepaged_enter(vma->vm_mm))
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 8ea4b541c31e..018f6d776037 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -28,6 +28,13 @@ struct page;
+ struct mm_struct;
+ struct kmem_cache;
+ 
++/*
++ * Increase when sub cgroup enable transparent hugepage, decrease when
++ * sub cgroup disable transparent hugepage. Help decide whether to run
++ * khugepaged.
++ */
++extern atomic_t sub_thp_count;
++
+ /* Cgroup-specific page state, on top of universal node page state */
+ enum memcg_stat_item {
+ 	MEMCG_SWAP = NR_VM_NODE_STAT_ITEMS,
+@@ -342,6 +349,7 @@ struct mem_cgroup {
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ 	struct deferred_split deferred_split_queue;
++	unsigned long thp_flag;
+ #endif
+ 
+ 	struct mem_cgroup_per_node *nodeinfo[];
+@@ -1127,6 +1135,34 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
+ 						gfp_t gfp_mask,
+ 						unsigned long *total_scanned);
+ 
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++static inline unsigned long mem_cgroup_thp_flag(struct mem_cgroup *memcg)
++{
++	if (unlikely(memcg == NULL) || mem_cgroup_disabled() ||
++	    mem_cgroup_is_root(memcg))
++		return transparent_hugepage_flags;
++
++	return memcg->thp_flag;
++}
++
++static inline int memcg_sub_thp_enabled(void)
++{
++	return atomic_read(&sub_thp_count) != 0;
++}
++
++static inline void memcg_sub_thp_enable(struct mem_cgroup *memcg)
++{
++	if (!mem_cgroup_is_root(memcg))
++		atomic_inc(&sub_thp_count);
++}
++
++static inline void memcg_sub_thp_disable(struct mem_cgroup *memcg)
++{
++	if (!mem_cgroup_is_root(memcg))
++		atomic_dec(&sub_thp_count);
++}
++#endif
++
+ #else /* CONFIG_MEMCG */
+ 
+ #define MEM_CGROUP_ID_SHIFT	0
+@@ -1524,6 +1560,27 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
+ {
+ 	return 0;
+ }
++
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++static inline unsigned long mem_cgroup_thp_flag(struct mem_cgroup *memcg)
++{
++	return transparent_hugepage_flags;
++}
++
++static inline int memcg_sub_thp_enabled(void)
++{
++	return 0;
++}
++
++static inline void memcg_sub_thp_enable(struct mem_cgroup *memcg)
++{
++}
++
++static inline void memcg_sub_thp_disable(struct mem_cgroup *memcg)
++{
++}
++#endif
++
+ #endif /* CONFIG_MEMCG */
+ 
+ static inline void __inc_lruvec_kmem_state(void *p, enum node_stat_item idx)
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 6bf0ec9ac4e4..47104567b0f1 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -3174,3 +3174,36 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+ 	trace_remove_migration_pmd(address, pmd_val(pmde));
+ }
+ #endif
++
++/*
++ * to be used on vmas which are known to support THP.
++ * Use transparent_hugepage_active otherwise
++ */
++inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma)
++{
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(vma->vm_mm);
++
++	/*
++	 * If the hardware/firmware marked hugepage support disabled.
++	 */
++	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_NEVER_DAX))
++		return false;
++
++	if (!transhuge_vma_enabled(vma, vma->vm_flags))
++		return false;
++
++	if (vma_is_temporary_stack(vma))
++		return false;
++
++	if (mem_cgroup_thp_flag(memcg) & (1 << TRANSPARENT_HUGEPAGE_FLAG))
++		return true;
++
++	if (vma_is_dax(vma))
++		return true;
++
++	if (mem_cgroup_thp_flag(memcg) &
++				(1 << TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
++		return !!(vma->vm_flags & VM_HUGEPAGE);
++
++	return false;
++}
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index eb444fd45568..8386d8d1d423 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -454,7 +454,7 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+ 		return shmem_huge_enabled(vma);
+ 
+ 	/* THP settings require madvise. */
+-	if (!(vm_flags & VM_HUGEPAGE) && !khugepaged_always())
++	if (!(vm_flags & VM_HUGEPAGE) && !khugepaged_always(vma))
+ 		return false;
+ 
+ 	/* Only regular file is valid */
+@@ -1537,6 +1537,40 @@ void collapse_pte_mapped_thp(struct mm_struct *mm, unsigned long addr)
+ 	goto drop_hpage;
+ }
+ 
++inline int khugepaged_enabled(void)
++{
++	if ((transparent_hugepage_flags &
++	    ((1<<TRANSPARENT_HUGEPAGE_FLAG) |
++	    (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))) ||
++	    memcg_sub_thp_enabled())
++		return 1;
++	else
++		return 0;
++}
++
++inline int khugepaged_req_madv(struct vm_area_struct *vma)
++{
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(vma->vm_mm);
++
++	if (mem_cgroup_thp_flag(memcg) &
++	    (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
++		return 1;
++	else
++		return 0;
++}
++
++inline int khugepaged_always(struct vm_area_struct *vma)
++{
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(vma->vm_mm);
++
++	if (mem_cgroup_thp_flag(memcg) &
++	    (1<<TRANSPARENT_HUGEPAGE_FLAG))
++		return 1;
++	else
++		return 0;
++}
++
++
+ static void khugepaged_collapse_pte_mapped_thps(struct mm_slot *mm_slot)
+ {
+ 	struct mm_struct *mm = mm_slot->mm;
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index e1b5823ac060..dfbc84313745 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -63,6 +63,7 @@
+ #include <linux/resume_user_mode.h>
+ #include <linux/psi.h>
+ #include <linux/seq_buf.h>
++#include <linux/khugepaged.h>
+ #include "internal.h"
+ #include <net/sock.h>
+ #include <net/ip.h>
+@@ -99,6 +100,8 @@ static bool cgroup_memory_noswap __ro_after_init;
+ static DECLARE_WAIT_QUEUE_HEAD(memcg_cgwb_frn_waitq);
+ #endif
+ 
++atomic_t sub_thp_count __read_mostly = ATOMIC_INIT(0);
++
+ /* Whether legacy memory+swap accounting is active */
+ static bool do_memsw_account(void)
+ {
+@@ -4823,6 +4826,71 @@ static int mem_cgroup_slab_show(struct seq_file *m, void *p)
+ }
+ #endif
+ 
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++static int mem_cgroup_thp_flag_show(struct seq_file *sf, void *v)
++{
++	const char *output;
++	struct mem_cgroup *memcg = mem_cgroup_from_seq(sf);
++	unsigned long flag = mem_cgroup_thp_flag(memcg);
++
++	if (test_bit(TRANSPARENT_HUGEPAGE_FLAG, &flag))
++		output = "[always] madvise never";
++	else if (test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, &flag))
++		output = "always [madvise] never";
++	else
++		output = "always madvise [never]";
++
++	seq_printf(sf, "%s\n", output);
++	return 0;
++}
++
++static ssize_t mem_cgroup_thp_flag_write(struct kernfs_open_file *of,
++				char *buf, size_t nbytes, loff_t off)
++{
++	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
++	ssize_t ret = nbytes;
++	unsigned long *flag;
++
++	if (!mem_cgroup_is_root(memcg))
++		flag = &memcg->thp_flag;
++	else
++		flag = &transparent_hugepage_flags;
++
++	if (sysfs_streq(buf, "always")) {
++		if (!test_bit(TRANSPARENT_HUGEPAGE_FLAG, flag)) {
++			set_bit(TRANSPARENT_HUGEPAGE_FLAG, flag);
++			/* change disable to enable */
++			if (!test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag))
++				memcg_sub_thp_enable(memcg);
++		}
++	} else if (sysfs_streq(buf, "madvise")) {
++		if (!test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag)) {
++			set_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag);
++			/* change disable to enable */
++			if (!test_bit(TRANSPARENT_HUGEPAGE_FLAG, flag))
++				memcg_sub_thp_enable(memcg);
++		}
++	} else if (sysfs_streq(buf, "never")) {
++		/* change enable to disable */
++		if (test_bit(TRANSPARENT_HUGEPAGE_FLAG, flag) ||
++		    test_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag)) {
++			clear_bit(TRANSPARENT_HUGEPAGE_FLAG, flag);
++			clear_bit(TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG, flag);
++			memcg_sub_thp_disable(memcg);
++		}
++	} else
++		ret = -EINVAL;
++
++	if (ret > 0) {
++		int err = start_stop_khugepaged();
++
++		if (err)
++			ret = err;
++	}
++	return ret;
++}
++#endif
++
+ static struct cftype mem_cgroup_legacy_files[] = {
+ 	{
+ 		.name = "usage_in_bytes",
+@@ -4948,6 +5016,13 @@ static struct cftype mem_cgroup_legacy_files[] = {
+ 		.write = mem_cgroup_reset,
+ 		.read_u64 = mem_cgroup_read_u64,
+ 	},
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	{
++		.name = "transparent_hugepage.enabled",
++		.seq_show = mem_cgroup_thp_flag_show,
++		.write = mem_cgroup_thp_flag_write,
++	},
++#endif
+ 	{ },	/* terminate */
+ };
+ 
+@@ -5145,6 +5220,13 @@ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
+ 	page_counter_set_high(&memcg->swap, PAGE_COUNTER_MAX);
+ 	if (parent) {
+ 		memcg->swappiness = mem_cgroup_swappiness(parent);
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++		memcg->thp_flag = mem_cgroup_thp_flag(parent);
++		if (memcg->thp_flag &
++		    ((1<<TRANSPARENT_HUGEPAGE_FLAG) |
++		    (1<<TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG)))
++			memcg_sub_thp_enable(memcg);
++#endif
+ 		memcg->oom_kill_disable = parent->oom_kill_disable;
+ 
+ 		page_counter_init(&memcg->memory, &parent->memory);
+@@ -5220,7 +5302,9 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
+ 	memcg_offline_kmem(memcg);
+ 	reparent_shrinker_deferred(memcg);
+ 	wb_memcg_offline(memcg);
+-
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++	memcg_sub_thp_disable(memcg);
++#endif
+ 	drain_all_stock(memcg);
+ 
+ 	mem_cgroup_id_put(memcg);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
