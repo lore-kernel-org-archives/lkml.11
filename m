@@ -2,93 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2623C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 04:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388945AbiEFEZ0 (ORCPT
+        id S1388971AbiEFE1z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 00:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        Fri, 6 May 2022 00:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388928AbiEFEZX (ORCPT
+        with ESMTP id S241323AbiEFE1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 00:25:23 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8AA605E759;
-        Thu,  5 May 2022 21:21:40 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id CDC6A1E80CF6;
-        Fri,  6 May 2022 12:16:59 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id JCRLcAwG6jDT; Fri,  6 May 2022 12:16:57 +0800 (CST)
-Received: from localhost.localdomain (unknown [111.193.128.65])
-        (Authenticated sender: kunyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 11A4C1E80C9B;
-        Fri,  6 May 2022 12:16:57 +0800 (CST)
-From:   Li kunyu <kunyu@nfschina.com>
-To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Li kunyu <kunyu@nfschina.com>
-Subject: [PATCH] x86: The return type of the function could be void
-Date:   Fri,  6 May 2022 12:21:05 +0800
-Message-Id: <20220506042105.6245-1-kunyu@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Fri, 6 May 2022 00:27:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAD05F270
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 21:24:09 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmpVY-0001Xp-Pi; Fri, 06 May 2022 06:24:00 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmpVY-000ddO-Bf; Fri, 06 May 2022 06:23:59 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmpVV-003s8x-Tc; Fri, 06 May 2022 06:23:57 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v4 3/7] net: phy: genphy_c45_pma_baset1_setup_master_slave: do no set unknown configuration
+Date:   Fri,  6 May 2022 06:23:53 +0200
+Message-Id: <20220506042357.923026-4-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220506042357.923026-1-o.rempel@pengutronix.de>
+References: <20220506042357.923026-1-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Perhaps the return value of the function is not used.
-It may be possible to optimize the execution instructions.
+Do not change default master/slave forced configuration if no changes was
+requested.
 
-Signed-off-by: Li kunyu <kunyu@nfschina.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- arch/x86/kvm/hyperv.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/phy/phy-c45.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 46f9dfb60469..64c0d1f54258 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -608,7 +608,7 @@ static enum hrtimer_restart stimer_timer_callback(struct hrtimer *timer)
-  * a) stimer->count is not equal to 0
-  * b) stimer->config has HV_STIMER_ENABLE flag
-  */
--static int stimer_start(struct kvm_vcpu_hv_stimer *stimer)
-+static void stimer_start(struct kvm_vcpu_hv_stimer *stimer)
- {
- 	u64 time_now;
- 	ktime_t ktime_now;
-@@ -638,7 +638,7 @@ static int stimer_start(struct kvm_vcpu_hv_stimer *stimer)
- 			      ktime_add_ns(ktime_now,
- 					   100 * (stimer->exp_time - time_now)),
- 			      HRTIMER_MODE_ABS);
--		return 0;
-+		return;
- 	}
- 	stimer->exp_time = stimer->count;
- 	if (time_now >= stimer->count) {
-@@ -649,7 +649,7 @@ static int stimer_start(struct kvm_vcpu_hv_stimer *stimer)
- 		 * the past, it will expire immediately."
- 		 */
- 		stimer_mark_pending(stimer, false);
--		return 0;
-+		return;
- 	}
- 
- 	trace_kvm_hv_stimer_start_one_shot(hv_stimer_to_vcpu(stimer)->vcpu_id,
-@@ -659,7 +659,6 @@ static int stimer_start(struct kvm_vcpu_hv_stimer *stimer)
- 	hrtimer_start(&stimer->timer,
- 		      ktime_add_ns(ktime_now, 100 * (stimer->count - time_now)),
- 		      HRTIMER_MODE_ABS);
--	return 0;
- }
- 
- static int stimer_set_config(struct kvm_vcpu_hv_stimer *stimer, u64 config,
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index ffa2d5cd09fc..b1f7c63f66cd 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -86,9 +86,10 @@ int genphy_c45_pma_baset1_setup_master_slave(struct phy_device *phydev)
+ 		break;
+ 	case MASTER_SLAVE_CFG_SLAVE_FORCE:
+ 	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
++		break;
+ 	case MASTER_SLAVE_CFG_UNKNOWN:
+ 	case MASTER_SLAVE_CFG_UNSUPPORTED:
+-		break;
++		return 0;
+ 	default:
+ 		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
+ 		return -EOPNOTSUPP;
 -- 
-2.18.2
+2.30.2
 
