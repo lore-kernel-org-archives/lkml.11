@@ -2,158 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AAA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A55C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390945AbiEFKZe (ORCPT
+        id S1352096AbiEFKZm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 06:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35354 "EHLO
+        Fri, 6 May 2022 06:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388420AbiEFKZa (ORCPT
+        with ESMTP id S1390947AbiEFKZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 06:25:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D7E5C678;
-        Fri,  6 May 2022 03:21:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCAD762136;
-        Fri,  6 May 2022 10:21:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85689C385AE;
-        Fri,  6 May 2022 10:21:45 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="EyO1temq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651832503;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VpiWB2Vq+d4qOaMoopKF7IjPVOx0k28nRUqidYxVKyc=;
-        b=EyO1temqXZy2n9LGeaXn+pQ7B9ff5vG8jlv22d9nAyzNv8KS+HAEookH/C9hx87WDD4OwI
-        w1S0fffLH7vWyOR6Dw/QBq9tERNJT6/kS3XiiGB3XEEO88KFPjD5UivY0FaKO3EkYthzYV
-        6FSPsdlrOtYv4y6F39Wm8URptDzddUE=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dee2ddae (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 6 May 2022 10:21:43 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        nathan@kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH v8] timekeeping: Add raw clock fallback for random_get_entropy()
-Date:   Fri,  6 May 2022 12:21:28 +0200
-Message-Id: <20220506102128.487998-1-Jason@zx2c4.com>
-In-Reply-To: <87y1zkmg0l.ffs@tglx>
-References: <87y1zkmg0l.ffs@tglx>
+        Fri, 6 May 2022 06:25:34 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30213E3B
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 03:21:51 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KvmnL4V3KzhYhJ;
+        Fri,  6 May 2022 18:21:26 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 6 May 2022 18:21:49 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 6 May 2022 18:21:49 +0800
+Subject: Re: [PATCH v3] arm64: add the printing of tpidr_elx in __show_regs()
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220505095640.312-1-thunder.leizhen@huawei.com>
+ <YnPLQJhu5B1Cxvoh@FVFF77S0Q05N.cambridge.arm.com>
+ <c6c22386-af37-1acc-63e9-2bb85028aa8c@huawei.com>
+ <307e4def-1e4a-1110-e644-d485b9959ab1@huawei.com>
+ <7c1207fa-56aa-1b33-31fd-3ec395b08f2b@huawei.com>
+ <YnTz6oFEQGDBrIpi@FVFF77S0Q05N>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <cc8180ee-1c17-aab4-c883-4f8794edceb5@huawei.com>
+Date:   Fri, 6 May 2022 18:21:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YnTz6oFEQGDBrIpi@FVFF77S0Q05N>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The addition of random_get_entropy_fallback() provides access to
-whichever time source has the highest frequency, which is useful for
-gathering entropy on platforms without available cycle counters. It's
-not necessarily as good as being able to quickly access a cycle counter
-that the CPU has, but it's still something, even when it falls back to
-being jiffies-based.
 
-In the event that a given arch does not define get_cycles(), falling
-back to the get_cycles() default implementation that returns 0 is really
-not the best we can do. Instead, at least calling
-random_get_entropy_fallback() would be preferable, because that always
-needs to return _something_, even falling back to jiffies eventually.
-It's not as though random_get_entropy_fallback() is super high precision
-or guaranteed to be entropic, but basically anything that's not zero all
-the time is better than returning zero all the time.
 
-Finally, since random_get_entropy_fallback() is used during extremely
-early boot when randomizing freelists in mm_init(), it can be called
-before timekeeping has been initialized. In that case there really is
-nothing we can do; jiffies hasn't even started ticking yet. So just give
-up and return 0.
+On 2022/5/6 18:09, Mark Rutland wrote:
+> On Fri, May 06, 2022 at 04:16:55PM +0800, Leizhen (ThunderTown) wrote:
+>>
+>>
+>> On 2022/5/5 21:34, Leizhen (ThunderTown) wrote:
+>>> On 2022/5/5 21:26, Leizhen (ThunderTown) wrote:
+>>>> On 2022/5/5 21:04, Mark Rutland wrote:
+>>>>> On Thu, May 05, 2022 at 05:56:40PM +0800, Zhen Lei wrote:
+>>>>>> Commit 7158627686f0 ("arm64: percpu: implement optimised pcpu access
+>>>>>> using tpidr_el1") and commit 6d99b68933fb ("arm64: alternatives: use
+>>>>>> tpidr_el2 on VHE hosts") use tpidr_elx to cache my_cpu_offset to optimize
+>>>>>> pcpu access. However, when performing reverse execution based on the
+>>>>>> registers and the memory contents in kdump, this information is sometimes
+>>>>>> required if there is a pcpu access.
+>>>>>>
+>>>>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>>>>>> ---
+>>>>>>  arch/arm64/kernel/process.c | 5 +++++
+>>>>>>  1 file changed, 5 insertions(+)
+>>>>>>
+>>>>>> v2 --> v3:
+>>>>>> 1) Relace "switch (read_sysreg(CurrentEL))" statement with
+>>>>>>    "if (is_kernel_in_hyp_mode())" statement.
+>>>>>> 2) Change the register name to lowercase.
+>>>>>>
+>>>>>> v1 --> v2:
+>>>>>> Directly print the tpidr_elx register of the current exception level.
+>>>>>> Avoid coupling with the implementation of 'my_cpu_offset'.
+>>>>>>
+>>>>>> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+>>>>>> index 7fa97df55e3ad3f..7b6bccce9721c36 100644
+>>>>>> --- a/arch/arm64/kernel/process.c
+>>>>>> +++ b/arch/arm64/kernel/process.c
+>>>>>> @@ -216,6 +216,11 @@ void __show_regs(struct pt_regs *regs)
+>>>>>>  	show_regs_print_info(KERN_DEFAULT);
+>>>>>>  	print_pstate(regs);
+>>>>>>  
+>>>>>> +	if (is_kernel_in_hyp_mode())
+>>>>>> +		printk("tpidr_el2 : %016llx\n", read_sysreg(tpidr_el2));
+>>>>>> +	else
+>>>>>> +		printk("tpidr_el1 : %016llx\n", read_sysreg(tpidr_el1));
+>>>>>
+>>>>> If we care about the offset specifically, this would be simpler as:
+>>>>>
+>>>>> 	printk("cpu offset : 0x%016lx\n", __my_cpu_offset());
+>>>>
+>>>> The function name is __show_regs(), so not using register name may not be good.
+>>>> In fact, some other architectures may also have this problem. If we use my_cpu_offset,
+>>>> we may need to put it in a public.
+>>>
+>>> The other idea is to back up each my_cpu_offset in an array. In this way, the offset can
+>>> be queried through vmcore even if it is not printed.
+>>
+>> Sorry, __per_cpu_offset[NR_CPUS] is always defined.
+> 
+> Surely that's in the vmcore already? It's just data in memory.
 
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Theodore Ts'o <tytso@mit.edu>
----
-Changes v7->v8:
-- Use READ_ONCE around clock and check timekeeping_suspended before
-  reading, suggested by Thomas.
+Yes. There is also a definition in drivers/base/arch_numa.c. I didn't search the drivers directory
+at first. I thought there would be no definition when CONFIG_HAVE_SETUP_PER_CPU_AREA=y.
 
-Changes v6->v7:
-- Return 0 if we're called before timekeeping has been initialized,
-  reported by Nathan.
+crash> p -x __per_cpu_offset
+__per_cpu_offset = $1 =
+ {0xffff8003f460d000, 0xffff8003f4621000, 0xffff8003f4635000, 0xffff8003f4649000
 
- include/linux/timex.h     |  8 ++++++++
- kernel/time/timekeeping.c | 15 +++++++++++++++
- 2 files changed, 23 insertions(+)
 
-diff --git a/include/linux/timex.h b/include/linux/timex.h
-index 5745c90c8800..3871b06bd302 100644
---- a/include/linux/timex.h
-+++ b/include/linux/timex.h
-@@ -62,6 +62,8 @@
- #include <linux/types.h>
- #include <linux/param.h>
- 
-+unsigned long random_get_entropy_fallback(void);
-+
- #include <asm/timex.h>
- 
- #ifndef random_get_entropy
-@@ -74,8 +76,14 @@
-  *
-  * By default we use get_cycles() for this purpose, but individual
-  * architectures may override this in their asm/timex.h header file.
-+ * If a given arch does not have get_cycles(), then we fallback to
-+ * using random_get_entropy_fallback().
-  */
-+#ifdef get_cycles
- #define random_get_entropy()	((unsigned long)get_cycles())
-+#else
-+#define random_get_entropy()	random_get_entropy_fallback()
-+#endif
- #endif
- 
- /*
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index dcdcb85121e4..461d17c0f3d6 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -17,6 +17,7 @@
- #include <linux/clocksource.h>
- #include <linux/jiffies.h>
- #include <linux/time.h>
-+#include <linux/timex.h>
- #include <linux/tick.h>
- #include <linux/stop_machine.h>
- #include <linux/pvclock_gtod.h>
-@@ -2380,6 +2381,20 @@ static int timekeeping_validate_timex(const struct __kernel_timex *txc)
- 	return 0;
- }
- 
-+/**
-+ * random_get_entropy_fallback - Returns the raw clock source value,
-+ * used by random.c for platforms with no valid random_get_entropy().
-+ */
-+unsigned long random_get_entropy_fallback(void)
-+{
-+	struct tk_read_base *tkr = &tk_core.timekeeper.tkr_mono;
-+	struct clocksource *clock = READ_ONCE(tkr->clock);
-+
-+	if (unlikely(timekeeping_suspended || !clock))
-+		return 0;
-+	return clock->read(clock);
-+}
-+EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
- 
- /**
-  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
+> 
+> Thanks,
+> Mark.
+> .
+> 
+
 -- 
-2.35.1
-
+Regards,
+  Zhen Lei
