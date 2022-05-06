@@ -2,109 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE79C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388521AbiEFD1C (ORCPT
+        id S1388528AbiEFD1t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
+        Thu, 5 May 2022 23:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388514AbiEFD1A (ORCPT
+        with ESMTP id S1352476AbiEFD1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:27:00 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6046D5EDF3
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:23:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651807399; x=1683343399;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gJAhDIHMWpivM5Pb0+lUmlrgmemgOFXzFUKg/utqTFs=;
-  b=ewNcwe4LmzPv9AdsDBCK0640PRoGEVCujQoyks3SW/saVxVCCBVM6BXu
-   bjdRxybUwpCXEdwG5hVP0by8EUxstl2gWX35mBind3SguqgMksfpXHKGx
-   d4/l9ZcBmSzgZrd5HLZrCwgqTxUNmiwxCwG57fiJCB0qf/ARJwBiTCmPs
-   l2+FJRjMi+FnpqGVnvKjnwXB8TxNK25RdF7Tt6Mlz3kvyYhlflwk0FfG7
-   HtFio9Z8Cg2xhZJvy9tce9U+dkU6/G9Oe5W04iWX+732fS8cW0VJYr5KC
-   Dai3u3N+SLmcrwThWG6CudcpX0wKpBLu6iqpuE2JYr5wDydME1+nQbw9D
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="267173951"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="267173951"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:23:19 -0700
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="517828846"
-Received: from fulaizha-mobl1.ccr.corp.intel.com ([10.254.213.163])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:23:16 -0700
-Message-ID: <d260e8b178defbe4facda3cd8f0b534ec812268a.camel@intel.com>
-Subject: Re: [PATCH v2 1/4] mm/migration: reduce the rcu lock duration
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
-        mike.kravetz@oracle.com, naoya.horiguchi@nec.com
-Cc:     hch@lst.de, dhowells@redhat.com, cl@linux.com, david@redhat.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Date:   Fri, 06 May 2022 11:23:14 +0800
-In-Reply-To: <20220425132723.34824-2-linmiaohe@huawei.com>
-References: <20220425132723.34824-1-linmiaohe@huawei.com>
-         <20220425132723.34824-2-linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 5 May 2022 23:27:39 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBE75EDF3
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:23:58 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id fv2so5901908pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=RXZWdwx6fV83qlkDGVYAGi/h0fzn5mo6WSbGj2n//Z4=;
+        b=Ig1AeI6oboKQdDcqCbOIcQdz7jyUFdOn/aI+iG6SaixNaffYk8MS18fL/7jBEqL0hy
+         AffnA79ugiw28R6w//oMuYp4usDbRPQTTD/FR/VFOLkovP6ksGNdrkoTNYjsF6f5sHWI
+         m2bg2JYCw8MHdwx2dL0M2sgjsoAm5l7fWqi/PhJQQwN7pW4XtM4Zubs6tKZhwIEJPem9
+         IFGOMHbbnWcxpeY1ft4m6DixCZtFJRu18vwJyNkfsKvaqMnOPzXRns6cNLgc85hhXmb2
+         i6m4tKMaL057XnaBkUaaa5gMTiWttlDZP/h5FwWdsjpaMOIyvPlrw2UAWm/K/sD8T4op
+         PrcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=RXZWdwx6fV83qlkDGVYAGi/h0fzn5mo6WSbGj2n//Z4=;
+        b=AeJvuTNL1GddTU+ccobbCkbwQNNQublosHdlg9u0sbb3dec+LqynJgrVgbEY8B6Qwu
+         v1SD+SWxCRGX+P6nc/HKZbT/1JJdJdIh0oVULaL2NWct0cP/TWC744Y7+75nOxt8cm2G
+         aNzGl1EgynJ6H+OeE4VTO91uPZGX5cwFymuISSfKtxVdjS8rJjdttgZvuBpDH3U7JaVr
+         e6g7xAlbgEdxyVrS+NgcT4/MXpgS+r87miVkVB40v2/gHPDZJ2RpkInnAJvtCgBm6MBo
+         j0LzJBPXarozxrOtLU6q/2RtvNVxoNEshzLTQGs0gfAp5hxpa79xvVDLIaxVAi+N4lxj
+         u/FQ==
+X-Gm-Message-State: AOAM5309XnAtAu29Yu1PQ/t76TUj5TeqW0z4xagufw6n9VcWjsa0YJGc
+        YqbxodRwwuaTfSzh1pANnWU=
+X-Google-Smtp-Source: ABdhPJyFuwJCywqrwmSYEelXIxZw9ZCojTKyGzzu4KWY0Z6b+HSp3o0jU3SYSutHzFQwmW3WWItXng==
+X-Received: by 2002:a17:902:ce8b:b0:15e:c249:1bf0 with SMTP id f11-20020a170902ce8b00b0015ec2491bf0mr1440712plg.125.1651807438229;
+        Thu, 05 May 2022 20:23:58 -0700 (PDT)
+Received: from localhost.localdomain ([183.14.31.73])
+        by smtp.gmail.com with ESMTPSA id 10-20020a17090a194a00b001d7dd00c231sm2304598pjh.22.2022.05.05.20.23.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 20:23:57 -0700 (PDT)
+From:   Puyou Lu <puyou.lu@gmail.com>
+To:     puyou.lu@gmail.com
+Cc:     akpm@linux-foundation.org, andy@kernel.org, chris@chrisdown.name,
+        keescook@chromium.org, linus.walleij@linaro.org,
+        linux-kernel@vger.kernel.org, linux@roeck-us.net, pmladek@suse.com
+Subject: Re: [PATCH] lib/string_helpers: add allocated strarray to device
+Date:   Fri,  6 May 2022 11:23:33 +0800
+Message-Id: <20220506032333.28249-1-puyou.lu@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220506022845.26750-1-puyou.lu@gmail.com>
+References: <20220506022845.26750-1-puyou.lu@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 21:27 +0800, Miaohe Lin wrote:
-> rcu_read_lock is required by grabbing the task refcount but it's not
-> needed for ptrace_may_access. So we could release the rcu lock after
-> task refcount is successfully grabbed to reduce the rcu holding time.
-> 
-> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> Cc: Huang Ying <ying.huang@intel.com>
-> Cc: David Howells <dhowells@redhat.com>
-> Cc: Christoph Lameter <cl@linux.com>
-> ---
->  mm/migrate.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index b2678279eb43..b779646665fe 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1902,17 +1902,16 @@ static struct mm_struct *find_mm_struct(pid_t pid, nodemask_t *mem_nodes)
->  		return ERR_PTR(-ESRCH);
->  	}
->  	get_task_struct(task);
-> +	rcu_read_unlock();
->  
-> 
->  	/*
->  	 * Check if this process has the right to modify the specified
->  	 * process. Use the regular "ptrace_may_access()" checks.
->  	 */
->  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
-> -		rcu_read_unlock();
->  		mm = ERR_PTR(-EPERM);
->  		goto out;
->  	}
-> -	rcu_read_unlock();
->  
-> 
->  	mm = ERR_PTR(security_task_movememory(task));
->  	if (IS_ERR(mm))
-
-Hi, Miaohe,
-
-Please check the previous discussion and verify whether the original
-reported race condition is stll valid by yourself before resending this
-patch again.  If you find that the original race condition isn't
-possible now, please add the analysis in your change log.
-
-Best Regards,
-Huang, Ying
-
+Hello:
+I think this should be added, am I got wrong?
