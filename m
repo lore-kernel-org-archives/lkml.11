@@ -2,95 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D53C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F353C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237013AbiEFKH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 06:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
+        id S1390791AbiEFKIT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 06:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245092AbiEFKHZ (ORCPT
+        with ESMTP id S245092AbiEFKIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 06:07:25 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45255A2D5;
-        Fri,  6 May 2022 03:03:42 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 242MkbAf018676;
-        Tue, 3 May 2022 00:52:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=0C11CsAnW4P/5rKgNjIeUGF+r6Ukzxc/zDr4VSM6xbw=;
- b=Azi0nxGPJ/lhtYTgEqO0MVtrhnzBtHd57PI+x2/UIvEKjujA+yaLm9ptEARPpCRrwB2Y
- 6YO/hwu5jcv6aRxl7qWxnlE6gdwEXjBsespamKwaVJKLQzlHd3P55I2gd8VN48KvaacF
- xZV1K7Gv7P2ey+udSe2bF2rFJoZDMbvpvJl4K8P0Q0Hli0IMxT750Cy2Zu1wDjeFnwEC
- EXRVkFFGHw7pkA2Z/8gvw09Fj4dWstpT3DpAIBS/qQnsf1CNQiD++A39yVLDFGfbJONA
- CgZIs+DpWR6zdPwBJDuKeDoGqyXe+QW3y3yqTMVB3pA863odXncvE79UfYYxvFnHWdFp xA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frwnt4kx6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:05 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2430oowt008899;
-        Tue, 3 May 2022 00:52:03 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83xb5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 03 May 2022 00:52:03 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2430pljs010389;
-        Tue, 3 May 2022 00:52:03 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fruj83x4g-29;
-        Tue, 03 May 2022 00:52:03 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     vkumar.1997@samsung.com, linux-kernel@vger.kernel.org,
-        jejb@linux.ibm.com, sc.suh@samsung.com, hy50.seo@samsung.com,
-        beanhuo@micron.com, cang@codeaurora.org, bhoon95.kim@samsung.com,
-        sh425.lee@samsung.com, avri.altman@wdc.com,
-        alim.akhtar@samsung.com, adrian.hunter@intel.com,
-        Kiwoong Kim <kwmad.kim@samsung.com>, linux-scsi@vger.kernel.org
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
-Subject: Re: [RESEND PATCH v3] scsi: ufs: exclude UECxx from SFR dump list
-Date:   Mon,  2 May 2022 20:51:39 -0400
-Message-Id: <165153836362.24053.16346946896226280421.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1648689845-33521-1-git-send-email-kwmad.kim@samsung.com>
-References: <CGME20220331012539epcas2p180d804d9562b6e0fb968ffd181d64605@epcas2p1.samsung.com> <1648689845-33521-1-git-send-email-kwmad.kim@samsung.com>
+        Fri, 6 May 2022 06:08:18 -0400
+Received: from us-smtp-delivery-74.mimecast.com (us-smtp-delivery-74.mimecast.com [170.10.129.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5095D5BD22
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 03:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651831474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bHY4VDg+ah70TicV7Rfgy/3c2lRATR8HIfCmkjcH/Oc=;
+        b=EBBF1w/tsdjvq9gqaANcNuvF+dcxYCX8kGzpyOtj10w/7SvIkfwfDBdXvhGA/bWTbEdxJI
+        65KY+iLnJwJzhns/l4G0P/rwIYzc3B65IUQady+K5xk5rN58CNOnqhZQUBxChoFntH7NTW
+        hbE9AArJ4O6qxvp7i6T9km8bLB3b10k=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-149-M18tM8b2OJy95Q0nzBIyHQ-1; Fri, 06 May 2022 06:04:33 -0400
+X-MC-Unique: M18tM8b2OJy95Q0nzBIyHQ-1
+Received: by mail-ed1-f70.google.com with SMTP id cf16-20020a0564020b9000b00425d543c75dso3751514edb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 03:04:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bHY4VDg+ah70TicV7Rfgy/3c2lRATR8HIfCmkjcH/Oc=;
+        b=iOVIlC8Fd2/hB6uwlvae/tTtLxT1iCqum8PyVGFr8qxqKtNPxZx46cr1vqzVGh4HSB
+         YdJ+GXzmPM9EtNhkWI9G3+vdcySCUaAUMyDupMXVuP5VvxTRtorZ8Unhai8oq5S+RL1A
+         drjhj41PASepcRzOljS0i7FrzyJYbIUlWyrmv+gEn8Z/MLiZwBp74edJCVJXXIwXq3fo
+         c/clZPTERnKWgFVoYoaU8H6xvpI2kgWFGUC2zxVlx5jEYitSC+fKa1kQlu12Olfexw5n
+         a2dfd3DeR+eVnZ9upHYiRmkvGyDuc6MebQVhlCUd5IM6Gm2DiucxmTfhULSNoTW4GUJ5
+         yeHA==
+X-Gm-Message-State: AOAM533TN6FgbzpfKTS8zmc5ChPgptam0solxFyvTaoOtY66IfsDvPxK
+        cM+1VQFDBRsISPpGG4/y3Z4pjIXKL6LuhpmWEbJoO3sWEghJWnRd/IdVAWUaJOAQv8bR5uAZ3In
+        md7F1UUTSzg77Pg6MAgcPz1gf
+X-Received: by 2002:a17:906:2989:b0:6f3:a215:8426 with SMTP id x9-20020a170906298900b006f3a2158426mr2179958eje.725.1651831470962;
+        Fri, 06 May 2022 03:04:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw00aYNt3RKDL8C1p1bUN4+NsjLxXRo4/823/OnQVTFKXu+rcbvHVRjmFNcVwCoe0MclOGQNA==
+X-Received: by 2002:a17:906:2989:b0:6f3:a215:8426 with SMTP id x9-20020a170906298900b006f3a2158426mr2179940eje.725.1651831470771;
+        Fri, 06 May 2022 03:04:30 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id zd9-20020a17090698c900b006f3ef214e28sm1814747ejb.142.2022.05.06.03.04.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 03:04:30 -0700 (PDT)
+Message-ID: <0d048b50-ee27-b5d6-11e2-f2f11ae17b79@redhat.com>
+Date:   Fri, 6 May 2022 12:04:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: 0VwwRJBFilOQDQMt6MiZM326Cl2Y3HAk
-X-Proofpoint-GUID: 0VwwRJBFilOQDQMt6MiZM326Cl2Y3HAk
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] platform/x86: thinkpad_acpi: Fix compilation without
+ CONFIG_SUSPEND
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Pearson <markpearson@lenovo.com>
+Cc:     Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Mark Gross <mgross@linux.intel.com>,
+        "open list:THINKPAD ACPI EXTRAS DRIVER" 
+        <ibm-acpi-devel@lists.sourceforge.net>,
+        "open list:THINKPAD ACPI EXTRAS DRIVER" 
+        <platform-driver-x86@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+References: <20220503012700.1273-1-mario.limonciello@amd.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220503012700.1273-1-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 10:24:05 +0900, Kiwoong Kim wrote:
+Hi,
 
-> v2 -> v3: add fixes
-> v1 -> v2: does skipping only for zero offset
+On 5/3/22 03:27, Mario Limonciello wrote:
+> When compiled without `CONFIG_SUSPEND` the extra s2idle quirk handling
+> doesn't make any sense and causes a kernel build failure.
 > 
-> These are ROC type things that means their values
-> are cleared when the SFRs are read.
-> They are usually read in ISR when an UIC error occur.
-> Thus, their values would be zero at many cases. And
-> there might be a little bit risky when they are read to
-> be cleared before the ISR reads them, e.g. the case that
-> a command is timed-out, ufshcd_dump_regs is called in
-> ufshcd_abort and an UIC error occurs at the nearly
-> same time. In this case, ISR will be called but UFS error handler
-> will not be scheduled.
-> This patch is to make UFS driver not read those SFRs in the
-> dump function, i.e. ufshcd_dump_regs.
+> Disable the new code with `CONFIG_SUSPEND` not set.
 > 
-> [...]
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-Applied to 5.19/scsi-queue, thanks!
+Thanks, since the original patch was still in my review-hans
+branch (and not yet in for-next) I've squashed this fix into
+the original patch.
 
-[1/1] scsi: ufs: exclude UECxx from SFR dump list
-      https://git.kernel.org/mkp/scsi/c/ef60031022eb
+Regards,
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Hans
+
+
+
+
+> ---
+>  drivers/platform/x86/thinkpad_acpi.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+> index f385450af864..2833609fade7 100644
+> --- a/drivers/platform/x86/thinkpad_acpi.c
+> +++ b/drivers/platform/x86/thinkpad_acpi.c
+> @@ -4482,6 +4482,7 @@ static const struct dmi_system_id fwbug_list[] __initconst = {
+>  	{}
+>  };
+>  
+> +#ifdef CONFIG_SUSPEND
+>  /*
+>   * Lenovo laptops from a variety of generations run a SMI handler during the D3->D0
+>   * transition that occurs specifically when exiting suspend to idle which can cause
+> @@ -4517,6 +4518,7 @@ static void thinkpad_acpi_amd_s2idle_restore(void)
+>  static struct acpi_s2idle_dev_ops thinkpad_acpi_s2idle_dev_ops = {
+>  	.restore = thinkpad_acpi_amd_s2idle_restore,
+>  };
+> +#endif
+>  
+>  static const struct pci_device_id fwbug_cards_ids[] __initconst = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x24F3) },
+> @@ -11569,8 +11571,10 @@ static void thinkpad_acpi_module_exit(void)
+>  
+>  	tpacpi_lifecycle = TPACPI_LIFE_EXITING;
+>  
+> +#ifdef CONFIG_SUSPEND
+>  	if (tp_features.quirks && tp_features.quirks->s2idle_bug_mmio)
+>  		acpi_unregister_lps0_dev(&thinkpad_acpi_s2idle_dev_ops);
+> +#endif
+>  	if (tpacpi_hwmon)
+>  		hwmon_device_unregister(tpacpi_hwmon);
+>  	if (tp_features.sensors_pdrv_registered)
+> @@ -11743,11 +11747,13 @@ static int __init thinkpad_acpi_module_init(void)
+>  	dmi_id = dmi_first_match(fwbug_list);
+>  	if (dmi_id) {
+>  		tp_features.quirks = dmi_id->driver_data;
+> +#ifdef CONFIG_SUSPEND
+>  		if (tp_features.quirks->s2idle_bug_mmio) {
+>  			if (!acpi_register_lps0_dev(&thinkpad_acpi_s2idle_dev_ops))
+>  				pr_info("Using s2idle quirk to avoid %s platform firmware bug\n",
+>  					dmi_id->ident ? dmi_id->ident : "");
+>  		}
+> +#endif
+>  	}
+>  
+>  	return 0;
+
