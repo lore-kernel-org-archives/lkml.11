@@ -2,201 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1083CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 977CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388826AbiEFDuv (ORCPT
+        id S1388835AbiEFDu5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
+        Thu, 5 May 2022 23:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384740AbiEFDuo (ORCPT
+        with ESMTP id S1388627AbiEFDuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:50:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D2044A04
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:47:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651808822; x=1683344822;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=euyo/px1cfdSUEMs0Pi/s6A8waAHPkEmTHwCJYMq36w=;
-  b=M3DjZo3fNBBoo30WKBfLA5NasH0+6o5EASVdCS2h+EsY/XNAH8chrcUv
-   81rmvGnirhyrBo2AZlu8/V2Gjor60SjDkUwD/dDn4bHcudHqmWcpZskoJ
-   IllQ+YuH5Ihx6QMaxNgQ5QUTzWSHK7FvlVBwBnCT+EeX7UhzEVwnCOBnk
-   wjq6kf5Vp5CD+rudOqMKBtYrNN6epXpmnRubA/PPC2Sx5NLow/8//EaBU
-   YCeF9MvwMZisVgBTEmQ6mCokz3fVokHpSFPaGX7ZRUjZ5CCw5Z+KfC83M
-   qQfhz4d72qWXzfJrT9gvmHYTCmtKWn1Bhf5r7MUaeaCwcaEq4/iiSerSf
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="265928017"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="265928017"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:47:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="600364065"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 05 May 2022 20:47:00 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmovj-000D3u-Ll;
-        Fri, 06 May 2022 03:46:59 +0000
-Date:   Fri, 6 May 2022 11:46:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Likun Gao <Likun.Gao@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Subject: [agd5f:drm-next 282/573]
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5759:9: sparse: sparse:
- incompatible types in conditional expression (different base types):
-Message-ID: <202205061127.T79RCanI-lkp@intel.com>
+        Thu, 5 May 2022 23:50:46 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEF2443E1
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:47:04 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id x12so5132141pgj.7
+        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 20:47:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0GBnsUFI480KyuDDKiDj6EO0c5V7IXRlhq6lrsQR2EY=;
+        b=k7uvdMBTxQMDq6M3LascyGTaiuxi2yT1elp1Bszljqv5oQ019q15F7QRpLZ+v1AwDR
+         lO7ycwTQEmQQSfqcXkDIXY3Diu5PwWZmmgNHECwmCVNcXktbcpsr/CEtiOvs6y2orAk/
+         SkMqSa4AXgPTI36JKkzNiGI47w67B2KjdIxEy/jk2jiLCJkAa7CQGY/OJdehRZLn72ca
+         aVBe6NaCeqffUuvNNxvTBYNjI+uipnvNQKhXi5Uo9qhgPv6zfBIdVlFT7pX7Xwy2z8u/
+         PqAisoU/4c+03vj7Hb2QgV8gxPPQJALYjiTG/WCMwlXqqjtNTK+IxyJ1rUt+uzsKqnmJ
+         A1Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0GBnsUFI480KyuDDKiDj6EO0c5V7IXRlhq6lrsQR2EY=;
+        b=0vgh8y9lKqlhp4W5dCqMMLlVULEX6CyD69pU6GEzU5MlUCneDcOki80YYA/3fEqIGY
+         zAimJY2uaP2ldt+zxsmwA7BZbDKHFm6eRFK/AwjJQbfS2SkXP/s6P04pKRUmqwu6913e
+         KgcnjPuXAWfCCFOQWqXx/ghPYTe0dT/q56HzUElLB87yVmlodFiMR4eSunkMT2RBRExm
+         PXbcFWc8ytVJkMcBCf1EZPj04uVuhzi7rYxzYSE3KxEVk/V9LacRUcn6rvSqxpI7xW1K
+         I7ML1ki/YcetK6CXLONe/ckffMFil4wN5YhhesVJjdRakLJN4m25YG/rhnWsksp9F/GC
+         q0hw==
+X-Gm-Message-State: AOAM531TQZltiCGoB95BupbO5JLWpnOE8HZem8adq4FGfjx9N4r7Jx7e
+        +VHjrJ1ubukfvNFGEEo9GLc=
+X-Google-Smtp-Source: ABdhPJyzdQZ2piTp+gk+/6EcJp5EzxsQPyiqNKXt9xJG3Eh1hHllS3jVdx2Ud8lyihP6lkN3sbk42w==
+X-Received: by 2002:aa7:962e:0:b0:50d:5ed8:aa23 with SMTP id r14-20020aa7962e000000b0050d5ed8aa23mr1602069pfg.43.1651808824217;
+        Thu, 05 May 2022 20:47:04 -0700 (PDT)
+Received: from lbmac.lan ([119.28.81.66])
+        by smtp.gmail.com with ESMTPSA id p18-20020a1709028a9200b0015e8d4eb2cdsm398139plo.279.2022.05.05.20.47.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 20:47:03 -0700 (PDT)
+From:   Liangbin Lian <jjm2473@gmail.com>
+To:     ntfs3@lists.linux.dev, almaz.alexandrovich@paragon-software.com
+Cc:     linux-kernel@vger.kernel.org, Liangbin Lian <jjm2473@gmail.com>
+Subject: [PATCH] fs/ntfs3: fix null pointer dereference in d_flags_for_inode
+Date:   Fri,  6 May 2022 11:46:56 +0800
+Message-Id: <20220506034656.50038-1-jjm2473@gmail.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   e7b25ac8f27f561894f8f65caec0dfafed3ddbb5
-commit: 563fcfbf3101b569d642ac4d71c8177f0d7dc0ce [282/573] drm/amdgpu: add hdp version 6 functions
-config: mips-randconfig-s031-20220506 (https://download.01.org/0day-ci/archive/20220506/202205061127.T79RCanI-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 563fcfbf3101b569d642ac4d71c8177f0d7dc0ce
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/ drivers/gpu/drm/amd/pm/powerplay/smumgr/ drivers/gpu/drm/amd/pm/swsmu/
+ntfs_read_mft may return inode with null i_op, cause null pointer dereference in d_flags_for_inode (inode->i_op->get_link).
+Reproduce:
+ - sudo mount -t ntfs3 -o loop ntfs.img ntfs
+ - ls ntfs/'$Extend/$Quota'
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The call trace is shown below (striped):
+ BUG: kernel NULL pointer dereference, address: 0000000000000008
+ CPU: 0 PID: 577 Comm: ls Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
+ RIP: 0010:d_flags_for_inode+0x65/0x90
+ Call Trace:
+ ntfs_lookup
+ +--- dir_search_u
+ |    +--- ntfs_iget5
+ |         +--- ntfs_read_mft
+ +--- d_splice_alias
+      +--- __d_add
+           +--- d_flags_for_inode
 
+Signed-off-by: Liangbin Lian <jjm2473@gmail.com>
+---
+ fs/ntfs3/inode.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-sparse warnings: (new ones prefixed by >>)
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   drivers/gpu/drm/amd/amdgpu/amdgpu_device.c: note: in included file (through drivers/gpu/drm/amd/amdgpu/amdgpu_virt.h, drivers/gpu/drm/amd/amdgpu/amdgpu.h):
-   drivers/gpu/drm/amd/amdgpu/amdgv_sriovmsg.h:314:49: sparse: sparse: static assertion failed: "amd_sriov_msg_vf2pf_info must be 1 KB"
->> drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5759:9: sparse: sparse: incompatible types in conditional expression (different base types):
->> drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5759:9: sparse:    void
->> drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5759:9: sparse:    int
---
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c: note: in included file (through drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu_virt.h, drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h):
-   drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgv_sriovmsg.h:314:49: sparse: sparse: static assertion failed: "amd_sriov_msg_vf2pf_info must be 1 KB"
->> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c:912:17: sparse: sparse: incompatible types in conditional expression (different base types):
->> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c:912:17: sparse:    void
->> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c:912:17: sparse:    int
---
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega10_smumgr.c: note: in included file (through drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu_virt.h, drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h, ...):
-   drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgv_sriovmsg.h:314:49: sparse: sparse: static assertion failed: "amd_sriov_msg_vf2pf_info must be 1 KB"
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega10_smumgr.c:63:9: sparse: sparse: incompatible types in conditional expression (different base types):
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega10_smumgr.c:63:9: sparse:    void
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega10_smumgr.c:63:9: sparse:    int
---
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/smu10_smumgr.c: note: in included file (through drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu_virt.h, drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h, ...):
-   drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgv_sriovmsg.h:314:49: sparse: sparse: static assertion failed: "amd_sriov_msg_vf2pf_info must be 1 KB"
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/smu10_smumgr.c:142:9: sparse: sparse: incompatible types in conditional expression (different base types):
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/smu10_smumgr.c:142:9: sparse:    void
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/smu10_smumgr.c:142:9: sparse:    int
---
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega12_smumgr.c: note: in included file (through drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu_virt.h, drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h, ...):
-   drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgv_sriovmsg.h:314:49: sparse: sparse: static assertion failed: "amd_sriov_msg_vf2pf_info must be 1 KB"
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega12_smumgr.c:71:9: sparse: sparse: incompatible types in conditional expression (different base types):
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega12_smumgr.c:71:9: sparse:    void
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega12_smumgr.c:71:9: sparse:    int
---
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c: note: in included file (through drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu_virt.h, drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h, ...):
-   drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgv_sriovmsg.h:314:49: sparse: sparse: static assertion failed: "amd_sriov_msg_vf2pf_info must be 1 KB"
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c:195:9: sparse: sparse: incompatible types in conditional expression (different base types):
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c:195:9: sparse:    void
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c:195:9: sparse:    int
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c:309:9: sparse: sparse: incompatible types in conditional expression (different base types):
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c:309:9: sparse:    void
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/smumgr/vega20_smumgr.c:309:9: sparse:    int
-
-vim +5759 drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-
-c1dd4aa624076c Andrey Grodzovsky 2020-08-24  5748  
-810085ddb7b76c Eric Huang        2021-06-02  5749  void amdgpu_device_invalidate_hdp(struct amdgpu_device *adev,
-810085ddb7b76c Eric Huang        2021-06-02  5750  		struct amdgpu_ring *ring)
-810085ddb7b76c Eric Huang        2021-06-02  5751  {
-810085ddb7b76c Eric Huang        2021-06-02  5752  #ifdef CONFIG_X86_64
-b818a5d374542c Alex Deucher      2022-03-09  5753  	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
-810085ddb7b76c Eric Huang        2021-06-02  5754  		return;
-810085ddb7b76c Eric Huang        2021-06-02  5755  #endif
-810085ddb7b76c Eric Huang        2021-06-02  5756  	if (adev->gmc.xgmi.connected_to_cpu)
-810085ddb7b76c Eric Huang        2021-06-02  5757  		return;
-c1dd4aa624076c Andrey Grodzovsky 2020-08-24  5758  
-810085ddb7b76c Eric Huang        2021-06-02 @5759  	amdgpu_asic_invalidate_hdp(adev, ring);
-810085ddb7b76c Eric Huang        2021-06-02  5760  }
-34f3a4a98bd388 Lang Yu           2021-12-09  5761  
-
-:::::: The code at line 5759 was first introduced by commit
-:::::: 810085ddb7b76c1cc5059a1feb3b1250eceacf23 drm/amdgpu: Don't flush/invalidate HDP for APUs and A+A
-
-:::::: TO: Eric Huang <jinhuieric.huang@amd.com>
-:::::: CC: Alex Deucher <alexander.deucher@amd.com>
-
+diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
+index 9eab11e3b..b68d26fa8 100644
+--- a/fs/ntfs3/inode.c
++++ b/fs/ntfs3/inode.c
+@@ -45,7 +45,6 @@ static struct inode *ntfs_read_mft(struct inode *inode,
+ 	struct MFT_REC *rec;
+ 	struct runs_tree *run;
+ 
+-	inode->i_op = NULL;
+ 	/* Setup 'uid' and 'gid' */
+ 	inode->i_uid = sbi->options->fs_uid;
+ 	inode->i_gid = sbi->options->fs_gid;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.32.0 (Apple Git-132)
+
