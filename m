@@ -2,99 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59682C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2235AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444563AbiEFVpI (ORCPT
+        id S1444573AbiEFVse (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38014 "EHLO
+        Fri, 6 May 2022 17:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444553AbiEFVpA (ORCPT
+        with ESMTP id S1348985AbiEFVsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:45:00 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABF26F4B9;
-        Fri,  6 May 2022 14:41:16 -0700 (PDT)
+        Fri, 6 May 2022 17:48:31 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E856FA1C;
+        Fri,  6 May 2022 14:44:47 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l18so16722278ejc.7;
+        Fri, 06 May 2022 14:44:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651873276; x=1683409276;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=8GnrDylVOCDCqLgj7fxHdYQzHxnK60EhThMKnv0XkgY=;
-  b=yZtkHHcZtJ35dDSxWGpt3Zy5pHvl9D14Sxu52QYeldO0yIM4CITS3AIF
-   qRsyDFDNP+/eItoKGGaGlIic1LvueAjVE9fr4hcS1aZyS9bXmDIiFl7wi
-   FAyDp1A+aPTnYzvkhwo25BRRrC4jLESaUgToGMAb1+k3e/OkwXxooF490
-   A=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 May 2022 14:41:15 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 14:41:15 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 6 May 2022 14:41:15 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 6 May 2022 14:41:14 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
-        <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] drm/msm/dp: Always clear mask bits to disable interrupts at dp_ctrl_reset_irq_ctrl()
-Date:   Fri, 6 May 2022 14:41:07 -0700
-Message-ID: <1651873267-18220-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N3A1rf/Rj0PDegZIBfqZUEZZbtuVQj5afQJ+DdGLJXY=;
+        b=qIRoPoyIi9YUs2nECEBig8BQu3212ApJ192x/PT3kMGoYGdOdLgi4i/CpRitLS2c5Q
+         tR8aBD/U8y02V1Do3uwlRPKXizYTv0uL7qWSMEvP5UO3yhPCR6vYjRHr+gi32YQE415O
+         cTgbnS3ikd6RrO+hPDJc3+zcDE0Vtk/E+l5qf2hKFV+xpAAKmpcyHbmMplqWRjSIt3mb
+         aldH2gdqvT0FDDBx4XJYO6M3Szu3ig6UabTifk/hdSr8FRF5PeRgnUdgpF3B3i0jjhEt
+         jsxFTcGvFJtcYxIic4jEtB7hX3mtnva63X2s7cOyBCrMHiCOwDw4A99hJx/2KR7aemGd
+         OlwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N3A1rf/Rj0PDegZIBfqZUEZZbtuVQj5afQJ+DdGLJXY=;
+        b=FDbXa2FWTQP909yFKrqk5VukJnrqiff9oGFqidS/pA2zQVEURTzway7KtuVVdAgxcu
+         8+L9hniKsmfpX+8HWw9fsTOppzSa6QYItgTVJg/sFi6ScFoFc2TwNHHd8QfoEmkSEzmx
+         KzrY2ES1X6y8q3TVLJ6HDeoKPy2Nu30hLqi6F2Y7bobHx6DjEqQmZiAiOaO5vPx2k/Uf
+         DperEChh7F8C4lZ7nyGjZRpnoUgWE1+gDom7LMRN+TEE1JrZEAxekmhuCu5vhZmskMw7
+         BE37qHRmD34rCfyFQ1F99e9xgdqZUB4UdvDQSgsBQpHVH/tEKvClqIVM52q8vnrKQMdJ
+         +GDg==
+X-Gm-Message-State: AOAM532pk8oE5SbAaUUMqxPjnVbTA8K9Fx2+xpEhBmL/nCX039QttLsF
+        fUfK5rTxozcKjqPgQkXxbOTZCcBPhNN9O80wC0o=
+X-Google-Smtp-Source: ABdhPJxKnXTPN1rE0ELs3y3hDsepy+hk9ObUJpCYg5aHeKL8ddu3x4IdwKD6k5cRrp+Yu12tRGxgzdfBai7wdCKbXO4=
+X-Received: by 2002:a17:907:6d9d:b0:6da:7d4c:287f with SMTP id
+ sb29-20020a1709076d9d00b006da7d4c287fmr4633735ejc.741.1651873485631; Fri, 06
+ May 2022 14:44:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220429014240.3434866-1-pulehui@huawei.com> <20220429014240.3434866-3-pulehui@huawei.com>
+In-Reply-To: <20220429014240.3434866-3-pulehui@huawei.com>
+From:   Luke Nelson <luke.r.nels@gmail.com>
+Date:   Fri, 6 May 2022 14:44:34 -0700
+Message-ID: <CAB-e3NRn9VgdWfakom6Cbx-3btakEzvpNVmiQw7k-h_-EtOMng@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/2] riscv, bpf: Support riscv jit to provide bpf_line_info
+To:     Pu Lehui <pulehui@huawei.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dp_catalog_ctrl_reset() will software reset DP controller. But it will
-not reset programmable registers to default value. DP driver still have
-to clear mask bits to interrupt status registers to disable interrupts
-after software reset of controller. This patch removes the enable flag
-condition checking to always clear mask bits of interrupt status
-registers to disable interrupts if enable flag is false.
+Thanks for the patch! I have a couple of notes written down below.
 
-Fixes: ba0a422be723 ("drm/msm/dp: do not initialize phy until plugin interrupt received")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+> +               ctx->prologue_offset = ctx->ninsns;
+> ...
+> +               prologue_len = ctx->epilogue_offset - ctx->prologue_offset;
+> +               for (i = 0; i < prog->len; i++)
+> +                       ctx->offset[i] = ninsns_rvoff(prologue_len + ctx->offset[i]);
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 38026f2..cbf3399 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1379,8 +1379,13 @@ void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
- 
- 	dp_catalog_ctrl_reset(ctrl->catalog);
- 
--	if (enable)
--		dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
-+	/*
-+	 * all dp controller programmable registers will not
-+	 * be reset to default value after DP_SW_RESET
-+	 * therefore interrupt mask bits have to be updated
-+	 * to enable/disable interrupts
-+	 */
-+	dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
- }
- 
- void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+The logic looks correct to me; my only nit is that the name
+prologue_offset might be a bit confusing. The prologue is always at
+the beginning of the final JITed program, it just happens to be that
+the prologue is emitted "out of order" on the initial/internal passes
+that compute offsets.
 
+What prologue_offset really measures in your code is the length of the
+body of the JITed program. What do you think about renaming
+prologue_offset to something like body_len? Then the line to compute
+prologue_len becomes:
+
+        prologue_len = ctx->epilogue_offset - ctx->body_len;
+
+This version makes more sense to me why it's correct. Curious what you think.
+
+
+> +               bpf_prog_fill_jited_linfo(prog, ctx->offset);
+
+Here's a quote from the comment that documents
+bpf_prog_fill_jited_linfo in kernel/bpf/core.c:
+
+/* The jit engine is responsible to provide an array
+ * for insn_off to the jited_off mapping (insn_to_jit_off).
+...
+ * jited_off is the byte off to the last byte of the jited insn.
+
+This comment says that ctx->offset (passed to this function as
+insn_to_jit_off) should map each instruction to the offset of the last
+byte of the JITed instructions, but as I understand it your patch sets
+ctx->offset[i] to be the offset _one past_ the last byte of the JITed
+instructions (i.e., the first byte of the next instruction). I'm not
+sure if this is a bug in your code, in this comment, or in my
+understanding :)
+
+As a concrete example, suppose the BPF instruction at index 0 compiles
+to 2 (non-compressed) RISC-V instructions, or 8 bytes. Then
+ctx->offset[0] will be 2 after the initial JIT passes, and your code
+would update ctx->offset[0] to be 4*prologue_len + 8. This offset
+corresponds to the first byte of insns[1], not the last byte of
+insn[0], which would be 4*prologue_len + 7.
+
+My guess would be that the comment is out of date and your code is
+doing the correct thing, since it seems in line with what other JITs
+are doing. If that's the case, maybe we can consider updating that
+comment at some point. I'm curious if the tests you ran would break if
+you changed your code to match what the comment says (i.e.,
+subtracting 1 byte from each element in ctx->offset before passing to
+bpf_prog_fill_jited_linfo).
+
+
+> ./test_progs -a btf
+> #19 btf:OK
+> Summary: 1/215 PASSED, 0 SKIPPED, 0 FAILED
+
+Last, did you have a chance to run any of the other tests with your
+change (e.g., test_verifier, test_bpf.ko, other tests in test_progs)?
+I don't expect this change to break any tests, but may as well run
+them if it's easy enough just to be sure.
+
+
+Thanks!
+- Luke
