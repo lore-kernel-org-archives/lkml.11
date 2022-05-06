@@ -2,430 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91847C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444400AbiEFVVr (ORCPT
+        id S1444413AbiEFV1P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
+        Fri, 6 May 2022 17:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444391AbiEFVVn (ORCPT
+        with ESMTP id S245548AbiEFV1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:21:43 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A4F6F482
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:17:57 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id p10so14569953lfa.12
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 14:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=n0zTf3mkj6imQWvTKla8ZDhb47kthXsnVXQbT7vmZcI=;
-        b=WFEMsM12TcZvA3nxmI+JtDwQosJWv2ILBTl4PZ2dVtQLOieOYB4M2H+14uhczDyOJc
-         pG4MvZAZM2Tggc5WmkR3mUloAe2rnt/Klj/zZpISUyCISVt/inzwSuK7/vDWrGXzvtZc
-         jJDsVOXVcLqMesbC4lQu9ADgR8FNdppGnITrvooM1PWvB1W+g/xACds2/HlVSSS571TJ
-         gV0xmWIY4zEah36bmNWrprDHmsCApWXgPMoagZG+oBuI+Id2V0pUZ6118Yj3wnA8G9ss
-         Ti5/CLXk1XUZRXHSqvxzwFD4Tk8ICjqXyoEKAEcm+jVVOVBwvQShZqGBSKLD4GkB9Zyl
-         n1ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=n0zTf3mkj6imQWvTKla8ZDhb47kthXsnVXQbT7vmZcI=;
-        b=68xL4PDMTlxjHN7rbBv0hCNtu217u3WSCNw0+RimNk27wztI/xOvg5A478WlZTZKfr
-         60FAJYwp1G+nI/P9FEl5DYeSSg51oj4Ub5/LsRmg5k3MjbPlTfBqvq8AdFVD2Ac6ou7S
-         kw3xIg/w5SWUHPUbeIJPqAG0siKv4QVkMMDYai/8/z5Bd5NSNi+jvu/rNWwAoSWuH772
-         hTDXWQwVqT32hdoActZfcVwumPmewNeZQlyT8OHgPXFKRbDMPcysr8hXvmK9P2+4Ry5U
-         xKXjUWl/B+coenB7hB7Y2Zw5keB15zVmm4Fyxeogpf5PLF1PxIYQ7zsJatkyPBBi3siP
-         /Elw==
-X-Gm-Message-State: AOAM533v2PulhDafyayHKBUAQgNPwsaoULelkkO37K1ezn7TTPi1aHhf
-        Vyj2a1KVLmpOw2CNFTePw/LtZQ==
-X-Google-Smtp-Source: ABdhPJyWDllH/XANRA+LSTq8vQahl0va8OB97X7F7OXnVqjfufIMq1eg+M6CAOGUNU0gJaqug5IREw==
-X-Received: by 2002:a05:6512:114c:b0:473:b2a7:65e1 with SMTP id m12-20020a056512114c00b00473b2a765e1mr3761983lfg.480.1651871875924;
-        Fri, 06 May 2022 14:17:55 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id w5-20020a05651c102500b0025052e35be2sm759926ljm.130.2022.05.06.14.17.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 14:17:55 -0700 (PDT)
-Message-ID: <f3abbab4-f390-414f-8374-cc6f9e75faf4@linaro.org>
-Date:   Sat, 7 May 2022 00:17:54 +0300
+        Fri, 6 May 2022 17:27:10 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17A86339A
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:23:25 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651872204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0Qt7CUp/pjOXetxeeCEQTHQJVA1rcx9ZBnwtcdpqF+0=;
+        b=1gitIq8FJN+a0xsKA2F9S/IkXhuehmIu/V1V6fDWUg4SgYJ6GNR70nqfi6IKrkT0vv4Yae
+        ZCuqm/hYF1OxK74tQBPRc0TS/NELz45bgd73c1EXtOB7GCDM8SKQ7JiVY/gGbu0/kBholF
+        JCPN0OvDqROnL3mfI+OVoJn1DJwxkm1w/Y3xe4jMDPcQgffkYct2evhH90bBtQYroQhHVQ
+        9i8FfLmF9G8vaSrdByk6xcyydCReNyG8txnHNUi2JYzjXsYbUvxSIRC6g/Zy35cqfeWuEr
+        XMxMC6wWl98ijxGTdbdsJG7bZbtwAoS6+gKor1KCGSBIS1sDipmE+IsdzaWeTw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651872204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0Qt7CUp/pjOXetxeeCEQTHQJVA1rcx9ZBnwtcdpqF+0=;
+        b=kbgZs5IojxdNYid2PCX/up8UYQ0YquDeCHiNJom3jcEaJQf4cp68zTUaibdsa1SEQ7jM4L
+        U3OxdSYz2NZABvDA==
+To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        x86@kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 10/29] iommu/vt-d: Implement minor tweaks for NMI irqs
+In-Reply-To: <20220506000008.30892-11-ricardo.neri-calderon@linux.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-11-ricardo.neri-calderon@linux.intel.com>
+Date:   Fri, 06 May 2022 23:23:23 +0200
+Message-ID: <87wneyfj90.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [Freedreno] [PATCH v10 1/4] drm/msm/dp: Add eDP support via
- aux_bus
-Content-Language: en-GB
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     quic_kalyant@quicinc.com, bjorn.andersson@linaro.org,
-        quic_vproddut@quicinc.com, airlied@linux.ie, dianders@chromium.org,
-        steev@kali.org, quic_khsieh@quicinc.com, robdclark@gmail.com,
-        seanpaul@chromium.org, daniel@ffwll.ch, quic_aravindh@quicinc.com,
-        swboyd@chromium.org, sean@poorly.run
-References: <1650887072-16652-1-git-send-email-quic_sbillaka@quicinc.com>
- <1650887072-16652-2-git-send-email-quic_sbillaka@quicinc.com>
- <8fe3f9cd-546d-539b-cba4-8479d780a4c5@linaro.org>
- <30e4f4db-9c4c-af90-f1d2-ec39019f95a5@quicinc.com>
- <1ad06f9b-69e8-327f-f695-3a833459b2ed@linaro.org>
- <f538faf0-2419-e28c-c926-c5ec677b14d3@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <f538faf0-2419-e28c-c926-c5ec677b14d3@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/05/2022 00:17, Abhinav Kumar wrote:
-> 
-> 
-> On 5/6/2022 2:05 PM, Dmitry Baryshkov wrote:
->> On 07/05/2022 00:03, Abhinav Kumar wrote:
->>>
->>>
->>> On 5/6/2022 1:49 PM, Dmitry Baryshkov wrote:
->>>> On 25/04/2022 14:44, Sankeerth Billakanti wrote:
->>>>> This patch adds support for generic eDP sink through aux_bus. The 
->>>>> eDP/DP
->>>>> controller driver should support aux transactions originating from the
->>>>> panel-edp driver and hence should be initialized and ready.
->>>>>
->>>>> The panel bridge supporting the panel should be ready before the 
->>>>> bridge
->>>>> connector is initialized. The generic panel probe needs the controller
->>>>> resources to be enabled to support the aux transactions originating 
->>>>> from
->>>>> the panel probe.
->>>>>
->>>>> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
->>>>> Reviewed-by: Douglas Anderson <dianders@chromium.org>
->>>>> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
->>>>
->>>> An additional side effect from this patch. Previously missing panel 
->>>> would have caused the bind error. Now it is the dp_modeset_init 
->>>> error, which translates to kms_hw_init returning -517. I kind ask to 
->>>> move the next_bridge acquisition back to the dp_bind in one of the 
->>>> followup patches.
->>>>
->>>
->>> This is true. But the end result would be same isnt it?
->>>
->>> When dp_display_bind() failed earlier, it would cause master bind 
->>> failure too due to component model.
->>>
->>> Even now, it causes the same result?
->>
->> Yes, it helped us to uncover several error. But I'd still prefer to 
->> have EPROBE_DEFER being returned earlier rather than later.
-> 
-> Alright, point noted to try moving this earlier.
-> 
-> We will be following this up with rounds of cleanups to implement the 
-> suggestions given by you and Doug earlier.
-> 
-> This point shall be noted too.
+On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> The Intel IOMMU interrupt remapping driver already programs correctly the
+> delivery mode of individual irqs as per their irq_data. Improve handling
+> of NMIs. Allow only one irq per NMI. Also, it is not necessary to cleanup
+> irq vectors after updating affinity.
 
-Thanks a lot.
+Structuring a changelog in paragraphs might make it readable. New lines
+exist for a reason.
 
-> 
->>
->>>
->>>>> ---
->>>>> Changes in v10:
->>>>>    - modify the error handling condition
->>>>>    - modify the kernel doc
->>>>>
->>>>> Changes in v9:
->>>>>    - add comments for panel probe
->>>>>    - modify the error handling checks
->>>>>
->>>>> Changes in v8:
->>>>>    - handle corner cases
->>>>>    - add comment for the bridge ops
->>>>>
->>>>> Changes in v7:
->>>>>    - aux_bus is mandatory for eDP
->>>>>    - connector type check modified to just check for eDP
->>>>>
->>>>> Changes in v6:
->>>>>    - Remove initialization
->>>>>    - Fix aux_bus node leak
->>>>>    - Split the patches
->>>>>
->>>>>   drivers/gpu/drm/msm/dp/dp_display.c | 72 
->>>>> ++++++++++++++++++++++++++++++++++---
->>>>>   drivers/gpu/drm/msm/dp/dp_display.h |  1 +
->>>>>   drivers/gpu/drm/msm/dp/dp_drm.c     | 21 ++++++++---
->>>>>   drivers/gpu/drm/msm/dp/dp_parser.c  | 23 ++----------
->>>>>   drivers/gpu/drm/msm/dp/dp_parser.h  | 14 +++++++-
->>>>>   5 files changed, 101 insertions(+), 30 deletions(-)
->>>>>
->>>>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c 
->>>>> b/drivers/gpu/drm/msm/dp/dp_display.c
->>>>> index d7a19d6..f772d84 100644
->>>>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->>>>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->>>>> @@ -10,6 +10,7 @@
->>>>>   #include <linux/component.h>
->>>>>   #include <linux/of_irq.h>
->>>>>   #include <linux/delay.h>
->>>>> +#include <drm/dp/drm_dp_aux_bus.h>
->>>>>   #include "msm_drv.h"
->>>>>   #include "msm_kms.h"
->>>>> @@ -259,14 +260,12 @@ static int dp_display_bind(struct device 
->>>>> *dev, struct device *master,
->>>>>       dp->dp_display.drm_dev = drm;
->>>>>       priv->dp[dp->id] = &dp->dp_display;
->>>>> -    rc = dp->parser->parse(dp->parser, 
->>>>> dp->dp_display.connector_type);
->>>>> +    rc = dp->parser->parse(dp->parser);
->>>>>       if (rc) {
->>>>>           DRM_ERROR("device tree parsing failed\n");
->>>>>           goto end;
->>>>>       }
->>>>> -    dp->dp_display.next_bridge = dp->parser->next_bridge;
->>>>> -
->>>>>       dp->aux->drm_dev = drm;
->>>>>       rc = dp_aux_register(dp->aux);
->>>>>       if (rc) {
->>>>> @@ -1319,6 +1318,8 @@ static int dp_display_probe(struct 
->>>>> platform_device *pdev)
->>>>>       dp->pdev = pdev;
->>>>>       dp->name = "drm_dp";
->>>>>       dp->dp_display.connector_type = desc->connector_type;
->>>>> +    dp->dp_display.is_edp =
->>>>> +        (dp->dp_display.connector_type == DRM_MODE_CONNECTOR_eDP);
->>>>>       rc = dp_init_sub_modules(dp);
->>>>>       if (rc) {
->>>>> @@ -1508,7 +1509,8 @@ void msm_dp_irq_postinstall(struct msm_dp 
->>>>> *dp_display)
->>>>>       dp_hpd_event_setup(dp);
->>>>> -    dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
->>>>> +    if (!dp_display->is_edp)
->>>>> +        dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
->>>>>   }
->>>>>   void msm_dp_debugfs_init(struct msm_dp *dp_display, struct 
->>>>> drm_minor *minor)
->>>>> @@ -1530,6 +1532,64 @@ void msm_dp_debugfs_init(struct msm_dp 
->>>>> *dp_display, struct drm_minor *minor)
->>>>>       }
->>>>>   }
->>>>> +static int dp_display_get_next_bridge(struct msm_dp *dp)
->>>>> +{
->>>>> +    int rc;
->>>>> +    struct dp_display_private *dp_priv;
->>>>> +    struct device_node *aux_bus;
->>>>> +    struct device *dev;
->>>>> +
->>>>> +    dp_priv = container_of(dp, struct dp_display_private, 
->>>>> dp_display);
->>>>> +    dev = &dp_priv->pdev->dev;
->>>>> +    aux_bus = of_get_child_by_name(dev->of_node, "aux-bus");
->>>>> +
->>>>> +    if (aux_bus && dp->is_edp) {
->>>>> +        dp_display_host_init(dp_priv);
->>>>> +        dp_catalog_ctrl_hpd_config(dp_priv->catalog);
->>>>> +        dp_display_host_phy_init(dp_priv);
->>>>> +        enable_irq(dp_priv->irq);
->>>>> +
->>>>> +        /*
->>>>> +         * The code below assumes that the panel will finish probing
->>>>> +         * by the time devm_of_dp_aux_populate_ep_devices() returns.
->>>>> +         * This isn't a great assumption since it will fail if the
->>>>> +         * panel driver is probed asynchronously but is the best we
->>>>> +         * can do without a bigger driver reorganization.
->>>>> +         */
->>>>> +        rc = devm_of_dp_aux_populate_ep_devices(dp_priv->aux);
->>>>> +        of_node_put(aux_bus);
->>>>> +        if (rc)
->>>>> +            goto error;
->>>>> +    } else if (dp->is_edp) {
->>>>> +        DRM_ERROR("eDP aux_bus not found\n");
->>>>> +        return -ENODEV;
->>>>> +    }
->>>>> +
->>>>> +    /*
->>>>> +     * External bridges are mandatory for eDP interfaces: one has to
->>>>> +     * provide at least an eDP panel (which gets wrapped into 
->>>>> panel-bridge).
->>>>> +     *
->>>>> +     * For DisplayPort interfaces external bridges are optional, so
->>>>> +     * silently ignore an error if one is not present (-ENODEV).
->>>>> +     */
->>>>> +    rc = dp_parser_find_next_bridge(dp_priv->parser);
->>>>> +    if (!dp->is_edp && rc == -ENODEV)
->>>>> +        return 0;
->>>>> +
->>>>> +    if (!rc) {
->>>>> +        dp->next_bridge = dp_priv->parser->next_bridge;
->>>>> +        return 0;
->>>>> +    }
->>>>> +
->>>>> +error:
->>>>> +    if (dp->is_edp) {
->>>>> +        disable_irq(dp_priv->irq);
->>>>> +        dp_display_host_phy_exit(dp_priv);
->>>>> +        dp_display_host_deinit(dp_priv);
->>>>> +    }
->>>>> +    return rc;
->>>>> +}
->>>>> +
->>>>>   int msm_dp_modeset_init(struct msm_dp *dp_display, struct 
->>>>> drm_device *dev,
->>>>>               struct drm_encoder *encoder)
->>>>>   {
->>>>> @@ -1553,6 +1613,10 @@ int msm_dp_modeset_init(struct msm_dp 
->>>>> *dp_display, struct drm_device *dev,
->>>>>       dp_display->encoder = encoder;
->>>>> +    ret = dp_display_get_next_bridge(dp_display);
->>>>> +    if (ret)
->>>>> +        return ret;
->>>>> +
->>>>>       dp_display->bridge = dp_bridge_init(dp_display, dev, encoder);
->>>>>       if (IS_ERR(dp_display->bridge)) {
->>>>>           ret = PTR_ERR(dp_display->bridge);
->>>>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.h 
->>>>> b/drivers/gpu/drm/msm/dp/dp_display.h
->>>>> index 49a1d89..1377cc3 100644
->>>>> --- a/drivers/gpu/drm/msm/dp/dp_display.h
->>>>> +++ b/drivers/gpu/drm/msm/dp/dp_display.h
->>>>> @@ -21,6 +21,7 @@ struct msm_dp {
->>>>>       bool audio_enabled;
->>>>>       bool power_on;
->>>>>       unsigned int connector_type;
->>>>> +    bool is_edp;
->>>>>       hdmi_codec_plugged_cb plugged_cb;
->>>>> diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c 
->>>>> b/drivers/gpu/drm/msm/dp/dp_drm.c
->>>>> index 7ce1aca..8a75c55 100644
->>>>> --- a/drivers/gpu/drm/msm/dp/dp_drm.c
->>>>> +++ b/drivers/gpu/drm/msm/dp/dp_drm.c
->>>>> @@ -114,10 +114,23 @@ struct drm_bridge *dp_bridge_init(struct 
->>>>> msm_dp *dp_display, struct drm_device *
->>>>>       bridge->funcs = &dp_bridge_ops;
->>>>>       bridge->type = dp_display->connector_type;
->>>>> -    bridge->ops =
->>>>> -        DRM_BRIDGE_OP_DETECT |
->>>>> -        DRM_BRIDGE_OP_HPD |
->>>>> -        DRM_BRIDGE_OP_MODES;
->>>>> +    /*
->>>>> +     * Many ops only make sense for DP. Why?
->>>>> +     * - Detect/HPD are used by DRM to know if a display is 
->>>>> _physically_
->>>>> +     *   there, not whether the display is powered on / finished 
->>>>> initting.
->>>>> +     *   On eDP we assume the display is always there because you 
->>>>> can't
->>>>> +     *   know until power is applied. If we don't implement the 
->>>>> ops DRM will
->>>>> +     *   assume our display is always there.
->>>>> +     * - Currently eDP mode reading is driven by the panel driver. 
->>>>> This
->>>>> +     *   allows the panel driver to properly power itself on to 
->>>>> read the
->>>>> +     *   modes.
->>>>> +     */
->>>>> +    if (!dp_display->is_edp) {
->>>>> +        bridge->ops =
->>>>> +            DRM_BRIDGE_OP_DETECT |
->>>>> +            DRM_BRIDGE_OP_HPD |
->>>>> +            DRM_BRIDGE_OP_MODES;
->>>>> +    }
->>>>>       rc = drm_bridge_attach(encoder, bridge, NULL, 
->>>>> DRM_BRIDGE_ATTACH_NO_CONNECTOR);
->>>>>       if (rc) {
->>>>> diff --git a/drivers/gpu/drm/msm/dp/dp_parser.c 
->>>>> b/drivers/gpu/drm/msm/dp/dp_parser.c
->>>>> index 1056b8d..4bdbf91 100644
->>>>> --- a/drivers/gpu/drm/msm/dp/dp_parser.c
->>>>> +++ b/drivers/gpu/drm/msm/dp/dp_parser.c
->>>>> @@ -265,7 +265,7 @@ static int dp_parser_clock(struct dp_parser 
->>>>> *parser)
->>>>>       return 0;
->>>>>   }
->>>>> -static int dp_parser_find_next_bridge(struct dp_parser *parser)
->>>>> +int dp_parser_find_next_bridge(struct dp_parser *parser)
->>>>>   {
->>>>>       struct device *dev = &parser->pdev->dev;
->>>>>       struct drm_bridge *bridge;
->>>>> @@ -279,7 +279,7 @@ static int dp_parser_find_next_bridge(struct 
->>>>> dp_parser *parser)
->>>>>       return 0;
->>>>>   }
->>>>> -static int dp_parser_parse(struct dp_parser *parser, int 
->>>>> connector_type)
->>>>> +static int dp_parser_parse(struct dp_parser *parser)
->>>>>   {
->>>>>       int rc = 0;
->>>>> @@ -300,25 +300,6 @@ static int dp_parser_parse(struct dp_parser 
->>>>> *parser, int connector_type)
->>>>>       if (rc)
->>>>>           return rc;
->>>>> -    /*
->>>>> -     * External bridges are mandatory for eDP interfaces: one has to
->>>>> -     * provide at least an eDP panel (which gets wrapped into 
->>>>> panel-bridge).
->>>>> -     *
->>>>> -     * For DisplayPort interfaces external bridges are optional, so
->>>>> -     * silently ignore an error if one is not present (-ENODEV).
->>>>> -     */
->>>>> -    rc = dp_parser_find_next_bridge(parser);
->>>>> -    if (rc == -ENODEV) {
->>>>> -        if (connector_type == DRM_MODE_CONNECTOR_eDP) {
->>>>> -            DRM_ERROR("eDP: next bridge is not present\n");
->>>>> -            return rc;
->>>>> -        }
->>>>> -    } else if (rc) {
->>>>> -        if (rc != -EPROBE_DEFER)
->>>>> -            DRM_ERROR("DP: error parsing next bridge: %d\n", rc);
->>>>> -        return rc;
->>>>> -    }
->>>>> -
->>>>>       /* Map the corresponding regulator information according to
->>>>>        * version. Currently, since we only have one supported 
->>>>> platform,
->>>>>        * mapping the regulator directly.
->>>>> diff --git a/drivers/gpu/drm/msm/dp/dp_parser.h 
->>>>> b/drivers/gpu/drm/msm/dp/dp_parser.h
->>>>> index d371bae..3a4d797 100644
->>>>> --- a/drivers/gpu/drm/msm/dp/dp_parser.h
->>>>> +++ b/drivers/gpu/drm/msm/dp/dp_parser.h
->>>>> @@ -125,7 +125,7 @@ struct dp_parser {
->>>>>       u32 max_dp_lanes;
->>>>>       struct drm_bridge *next_bridge;
->>>>> -    int (*parse)(struct dp_parser *parser, int connector_type);
->>>>> +    int (*parse)(struct dp_parser *parser);
->>>>>   };
->>>>>   /**
->>>>> @@ -141,4 +141,16 @@ struct dp_parser {
->>>>>    */
->>>>>   struct dp_parser *dp_parser_get(struct platform_device *pdev);
->>>>> +/**
->>>>> + * dp_parser_find_next_bridge() - find an additional bridge to DP
->>>>> + *
->>>>> + * @parser: dp_parser data from client
->>>>> + *
->>>>> + * This function is used to find any additional bridge attached to
->>>>> + * the DP controller. The eDP interface requires a panel bridge.
->>>>> + *
->>>>> + * Return: 0 if able to get the bridge, otherwise negative errno 
->>>>> for failure.
->>>>> + */
->>>>> +int dp_parser_find_next_bridge(struct dp_parser *parser);
->>>>> +
->>>>>   #endif
->>>>
->>>>
->>
->>
+> NMIs do not have associated vectors.
+
+Again. NMI has an vector associated, but it is not subject to dynamic
+vector management.
+
+> diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+> index fb2d71bea98d..791a9331e257 100644
+> --- a/drivers/iommu/intel/irq_remapping.c
+> +++ b/drivers/iommu/intel/irq_remapping.c
+> @@ -1198,8 +1198,12 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+>  	 * After this point, all the interrupts will start arriving
+>  	 * at the new destination. So, time to cleanup the previous
+>  	 * vector allocation.
+> +	 *
+> +	 * Do it only for non-NMI irqs. NMIs don't have associated
+> +	 * vectors.
+
+See above.
+
+>  	 */
+> -	send_cleanup_vector(cfg);
+> +	if (cfg->delivery_mode != APIC_DELIVERY_MODE_NMI)
+> +		send_cleanup_vector(cfg);
+
+So this needs to be replicated for all invocations of
+send_cleanup_vector(), right? Why can't you put it into that function?
+  
+>  	return IRQ_SET_MASK_OK_DONE;
+>  }
+> @@ -1352,6 +1356,9 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
+>  	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
+>  		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
+>  
+> +	if ((info->flags & X86_IRQ_ALLOC_AS_NMI) && nr_irqs != 1)
+> +		return -EINVAL;
+
+This cannot be reached when the vector allocation domain already
+rejected it, but copy & pasta is wonderful and increases the line count.
+
+Thanks,
+
+        tglx
 
 
--- 
-With best wishes
-Dmitry
