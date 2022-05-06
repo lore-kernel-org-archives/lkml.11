@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BFDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37879C43219
 	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443793AbiEFQOR (ORCPT
+        id S1443778AbiEFQON (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        Fri, 6 May 2022 12:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443627AbiEFQNd (ORCPT
+        with ESMTP id S1443607AbiEFQNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:13:33 -0400
-Received: from smtp-1908.mail.infomaniak.ch (smtp-1908.mail.infomaniak.ch [185.125.25.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A966EB09
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:09:47 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwWF60pkzMqHNm;
-        Fri,  6 May 2022 18:09:45 +0200 (CEST)
+        Fri, 6 May 2022 12:13:31 -0400
+Received: from smtp-bc0c.mail.infomaniak.ch (smtp-bc0c.mail.infomaniak.ch [45.157.188.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB3F6E8F6
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:09:44 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwWB71K8zMqT97;
+        Fri,  6 May 2022 18:09:42 +0200 (CEST)
 Received: from localhost (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwWF3whBzlhSLy;
-        Fri,  6 May 2022 18:09:45 +0200 (CEST)
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwWB0WxwzlhMCD;
+        Fri,  6 May 2022 18:09:42 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651853385;
-        bh=L3EhBQuZ8JSyRKEViKbnN85U/wm7/nFg67YALqmghu8=;
+        s=20191114; t=1651853382;
+        bh=b5lWOGyqbT8zcn7hnQNEb4CQX/FmgRw1H4bzPQKGJyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JOza7zG25EY3L8hBE9WNhYxxfBMlXYdNrGY8ol46Kw7FJ085yeaSuzXiNbpAWJ1P5
-         qj8sI6X3ivCDev5JQuMpz3L8leRicjZzeGCr4PkRPqul2caZViwhoR0j2sFYnhU6Y4
-         FBW/n/cVgXPlSZLu0r7j2pZ6k5xuZaZG0/q9njfI=
+        b=CbyDGM7AXAkJCl97UG6ucyopswscsHddqEjcb+yitepZtIUTujo5MzJx4jzsuoVj/
+         VHpSs/3/Bi8Dv9OF5O/FcHUGUJTT26bpnYStpE2AFC9pXwD0zqAPwqvwXba0fnuy0B
+         MBvlLOSByZn3iLMnBKho7sAewRH4PHPac7RMbQ9E=
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     James Morris <jmorris@namei.org>,
         "Serge E . Hallyn" <serge@hallyn.com>
@@ -42,10 +42,12 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Shuah Khan <shuah@kernel.org>,
         Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
         linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH v3 10/12] landlock: Document LANDLOCK_ACCESS_FS_REFER and ABI versioning
-Date:   Fri,  6 May 2022 18:11:00 +0200
-Message-Id: <20220506161102.525323-11-mic@digikod.net>
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Kentaro Takeda <takedakn@nttdata.co.jp>
+Subject: [PATCH v3 06/12] LSM: Remove double path_rename hook calls for RENAME_EXCHANGE
+Date:   Fri,  6 May 2022 18:10:56 +0200
+Message-Id: <20220506161102.525323-7-mic@digikod.net>
 In-Reply-To: <20220506161102.525323-1-mic@digikod.net>
 References: <20220506161102.525323-1-mic@digikod.net>
 MIME-Version: 1.0
@@ -55,222 +57,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add LANDLOCK_ACCESS_FS_REFER in the example and properly check to only
-use it if the current kernel support it thanks to the Landlock ABI
-version.
+In order to be able to identify a file exchange with renameat2(2) and
+RENAME_EXCHANGE, which will be useful for Landlock [1], propagate the
+rename flags to LSMs.  This may also improve performance because of the
+switch from two set of LSM hook calls to only one, and because LSMs
+using this hook may optimize the double check (e.g. only one lock,
+reduce the number of path walks).
 
-Move the file renaming and linking limitation to a new "Previous
-limitations" section.
+AppArmor, Landlock and Tomoyo are updated to leverage this change.  This
+should not change the current behavior (same check order), except
+(different level of) speed boosts.
 
-Improve documentation about the backward and forward compatibility,
-including the rational for ruleset's handled_access_fs.
+[1] https://lore.kernel.org/r/20220221212522.320243-1-mic@digikod.net
 
-Update the document date.
-
+Cc: James Morris <jmorris@namei.org>
+Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+Cc: Serge E. Hallyn <serge@hallyn.com>
+Acked-by: John Johansen <john.johansen@canonical.com>
+Acked-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Reviewed-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Link: https://lore.kernel.org/r/20220506161102.525323-11-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506161102.525323-7-mic@digikod.net
 ---
 
 Changes since v2:
-* Fix spelling spotted by Paul.
-* Explain a bit more the renaming and linking constraint alternative
-  (previous limitations), which is implemented with
-  LANDLOCK_ACCESS_FS_REFER.
-* Update date.
+* Add Reviewed-by: Paul Moore.
+* Format security/landlock/fs.c with clang-format.
 
 Changes since v1:
-* Add Reviewed-by: Paul Moore.
-* Update date.
+* Import patch from
+  https://lore.kernel.org/r/20220222175332.384545-1-mic@digikod.net
+* Add Acked-by: Tetsuo Handa.
+* Add Acked-by: John Johansen.
 ---
- Documentation/userspace-api/landlock.rst | 126 +++++++++++++++++++----
- 1 file changed, 106 insertions(+), 20 deletions(-)
+ include/linux/lsm_hook_defs.h |  2 +-
+ include/linux/lsm_hooks.h     |  1 +
+ security/apparmor/lsm.c       | 30 +++++++++++++++++++++++++-----
+ security/landlock/fs.c        | 11 ++++++++++-
+ security/security.c           |  9 +--------
+ security/tomoyo/tomoyo.c      | 11 ++++++++++-
+ 6 files changed, 48 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/userspace-api/landlock.rst
-index b68e7a51009f..ae2aea986aa6 100644
---- a/Documentation/userspace-api/landlock.rst
-+++ b/Documentation/userspace-api/landlock.rst
-@@ -8,7 +8,7 @@ Landlock: unprivileged access control
- =====================================
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index db924fe379c9..eafa1d2489fd 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -100,7 +100,7 @@ LSM_HOOK(int, 0, path_link, struct dentry *old_dentry,
+ 	 const struct path *new_dir, struct dentry *new_dentry)
+ LSM_HOOK(int, 0, path_rename, const struct path *old_dir,
+ 	 struct dentry *old_dentry, const struct path *new_dir,
+-	 struct dentry *new_dentry)
++	 struct dentry *new_dentry, unsigned int flags)
+ LSM_HOOK(int, 0, path_chmod, const struct path *path, umode_t mode)
+ LSM_HOOK(int, 0, path_chown, const struct path *path, kuid_t uid, kgid_t gid)
+ LSM_HOOK(int, 0, path_chroot, const struct path *path)
+diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+index 419b5febc3ca..9acf5e368d73 100644
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -358,6 +358,7 @@
+  *	@old_dentry contains the dentry structure of the old link.
+  *	@new_dir contains the path structure for parent of the new link.
+  *	@new_dentry contains the dentry structure of the new link.
++ *	@flags may contain rename options such as RENAME_EXCHANGE.
+  *	Return 0 if permission is granted.
+  * @path_chmod:
+  *	Check for permission to change a mode of the file @path. The new
+diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
+index 4f0eecb67dde..900bc540656a 100644
+--- a/security/apparmor/lsm.c
++++ b/security/apparmor/lsm.c
+@@ -354,13 +354,16 @@ static int apparmor_path_link(struct dentry *old_dentry, const struct path *new_
+ }
  
- :Author: Mickaël Salaün
--:Date: March 2021
-+:Date: May 2022
+ static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_dentry,
+-				const struct path *new_dir, struct dentry *new_dentry)
++				const struct path *new_dir, struct dentry *new_dentry,
++				const unsigned int flags)
+ {
+ 	struct aa_label *label;
+ 	int error = 0;
  
- The goal of Landlock is to enable to restrict ambient rights (e.g. global
- filesystem access) for a set of processes.  Because Landlock is a stackable
-@@ -29,14 +29,15 @@ the thread enforcing it, and its future children.
- Defining and enforcing a security policy
- ----------------------------------------
+ 	if (!path_mediated_fs(old_dentry))
+ 		return 0;
++	if ((flags & RENAME_EXCHANGE) && !path_mediated_fs(new_dentry))
++		return 0;
  
--We first need to create the ruleset that will contain our rules.  For this
-+We first need to define the ruleset that will contain our rules.  For this
- example, the ruleset will contain rules that only allow read actions, but write
- actions will be denied.  The ruleset then needs to handle both of these kind of
--actions.
-+actions.  This is required for backward and forward compatibility (i.e. the
-+kernel and user space may not know each other's supported restrictions), hence
-+the need to be explicit about the denied-by-default access rights.
+ 	label = begin_current_label_crit_section();
+ 	if (!unconfined(label)) {
+@@ -374,10 +377,27 @@ static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_d
+ 			d_backing_inode(old_dentry)->i_mode
+ 		};
  
- .. code-block:: c
+-		error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
+-				     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
+-				     AA_MAY_SETATTR | AA_MAY_DELETE,
+-				     &cond);
++		if (flags & RENAME_EXCHANGE) {
++			struct path_cond cond_exchange = {
++				i_uid_into_mnt(mnt_userns, d_backing_inode(new_dentry)),
++				d_backing_inode(new_dentry)->i_mode
++			};
++
++			error = aa_path_perm(OP_RENAME_SRC, label, &new_path, 0,
++					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
++					     AA_MAY_SETATTR | AA_MAY_DELETE,
++					     &cond_exchange);
++			if (!error)
++				error = aa_path_perm(OP_RENAME_DEST, label, &old_path,
++						     0, MAY_WRITE | AA_MAY_SETATTR |
++						     AA_MAY_CREATE, &cond_exchange);
++		}
++
++		if (!error)
++			error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
++					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
++					     AA_MAY_SETATTR | AA_MAY_DELETE,
++					     &cond);
+ 		if (!error)
+ 			error = aa_path_perm(OP_RENAME_DEST, label, &new_path,
+ 					     0, MAY_WRITE | AA_MAY_SETATTR |
+diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+index 7b7860039a08..30b42cdee52e 100644
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -622,10 +622,12 @@ static int hook_path_link(struct dentry *const old_dentry,
+ static int hook_path_rename(const struct path *const old_dir,
+ 			    struct dentry *const old_dentry,
+ 			    const struct path *const new_dir,
+-			    struct dentry *const new_dentry)
++			    struct dentry *const new_dentry,
++			    const unsigned int flags)
+ {
+ 	const struct landlock_ruleset *const dom =
+ 		landlock_get_current_domain();
++	u32 exchange_access = 0;
  
--    int ruleset_fd;
-     struct landlock_ruleset_attr ruleset_attr = {
-         .handled_access_fs =
-             LANDLOCK_ACCESS_FS_EXECUTE |
-@@ -51,9 +52,34 @@ actions.
-             LANDLOCK_ACCESS_FS_MAKE_SOCK |
-             LANDLOCK_ACCESS_FS_MAKE_FIFO |
-             LANDLOCK_ACCESS_FS_MAKE_BLOCK |
--            LANDLOCK_ACCESS_FS_MAKE_SYM,
-+            LANDLOCK_ACCESS_FS_MAKE_SYM |
-+            LANDLOCK_ACCESS_FS_REFER,
-     };
+ 	if (!dom)
+ 		return 0;
+@@ -633,12 +635,19 @@ static int hook_path_rename(const struct path *const old_dir,
+ 	if (old_dir->dentry != new_dir->dentry)
+ 		/* Gracefully forbids reparenting. */
+ 		return -EXDEV;
++	if (flags & RENAME_EXCHANGE) {
++		if (unlikely(d_is_negative(new_dentry)))
++			return -ENOENT;
++		exchange_access =
++			get_mode_access(d_backing_inode(new_dentry)->i_mode);
++	}
+ 	if (unlikely(d_is_negative(old_dentry)))
+ 		return -ENOENT;
+ 	/* RENAME_EXCHANGE is handled because directories are the same. */
+ 	return check_access_path(
+ 		dom, old_dir,
+ 		maybe_remove(old_dentry) | maybe_remove(new_dentry) |
++			exchange_access |
+ 			get_mode_access(d_backing_inode(old_dentry)->i_mode));
+ }
  
-+Because we may not know on which kernel version an application will be
-+executed, it is safer to follow a best-effort security approach.  Indeed, we
-+should try to protect users as much as possible whatever the kernel they are
-+using.  To avoid binary enforcement (i.e. either all security features or
-+none), we can leverage a dedicated Landlock command to get the current version
-+of the Landlock ABI and adapt the handled accesses.  Let's check if we should
-+remove the `LANDLOCK_ACCESS_FS_REFER` access right which is only supported
-+starting with the second version of the ABI.
-+
-+.. code-block:: c
-+
-+    int abi;
-+
-+    abi = landlock_create_ruleset(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
-+    if (abi < 2) {
-+        ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_REFER;
-+    }
-+
-+This enables to create an inclusive ruleset that will contain our rules.
-+
-+.. code-block:: c
-+
-+    int ruleset_fd;
-+
-     ruleset_fd = landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-     if (ruleset_fd < 0) {
-         perror("Failed to create a ruleset");
-@@ -92,6 +118,11 @@ descriptor.
-         return 1;
-     }
+diff --git a/security/security.c b/security/security.c
+index b7cf5cbfdc67..c9bfc0b70b28 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -1197,15 +1197,8 @@ int security_path_rename(const struct path *old_dir, struct dentry *old_dentry,
+ 		     (d_is_positive(new_dentry) && IS_PRIVATE(d_backing_inode(new_dentry)))))
+ 		return 0;
  
-+It may also be required to create rules following the same logic as explained
-+for the ruleset creation, by filtering access rights according to the Landlock
-+ABI version.  In this example, this is not required because
-+`LANDLOCK_ACCESS_FS_REFER` is not allowed by any rule.
-+
- We now have a ruleset with one rule allowing read access to ``/usr`` while
- denying all other handled accesses for the filesystem.  The next step is to
- restrict the current thread from gaining more privileges (e.g. thanks to a SUID
-@@ -192,6 +223,56 @@ To be allowed to use :manpage:`ptrace(2)` and related syscalls on a target
- process, a sandboxed process should have a subset of the target process rules,
- which means the tracee must be in a sub-domain of the tracer.
- 
-+Compatibility
-+=============
-+
-+Backward and forward compatibility
-+----------------------------------
-+
-+Landlock is designed to be compatible with past and future versions of the
-+kernel.  This is achieved thanks to the system call attributes and the
-+associated bitflags, particularly the ruleset's `handled_access_fs`.  Making
-+handled access right explicit enables the kernel and user space to have a clear
-+contract with each other.  This is required to make sure sandboxing will not
-+get stricter with a system update, which could break applications.
-+
-+Developers can subscribe to the `Landlock mailing list
-+<https://subspace.kernel.org/lists.linux.dev.html>`_ to knowingly update and
-+test their applications with the latest available features.  In the interest of
-+users, and because they may use different kernel versions, it is strongly
-+encouraged to follow a best-effort security approach by checking the Landlock
-+ABI version at runtime and only enforcing the supported features.
-+
-+Landlock ABI versions
-+---------------------
-+
-+The Landlock ABI version can be read with the sys_landlock_create_ruleset()
-+system call:
-+
-+.. code-block:: c
-+
-+    int abi;
-+
-+    abi = landlock_create_ruleset(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
-+    if (abi < 0) {
-+        switch (errno) {
-+        case ENOSYS:
-+            printf("Landlock is not supported by the current kernel.\n");
-+            break;
-+        case EOPNOTSUPP:
-+            printf("Landlock is currently disabled.\n");
-+            break;
-+        }
-+        return 0;
-+    }
-+    if (abi >= 2) {
-+        printf("Landlock supports LANDLOCK_ACCESS_FS_REFER.\n");
-+    }
-+
-+The following kernel interfaces are implicitly supported by the first ABI
-+version.  Features only supported from a specific version are explicitly marked
-+as such.
-+
- Kernel interface
- ================
- 
-@@ -228,21 +309,6 @@ Enforcing a ruleset
- Current limitations
- ===================
- 
--File renaming and linking
---------------------------
+-	if (flags & RENAME_EXCHANGE) {
+-		int err = call_int_hook(path_rename, 0, new_dir, new_dentry,
+-					old_dir, old_dentry);
+-		if (err)
+-			return err;
+-	}
 -
--Because Landlock targets unprivileged access controls, it is needed to properly
--handle composition of rules.  Such property also implies rules nesting.
--Properly handling multiple layers of ruleset, each one of them able to restrict
--access to files, also implies to inherit the ruleset restrictions from a parent
--to its hierarchy.  Because files are identified and restricted by their
--hierarchy, moving or linking a file from one directory to another implies to
--propagate the hierarchy constraints.  To protect against privilege escalations
--through renaming or linking, and for the sake of simplicity, Landlock currently
--limits linking and renaming to the same directory.  Future Landlock evolutions
--will enable more flexibility for renaming and linking, with dedicated ruleset
--flags.
--
- Filesystem topology modification
- --------------------------------
+ 	return call_int_hook(path_rename, 0, old_dir, old_dentry, new_dir,
+-				new_dentry);
++				new_dentry, flags);
+ }
+ EXPORT_SYMBOL(security_path_rename);
  
-@@ -281,6 +347,26 @@ Memory usage
- Kernel memory allocated to create rulesets is accounted and can be restricted
- by the Documentation/admin-guide/cgroup-v1/memory.rst.
+diff --git a/security/tomoyo/tomoyo.c b/security/tomoyo/tomoyo.c
+index b6a31901f289..71e82d855ebf 100644
+--- a/security/tomoyo/tomoyo.c
++++ b/security/tomoyo/tomoyo.c
+@@ -264,17 +264,26 @@ static int tomoyo_path_link(struct dentry *old_dentry, const struct path *new_di
+  * @old_dentry: Pointer to "struct dentry".
+  * @new_parent: Pointer to "struct path".
+  * @new_dentry: Pointer to "struct dentry".
++ * @flags: Rename options.
+  *
+  * Returns 0 on success, negative value otherwise.
+  */
+ static int tomoyo_path_rename(const struct path *old_parent,
+ 			      struct dentry *old_dentry,
+ 			      const struct path *new_parent,
+-			      struct dentry *new_dentry)
++			      struct dentry *new_dentry,
++			      const unsigned int flags)
+ {
+ 	struct path path1 = { .mnt = old_parent->mnt, .dentry = old_dentry };
+ 	struct path path2 = { .mnt = new_parent->mnt, .dentry = new_dentry };
  
-+Previous limitations
-+====================
++	if (flags & RENAME_EXCHANGE) {
++		const int err = tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path2,
++				&path1);
 +
-+File renaming and linking (ABI 1)
-+---------------------------------
-+
-+Because Landlock targets unprivileged access controls, it needs to properly
-+handle composition of rules.  Such property also implies rules nesting.
-+Properly handling multiple layers of rulesets, each one of them able to
-+restrict access to files, also implies inheritance of the ruleset restrictions
-+from a parent to its hierarchy.  Because files are identified and restricted by
-+their hierarchy, moving or linking a file from one directory to another implies
-+propagation of the hierarchy constraints, or restriction of these actions
-+according to the potentially lost constraints.  To protect against privilege
-+escalations through renaming or linking, and for the sake of simplicity,
-+Landlock previously limited linking and renaming to the same directory.
-+Starting with the Landlock ABI version 2, it is now possible to securely
-+control renaming and linking thanks to the new `LANDLOCK_ACCESS_FS_REFER`
-+access right.
-+
- Questions and answers
- =====================
++		if (err)
++			return err;
++	}
+ 	return tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path1, &path2);
+ }
  
 -- 
 2.35.1
