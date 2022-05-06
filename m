@@ -2,188 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 07:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388118AbiEFHHQ (ORCPT
+        id S1388279AbiEFHHX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 03:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
+        Fri, 6 May 2022 03:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388060AbiEFHG4 (ORCPT
+        with ESMTP id S1388114AbiEFHHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 03:06:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9161366F83
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:03:12 -0700 (PDT)
-Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KvhMJ31qBzfb1c;
-        Fri,  6 May 2022 15:02:04 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
+        Fri, 6 May 2022 03:07:15 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E81C666CB5
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 00:03:13 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24038:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 06 May 2022 15:01:02 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 15:03:10 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 6 May
- 2022 15:03:09 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <richard@nod.at>, <miquel.raynal@bootlin.com>, <vigneshr@ti.com>,
-        <mcoquelin.stm32@gmail.com>, <kirill.shutemov@linux.intel.com>,
-        <s.hauer@pengutronix.de>, <arne.edholm@axis.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>
-Subject: [PATCH v2 2/2] ubi: fastmap: Check wl_pool for free peb before wear leveling
-Date:   Fri, 6 May 2022 15:17:04 +0800
-Message-ID: <20220506071704.222501-3-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220506071704.222501-1-chengzhihao1@huawei.com>
-References: <20220506071704.222501-1-chengzhihao1@huawei.com>
+ 15.1.2507.6; Fri, 6 May 2022 15:01:00 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2507.006; Fri, 6 May 2022 15:01:00 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Subject: RE: [PATCH v14 6/9] dt-bindings: interrupt-controller: Add bindings
+ for SP7021 interrupt controller
+Thread-Topic: [PATCH v14 6/9] dt-bindings: interrupt-controller: Add bindings
+ for SP7021 interrupt controller
+Thread-Index: AQHYYPmoKr87uTd0mUKH1SxX+WAEFK0Q3wAAgACMdMA=
+Date:   Fri, 6 May 2022 07:01:00 +0000
+Message-ID: <d4ec03ed722349dda9fa3357449ac612@cqplus1.com>
+References: <cover.1651805790.git.qinjian@cqplus1.com>
+ <56fb5e9a35a901f15d8e9721385c7e916c181377.1651805790.git.qinjian@cqplus1.com>
+ <550cd907-be2a-4e90-350c-fbc3bdc03728@linaro.org>
+In-Reply-To: <550cd907-be2a-4e90-350c-fbc3bdc03728@linaro.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UBI fetches free peb from wl_pool during wear leveling, so UBI should
-check wl_pool's empty status before wear leveling. Otherwise, UBI will
-miss wear leveling chances when free pebs are run out.
-
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- drivers/mtd/ubi/fastmap-wl.c | 52 ++++++++++++++++++++++++++++++++++++
- drivers/mtd/ubi/wl.c         | 14 ++++++++--
- drivers/mtd/ubi/wl.h         |  2 ++
- 3 files changed, 66 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/mtd/ubi/fastmap-wl.c b/drivers/mtd/ubi/fastmap-wl.c
-index 21ea5ca8270b..15c286546d28 100644
---- a/drivers/mtd/ubi/fastmap-wl.c
-+++ b/drivers/mtd/ubi/fastmap-wl.c
-@@ -269,6 +269,58 @@ int ubi_wl_get_peb(struct ubi_device *ubi)
- 	return ret;
- }
- 
-+/**
-+ * next_peb_for_wl - returns next PEB to be used internally by the
-+ * WL sub-system.
-+ *
-+ * @ubi: UBI device description object
-+ */
-+static struct ubi_wl_entry *next_peb_for_wl(struct ubi_device *ubi)
-+{
-+	struct ubi_fm_pool *pool = &ubi->fm_wl_pool;
-+	int pnum;
-+
-+	if (pool->used == pool->size)
-+		return NULL;
-+
-+	pnum = pool->pebs[pool->used];
-+	return ubi->lookuptbl[pnum];
-+}
-+
-+/**
-+ * need_wear_leveling - checks whether to trigger a wear leveling work.
-+ * UBI fetches free PEB from wl_pool, we check free PEBs from both 'wl_pool'
-+ * and 'ubi->free', because free PEB in 'ubi->free' tree maybe moved into
-+ * 'wl_pool' by ubi_refill_pools().
-+ *
-+ * @ubi: UBI device description object
-+ */
-+static bool need_wear_leveling(struct ubi_device *ubi)
-+{
-+	int ec;
-+	struct ubi_wl_entry *e;
-+
-+	if (!ubi->used.rb_node)
-+		return false;
-+
-+	e = next_peb_for_wl(ubi);
-+	if (!e) {
-+		if (!ubi->free.rb_node)
-+			return false;
-+		e = find_wl_entry(ubi, &ubi->free, WL_FREE_MAX_DIFF);
-+		ec = e->ec;
-+	} else {
-+		ec = e->ec;
-+		if (ubi->free.rb_node) {
-+			e = find_wl_entry(ubi, &ubi->free, WL_FREE_MAX_DIFF);
-+			ec = max(ec, e->ec);
-+		}
-+	}
-+	e = rb_entry(rb_first(&ubi->used), struct ubi_wl_entry, u.rb);
-+
-+	return ec - e->ec >= UBI_WL_THRESHOLD;
-+}
-+
- /* get_peb_for_wl - returns a PEB to be used internally by the WL sub-system.
-  *
-  * @ubi: UBI device description object
-diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
-index afcdacb9d0e9..55bae06cf408 100644
---- a/drivers/mtd/ubi/wl.c
-+++ b/drivers/mtd/ubi/wl.c
-@@ -670,7 +670,11 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
- 	ubi_assert(!ubi->move_from && !ubi->move_to);
- 	ubi_assert(!ubi->move_to_put);
- 
-+#ifdef CONFIG_MTD_UBI_FASTMAP
-+	if (!next_peb_for_wl(ubi) ||
-+#else
- 	if (!ubi->free.rb_node ||
-+#endif
- 	    (!ubi->used.rb_node && !ubi->scrub.rb_node)) {
- 		/*
- 		 * No free physical eraseblocks? Well, they must be waiting in
-@@ -1003,8 +1007,6 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
- static int ensure_wear_leveling(struct ubi_device *ubi, int nested)
- {
- 	int err = 0;
--	struct ubi_wl_entry *e1;
--	struct ubi_wl_entry *e2;
- 	struct ubi_work *wrk;
- 
- 	spin_lock(&ubi->wl_lock);
-@@ -1017,6 +1019,13 @@ static int ensure_wear_leveling(struct ubi_device *ubi, int nested)
- 	 * the WL worker has to be scheduled anyway.
- 	 */
- 	if (!ubi->scrub.rb_node) {
-+#ifdef CONFIG_MTD_UBI_FASTMAP
-+		if (!need_wear_leveling(ubi))
-+			goto out_unlock;
-+#else
-+		struct ubi_wl_entry *e1;
-+		struct ubi_wl_entry *e2;
-+
- 		if (!ubi->used.rb_node || !ubi->free.rb_node)
- 			/* No physical eraseblocks - no deal */
- 			goto out_unlock;
-@@ -1032,6 +1041,7 @@ static int ensure_wear_leveling(struct ubi_device *ubi, int nested)
- 
- 		if (!(e2->ec - e1->ec >= UBI_WL_THRESHOLD))
- 			goto out_unlock;
-+#endif
- 		dbg_wl("schedule wear-leveling");
- 	} else
- 		dbg_wl("schedule scrubbing");
-diff --git a/drivers/mtd/ubi/wl.h b/drivers/mtd/ubi/wl.h
-index c93a53293786..5ebe374a08ae 100644
---- a/drivers/mtd/ubi/wl.h
-+++ b/drivers/mtd/ubi/wl.h
-@@ -5,6 +5,8 @@
- static void update_fastmap_work_fn(struct work_struct *wrk);
- static struct ubi_wl_entry *find_anchor_wl_entry(struct rb_root *root);
- static struct ubi_wl_entry *get_peb_for_wl(struct ubi_device *ubi);
-+static struct ubi_wl_entry *next_peb_for_wl(struct ubi_device *ubi);
-+static bool need_wear_leveling(struct ubi_device *ubi);
- static void ubi_fastmap_close(struct ubi_device *ubi);
- static inline void ubi_fastmap_init(struct ubi_device *ubi, int *count)
- {
--- 
-2.31.1
-
+PiBPbiAwNi8wNS8yMDIyIDA1OjIzLCBRaW4gSmlhbiB3cm90ZToNCj4gPiBBZGQgZG9jdW1lbnRh
+dGlvbiB0byBkZXNjcmliZSBTdW5wbHVzIFNQNzAyMSBpbnRlcnJ1cHQgY29udHJvbGxlciBiaW5k
+aW5ncy4NCj4gPg0KPiA+IFJldmlld2VkLWJ5OiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwub3Jn
+Pg0KPiA+IFNpZ25lZC1vZmYtYnk6IFFpbiBKaWFuIDxxaW5qaWFuQGNxcGx1czEuY29tPg0KPiA+
+IC0tLQ0KPiA+ICAuLi4vc3VucGx1cyxzcDcwMjEtaW50Yy55YW1sICAgICAgICAgICAgICAgICAg
+fCA2MiArKysrKysrKysrKysrKysrKysrDQo+ID4gIE1BSU5UQUlORVJTICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICB8ICAxICsNCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA2MyBpbnNl
+cnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvc3VucGx1cyxzcDcwMjEtaW50Yy55YW1s
+DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
+L2ludGVycnVwdC1jb250cm9sbGVyL3N1bnBsdXMsc3A3MDIxLWludGMueWFtbA0KPiBiL0RvY3Vt
+ZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxlci9zdW5wbHVz
+LHNwNzAyMS1pbnRjLnlhbWwNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAw
+MDAwMDAwMC4uZjI2ZDhiMjEzDQo+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3VtZW50
+YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxlci9zdW5wbHVzLHNw
+NzAyMS1pbnRjLnlhbWwNCj4gPiBAQCAtMCwwICsxLDYyIEBADQo+ID4gKyMgU1BEWC1MaWNlbnNl
+LUlkZW50aWZpZXI6IChHUEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNlKQ0KPiA+ICsjIENvcHly
+aWdodCAoQykgU3VucGx1cyBDby4sIEx0ZC4gMjAyMQ0KPiA+ICslWUFNTCAxLjINCj4gPiArLS0t
+DQo+ID4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvaW50ZXJydXB0LWNvbnRy
+b2xsZXIvc3VucGx1cyxzcDcwMjEtaW50Yy55YW1sIw0KPiA+ICskc2NoZW1hOiBodHRwOi8vZGV2
+aWNldHJlZS5vcmcvbWV0YS1zY2hlbWFzL2NvcmUueWFtbCMNCj4gPiArDQo+ID4gK3RpdGxlOiBT
+dW5wbHVzIFNQNzAyMSBTb0MgSW50ZXJydXB0IENvbnRyb2xsZXIgRGV2aWNlIFRyZWUgQmluZGlu
+Z3MNCj4gDQo+IFJlbW92ZSAiRGV2aWNlIFRyZWUgQmluZGluZ3MiLiBUaGlzIGFwcGxpZXMgdG8g
+YWxsIGJpbmRpbmdzIHBhdGNoZXMsIG5vdA0KPiBvbmx5IHRvIG9uZS4NCj4gDQoNCkRpZCB5b3Ug
+bWVhbnMgY2hhbmdlDQoidGl0bGU6IFN1bnBsdXMgU1A3MDIxIFNvQyBJbnRlcnJ1cHQgQ29udHJv
+bGxlciBEZXZpY2UgVHJlZSBCaW5kaW5ncyINCnRvIA0KInRpdGxlOiBTdW5wbHVzIFNQNzAyMSBT
+b0MgSW50ZXJydXB0IENvbnRyb2xsZXIiPw0KDQoNCg==
