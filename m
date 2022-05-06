@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC10FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2531C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390074AbiEFIZD (ORCPT
+        id S1390107AbiEFIZE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
+        Fri, 6 May 2022 04:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390053AbiEFIY5 (ORCPT
+        with ESMTP id S1390096AbiEFIZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:24:57 -0400
+        Fri, 6 May 2022 04:25:01 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B864C13F3A
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:21:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12DD13D13
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:21:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651825275; x=1683361275;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SWCtzeQzV0HfQf38xk+FbMTpoar7gBWKe/96+FRMtXQ=;
-  b=jtvE2+yHoLyRF4n/gRVwt0MLx7sqbsWedjJoUmTnRqfaesMZzILhw0MZ
-   kpqEq/iwHyDlaKW08LZQfa9f0Iem3a9Uw3mOAJQOdWqmqF357E1aIsnqZ
-   SsZqwEUCOXoZWzQyzmZsXBrZ6xXNPFLY0F89YKoKk2vp10nzz901LmzZR
-   f+KjHim9XOkSZe+0Di7QeJ3YK3TpFGLjUm5scmy0DaVljK/t89die0R/D
-   xnB3ZXXIqdaf2wVHnOJp7f6+rDPHo7tx5rTpFNffjzyn0P/cdF3aZ6O3V
-   eKiGx1y58f1QjehNa/DLAmWc3U0ca13Oa/i7DwePpft0dwimscyJ5otIJ
-   g==;
+  t=1651825278; x=1683361278;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=f3Co6OGCYeWWxJEwjya8qaocxIctKpd8QmKpvKixx+c=;
+  b=f+N6AJ+0CI0TZP1EVFVu/o/YB6A7AUxBO+We+t48UvMItkPGFq5SdMqT
+   ph/IG3BIPRsH49TAIYbOxYfhKOmoixp8qWrdeONnLdG9e991wJuMAsuYo
+   SdkHG2vWGVTpm+R4/6Bp3sY29+YYLZChVKZ68byAbNO4rXrrUVvHZSsa9
+   ZXWXZb/aBkVCVTw+3F/ne1UsXgZ5L1qDTszbHsz6VfgUGPUrlTxRtE3bz
+   gq8ueH81HacqMcTiR+RYeCVF0deLQMzb8RV23e+Tyr0/Pw9W4r0E1YEG1
+   oAFHKqGY2SlY7l0jO4ZiKxca142ycX19TxKW5DweGzr3BykuGDWT2japD
+   w==;
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="155031257"
+   d="scan'208";a="158023604"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2022 01:21:15 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2022 01:21:18 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 6 May 2022 01:21:13 -0700
+ 15.1.2375.17; Fri, 6 May 2022 01:21:17 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 6 May 2022 01:21:11 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 6 May 2022 01:21:14 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <linux@armlinux.org.uk>
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 0/4] ARM: at91: pm: add quirks for ethernet
-Date:   Fri, 6 May 2022 11:23:31 +0300
-Message-ID: <20220506082335.3817259-1-claudiu.beznea@microchip.com>
+Subject: [PATCH v3 1/4] ARM: at91: pm: keep documentation inline with structure members
+Date:   Fri, 6 May 2022 11:23:32 +0300
+Message-ID: <20220506082335.3817259-2-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220506082335.3817259-1-claudiu.beznea@microchip.com>
+References: <20220506082335.3817259-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -57,44 +59,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Move documentation of bu to keep the same order as in the structure
+itself.
 
-As described in patch 4/4 when receiving WoL packet on Ethernet
-interfaces of AT91 SoCs and being in ULP0 or ULP1 AT91 specific power
-management modes some SoCs may block other may have Ethernet interfaces
-broken after resume. Workaround for this would be to disable clocks
-for these Ethernet interfaces. As the MACB driver is common to multiple
-vendors and multiple architectures and ULP0, ULP1 PM modes are AT91
-specific the fix has been implemented in arch/arm/mach-at91 to avoid
-having AT91 specific code in MACB driver.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ arch/arm/mach-at91/pm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Along with this patches I took the chance and added few comment style
-fixups.
-
-Thank you,
-Claudiu Beznea
-
-Changes in v3:
-- patch 3/4 is now patch 4/4, patch 4/4 is now patch 3/4
-- in patch 4/4:
-	- improve failure path in at91_pm_config_quirks()
-	- pass struct at91_pm_quirk_eth object to at91_pm_eth_quirk_is_valid()
-	- add struct device member to struct at91_pm_quirk_eth
-	- guard for_each_wakeup_source() with CONFIG_PM_SLEEP fixing the
-	  compilation error Reported-by: kernel test robot <lkp@intel.com>
-
-Changes in v2:
-- in patch 4/4: use proper structure name in documentation
-
-Claudiu Beznea (4):
-  ARM: at91: pm: keep documentation inline with structure members
-  ARM: at91: pm: introduce macros for pm mode replacement
-  ARM: at91: pm: use kernel documentation style
-  ARM: at91: pm: add quirks for pm
-
- arch/arm/mach-at91/pm.c | 395 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 362 insertions(+), 33 deletions(-)
-
+diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
+index 0fd609e26615..7ea4c7f13d28 100644
+--- a/arch/arm/mach-at91/pm.c
++++ b/arch/arm/mach-at91/pm.c
+@@ -65,9 +65,9 @@ struct at91_pm_sfrbu_regs {
+  * @config_shdwc_ws: wakeup sources configuration function for SHDWC
+  * @config_pmc_ws: wakeup srouces configuration function for PMC
+  * @ws_ids: wakup sources of_device_id array
++ * @bu: backup unit mapped data (for backup mode)
+  * @data: PM data to be used on last phase of suspend
+  * @sfrbu_regs: SFRBU registers mapping
+- * @bu: backup unit mapped data (for backup mode)
+  * @memcs: memory chip select
+  */
+ struct at91_soc_pm {
 -- 
 2.34.1
 
