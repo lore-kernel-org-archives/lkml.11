@@ -2,94 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E99C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0939C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 20:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442821AbiEFVD1 (ORCPT
+        id S1392488AbiEFVDb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
+        Fri, 6 May 2022 17:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444045AbiEFVDW (ORCPT
+        with ESMTP id S1444310AbiEFVDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:03:22 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D0D6EB22;
-        Fri,  6 May 2022 13:59:14 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id e15so9373154iob.3;
-        Fri, 06 May 2022 13:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Nq1jhHTyUB0btWPNhxYltvYS+C1e550wDIkKCw2n7r8=;
-        b=lkHY4dcyhn0aLJYJtjuECXL00hq+a5aXvIQuS07AUtCk2pp5v+kL+zQEv1IEnqjjOO
-         mtbYsn1zwyFOUBBHPbiyHe+ysF5d7YabJD4V1h7rI2vrhjl8PZT8tncjWgYlcDNbgzsw
-         fQquVpRC0FSG1QjbxEgS6kiYOuBEsRlzr5ViJRgYEz3ng2GKTXX/6ca+jlEFEZZ2izsV
-         LvDovelBQEfAtvAkBH9OFhQv2LE7P263ta2DxvdRwfGIYj9qxD450fMUpweD7thuZUZG
-         nlm9B0P+ILI+t8zpOtHrON123wiBek/ha99cInddIIQ29URp1shIyEDKAphV7Vall/0G
-         8iKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Nq1jhHTyUB0btWPNhxYltvYS+C1e550wDIkKCw2n7r8=;
-        b=u3e2/5/leqs4ruLepg9do9r9MX2qYJtEmTQEosIP28Q3PJX5CheH1hLSTmRx0DCHJL
-         1/b308ZTZj7gX5W5tf4H6LtIJgVt7teVk4hsbCL0H8QO69lFOkMzHysJHOr9RnkASCJu
-         vo+VFfyx7xWaLIA5s45JJL3QNpUJv5fS2hdQptcJeAMnL5TFqPAFNbQCubwd4QsUUsbl
-         TxZ8MRgnv2WP+DThQ5OmMs3wItyeBtSemtHg5+/dZuiUKWE7wZmuGeC/x0smQDRi6/QC
-         R2X18sqPONYWwF6iSuu9z6+itHrlsq+WUUQANLeEj2grQUpuIt2r7LBKPpVWgQurDIcC
-         hIWw==
-X-Gm-Message-State: AOAM531LxwroQnXVnZebd76yU9J/qUxsaSZqyQi5u79vRP36YJ3wp7hs
-        otiFlOpQuB/CW8oMlrTDacs=
-X-Google-Smtp-Source: ABdhPJyNAi7sSCmw+K0BxgixB4ZYe/BbE15nYIBlfT3Fjv26X5cL9B+ZFQMdx+YQ0c+0dwiyNeXZJw==
-X-Received: by 2002:a05:6638:502:b0:32b:8c53:f737 with SMTP id i2-20020a056638050200b0032b8c53f737mr2223887jar.121.1651870754254;
-        Fri, 06 May 2022 13:59:14 -0700 (PDT)
-Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id b15-20020a5ea70f000000b0065a47e16f5bsm1485608iod.45.2022.05.06.13.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 13:59:13 -0700 (PDT)
-Date:   Fri, 06 May 2022 13:59:06 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Pu Lehui <pulehui@huawei.com>, bpf@vger.kernel.org,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pu Lehui <pulehui@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Message-ID: <62758c1abea39_196b72087a@john.notmuch>
-In-Reply-To: <20220429014240.3434866-3-pulehui@huawei.com>
-References: <20220429014240.3434866-1-pulehui@huawei.com>
- <20220429014240.3434866-3-pulehui@huawei.com>
-Subject: RE: [PATCH bpf-next v2 2/2] riscv, bpf: Support riscv jit to provide
- bpf_line_info
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Fri, 6 May 2022 17:03:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA50F6EC48;
+        Fri,  6 May 2022 13:59:20 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 8A0991F92C;
+        Fri,  6 May 2022 20:59:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651870759; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=zR674RhM0j/QUf3xPcIjeF4uS7iA8qT7AtuAdc1NKmY=;
+        b=K83Qfgc5Cy41wq2LTtRvX2cCbmsZiTYl0v3QttKD901o33lIPGZ1YakjXpIFn7FbYkPQfA
+        Ge9+p+NJp/yO9uG2Y7sXrN8RbVKFYG7laDV1eHf4jAUJebdxtGHmvVhkXxhzCzsjzpSqn3
+        aAgBWRB6O6Nh5r1xQaTw4kmEfKxL9hA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5200613A1B;
+        Fri,  6 May 2022 20:59:19 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id CYAqEieMdWI1CAAAMHmgww
+        (envelope-from <dsterba@suse.com>); Fri, 06 May 2022 20:59:19 +0000
+Date:   Fri, 6 May 2022 22:55:06 +0200
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Btrfs fixes for 5.18-rc6, part 2
+Message-ID: <cover.1651860315.git.dsterba@suse.com>
+Mail-Followup-To: David Sterba <dsterba@suse.com>,
+        torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pu Lehui wrote:
-> Add support for riscv jit to provide bpf_line_info.
-> We need to consider the prologue offset in ctx->offset,
-> but unlike x86 and arm64, ctx->offset of riscv does not
-> provide an extra slot for the prologue, so here we just
-> calculate the len of prologue and add it to ctx->offset
-> at the end. Both RV64 and RV32 have been tested.
-> 
-> Signed-off-by: Pu Lehui <pulehui@huawei.com>
-> ---
+Hi,
 
-Looks reasonable to me, but would be good if someone with RISC
-knowledge takes a lookt hough.
+a few more regular fixes and regression fixes. Please pull, thanks.
+
+- regression fixes in zone activation:
+  - move a loop invariant out of the loop to avoid checking space status
+
+  - properly handle unlimited activation
+
+- fixes:
+  - for subpage, force the free space v2 mount to avoid a warning and
+    make it easy to switch a filesystem on different page size systems
+
+  - export sysfs status of exclusive operation 'balance paused', so the
+    user space tools can recognize it and allow adding a device with
+    paused balance
+
+  - fix assertion failure when logging directory key range item
+
+----------------------------------------------------------------
+The following changes since commit 4b73c55fdebd8939f0f6000921075f7f6fa41397:
+
+  btrfs: skip compression property for anything other than files and dirs (2022-04-27 22:20:21 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc5-tag
+
+for you to fetch changes up to 3e1ad196385c65c1454aceab1226d9a4baca27d5:
+
+  btrfs: sysfs: export the balance paused state of exclusive operation (2022-05-05 21:05:56 +0200)
+
+----------------------------------------------------------------
+David Sterba (1):
+      btrfs: sysfs: export the balance paused state of exclusive operation
+
+Filipe Manana (1):
+      btrfs: fix assertion failure when logging directory key range item
+
+Naohiro Aota (2):
+      btrfs: zoned: move non-changing condition check out of the loop
+      btrfs: zoned: activate block group properly on unlimited active zone device
+
+Qu Wenruo (1):
+      btrfs: force v2 space cache usage for subpage mount
+
+ fs/btrfs/disk-io.c  | 11 +++++++++++
+ fs/btrfs/sysfs.c    |  3 +++
+ fs/btrfs/tree-log.c | 39 +++++++++++++++++++++++++--------------
+ fs/btrfs/zoned.c    | 34 ++++++++++++++--------------------
+ 4 files changed, 53 insertions(+), 34 deletions(-)
