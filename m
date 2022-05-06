@@ -2,137 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C44AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0222DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388706AbiEFDh0 (ORCPT
+        id S1388728AbiEFDhd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
+        Thu, 5 May 2022 23:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388624AbiEFDhM (ORCPT
+        with ESMTP id S1388659AbiEFDhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:37:12 -0400
+        Thu, 5 May 2022 23:37:17 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2F734B89;
-        Thu,  5 May 2022 20:33:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60BC6470D;
+        Thu,  5 May 2022 20:33:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651808010; x=1683344010;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jWl1D5slKk6w7g0PrJ06g4GuOXgOsDIIVfKaaFlJcrU=;
-  b=AY5pqZSX7/qfGtmXbYqGT9kzZP8XT4X8b2HHHI0xh76DWSrH71dbzHOA
-   NaflWsb3Ucyr27+rEuMD1UK5UUuM9f4s0HrhTSwG+3+PW2oPU7OlJ+tf7
-   hFbjogcVSLAZlWfi0qvlcZeAXoGI0+fa1VRVA1FJhMduphRlGfOKGvMMX
-   jgTd/kx/dxTmmMWVL7c1fNqNCAd/xivwDSM2DpqotD611gqQzg58AE7PO
-   XMN1gu0CalBd/iccAQ4OFGU7og6ByK73YBZoPt6RPc9odwhkB/4hNh+oi
-   GxRD8bY9i4Tdjs4n9/AwZ9425zQBZZr077gBYwfgKTug8S4/9IZxndYfq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248241398"
+  t=1651808014; x=1683344014;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/aT8shTfR73CsTUE1zaaXFpbhPv5XiSNPRh4SyeBU4Y=;
+  b=ZPVmftxoZLlsXHl9mw8Tn9VVY/z0mEOf6Ko34PiLy0Gpopy7A76EXuH6
+   t4VHgjnZRxZFJWIFEVsaCkmGCyxYbEa5mJ3jUCvZMjO+NVI3thupMhnCV
+   B9/CjlmXVhhYFU18wTXPX6U4BZLYspx//+kFBV2UQYaJTPCbA9NzDCUow
+   KtyYLLB+rjkGVF2nBvAs56F3saxI4fzMg2wS/Yh2yNFWftm2ej6BABhH9
+   1ijoaAjtVON3Mqab6aKmQNHC9hw7P+jcnJoKx5JENb8FIZbp823D8IzNh
+   15TYHXEMjwEIrzYRDosuUgfWiRTJXM3yhYwnfQ9LRZwFkGpKJMV9t1Yli
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248241440"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="248241398"
+   d="scan'208";a="248241440"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:33:30 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:33:34 -0700
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="632745146"
+   d="scan'208";a="632745187"
 Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:33:30 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:33:33 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         kan.liang@linux.intel.com, like.xu.linux@gmail.com,
         vkuznets@redhat.com, wei.w.wang@intel.com, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v11 00/16] Introduce Architectural LBR for vPMU
-Date:   Thu,  5 May 2022 23:32:49 -0400
-Message-Id: <20220506033305.5135-1-weijiang.yang@intel.com>
+Cc:     Like Xu <like.xu@linux.intel.com>,
+        Yang Weijiang <weijiang.yang@intel.com>
+Subject: [PATCH v11 09/16] KVM: x86: Refine the matching and clearing logic for supported_xss
+Date:   Thu,  5 May 2022 23:32:58 -0400
+Message-Id: <20220506033305.5135-10-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220506033305.5135-1-weijiang.yang@intel.com>
+References: <20220506033305.5135-1-weijiang.yang@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intel CPU model-specific LBR(Legacy LBR) evolved into Architectural
-LBR(Arch LBR[0]), it's the replacement of legacy LBR on new platforms.
-The native support patches were merged into 5.9 kernel tree, and this
-patch series is to enable Arch LBR in vPMU so that guest can benefit
-from the merits of the feature.
+From: Like Xu <like.xu@linux.intel.com>
 
-The main advantages of Arch LBR are [1]:
-- Faster context switching due to XSAVES support and faster reset of
-  LBR MSRs via the new DEPTH MSR
-- Faster LBR read for a non-PEBS event due to XSAVES support, which
-  lowers the overhead of the NMI handler.
-- Linux kernel can support the LBR features without knowing the model
-  number of the current CPU.
+Refine the code path of the existing clearing of supported_xss in this way:
+initialize the supported_xss with the filter of KVM_SUPPORTED_XSS mask and
+update its value in a bit clear manner (rather than bit setting).
 
-From end user's point of view, the usage of Arch LBR is the same as
-the Legacy LBR that has been merged in the mainline.
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Like Xu <like.xu@linux.intel.com>
+Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+---
+ arch/x86/kvm/vmx/vmx.c | 5 +++--
+ arch/x86/kvm/x86.c     | 6 +++++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-Note, in this series, we impose one restriction for guest Arch LBR:
-Guest can only set the same LBR record depth as host, this is due to
-the special behavior of MSR_ARCH_LBR_DEPTH: 1) On write to the MSR,
-it'll reset all Arch LBR recording MSRs to 0s. 2) XRSTORS resets all
-record MSRs to 0s if the saved depth mismatches MSR_ARCH_LBR_DEPTH.
-Enforcing the restriction keeps the KVM enabling patch simple and
-straightforward.
-
-[0] https://software.intel.com/sites/default/files/managed/c5/15/architecture-instruction-set-extensions-programming-reference.pdf
-[1] https://lore.kernel.org/lkml/1593780569-62993-1-git-send-email-kan.liang@linux.intel.com/
-
-Qemu patch:
-https://patchwork.ozlabs.org/project/qemu-devel/cover/20220215195258.29149-1-weijiang.yang@intel.com/
-
-Previous version:
-v10: https://lore.kernel.org/all/20220422075509.353942-1-weijiang.yang@intel.com/
-
-Changes in v11:
-1. Moved MSR_ARCH_LBR_DEPTH/CTL check code to a unified function.[Kan]
-2. Modified some commit messages per Kan's feedback.
-3. Rebased the patch series to 5.18-rc5.
-
-Like Xu (6):
-  perf/x86/intel: Fix the comment about guest LBR support on KVM
-  perf/x86/lbr: Simplify the exposure check for the LBR_INFO registers
-  KVM: vmx/pmu: Emulate MSR_ARCH_LBR_DEPTH for guest Arch LBR
-  KVM: vmx/pmu: Emulate MSR_ARCH_LBR_CTL for guest Arch LBR
-  KVM: x86: Refine the matching and clearing logic for supported_xss
-  KVM: x86: Add XSAVE Support for Architectural LBR
-
-Sean Christopherson (1):
-  KVM: x86: Report XSS as an MSR to be saved if there are supported
-    features
-
-Yang Weijiang (9):
-  KVM: x86: Refresh CPUID on writes to MSR_IA32_XSS
-  KVM: x86: Add Arch LBR MSRs to msrs_to_save_all list
-  KVM: x86/pmu: Refactor code to support guest Arch LBR
-  KVM: x86/vmx: Check Arch LBR config when return perf capabilities
-  KVM: nVMX: Add necessary Arch LBR settings for nested VM
-  KVM: x86/vmx: Clear Arch LBREn bit before inject #DB to guest
-  KVM: x86/vmx: Flip Arch LBREn bit on guest state change
-  KVM: x86: Add Arch LBR data MSR access interface
-  KVM: x86/cpuid: Advertise Arch LBR feature in CPUID
-
- arch/x86/events/intel/core.c     |   3 +-
- arch/x86/events/intel/lbr.c      |   6 +-
- arch/x86/include/asm/kvm_host.h  |   3 +
- arch/x86/include/asm/msr-index.h |   1 +
- arch/x86/include/asm/vmx.h       |   4 +
- arch/x86/kvm/cpuid.c             |  49 +++++++++-
- arch/x86/kvm/vmx/capabilities.h  |   8 ++
- arch/x86/kvm/vmx/nested.c        |   7 +-
- arch/x86/kvm/vmx/pmu_intel.c     | 157 ++++++++++++++++++++++++++++---
- arch/x86/kvm/vmx/vmcs12.c        |   1 +
- arch/x86/kvm/vmx/vmcs12.h        |   3 +-
- arch/x86/kvm/vmx/vmx.c           |  65 ++++++++++++-
- arch/x86/kvm/x86.c               |  23 ++++-
- 13 files changed, 295 insertions(+), 35 deletions(-)
-
-
-base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 98e56a909c01..379d13aa65c0 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7444,9 +7444,10 @@ static __init void vmx_set_cpu_caps(void)
+ 		kvm_cpu_cap_set(X86_FEATURE_UMIP);
+ 
+ 	/* CPUID 0xD.1 */
+-	supported_xss = 0;
+-	if (!cpu_has_vmx_xsaves())
++	if (!cpu_has_vmx_xsaves()) {
+ 		kvm_cpu_cap_clear(X86_FEATURE_XSAVES);
++		supported_xss = 0;
++	}
+ 
+ 	/* CPUID 0x80000001 and 0x7 (RDPID) */
+ 	if (!cpu_has_vmx_rdtscp()) {
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 8437d0c9804f..7a181bd34b82 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -224,6 +224,8 @@ static struct kvm_user_return_msrs __percpu *user_return_msrs;
+ 				| XFEATURE_MASK_BNDCSR | XFEATURE_MASK_AVX512 \
+ 				| XFEATURE_MASK_PKRU | XFEATURE_MASK_XTILE)
+ 
++#define KVM_SUPPORTED_XSS     0
++
+ u64 __read_mostly host_efer;
+ EXPORT_SYMBOL_GPL(host_efer);
+ 
+@@ -11601,8 +11603,10 @@ int kvm_arch_hardware_setup(void *opaque)
+ 
+ 	rdmsrl_safe(MSR_EFER, &host_efer);
+ 
+-	if (boot_cpu_has(X86_FEATURE_XSAVES))
++	if (boot_cpu_has(X86_FEATURE_XSAVES)) {
+ 		rdmsrl(MSR_IA32_XSS, host_xss);
++		supported_xss = host_xss & KVM_SUPPORTED_XSS;
++	}
+ 
+ 	r = ops->hardware_setup();
+ 	if (r != 0)
 -- 
 2.27.0
 
