@@ -2,104 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D67C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443764AbiEFQ2A (ORCPT
+        id S1443782AbiEFQ2n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
+        Fri, 6 May 2022 12:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348275AbiEFQ15 (ORCPT
+        with ESMTP id S1443769AbiEFQ2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:27:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9106EB10;
-        Fri,  6 May 2022 09:24:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A28B61FB9;
-        Fri,  6 May 2022 16:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FA7C385A9;
-        Fri,  6 May 2022 16:24:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651854252;
-        bh=wTXEscK9VBgHJe/fSlna6PK3W41cFBchYyGv8z2pebI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p1nOCalow/2RQwbMhADcIJBXbNSSDpU7ndJNAMZ+LklR/Ytf/Yk8pOkxXuDGMp4eM
-         gP2IUNDuWrQDJb0PLMNEvLoS/S6s8wMtxFlY+CoM4fPh9Jj1IXCgNO8Jkag6TSHmBa
-         xWR+wwShhvXYY//Xbqo66sdDofowm73XFvChIPGNVTdVFrxxindXpSnUZzl2YSA1F0
-         zdx38UmAW5uz5fs28TZqPNUoB8EdnjkSQSIyZd/EkmSTH9p3tKp3VxzP0a9bIkcE5A
-         xTDo+H5OW7Us7vTESTUfLA26MTpoN7foivQz7ZYTonrPvGF7OyssneL1TKFtDBEomH
-         iIr1h9KZs2ExQ==
-Date:   Fri, 6 May 2022 09:24:10 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Artem Savkov <asavkov@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] net: make tcp keepalive timer upper bound
-Message-ID: <20220506162410.b5wkq4ybsiut4rzu@treble>
-References: <87zgkwjtq2.ffs@tglx>
- <20220505131811.3744503-1-asavkov@redhat.com>
- <20220505131811.3744503-3-asavkov@redhat.com>
- <20220505175654.jhu3zldboxdcjifr@treble>
- <YnTCjFE2+/JEgglV@samus.usersys.redhat.com>
+        Fri, 6 May 2022 12:28:40 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5836EB19
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:24:56 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-d39f741ba0so7676226fac.13
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:24:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MJNi1mbSdob7+bt9cuYWkkcjxTPYJe7q5XVeyN3mbE0=;
+        b=hxbKsuJmP/J8sgmfTX8++VCbHxMkma3TtffIjfk/un+FrHSMF/iF8j5Ass5FMe/NBi
+         nPb4sbJeG7pvEDbr5U2Z1uLMlkQ4CXen/ReSeNCjpjj46WW1MKMZyU1unDGH6JZDUzPt
+         5HH1O5CXOIjZqPst9/Vvf6ZSQt7KHZSbZHWPUL53o3tQ8Ra+qG0bUQ3o+64XOEpQ/Vti
+         CHj8Xc5vLsVd6+225+OrnS6K6CPUPIqzTc+tVXwKj6mKDEg+AAh3kkrKe/ez9Xy6gGND
+         6+NdBlwjQXW5yNdLIwICdIUw7JXpLg2YvwXdDfNI1Z6ZhiA8p5tMJCEBw/G6xHYEZ057
+         aT2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MJNi1mbSdob7+bt9cuYWkkcjxTPYJe7q5XVeyN3mbE0=;
+        b=zEysXkmzTCklSxxKBLMpkMKvi5AUHgxS1byI28CGcHwldYdXZveSt0AWX/DmAer4fZ
+         gY7bmt7dfkXFh1tuUC+sZwEa8Pr4AMGp6rVRh/qlgivwu7MgaFUF7IeMaGLCF615I3Pc
+         kHz7XA3FHiZj8HO/KudEd4eHUVHIPndAPQSJajFBhw9U9otn8XMF8etJx8J9SugGEGTk
+         VjZnmJsO+SXaUabZEE1nV+5cnBspyjk6WOlz8xKit/uMxr3301SXW7XiGvysPyDOtwzx
+         jJQcCpcoMYOskejp/bE5RFsXg4JXKX7WIFo5TGTyzwhm80XHg3K86XJXkD00EPzRN9Uu
+         k+eQ==
+X-Gm-Message-State: AOAM533ICodxoUGbjjRjmPQlcy7R2jmgoZLktG92B6Hp9Lf47GlA+Nsj
+        XqzcHrTqdjrYNZfaupJmE0l6TQ==
+X-Google-Smtp-Source: ABdhPJzRPABBMXOCHct7MUr2JDfjknHPxMsUWZxuLfH7VhK2lkNZtaisjFtIeEQ941TOXMLluM+umQ==
+X-Received: by 2002:a05:6870:414d:b0:ed:5585:7436 with SMTP id r13-20020a056870414d00b000ed55857436mr1682804oad.29.1651854295970;
+        Fri, 06 May 2022 09:24:55 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id a204-20020acab1d5000000b00325643bce40sm1832260oif.0.2022.05.06.09.24.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 09:24:55 -0700 (PDT)
+Date:   Fri, 6 May 2022 09:27:29 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>,
+        Doug Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v14 2/2] leds: Add driver for Qualcomm LPG
+Message-ID: <YnVMcaRV86jZslhd@ripper>
+References: <20220303214300.59468-1-bjorn.andersson@linaro.org>
+ <20220303214300.59468-2-bjorn.andersson@linaro.org>
+ <20220504073009.GC8204@duo.ucw.cz>
+ <YnKTAvQc6eDxTl14@ripper>
+ <20220506160901.GA1199@bug>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnTCjFE2+/JEgglV@samus.usersys.redhat.com>
+In-Reply-To: <20220506160901.GA1199@bug>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 08:39:08AM +0200, Artem Savkov wrote:
-> On Thu, May 05, 2022 at 10:56:54AM -0700, Josh Poimboeuf wrote:
-> > On Thu, May 05, 2022 at 03:18:11PM +0200, Artem Savkov wrote:
-> > > Make sure TCP keepalive timer does not expire late. Switching to upper
-> > > bound timers means it can fire off early but in case of keepalive
-> > > tcp_keepalive_timer() handler checks elapsed time and resets the timer
-> > > if it was triggered early. This results in timer "cascading" to a
-> > > higher precision and being just a couple of milliseconds off it's
-> > > original mark.
-> > > This adds minimal overhead as keepalive timers are never re-armed and
-> > > are usually quite long.
-> > > 
-> > > Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> > > ---
-> > >  net/ipv4/inet_connection_sock.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > > index 1e5b53c2bb26..bb2dbfb6f5b5 100644
-> > > --- a/net/ipv4/inet_connection_sock.c
-> > > +++ b/net/ipv4/inet_connection_sock.c
-> > > @@ -589,7 +589,7 @@ EXPORT_SYMBOL(inet_csk_delete_keepalive_timer);
-> > >  
-> > >  void inet_csk_reset_keepalive_timer(struct sock *sk, unsigned long len)
-> > >  {
-> > > -	sk_reset_timer(sk, &sk->sk_timer, jiffies + len);
-> > > +	sk_reset_timer(sk, &sk->sk_timer, jiffies + upper_bound_timeout(len));
-> > >  }
-> > >  EXPORT_SYMBOL(inet_csk_reset_keepalive_timer);
-> > 
-> > As I mentioned before, there might be two sides to the same coin,
-> > depending on whether the keepalive is detecting vs preventing the
-> > disconnect.  So this might possibly fix one case, while breaking
-> > another.
+On Fri 06 May 09:09 PDT 2022, Pavel Machek wrote:
+
+> Hi!
 > 
-> But cascading is still there in the handler so it will fire off quite
-> close to original timer in any case.
+> > > > +    "255 500 0 500"
+> > > > +
+> > > > +        ^
+> > > > +        |
+> > > > +    255 +----+    +----+
+> > > > +        |    |    |    |      ...
+> > > > +      0 |    +----+    +----
+> > > > +        +---------------------->
+> > > > +        0    5   10   15     time (100ms)
+> > > > +
+> > > > +The LPG supports specifying a longer hold-time for the first and last element
+> > > > +in the pattern, the so called "low pause" and "high pause".
+> > > 
+> > > Please see
+> > > Documentation/devicetree/bindings/leds/leds-trigger-pattern.txt . This
+> > > should really be compatible.
+> > 
+> > Unfortunately the LPG hardware only supports fixed duration (except for
+> > the ability to hold/extend the first and last duration in the pattern)
+> > and it also does not support gradual transition between the brightness
+> > levels.
+> 
+> Ok.
+> 
+> > As such the pattern sequence provided to hw_pattern looks to be the
+> > smae, but I don't see that it can be made compatible.
+> > 
+> > > Can I get either patch to disable pattern infrastructure for now or to
+> > > get it compatible?
+> > > 
+> > 
+> > I'd be happy to get this updated to your liking, but this was one of the
+> > drivers we discussed when we introduced the pattern trigger and led to
+> > the conclusion that we need the ability to do hw-specific patterns.
+> > 
+> > As such this document provides the hardware specific documentation, as
+> > we describe under "hw_pattern" in
+> > Documentation/ABI/testing/sysfs-class-led-trigger-pattern.
+> > 
+> > Please advice on what you would like me to do.
+> 
+> I'd like you to use same format leds-trigger-pattern describes.
+> 
+> If someone passes "255 500 0 500", that's requesting gradual transitions and
+> your hw can not do that. You return -EINVAL.
+> 
+> If someone wants that kind of blinking, they need to pass "255 0 255 500 0 0 0 500".
+> 
 
-Ah, indeed it does.  Sorry, I should try actually reading the patch
-description next time :-/ Looks good to me.
+So the section under hw_pattern in sysfs-class-led-trigger-pattern that
+says:
 
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+"Since different LED hardware can have different semantics of
+hardware patterns, each driver is expected to provide its own
+description for the hardware patterns in their documentation
+file at Documentation/leds/."
 
--- 
-Josh
+That doesn't apply to this piece of hardware & driver?
+
+
+Or is the sysfs documentation simply not reflecting what has been
+decided of how this interface should look like?
+
+Regards,
+Bjorn
