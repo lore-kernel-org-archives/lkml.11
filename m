@@ -2,84 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD27C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B08DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392041AbiEFMfd (ORCPT
+        id S1392065AbiEFMgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 08:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
+        Fri, 6 May 2022 08:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391982AbiEFMfT (ORCPT
+        with ESMTP id S1392096AbiEFMgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 08:35:19 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C792C5DA27;
-        Fri,  6 May 2022 05:31:36 -0700 (PDT)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KvqZH43Gfz6H7kT;
-        Fri,  6 May 2022 20:27:03 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 14:31:34 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 13:31:32 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, Xiang Chen <chenxiang66@hisilicon.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
-Date:   Fri, 6 May 2022 20:25:39 +0800
-Message-ID: <1651839939-101188-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Fri, 6 May 2022 08:36:41 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CAF6A01B;
+        Fri,  6 May 2022 05:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1651840345; x=1683376345;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fzQFkq/K6iZlQWPOHYF8YT4ikih/eSX7EA3Eb9gwWAI=;
+  b=Vnsvd3o7IwJjQ2AP6U7huYyGKnDkF11yOmFDEZKRfu9i/z7L7TUWnsgv
+   K0jYJA8kBjlRQ83ZXNJ24ketB4tYLq/An8n7/yux17zpf5wyY/JFFZixe
+   aaepy06pQrEWQ4TacoQk85ZILCCc72+ME8txGgFk0OLYBG3urhRRRKe2U
+   I=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293244886"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647298800"; 
+   d="scan'208";a="293244886"
+Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 14:32:22 +0200
+Received: from MUCSE812.infineon.com (MUCSE812.infineon.com [172.23.29.38])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
+        Fri,  6 May 2022 14:32:21 +0200 (CEST)
+Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE812.infineon.com
+ (172.23.29.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 6 May 2022
+ 14:32:21 +0200
+Received: from smaha-lin-dev01.agb.infineon.com (172.23.8.247) by
+ MUCSE818.infineon.com (172.23.29.44) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 6 May 2022 14:32:20 +0200
+From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+To:     <jarkko@kernel.org>, <linux-integrity@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <Marten.Lindahl@axis.com>, <martenli@axis.com>, <jgg@ziepe.ca>,
+        <jsnitsel@redhat.com>, <nayna@linux.vnet.ibm.com>,
+        <johannes.holland@infineon.com>, <peterhuewe@gmx.de>,
+        Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>,
+        <stable@vger.kernel.org>
+Subject: [PATCH 1/2] tpm: Fix buffer access in tpm2_get_tpm_pt()
+Date:   Fri, 6 May 2022 14:31:46 +0200
+Message-ID: <20220506123145.229058-1-stefan.mahnke-hartmann@infineon.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE801.infineon.com (172.23.29.27) To
+ MUCSE818.infineon.com (172.23.29.44)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+Under certain conditions uninitialized memory will be accessed.
+As described by TCG Trusted Platform Module Library Specification,
+rev. 1.59 (Part 3: Commands), if a TPM2_GetCapability is received,
+requesting a capability, the TPM in Field Upgrade mode may return a
+zero length list.
+Check the property count in tpm2_get_tpm_pt().
 
-If we fail to notify the phy up event then undo the RPM resume, as the
-phy up notify event handling pairs with that RPM resume.
-
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
-Reported-by: Yihang Li <liyihang6@hisilicon.com>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
+Fixes: 2ab3241161b3 ("tpm: migrate tpm2_get_tpm_pt() to use struct tpm_buf")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
 ---
-Please consider for 5.19, thanks!
+ drivers/char/tpm/tpm2-cmd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 79f87d7c3e68..7d819fc0395e 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -1563,9 +1563,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
- 
- 	phy->port_id = port_id;
- 
--	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
-+	/*
-+	 * Call pm_runtime_get_noresume() which pairs with
-+	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
-+	 * For failure call pm_runtime_put() as we are in a hardirq context.
-+	 */
- 	pm_runtime_get_noresume(dev);
--	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	if (!res)
-+		pm_runtime_put(dev);
- 
- 	res = IRQ_HANDLED;
- 
+diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
+index 4704fa553098..e62a644ce26b 100644
+--- a/drivers/char/tpm/tpm2-cmd.c
++++ b/drivers/char/tpm/tpm2-cmd.c
+@@ -400,7 +400,10 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,  u32 *value,
+ 	if (!rc) {
+ 		out = (struct tpm2_get_cap_out *)
+ 			&buf.data[TPM_HEADER_SIZE];
+-		*value = be32_to_cpu(out->value);
++		if (be32_to_cpu(out->property_cnt) > 0)
++			*value = be32_to_cpu(out->value);
++		else
++			rc = -ENODATA;
+ 	}
+ 	tpm_buf_destroy(&buf);
+ 	return rc;
 -- 
-2.26.2
+2.25.1
 
