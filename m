@@ -2,159 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C22D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D48ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 00:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387427AbiEFANu (ORCPT
+        id S1387431AbiEFAOc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 20:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        Thu, 5 May 2022 20:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236541AbiEFANo (ORCPT
+        with ESMTP id S236541AbiEFAOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 20:13:44 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685744FC51
-        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 17:10:03 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id e19so5711312vsu.12
-        for <linux-kernel@vger.kernel.org>; Thu, 05 May 2022 17:10:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yJ+SLgOYbrk33Dg8nsfPTJsmGxPqpaD9tEBJ44rZ4jw=;
-        b=FbPAHd/cZf+oAk+bPlSFKG2psQnIN9Ga5SEkyA2zB9lXPbBREx+dtWxFkZOI9h2TDZ
-         heGuPUQrTH9WBVp7W3t4F5sNVMJV2lnenWSpjafTIzoa+kZdcYAqkA5Jos7Q6raI5joR
-         AzyY1okzWTfGXBYJeKuXZWHIadIPV1erisLPNhmhAS8gUU7Vag5k+OUEv80ey1b6SHZL
-         j6/hulSkdu+HeCKpW3n1u8PDrstm/jPteQpYWz6UJqxsXiw58knckbmjJX2oqVx8SYJQ
-         1aFmHX5/QqwnrxGGbqR/iZgfrlFx5LDK1gvpqytNaC96z1PPn2kNe9jY3pzVxP5+HyBi
-         FsPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yJ+SLgOYbrk33Dg8nsfPTJsmGxPqpaD9tEBJ44rZ4jw=;
-        b=iGWdnGG/ApxwxN8vclhv6sdDQlDfg1g9wMQSQaj7wDPj3WhXg5lGN+DhNNBGVUWaCD
-         r7lIpj9BuiXSU0W064/N36OSpvKdtWqVYKzDOJQg8i+Ude4c7WTszZQcqCE55/9t7Qkv
-         C7v5hswdwGQpli917S/WhpeAiTh8DS+1DkHaFgtWVuvcPKJZlUIP8RpNA30qINwoi66m
-         n8zYDd+c2JCiOgn92DCOgSmDzLqZLHZoAi/xhVuhQlWxlWMlGEn4egnVQnfs4ZMskYDd
-         Tq3voaefbqc0REl/1VhEXk8Vy4LlEABUBU2nZdNBZBYP3gcUc0vInu7DyOAzNxrn0Yz9
-         NAKQ==
-X-Gm-Message-State: AOAM533rwdjQs/hn/WpapQCptMVb8Ty/UxrVu90xnuXqC56F00sbQ8WF
-        gPf4FGr/sTkhtwlkgc+z7pL8iVlVCIp4RQhPlJgcW0uz8+TsJg==
-X-Google-Smtp-Source: ABdhPJztSde5JBbjcISPX1oFD0cbFRYTyNx96VYRc3OFukDxOLeFQBxalmiknIIMpuq3aidN7pUx3K/GN5wtbZugy9o=
-X-Received: by 2002:a67:af01:0:b0:32d:3d57:cff with SMTP id
- v1-20020a67af01000000b0032d3d570cffmr201532vsl.8.1651795802384; Thu, 05 May
- 2022 17:10:02 -0700 (PDT)
+        Thu, 5 May 2022 20:14:30 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE733A199
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 17:10:49 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id D9EA71F45E0A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651795847;
+        bh=8HWc5okoCATXQtSjnHcBZ94vd08tA8gZnAW7NIzIUzc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=E69M8Dpbytxm+liBztEXWxOxgJF11w/CzN4vstE4Ks1/CK+R54ymWAG8WhQ11Z3it
+         UTIE6yFWtxaLarXDEtc1FXzyvLjbznINeNlstPpA/8NTxjU+0cl6o7qv4HCz9h8i2o
+         YM3d+HYGQ09TSTZDF+orUvlE6/iycVSKZ98/O8I54xjCdcd8/z5KAFanNwPBZIRDQq
+         QDCWPKlrh/drnIXxITfMDB+g+ErN5tUhFyTcnvdRojYEy1/dguLfyKPtPIXA7ynU7a
+         5af+OKmMvexH7qR6EjSif8Bdmzw4QMIXr7cl/RyeaX8mvcbPPS7sASgtcr6r7aQrRL
+         bjxSeX9NGH/gQ==
+Message-ID: <ff97790a-fb64-1e15-74b4-59c807bce0b9@collabora.com>
+Date:   Fri, 6 May 2022 03:10:43 +0300
 MIME-Version: 1.0
-References: <20220505165639.361733-1-adrian.hunter@intel.com> <20220505165639.361733-19-adrian.hunter@intel.com>
-In-Reply-To: <20220505165639.361733-19-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 5 May 2022 17:09:49 -0700
-Message-ID: <CAP-5=fWFMNPjrKJMC8EH4_D=bcT8JHWqrVaaM4v0c51dpypfJw@mail.gmail.com>
-Subject: Re: [PATCH V1 18/23] libperf evlist: Allow mixing per-thread and
- per-cpu mmaps
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 11/15] drm/shmem-helper: Add generic memory shrinker
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Dmitry Osipenko <digetx@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org
+References: <20220417223707.157113-1-dmitry.osipenko@collabora.com>
+ <20220417223707.157113-12-dmitry.osipenko@collabora.com>
+ <e6108e9c-6e67-2d71-0665-654e11d9c3a5@suse.de>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <e6108e9c-6e67-2d71-0665-654e11d9c3a5@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 5, 2022 at 9:58 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> mmap_per_evsel() will skip events that do not match the CPU, so all CPUs
-> can be iterated in any case.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+On 5/5/22 11:34, Thomas Zimmermann wrote:
+> Hi
+> 
+> Am 18.04.22 um 00:37 schrieb Dmitry Osipenko:
+>> Introduce a common DRM SHMEM shrinker. It allows to reduce code
+>> duplication among DRM drivers that implement theirs own shrinkers.
+>> This is initial version of the shrinker that covers basic needs of
+>> GPU drivers, both purging and eviction of shmem objects are supported.
+>>
+>> This patch is based on a couple ideas borrowed from Rob's Clark MSM
+>> shrinker and Thomas' Zimmermann variant of SHMEM shrinker.
+>>
+>> In order to start using DRM SHMEM shrinker drivers should:
+>>
+>> 1. Implement new purge(), evict() + swap_in() GEM callbacks.
+>> 2. Register shrinker using drm_gem_shmem_shrinker_register(drm_device).
+>> 3. Use drm_gem_shmem_set_purgeable_and_evictable(shmem) and alike API
+>>     functions to activate shrinking of GEMs.
+> 
+> Honestly speaking, after reading the patch and the discussion here I
+> really don't like where all tis is going. The interfaces and
+> implementation are overengineered.  Descisions about evicting and
+> purging should be done by the memory manager. For the most part, it's
+> none of the driver's business.
 
-Acked-by: Ian Rogers <irogers@google.com>
+Daniel mostly suggesting to make interface more flexible for future
+drivers, so we won't need to re-do it later on. My version of the
+interface is based on what drivers need today.
 
-Thanks,
-Ian
+Why do you think it's a problem to turn shmem helper into the simple
+generic memory manager? I don't see how it's better to have drivers
+duplicating the exactly same efforts and making different mistakes.
 
-> ---
->  tools/lib/perf/evlist.c | 36 +++++++-----------------------------
->  1 file changed, 7 insertions(+), 29 deletions(-)
->
-> diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-> index 048b546f9444..0acf43946479 100644
-> --- a/tools/lib/perf/evlist.c
-> +++ b/tools/lib/perf/evlist.c
-> @@ -508,29 +508,6 @@ mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
->         return 0;
->  }
->
-> -static int
-> -mmap_per_thread(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
-> -               struct perf_mmap_param *mp)
-> -{
-> -       int thread;
-> -       int nr_threads = perf_thread_map__nr(evlist->threads);
-> -
-> -       for (thread = 0; thread < nr_threads; thread++) {
-> -               int output = -1;
-> -               int output_overwrite = -1;
-> -
-> -               if (mmap_per_evsel(evlist, ops, thread, mp, 0, thread,
-> -                                  &output, &output_overwrite))
-> -                       goto out_unmap;
-> -       }
-> -
-> -       return 0;
-> -
-> -out_unmap:
-> -       perf_evlist__munmap(evlist);
-> -       return -1;
-> -}
-> -
->  static int
->  mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
->              struct perf_mmap_param *mp)
-> @@ -561,9 +538,14 @@ static int perf_evlist__nr_mmaps(struct perf_evlist *evlist)
->  {
->         int nr_mmaps;
->
-> +       /* One for each CPU */
->         nr_mmaps = perf_cpu_map__nr(evlist->all_cpus);
-> -       if (perf_cpu_map__empty(evlist->all_cpus))
-> -               nr_mmaps = perf_thread_map__nr(evlist->threads);
-> +       if (perf_cpu_map__empty(evlist->all_cpus)) {
+The shmem shrinker implementation is mostly based on the freedreno's
+shrinker and it's very easy to enable generic shrinker for VirtIO and
+Panfrost drivers. I think in the future freedreno and other drivers
+could switch to use drm shmem instead of open coding the memory management.
 
-Here with the current definition of perf_cpu_map__empty this is a NULL
-or first element is any CPU (aka dummy) test. Given our conversation
-this may not work as intended for that definition.
+> I'd like to ask you to reduce the scope of the patchset and build the
+> shrinker only for virtio-gpu. I know that I first suggested to build
+> upon shmem helpers, but it seems that it's easier to do that in a later
+> patchset.
 
-> +               /* Plus one for each thread */
-> +               nr_mmaps += perf_thread_map__nr(evlist->threads);
-> +               /* Minus the per-thread CPU (-1) */
-> +               nr_mmaps -= 1;
-> +       }
->
->         return nr_mmaps;
->  }
-> @@ -573,7 +555,6 @@ int perf_evlist__mmap_ops(struct perf_evlist *evlist,
->                           struct perf_mmap_param *mp)
->  {
->         struct perf_evsel *evsel;
-> -       const struct perf_cpu_map *cpus = evlist->all_cpus;
->
->         if (!ops || !ops->get || !ops->mmap)
->                 return -EINVAL;
-> @@ -592,9 +573,6 @@ int perf_evlist__mmap_ops(struct perf_evlist *evlist,
->         if (evlist->pollfd.entries == NULL && perf_evlist__alloc_pollfd(evlist) < 0)
->                 return -ENOMEM;
->
-> -       if (perf_cpu_map__empty(cpus))
-> -               return mmap_per_thread(evlist, ops, mp);
-> -
->         return mmap_per_cpu(evlist, ops, mp);
->  }
->
-> --
-> 2.25.1
->
+The first version of the VirtIO shrinker didn't support memory eviction.
+Memory eviction support requires page fault handler to be aware of the
+evicted pages, what should we do about it? The page fault handling is a
+part of memory management, hence to me drm-shmem is already kinda a MM.
