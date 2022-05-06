@@ -2,110 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355063AbiEFVlp (ORCPT
+        id S1444560AbiEFVpD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 17:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        Fri, 6 May 2022 17:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244522AbiEFVlk (ORCPT
+        with ESMTP id S1444551AbiEFVo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 17:41:40 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9C76FA06
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:37:56 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id k14so7110536pga.0
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 14:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wDlo/3xACgXAwIyvRAGw9rxCX/T/ZCg3pbeJ6EmzJxc=;
-        b=i8zh5ZKxoyPeA0SqzdaWZX+Kwc1I9CU7yG9bWNwwo4a3uMEv2Zn6KklIdQWEkDQ4P1
-         CSvi01zCHmGs5vC7lwaawX58+1jSKl7zOMZdrGYGg00etgdxmQmYzN5/idOOOrc+/8bz
-         e+Sg7rFI6/yX8rdh17bXS1vz1LE2WxeSCpsmFzm+P0RhiovlJeqUcV/IHvEOJldbMQ5z
-         PGcu+wEe6FfiJwsEdAVv/t3dMyo7Ql5I3kdbq1QNjWY/Mp5rSbdHK0+84l31rHwxKWkO
-         M4Im2GZSj+eTKnJOnXbDXMByB0bRvD85+xHrigLH7KLkjxEfVDisVKBA11q8EMfo9jmn
-         2Jgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wDlo/3xACgXAwIyvRAGw9rxCX/T/ZCg3pbeJ6EmzJxc=;
-        b=03I5w68Ic56ypnfRVRV9KzNRdPdQDwEsWpieR4HB6EGB9HhQReVhYbHifleMWnNaYQ
-         hIRuHCpYb54u3HeHHE8vMFzLDsBS+eQXscv//7DwjtMn6s+Q8GNBbPlDxUQu+yOgItgF
-         ztceBRamhFpOXHTJO6/I17soT8uD/E0D7/KpNRStDXlDv4PdUYJz2VFkdBP6A/tDsnnH
-         fehkPiTdHyHHWfi7Pz50/adwFDslM4pA3hLjWBuoKW60MQTq+cXb19kUcsFM8wT5wmvO
-         QZZkiCAowMDHR4PaVj3SYuw9CWLW074kagPedKCyecBElYPIDiqQFtFM8S1V4sZDvgTQ
-         jspw==
-X-Gm-Message-State: AOAM531lvimwyqmjooUO27CDWEbVoRjAGNV2fATF4jx3/6ydoHQnfNnH
-        n0dIjnBtZezFpTjRVMzXzEmD9A==
-X-Google-Smtp-Source: ABdhPJzia9KVpHse2ThgWwuNRKDj+zzCOTlETRn+9WJ+6EE/ct9hPNk9Hyc/HM5tg3cAxabSilrlOQ==
-X-Received: by 2002:a63:444f:0:b0:39d:3aa5:c9f0 with SMTP id t15-20020a63444f000000b0039d3aa5c9f0mr4349860pgk.363.1651873076058;
-        Fri, 06 May 2022 14:37:56 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id n21-20020a170903405500b0015e8d4eb1f9sm2189166pla.67.2022.05.06.14.37.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 14:37:55 -0700 (PDT)
-Date:   Fri, 6 May 2022 21:37:52 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>
-Subject: Re: [PATCH 003/128] KVM: selftests: Unconditionally compile KVM
- selftests with -Werror
-Message-ID: <YnWVMJYdk6wDYcgj@google.com>
-References: <20220504224914.1654036-1-seanjc@google.com>
- <20220504224914.1654036-4-seanjc@google.com>
- <875ymk137s.fsf@redhat.com>
+        Fri, 6 May 2022 17:44:59 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E236F4B6
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 14:41:15 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651873274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WEBD3i+RCMCV6ItWgJTNpoS5Qp50+5gg+1MUzDbcFWU=;
+        b=0gf5bTX4NIQykq3iPPRZunSuSvrZWoWSo2b1NIiTagpKSMaW3qdtrw7UmeRdrKArDQE/+S
+        Zy8ijWhMlujrmAIZPJRjxCHh90monbTV12KDhye6vQM/3CAQqw8JRQAdzQBwiG/t4sAVLj
+        VGlEJ6vxHVjRXIiYcdNdyHl9i3CHV9mgzff5fRJV7Md00WfSlsUarMqfVzZqx0g0/sFCEG
+        xHPKgvCjYezzLHm0ZxrVkOJkWlQ9+ITm9Ner24gSmKr1U37+vm+cp040VQJzXjfoPeTXFE
+        2Z1+E0/StooqcZKBaNaiZO9gcjhFy0aSijMrtLORg57UfwyNDwEREhdL85JJhg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651873274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WEBD3i+RCMCV6ItWgJTNpoS5Qp50+5gg+1MUzDbcFWU=;
+        b=EPFGmOCZQqvpMfXX+kTEn3pMBEYvOWTDsHxx4zzYwsn3Efr3jSRiPe+y2939MMnRZZC56U
+        K4PVioMmImoIJ3Dw==
+To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        x86@kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
+ hpet_set_comparator_periodic()
+In-Reply-To: <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
+Date:   Fri, 06 May 2022 23:41:13 +0200
+Message-ID: <87mtfufifa.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875ymk137s.fsf@redhat.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022, Vitaly Kuznetsov wrote:
-> Sean Christopherson <seanjc@google.com> writes:
-> 
-> > Specify -Werror when compiling KVM's selftests, there's zero reason to
-> > let warnings sneak into the selftests.
-> >
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> >  tools/testing/selftests/kvm/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-> > index af582d168621..c8efaaeb0885 100644
-> > --- a/tools/testing/selftests/kvm/Makefile
-> > +++ b/tools/testing/selftests/kvm/Makefile
-> > @@ -153,7 +153,7 @@ LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/x86/include
-> >  else
-> >  LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/$(ARCH)/include
-> >  endif
-> > -CFLAGS += -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=gnu99 \
-> > +CFLAGS += -Wall -Werror -Wstrict-prototypes -Wuninitialized -O2 -g -std=gnu99 \
-> >  	-fno-stack-protector -fno-PIE -I$(LINUX_TOOL_INCLUDE) \
-> >  	-I$(LINUX_TOOL_ARCH_INCLUDE) -I$(LINUX_HDR_PATH) -Iinclude \
-> >  	-I$(<D) -Iinclude/$(UNAME_M) -I.. $(EXTRA_CFLAGS) $(KHDR_INCLUDES)
-> 
-> "-Werror" in kvm-unit-tests is a constant source of pain as different
-> GCC versions tend to produce different warnings. It's going to be even
-> worse for selftests: e.g. bisecting an 'old' kernel on a system with
-> somewhat 'newer' compiler and selftests don't even build.
-> 
-> Personally, I'd prefer "-Werror" to be an acceptance criteria for
-> upstream patches (e.g. if something produces warnings on Paolo's
-> setup -- the patch doesn't get accepted) but not the hardcoded default
-> in Makefile.
+On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> Programming an HPET channel as periodic requires setting the
+> HPET_TN_SETVAL bit in the channel configuration. Plus, the comparator
+> register must be written twice (once for the comparator value and once for
+> the periodic value). Since this programming might be needed in several
+> places (e.g., the HPET clocksource and the HPET-based hardlockup detector),
+> add a helper function for this purpose.
+>
+> A helper function hpet_set_comparator_oneshot() could also be implemented.
+> However, such function would only program the comparator register and the
+> function would be quite small. Hence, it is better to not bloat the code
+> with such an obvious function.
 
-I've no objection to dropping this patch.  I mostly added it to ensure that I
-didn't sneak in a warning in any of the intermediate patches, and I can accomplish
-that by feeding in -Werror via EXTRA_CFLAGS.
+This word salad above does not provide a single reason why the periodic
+programming function is required and better suited for the NMI watchdog
+case and then goes on and blurbs about why a function which is not
+required is not implemented. The argument about not bloating the code
+with an "obvious???" function which is quite small is slightly beyond my
+comprehension level.
+
+Thanks,
+
+        tglx
