@@ -2,162 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A64C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F951C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 14:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442052AbiEFOO3 (ORCPT
+        id S1442095AbiEFOQH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 10:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
+        Fri, 6 May 2022 10:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442080AbiEFOO0 (ORCPT
+        with ESMTP id S1391428AbiEFOQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 10:14:26 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3877529C96;
-        Fri,  6 May 2022 07:10:39 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id C4EBD1F46719
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651846231;
-        bh=aPzN11eOYyBmn6uYxSJ4z+OxGW0B11goKlzatjEFOG4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=A5kW1JJmvHfMp+G3BYZfs1DtIoJxwTSAkQcm9HkU230sGHCbaarPy3d3ylVb7ghQK
-         QFidNeP16CsPIu7NGef5buR6vQrZaa2Bu2Ol7ocivR52MK99+p14lZHhPhckFBadHq
-         LWO8HGz0L5XHJgOXIl4zHum9KGrTPQ8XNRCAiPLiBFHqfgiXkDJFYnZvSeZjgWY6Sf
-         b+r6JcWvC90AjEGx12tTLe293/2dwUtSGPf4vDeIZmmldanQoeJoRJ1W5+Zs/dm4mK
-         YMULBdy55mQ6HS0+7WhL/7UJ3ikAvXuW+YZrNYtURWDPqYm9/aozEGozBwUb1cqkv6
-         H0OATVRjsYPpg==
-Message-ID: <ca422804-0fa0-5fef-07e2-a9ff005a495c@collabora.com>
-Date:   Fri, 6 May 2022 17:10:24 +0300
+        Fri, 6 May 2022 10:16:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35755F68;
+        Fri,  6 May 2022 07:12:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EBFFB835D5;
+        Fri,  6 May 2022 14:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF88CC385A9;
+        Fri,  6 May 2022 14:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651846340;
+        bh=Sc+wfLcWGfJ4RZMc7taxXvG8soVS9Rxm976jpP4IOpU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=luMA3Sbi2UnRW0GqSVRQt3AxZhoxfkQkT/EbFF8XXw6n5ZRdbbsIJ9jI+b1nuQWbj
+         EcAhZG4zfkiL67+iGSDhHRdl3MQ6ntxOAHVWpxk1rAM34+zWz8WE5F/wd0YT4NUTRG
+         MtwoVFnp0jA0Z0MFX1bfUoJZ22K40vbroYISSTQgD9gBmktOLkyCG+NBl1BnHXqsSt
+         iwNbeRYjctvSdr6WFqBgaYHUKlG33BbWyJO9+pl0CMVxOlec26uI8/zM8jB8OVIaSk
+         i8lpuyH5mgY+J0q8Sjp9rGXuTq7Q7ubkwYxQ7lyPyJ+PoJE7abRI6pmy4x6HOhXm5/
+         tJCcKygDDL6pQ==
+Date:   Fri, 6 May 2022 15:12:14 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Srinivasarao Pathipati <quic_c_spathi@quicinc.com>
+Cc:     mark.rutland@arm.com, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org, catalin.marinas@arm.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] arm64: perf: Retain PMCR.X of PMCR_EL0 during reset
+Message-ID: <20220506141213.GA23485@willie-the-truck>
+References: <1651231749-19565-1-git-send-email-quic_c_spathi@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v7 04/20] kernel: Add combined power-off+restart handler
- call chain API
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Joshua Thompson <funaho@jurai.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        xen-devel@lists.xenproject.org,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <20220411233832.391817-1-dmitry.osipenko@collabora.com>
- <20220411233832.391817-5-dmitry.osipenko@collabora.com>
- <CAJZ5v0gnTSoeNP+QXwrZ45FQY4howVkJMuCjM=j+_-2BngJdQg@mail.gmail.com>
- <990621e7-9f8a-8b4a-02ec-fd6c1e1f48ff@collabora.com>
- <CAJZ5v0jxXtwot0qpib4UG8Tz8Hd1dEbgo58tEdPFboU8xwKHNw@mail.gmail.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <CAJZ5v0jxXtwot0qpib4UG8Tz8Hd1dEbgo58tEdPFboU8xwKHNw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651231749-19565-1-git-send-email-quic_c_spathi@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/20/22 21:47, Rafael J. Wysocki wrote:
->>>> +       POWEROFF_PREPARE,
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct power_off_data - Power-off callback argument
->>>> + *
->>>> + * @cb_data: Callback data.
->>>> + */
->>>> +struct power_off_data {
->>>> +       void *cb_data;
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct power_off_prep_data - Power-off preparation callback argument
->>>> + *
->>>> + * @cb_data: Callback data.
->>>> + */
->>>> +struct power_off_prep_data {
->>>> +       void *cb_data;
->>>> +};
->>> Why does this need to be a separate data type?
->> To allow us extend the "struct power_off_prep_data" with more parameters
->> later on without a need to update each driver with the new arguments.
-
-> I'm not really sure what you mean here.  Can you give an example?
+On Fri, Apr 29, 2022 at 04:59:09PM +0530, Srinivasarao Pathipati wrote:
+> Preserve the bit PMCR.X of PMCR_EL0 during PMU reset to export
+> PMU events. as it could be set before PMU initialization.
 > 
+> Signed-off-by: Srinivasarao Pathipati <quic_c_spathi@quicinc.com>
+> ---
+> Changes since V1:
+> 	- Preserving only PMCR_X bit as per Robin Murphy's comment
+> ---
+>  arch/arm64/kernel/perf_event.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
+> index cb69ff1..532a417 100644
+> --- a/arch/arm64/kernel/perf_event.c
+> +++ b/arch/arm64/kernel/perf_event.c
+> @@ -1047,6 +1047,9 @@ static void armv8pmu_reset(void *info)
+>  	if (armv8pmu_has_long_event(cpu_pmu))
+>  		pmcr |= ARMV8_PMU_PMCR_LP;
+>  
+> +	/* Preserve PMCR_X to export PMU events */
+> +	pmcr |= (armv8pmu_pmcr_read() & ARMV8_PMU_PMCR_X);
 
-The restart callbacks use more than the cb_data and we have:
+I don't think this should be unconditional. Exporting events could easily
+result in additional power consumption, and potentially even hardware
+lockups.
 
-struct restart_data {
-	void *cb_data;
-	const char *cmd;
-	bool stop_chain;
-	enum reboot_mode mode;
-};
+Please stick this behind something like a sysctl toggle or sysfs control,
+with documentation about what it does. It should default to disabled.
 
-If we'll ever need to extended struct power_off_data similarly to the
-restart_data, then we will need to update all the power-off callbacks
-instead of adding a new field to the power_off_data.
-
-Hence, for example, if you'll want to extend power_off_data with "enum
-poweroff_mode mode", then for each driver you'll need to do this change:
-
--power_off(void *cb_data)
-+power_off(void *cb_data, enum poweroff_mode mode)
-
-and you won't need to do that using struct power_off_data.
-
-Why do we need this? Because I saw in the past people changing kernel
-APIs that way when they wanted to add new arguments and then needed to
-update every call site around the kernel.
-
--- 
-Best regards,
-Dmitry
+Will
