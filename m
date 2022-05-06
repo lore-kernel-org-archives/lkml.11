@@ -2,208 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D137C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443661AbiEFQP0 (ORCPT
+        id S1443635AbiEFQPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 12:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
+        Fri, 6 May 2022 12:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443546AbiEFQNa (ORCPT
+        with ESMTP id S1443971AbiEFQOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 12:13:30 -0400
-Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [45.157.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF66069CCB
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:09:43 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KvwW94tCNzMprrw;
-        Fri,  6 May 2022 18:09:41 +0200 (CEST)
-Received: from localhost (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KvwW92rDwzlhSM0;
-        Fri,  6 May 2022 18:09:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1651853381;
-        bh=cmILz4WmKumtNbX1pB4Es0uoK/Hp1d7jlUzEE1O4U1k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=epbVYSobZJouR2NgBHN1XJmNMj/OslJrof2xy4sV4WzBDF1jrkjdhPQ/FxjFtYI1q
-         YaLfWBeszs3aO/RfLl7SjLFcfB01mogK9T553hG/gNcp5rgy+a6BlY1DkIe4mESOl4
-         LDi0XIUZY82ilIv9Rb/iivKHdvsYcCSCLXvk3KuY=
-From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-To:     James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jann Horn <jannh@google.com>,
-        John Johansen <john.johansen@canonical.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH v3 05/12] landlock: Move filesystem helpers and add a new one
-Date:   Fri,  6 May 2022 18:10:55 +0200
-Message-Id: <20220506161102.525323-6-mic@digikod.net>
-In-Reply-To: <20220506161102.525323-1-mic@digikod.net>
-References: <20220506161102.525323-1-mic@digikod.net>
+        Fri, 6 May 2022 12:14:51 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C83BD83;
+        Fri,  6 May 2022 09:11:07 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id ba17so9247884edb.5;
+        Fri, 06 May 2022 09:11:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3tVCRctusR50NsJqvwU9ayy4TOZg/tJq1P3xPHYXtsk=;
+        b=i1diYqUiflUn78SzAR+JrxbLULT9uZMaQSTddCm1jzoW63mWs9o/6wUCZCkPpxzSmo
+         KcoTpc0j+8g6QFq54SoaRdLe0avqJ+Sl5W6MS1qkr1BnWf0Y85jq/ajYjP0l0cMQ53aD
+         37fTe/MYOAilcDfsrCXwhGLp5+5U+dTPWX3xKnZr/pI12HA5VJ1J2Ny7vOuGQNpBaJZh
+         iXEqX+Pq6PJq50V2ZnFgbU7Q71vjZyQeYyiQOfcGP+jEe/rSNqb2G+j2qAh8YHlbqkFy
+         wzfPuETIcT9/lCIIrUFAcuC0n99X8oxK2sfUgwBb0qVr6UvIU9BMaP2VGa21SkTiR2VR
+         Ziug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3tVCRctusR50NsJqvwU9ayy4TOZg/tJq1P3xPHYXtsk=;
+        b=RTgGkYbNQ6alckWeZhzAQc4m6yfrcZJEqvxG2j2cM3+/U7rWHfDCT3O1DBBjjaOKjg
+         F6ZSPKQ3zmA4ZaTdVRPMe5BczYXxx7Cs0sbgwMjkMHO9aFQo977WaE0wwlkcXzC03/VO
+         M6nu8c1//x0qZP8w5VOjEyWpQcmI7naM+gXrQU2A33z+PhPOB84cdhOKJyyFpxxj1SJk
+         UMXuvh9J2wBsIgGuS68pLgjcm1CbQsn4UkG9uAKudo/w+w3aTrmUccr1eLkqlGt7tYEL
+         tBMpGYZd7YxGyxGBjoU80lcLF33rXIj5XFKF0b/V8Y+a+6nQnVdvsJiUCOkckSYL52Ou
+         zgjg==
+X-Gm-Message-State: AOAM531Z+82Xij5feVGsAWj8Jfo5Iy+UOWf89AXlAMW8c/qOeOjP8dse
+        ZsqRIHTO8YpYK7V2McCEfDk=
+X-Google-Smtp-Source: ABdhPJz6k0eo2Uhvh2qOblVPcJzuQ5qSlxygttmHjSaUEbOY57FCjq8PIQAgtt3jlGaXjKhpf9kmdg==
+X-Received: by 2002:a05:6402:520e:b0:428:22d0:e996 with SMTP id s14-20020a056402520e00b0042822d0e996mr4135931edd.250.1651853465786;
+        Fri, 06 May 2022 09:11:05 -0700 (PDT)
+Received: from kista.localnet (cpe1-3-76.cable.triera.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id qs24-20020a170906459800b006f3ef214e1bsm2027255ejc.129.2022.05.06.09.11.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 09:11:05 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Andre Przywara <andre.przywara@arm.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org
+Subject: Re: [PATCH v11 2/6] clk: sunxi-ng: h616: Add PLL derived 32KHz clock
+Date:   Fri, 06 May 2022 18:11:04 +0200
+Message-ID: <3607837.MHq7AAxBmi@kista>
+In-Reply-To: <20220428230933.15262-3-andre.przywara@arm.com>
+References: <20220428230933.15262-1-andre.przywara@arm.com> <20220428230933.15262-3-andre.przywara@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the SB_NOUSER and IS_PRIVATE dentry check to a standalone
-is_nouser_or_private() helper.  This will be useful for a following
-commit.
+Dne petek, 29. april 2022 ob 01:09:29 CEST je Andre Przywara napisal(a):
+> The RTC section of the H616 manual mentions in a half-sentence the
+> existence of a clock "32K divided by PLL_PERI(2X)". This is used as
+> one of the possible inputs for the mux that selects the clock for the
+> 32 KHz fanout pad. On the H616 this is routed to pin PG10, and some
+> boards use that clock output to compensate for a missing 32KHz crystal.
+> On the OrangePi Zero2 this is for instance connected to the LPO pin of
+> the WiFi/BT chip.
+> The new RTC clock binding requires this clock to be named as one input
+> clock, so we need to expose this to the DT. In contrast to the D1 SoC
+> there does not seem to be a gate for this clock, so just use a fixed
+> divider clock, using a newly assigned clock number.
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> Reviewed-by: Samuel Holland <samuel@sholland.org>
 
-Move get_mode_access() and maybe_remove() to make them usable by new
-code provided by a following commit.
+Applied to sunxi/clk-for-5.19, thanks!
 
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Link: https://lore.kernel.org/r/20220506161102.525323-6-mic@digikod.net
----
+Best regards,
+Jernej
 
-Changes since v2:
-* Format with clang-format and rebase.
+> ---
+>  drivers/clk/sunxi-ng/ccu-sun50i-h616.c      | 8 ++++++++
+>  drivers/clk/sunxi-ng/ccu-sun50i-h616.h      | 2 +-
+>  include/dt-bindings/clock/sun50i-h616-ccu.h | 1 +
+>  3 files changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h616.c b/drivers/clk/sunxi-ng/
+ccu-sun50i-h616.c
+> index 49a2474cf314..21e918582aa5 100644
+> --- a/drivers/clk/sunxi-ng/ccu-sun50i-h616.c
+> +++ b/drivers/clk/sunxi-ng/ccu-sun50i-h616.c
+> @@ -704,6 +704,13 @@ static CLK_FIXED_FACTOR_HWS(pll_periph0_2x_clk, "pll-
+periph0-2x",
+>  			    pll_periph0_parents,
+>  			    1, 2, 0);
+>  
+> +static const struct clk_hw *pll_periph0_2x_hws[] = {
+> +	&pll_periph0_2x_clk.hw
+> +};
+> +
+> +static CLK_FIXED_FACTOR_HWS(pll_system_32k_clk, "pll-system-32k",
+> +			    pll_periph0_2x_hws, 36621, 1, 0);
+> +
+>  static const struct clk_hw *pll_periph1_parents[] = {
+>  	&pll_periph1_clk.common.hw
+>  };
+> @@ -852,6 +859,7 @@ static struct clk_hw_onecell_data sun50i_h616_hw_clks = 
+{
+>  		[CLK_PLL_DDR1]		= 
+&pll_ddr1_clk.common.hw,
+>  		[CLK_PLL_PERIPH0]	= &pll_periph0_clk.common.hw,
+>  		[CLK_PLL_PERIPH0_2X]	= &pll_periph0_2x_clk.hw,
+> +		[CLK_PLL_SYSTEM_32K]	= &pll_system_32k_clk.hw,
+>  		[CLK_PLL_PERIPH1]	= &pll_periph1_clk.common.hw,
+>  		[CLK_PLL_PERIPH1_2X]	= &pll_periph1_2x_clk.hw,
+>  		[CLK_PLL_GPU]		= 
+&pll_gpu_clk.common.hw,
+> diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h616.h b/drivers/clk/sunxi-ng/
+ccu-sun50i-h616.h
+> index dd671b413f22..fdd2f4d5103f 100644
+> --- a/drivers/clk/sunxi-ng/ccu-sun50i-h616.h
+> +++ b/drivers/clk/sunxi-ng/ccu-sun50i-h616.h
+> @@ -51,6 +51,6 @@
+>  
+>  #define CLK_BUS_DRAM		56
+>  
+> -#define CLK_NUMBER		(CLK_BUS_HDCP + 1)
+> +#define CLK_NUMBER		(CLK_PLL_SYSTEM_32K + 1)
+>  
+>  #endif /* _CCU_SUN50I_H616_H_ */
+> diff --git a/include/dt-bindings/clock/sun50i-h616-ccu.h b/include/dt-
+bindings/clock/sun50i-h616-ccu.h
+> index 4fc08b0df2f3..1191aca53ac6 100644
+> --- a/include/dt-bindings/clock/sun50i-h616-ccu.h
+> +++ b/include/dt-bindings/clock/sun50i-h616-ccu.h
+> @@ -111,5 +111,6 @@
+>  #define CLK_BUS_TVE0		125
+>  #define CLK_HDCP		126
+>  #define CLK_BUS_HDCP		127
+> +#define CLK_PLL_SYSTEM_32K	128
+>  
+>  #endif /* _DT_BINDINGS_CLK_SUN50I_H616_H_ */
+> -- 
+> 2.35.3
+> 
+> 
 
-Changes since v1:
-* Move is_nouser_or_private() explanation up to a function header
-  comment block as suggested by Paul Moore.
-* Add Reviewed-by: Paul Moore.
----
- security/landlock/fs.c | 87 ++++++++++++++++++++++--------------------
- 1 file changed, 46 insertions(+), 41 deletions(-)
-
-diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-index c5749301b37d..7b7860039a08 100644
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -261,6 +261,18 @@ unmask_layers(const struct landlock_rule *const rule,
- 	return false;
- }
- 
-+/*
-+ * Allows access to pseudo filesystems that will never be mountable (e.g.
-+ * sockfs, pipefs), but can still be reachable through
-+ * /proc/<pid>/fd/<file-descriptor>
-+ */
-+static inline bool is_nouser_or_private(const struct dentry *dentry)
-+{
-+	return (dentry->d_sb->s_flags & SB_NOUSER) ||
-+	       (d_is_positive(dentry) &&
-+		unlikely(IS_PRIVATE(d_backing_inode(dentry))));
-+}
-+
- static int check_access_path(const struct landlock_ruleset *const domain,
- 			     const struct path *const path,
- 			     const access_mask_t access_request)
-@@ -274,14 +286,7 @@ static int check_access_path(const struct landlock_ruleset *const domain,
- 		return 0;
- 	if (WARN_ON_ONCE(!domain || !path))
- 		return 0;
--	/*
--	 * Allows access to pseudo filesystems that will never be mountable
--	 * (e.g. sockfs, pipefs), but can still be reachable through
--	 * /proc/<pid>/fd/<file-descriptor> .
--	 */
--	if ((path->dentry->d_sb->s_flags & SB_NOUSER) ||
--	    (d_is_positive(path->dentry) &&
--	     unlikely(IS_PRIVATE(d_backing_inode(path->dentry)))))
-+	if (is_nouser_or_private(path->dentry))
- 		return 0;
- 	if (WARN_ON_ONCE(domain->num_layers < 1))
- 		return -EACCES;
-@@ -360,6 +365,39 @@ static inline int current_check_access_path(const struct path *const path,
- 	return check_access_path(dom, path, access_request);
- }
- 
-+static inline access_mask_t get_mode_access(const umode_t mode)
-+{
-+	switch (mode & S_IFMT) {
-+	case S_IFLNK:
-+		return LANDLOCK_ACCESS_FS_MAKE_SYM;
-+	case 0:
-+		/* A zero mode translates to S_IFREG. */
-+	case S_IFREG:
-+		return LANDLOCK_ACCESS_FS_MAKE_REG;
-+	case S_IFDIR:
-+		return LANDLOCK_ACCESS_FS_MAKE_DIR;
-+	case S_IFCHR:
-+		return LANDLOCK_ACCESS_FS_MAKE_CHAR;
-+	case S_IFBLK:
-+		return LANDLOCK_ACCESS_FS_MAKE_BLOCK;
-+	case S_IFIFO:
-+		return LANDLOCK_ACCESS_FS_MAKE_FIFO;
-+	case S_IFSOCK:
-+		return LANDLOCK_ACCESS_FS_MAKE_SOCK;
-+	default:
-+		WARN_ON_ONCE(1);
-+		return 0;
-+	}
-+}
-+
-+static inline access_mask_t maybe_remove(const struct dentry *const dentry)
-+{
-+	if (d_is_negative(dentry))
-+		return 0;
-+	return d_is_dir(dentry) ? LANDLOCK_ACCESS_FS_REMOVE_DIR :
-+				  LANDLOCK_ACCESS_FS_REMOVE_FILE;
-+}
-+
- /* Inode hooks */
- 
- static void hook_inode_free_security(struct inode *const inode)
-@@ -553,31 +591,6 @@ static int hook_sb_pivotroot(const struct path *const old_path,
- 
- /* Path hooks */
- 
--static inline access_mask_t get_mode_access(const umode_t mode)
--{
--	switch (mode & S_IFMT) {
--	case S_IFLNK:
--		return LANDLOCK_ACCESS_FS_MAKE_SYM;
--	case 0:
--		/* A zero mode translates to S_IFREG. */
--	case S_IFREG:
--		return LANDLOCK_ACCESS_FS_MAKE_REG;
--	case S_IFDIR:
--		return LANDLOCK_ACCESS_FS_MAKE_DIR;
--	case S_IFCHR:
--		return LANDLOCK_ACCESS_FS_MAKE_CHAR;
--	case S_IFBLK:
--		return LANDLOCK_ACCESS_FS_MAKE_BLOCK;
--	case S_IFIFO:
--		return LANDLOCK_ACCESS_FS_MAKE_FIFO;
--	case S_IFSOCK:
--		return LANDLOCK_ACCESS_FS_MAKE_SOCK;
--	default:
--		WARN_ON_ONCE(1);
--		return 0;
--	}
--}
--
- /*
-  * Creating multiple links or renaming may lead to privilege escalations if not
-  * handled properly.  Indeed, we must be sure that the source doesn't gain more
-@@ -606,14 +619,6 @@ static int hook_path_link(struct dentry *const old_dentry,
- 		get_mode_access(d_backing_inode(old_dentry)->i_mode));
- }
- 
--static inline access_mask_t maybe_remove(const struct dentry *const dentry)
--{
--	if (d_is_negative(dentry))
--		return 0;
--	return d_is_dir(dentry) ? LANDLOCK_ACCESS_FS_REMOVE_DIR :
--				  LANDLOCK_ACCESS_FS_REMOVE_FILE;
--}
--
- static int hook_path_rename(const struct path *const old_dir,
- 			    struct dentry *const old_dentry,
- 			    const struct path *const new_dir,
--- 
-2.35.1
 
