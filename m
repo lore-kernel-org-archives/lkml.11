@@ -2,126 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC291C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6483AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442747AbiEFPUC (ORCPT
+        id S1442806AbiEFP0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
+        Fri, 6 May 2022 11:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347956AbiEFPT5 (ORCPT
+        with ESMTP id S236859AbiEFPZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:19:57 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8031A66203;
-        Fri,  6 May 2022 08:16:13 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:52514)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmygm-009mY8-CM; Fri, 06 May 2022 08:12:12 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37200 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nmygj-007Bpk-Tg; Fri, 06 May 2022 08:12:11 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     <linux-arch@vger.kernel.org>
-Cc:     Tejun Heo <tj@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-References: <CANpfEhOnNZa5d_G3e0dzzbbEtSuqxWY-fUCqzSiFpiQ2k0hJyw@mail.gmail.com>
-        <CAHk-=wjfecvcUk2vNQM1GiUz_G=WQEJ8i8JS7yjnxjq_f-OgKw@mail.gmail.com>
-        <87a6czifo7.fsf@email.froward.int.ebiederm.org>
-        <CAHk-=wj=EHvH-DEUHbkoB3vDZJ1xRzrk44JibtNOepNkachxPw@mail.gmail.com>
-        <87ilrn1drx.ffs@tglx> <877d7zk1cf.ffs@tglx>
-        <CAHk-=wiJPeANKYU4imYaeEuV6sNP+EDR=rWURSKv=y4Mhcn1hA@mail.gmail.com>
-        <87y20fid4d.ffs@tglx>
-        <87bkx5q3pk.fsf_-_@email.froward.int.ebiederm.org>
-Date:   Fri, 06 May 2022 09:11:36 -0500
-In-Reply-To: <87bkx5q3pk.fsf_-_@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Tue, 12 Apr 2022 18:31:03 -0500")
-Message-ID: <87mtfu4up3.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 6 May 2022 11:25:59 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC1B6D181;
+        Fri,  6 May 2022 08:22:15 -0700 (PDT)
+Received: from [192.168.1.30] (097-089-247-249.biz.spectrum.com [97.89.247.249])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 4F4A93F741;
+        Fri,  6 May 2022 15:22:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1651850534;
+        bh=xeNUGaT4p7FRhfwjeWmLkgogYHfgQxHD8jC1ffB16qc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=BOrbwwqMJgYB7MMeDKt6CJV/BzxbcAzJhmM0IMybCrP0+Np3etyNxHy8f9msYe/BI
+         JupmgffARce/69urpHn21syPU4Ca7BZQF/WDPwysfELAMDvJBRO/0RNCGi4gkEqbsp
+         Pmz3fPktq55CkK8UDZwbjnArU2i+jj2iYvlNaj2NWbmt9688dXnUmaqaee0WQsRuPT
+         kbudqpHht73fEd4l90KZB6HGHCHreh3LN7DJjKCDN36gahi9p0vxFdu9AcY1WrfKc5
+         YZBgMcd+WI4QTvaypa6fbdUI/aBtG1aMOQIJ+O28JNrcAGAfm8U5nsH9ZxEQTzEGkB
+         Lap6FsoMpPZyg==
+Message-ID: <0a3e8894-bc12-5854-dbaf-71ac8f1367f2@canonical.com>
+Date:   Fri, 6 May 2022 11:22:11 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nmygj-007Bpk-Tg;;;mid=<87mtfu4up3.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19t4gV9Zdd4oP1qG3l/gRiLHnzIm5vjIGg=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 0/7] fork: Make init and umh ordinary tasks
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] docs: sched: Update sched-rt-group Documentation For
+ Gender Inclusiveness
+Content-Language: en-US
+To:     Phil Auld <pauld@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, corbet@lwn.net,
+        linux-doc@vger.kernel.org, stable@vger.kernel.org,
+        peterz@infradead.org, tglx@linutronix.de
+References: <20220505021424.12656-1-joseph.salisbury@canonical.com>
+ <YnUwsnt52aB0sZi0@lorien.usersys.redhat.com>
+From:   Joseph Salisbury <joseph.salisbury@canonical.com>
+In-Reply-To: <YnUwsnt52aB0sZi0@lorien.usersys.redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-In commit 40966e316f86 ("kthread: Ensure struct kthread is present for
-all kthreads") caused init and the user mode helper threads that call
-kernel_execve to have struct kthread allocated for them.
 
-I believe my first patch in this series is enough to fix the bug
-and is simple enough and obvious enough to be backportable.
+On 5/6/22 10:29, Phil Auld wrote:
+> On Wed, May 04, 2022 at 10:14:24PM -0400 Joseph Salisbury wrote:
+>> Document assumes root user is he:
+>> "assumes root knows what he is doing."
+>>
+>> Update documentation for inclusivness, since root is not limited by gender.
+>>
+>> Fixes: 60aa605dfce2 ("sched: rt: document the risk of small values in the bandwidth settings")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Joseph Salisbury <joseph.salisbury@canonical.com>
+>> ---
+>>   Documentation/scheduler/sched-rt-group.rst | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/scheduler/sched-rt-group.rst b/Documentation/scheduler/sched-rt-group.rst
+>> index 655a096ec8fb..e55fee6772c4 100644
+>> --- a/Documentation/scheduler/sched-rt-group.rst
+>> +++ b/Documentation/scheduler/sched-rt-group.rst
+>> @@ -19,7 +19,7 @@ Real-Time group scheduling
+>>   ==========
+>>   
+>>    Fiddling with these settings can result in an unstable system, the knobs are
+>> - root only and assumes root knows what he is doing.
+>> + root only and assumes root knows what they are doing.
+>>
+> Now there's a singular vs plural problem.
+>
+> "... assumes root users know ..."  ?
+Thanks for the feedback, Phil.
 
-The rest of the changes pass struct kernel_clone_args to clean things
-up and cause the code to make sense.
+Your suggestion makes more sense.  I'll wait for any additional 
+responses before sending a v2 with your suggestion.
+>
+>
+>
+> Cheers,
+> Phil
+>
+>>   Most notable:
+>>   
+>> -- 
+>> 2.34.1
+>>
 
-There is one rough spot in this change.  In the init process before the
-user space init process is exec'd there is a lot going on.  I have found
-when async_schedule_domain is low on memory or has more than 32K callers
-executing do_populate_rootfs will now run in a user space thread making
-flush_delayed_fput meaningless, and __fput_sync is unusable.  I solved
-this as I did in usermode_driver.c with an added explicit task_work_run.
-I point this out as I have seen some talk about making flushing file
-handles more explicit.
-
-Eric W. Biederman (7):
-      kthread: Don't allocate kthread_struct for init and umh
-      fork: Pass struct kernel_clone_args into copy_thread
-      fork: Explicity test for idle tasks in copy_thread
-      fork: Generalize PF_IO_WORKER handling
-      init: Deal with the init process being a user mode process
-      fork: Explicitly set PF_KTHREAD
-      fork: Stop allowing kthreads to call execve
-
- arch/alpha/kernel/process.c      | 13 ++++++------
- arch/arc/kernel/process.c        | 13 ++++++------
- arch/arm/kernel/process.c        | 12 ++++++-----
- arch/arm64/kernel/process.c      | 12 ++++++-----
- arch/csky/kernel/process.c       | 15 ++++++-------
- arch/h8300/kernel/process.c      | 10 ++++-----
- arch/hexagon/kernel/process.c    | 12 ++++++-----
- arch/ia64/kernel/process.c       | 15 +++++++------
- arch/m68k/kernel/process.c       | 12 ++++++-----
- arch/microblaze/kernel/process.c | 12 ++++++-----
- arch/mips/kernel/process.c       | 13 ++++++------
- arch/nios2/kernel/process.c      | 12 ++++++-----
- arch/openrisc/kernel/process.c   | 12 ++++++-----
- arch/parisc/kernel/process.c     | 18 +++++++++-------
- arch/powerpc/kernel/process.c    | 15 +++++++------
- arch/riscv/kernel/process.c      | 12 ++++++-----
- arch/s390/kernel/process.c       | 12 ++++++-----
- arch/sh/kernel/process_32.c      | 12 ++++++-----
- arch/sparc/kernel/process_32.c   | 12 ++++++-----
- arch/sparc/kernel/process_64.c   | 12 ++++++-----
- arch/um/kernel/process.c         | 15 +++++++------
- arch/x86/include/asm/fpu/sched.h |  2 +-
- arch/x86/include/asm/switch_to.h |  8 +++----
- arch/x86/kernel/fpu/core.c       |  4 ++--
- arch/x86/kernel/process.c        | 18 +++++++++-------
- arch/xtensa/kernel/process.c     | 17 ++++++++-------
- fs/exec.c                        |  8 ++++---
- include/linux/sched/task.h       |  8 +++++--
- init/initramfs.c                 |  2 ++
- init/main.c                      |  2 +-
- kernel/fork.c                    | 46 +++++++++++++++++++++++++++++++++-------
- kernel/umh.c                     |  6 +++---
- 32 files changed, 233 insertions(+), 159 deletions(-)
-
-Eric
