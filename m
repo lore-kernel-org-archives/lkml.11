@@ -2,143 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D65C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 21:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444646AbiEFWDB (ORCPT
+        id S1444670AbiEFWGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 18:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50052 "EHLO
+        Fri, 6 May 2022 18:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350991AbiEFWDA (ORCPT
+        with ESMTP id S1444663AbiEFWGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 18:03:00 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BF8255AC;
-        Fri,  6 May 2022 14:59:16 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:41340)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nn5yh-008b7d-Gi; Fri, 06 May 2022 15:59:11 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37292 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nn5yg-00Aw1E-9W; Fri, 06 May 2022 15:59:11 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, oleg@redhat.com,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        linux-ia64@vger.kernel.org, Robert O'Callahan <roc@pernos.co>,
-        Kyle Huey <khuey@pernos.co>
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <202205061348.927E94729E@keescook>
-Date:   Fri, 06 May 2022 16:59:03 -0500
-In-Reply-To: <202205061348.927E94729E@keescook> (Kees Cook's message of "Fri,
-        6 May 2022 14:26:36 -0700")
-Message-ID: <87h762z5js.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 6 May 2022 18:06:19 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E3E6D3A3
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 15:02:35 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id c9so7993576plh.2
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 15:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cIzYna/YEl2NhWK3pU6KnqI6mAaFoXTCE8kbRq6Vi0s=;
+        b=wW20NCXgQpd2v7jNG5eADv5lYiVGQxYZACu+zWNdwR4kp4fX0K4Y/L8LaPfgIL7NnX
+         c9TmyUBdYqNqBQsthH4wED6t/gk69f9rAVG0ZDrh8JMotKamqjbSj4CMgDHYULSDYasv
+         czLMWrZs2Y8wGiQXok4+o4zw9+mUfNXS+k4QREjl6Km50nwmz0xjoXGDPWO1wg25Ca8i
+         KwCWl07nN47Z45UUG7rvFMjhs0tg1RChYmZQHMtxdJvyaoygZC1spfCta7nuK8ZynqvI
+         0IRQJ//4uoifcIUhYglbAX7nGgwBP1Kq2GYnHCrTUSdd0IzN2wRio0q9T9crCSl0F4KY
+         /+mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cIzYna/YEl2NhWK3pU6KnqI6mAaFoXTCE8kbRq6Vi0s=;
+        b=0tJFcBipKyLTK2Gxg1vm3smJrm1jQkyh8QWO5UrDkh6Kedht6B7rcqp2U7mHNt3t5I
+         Vxv40LZbte/qH8B76ZNHRfNs7sKCcGMPsnGS62rnG2yTSp0Ecpgct9DH8MkhqYSbeTl+
+         dcsaUL/EcIBk6hPqE0/NHjHHxvfddGrsANG2FqbuyC0448+iSLCEkLB4TEQI+7a3Ydr4
+         ixld252/BY5BoP8kHiKe9DTW9LNdwoSO7Cx+tXWVz7P9o3QuTbch1CMjJqKTMUU9pcQt
+         qo3pW4UrocZ9J57dOzTi0ECIhkY/VedPYP9yo1iCXALvXkd4IGb9IgdYxiY7TSs+SDKj
+         1Mcg==
+X-Gm-Message-State: AOAM531n9xoK4HvSzcyQXWbU+l49VVsybilmnwtSOYIoS8mx1pd5v6M4
+        iWGB4OLjGF8yCZwH1qP+9aZDPw==
+X-Google-Smtp-Source: ABdhPJyCz+3zBak6a3HzIwwi6Mpi98YDzL4KdwBqjl+i7Qt3MYrW+j9aPZ8qrMRaujKNDE256Z6WGA==
+X-Received: by 2002:a17:90b:1b03:b0:1dc:a80b:8004 with SMTP id nu3-20020a17090b1b0300b001dca80b8004mr14653328pjb.182.1651874554739;
+        Fri, 06 May 2022 15:02:34 -0700 (PDT)
+Received: from [192.168.4.166] (cpe-72-132-29-68.dc.res.rr.com. [72.132.29.68])
+        by smtp.gmail.com with ESMTPSA id y15-20020a170902b48f00b0015e8d4eb211sm2243226plr.91.2022.05.06.15.02.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 15:02:34 -0700 (PDT)
+Message-ID: <8e81111d-398c-3810-50b4-e1475e956b6f@kernel.dk>
+Date:   Fri, 6 May 2022 16:02:33 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nn5yg-00Aw1E-9W;;;mid=<87h762z5js.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/VPXqGxLyk6k3FEwGJyXklghMod61nqrE=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 3/5] io_uring: let fast poll support multishot
+Content-Language: en-US
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        Hao Xu <haoxu.linux@gmail.com>, io-uring@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220506070102.26032-1-haoxu.linux@gmail.com>
+ <20220506070102.26032-4-haoxu.linux@gmail.com>
+ <d68381cf-a9fc-33b8-8a9c-ff8485ba8d19@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <d68381cf-a9fc-33b8-8a9c-ff8485ba8d19@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+On 5/6/22 11:19 AM, Pavel Begunkov wrote:
+> On 5/6/22 08:01, Hao Xu wrote:
+>> From: Hao Xu <howeyxu@tencent.com>
+>>
+>> For operations like accept, multishot is a useful feature, since we can
+>> reduce a number of accept sqe. Let's integrate it to fast poll, it may
+>> be good for other operations in the future.
+>>
+>> Signed-off-by: Hao Xu <howeyxu@tencent.com>
+>> ---
+>>   fs/io_uring.c | 41 ++++++++++++++++++++++++++---------------
+>>   1 file changed, 26 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/fs/io_uring.c b/fs/io_uring.c
+>> index 8ebb1a794e36..d33777575faf 100644
+>> --- a/fs/io_uring.c
+>> +++ b/fs/io_uring.c
+>> @@ -5952,7 +5952,7 @@ static void io_poll_remove_entries(struct io_kiocb *req)
+>>    * either spurious wakeup or multishot CQE is served. 0 when it's done with
+>>    * the request, then the mask is stored in req->cqe.res.
+>>    */
+>> -static int io_poll_check_events(struct io_kiocb *req, bool locked)
+>> +static int io_poll_check_events(struct io_kiocb *req, bool *locked)
+>>   {
+>>       struct io_ring_ctx *ctx = req->ctx;
+>>       int v;
+>> @@ -5981,17 +5981,26 @@ static int io_poll_check_events(struct io_kiocb *req, bool locked)
+>>             /* multishot, just fill an CQE and proceed */
+>>           if (req->cqe.res && !(req->apoll_events & EPOLLONESHOT)) {
+>> -            __poll_t mask = mangle_poll(req->cqe.res & req->apoll_events);
+>> -            bool filled;
+>> -
+>> -            spin_lock(&ctx->completion_lock);
+>> -            filled = io_fill_cqe_aux(ctx, req->cqe.user_data, mask,
+>> -                         IORING_CQE_F_MORE);
+>> -            io_commit_cqring(ctx);
+>> -            spin_unlock(&ctx->completion_lock);
+>> -            if (unlikely(!filled))
+>> -                return -ECANCELED;
+>> -            io_cqring_ev_posted(ctx);
+>> +            if (req->flags & REQ_F_APOLL_MULTISHOT) {
+>> +                io_tw_lock(req->ctx, locked);
+>> +                if (likely(!(req->task->flags & PF_EXITING)))
+>> +                    io_queue_sqe(req);
+> 
+> That looks dangerous, io_queue_sqe() usually takes the request
+> ownership and doesn't expect that someone, i.e.
+> io_poll_check_events(), may still be actively using it.
 
-> On Thu, May 05, 2022 at 01:25:57PM -0500, Eric W. Biederman wrote:
->> The states TASK_STOPPED and TASK_TRACE are special in they can not
->> handle spurious wake-ups.  This plus actively depending upon and
->> changing the value of tsk->__state causes problems for PREEMPT_RT and
->> Peter's freezer rewrite.
->> 
->> There are a lot of details we have to get right to sort out the
->> technical challenges and this is my parred back version of the changes
->> that contains just those problems I see good solutions to that I believe
->> are ready.
->> 
->> A couple of issues have been pointed but I think this parred back set of
->> changes is still on the right track.  The biggest change in v4 is the
->> split of "ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs" into
->> two patches because the dependency I thought exited between two
->> different changes did not exist.  The rest of the changes are minor
->> tweaks to "ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs";
->> removing an always true branch, and adding an early  test to see if the
->> ptracer had gone, before TASK_TRAPPING was set.
->> 
->> This set of changes should support Peter's freezer rewrite, and with the
->> addition of changing wait_task_inactive(TASK_TRACED) to be
->> wait_task_inactive(0) in ptrace_check_attach I don't think there are any
->> races or issues to be concerned about from the ptrace side.
->> 
->> More work is needed to support PREEMPT_RT, but these changes get things
->> closer.
->> 
->> This set of changes continues to look like it will provide a firm
->> foundation for solving the PREEMPT_RT and freezer challenges.
->
-> One of the more sensitive projects to changes around ptrace is rr
-> (Robert and Kyle added to CC). I ran rr's selftests before/after this
-> series and saw no changes. My failures remained the same; I assume
-> they're due to missing CPU features (pkeys) or build configs (bpf), etc:
->
-> 99% tests passed, 19 tests failed out of 2777
->
-> Total Test time (real) = 773.40 sec
->
-> The following tests FAILED:
->          42 - bpf_map (Failed)
->          43 - bpf_map-no-syscallbuf (Failed)
->         414 - netfilter (Failed)
->         415 - netfilter-no-syscallbuf (Failed)
->         454 - x86/pkeys (Failed)
->         455 - x86/pkeys-no-syscallbuf (Failed)
->         1152 - ttyname (Failed)
->         1153 - ttyname-no-syscallbuf (Failed)
->         1430 - bpf_map-32 (Failed)
->         1431 - bpf_map-32-no-syscallbuf (Failed)
->         1502 - detach_sigkill-32 (Failed)
->         1802 - netfilter-32 (Failed)
->         1803 - netfilter-32-no-syscallbuf (Failed)
->         1842 - x86/pkeys-32 (Failed)
->         1843 - x86/pkeys-32-no-syscallbuf (Failed)
->         2316 - crash_in_function-32 (Failed)
->         2317 - crash_in_function-32-no-syscallbuf (Failed)
->         2540 - ttyname-32 (Failed)
->         2541 - ttyname-32-no-syscallbuf (Failed)
->
-> So, I guess:
->
-> Tested-by: Kees Cook <keescook@chromium.org>
->
-> :)
+I took a look at this, too. We do own the request at this point, but
+it's still on the poll list. If io_accept() fails, then we do run the
+poll_clean.
 
-Thank you.  I was thinking it would be good to add the rr folks to the
-discussion.
+> E.g. io_accept() fails on fd < 0, return an error, io_queue_sqe() ->
+> io_queue_async() -> io_req_complete_failed() kills it. Then
+> io_poll_check_events() and polling in general carry on using the freed
+> request => UAF. Didn't look at it too carefully, but there might other
+> similar cases.
 
-Eric
+But we better have done poll_clean() before returning the error. What am
+I missing here?
+
+-- 
+Jens Axboe
 
