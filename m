@@ -2,198 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0FDC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 18:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E965C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 18:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390256AbiEFSRb (ORCPT
+        id S1385504AbiEFSTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 14:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
+        Fri, 6 May 2022 14:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389385AbiEFSRD (ORCPT
+        with ESMTP id S233843AbiEFSTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 14:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1556E8D3
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 11:13:19 -0700 (PDT)
+        Fri, 6 May 2022 14:19:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B084A4D9FE;
+        Fri,  6 May 2022 11:15:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 360D7620C9
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 18:13:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7820BC385A8;
-        Fri,  6 May 2022 18:13:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D03B1B83882;
+        Fri,  6 May 2022 18:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52452C385A8;
+        Fri,  6 May 2022 18:15:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651860798;
-        bh=fbyhZMmkilOXsKYBJBdj/kDrggST+SDzEYXa+vgaI/I=;
+        s=k20201202; t=1651860947;
+        bh=HZhuEiXqbxhd9fR3VaMws+c8YgJggiG/REZXjlbhj18=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FeW6T9IvzdP9MKjN/+6EdJLoDxHuC3gOQ77VaUeI7kx0OglQZb2pFCxStSBUqyKED
-         1FroRiP2wK4/j+slSWPzyjk8mEVrGou97+p0S5a5BwWyPtmIcJSnUZNFhnyj1hr9TA
-         2YuQ79vLIQDXFXDh16a4YFeQ2BQHiM3AAlu6Q62ooIprSebwJ981s/0zT1L6SEljEN
-         Z7tJQ9njGz96sx26NV/2LTVH4hnRABZdwDAa6CxVKURy/1qIeoB5QKS50wGkIZVv4L
-         4haPObMcCm5mMkwuhq8/WeqQJxIVwjxYrpHi//g0VuFDkWqvt5rpobP6iQ453y0yQs
-         jj1DKCF33sVOw==
-Date:   Fri, 6 May 2022 11:13:16 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Chao Yu <chao@kernel.org>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] f2fs: avoid to select pinned section during
- checkpoint=disable
-Message-ID: <YnVlPEWzV6PykN2u@google.com>
-References: <20220506115800.2605-1-chao@kernel.org>
+        b=SbmKMuE4NMYBwSFmCjQO0fmQYNuHL4sHqBwee1oxEcLsDZ/hLL8UAq2s3MUOr5Z8w
+         y565I0qstxIOWuzcW428eNk1WunYU+neAu+5eCwcn0oKMEZZo6lVrQddWyqoYal8Hg
+         umu5w8HFMKhvDtlMucA3qqav0ZNVhO9KWViRPaUreU4K9ZfQOu5H+/2IGJmUw5D1qs
+         p9mdDlhuBa3He8mklEiSWFIP0VCuEyRo2MVwKKNdgpWYzsYm/w0tO/Jr/mUW/rQfrU
+         LctRvFwD3/xgvQ/l5sF5TU4e/ORTOmmDLQE5Uup1xLrrvqGemKRykhaJYPGtxuKPLo
+         9OOjWq+J5IJRg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 8796F400B1; Fri,  6 May 2022 15:15:44 -0300 (-03)
+Date:   Fri, 6 May 2022 15:15:44 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>, svens@linux.ibm.com,
+        gor@linux.ibm.com, sumanthk@linux.ibm.com, hca@linux.ibm.com
+Subject: Re: [PATCH v3] perf test: Add skip to --per-thread test
+Message-ID: <YnVl0PxKboCxuke4@kernel.org>
+References: <20220505182505.3313191-1-irogers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220506115800.2605-1-chao@kernel.org>
+In-Reply-To: <20220505182505.3313191-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/06, Chao Yu wrote:
-> From: Jaegeuk Kim <jaegeuk@kernel.org>
+Em Thu, May 05, 2022 at 11:25:05AM -0700, Ian Rogers escreveu:
+> As reported in:
+> https://lore.kernel.org/linux-perf-users/20220428122821.3652015-1-tmricht@linux.ibm.com/
+> the 'instructions:u' event may not be supported. Add a skip using 'perf
+> record'.
 > 
-> The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
-> chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
-> segment as a victim all the time, resulting in checkpoint=disable failure.
-> Let's pick another one, if we fail to collect it.
+> Switch some code away from pipe to make the failures clearer.
 
-I'm concerning more like the generic cases where GC will get the same victim
-having the pinned space resulting in EAGAIN all the time.
+Thanks, applied.
 
-> 
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+- Arnaldo
+
+ 
+> Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+> Tested-by: Thomas Richter <tmricht@linux.ibm.com>
+> Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
-> v4:
-> - use sec_freed instead of total_freed
->  fs/f2fs/f2fs.h    |  2 +-
->  fs/f2fs/file.c    |  8 ++++----
->  fs/f2fs/gc.c      | 17 +++++++++++------
->  fs/f2fs/segment.c |  2 +-
->  fs/f2fs/super.c   |  2 +-
->  5 files changed, 18 insertions(+), 13 deletions(-)
+>  tools/perf/tests/shell/record.sh | 46 ++++++++++++++++++++++++++++----
+>  1 file changed, 41 insertions(+), 5 deletions(-)
 > 
-> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-> index 56adc3b68e14..0f8c426aed50 100644
-> --- a/fs/f2fs/f2fs.h
-> +++ b/fs/f2fs/f2fs.h
-> @@ -3787,7 +3787,7 @@ int f2fs_start_gc_thread(struct f2fs_sb_info *sbi);
->  void f2fs_stop_gc_thread(struct f2fs_sb_info *sbi);
->  block_t f2fs_start_bidx_of_node(unsigned int node_ofs, struct inode *inode);
->  int f2fs_gc(struct f2fs_sb_info *sbi, bool sync, bool background, bool force,
-> -			unsigned int segno);
-> +			unsigned int segno, unsigned int nr_section);
->  void f2fs_build_gc_manager(struct f2fs_sb_info *sbi);
->  int f2fs_resize_fs(struct f2fs_sb_info *sbi, __u64 block_count);
->  int __init f2fs_create_garbage_collection_cache(void);
-> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-> index e4cf8b7b23aa..07d2fa6c774b 100644
-> --- a/fs/f2fs/file.c
-> +++ b/fs/f2fs/file.c
-> @@ -1684,7 +1684,7 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
->  		if (has_not_enough_free_secs(sbi, 0,
->  			GET_SEC_FROM_SEG(sbi, overprovision_segments(sbi)))) {
->  			f2fs_down_write(&sbi->gc_lock);
-> -			err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
-> +			err = f2fs_gc(sbi, true, false, false, NULL_SEGNO, 0);
->  			if (err && err != -ENODATA && err != -EAGAIN)
->  				goto out_err;
->  		}
-> @@ -2472,7 +2472,7 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
->  		f2fs_down_write(&sbi->gc_lock);
->  	}
+> diff --git a/tools/perf/tests/shell/record.sh b/tools/perf/tests/shell/record.sh
+> index d98f4d4a00e1..00c7285ce1ac 100755
+> --- a/tools/perf/tests/shell/record.sh
+> +++ b/tools/perf/tests/shell/record.sh
+> @@ -5,11 +5,43 @@
+>  set -e
 >  
-> -	ret = f2fs_gc(sbi, sync, true, false, NULL_SEGNO);
-> +	ret = f2fs_gc(sbi, sync, true, false, NULL_SEGNO, 0);
->  out:
->  	mnt_drop_write_file(filp);
->  	return ret;
-> @@ -2509,7 +2509,7 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
->  	}
->  
->  	ret = f2fs_gc(sbi, range->sync, true, false,
-> -				GET_SEGNO(sbi, range->start));
-> +				GET_SEGNO(sbi, range->start), 0);
->  	if (ret) {
->  		if (ret == -EBUSY)
->  			ret = -EAGAIN;
-> @@ -2966,7 +2966,7 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
->  		sm->last_victim[GC_CB] = end_segno + 1;
->  		sm->last_victim[GC_GREEDY] = end_segno + 1;
->  		sm->last_victim[ALLOC_NEXT] = end_segno + 1;
-> -		ret = f2fs_gc(sbi, true, true, true, start_segno);
-> +		ret = f2fs_gc(sbi, true, true, true, start_segno, 0);
->  		if (ret == -EAGAIN)
->  			ret = 0;
->  		else if (ret < 0)
-> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-> index 3009c0a97ab4..d13a86272e8b 100644
-> --- a/fs/f2fs/gc.c
-> +++ b/fs/f2fs/gc.c
-> @@ -142,7 +142,7 @@ static int gc_thread_func(void *data)
->  			sync_mode = false;
->  
->  		/* if return value is not zero, no victim was selected */
-> -		if (f2fs_gc(sbi, sync_mode, !foreground, false, NULL_SEGNO))
-> +		if (f2fs_gc(sbi, sync_mode, !foreground, false, NULL_SEGNO, 0))
->  			wait_ms = gc_th->no_gc_sleep_time;
->  
->  		if (foreground)
-> @@ -1754,7 +1754,8 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
+>  err=0
+> +perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
+> +
+> +cleanup() {
+> +  rm -f ${perfdata}
+> +  rm -f ${perfdata}.old
+> +  trap - exit term int
+> +}
+> +
+> +trap_cleanup() {
+> +  cleanup
+> +  exit 1
+> +}
+> +trap trap_cleanup exit term int
+> +
+>  test_per_thread() {
+>    echo "Basic --per-thread mode test"
+> -  perf record -e instructions:u --per-thread -o- true 2> /dev/null \
+> -    | perf report -i- -q \
+> -    | egrep -q true
+> +  if ! perf record -e instructions:u -o ${perfdata} --quiet true 2> /dev/null
+> +  then
+> +    echo "Per-thread record [Skipped instructions:u not supported]"
+> +    if [ $err -ne 1 ]
+> +    then
+> +      err=2
+> +    fi
+> +    return
+> +  fi
+> +  if ! perf record -e instructions:u --per-thread -o ${perfdata} true 2> /dev/null
+> +  then
+> +    echo "Per-thread record of instructions:u [Failed]"
+> +    err=1
+> +    return
+> +  fi
+> +  if ! perf report -i ${perfdata} -q | egrep -q true
+> +  then
+> +    echo "Per-thread record [Failed missing output]"
+> +    err=1
+> +    return
+> +  fi
+>    echo "Basic --per-thread mode test [Success]"
 >  }
 >  
->  int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
-> -			bool background, bool force, unsigned int segno)
-> +			bool background, bool force, unsigned int segno,
-> +			unsigned int nr_section)
->  {
->  	int gc_type = sync ? FG_GC : BG_GC;
->  	int sec_freed = 0, seg_freed = 0, total_freed = 0;
-> @@ -1841,11 +1842,15 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
->  	if (gc_type == FG_GC)
->  		sbi->cur_victim_sec = NULL_SEGNO;
->  
-> -	if (sync)
-> -		goto stop;
-> -
-> -	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
-> +	if (sync || !has_not_enough_free_secs(sbi, sec_freed, 0)) {
-> +		/*
-> +		 * f2fs_disable_checkpoint() needs to migrate enough section
-> +		 * before f2fs_gc() exits.
-> +		 */
-> +		if (sec_freed < nr_section)
-> +			goto gc_more;
->  		goto stop;
-> +	}
->  
->  	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
->  
-> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-> index 8c17fed8987e..3a3e2cec2ac4 100644
-> --- a/fs/f2fs/segment.c
-> +++ b/fs/f2fs/segment.c
-> @@ -524,7 +524,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
->  			finish_wait(&sbi->gc_thread->fggc_wq, &wait);
->  		} else {
->  			f2fs_down_write(&sbi->gc_lock);
-> -			f2fs_gc(sbi, false, false, false, NULL_SEGNO);
-> +			f2fs_gc(sbi, false, false, false, NULL_SEGNO, 0);
->  		}
->  	}
+> @@ -18,6 +50,10 @@ test_register_capture() {
+>    if ! perf list | egrep -q 'br_inst_retired.near_call'
+>    then
+>      echo "Register capture test [Skipped missing instruction]"
+> +    if [ $err -ne 1 ]
+> +    then
+> +      err=2
+> +    fi
+>      return
+>    fi
+>    if ! perf record --intr-regs=\? 2>&1 | egrep -q 'available registers: AX BX CX DX SI DI BP SP IP FLAGS CS SS R8 R9 R10 R11 R12 R13 R14 R15'
+> @@ -37,8 +73,8 @@ test_register_capture() {
+>    echo "Register capture test [Success]"
 >  }
-> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-> index d06a577a1208..2f0ad9ffbf17 100644
-> --- a/fs/f2fs/super.c
-> +++ b/fs/f2fs/super.c
-> @@ -2076,7 +2076,7 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
 >  
->  	while (!f2fs_time_over(sbi, DISABLE_TIME)) {
->  		f2fs_down_write(&sbi->gc_lock);
-> -		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
-> +		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO, 1);
->  		if (err == -ENODATA) {
->  			err = 0;
->  			break;
+> -# Test for platform support and return TEST_SKIP
+> -[ $(uname -m) = s390x ] && exit 2
+>  test_per_thread
+>  test_register_capture
+> +
+> +cleanup
+>  exit $err
 > -- 
-> 2.32.0
+> 2.36.0.512.ge40c2bad7a-goog
+
+-- 
+
+- Arnaldo
