@@ -2,100 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CECA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 08:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244639AbiEFIjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 04:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
+        id S1389535AbiEFIkQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 6 May 2022 04:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390195AbiEFIjN (ORCPT
+        with ESMTP id S238317AbiEFIkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 04:39:13 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7489AF21;
-        Fri,  6 May 2022 01:35:27 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id B066A21A32;
-        Fri,  6 May 2022 08:35:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651826125; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oLTw3J5HqlJGXaem/7/GBVpCJVJMfm3k1q3z73ZMkPw=;
-        b=1Yy/gjrYQLm4DghIDFhD/IrLawONoyxXP5fOdpWyFVG4MSJevaI5r46X34PjzhRQ8GDjJ0
-        eIo/wkkeVpmBxFTPWOi5XkpXYNGx+tQQBEF6QIRloZ2cfaf/2ELMa8SyrummqomKCkpYaJ
-        aiakOCQQYpN+Slsuwruruoq1Uc8N6Rk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651826125;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oLTw3J5HqlJGXaem/7/GBVpCJVJMfm3k1q3z73ZMkPw=;
-        b=l0VFkJAOc+cqSSLs18nzyG9/resunTOXRHoe0KSkn9/d64u9N6r2B5secCGatv/Bk+14Fm
-        M3NdS/OdqZ7Bc+CA==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2B9D12C142;
-        Fri,  6 May 2022 08:35:25 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id D0378A0629; Fri,  6 May 2022 10:35:23 +0200 (CEST)
-Date:   Fri, 6 May 2022 10:35:23 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     Jan Kara <jack@suse.cz>, Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>
-Subject: Re: [PATCH v2 2/3] fanotify: define struct members to hold response
- decision context
-Message-ID: <20220506083523.drdj2ahjw6abimus@quack3.lan>
-References: <cover.1651174324.git.rgb@redhat.com>
- <17660b3f2817e5c0a19d1e9e5d40b53ff4561845.1651174324.git.rgb@redhat.com>
- <CAHC9VhQ3Qtpwhj6TeMR7rmdbUe_6VRHU9OymmDoDdsazeGuNKA@mail.gmail.com>
- <YnHX74E+COTp7AgY@madcap2.tricolour.ca>
- <20220505144456.nw6slyqw4pjizl5p@quack3.lan>
- <CAOQ4uxjkJ37Nzke4YN_se4ztr-yZgm6SK_LhmBQ-ckWutOwWrQ@mail.gmail.com>
+        Fri, 6 May 2022 04:40:14 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C2CB24BCA
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 01:36:10 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24042:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 06 May 2022 16:34:24 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.6; Fri, 6 May 2022 16:34:17 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2507.006; Fri, 6 May 2022 16:34:17 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Russell King - ARM Linux" <linux@armlinux.org.uk>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>
+Subject: RE: [PATCH v14 0/9] Add Sunplus SP7021 SoC Support
+Thread-Topic: [PATCH v14 0/9] Add Sunplus SP7021 SoC Support
+Thread-Index: AQHYYPmpoyLFCwENCkOMTsBsGD1pya0Q7muAgACVJHA=
+Date:   Fri, 6 May 2022 08:34:17 +0000
+Message-ID: <23e22e4e8b9e4d7ab02caaa1c3f7b599@cqplus1.com>
+References: <cover.1651805790.git.qinjian@cqplus1.com>
+ <CAK8P3a0W4wpVwDmCXDkm_u9W=JozrnCnxW7zK3h2XD8f_ODy6w@mail.gmail.com>
+In-Reply-To: <CAK8P3a0W4wpVwDmCXDkm_u9W=JozrnCnxW7zK3h2XD8f_ODy6w@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOQ4uxjkJ37Nzke4YN_se4ztr-yZgm6SK_LhmBQ-ckWutOwWrQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 05-05-22 20:34:06, Amir Goldstein wrote:
-> > One open question I have is what should the kernel do with 'info_type' in
-> > response it does not understand (in the future when there are possibly more
-> > different info types). It could just skip it because this should be just
-> > additional info for introspection (the only mandatory part is in
-> > fanotify_response, however it could surprise userspace that passed info is
-> > just getting ignored. To solve this we would have to somewhere report
-> > supported info types (maybe in fanotify fdinfo in proc). I guess we'll
-> > cross that bridge when we get to it.
-> >
-> > Amir, what do you think?
-> 
-> Regardless if and how we provide a way to enumerate supported info types,
-> I would prefer to reject (EINVAL) unknown info types.
-
-OK, agreed. I will be also calmer when we do that because then we can be
-certain userspace does not pass bogus data for unknown info types.
-
-> We can provide a command FAN_RESPONSE_TEST to write a test response with
-> FAN_NOFD and some extra info so the program can test if certain info
-> types are supported.
-
-Hum, that would be an option as well. We don't even need the
-FAN_RESPONSE_TEST command, do we? The write to fanotify fd for FAN_NOFD fd
-would just perform validation of the response and either accept it (do
-nothing) or return EINVAL.
-
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+PiANCj4gT24gRnJpLCBNYXkgNiwgMjAyMiBhdCA1OjIzIEFNIFFpbiBKaWFuIDxxaW5qaWFuQGNx
+cGx1czEuY29tPiB3cm90ZToNCj4gPg0KPiA+IFRoaXMgcGF0Y2ggc2VyaWVzIGFkZCBTdW5wbHVz
+IFNQNzAyMSBTb0Mgc3VwcG9ydC4NCj4gPg0KPiA+IFN1bnBsdXMgU1A3MDIxIGlzIGFuIEFSTSBD
+b3J0ZXggQTcgKDQgY29yZXMpIGJhc2VkIFNvQy4gSXQgaW50ZWdyYXRlcyBtYW55DQo+ID4gcGVy
+aXBoZXJhbHMgKGV4OiBVQVJULCBJMkMsIFNQSSwgU0RJTywgZU1NQywgVVNCLCBTRCBjYXJkIGFu
+ZCBldGMuKSBpbnRvIGENCj4gPiBzaW5nbGUgY2hpcC4gSXQgaXMgZGVzaWduZWQgZm9yIGluZHVz
+dHJpYWwgY29udHJvbC4NCj4gPg0KPiA+IFNQNzAyMSBjb25zaXN0cyBvZiB0d28gY2hpcHMgKGRp
+ZXMpIGluIGEgcGFja2FnZS4gT25lIGlzIGNhbGxlZCBDLWNoaXANCj4gPiAoY29tcHV0aW5nIGNo
+aXApLiBJdCBpcyBhIDQtY29yZSBBUk0gQ29ydGV4IEE3IENQVS4gSXQgYWRvcHRzIGhpZ2gtbGV2
+ZWwNCj4gPiBwcm9jZXNzICgyMiBubSkgZm9yIGhpZ2ggcGVyZm9ybWFuY2UgY29tcHV0aW5nLiBU
+aGUgb3RoZXIgaXMgY2FsbGVkIFAtDQo+ID4gY2hpcCAocGVyaXBoZXJhbCBjaGlwKS4gSXQgaGFz
+IG1hbnkgcGVyaXBoZXJhbHMgYW5kIGFuIEFSTSBBOTI2IGFkZGVkDQo+ID4gZXNwZWNpYWxseSBm
+b3IgcmVhbC10aW1lIGNvbnRyb2wuIFAtY2hpcCBpcyBtYWRlIGZvciBjdXN0b21lcnMuIEl0IGFk
+b3B0cw0KPiA+IGxvdy1sZXZlbCBwcm9jZXNzIChleDogMC4xMSB1bSkgdG8gcmVkdWNlIGNvc3Qu
+DQo+IA0KPiBKdXN0IGFuIHVwZGF0ZSBmcm9tIG15IHNpZGUgYWJvdXQgbWVyZ2luZyB0aGUgcGxh
+dGZvcm0gY29kZTogdGhlDQo+IHN1Ym1pc3Npb24gbG9va3MgbW9zdGx5IHNlbnNpYmxlIHRvIG1l
+LCBidXQgYXMgbG9uZyBhcyB0aGUgY2xrIGFuZCBpcnFjaGlwDQo+IGRyaXZlcnMgaGF2ZSBub3Qg
+ZmluaXNoZWQgdGhlIHJldmlldywgSSBjYW5ub3QgdGFrZSB0aGlzIHRocm91Z2ggdGhlIHNvYw0K
+PiB0cmVlLiBXZSBjb3VsZCBjb25zaWRlciBtZXJnaW5nIHRoZSBwbGF0Zm9ybSBjb2RlIHdpdGhv
+dXQgdGhvc2UgdHdvDQo+IGRyaXZlcnMsIGJ1dCB0aGF0IHNlZW1zIHBvaW50bGVzcyBiZWNhdXNl
+IGl0IHdpbGwgbm90IGJvb3QuDQo+IA0KDQpUaGUgcmV2aWV3ZXJzIG5vIHJlcGx5LCBJIGRvbuKA
+mXQga25vdyB3aHkuDQoNCj4gV2hhdCBpcyB0aGUgcmVhc29uIHlvdSBkb24ndCBpbmNsdWRlIGEg
+LmR0c2kgZmlsZSBpbiB0aGlzIHNlcmllcz8gVXN1YWxseQ0KPiB0aGVyZSBzaG91bGQgYmUgYXQg
+bGVhc3Qgb25lIGJvYXJkIGFuZCB0aGUgZGVzY3JpcHRpb24gb2YgdGhlIFNvQyBpdHNlbGYuDQo+
+IEFnYWluLCB3aXRob3V0IHRob3NlIEknbSBub3Qgc3VyZSBpdCdzIHdvcnRoIG1lcmdpbmcuDQo+
+IA0KDQpTb3JyeSwgSSdsbCBhZGQgdGhlIGR0cyBmaWxlIGluIG5leHQgcGF0Y2guDQoNCj4gRm9y
+IHRoZSB0aW1pbmcsIHdlIGFyZSBnZXR0aW5nIGNsb3NlIHRvIHRoZSA1LjE5IG1lcmdlIHdpbmRv
+dyB0aGF0DQo+IHN0YXJ0cyBvbmNlIHY1LjE4IGlzIG91dCwgYW5kIEkgZG9uJ3QgZXhwZWN0IHRo
+YXQgYWxsIHRoZSBhYm92ZSB3aWxsDQo+IGJlIHJlc29sdmVkIGluIHRpbWUsIHNvIGl0IGxvb2tz
+IHdlIHdpbGwgaGF2ZSB0byBkZWZlciBpdCBieSBvbmUgbW9yZQ0KPiByZWxlYXNlIHRvIDUuMjAu
+DQo+IA0KPiAgICAgICAgICAgQXJuZA0K
