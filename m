@@ -2,153 +2,371 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD12C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 09:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4067C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 09:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390462AbiEFJZL (ORCPT
+        id S1390458AbiEFJZD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 05:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
+        Fri, 6 May 2022 05:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390401AbiEFJYn (ORCPT
+        with ESMTP id S1344441AbiEFJYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 05:24:43 -0400
-X-Greylist: delayed 517 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 May 2022 02:20:58 PDT
-Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0866564BE7;
-        Fri,  6 May 2022 02:20:53 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.west.internal (Postfix) with ESMTP id 93A8D2B0562D;
-        Fri,  6 May 2022 05:12:13 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 06 May 2022 05:12:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651828333; x=
-        1651835533; bh=G6gyLdn77rvfE254bKTLUge+Op3KXd37yTLdohreqqM=; b=v
-        QKeAQx1x9oi9rnTQnxWzQZ3vTa1sCKU3qAfK8BUdnTNglj/iKAYlugS8ZO/zk5fZ
-        DfF7J1EiEgVn1bVYrjCqLYS3iirT+M/yZbaX7X/uei2Gb3LNEQ7gNa/6aO4lyi6K
-        Tt7s1lCuwd/NrqgJIxoWaYMl29GOUzitCCOr5c2z9gRbiPjvVQLp/zABVxIqq2ZK
-        AaY9nkTVzG/mRRGYLVAR8bBcR5nX8PaiHT4MAiZq+H0Xwj5TbLVla4dy88/3+1AN
-        1wI0EAxFufJY3W8/p05bkAWVyXVer+YeXe+Ib7meLr1qgWB/FfkXpkAKjyHMQsJ3
-        7g4mWCiNAG2aqihJux0IA==
-X-ME-Sender: <xms:YuZ0YjLV7ehbq11Iew8UcQGjF5dzNVZmWTCB44jSQAUnrEzMUanDNw>
-    <xme:YuZ0YnLO3AhBi-8UDTh2IshOkP29SbDuTpdLzRv7EABfM46yVxKyoWYDYhcgeRQCS
-    77vC9WxTNt6pMrOhv0>
-X-ME-Received: <xmr:YuZ0Yruq9kszH8K6PStFW0G6vBqLXoDlJzZGTzPxfq_14sas55UK-gUHN-Zh2nfpt0s4gg2KHxVH05i8KORm6pMmTETF2ks5atM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeefgdduudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefujgfkfhggtgesthdtredttddtvdenucfhrhhomhephfhinhhnucfv
-    hhgrihhnuceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrth
-    htvghrnhepleeuheelheekgfeuvedtveetjeekhfffkeeffffftdfgjeevkeegfedvueeh
-    ueelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfh
-    hthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgh
-X-ME-Proxy: <xmx:YuZ0YsYfsshGe5L3c7ZGNomVPUHUMo_s6qgakvJ4OzSu-3gGhre-ZQ>
-    <xmx:YuZ0YqYvL7cbpdbLSaNh38uTGj9Rc92MFhzYVkQe0DbODJiFYPgAcA>
-    <xmx:YuZ0YgAK1cXBpunCnPwlHEy_DcU5yqhXavJmM9Za0lR2vtG4vS6RVA>
-    <xmx:beZ0YvPqIgZVZC0ItH0ne5dg6_12BUITfxVdxuoceofiAb6SMND9K6LMeBg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 6 May 2022 05:11:59 -0400 (EDT)
-Date:   Fri, 6 May 2022 19:12:06 +1000 (AEST)
-From:   Finn Thain <fthain@linux-m68k.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-cc:     Arnd Bergmann <arnd@kernel.org>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
-        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        "open list:SUPERH" <linux-sh@vger.kernel.org>,
-        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
-        <sparclinux@vger.kernel.org>
-Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
- it as necessary
-In-Reply-To: <20220505195342.GA509942@bhelgaas>
-Message-ID: <22bec167-241f-2cbe-829f-a3f65e40e71@linux-m68k.org>
-References: <20220505195342.GA509942@bhelgaas>
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CF06353E;
+        Fri,  6 May 2022 02:20:36 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2469BWQR017006;
+        Fri, 6 May 2022 09:20:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=3oQTRMoYp+AixGBGNuC1ls5eRuRl1O9hEo1EWzhPnoA=;
+ b=RvOgT8u3eoMUpNnPxwZ0Jwtl7ORHoODoD63zqLTb21H0112xGDprn0ESUYClEhutuGtF
+ Hlt59Fvqsn8w3Z+48X3klna4UZk0Xx66Skgvk4hBKnZks82IsAPx0UvNB40eCJM7/gEY
+ Mgq25Nnq65HpZk0C9oimExTiTdg3F8IQMqKxbMS8AnoNVizoHzf6P29QCFg3pdRlDbGl
+ 2dpVdfOqEXpjQW1k0mZg3buk5OH3K5vx0anASB1THWphTxfDm6iPK9CfByEu4z+PvTN6
+ 0wuCIZ5VkPyVmrNNZw8HtbWPsricZkZOmrRrqh2++iGrt7poX5Li/dY5SdBE2PlN6KZq 5A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw0twg5sk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 09:20:36 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2469DS4m031498;
+        Fri, 6 May 2022 09:20:36 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fw0twg5s4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 09:20:35 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2469Ca6f032483;
+        Fri, 6 May 2022 09:20:33 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03fra.de.ibm.com with ESMTP id 3fscdk6491-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 06 May 2022 09:20:33 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 246975np37224916
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 6 May 2022 09:07:05 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1DC7D11C050;
+        Fri,  6 May 2022 09:20:30 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5C81911C04A;
+        Fri,  6 May 2022 09:20:29 +0000 (GMT)
+Received: from li-c6ac47cc-293c-11b2-a85c-d421c8e4747b.ibm.com.com (unknown [9.171.62.79])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  6 May 2022 09:20:29 +0000 (GMT)
+From:   Pierre Morel <pmorel@linux.ibm.com>
+To:     kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, pmorel@linux.ibm.com,
+        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com
+Subject: [PATCH v9 1/3] s390x: KVM: ipte lock for SCA access should be contained in KVM
+Date:   Fri,  6 May 2022 11:24:01 +0200
+Message-Id: <20220506092403.47406-2-pmorel@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220506092403.47406-1-pmorel@linux.ibm.com>
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: td-57-6C1AUw_ZcRZRqUx2k0PkOf3Qqw
+X-Proofpoint-GUID: 1qMrtwPSY2SkKyXwypD_dK-M6DAA2snb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-06_03,2022-05-05_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ lowpriorityscore=0 mlxlogscore=999 clxscore=1015 spamscore=0
+ suspectscore=0 phishscore=0 impostorscore=0 priorityscore=1501
+ malwarescore=0 mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2205060049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The former check to chose between SIIF or not SIIF can be done
+using the sclp.has_siif instead of accessing per vCPU structures
 
+When accessing the SCA, ipte lock and ipte_unlock do not need
+to access any vcpu structures but only the KVM structure.
 
-On Thu, 5 May 2022, Bjorn Helgaas wrote:
+Let's simplify the ipte handling.
 
-> On Thu, May 05, 2022 at 07:39:42PM +0200, Arnd Bergmann wrote:
-> > On Thu, May 5, 2022 at 6:10 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > On Wed, May 04, 2022 at 11:31:28PM +0200, Arnd Bergmann wrote:
-> > > >
-> > > > The main goal is to avoid c), which is what happens on s390, but
-> > > > can also happen elsewhere. Catching b) would be nice as well,
-> > > > but is much harder to do from generic code as you'd need an
-> > > > architecture specific inline asm statement to insert a ex_table
-> > > > fixup, or a runtime conditional on each access.
-> > >
-> > > Or s390 could implement its own inb().
-> > >
-> > > I'm hearing that generic powerpc kernels have to run both on machines
-> > > that have I/O port space and those that don't.  That makes me think
-> > > s390 could do something similar.
-> > 
-> > No, this is actually the current situation, and it makes absolutely no
-> > sense. s390 has no way of implementing inb()/outb() because there
-> > are no instructions for it and it cannot tunnel them through a virtual
-> > address mapping like on most of the other architectures. (it has special
-> > instructions for accessing memory space, which is not the same as
-> > a pointer dereference here).
-> > 
-> > The existing implementation gets flagged as a NULL pointer dereference
-> > by a compiler warning because it effectively is.
-> 
-> I think s390 currently uses the inb() in asm-generic/io.h, i.e.,
-> "__raw_readb(PCI_IOBASE + addr)".  I understand that's a NULL pointer
-> dereference because the default PCI_IOBASE is 0.
-> 
-> I mooted a s390 inb() implementation like "return ~0" because that's
-> what happens on most arches when there's no device to respond to the
-> inb().
-> 
-> The HAS_IOPORT dependencies are fairly ugly IMHO, and they clutter
-> drivers that use I/O ports in some cases but not others.  But maybe
-> it's the most practical way.
-> 
+Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+---
+ arch/s390/kvm/gaccess.c | 96 ++++++++++++++++++++---------------------
+ arch/s390/kvm/gaccess.h |  6 +--
+ arch/s390/kvm/priv.c    |  6 +--
+ 3 files changed, 54 insertions(+), 54 deletions(-)
 
-Do you mean, "the most practical way to avoid a compiler warning on s390"? 
-What about "#pragma GCC diagnostic ignored"?
+diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
+index d53a183c2005..0e1f6dd31882 100644
+--- a/arch/s390/kvm/gaccess.c
++++ b/arch/s390/kvm/gaccess.c
+@@ -262,77 +262,77 @@ struct aste {
+ 	/* .. more fields there */
+ };
+ 
+-int ipte_lock_held(struct kvm_vcpu *vcpu)
++int ipte_lock_held(struct kvm *kvm)
+ {
+-	if (vcpu->arch.sie_block->eca & ECA_SII) {
++	if (sclp.has_siif) {
+ 		int rc;
+ 
+-		read_lock(&vcpu->kvm->arch.sca_lock);
+-		rc = kvm_s390_get_ipte_control(vcpu->kvm)->kh != 0;
+-		read_unlock(&vcpu->kvm->arch.sca_lock);
++		read_lock(&kvm->arch.sca_lock);
++		rc = kvm_s390_get_ipte_control(kvm)->kh != 0;
++		read_unlock(&kvm->arch.sca_lock);
+ 		return rc;
+ 	}
+-	return vcpu->kvm->arch.ipte_lock_count != 0;
++	return kvm->arch.ipte_lock_count != 0;
+ }
+ 
+-static void ipte_lock_simple(struct kvm_vcpu *vcpu)
++static void ipte_lock_simple(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+-	mutex_lock(&vcpu->kvm->arch.ipte_mutex);
+-	vcpu->kvm->arch.ipte_lock_count++;
+-	if (vcpu->kvm->arch.ipte_lock_count > 1)
++	mutex_lock(&kvm->arch.ipte_mutex);
++	kvm->arch.ipte_lock_count++;
++	if (kvm->arch.ipte_lock_count > 1)
+ 		goto out;
+ retry:
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		if (old.k) {
+-			read_unlock(&vcpu->kvm->arch.sca_lock);
++			read_unlock(&kvm->arch.sca_lock);
+ 			cond_resched();
+ 			goto retry;
+ 		}
+ 		new = old;
+ 		new.k = 1;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
++	read_unlock(&kvm->arch.sca_lock);
+ out:
+-	mutex_unlock(&vcpu->kvm->arch.ipte_mutex);
++	mutex_unlock(&kvm->arch.ipte_mutex);
+ }
+ 
+-static void ipte_unlock_simple(struct kvm_vcpu *vcpu)
++static void ipte_unlock_simple(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+-	mutex_lock(&vcpu->kvm->arch.ipte_mutex);
+-	vcpu->kvm->arch.ipte_lock_count--;
+-	if (vcpu->kvm->arch.ipte_lock_count)
++	mutex_lock(&kvm->arch.ipte_mutex);
++	kvm->arch.ipte_lock_count--;
++	if (kvm->arch.ipte_lock_count)
+ 		goto out;
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		new = old;
+ 		new.k = 0;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
+-	wake_up(&vcpu->kvm->arch.ipte_wq);
++	read_unlock(&kvm->arch.sca_lock);
++	wake_up(&kvm->arch.ipte_wq);
+ out:
+-	mutex_unlock(&vcpu->kvm->arch.ipte_mutex);
++	mutex_unlock(&kvm->arch.ipte_mutex);
+ }
+ 
+-static void ipte_lock_siif(struct kvm_vcpu *vcpu)
++static void ipte_lock_siif(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+ retry:
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		if (old.kg) {
+-			read_unlock(&vcpu->kvm->arch.sca_lock);
++			read_unlock(&kvm->arch.sca_lock);
+ 			cond_resched();
+ 			goto retry;
+ 		}
+@@ -340,15 +340,15 @@ static void ipte_lock_siif(struct kvm_vcpu *vcpu)
+ 		new.k = 1;
+ 		new.kh++;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
++	read_unlock(&kvm->arch.sca_lock);
+ }
+ 
+-static void ipte_unlock_siif(struct kvm_vcpu *vcpu)
++static void ipte_unlock_siif(struct kvm *kvm)
+ {
+ 	union ipte_control old, new, *ic;
+ 
+-	read_lock(&vcpu->kvm->arch.sca_lock);
+-	ic = kvm_s390_get_ipte_control(vcpu->kvm);
++	read_lock(&kvm->arch.sca_lock);
++	ic = kvm_s390_get_ipte_control(kvm);
+ 	do {
+ 		old = READ_ONCE(*ic);
+ 		new = old;
+@@ -356,25 +356,25 @@ static void ipte_unlock_siif(struct kvm_vcpu *vcpu)
+ 		if (!new.kh)
+ 			new.k = 0;
+ 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
+-	read_unlock(&vcpu->kvm->arch.sca_lock);
++	read_unlock(&kvm->arch.sca_lock);
+ 	if (!new.kh)
+-		wake_up(&vcpu->kvm->arch.ipte_wq);
++		wake_up(&kvm->arch.ipte_wq);
+ }
+ 
+-void ipte_lock(struct kvm_vcpu *vcpu)
++void ipte_lock(struct kvm *kvm)
+ {
+-	if (vcpu->arch.sie_block->eca & ECA_SII)
+-		ipte_lock_siif(vcpu);
++	if (sclp.has_siif)
++		ipte_lock_siif(kvm);
+ 	else
+-		ipte_lock_simple(vcpu);
++		ipte_lock_simple(kvm);
+ }
+ 
+-void ipte_unlock(struct kvm_vcpu *vcpu)
++void ipte_unlock(struct kvm *kvm)
+ {
+-	if (vcpu->arch.sie_block->eca & ECA_SII)
+-		ipte_unlock_siif(vcpu);
++	if (sclp.has_siif)
++		ipte_unlock_siif(kvm);
+ 	else
+-		ipte_unlock_simple(vcpu);
++		ipte_unlock_simple(kvm);
+ }
+ 
+ static int ar_translation(struct kvm_vcpu *vcpu, union asce *asce, u8 ar,
+@@ -1075,7 +1075,7 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 	try_storage_prot_override = storage_prot_override_applicable(vcpu);
+ 	need_ipte_lock = psw_bits(*psw).dat && !asce.r;
+ 	if (need_ipte_lock)
+-		ipte_lock(vcpu);
++		ipte_lock(vcpu->kvm);
+ 	/*
+ 	 * Since we do the access further down ultimately via a move instruction
+ 	 * that does key checking and returns an error in case of a protection
+@@ -1113,7 +1113,7 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 		rc = trans_exc(vcpu, rc, ga, ar, mode, prot);
+ out_unlock:
+ 	if (need_ipte_lock)
+-		ipte_unlock(vcpu);
++		ipte_unlock(vcpu->kvm);
+ 	if (nr_pages > ARRAY_SIZE(gpa_array))
+ 		vfree(gpas);
+ 	return rc;
+@@ -1185,10 +1185,10 @@ int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+ 	rc = get_vcpu_asce(vcpu, &asce, gva, ar, mode);
+ 	if (rc)
+ 		return rc;
+-	ipte_lock(vcpu);
++	ipte_lock(vcpu->kvm);
+ 	rc = guest_range_to_gpas(vcpu, gva, ar, NULL, length, asce, mode,
+ 				 access_key);
+-	ipte_unlock(vcpu);
++	ipte_unlock(vcpu->kvm);
+ 
+ 	return rc;
+ }
+@@ -1451,7 +1451,7 @@ int kvm_s390_shadow_fault(struct kvm_vcpu *vcpu, struct gmap *sg,
+ 	 * tables/pointers we read stay valid - unshadowing is however
+ 	 * always possible - only guest_table_lock protects us.
+ 	 */
+-	ipte_lock(vcpu);
++	ipte_lock(vcpu->kvm);
+ 
+ 	rc = gmap_shadow_pgt_lookup(sg, saddr, &pgt, &dat_protection, &fake);
+ 	if (rc)
+@@ -1485,7 +1485,7 @@ int kvm_s390_shadow_fault(struct kvm_vcpu *vcpu, struct gmap *sg,
+ 	pte.p |= dat_protection;
+ 	if (!rc)
+ 		rc = gmap_shadow_page(sg, saddr, __pte(pte.val));
+-	ipte_unlock(vcpu);
++	ipte_unlock(vcpu->kvm);
+ 	mmap_read_unlock(sg->mm);
+ 	return rc;
+ }
+diff --git a/arch/s390/kvm/gaccess.h b/arch/s390/kvm/gaccess.h
+index 1124ff282012..9408d6cc8e2c 100644
+--- a/arch/s390/kvm/gaccess.h
++++ b/arch/s390/kvm/gaccess.h
+@@ -440,9 +440,9 @@ int read_guest_real(struct kvm_vcpu *vcpu, unsigned long gra, void *data,
+ 	return access_guest_real(vcpu, gra, data, len, 0);
+ }
+ 
+-void ipte_lock(struct kvm_vcpu *vcpu);
+-void ipte_unlock(struct kvm_vcpu *vcpu);
+-int ipte_lock_held(struct kvm_vcpu *vcpu);
++void ipte_lock(struct kvm *kvm);
++void ipte_unlock(struct kvm *kvm);
++int ipte_lock_held(struct kvm *kvm);
+ int kvm_s390_check_low_addr_prot_real(struct kvm_vcpu *vcpu, unsigned long gra);
+ 
+ /* MVPG PEI indication bits */
+diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
+index 5beb7a4a11b3..0e8603acc105 100644
+--- a/arch/s390/kvm/priv.c
++++ b/arch/s390/kvm/priv.c
+@@ -443,7 +443,7 @@ static int handle_ipte_interlock(struct kvm_vcpu *vcpu)
+ 	vcpu->stat.instruction_ipte_interlock++;
+ 	if (psw_bits(vcpu->arch.sie_block->gpsw).pstate)
+ 		return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
+-	wait_event(vcpu->kvm->arch.ipte_wq, !ipte_lock_held(vcpu));
++	wait_event(vcpu->kvm->arch.ipte_wq, !ipte_lock_held(vcpu->kvm));
+ 	kvm_s390_retry_instr(vcpu);
+ 	VCPU_EVENT(vcpu, 4, "%s", "retrying ipte interlock operation");
+ 	return 0;
+@@ -1472,7 +1472,7 @@ static int handle_tprot(struct kvm_vcpu *vcpu)
+ 	access_key = (operand2 & 0xf0) >> 4;
+ 
+ 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_DAT)
+-		ipte_lock(vcpu);
++		ipte_lock(vcpu->kvm);
+ 
+ 	ret = guest_translate_address_with_key(vcpu, address, ar, &gpa,
+ 					       GACC_STORE, access_key);
+@@ -1509,7 +1509,7 @@ static int handle_tprot(struct kvm_vcpu *vcpu)
+ 	}
+ 
+ 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_DAT)
+-		ipte_unlock(vcpu);
++		ipte_unlock(vcpu->kvm);
+ 	return ret;
+ }
+ 
+-- 
+2.27.0
+
