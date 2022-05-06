@@ -2,192 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FDFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BCCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 22:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445196AbiEFW7j (ORCPT
+        id S1376458AbiEFXBG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 18:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        Fri, 6 May 2022 19:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444864AbiEFW6X (ORCPT
+        with ESMTP id S1445068AbiEFXAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 18:58:23 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E0F6D384;
-        Fri,  6 May 2022 15:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651877674; x=1683413674;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KGA1nmqFeK8SackFzzwlitqvHkNtr99ZD6P9ZTJva6U=;
-  b=XCwppUgzH4i1rhFmtm4cuFjzDDLlf842pPljX7rf1Hiy36x++etsHcR1
-   LZuPfAo2BM/WFvYyk6SPnY6IQF3V9ayt3P8xGgxxtP7guz7UToNGR6ZLS
-   W29m3XNQ74OPO/uRTFaYRbfrFkh20bKbk5v6X9EW6B22xGQHI++3QLKiF
-   712A89d9IZSyGdu+tru93qdElko7lXl8ZxWgkbx/KoC/R+5rhu3DYvzEF
-   SM50jlsIombfGs7ycrH5jmkkPOmtDA2mLGaGtfRKnxJo7DSuharf7hEm0
-   cxo1UpFhe1lEiUg8ADpG5lwVOUCQQ14Hi+Kmfj5pHHSO8ytKi3GYUUO0W
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268736165"
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="268736165"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:21 -0700
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="812594482"
-Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.212.152.127])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 15:54:20 -0700
-From:   Russ Weight <russell.h.weight@intel.com>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        lee.jones@linaro.org, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
-        matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v18 3/5] fpga: cardbmc-sec: expose flash update count
-Date:   Fri,  6 May 2022 15:54:13 -0700
-Message-Id: <20220506225415.78763-4-russell.h.weight@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220506225415.78763-1-russell.h.weight@intel.com>
-References: <20220506225415.78763-1-russell.h.weight@intel.com>
+        Fri, 6 May 2022 19:00:49 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C70D7F;
+        Fri,  6 May 2022 15:56:56 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id p3so4937802qvi.7;
+        Fri, 06 May 2022 15:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jiMx1KNAzuMIgpn6LqdJi2ADhn7OHgQMCNsj9Mwa3ZA=;
+        b=c/5NIlXsr1gsCXmvQZIu/ByrkSBvSPA+5yIMedNUlzuk0MlGc4OaZfDOL1mNTAOxlG
+         kUR+qWhdKmBqEsad++XyNSmPXNZINRJLp/aTCcX4fwqnOurEq1imV3EQJJQTBuNxqHtX
+         GE6jQqe/c/M8+QxdNfKZe26Gu1GvyqLT3fdgzRTn1wo6hx8UodL0REqq8g2YqCXaEzb3
+         p85wKzLzRDYEJirBjxl8wueyU07H2uKTQLC4SASiotQOubBiMc8aRw9mDisu4UY5y/Yi
+         UxyEF8F5a0q4ihRGht34Y65uVdkB+4Y8slAKx15y19kq/f7mq8hPaUn63xGxHISKcdBZ
+         GcEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jiMx1KNAzuMIgpn6LqdJi2ADhn7OHgQMCNsj9Mwa3ZA=;
+        b=gMUSNYpJzqdhJnn/xNcwGrpBjiG3oxZI889uDJyIHrj9la4ARdx3NBgxe0v6m46yXJ
+         mA9HYy45sKOT0aSBVxzY2Ra4sq1kqLYvSU+mPc8N7yjPzdXEGb1Qzj3rgHGADyPFRa9o
+         8a1sDa0vG0lkMHiGICagKk7iyBWy+8wr+ceYCj7shuLrBQNk8WJgEulQE59nCiu/G2HW
+         F7WhWohXvCyMygol0H0sOSTohtIVlfm7nQ9eewh6cNcy4hlbrcJO/rH1TbbVz4zPLum7
+         6aZF+y7VRmc/Znsxc6/wheS58okRP5b+6wbp4yUaMl+vU3yGZHUj8R9oyOjIW4nR62HJ
+         gGgA==
+X-Gm-Message-State: AOAM531YjYGAHuSfQIXPL9DeTDjM96wRL2a7cdbo5VCDTWdnFShMvOnr
+        KM1nxELvc9JkgWUpX8LK/cadATa2i+fVpw==
+X-Google-Smtp-Source: ABdhPJxrDUwu4Z10IRKqRVGhaH8iLkEjQy2GN2YKD3abQzhKTiYSjD2JqGul25opJn2AVjn8yU3jhA==
+X-Received: by 2002:a05:6214:1d08:b0:45a:a692:3bb2 with SMTP id e8-20020a0562141d0800b0045aa6923bb2mr4501663qvd.24.1651877815661;
+        Fri, 06 May 2022 15:56:55 -0700 (PDT)
+Received: from grrm.lan (bras-base-mtrlpq4809w-grc-17-70-53-205-21.dsl.bell.ca. [70.53.205.21])
+        by smtp.gmail.com with ESMTPSA id q188-20020a37a7c5000000b0069fc13ce208sm3187880qke.57.2022.05.06.15.56.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 15:56:54 -0700 (PDT)
+From:   Yannick Brosseau <yannick.brosseau@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
+        olivier.moysan@foss.st.com
+Cc:     paul@crapouillou.net, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yannick Brosseau <yannick.brosseau@gmail.com>
+Subject: [PATCH 0/2] iio: adc: stm32: Fix ADC IRQ handling on STM32F4
+Date:   Fri,  6 May 2022 18:56:15 -0400
+Message-Id: <20220506225617.1774604-1-yannick.brosseau@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the FPGA Card BMC Secure Update driver to provide a sysfs file to
-expose the flash update count.
+Recent changes to the STM32 ADC irq handling broke the STM32F4 platforms
+These two patches bring it back to a working state.
 
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
-Reviewed-by: Tom Rix <trix@redhat.com>
----
-v18:
-  - No change
-v17:
-  - Update the Date and KernelVersion for the ABI documentation to Jul 2022
-    and 5.19 respectively.
-  - Change "m10bmc" in symbol names to "cardbmc" to reflect the fact that the
-    future devices will not necessarily use the MAX10.
-v16:
-  - No Change
-v15:
-  - Updated the Dates and KernelVersions in the ABI documentation
-v14:
-  - No change
-v13:
-  - Updated ABI documentation date and kernel version
-v12:
-  - Updated Date and KernelVersion fields in ABI documentation
-v11:
-  - No change
-v10:
-  - Changed the path expression in the sysfs documentation to
-    replace the n3000 reference with something more generic to
-    accomodate other devices that use the same driver.
-v9:
-  - Rebased to 5.12-rc2 next
-  - Updated Date and KernelVersion in ABI documentation
-v8:
-  - Previously patch 3/6, otherwise no change
-v7:
-  - Updated Date and KernelVersion in ABI documentation
-v6:
-  - Changed flash_count_show() parameter list to achieve
-    reverse-christmas tree format.
-  - Added WARN_ON() call for (FLASH_COUNT_SIZE / stride) to ensure
-    that the proper count is passed to regmap_bulk_read().
-v5:
-  - Renamed sysfs node user_flash_count to flash_count and updated the
-    sysfs documentation accordingly.
-v4:
-  - Moved the sysfs file for displaying the flash count from the
-    FPGA Security Manager class driver to here. The
-    m10bmc_user_flash_count() function is removed and the
-    functionality is moved into a user_flash_count_show()
-    function.
-  - Added ABI documentation for the new sysfs entry
-v3:
-  - Changed: iops -> sops, imgr -> smgr, IFPGA_ -> FPGA_, ifpga_ to fpga_
-  - Changed "MAX10 BMC Secure Engine driver" to "MAX10 BMC Secure Update
-    driver"
-  - Removed wrapper functions (m10bmc_raw_*, m10bmc_sys_*). The
-    underlying functions are now called directly.
-v2:
-  - Renamed get_qspi_flash_count() to m10bmc_user_flash_count()
-  - Minor code cleanup per review comments
-  - Added m10bmc_ prefix to functions in m10bmc_iops structure
----
- .../sysfs-driver-intel-cardbmc-sec-update     |  8 +++++
- drivers/fpga/intel-cardbmc-sec-update.c       | 36 +++++++++++++++++++
- 2 files changed, 44 insertions(+)
+Yannick Brosseau (2):
+  iio: adc: stm32: Iterate through all ADCs in irq handler
+  iio: adc: stm32: Fix check for spurious IRQs on STM32F4
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-intel-cardbmc-sec-update b/Documentation/ABI/testing/sysfs-driver-intel-cardbmc-sec-update
-index 94887ab055a5..04f8c5a1fc1c 100644
---- a/Documentation/ABI/testing/sysfs-driver-intel-cardbmc-sec-update
-+++ b/Documentation/ABI/testing/sysfs-driver-intel-cardbmc-sec-update
-@@ -27,3 +27,11 @@ Description:	Read only. Returns the root entry hash for the BMC image
- 		"hash not programmed".  This file is only visible if the
- 		underlying device supports it.
- 		Format: string.
-+
-+What:		/sys/bus/platform/drivers/intel-cardbmc-sec-update/.../security/flash_count
-+Date:		Jul 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	Read only. Returns number of times the secure update
-+		staging area has been flashed.
-+		Format: "%u".
-diff --git a/drivers/fpga/intel-cardbmc-sec-update.c b/drivers/fpga/intel-cardbmc-sec-update.c
-index 6b8ed326e766..d8f3645e2139 100644
---- a/drivers/fpga/intel-cardbmc-sec-update.c
-+++ b/drivers/fpga/intel-cardbmc-sec-update.c
-@@ -77,7 +77,43 @@ DEVICE_ATTR_SEC_REH_RO(bmc, BMC_PROG_MAGIC, BMC_PROG_ADDR, BMC_REH_ADDR);
- DEVICE_ATTR_SEC_REH_RO(sr, SR_PROG_MAGIC, SR_PROG_ADDR, SR_REH_ADDR);
- DEVICE_ATTR_SEC_REH_RO(pr, PR_PROG_MAGIC, PR_PROG_ADDR, PR_REH_ADDR);
- 
-+#define FLASH_COUNT_SIZE 4096	/* count stored as inverted bit vector */
-+
-+static ssize_t flash_count_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bmc_sec *sec = dev_get_drvdata(dev);
-+	unsigned int stride, num_bits;
-+	u8 *flash_buf;
-+	int cnt, ret;
-+
-+	stride = regmap_get_reg_stride(sec->m10bmc->regmap);
-+	num_bits = FLASH_COUNT_SIZE * 8;
-+
-+	flash_buf = kmalloc(FLASH_COUNT_SIZE, GFP_KERNEL);
-+	if (!flash_buf)
-+		return -ENOMEM;
-+
-+	WARN_ON(FLASH_COUNT_SIZE % stride);
-+	ret = regmap_bulk_read(sec->m10bmc->regmap, STAGING_FLASH_COUNT,
-+			       flash_buf, FLASH_COUNT_SIZE / stride);
-+	if (ret) {
-+		dev_err(sec->dev,
-+			"failed to read flash count: %x cnt %x: %d\n",
-+			STAGING_FLASH_COUNT, FLASH_COUNT_SIZE / stride, ret);
-+		goto exit_free;
-+	}
-+	cnt = num_bits - bitmap_weight((unsigned long *)flash_buf, num_bits);
-+
-+exit_free:
-+	kfree(flash_buf);
-+
-+	return ret ? : sysfs_emit(buf, "%u\n", cnt);
-+}
-+static DEVICE_ATTR_RO(flash_count);
-+
- static struct attribute *bmc_security_attrs[] = {
-+	&dev_attr_flash_count.attr,
- 	&dev_attr_bmc_root_entry_hash.attr,
- 	&dev_attr_sr_root_entry_hash.attr,
- 	&dev_attr_pr_root_entry_hash.attr,
+ drivers/iio/adc/stm32-adc-core.c | 7 ++++++-
+ drivers/iio/adc/stm32-adc.c      | 9 ++++++---
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
 -- 
-2.25.1
+2.36.0
 
