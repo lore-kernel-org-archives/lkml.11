@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73647C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 11:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391525AbiEFLtl (ORCPT
+        id S1391531AbiEFLtn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 07:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45538 "EHLO
+        Fri, 6 May 2022 07:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391469AbiEFLs6 (ORCPT
+        with ESMTP id S1391466AbiEFLs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 07:48:58 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3387564725;
-        Fri,  6 May 2022 04:45:16 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kvpcm30hzzfbHk;
-        Fri,  6 May 2022 19:44:08 +0800 (CST)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCD162BF7;
+        Fri,  6 May 2022 04:45:15 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvpdP3zhVzhYps;
+        Fri,  6 May 2022 19:44:41 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 19:45:14 +0800
+ 15.1.2375.24; Fri, 6 May 2022 19:45:13 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 19:45:13 +0800
+ 15.1.2375.24; Fri, 6 May 2022 19:45:12 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -49,9 +49,9 @@ CC:     Zhen Lei <thunder.leizhen@huawei.com>,
         Chen Zhou <dingguo.cz@antgroup.com>,
         "John Donnelly" <John.p.donnelly@oracle.com>,
         Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH v24 5/6] of: Support more than one crash kernel regions for kexec -s
-Date:   Fri, 6 May 2022 19:44:01 +0800
-Message-ID: <20220506114402.365-6-thunder.leizhen@huawei.com>
+Subject: [PATCH v24 4/6] of: fdt: Add memory for devices by DT property "linux,usable-memory-range"
+Date:   Fri, 6 May 2022 19:44:00 +0800
+Message-ID: <20220506114402.365-5-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220506114402.365-1-thunder.leizhen@huawei.com>
 References: <20220506114402.365-1-thunder.leizhen@huawei.com>
@@ -66,40 +66,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When "crashkernel=X,high" is used, there may be two crash regions:
-high=crashk_res and low=crashk_low_res. But now the syscall
-kexec_file_load() only add crashk_res into "linux,usable-memory-range",
-this may cause the second kernel to have no available dma memory.
+From: Chen Zhou <chenzhou10@huawei.com>
 
-Fix it like kexec tool do for option -c, add both 'high' and 'low' regions
-into the dtb.
+When reserving crashkernel in high memory, some low memory is reserved
+for crash dump kernel devices and never mapped by the first kernel.
+This memory range is advertised to crash dump kernel via DT property
+under /chosen,
+        linux,usable-memory-range = <BASE1 SIZE1 [BASE2 SIZE2]>
 
+We reused the DT property linux,usable-memory-range and made the low
+memory region as the second range "BASE2 SIZE2", which keeps compatibility
+with existing user-space and older kdump kernels.
+
+Crash dump kernel reads this property at boot time and call memblock_add()
+to add the low memory region after memblock_cap_memory_range() has been
+called.
+
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+Co-developed-by: Zhen Lei <thunder.leizhen@huawei.com>
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Tested-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 ---
- drivers/of/kexec.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/of/fdt.c | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index b9bd1cff179388c..8d374cc552be5f2 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
- 				crashk_res.end - crashk_res.start + 1);
- 		if (ret)
- 			goto out;
-+
-+		if (crashk_low_res.end) {
-+			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
-+					"linux,usable-memory-range",
-+					crashk_low_res.start,
-+					crashk_low_res.end - crashk_low_res.start + 1);
-+			if (ret)
-+				goto out;
-+		}
- 	}
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index ec315b060cd50d2..2f248d0acc04830 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -973,16 +973,24 @@ static void __init early_init_dt_check_for_elfcorehdr(unsigned long node)
  
- 	/* add bootargs */
+ static unsigned long chosen_node_offset = -FDT_ERR_NOTFOUND;
+ 
++/*
++ * The main usage of linux,usable-memory-range is for crash dump kernel.
++ * Originally, the number of usable-memory regions is one. Now there may
++ * be two regions, low region and high region.
++ * To make compatibility with existing user-space and older kdump, the low
++ * region is always the last range of linux,usable-memory-range if exist.
++ */
++#define MAX_USABLE_RANGES		2
++
+ /**
+  * early_init_dt_check_for_usable_mem_range - Decode usable memory range
+  * location from flat tree
+  */
+ void __init early_init_dt_check_for_usable_mem_range(void)
+ {
+-	const __be32 *prop;
+-	int len;
+-	phys_addr_t cap_mem_addr;
+-	phys_addr_t cap_mem_size;
++	struct memblock_region rgn[MAX_USABLE_RANGES] = {0};
++	const __be32 *prop, *endp;
++	int len, i;
+ 	unsigned long node = chosen_node_offset;
+ 
+ 	if ((long)node < 0)
+@@ -991,16 +999,21 @@ void __init early_init_dt_check_for_usable_mem_range(void)
+ 	pr_debug("Looking for usable-memory-range property... ");
+ 
+ 	prop = of_get_flat_dt_prop(node, "linux,usable-memory-range", &len);
+-	if (!prop || (len < (dt_root_addr_cells + dt_root_size_cells)))
++	if (!prop || (len % (dt_root_addr_cells + dt_root_size_cells)))
+ 		return;
+ 
+-	cap_mem_addr = dt_mem_next_cell(dt_root_addr_cells, &prop);
+-	cap_mem_size = dt_mem_next_cell(dt_root_size_cells, &prop);
++	endp = prop + (len / sizeof(__be32));
++	for (i = 0; i < MAX_USABLE_RANGES && prop < endp; i++) {
++		rgn[i].base = dt_mem_next_cell(dt_root_addr_cells, &prop);
++		rgn[i].size = dt_mem_next_cell(dt_root_size_cells, &prop);
+ 
+-	pr_debug("cap_mem_start=%pa cap_mem_size=%pa\n", &cap_mem_addr,
+-		 &cap_mem_size);
++		pr_debug("cap_mem_regions[%d]: base=%pa, size=%pa\n",
++			 i, &rgn[i].base, &rgn[i].size);
++	}
+ 
+-	memblock_cap_memory_range(cap_mem_addr, cap_mem_size);
++	memblock_cap_memory_range(rgn[0].base, rgn[0].size);
++	for (i = 1; i < MAX_USABLE_RANGES && rgn[i].size; i++)
++		memblock_add(rgn[i].base, rgn[i].size);
+ }
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
 -- 
 2.25.1
 
