@@ -2,101 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193F9C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 17:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE52C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 17:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444219AbiEFRgN (ORCPT
+        id S1444242AbiEFRqA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 13:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
+        Fri, 6 May 2022 13:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444142AbiEFRgK (ORCPT
+        with ESMTP id S1444236AbiEFRp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 13:36:10 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FE05047B;
-        Fri,  6 May 2022 10:32:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651858347; x=1683394347;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RJIpyH4aTtIDi9aTnRTxdWTTpZ/zrmSOQtRCRTJZbRw=;
-  b=iTnFYc4gmZeuC0UJYgs0IHP/gXEyWLz5sU5Aae/3yIdSAGaEhjYehT2P
-   jtR7dnX5e3opm0UFej3f3BerB90zB1Ty0Xfg+TUpOIl1q+1qfD31Ou/jx
-   8ZEc0HOp1TUQLfSrgytNjrMNCJU1p+WReTiehU+7RY8hueiTb86hMv1rE
-   rIL3TDSCj6caMQXFsq3rW9ownSDu7LYDeMzPROrcZ1ZvbK+PCyjLN5XfC
-   wGyPDspl9U6bQ6KjeyKPdzCEV8MWe++tG0+cePTP7J58uq53hm3pmmObN
-   qcmBguNYF/C4yQC22M7u1kTZcWlZYGH/kKII92lVG/Bku3bOYaLLxg1vs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268425255"
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="268425255"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 10:32:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="812475599"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 06 May 2022 10:32:23 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nn1oV-000DiS-2G;
-        Fri, 06 May 2022 17:32:23 +0000
-Date:   Sat, 7 May 2022 01:31:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: qcom: msm8974-FP2: Add notification LED
-Message-ID: <202205070100.8DCDwfSb-lkp@intel.com>
-References: <20220505163029.6541-1-luca@z3ntu.xyz>
+        Fri, 6 May 2022 13:45:58 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBA353717
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 10:42:14 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id s30so14099575ybi.8
+        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 10:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YKfnJFHuOviCdMg0UB5UffT9B/WVcObEOxiRN5y2Kug=;
+        b=emmUN3k1bPN4J6n6aBe2FemprgUT+FF6VAYxV6ekMwnHvd4yMg9T5KGYmUYmFa9oAe
+         l8wgj8tdCP2FJPIShfAg2Fk/rOBVcSKoqvKeqjnUKen1LIajvaEdZt/TPfqzH6t/XrSo
+         syM1kjCv3gSDfacEuEc3EgG0lwGjeC2hWNg5U2El7kqEz+o0tsjk8MjpqNijR6o+XqPs
+         q3onvlApQgHZ5xOXxhHzjSgk18UOnvT+GgtT76x6XFC/llE4jgVQddy0F0CFkFJAkHTB
+         0S9hvZkV7X0lPAIZLLytf/7qjnZXN3mz9RqswI5f966807Geg/q/71UbscP2MlkhGUSo
+         7bxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YKfnJFHuOviCdMg0UB5UffT9B/WVcObEOxiRN5y2Kug=;
+        b=GMnNev09V0zakOmDaz8vN6vtmn2Gj3z8u8XJ4MhttvAi2UQHXRj6ZCk88vbc1F/JJI
+         AYy7HnFs39wTvjI5qf6DWacY3oBWFMJU6uJXR5iZ2qr1kxwkRIJ1339GpCw+4CCWikhT
+         +RgK+6Z9vJP02ZOG536Ux5TIuDd/bwjLIkyWRJgvqhv/YX2WtQs5m1d+433I+4nnMEpw
+         J4KDUd7bOzdu7wOXoyiLHAEBQAYOut1u0C4h/OFHEEP0eUoXajKyuWTHGzsWbBq68x4J
+         ExBmDcKf+AqiFocWxT2aFha4OrI07e4LsKnyJ6BkF5qwam14ca1/ofq6iVDIZ6/zDFQ6
+         zGEQ==
+X-Gm-Message-State: AOAM532VAhmTrjg4ueCGKjkctKauTkvWNgt3dftCV95eAS0EOelw4yhb
+        Rq+76G/av/yG+ox/zz7NnwdqmQNa2slpypzkGOlEJw==
+X-Google-Smtp-Source: ABdhPJws5njwDWJ9xDpRYMne8cwuzMbwVAp2MzFRAKHvjVIKPSom5y1drK/dJlbHrWExYpCexhrZLlT5LtJ6/fdqUbo=
+X-Received: by 2002:a25:bb0f:0:b0:61d:60f9:aaf9 with SMTP id
+ z15-20020a25bb0f000000b0061d60f9aaf9mr3038082ybg.199.1651858933696; Fri, 06
+ May 2022 10:42:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505163029.6541-1-luca@z3ntu.xyz>
+References: <20220426164315.625149-1-glider@google.com> <20220426164315.625149-29-glider@google.com>
+ <87a6c6y7mg.ffs@tglx> <CAG_fn=U7PPBmmkgxFcWFQUCqZitzMizr1e69D9f26sGGzeitLQ@mail.gmail.com>
+ <87y1zjlhmj.ffs@tglx> <CAG_fn=XxAhBEBP2KJvahinbaxLAd1xvqTfRJdAu1Tk5r8=01jw@mail.gmail.com>
+ <878rrfiqyr.ffs@tglx> <CAG_fn=XVchXCcOhFt+rP=vinRhkyrXJSP46cyvcZeHJWaDquGg@mail.gmail.com>
+ <87k0ayhc43.ffs@tglx>
+In-Reply-To: <87k0ayhc43.ffs@tglx>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Fri, 6 May 2022 19:41:37 +0200
+Message-ID: <CAG_fn=UpcXMqJiZvho6_G3rjvjQA-3Ax6X8ONVO0D+4Pttc9dA@mail.gmail.com>
+Subject: Re: [PATCH v3 28/46] kmsan: entry: handle register passing from
+ uninstrumented code
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Luca,
+On Fri, May 6, 2022 at 6:14 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> On Fri, May 06 2022 at 16:52, Alexander Potapenko wrote:
+> > On Thu, May 5, 2022 at 11:56 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> >> @@ -452,6 +455,7 @@ irqentry_state_t noinstr irqentry_nmi_en
+> >>         rcu_nmi_enter();
+> >>
+> >>         instrumentation_begin();
+> >> +       unpoison(regs);
+> >>         trace_hardirqs_off_finish();
+> >>         ftrace_nmi_enter();
+> >>         instrumentation_end();
+> >>
+> >> As I said: 4 places :)
+> >
+> > These four instances still do not look sufficient.
+> > Right now I am seeing e.g. reports with the following stack trace:
+> >
+> > BUG: KMSAN: uninit-value in irqtime_account_process_tick+0x255/0x580
+> > kernel/sched/cputime.c:382
+> >  irqtime_account_process_tick+0x255/0x580 kernel/sched/cputime.c:382
+> >  account_process_tick+0x98/0x450 kernel/sched/cputime.c:476
+> >  update_process_times+0xe4/0x3e0 kernel/time/timer.c:1786
+> >  tick_sched_handle kernel/time/tick-sched.c:243
+> >  tick_sched_timer+0x83e/0x9e0 kernel/time/tick-sched.c:1473
+> >  __run_hrtimer+0x518/0xe50 kernel/time/hrtimer.c:1685
+> >  __hrtimer_run_queues kernel/time/hrtimer.c:1749
+> >  hrtimer_interrupt+0x838/0x15a0 kernel/time/hrtimer.c:1811
+> >  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1086
+> >  __sysvec_apic_timer_interrupt+0x1ae/0x680 arch/x86/kernel/apic/apic.c:1103
+> >  sysvec_apic_timer_interrupt+0x95/0xc0 arch/x86/kernel/apic/apic.c:1097
+> > ...
+> > (uninit creation stack trace is irrelevant here, because it is some
+> > random value from the stack)
+> >
+> > sysvec_apic_timer_interrupt() receives struct pt_regs from
+> > uninstrumented code, so regs can be partially uninitialized.
+> > They are not passed down the call stack directly, but are instead
+> > saved by set_irq_regs() in sysvec_apic_timer_interrupt() and loaded by
+> > get_irq_regs() in tick_sched_timer().
+>
+> sysvec_apic_timer_interrupt() invokes irqentry_enter() _before_
+> set_irq_regs() and irqentry_enter() unpoisons @reg.
+>
+> Confused...
 
-Thank you for the patch! Yet something to improve:
+As far as I can tell in this case sysvect_apic_timer_interrupt() is
+called by the following code in arch/x86/kernel/idt.c:
 
-[auto build test ERROR on next-20220505]
-[cannot apply to robh/for-next v5.18-rc5 v5.18-rc4 v5.18-rc3 v5.18-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+  INTG(LOCAL_TIMER_VECTOR,                asm_sysvec_apic_timer_interrupt),
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Luca-Weiss/ARM-dts-qcom-msm8974-FP2-Add-notification-LED/20220506-003524
-base:    632a8c88e339fe86ae6e420a24dfc641d4dd0ab5
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220507/202205070100.8DCDwfSb-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/45445147f88f2416d7bc32c8a72c714818fe466c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Luca-Weiss/ARM-dts-qcom-msm8974-FP2-Add-notification-LED/20220506-003524
-        git checkout 45445147f88f2416d7bc32c8a72c714818fe466c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+, which does not use IDTENTRY_SYSVEC framework and thus does not call
+irqentry_enter().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I guess handling those will require wrapping every interrupt gate into
+a function that performs register unpoisoning?
 
-All errors (new ones prefixed by >>):
-
->> Error: arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts:123.1-12 Label or path pm8941_lpg not found
-   FATAL ERROR: Syntax error parsing input tree
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+By the way, if it helps, I think we don't necessarily have to call
+kmsan_unpoison_memory() from within the
+instrumentation_begin()/instrumentation_end() region?
+We could move the call to the beginning of irqentry_enter(), removing
+unnecessary duplication.
