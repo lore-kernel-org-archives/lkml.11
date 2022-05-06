@@ -2,246 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 437BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 03:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238827AbiEFD0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 5 May 2022 23:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
+        id S1388521AbiEFD1C (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 5 May 2022 23:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388507AbiEFD0s (ORCPT
+        with ESMTP id S1388514AbiEFD1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 5 May 2022 23:26:48 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6E05EDD5;
-        Thu,  5 May 2022 20:23:05 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KvbV05frpzhYqf;
-        Fri,  6 May 2022 11:22:32 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 11:23:04 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 6 May 2022 11:23:02 +0800
-Subject: Re: [PATCH v23 3/6] arm64: kdump: Reimplement crashkernel=X
-To:     Catalin Marinas <catalin.marinas@arm.com>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        <kexec@lists.infradead.org>, Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
-        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        "John Donnelly" <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-References: <20220505091845.167-1-thunder.leizhen@huawei.com>
- <20220505091845.167-4-thunder.leizhen@huawei.com> <YnQC44KVKirH0vyB@arm.com>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <189f24a8-9e9b-b3e9-7ac5-935433ea575b@huawei.com>
-Date:   Fri, 6 May 2022 11:22:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Thu, 5 May 2022 23:27:00 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6046D5EDF3
+        for <linux-kernel@vger.kernel.org>; Thu,  5 May 2022 20:23:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651807399; x=1683343399;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gJAhDIHMWpivM5Pb0+lUmlrgmemgOFXzFUKg/utqTFs=;
+  b=ewNcwe4LmzPv9AdsDBCK0640PRoGEVCujQoyks3SW/saVxVCCBVM6BXu
+   bjdRxybUwpCXEdwG5hVP0by8EUxstl2gWX35mBind3SguqgMksfpXHKGx
+   d4/l9ZcBmSzgZrd5HLZrCwgqTxUNmiwxCwG57fiJCB0qf/ARJwBiTCmPs
+   l2+FJRjMi+FnpqGVnvKjnwXB8TxNK25RdF7Tt6Mlz3kvyYhlflwk0FfG7
+   HtFio9Z8Cg2xhZJvy9tce9U+dkU6/G9Oe5W04iWX+732fS8cW0VJYr5KC
+   Dai3u3N+SLmcrwThWG6CudcpX0wKpBLu6iqpuE2JYr5wDydME1+nQbw9D
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="267173951"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="267173951"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:23:19 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="517828846"
+Received: from fulaizha-mobl1.ccr.corp.intel.com ([10.254.213.163])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 20:23:16 -0700
+Message-ID: <d260e8b178defbe4facda3cd8f0b534ec812268a.camel@intel.com>
+Subject: Re: [PATCH v2 1/4] mm/migration: reduce the rcu lock duration
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
+        mike.kravetz@oracle.com, naoya.horiguchi@nec.com
+Cc:     hch@lst.de, dhowells@redhat.com, cl@linux.com, david@redhat.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Date:   Fri, 06 May 2022 11:23:14 +0800
+In-Reply-To: <20220425132723.34824-2-linmiaohe@huawei.com>
+References: <20220425132723.34824-1-linmiaohe@huawei.com>
+         <20220425132723.34824-2-linmiaohe@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-In-Reply-To: <YnQC44KVKirH0vyB@arm.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/5/6 1:01, Catalin Marinas wrote:
-> On Thu, May 05, 2022 at 05:18:42PM +0800, Zhen Lei wrote:
->> From: Chen Zhou <chenzhou10@huawei.com>
->>
->> There are following issues in arm64 kdump:
->> 1. We use crashkernel=X to reserve crashkernel in DMA zone, which
->> will fail when there is not enough low memory.
->> 2. If reserving crashkernel above DMA zone, in this case, crash dump
->> kernel will fail to boot because there is no low memory available
->> for allocation.
->>
->> To solve these issues, introduce crashkernel=X,[high,low].
->> The "crashkernel=X,high" is used to select a region above DMA zone, and
->> the "crashkernel=Y,low" is used to allocate specified size low memory.
+On Mon, 2022-04-25 at 21:27 +0800, Miaohe Lin wrote:
+> rcu_read_lock is required by grabbing the task refcount but it's not
+> needed for ptrace_may_access. So we could release the rcu lock after
+> task refcount is successfully grabbed to reduce the rcu holding time.
 > 
-> Thanks for posting the simplified version, though the discussion with
-> Baoquan is still ongoing. AFAICT there is no fallback if crashkernel=
-> fails. The advantage with this series is cleaner code, we set the limits
-> during parsing and don't have to adjust them if some of the first
-> allocation failed.
-
-Yes, I'm currently implementing it in the simplest version, providing only
-the most basic functions. Because the conclusions of this part of the discussion
-are clear. I think I can send the fallback, default low size, and mapping optimization
-patches separately after this basic version is merged. These three functions can
-be discussed separately.
-
+> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> Cc: Huang Ying <ying.huang@intel.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: Christoph Lameter <cl@linux.com>
+> ---
+>  mm/migrate.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
->> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
->> index 51863f1448c6989..11406f3e1443168 100644
->> --- a/arch/arm64/mm/init.c
->> +++ b/arch/arm64/mm/init.c
->> @@ -90,6 +90,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
->>  phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
->>  #endif
->>  
->> +/* Current arm64 boot protocol requires 2MB alignment */
->> +#define CRASH_ALIGN			SZ_2M
->> +
->> +#define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
->> +#define CRASH_ADDR_HIGH_MAX		memblock.current_limit
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index b2678279eb43..b779646665fe 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -1902,17 +1902,16 @@ static struct mm_struct *find_mm_struct(pid_t pid, nodemask_t *mem_nodes)
+>  		return ERR_PTR(-ESRCH);
+>  	}
+>  	get_task_struct(task);
+> +	rcu_read_unlock();
+>  
 > 
-> Better use memblock_get_current_limit() if you need to or just
-> MEMBLOCK_ALLOC_ANYWHERE, memblock.current_limit is just a memblock
-> internal. But I think we can go for (PHYS_MASK + 1) if you need
-> something other than MEMBLOCK_ALLOC_ANYWHERE, memblock knows what to
-> allocate anyway.
-
-Yes, it would be better to use (PHYS_MASK + 1).
-
+>  	/*
+>  	 * Check if this process has the right to modify the specified
+>  	 * process. Use the regular "ptrace_may_access()" checks.
+>  	 */
+>  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
+> -		rcu_read_unlock();
+>  		mm = ERR_PTR(-EPERM);
+>  		goto out;
+>  	}
+> -	rcu_read_unlock();
+>  
 > 
->> +static int __init reserve_crashkernel_low(unsigned long long low_size)
->> +{
->> +	unsigned long long low_base;
->> +
->> +	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
->> +	if (!low_base) {
->> +		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
->> +		return -ENOMEM;
->> +	}
->> +
->> +	pr_info("crashkernel low memory reserved: 0x%08llx - 0x%08llx (%lld MB)\n",
->> +		low_base, low_base + low_size, low_size >> 20);
->> +
->> +	crashk_low_res.start = low_base;
->> +	crashk_low_res.end   = low_base + low_size - 1;
->> +	insert_resource(&iomem_resource, &crashk_low_res);
->> +
->> +	return 0;
->> +}
->> +
->>  /*
->>   * reserve_crashkernel() - reserves memory for crash kernel
->>   *
->> @@ -100,17 +126,32 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
->>  static void __init reserve_crashkernel(void)
->>  {
->>  	unsigned long long crash_base, crash_size;
->> -	unsigned long long crash_max = arm64_dma_phys_limit;
->> +	unsigned long long crash_low_size = 0;
->> +	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
->> +	char *cmdline = boot_command_line;
->>  	int ret;
->>  
->>  	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
->>  		return;
->>  
->> -	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
->> +	/* crashkernel=X[@offset] */
->> +	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
->>  				&crash_size, &crash_base);
->> -	/* no crashkernel= or invalid value specified */
->> -	if (ret || !crash_size)
->> -		return;
->> +	if (ret || !crash_size) {
-> 
-> I think we should check for ret == -ENOENT only. If the crashkernel=
-> exists but is malformed or the size is 0, we shouldn't bother with
-> high/low at all.
+>  	mm = ERR_PTR(security_task_movememory(task));
+>  	if (IS_ERR(mm))
 
-That's right.
+Hi, Miaohe,
 
-> 
->> +		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
->> +		if (ret || !crash_size)
->> +			return;
->> +
->> +		/*
->> +		 * crashkernel=Y,low can be specified or not, but invalid value
->> +		 * is not allowed.
->> +		 */
->> +		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
->> +		if (ret && (ret != -ENOENT))
->> +			return;
->> +
->> +		crash_max = CRASH_ADDR_HIGH_MAX;
->> +	}
->>  
->>  	crash_size = PAGE_ALIGN(crash_size);
->>  
->> @@ -118,8 +159,7 @@ static void __init reserve_crashkernel(void)
->>  	if (crash_base)
->>  		crash_max = crash_base + crash_size;
->>  
->> -	/* Current arm64 boot protocol requires 2MB alignment */
->> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
->> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
->>  					       crash_base, crash_max);
->>  	if (!crash_base) {
->>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
-> 
-> I personally like this but let's see how the other thread goes. I guess
+Please check the previous discussion and verify whether the original
+reported race condition is stll valid by yourself before resending this
+patch again.  If you find that the original race condition isn't
+possible now, please add the analysis in your change log.
 
-Me too. This fallback complicates code logic more than just a little.
-I'm not sure why someone would rather add fallback than change the bootup
-options to crashkernel=X,[high|low]. Perhaps fallback to high/low is a better
-compatible and extended mode when crashkernel=X fails to reserve memory. And
-the code logic will be much clearer.
+Best Regards,
+Huang, Ying
 
-//parse crashkernel=X		//To simplify the discussion, Ignore [@offset]
-crash_base = memblock_phys_alloc_range()
-if (!crash_base || /* crashkernel=X is not specified */) {
-	//parse crashkernel=X,[high,low]
-	//reserve high/low memory
-}
-
-So that, the following three modes are supported:
-1) crashkernel=X[@offset]
-2) crashkernel=X,high crashkernel=X,low
-3) crashkernel=X[@offset] crashkernel=X,high [crashkernel=Y,low]
-
-For case 3), try "crashkernel=X[@offset]" first, if it can not work, fallback
-to "crashkernel=X,high crashkernel=X,low". This looks better than the old "crashkernel=X"
-fallback ---- Select a region under 4G first, and fall back to reserve region above 4G.
-
-Note: when the X of crashkernel=X and crashkernel=X,high are the same, It's equivalent
-to the old "crashkernel=X" fallback.
-
-> if we want a fallback, it would come just before the check the above:
-> 
-> 	if (!crash_base && crash_max != CRASH_ADDR_HIGH_MAX) {
-> 		/* attempt high allocation with default low */
-> 		if (!crash_low_size)
-> 			crash_low_size = some default;
-> 		crash_max = CRASH_ADDR_LOW_MAX;
-
-crash_max = CRASH_ADDR_HIGH_MAX; We should fallback to high memory now.
-
-> 		crash_base = memblock_phys_alloc_range();
-> 	}
-> 
-> Well, I guess we end up with your earlier proposal but I think I
-> understand it better now ;).
-> 
-
--- 
-Regards,
-  Zhen Lei
