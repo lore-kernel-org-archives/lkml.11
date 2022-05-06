@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 12:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391281AbiEFMYV (ORCPT
+        id S1391721AbiEFMYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 08:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
+        Fri, 6 May 2022 08:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344352AbiEFMYS (ORCPT
+        with ESMTP id S236947AbiEFMYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 6 May 2022 08:24:18 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080821900C
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 05:20:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D951901B
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 05:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=HSYqsfm/L8cEFT67qwt/B0OdeJkOEA6FwbUFh1hXWX8=; b=q0pSpo+oIqDrF1geN8hflRwUg8
-        8aJkHHj+rRjaL8DYYghR8s/9JWizHXsogySF2zF0WWFbJDvnUcJHAZD0xq8qqICtD0gQ+Ps5r7wDa
-        iOQMUfSzURZBb8M7CyIiC/DhPc1M2y7ORUf6eWBZAlrzU2z1j30jwzeWOeXhdU2gC/5jXUk2eFY3z
-        URGo4vdyPxZHk1mBdUk1O9K+dl+83jmkMSWRUS1q14AwL2oYPj85iO3/p+dlTXW4NsjpM/pakZHU9
-        NVogShqw0z/ae5rshzXg0fvdUBgaeJUdVCk4GM4oSqIVyil+LtpIJSjJwM2LWtUw9uWv4kBzOUlHE
-        3SJ6C+uA==;
+        bh=SphQ9KPOAD+tVcln1GuUYwPYc5Upd7RmPAUA28r5dTY=; b=oQLqszHTZrgSkFSX5rZoPHCKUN
+        kyHKyWoVLrAOP+/NiYdRS8NiZ4HJZCgOAM2mM8fMlMODSGRqDoXCoaBNIzptiXvYV13uNi2rkASdG
+        3yL/TKQJW+7VMuIfh/fAB0hNLIgynSknuWaGVrafA9Lzb24lYkZlxYYaL4mQnFhJ+rrMT9o2wlsic
+        UaT72saFI6VsVsc4ORj0xZy6/WBXcOWbWRWevMkLqh0RKJIiby8ADf4IAjYgvcunot34QRzlWdqLc
+        X+Z+GCpqO1intiiqxE3H4MvxWk0oeW0A3ICPbVAZGaO3zGf+xfZmt4dhX76QCqswVP/jzlX0UBEPx
+        VVYOanmg==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nmwwU-00BfTa-Qk; Fri, 06 May 2022 12:20:19 +0000
+        id 1nmwwU-00BfTb-Qk; Fri, 06 May 2022 12:20:19 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 12362300776;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1090A3005B9;
         Fri,  6 May 2022 14:20:16 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id E22A720285CC0; Fri,  6 May 2022 14:20:15 +0200 (CEST)
-Message-ID: <20220506121631.133110232@infradead.org>
+        id EB7A02026F792; Fri,  6 May 2022 14:20:15 +0200 (CEST)
+Message-ID: <20220506121631.293889636@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 06 May 2022 14:14:32 +0200
+Date:   Fri, 06 May 2022 14:14:34 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         jpoimboe@redhat.com, brgerst@gmail.com, jiangshanlai@gmail.com,
         Andrew.Cooper3@citrix.com, mark.rutland@arm.com,
         Borislav Petkov <bp@suse.de>
-Subject: [PATCH 1/6] x86/mm: Simplify RESERVE_BRK()
+Subject: [PATCH 3/6] x86/entry: Use PUSH_AND_CLEAR_REGS for compat
 References: <20220506121431.563656641@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,68 +54,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+Since the upper regs don't exist for ia32 code, preserving them
+doesn't hurt and it simplifies the code.
 
-RESERVE_BRK() reserves data in the .brk_reservation section.  The data
-is initialized to zero, like BSS, so the macro specifies 'nobits' to
-prevent the data from taking up space in the vmlinux binary.  The only
-way to get the compiler to do that (without putting the variable in .bss
-proper) is to use inline asm.
+This doesn't add any attack surface that would not already be
+available through INT80.
 
-The macro also has a hack which encloses the inline asm in a discarded
-function, which allows the size to be passed (global inline asm doesn't
-allow inputs).
+Notably:
 
-Remove the need for the discarded function hack by just stringifying the
-size rather than supplying it as an input to the inline asm.
+ - 32bit SYSENTER: didn't clear si, dx, cx.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+ - 32bit SYSCALL, INT80: *do* clear si since the C functions don't
+   take a second argument.
+
+ - 64bit: didn't clear si since the C functions take a second
+   argument; except the error_entry path might have only one argument,
+   so clearing si was missing here.
+
+32b SYSENTER should be clearing all those 3 registers, nothing uses them
+and selftests pass.
+
+Unconditionally clear rsi since it simplifies code.
+
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Borislav Petkov <bp@suse.de>
 ---
- arch/x86/include/asm/setup.h |   30 +++++++++++-------------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+ arch/x86/entry/calling.h         |    1 
+ arch/x86/entry/entry_64_compat.S |   87 +--------------------------------------
+ 2 files changed, 4 insertions(+), 84 deletions(-)
 
---- a/arch/x86/include/asm/setup.h
-+++ b/arch/x86/include/asm/setup.h
-@@ -109,27 +109,19 @@ extern unsigned long _brk_end;
- void *extend_brk(size_t size, size_t align);
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -99,6 +99,7 @@ For 32-bit we have the following convent
+ 	 * well before they could be put to use in a speculative execution
+ 	 * gadget.
+ 	 */
++	xorl	%esi,  %esi	/* nospec si  */
+ 	xorl	%edx,  %edx	/* nospec dx  */
+ 	xorl	%ecx,  %ecx	/* nospec cx  */
+ 	xorl	%r8d,  %r8d	/* nospec r8  */
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -83,32 +83,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_af
+ 	movl	%eax, %eax
  
- /*
-- * Reserve space in the brk section.  The name must be unique within
-- * the file, and somewhat descriptive.  The size is in bytes.  Must be
-- * used at file scope.
-+ * Reserve space in the brk section.  The name must be unique within the file,
-+ * and somewhat descriptive.  The size is in bytes.
-  *
-- * (This uses a temp function to wrap the asm so we can pass it the
-- * size parameter; otherwise we wouldn't be able to.  We can't use a
-- * "section" attribute on a normal variable because it always ends up
-- * being @progbits, which ends up allocating space in the vmlinux
-- * executable.)
-+ * The allocation is done using inline asm (rather than using a section
-+ * attribute on a normal variable) in order to allow the use of @nobits, so
-+ * that it doesn't take up any space in the vmlinux file.
-  */
--#define RESERVE_BRK(name,sz)						\
--	static void __section(".discard.text") __noendbr __used notrace	\
--	__brk_reservation_fn_##name##__(void) {				\
--		asm volatile (						\
--			".pushsection .brk_reservation,\"aw\",@nobits;" \
--			".brk." #name ":"				\
--			" 1:.skip %c0;"					\
--			" .size .brk." #name ", . - 1b;"		\
--			" .popsection"					\
--			: : "i" (sz));					\
--	}
-+#define RESERVE_BRK(name, size)						\
-+	asm(".pushsection .brk_reservation,\"aw\",@nobits\n\t"		\
-+	    ".brk." #name ":\n\t"					\
-+	    ".skip " __stringify(size) "\n\t"				\
-+	    ".size .brk." #name ", " __stringify(size) "\n\t"		\
-+	    ".popsection\n\t")
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	pushq	%rdi			/* pt_regs->di */
+-	pushq	%rsi			/* pt_regs->si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	pushq	%rcx			/* pt_regs->cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   $0			/* pt_regs->r8  = 0 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   $0			/* pt_regs->r9  = 0 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   $0			/* pt_regs->r10 = 0 */
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   $0			/* pt_regs->r11 = 0 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   $0			/* pt_regs->r12 = 0 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   $0			/* pt_regs->r13 = 0 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   $0			/* pt_regs->r14 = 0 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   $0			/* pt_regs->r15 = 0 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
++	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
+ 	UNWIND_HINT_REGS
  
- extern void probe_roms(void);
- #ifdef __i386__
+ 	cld
+@@ -225,35 +200,7 @@ SYM_INNER_LABEL(entry_SYSCALL_compat_saf
+ SYM_INNER_LABEL(entry_SYSCALL_compat_after_hwframe, SYM_L_GLOBAL)
+ 	movl	%eax, %eax		/* discard orig_ax high bits */
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	pushq	%rdi			/* pt_regs->di */
+-	pushq	%rsi			/* pt_regs->si */
+-	xorl	%esi, %esi		/* nospec   si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	xorl	%edx, %edx		/* nospec   dx */
+-	pushq	%rbp			/* pt_regs->cx (stashed in bp) */
+-	xorl	%ecx, %ecx		/* nospec   cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   $0			/* pt_regs->r8  = 0 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   $0			/* pt_regs->r9  = 0 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   $0			/* pt_regs->r10 = 0 */
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   $0			/* pt_regs->r11 = 0 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   $0			/* pt_regs->r12 = 0 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   $0			/* pt_regs->r13 = 0 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   $0			/* pt_regs->r14 = 0 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   $0			/* pt_regs->r15 = 0 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
++	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
+ 	UNWIND_HINT_REGS
+ 
+ 	movq	%rsp, %rdi
+@@ -380,35 +327,7 @@ SYM_CODE_START(entry_INT80_compat)
+ 	pushq	0*8(%rax)		/* regs->orig_ax */
+ .Lint80_keep_stack:
+ 
+-	pushq	%rdi			/* pt_regs->di */
+-	pushq	%rsi			/* pt_regs->si */
+-	xorl	%esi, %esi		/* nospec   si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	xorl	%edx, %edx		/* nospec   dx */
+-	pushq	%rcx			/* pt_regs->cx */
+-	xorl	%ecx, %ecx		/* nospec   cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   %r8			/* pt_regs->r8 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   %r9			/* pt_regs->r9 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   %r10			/* pt_regs->r10*/
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   %r11			/* pt_regs->r11 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   %r12                    /* pt_regs->r12 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   %r13                    /* pt_regs->r13 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   %r14                    /* pt_regs->r14 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   %r15                    /* pt_regs->r15 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
++	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
+ 	UNWIND_HINT_REGS
+ 
+ 	cld
 
 
