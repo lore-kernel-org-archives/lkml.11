@@ -2,137 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C528C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 10:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354841AbiEFKJD (ORCPT
+        id S1390807AbiEFKKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 06:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        Fri, 6 May 2022 06:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390796AbiEFKIv (ORCPT
+        with ESMTP id S1390800AbiEFKKl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 06:08:51 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F07C5BD22;
-        Fri,  6 May 2022 03:05:09 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 091F51F8BD;
-        Fri,  6 May 2022 10:05:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651831508;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vOduMzov7LmnmWKc/9KVSmPz2a6N3lKrkrPH5TFQYIc=;
-        b=K4zZmj4v1fjdFM/RKx8Duu++qZaOr1W8AzpQcYAtGPMwOhjBprORx356zQus6XFWACBCQF
-        3q93GJMPIcNCGWf1Vqdj2ZqZfWSjk620OnmXjshIrIxUny7uRwTMBMu7qq+LU2Z1neP7Gi
-        IxTCtYC1flVRKGnh7NdXeIwsoAPvC6c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651831508;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vOduMzov7LmnmWKc/9KVSmPz2a6N3lKrkrPH5TFQYIc=;
-        b=emRyEKwz+9oRLLb8JPuF4fBjvsI2XyZaLLPkrB+CWkH8TWcBmagnWsk9b9EaOudwzxzjsW
-        uIsIGyYYtdhQ2ODA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6321513A1B;
-        Fri,  6 May 2022 10:05:07 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id uw3nFtPydGJYbwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Fri, 06 May 2022 10:05:07 +0000
-Date:   Fri, 6 May 2022 12:00:55 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     jaegeuk@kernel.org, hare@suse.de, dsterba@suse.com,
-        axboe@kernel.dk, hch@lst.de, damien.lemoal@opensource.wdc.com,
-        snitzer@kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, bvanassche@acm.org,
-        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
-        Jens Axboe <axboe@fb.com>, gost.dev@samsung.com,
-        jonathan.derrick@linux.dev, jiangbo.365@bytedance.com,
-        linux-nvme@lists.infradead.org, dm-devel@redhat.com,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alasdair Kergon <agk@redhat.com>, linux-block@vger.kernel.org,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH v3 00/11] support non power of 2 zoned devices
-Message-ID: <20220506100054.GZ18596@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        jaegeuk@kernel.org, hare@suse.de, dsterba@suse.com, axboe@kernel.dk,
-        hch@lst.de, damien.lemoal@opensource.wdc.com, snitzer@kernel.org,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
-        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
-        gost.dev@samsung.com, jonathan.derrick@linux.dev,
-        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
-        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
-        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>, Alasdair Kergon <agk@redhat.com>,
-        linux-block@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org
-References: <CGME20220506081106eucas1p181e83ef352eb8bfb1752bee0cf84020f@eucas1p1.samsung.com>
- <20220506081105.29134-1-p.raghav@samsung.com>
+        Fri, 6 May 2022 06:10:41 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 379DE5DA7F;
+        Fri,  6 May 2022 03:06:58 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F384C14BF;
+        Fri,  6 May 2022 03:06:57 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.65.197])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 583A13FA31;
+        Fri,  6 May 2022 03:06:55 -0700 (PDT)
+Date:   Fri, 6 May 2022 11:06:51 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arch@vger.kernel.org, jthierry@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org, masahiroy@kernel.org,
+        jpoimboe@redhat.com, ycote@redhat.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, ardb@kernel.org, maz@kernel.org,
+        tglx@linutronix.de, luc.vanoostenryck@gmail.com
+Subject: Re: [RFC PATCH v4 22/37] arm64: kernel: Skip validation of kuser32.o
+Message-ID: <YnTzO3imkSUAuIKx@FVFF77S0Q05N>
+References: <20220429094355.122389-1-chenzhongjin@huawei.com>
+ <20220429094355.122389-23-chenzhongjin@huawei.com>
+ <YmvGja62yWdPHPOW@hirez.programming.kicks-ass.net>
+ <a57f7d73-6e01-8f41-9be3-8e90807ec08f@huawei.com>
+ <20220505092448.GE2501@worktop.programming.kicks-ass.net>
+ <YnOtbYOIT5OP7F0g@FVFF77S0Q05N.cambridge.arm.com>
+ <51ce37b5-f527-9743-36d3-50247cb0939f@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220506081105.29134-1-p.raghav@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <51ce37b5-f527-9743-36d3-50247cb0939f@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 10:10:54AM +0200, Pankaj Raghav wrote:
-> - Open issue:
-> * btrfs superblock location for zoned devices is expected to be in 0,
->   512GB(mirror) and 4TB(mirror) in the device. Zoned devices with po2
->   zone size will naturally align with these superblock location but non
->   po2 devices will not align with 512GB and 4TB offset.
+On Fri, May 06, 2022 at 10:18:10AM +0800, Chen Zhongjin wrote:
+> On 2022/5/5 18:56, Mark Rutland wrote:
+> > On Thu, May 05, 2022 at 11:24:48AM +0200, Peter Zijlstra wrote:
+> >> On Thu, May 05, 2022 at 11:36:12AM +0800, Chen Zhongjin wrote:
+> >>> Hi Peter,
+> >>>
+> >>> IIRC now the blacklist mechanisms all run on check stage, which after
+> >>> decoding, but the problem of kuser32.S happens in decoding stage. Other
+> >>> than that the assembly symbols in kuser32 is STT_NOTYPE and
+> >>> STACK_FRAME_NON_STANDARD will throw an error for this.
+> >>>
+> >>> OBJECT_FILES_NON_STANDARD works for the single file but as you said
+> >>> after LTO it's invalid. However STACK_FRAME_NON_STANDARD doesn't work
+> >>> for kuser32 case at all.
+> >>>
+> >>> Now my strategy for undecodable instructions is: show an error message
+> >>> and mark insn->ignore = true, but do not stop anything so decoding work
+> >>> can going on.
+> >>>
+> >>> To totally solve this my idea is that applying blacklist before decode.
+> >>> However for this part objtool doesn't have any insn or func info, so we
+> >>> should add a new blacklist just for this case...
+> >>
+> >> OK, so Mark explained that this is 32bit userspace (VDSO) code.
+> >>
+> >> And as such there's really no point in running objtool on it. Does all
+> >> that live in it's own section? Should it?
+> > 
+> > It's placed in .rodata by a linker script:
+> > 
+> > * The 32-bit vdso + kuser code is placed in .rodata, between the `vdso32_start`
+> >   and `vdso32_end` symbols, as raw bytes (via .incbin).
+> >   See arch/arm64/kernel/vdso32-wrap.S.
+> > 
+> > * The 64-bit vdso code is placed in .rodata, between the `vdso_start`
+> >   and `vdso32` symbols, as raw bytes (via .incbin).
+> >   See arch/arm64/kernel/vdso-wrap.S.
+> > 
+> > The objects under arch/arm64/kernel/{vdso,vdso32}/ are all userspace objects,
+> > and from userspace's PoV the existing secrtions within those objects are
+> > correct, so I don't think those should change.
+> > 
+> > How does x86 deal with its vdso objects?
+> > 
+> > Thanks,
+> > Mark.
+> > .
 > 
->   The current approach for npo2 devices is to place the superblock mirror
->   zones near   512GB and 4TB that is **aligned to the zone size**.
+> However for my build kuser32.o content is in .text 
 
-I don't like that, the offsets have been chosen so the values are fixed
-and also future proof in case the zone size increases significantly. The
-natural alignment of the pow2 zones makes it fairly trivial.
+We should be able to move that into .rodata; it's never executed in kernel context.
 
-If I understand correctly what you suggest, it would mean that if zone
-is eg. 5G and starts at 510G then the superblock should start at 510G,
-right? And with another device that has 7G zone size the nearest
-multiple is 511G. And so on.
+> and there is only `vdso` symbol in .rodata without `vdso32`.
 
-That makes it all less predictable, depending on the physical device
-constraints that are affecting the logical data structures of the
-filesystem. We tried to avoid that with pow2, the only thing that
-depends on the device is that the range from the super block offsets is
-always 2 zones.
+That means you're not building with CROSS_COMPILE_COMPAT, and so we can't build
+the 32-bit VDSO.
 
-I really want to keep the offsets for all zoned devices the same and
-adapt the code that's handling the writes. This is possible with the
-non-pow2 too, the first write is set to the expected offset, leaving the
-beginning of the zone unused.
+> And for defconfig the CONFIG_KUSER_HELPERS=y is on.
 
->   This
->   is of no issue for normal operation as we keep track where the superblock
->   mirror are placed but this can cause an issue with recovery tools for
->   zoned devices as they expect mirror superblock to be in 512GB and 4TB.
+Yes.
 
-Yeah the tools need to be updated, btrfs-progs and suite of blk* in
-util-linux.
+> According to your description, it seems something wrong here?
 
->   Note that ATM, recovery tools such as `btrfs check` does not work for
->   image dumps for zoned devices even for po2 zone sizes.
+Sorry, I was wrong about how we linked the kuser32 code.
 
-I thought this worked, but if you find something that does not please
-report that to Johannes or Naohiro.
+I believe we can move that into .rodata by adding:
+
+	.section .rodata
+
+... to the start of that.
+
+I think that'd be a nice cleanup to do regardless of objtool.
+
+Thanks,
+Mark.
