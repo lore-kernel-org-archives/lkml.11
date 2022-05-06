@@ -2,161 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57196C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D556C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 15:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442578AbiEFPGH (ORCPT
+        id S1442592AbiEFPGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 11:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        Fri, 6 May 2022 11:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344485AbiEFPGE (ORCPT
+        with ESMTP id S237627AbiEFPGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 11:06:04 -0400
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA313396B6;
-        Fri,  6 May 2022 08:02:20 -0700 (PDT)
-Received: by mail-qv1-f49.google.com with SMTP id js14so5584893qvb.12;
-        Fri, 06 May 2022 08:02:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T95DKyI860o0Ni6h4dJD+E7diEEpmm2y8EkaKK0YMZc=;
-        b=LIEt+Hj0vorrPId2XXAkIzYrafDHh4aGVFsTJERz19t6ZBEGg4QqxOeWZIiZm1IzdA
-         TP9/Gzt6OcBeCGJrc5ptrAoRAptT87/ed4fEOYP5rjMkxZ08BRCzZdUivGPaflqOrxid
-         UdUX9guNF636lqAAqf2X6uu7i5yfhqe2peiWMfrHN17BblyZntp85mXqSYolGtsOeahP
-         Bqhw8nXJb6yqqbGYgDVz49P6My1uYqB1fumdV7cjG5TbC6cor52Dz28WyGQi30JeLABb
-         BwvMlRhRT0caLQGmbZHgEmqY572uMTBhKKCF09qxgDuhQCaEESY+w7YTVJqhTkeqT76H
-         ghGQ==
-X-Gm-Message-State: AOAM532tB31TEiA294rcJNQ3ykT0zHFdc8p261lVpD/VsfCDQiBtEcEQ
-        J6moxrX2XxBrpszDFBVA1FtpGT0qW2d+VQ==
-X-Google-Smtp-Source: ABdhPJynUG3F533fte8dV60hdIv+ozcQx1diqhjWoKACMR0xOo9dFfthI5Vt9H+fq9TJ1Fj5nJKqwQ==
-X-Received: by 2002:a05:6214:29c1:b0:45a:e0e5:7b2b with SMTP id gh1-20020a05621429c100b0045ae0e57b2bmr2778900qvb.44.1651849339531;
-        Fri, 06 May 2022 08:02:19 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id bm25-20020a05620a199900b0069fc13ce22asm2625608qkb.91.2022.05.06.08.02.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 08:02:19 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id w187so13355019ybe.2;
-        Fri, 06 May 2022 08:02:18 -0700 (PDT)
-X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
- s14-20020a056902120e00b006346f296b84mr2817893ybu.604.1651849338111; Fri, 06
- May 2022 08:02:18 -0700 (PDT)
+        Fri, 6 May 2022 11:06:12 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246F4396B6
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 08:02:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651849349; x=1683385349;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JtteZAMTQXi+wE2QvFf74UIXeiYI3rgZRBcRNFpRR2c=;
+  b=XyRP9eRqV/+kXBgHrrHwrxitfdrPwQoYajscJHEI6gfh5uH+ooqOffve
+   XWL/vYLMl2VaNwH4AuEnWcCzu4Ex+NwlUrL7bIAA2QR3K58FlY37vN0Rq
+   XX3NVHb00zm0IVBqzn49907AaMgrxlELXTspqeT+VsvbfxAl59hYPNafO
+   PWufM3t/dfzic5hmqmYBTOZrYbsGMRQ8NIfGnl1p3tR8eXnMWCCnoOJB0
+   sizU3Vi/09BHBESJYV34GsAOIVo4O+nRClbyRd8OU4elpxxljqiUa/6IK
+   ImJyFujt+xV+GXHn2H0MKFKeAyP0xs0iWZB/xqZo03bUKCsZqCSeuj5dm
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268092547"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="268092547"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:02:24 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="654729242"
+Received: from ysomasun-mobl1.amr.corp.intel.com (HELO [10.209.0.67]) ([10.209.0.67])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 08:02:23 -0700
+Message-ID: <725af523-d144-e373-e09b-fb48b3afb9ed@linux.intel.com>
+Date:   Fri, 6 May 2022 09:13:00 -0500
 MIME-Version: 1.0
-References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
- <20220505161028.GA492600@bhelgaas> <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
- <alpine.DEB.2.21.2205061058540.52331@angie.orcam.me.uk> <CAK8P3a0NzG=3tDLCdPj2=A__2r_+xiiUTW=WJCBNp29x_A63Og@mail.gmail.com>
- <alpine.DEB.2.21.2205061314110.52331@angie.orcam.me.uk> <5239892986c94239a122ab2f7a18a7a5@AcuMS.aculab.com>
- <CAMuHMdWj5rmrP941DF7bsUXbiiemE-o2=8XqnAS-chgmpFFPQg@mail.gmail.com> <62c1bf6687ac4abc98d4015852930241@AcuMS.aculab.com>
-In-Reply-To: <62c1bf6687ac4abc98d4015852930241@AcuMS.aculab.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 6 May 2022 17:02:06 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV1HpUNKdZDqd0e5BKfr-FqGrwGJJ_xTKw5Z55bdEJa+Q@mail.gmail.com>
-Message-ID: <CAMuHMdV1HpUNKdZDqd0e5BKfr-FqGrwGJJ_xTKw5Z55bdEJa+Q@mail.gmail.com>
-Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select it
- as necessary
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Arnd Bergmann <arnd@kernel.org>, Rich Felker <dalias@libc.org>,
-        "open list:IA64 (Itanium) PLATFORM" <linux-ia64@vger.kernel.org>,
-        "open list:SUPERH" <linux-sh@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
-        <sparclinux@vger.kernel.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        Will Deacon <will@kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Helge Deller <deller@gmx.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Matt Turner <mattst88@gmail.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v2] soundwire: qcom: adjust autoenumeration timeout
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        vkoul@kernel.org
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        bard.liao@intel.com,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+References: <20220506084705.18525-1-srinivas.kandagatla@linaro.org>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220506084705.18525-1-srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David
 
-On Fri, May 6, 2022 at 4:05 PM David Laight <David.Laight@aculab.com> wrote:
-> From: Geert Uytterhoeven
-> > Sent: 06 May 2022 14:09
-> > > The same is really true for other bus type - including ISA and EISA.
-> > > (Ignoring the horrid of probing ISI bus devices - hopefully they
-> > > are in the ACPI tables??_
-> > > If a driver is probed on a ISA bus there ought to be functions
-> > > equivalent to pci_ioremap() (for both memory and IO addresses)
-> > > that return tokens appropriate for the specific bus.
-> > >
-> > > That is all a different load of churn.
-> >
-> > A loooong time ago,  it was suggested to add register accessor
-> > functions to struct device, so e.g. readl(dev, offset) would call
-> > into these accessors, which would implement the bus-specific behavior.
-> > No more worries about readl(), __raw_readl(), ioread32b(), or whatever
-> > quirk is needed, at the (small on nowadays' machines) expense of
-> > some indirection...
->
-> I was just thinking that the access functions might need a 'device'.
-> Although you also need the BAR (or equivalent).
-> So readl(dev, bar_token, offset) or readl(dev, bar_token + offset).
 
-Note that we do have such a system: regmap.
+On 5/6/22 03:47, Srinivas Kandagatla wrote:
+> Currently timeout for autoenumeration during probe and bus reset is set to
+> 2 secs which is really a big value. This can have an adverse effect on
+> boot time if the slave device is not ready/reset.
+> This was the case with wcd938x which was not reset yet but we spent 2
+> secs waiting in the soundwire controller probe. Reduce this time to
+> 1/10 of Hz which should be good enough time to finish autoenumeration
+> if any slaves are available on the bus.
 
-> Clearly the 'dev' parameter could be compiled out for non-DEBUG
-> build on x86 - leaving the current(ish) object code.
+Humm, now that I think of it I am not sure what reducing the timeout does.
 
-Assumed all devices are PCI devices.
-E.g. USB devices would still need the indirection.
+It's clear that autoenumeration should be very fast, but if there is
+nothing to enumerate what would happen then? It seems that reducing the
+timeout value only forces an inconsistent configuration to be exposed
+earlier, but that would not result in a functional change where the
+missing device would magically appear, would it? Is this change mainly
+to make the tests fail faster? If the 'slave device is not ready/reset',
+is there a recovery mechanism to recheck later?
 
-> You don't want an indirect call (this year), but maybe real
-> function call and a few tests won't make that much difference.
-> They might affect PCIe writes, but PCIe reads are so slow you
-> need to avoid them whenever possible.
-> I've not timed reads into something like an ethernet chip,
-> but into our fpga they are probably 1000 clocks+.
->
-> OTOH I wouldn't want any overhead on the PIO fifo reads
-> on one of our small ppc devices.
-> We push a lot of data though that fifo and anything extra
-> would kill performance.
+Would you mind clarifying what happens after the timeout, and why the
+timeout would happen in the first place?
 
-Right.
+Thanks!
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> 
+> Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+> 
+> Changes since v1:
+> 	replaced HZ/10 with 100 as suggested by Pierre
+> 
+>  drivers/soundwire/qcom.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index 7367aa88b8ac..d6111f69d320 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -105,7 +105,7 @@
+>  
+>  #define SWRM_SPECIAL_CMD_ID	0xF
+>  #define MAX_FREQ_NUM		1
+> -#define TIMEOUT_MS		(2 * HZ)
+> +#define TIMEOUT_MS		100
+>  #define QCOM_SWRM_MAX_RD_LEN	0x1
+>  #define QCOM_SDW_MAX_PORTS	14
+>  #define DEFAULT_CLK_FREQ	9600000
