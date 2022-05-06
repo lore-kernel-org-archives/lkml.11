@@ -2,218 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D919C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 16:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 17:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444019AbiEFRCv (ORCPT
+        id S1444025AbiEFRDn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 13:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
+        Fri, 6 May 2022 13:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444018AbiEFRCs (ORCPT
+        with ESMTP id S1444022AbiEFRDm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 13:02:48 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905196D953
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:59:04 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so7236439pji.3
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 09:59:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vj6XEbgIMbTr9+iA2bOkom4+D75tX0mB3fjbufS1Z10=;
-        b=feRUWTCl2QMVdpXsrIM+3vZBL5P3h3/8Ynt3HSw+RVb8Y02b8BCzt/xxjdLZ+lm/rM
-         MxAAwqTYNpSvPK6/3W9yBxyXkh9zW7dx2jk5najDR6j6DiCDrrz3BhFNkJVh9BpSQKE/
-         oh2OH0tjjQa/cOdARonIOidtJlBfLWgUxxHfj+Ghcs0+CZU90bK83a+SULYdKdNLlFy6
-         sZxdBhhkTG51p29v7+33fKAxQuKtL+YNZaB2y4zXM/0TZLrKce2isiaiFEyoqEnUzqbi
-         daqyCXGSbWvY1LaZrbeKcEsTeYOkCuSsdUWWFcWc+JZ/O+dKbchnly84zJhQHHIbSyRc
-         or7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vj6XEbgIMbTr9+iA2bOkom4+D75tX0mB3fjbufS1Z10=;
-        b=fdVD5Ly0VgLqCm9wjztV5Zfi6Ck1jzZZaGJ3mZOJwj/vwggtyQvLCHVIHYu8GyBtNi
-         q8bIPUa3NJFQOZ9uT6iKXlMKaQ6j7SBOyfr/WtdeKc/vDBAFjkn12ZRIBmFDjy0HySZj
-         BpIK4R+7EfbRD6EPO6Ir6OfrQ83mf3t/y+ezbVuhn15vXKj0vZG7wtTgt/Tr6iwwNR7o
-         B4bqmdqYc9X2PLXmWwgp4zzhSvaJ5mbh3KhnVzyp/WjujzxfqGSXgNHwfBBKW5ADPYlf
-         bl7DWUZXgRApkFL2DTqZ58uB1excN8f6+sAXyackACiwIf7WcTr2j//zLZ+PGkRq3JhJ
-         Be/A==
-X-Gm-Message-State: AOAM530zNKHEaFh18z3xIhfPCXDJJZdrRGW/fJ84LfUJm6oDJjAH4QG+
-        uaVjwaHmDrlqX3WKQLhFAqiFxqt3LTs=
-X-Google-Smtp-Source: ABdhPJzHU6TTWVDjf/3gc99fKZkHMN+emRqleV7wQE2C9rolA5SwVurRJTfon78jncXjIJpVJqvGHg==
-X-Received: by 2002:a17:90b:3884:b0:1dc:5838:1bea with SMTP id mu4-20020a17090b388400b001dc58381beamr13187175pjb.90.1651856343692;
-        Fri, 06 May 2022 09:59:03 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170902dac700b0015e8d4eb2easm2008874plx.308.2022.05.06.09.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 09:59:02 -0700 (PDT)
-Date:   Sat, 7 May 2022 01:58:55 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        x86@kernel.org
-Subject: Re: [RFC PATCH 0/3] Prototype for direct map awareness in page
- allocator
-Message-ID: <YnVTz4szkpwkKlFP@hyeyoo>
-References: <20220127085608.306306-1-rppt@kernel.org>
- <YmezWeMZSRNRfXyG@hyeyoo>
- <YmgOFa3FUUpiANMq@kernel.org>
- <20220430134415.GA25819@ip-172-31-27-201.ap-northeast-1.compute.internal>
- <YnCzQJk8Mu1848tG@kernel.org>
+        Fri, 6 May 2022 13:03:42 -0400
+Received: from wrqvvpks.outbound-mail.sendgrid.net (wrqvvpks.outbound-mail.sendgrid.net [149.72.131.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205B16A40E
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 09:59:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catern.com;
+        h=from:subject:in-reply-to:references:mime-version:to:cc:content-type:
+        content-transfer-encoding;
+        s=s1; bh=0kv8Y+pw6sAthOMznHqH5eVjKXOt00qV9e4yFDnt+Es=;
+        b=JyGuBIUDLSg4VXtCtO+PrvbRjlHlYCWKmbwjPwbfXPEBx5aN/PKoexTCq249YbDPbeWO
+        PtA9yI37NUqajl8TtUDOxJPsJZPdoZc0f4BOyHJFEAs0+N9Tgzn7WSTF6w34GdGlRK3ob2
+        5p/SWiyqSLmOjpS6RNmfIFjcrKAJPbAI5SKDW6vMnhbSFhV/CQEh9vYF+z8JcFodjYuKWY
+        Y00pZ52/0HprIoV4nG7CtUVXPI8/E0+l+HHsNgm+dbPZspoWc6fj/dS8vHormThs86lRO9
+        07IIi4OMbFj5tYdnOsI2sPYXUvofIHnKPSQZGiy7cDj541Uwh0WpDUk6w5w4AhyA==
+Received: by filterdrecv-77df7bffc9-b2j5p with SMTP id filterdrecv-77df7bffc9-b2j5p-1-627553ED-5E
+        2022-05-06 16:59:25.839025366 +0000 UTC m=+2574812.774299640
+Received: from earth.catern.com (unknown)
+        by geopod-ismtpd-2-2 (SG)
+        with ESMTP
+        id lPNwAp36QO6WuhyWBDuI8g
+        Fri, 06 May 2022 16:59:25.688 +0000 (UTC)
+X-Comment: SPF check N/A for local connections - client-ip=::1; helo=localhost; envelope-from=sbaugh@catern.com; receiver=<UNKNOWN> 
+Received: from localhost (localhost [IPv6:::1])
+        by earth.catern.com (Postfix) with ESMTPSA id 966DA60040;
+        Fri,  6 May 2022 12:59:24 -0400 (EDT)
+From:   Spencer Baugh <sbaugh@catern.com>
+Subject: Re: Explicitly defining the userspace API
+In-Reply-To: <YmA/jFztk5GkjIr2@kroah.com>
+References: <874k2nhgtg.fsf@catern.com> <YmA/jFztk5GkjIr2@kroah.com>
+Date:   Fri, 06 May 2022 16:59:26 +0000 (UTC)
+Message-ID: <87levefvgz.fsf@catern.com>
 MIME-Version: 1.0
+X-SG-EID: =?us-ascii?Q?GW3oCMoYnalRiojMOuLzE6x2H5kORXvlCdz1UwQVRMVT4fbh9ODEfCogOe74cO?=
+ =?us-ascii?Q?rI4e0V+MFZgakz9Re5a6=2FCgloGF35IKSfipc2eg?=
+ =?us-ascii?Q?gco3jvfFNeZBoapduVGgMA+K=2F4SfxXcosVfTDgq?=
+ =?us-ascii?Q?NVbZkA6JzG4eHrV1fet9KMsG2zjt1m1jpbhM4+s?=
+ =?us-ascii?Q?j0szgyOzQfAJPXrmqWpxOgRDAsoCI0TRPkt2yvN?=
+ =?us-ascii?Q?jgLmkm7A9=2FPAh1t2R0K3L1PRg9Og=2Ff0bU5gZHM?=
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcin@juszkiewicz.com.pl, torvalds@linux-foundation.org,
+        arnd@arndb.de
+X-Entity-ID: d/0VcHixlS0t7iB1YKCv4Q==
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnCzQJk8Mu1848tG@kernel.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 09:44:48PM -0700, Mike Rapoport wrote:
-> On Sat, Apr 30, 2022 at 01:44:16PM +0000, Hyeonggon Yoo wrote:
-> > On Tue, Apr 26, 2022 at 06:21:57PM +0300, Mike Rapoport wrote:
-> > > Hello Hyeonggon,
-> > > 
-> > > On Tue, Apr 26, 2022 at 05:54:49PM +0900, Hyeonggon Yoo wrote:
-> > > > On Thu, Jan 27, 2022 at 10:56:05AM +0200, Mike Rapoport wrote:
-> > > > > From: Mike Rapoport <rppt@linux.ibm.com>
-> > > > > 
-> > > > > Hi,
-> > > > > 
-> > > > > This is a second attempt to make page allocator aware of the direct map
-> > > > > layout and allow grouping of the pages that must be mapped at PTE level in
-> > > > > the direct map.
-> > > > >
-> > > > 
-> > > > Hello mike, It may be a silly question...
-> > > > 
-> > > > Looking at implementation of set_memory*(), they only split
-> > > > PMD/PUD-sized entries. But why not _merge_ them when all entries
-> > > > have same permissions after changing permission of an entry?
-> > > > 
-> > > > I think grouping __GFP_UNMAPPED allocations would help reducing
-> > > > direct map fragmentation, but IMHO merging split entries seems better
-> > > > to be done in those helpers than in page allocator.
-> > >
-> > > Maybe, I didn't got as far as to try merging split entries in the direct
-> > > map.  IIRC, Kirill sent a patch for collapsing huge pages in the direct map
-> > > some time ago, but there still was something that had to initiate the
-> > > collapse.
-> > 
-> > But in this case buddy allocator's view of direct map is quite limited.
-> > It cannot merge 2M entries to 1G entry as it does not support
-> > big allocations. Also it cannot merge entries of pages freed in boot process
-> > as they weren't allocated from page allocator.
-> > 
-> > And it will become harder when pages in MIGRATE_UNMAPPED is borrowed
-> > from another migrate type....
-> > 
-> > So it would be nice if we can efficiently merge mappings in
-> > change_page_attr_set(). this approach can handle cases above.
-> > 
-> > I think in this case grouping allocations and merging mappings
-> > should be done separately.
-> 
-> I've added the provision to merge the mappings in __free_one_page() because
-> at that spot we know for sure we can replace multiple PTEs with a single
-> PMD.
+Greg KH <gregkh@linuxfoundation.org> writes:
+> On Wed, Apr 20, 2022 at 04:15:25PM +0000, Spencer Baugh wrote:
+>> 
+>> Linux guarantees the stability of its userspace API, but the API
+>> itself is only informally described, primarily with English prose.  I
+>> want to add an explicit, authoritative machine-readable definition of
+>> the Linux userspace API.
+>> 
+>> As background, in a conventional libc like glibc, read(2) calls the
+>> Linux system call read, passing arguments in an architecture-specific
+>> way according to the specific details of read.
+>> 
+>> The details of these syscalls are at best documented in manpages, and
+>> often defined only by the implementation.  Anyone else who wants to
+>> work with a syscall, in any way, needs to duplicate all those details.
+>> 
+>> So the most basic definition of the API would just represent the
+>> information already present in SYSCALL_DEFINE macros: the C types of
+>> arguments and return values.  More usefully, it would describe the
+>> formats of those arguments and return values: that the first argument
+>> to read is a file descriptor rather than an arbitrary integer, and
+>> what flags are valid in the flags argument of openat, and that open
+>> returns a file descriptor.  A step beyond that would be describing, in
+>> some limited way, the effects of syscalls; for example, that read
+>> writes into the passed buffer the number of bytes that it returned.
+>
+> So how would you define read() in this format in a way that has not
+> already been attempted in the past?
 
-Actually no external merging mechanism is needed if CPA supports merging
-mappings.
+I don't know about any attempts at doing this in the past (other than
+what's already been mentioned in this thread - e.g. SYSCALL_DEFINE),
+what do you have in mind?
 
-Recently I started to implement similar idea I described above.
-The approach is slightly different as it does not scan the page table
-but updates count of number of mappings that has non-standard protection bits.
-(being "non-standard" means pgprot is not equal to PAGE_KERNEL.)
+> How are you going to define a format that explains functionality in a
+> way that is not just the implementation in the end?
 
-It increases split_count when standard mapping becomes non-standard
-and decreases split_count in the opposite case. It merges mappings when
-the count become zero.
+Lots of information can be expressed just with more specific types on
+the function signature, even with regular C types.  No need to expose
+the implementation in any way.
 
-Updating counts and merging is invoked in __change_page_attr(), which
-is called by set_memory_{rw,ro}(),
-set_direct_map_{default,invalid}_noflush(), ... etc.
+For example, accept4's signature is:
 
-The implementation looks like revert_page() function that existed in
-arch/i386/mm/pageattr.c decades ago...
+SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
+		int __user *, upeer_addrlen, int, flags)
 
-There are some issues like 1) set_memory_4k()-ed memory should not be
-merged and 2) we need to be extremely sure that the count is always
-valid.
+Here, fd and flags are the same type and have nothing to distinguish
+them.  But, purely as an example, not suggesting exactly this, but one
+could have:
 
-But I think this approach is definitely worth trying.
-I'll send a RFC versionin to list after a bit of more work.
+typedef int user_fd_t;
+typedef int accept_flags_t;
 
-And still, I think grouping allocations using migrate type would
-work well with adding merging feature in CPA.
+SYSCALL_DEFINE4(accept4, user_fd_t, fd, struct sockaddr __user *, upeer_sockaddr,
+		int __user *, upeer_addrlen, accept_flags_t, flags)
 
-Thanks!
-Hyeonggon
+Then a user could parse this SYSCALL_DEFINE and know that fd and flags
+have different types with different possible valid values. user_fd_t
+would be used by many different syscalls, accept_flags_t just by this.
 
-> I'm not saying there should be no additional mechanism for collapsing
-> direct map pages, but I don't know when and how it should be invoked.
->  
-> > > > For example:
-> > > > 	1) set_memory_ro() splits 1 RW PMD entry into 511 RW PTE
-> > > > 	entries and 1 RO PTE entry.
-> > > > 
-> > > > 	2) before freeing the pages, we call set_memory_rw() and we have
-> > > > 	512 RW PTE entries. Then we can merge it to 1 RW PMD entry.
-> > > 
-> > > For this we need to check permissions of all 512 pages to make sure we can
-> > > use a PMD entry to map them.
-> > 
-> > Of course that may be slow. Maybe one way to optimize this is using some bits
-> > in struct page, something like: each bit of page->direct_map_split (unsigned long)
-> > is set when at least one entry in (PTRS_PER_PTE = 512)/(BITS_PER_LONG = 64) = 8 entries
-> > has special permissions.
-> > 
-> > Then we just need to set the corresponding bit when splitting mappings and
-> > iterate 8 entries when changing permission back again. (and then unset the bit when 8 entries has
-> > usual permissions). we can decide to merge by checking if page->direct_map_split is zero.
-> > 
-> > When scanning, 8 entries would fit into one cacheline.
-> > 
-> > Any other ideas?
-> > 
-> > > Not sure that doing the scan in each set_memory call won't cause an overall
-> > > slowdown.
-> > 
-> > I think we can evaluate it by measuring boot time and bpf/module
-> > load/unload time.
-> > 
-> > Is there any other workload that is directly affected
-> > by performance of set_memory*()?
-> > 
-> > > > 	3) after 2) we can do same thing about PMD-sized entries
-> > > > 	and merge them into 1 PUD entry if 512 PMD entries have
-> > > > 	same permissions.
-> > > > [...]
-> > > > > Mike Rapoport (3):
-> > > > >   mm/page_alloc: introduce __GFP_UNMAPPED and MIGRATE_UNMAPPED
-> > > > >   mm/secretmem: use __GFP_UNMAPPED to allocate pages
-> > > > >   EXPERIMENTAL: x86/module: use __GFP_UNMAPPED in module_alloc
-> > > > -- 
-> > > > Thanks,
-> > > > Hyeonggon
-> > > 
-> > > -- 
-> > > Sincerely yours,
-> > > Mike.
-> 
-> -- 
-> Sincerely yours,
-> Mike.
+With just this, the user of this information would still need to know
+what user_fd and accept_flags are.  The next step would be describing
+the valid values for accept_flags.  Unfortunately that's not something
+that the C type system alone can express, but again purely as an
+example, but one could have something like:
 
--- 
-Thanks,
-Hyeonggon
+FLAGS_DEFINE(accept_flags, int,
+  SOCK_CLOEXEC,
+  SOCK_NONBLOCK)
+
+Then a user could parse this FLAGS_DEFINE and know what the range of
+valid values for accept_flags_t is.  This could also be used in the
+kernel; for example, FLAGS_DEFINE could generate an accept_flags_valid
+function, usable in accept4 as:
+
+if (!accept_flags_valid(flags))
+	return -EINVAL;
+
+As for describing the buffer-writing behavior of read like I mentioned
+before, here's a sketch of what that maybe could look like.  The current
+signature of read is:
+
+SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
+
+One could imagine adding a type to the return value and changing this to
+something like:
+
+#define bytes_written_or_error(written_buffer) int
+#define writable_user_buf(size_of_buffer) char __user *
+
+SYSCALL_DEFINE3_RET(bytes_written_or_error(buf),
+                    read, unsigned int, fd,
+                    writable_user_buf(count), buf, size_t, count)
+
+A user could parse this and know at least partially how read uses the
+passed-in buffer, without having to look at the implementation.
+
+Just for the sake of mentioning it, one could also imagine static
+analysis which checks the kernel implementation against these
+more-detailed types, which could catch bugs.  But I'm not necessarily
+proposing doing that - this is useful on its own even if it's not
+checked by static analysis.
+
+>> One step in this direction is Documentation/ABI, which specifies the
+>> stability guarantees for different userspace APIs in a semi-formal
+>> way.  But it doesn't specify the actual content of those APIs, and it
+>> doesn't cover individual syscalls at all.
+>
+> The content is described in Documentation/ABI/ entries, where do you see
+> that missing?
+
+I meant that it doesn't describe the content of the APIs in a
+machine-readable way.  (It's still very useful of course!)
+
+> And you are correct, that place does not describe syscalls, or other
+> user/kernel interfaces that predate sysfs.
+>
+> good luck!
+
+Thank you!
