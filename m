@@ -2,165 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B824C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 658C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385886AbiEGPyg (ORCPT
+        id S1385960AbiEGPzb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 11:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
+        Sat, 7 May 2022 11:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiEGPyd (ORCPT
+        with ESMTP id S229630AbiEGPz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 11:54:33 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182EA6401;
-        Sat,  7 May 2022 08:50:46 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id m11so10748994oib.11;
-        Sat, 07 May 2022 08:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=41Mv+KsQAYVN8Us0Ti+umuHoMmg3u4PP5976C3vXHgk=;
-        b=EaEM/ppYw3SGKRW1BXCaJNfnDqfRYjjzWgOuqJh22Bt3tZah8jcyQ1ubPU6pZG6VPy
-         4cv2e3bzJr4G7OGX7A1qJiP1C3eVTsKJx6jXlmlaJZw7LPNak4EDuNS+Rro9/KAgHHdE
-         IjZ48Lwaen5GFNu6O4alTJ8MwACBVKXe9cH38KDljQt1uqqQmDQB0fgDzq3SY0jfONJb
-         rUzJ5nQltC7GMOzjYHLEbTsgpugPPny/CkZFmeQ0HU1xtnHwTv8990Zyfov6u/1a5bzg
-         +SnZPAE28rVX7q5I8CGknTDT3nrw0iyDc13gmZEl0pmQZIH796PYBhs+rgJg255dRp7F
-         6rWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=41Mv+KsQAYVN8Us0Ti+umuHoMmg3u4PP5976C3vXHgk=;
-        b=VfAUoRYy0YeZ7TK/eztL8QXTLMO2gde0u9uOcIDeYvTxXtOWRfogQRD6bMsHnr0Yhx
-         iZ9w6UWAUcfaxptBSzdFHzRVEnOteOqZAYwLTsacsiPirGIK2ekqVIe/jMNpKBGUHGzV
-         VRQtQ+btwp10hQuwLRiuAOzJ/0rFy4psCKBpIYco8/++GgCyxocfyrRjf/Z72M5y/XM8
-         RbEFkPjYfhFNO7i4m8IZxFXN7FrPrp5R3ddWX2CU1MS5BfO/q7Al+79t+RlfmdzL3Hgz
-         BBaE0d5ohnZszu2fEq7y8fMUvjbxKB93G0b47l7LcuNrBZla2kAX0+A3WP4zzXbpKZe0
-         Ti0A==
-X-Gm-Message-State: AOAM531QHtfPFWwoVSCYcMspL/NBZl2PuY8Kezs6Iep7xI+sooe6GgTx
-        ycU7efb8JGDlwLCfjCq2QAEcUESklO0RhQFtfFU=
-X-Google-Smtp-Source: ABdhPJyNVLjlNojWMOmmF/fqfRoyr8hRC/qN3/sJWxy5USjdyZU30QBDROrUwhBOdpHE8rBU+YdxX+/vNkb/2bIhwS0=
-X-Received: by 2002:a05:6808:13d2:b0:322:7571:79e with SMTP id
- d18-20020a05680813d200b003227571079emr4008626oiw.52.1651938645103; Sat, 07
- May 2022 08:50:45 -0700 (PDT)
+        Sat, 7 May 2022 11:55:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08121B7BA;
+        Sat,  7 May 2022 08:51:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25D13612AB;
+        Sat,  7 May 2022 15:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 455DBC385A6;
+        Sat,  7 May 2022 15:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651938701;
+        bh=SgylqqFhnOT+/hcD4sAqkybiY5vyD7iv/twFPe7OHaM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=guEAchjyjebfnzhVIoCAGaHdMf04FE+uglyskBbQZa3DtdBLF5zyF2RZvKxLXPYOQ
+         PKSxqOyRnQ/KZXTFxzw9r1Kerf12SAy+Fj6KGYYcCfFNx8RJ2P61a2UiFyPlb/GSwH
+         WxA4ns9CmvpcWEdQnTjTWPrmatbT7gfm5O1VMB2+wNTFm2kdY/e6UKbqjYd57gHlmD
+         WUeSg2DCIAVpGSjlcSVtBGz5VO0R2X3D9hqekPGEapphmbzBLBuafpAGJL5hpumOol
+         XmROb9yGM14D0xLFSfJ2+nrIU/1DN6jbPv0IKAgy1ssr8fUSEMAjkre7SVOERxyG1h
+         P3F5XdLp/uvjg==
+Date:   Sat, 7 May 2022 17:00:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Dan Robertson <dan@dlrobertson.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 4/9] iio: accel: bma400: Add triggered buffer support
+Message-ID: <20220507170009.1cecf481@jic23-huawei>
+In-Reply-To: <CAM+2EuLLRNarHkzr9YXTcSnhdSYcRNZj_tYZK7HN+Jzj0GC5ag@mail.gmail.com>
+References: <20220420211105.14654-1-jagathjog1996@gmail.com>
+        <20220420211105.14654-5-jagathjog1996@gmail.com>
+        <CAHp75Vf5pS_TGm5ptN7TyNmhZe_Oz8pVmETT27VeC=BZk9+ezg@mail.gmail.com>
+        <20220501172037.5f3d446f@jic23-huawei>
+        <CAM+2EuLLRNarHkzr9YXTcSnhdSYcRNZj_tYZK7HN+Jzj0GC5ag@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220507120851.29948-1-schspa@gmail.com> <YnaBwkhIxZ1wtIQX@kroah.com>
- <YnaLDxcaCGMmETuP@rowland.harvard.edu>
-In-Reply-To: <YnaLDxcaCGMmETuP@rowland.harvard.edu>
-From:   Schspa Shi <schspa@gmail.com>
-Date:   Sat, 7 May 2022 23:50:32 +0800
-Message-ID: <CAMA88TrcHZH7vw8W4Jh+NCQJvpe3wQM-4k46MnDQC9agna4XJg@mail.gmail.com>
-Subject: Re: [PATCH] usb: gadget: fix race when gadget driver register via ioctl
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, andreyknvl@gmail.com,
-        balbi@kernel.org, jj251510319013@gmail.com, jannh@google.com,
-        Julia.Lawall@inria.fr, linux-usb@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alan Stern <stern@rowland.harvard.edu> writes:
+On Mon, 2 May 2022 01:55:49 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-> On Sat, May 07, 2022 at 04:27:14PM +0200, Greg KH wrote:
->> On Sat, May 07, 2022 at 08:08:51PM +0800, Schspa Shi wrote:
->> > The usb_gadget_register_driver doesn't have inside locks to protect the
->> > driver, and If there is two threads are registered at the same time via
->> > the ioctl syscall, the system will crash as syzbot reported.
->> >
->> > Call trace as:
->> >   driver_register+0x220/0x3a0 drivers/base/driver.c:171
->> >   usb_gadget_register_driver_owner+0xfb/0x1e0
->> >     drivers/usb/gadget/udc/core.c:1546
->> >   raw_ioctl_run drivers/usb/gadget/legacy/raw_gadget.c:513 [inline]
->> >   raw_ioctl+0x1883/0x2730 drivers/usb/gadget/legacy/raw_gadget.c:1220
->> >
->> > This routine allows two processes to register the same driver instance
->> > via ioctl syscall. which lead to a race condition.
->> >
->> > We can fix it by adding a driver_lock to avoid double register.
->> >
->> > Reported-by: syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
->> > Link: https://lore.kernel.org/all/000000000000e66c2805de55b15a@google.com/
->> >
->> > Signed-off-by: Schspa Shi <schspa@gmail.com>
->> > ---
->> >  drivers/usb/gadget/legacy/raw_gadget.c | 8 ++++++++
->> >  1 file changed, 8 insertions(+)
->> >
->> > diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
->> > index b3be8db1ff63..d7ff9c2b5397 100644
->> > --- a/drivers/usb/gadget/legacy/raw_gadget.c
->> > +++ b/drivers/usb/gadget/legacy/raw_gadget.c
->> > @@ -155,7 +155,9 @@ struct raw_dev {
->> >    spinlock_t                      lock;
->> >
->> >    const char                      *udc_name;
->> > +  /* Protected by driver_lock for reentrant registration */
->> >    struct usb_gadget_driver        driver;
->> > +  struct mutex                    driver_lock;
->>
->> Why are you adding another lock here?  What's wrong with the existing
->> lock in this structure that requires an additional one?
->>
->> >
->> >    /* Reference to misc device: */
->> >    struct device                   *dev;
->> > @@ -188,6 +190,8 @@ static struct raw_dev *dev_new(void)
->> >    spin_lock_init(&dev->lock);
->> >    init_completion(&dev->ep0_done);
->> >    raw_event_queue_init(&dev->queue);
->> > +  mutex_init(&dev->driver_lock);
->> > +
->> >    return dev;
->> >  }
->> >
->> > @@ -398,7 +402,9 @@ static int raw_release(struct inode *inode, struct file *fd)
->> >    spin_unlock_irqrestore(&dev->lock, flags);
->> >
->> >    if (unregister) {
->> > +          mutex_lock(&dev->driver_lock);
->> >            ret = usb_gadget_unregister_driver(&dev->driver);
->> > +          mutex_unlock(&dev->driver_lock);
->> >            if (ret != 0)
->> >                    dev_err(dev->dev,
->> >                            "usb_gadget_unregister_driver() failed with %d\n",
->> > @@ -510,7 +516,9 @@ static int raw_ioctl_run(struct raw_dev *dev, unsigned long value)
->> >    }
->> >    spin_unlock_irqrestore(&dev->lock, flags);
->> >
->> > +  mutex_lock(&dev->driver_lock);
->> >    ret = usb_gadget_register_driver(&dev->driver);
->> > +  mutex_unlock(&dev->driver_lock);
->>
->> How can unregister race with register?
->>
->> What ioctl is causing this race?  What userspace program is doing this?
->> Only one userspace program should be accessing this at once, right?
->
-> These questions are on the right track.
->
-> The problem here is not insufficient locking.  The problem is that
-> dev->state does not have a special state to indicate that the driver is
-> being registered.
->
-> Before calling usb_gadget_register_driver(), while still holding
-> dev->lock, the code should change dev->state to STATE_DEV_REGISTERING.
-> Then no race can occur, because the second thread to acquire the
-> spinlock will see that dev->state is not equal to STATE_DEV_INITIALIZED.
->
+> Hi Jonathan,
+> 
+> On Sun, May 1, 2022 at 9:42 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > On Wed, 27 Apr 2022 14:34:57 +0200
+> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> >  
+> > > On Wed, Apr 20, 2022 at 11:11 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:  
+> > > >
+> > > > Added trigger buffer support to read continuous acceleration
+> > > > data from device with data ready interrupt which is mapped
+> > > > to INT1 pin.  
+> > >
+> > > LGTM,
+> > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>  
+> > Agreed.  A couple of 'comments' inline but no actual need to change anything.
+> > One is contingent on a fix I've not sent out yet for the rest of IIO.
+> > The other is potentially a minor improvement for the future.
+> >
+> > Thanks,
+> >
+> > Jonathan
+> >  
+> > >  
+> > > > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+> > > > ---
+> > > >  drivers/iio/accel/Kconfig       |   2 +
+> > > >  drivers/iio/accel/bma400.h      |  10 +-
+> > > >  drivers/iio/accel/bma400_core.c | 162 +++++++++++++++++++++++++++++++-
+> > > >  drivers/iio/accel/bma400_i2c.c  |   2 +-
+> > > >  drivers/iio/accel/bma400_spi.c  |   2 +-
+> > > >  5 files changed, 170 insertions(+), 8 deletions(-)  
+> >  
+> > > >
+> > > >  #include "bma400.h"
+> > > >
+> > > > @@ -61,6 +66,14 @@ struct bma400_data {
+> > > >         struct bma400_sample_freq sample_freq;
+> > > >         int oversampling_ratio;
+> > > >         int scale;
+> > > > +       struct iio_trigger *trig;
+> > > > +       /* Correct time stamp alignment */
+> > > > +       struct {
+> > > > +               __le16 buff[3];
+> > > > +               u8 temperature;
+> > > > +               s64 ts __aligned(8);
+> > > > +       } buffer ____cacheline_aligned;  
+> >
+> > If you are rolling again, could you change this to
+> > __aligned(IIO_ALIGN);  See
+> > https://lore.kernel.org/linux-iio/20220419121241.00002e42@Huawei.com/
+> > for why.
+> > Note that I'll be sending a fix patch out for IIO_ALIGN to define
+> > it as ARCH_KMALLOC_ALIGN in next few days.
+> >
+> > If you'd pref not to get caught up in that, send it as it stands
+> > and I'll fix up once that fix is in place.  What's one more driver
+> > on top of the 80+ I have to do anyway :)
+> >
+> >  
+> 
+> Sure, I will change that to __aligned(IIO_ALIGN); in the next series.
+> 
+> >  
+> > > > +       __le16 status;
+> > > >  };
+> > > >  
+> >  
+> > > > +
+> > > > +static const unsigned long bma400_avail_scan_masks[] = {
+> > > > +       GENMASK(3, 0),
+> > > > +       0
+> > > > +};
+> > > > +
+> > > >  static const struct iio_info bma400_info = {
+> > > >         .read_raw          = bma400_read_raw,
+> > > >         .read_avail        = bma400_read_avail,
+> > > > @@ -814,7 +869,72 @@ static const struct iio_info bma400_info = {
+> > > >         .write_raw_get_fmt = bma400_write_raw_get_fmt,
+> > > >  };
+> > > >
+> > > > -int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
+> > > > +static const struct iio_trigger_ops bma400_trigger_ops = {
+> > > > +       .set_trigger_state = &bma400_data_rdy_trigger_set_state,
+> > > > +       .validate_device = &iio_trigger_validate_own_device,
+> > > > +};
+> > > > +
+> > > > +static irqreturn_t bma400_trigger_handler(int irq, void *p)
+> > > > +{
+> > > > +       struct iio_poll_func *pf = p;
+> > > > +       struct iio_dev *indio_dev = pf->indio_dev;
+> > > > +       struct bma400_data *data = iio_priv(indio_dev);
+> > > > +       int ret, temp;
+> > > > +
+> > > > +       /* Lock to protect the data->buffer */
+> > > > +       mutex_lock(&data->mutex);
+> > > > +
+> > > > +       /* bulk read six registers, with the base being the LSB register */
+> > > > +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
+> > > > +                              &data->buffer.buff, sizeof(data->buffer.buff));
+> > > > +       if (ret)
+> > > > +               goto unlock_err;
+> > > > +
+> > > > +       ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &temp);  
+> >
+> > Given the temperature read is a separate action, it seems like you could sensible
+> > add another entry to bma400_avail_scan_masks() for just the accelerometer axis
+> > and then only perform this read if the temperature is requested.
+> >
+> > It would be a feature though, so no need to have it in this patch if you
+> > prefer not to.  
+> 
+> Sure I will add another entry only for the accelerometer axis and I
+> will make changes
+> accordingly in the next series.
+> 
+> Do I need to add 'Reviewed-by' tag if the patch gets modified again
+> after getting the
+> tag?
+> 
+It's something you have judge based on whether you think a change
+is significant enough to warrant dropping tags.
+If you do drop them you should always state why in the cover
+letter or change log.
 
-Yes, it's a good suggestion, I will upload a new patch set to use this
-method.
+Thanks,
 
-> Alan Stern
+Jonathan
 
----
-BRs
+> 
+> >  
+> > > > +       if (ret)
+> > > > +               goto unlock_err;
+> > > > +
+> > > > +       data->buffer.temperature = temp;
+> > > > +
+> > > > +       iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
+> > > > +                                          iio_get_time_ns(indio_dev));
+> > > > +
+> > > > +       mutex_unlock(&data->mutex);
+> > > > +       iio_trigger_notify_done(indio_dev->trig);
+> > > > +       return IRQ_HANDLED;
+> > > > +
+> > > > +unlock_err:
+> > > > +       mutex_unlock(&data->mutex);
+> > > > +       return IRQ_NONE;
+> > > > +}  
+> >  
 
-Schspa Shi
