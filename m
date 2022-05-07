@@ -2,77 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385517AbiEGO0m (ORCPT
+        id S1383666AbiEGO2c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 10:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
+        Sat, 7 May 2022 10:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385469AbiEGO0T (ORCPT
+        with ESMTP id S234096AbiEGO22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 10:26:19 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FC545AEF;
-        Sat,  7 May 2022 07:22:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=4DKiZOR0d8gLevCXFlmwVusn6daMOTUf4ijErpfvJ34=; b=rsVi+Suue0O1GTak3ZsMm4pHDR
-        a8ln2A+a4+MyYT4xuAf8ZkCaAUBBnkilIAEqymUyyEc7NDUSsJwVQuGPqeLgVl2oe0yIo2DHHpGj6
-        hyAJqMeR76ukQEKrFhdQXaDfjdValCyFWHC4mmoH25wAUYYmL8SaLACozqA4bWGuxA0M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nnLJv-001fOc-CB; Sat, 07 May 2022 16:22:07 +0200
-Date:   Sat, 7 May 2022 16:22:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jason Xing <xingwanli@kuaishou.com>
-Subject: Re: [PATCH net-next] net: use the %px format to display sock
-Message-ID: <YnaAj1FoaBVnVzgt@lunn.ch>
-References: <20220505130826.40914-1-kerneljasonxing@gmail.com>
- <20220506185641.GA2289@bytedance>
- <CAL+tcoBwQ2tijfzwOO6zb2MobCL27PcyN3foRcAw91MpyWg_VA@mail.gmail.com>
+        Sat, 7 May 2022 10:28:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4522343EE7;
+        Sat,  7 May 2022 07:24:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 84E8CCE0176;
+        Sat,  7 May 2022 14:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362E8C385A5;
+        Sat,  7 May 2022 14:24:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651933478;
+        bh=sSXLpYu1t8UtQ4m0tCJJKWk/8Qphs0XLvUjn7yKWF80=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=J8ufkF6+pzihvNA5oZVEqSIsHo9HyWdlylM6eC23ALm28O9NWza/OdWtwDaRHIk5+
+         AW8aCvkizjtrRe4jBfDjexDkjRNRsgK+oya40rrygnPvqpM7TU4Z6gAihS2ebLZraN
+         fDGHnNpZBv2CI9GSR3VUmih/hekiuZNEh7qekfkcOUWABRdM0+AHErR0UTBaakVv8u
+         8VkPR9cKmHXvYkN2zpLiGDCTVWk2kvI2utODl4WUx9lbqJWc12xy0E1cmCVRlj4Ken
+         Z28BlrUt6Fz1kpnG3xIBaiZyAPonml58FPTyHKXRH3Kux+PZCWPLC6apvSqZYcDv7S
+         DbMRXdjVZpomA==
+Date:   Sat, 7 May 2022 15:33:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andreas Klinger <ak@it-klinger.de>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: proximity: srf04: Make use of device
+ properties
+Message-ID: <20220507153306.51d5409f@jic23-huawei>
+In-Reply-To: <20220504113557.59048-1-andriy.shevchenko@linux.intel.com>
+References: <20220504113557.59048-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL+tcoBwQ2tijfzwOO6zb2MobCL27PcyN3foRcAw91MpyWg_VA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 07, 2022 at 09:26:07AM +0800, Jason Xing wrote:
-> On Sat, May 7, 2022 at 2:56 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> >
-> > Hi Jason,
-> >
-> > On Thu, May 05, 2022 at 09:08:26PM +0800, kerneljasonxing@gmail.com wrote:
-> > > -             pr_err("Attempt to release TCP socket in state %d %p\n",
-> > > +             pr_err("Attempt to release TCP socket in state %d %px\n",
-> >
-> > I think we cannot use %px here for security reasons?  checkpatch is also
-> > warning about it:
-> >
+On Wed,  4 May 2022 14:35:57 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
 > 
-> I noticed this warning before submitting. Since the %p format doesn't
-> print the real address, printing the address here will be helpless and
-> we cannot trace what exactly the bad socket is.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/proximity/srf04.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
 > 
-> What do you suggest?
+> diff --git a/drivers/iio/proximity/srf04.c b/drivers/iio/proximity/srf04.c
+> index 4e6286765f01..05015351a34a 100644
+> --- a/drivers/iio/proximity/srf04.c
+> +++ b/drivers/iio/proximity/srf04.c
+> @@ -37,9 +37,8 @@
+>  #include <linux/err.h>
+>  #include <linux/gpio/consumer.h>
+>  #include <linux/kernel.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+> -#include <linux/of_device.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/property.h>
+>  #include <linux/sched.h>
+> @@ -261,7 +260,7 @@ static int srf04_probe(struct platform_device *pdev)
+>  
+>  	data = iio_priv(indio_dev);
+>  	data->dev = dev;
+> -	data->cfg = of_match_device(of_srf04_match, dev)->data;
+> +	data->cfg = device_get_match_data(dev);
+>  
+>  	mutex_init(&data->lock);
+>  	init_completion(&data->rising);
+> @@ -289,10 +288,8 @@ static int srf04_probe(struct platform_device *pdev)
+>  		return PTR_ERR(data->gpiod_power);
+>  	}
+>  	if (data->gpiod_power) {
+> -
+> -		if (of_property_read_u32(dev->of_node, "startup-time-ms",
+> -						&data->startup_time_ms))
+> -			data->startup_time_ms = 100;
+> +		data->startup_time_ms = 100;
+> +		device_property_read_u32(dev, "startup-time-ms", &data->startup_time_ms);
+>  		dev_dbg(dev, "using power gpio: startup-time-ms=%d\n",
+>  							data->startup_time_ms);
+>  	}
 
-How is a socket identified in places like /proc/<PID>/net/tcp ?
-Could you print the local and remote port to identify the socket?
-
-How does the address of the structure actually help you? Do you see
-this address somewhere else?
-
-     Andrew
