@@ -2,122 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47838C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1803C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446138AbiEGIu0 (ORCPT
+        id S1446148AbiEGIvN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 04:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        Sat, 7 May 2022 04:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358391AbiEGIuU (ORCPT
+        with ESMTP id S1344519AbiEGIvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 04:50:20 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E97C48380;
-        Sat,  7 May 2022 01:46:34 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KwLWx0db2zXdkZ;
-        Sat,  7 May 2022 16:41:49 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 7 May 2022 16:46:32 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 7 May 2022 16:46:31 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arch@vger.kernel.org>, <stable@vger.kernel.org>
-CC:     <peterz@infradead.org>, <tglx@linutronix.de>, <namit@vmware.com>,
-        <gor@linux.ibm.com>, <rdunlap@infradead.org>,
-        <gregkh@linuxfoundation.org>, <sashal@kernel.org>,
-        <chenzhongjin@huawei.com>
-Subject: [PATCH 5.10 v3] locking/csd_lock: fix csdlock_debug cause arm64 boot panic
-Date:   Sat, 7 May 2022 16:45:10 +0800
-Message-ID: <20220507084510.14761-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Sat, 7 May 2022 04:51:12 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DA848380;
+        Sat,  7 May 2022 01:47:26 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id a11so8150330pff.1;
+        Sat, 07 May 2022 01:47:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccfTY95+psHCY6He+eK67UQqmYafold9pHrglmLvAmo=;
+        b=a0c+PxeyYec6iuI72OoPUUxOdZemThLnOXunZERwdu1npZzTEHdmVXp3DZFbeM/kd0
+         4ELSCLd2hwArfQvPcmuuNpExoQXLBYZQ/2sKLQ9mQ4ePwOL9x4mHLwtScbUmhfcpygFT
+         doEAhVK8vp9iylie7nfmGvdqefo9L7hXHK6HUwGchFeHMoyHg5gdu7TZjGljXZfJiCla
+         JaXr4zACb9C/GrlgyiFi3w2APlDcPjHM5kf2SSeNSlq38G+PRxB5LqBE2mlc0uRMRY/d
+         1AecSIIHKBW7pw4kvm4Q3dKzL3irJIutJEVsd4JVt2QPVqOvHwpTKHlLCqcjyORyEWvH
+         ZdQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccfTY95+psHCY6He+eK67UQqmYafold9pHrglmLvAmo=;
+        b=iSGt2AQdR6n8ANe/heB5VMpplxVxHdcrn3PX7+yuUgj7Jgken6Yzfms2R96sr9NBdS
+         oJwMpLZ7UDfNYFXGGdKFQQ7lzRbYGPwFJvxj2Zf60orR2S23atrQq9BUVbMM2oMMPkLs
+         R4T14oQYnpCCayA+gQkRBGN28EBtwtk4w1CUwzojx763stQqCPagiSW2QWLLLrnt8QCz
+         ZIXr6y+hCoLIZzdUjFwaf9IWekuRgU4p1hflw1RHTV8WAWU+g2uaw8aSkmo/m8xRDOqQ
+         Lt0eubR4iuysE3REt6tUG238tSH/6fff2H9C7A8xNG8sHMKsjkTwz5oSY1rIZGOCZpCI
+         RRow==
+X-Gm-Message-State: AOAM532eYq0YAhbHGJvuq1X/Rb5ymMpCOpT1fCxTfEcXq9sM1SYDpk0G
+        BGT6uIAoDs5zwyFbn1Ra16Z5FNombVUVgQ==
+X-Google-Smtp-Source: ABdhPJw98tTxONDGUaX/2zcjqg4/YagwX+3tFePd02L85CION61ElJstk4CmLbKdovWuk9L6C2Zy2Q==
+X-Received: by 2002:a05:6a00:21c8:b0:4fd:f89f:ec0e with SMTP id t8-20020a056a0021c800b004fdf89fec0emr7123513pfj.83.1651913245215;
+        Sat, 07 May 2022 01:47:25 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-9.three.co.id. [180.214.232.9])
+        by smtp.gmail.com with ESMTPSA id ot16-20020a17090b3b5000b001dc4d22c0a7sm5055729pjb.10.2022.05.07.01.47.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 May 2022 01:47:24 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Ben Greear <greearb@candelatech.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>, netdev@vger.kernel.org,
+        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3] net/core: Rephrase function description of __dev_queue_xmit()
+Date:   Sat,  7 May 2022 15:46:44 +0700
+Message-Id: <20220507084643.18278-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-csdlock_debug is a early_param to enable csd_lock_wait
-feature.
+Commit c526fd8f9f4f21 ("net: inline dev_queue_xmit()") inlines
+dev_queue_xmit() that contains comment quote from Ben Greear, which
+originates from commit af191367a75262 ("[NET]: Document ->hard_start_xmit()
+locking in comments."). It triggers htmldocs warning:
 
-It uses static_branch_enable in early_param which triggers
-a panic on arm64 with config:
-CONFIG_SPARSEMEM=y
-CONFIG_SPARSEMEM_VMEMMAP=n
+Documentation/networking/kapi:92: net/core/dev.c:4101: WARNING: Missing matching underline for section title overline.
 
-The log shows:
-Unable to handle kernel NULL pointer dereference at
-virtual address ", '0' <repeats 16 times>, "
-...
-Call trace:
-__aarch64_insn_write+0x9c/0x18c
-...
-static_key_enable+0x1c/0x30
-csdlock_debug+0x4c/0x78
-do_early_param+0x9c/0xcc
-parse_args+0x26c/0x3a8
-parse_early_options+0x34/0x40
-parse_early_param+0x80/0xa4
-setup_arch+0x150/0x6c8
-start_kernel+0x8c/0x720
-...
-Kernel panic - not syncing: Oops: Fatal exception
+-----------------------------------------------------------------------------------
+     I notice this method can also return errors from the queue disciplines,
+     including NET_XMIT_DROP, which is a positive value.  So, errors can also
 
-Call trace inside __aarch64_insn_write:
-__nr_to_section
-__pfn_to_page
-phys_to_page
-patch_map
-__aarch64_insn_write
+Fix the warning by rephrasing the function description. This is done by
+incorporating notes from the quote as well as dropping the banner and
+attribution signature.
 
-Here, with CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section returns
-NULL and makes the NULL dereference because mem_section is
-initialized in sparse_init after parse_early_param stage.
-
-So, static_branch_enable shouldn't be used inside early_param.
-To avoid this, I changed it to __setup and fixed this.
-
-Reported-by: Chen jingwen <chenjingwen6@huawei.com>
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Fixes: c526fd8f9f4f21 ("net: inline dev_queue_xmit()")
+Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Ben Greear <greearb@candelatech.com>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Akira Yokosawa <akiyks@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-next@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
-Change v2 -> v3:
-Add module name in title
+ Changes since v2 [1]:
+   - Approach the problem by rephrasing (suggested by Jakub)
+   - Explain that inlining in the Fixes: commit triggers the warning
+     (suggested by Akira)
 
-Change v1 -> v2:
-Fix return 1 for __setup
----
+ [1]: https://lore.kernel.org/linux-doc/20220505082907.42393-1-bagasdotme@gmail.com/
 
- kernel/smp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/core/dev.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 65a630f62363..381eb15cd28f 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
- 	if (val)
- 		static_branch_enable(&csdlock_debug_enabled);
- 
--	return 0;
-+	return 1;
- }
--early_param("csdlock_debug", csdlock_debug);
-+__setup("csdlock_debug=", csdlock_debug);
- 
- static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
- static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index f036ccb61da4da..75c00bb45f9b46 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4139,22 +4139,20 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+  *	have set the device and priority and built the buffer before calling
+  *	this function. The function can be called from an interrupt.
+  *
+- *	A negative errno code is returned on a failure. A success does not
+- *	guarantee the frame will be transmitted as it may be dropped due
+- *	to congestion or traffic shaping.
+- *
+- * -----------------------------------------------------------------------------------
+- *      I notice this method can also return errors from the queue disciplines,
+- *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+- *      be positive.
+- *
+- *      Regardless of the return value, the skb is consumed, so it is currently
+- *      difficult to retry a send to this method.  (You can bump the ref count
+- *      before sending to hold a reference for retry if you are careful.)
+- *
+- *      When calling this method, interrupts MUST be enabled.  This is because
+- *      the BH enable code must have IRQs enabled so that it will not deadlock.
+- *          --BLG
++ *	This function can returns a negative errno code in case of failure.
++ *	Positive errno code can also be returned from the queue disciplines
++ *	(including NET_XMIT_DROP). A success does not guarantee the frame
++ *	will be transmitted as it may be dropped due to congestion or
++ *	traffic shaping.
++ *
++ *	The skb is consumed anyway regardless of return value, so it is
++ *	currently difficult to retry sending to this method. If careful,
++ *	you can bump the ref count before sending to hold a reference for
++ *	retry.
++ *
++ *	Interrupts must be enabled when calling this function, because
++ *	BH-enabled code must have IRQs enabled so that it will not deadlock.
++ *
+  */
+ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ {
+
+base-commit: 8fc0b6992a06998404321f26a57ea54522659b64
 -- 
-2.17.1
+An old man doll... just what I always wanted! - Clara
 
