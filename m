@@ -2,103 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446607AbiEGPRl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 11:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
+        id S242407AbiEGPYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 7 May 2022 11:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382110AbiEGPRj (ORCPT
+        with ESMTP id S229983AbiEGPXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 11:17:39 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1942D1FE;
-        Sat,  7 May 2022 08:13:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651936432; x=1683472432;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SFrfLygWwaKz2niUDCJteyOlvqg0e03MT+XUWT0AuUQ=;
-  b=DL/j5qcK8uvQVXsqw5lD87pV1QXWrlQPP9AGWqBiGoVtDNbtZvgiE5ZG
-   a+rv2WaqX1TYnwl8buzKHNg5e/k7csztqq9/A4iQB2tc/7+E8qjgpOpGa
-   8bDX2ZmQPOtnmOe/GT+mtAEJ3w6s5Qt2D2AW3EfZyDmd1BWA/2e+9/PM4
-   i6JUGT5DEUNCrg+OGVEazyo3/EZxaMaeD5bRye2SBbXNHBg/dEW5e4989
-   kofJ6ay7eqyphvGlfy3xlI7evpgq3n5MdC1Tef/+diuSRVkisUVguE0Bj
-   Pq4IjFC1uCfN5UlHdkEq6EjycOoeQX0e0bvq4RaFkJQcI9CvgzbyEEC2G
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="329271612"
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="329271612"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 08:13:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="709892109"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 07 May 2022 08:13:48 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nnM7w-000Eg3-7k;
-        Sat, 07 May 2022 15:13:48 +0000
-Date:   Sat, 7 May 2022 23:13:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Satya Priya <quic_c_skakit@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     kbuild-all@lists.01.org, Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        swboyd@chromium.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: Re: [PATCH V11 7/9] regulator: Add a regulator driver for the PM8008
- PMIC
-Message-ID: <202205072349.clMXCCaw-lkp@intel.com>
-References: <1651742739-12338-8-git-send-email-quic_c_skakit@quicinc.com>
+        Sat, 7 May 2022 11:23:48 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9844A403E7;
+        Sat,  7 May 2022 08:19:59 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id g3so8467061pgg.3;
+        Sat, 07 May 2022 08:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oPC57eGRzrZao/L+XK5ONaCj2oS1ex/u9qNmJAXq7uE=;
+        b=iYcNJHCZaR59bK/QD2LgguVmlVGzroWoLii7IIkIRHLdCBcES3ietCiBsJCgUSKZyi
+         a9moUpAHWdXkYoQKDXMkYHD4+yaWFyWvBxIKttB397zx6sEpuec87qcOjoLNQMyGObjg
+         1FthxKu0o2pf2vkgjtCbwL4DNBMOKtCECA6HDSJ1PTkyvlRbDorywNFXMOPn32lVc5a4
+         fZaMln/CaIRbVgt6x2fUBCgN3R/cVPwks7XzIq9+7GZ/OhDaGmJ2w8iTGxxREQExEvLI
+         Ew1uGE+wLgM9SZBPlJXUwhphoQrfNjPvXPhU1SWPbEfb4ryFyljj/ia/JuuS3wW6DP5C
+         hauw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oPC57eGRzrZao/L+XK5ONaCj2oS1ex/u9qNmJAXq7uE=;
+        b=P4Xn9DrNhTQBv2jRRh7gqRlVTVWH4P3ldFWW8wP/IIkoCIHigTcp+RelHjBM+hTCR7
+         7ilCxzRnuwHx+1//KI5XC6rdYqeqbx2Vl4Qakp0pmCO/kU4Q6TXyrJA6ztyW+oMbAdPT
+         mpz5jKqTkA4QI6vkR0/T3VByX5KLvPlF/GBn/woVXog8/plXdR12EcBI3sgewqiPRmFM
+         ERC4StlRbjiciDBTM2bIGIUQ4dugCypdayHET/L01c/c8oJc+1Ej1msN6dL8SQM451Vz
+         1MATPaRUtj5ttUnViR7+6UJ/Jk7tK82vFNnrvnxqiiknax2Wd9kNomSu1ytv0XrUxn0C
+         HTsw==
+X-Gm-Message-State: AOAM533Gkr3Hu3m4QFpzUhiRS1LoWcSuLzoE97SIj1+5qmgpHmAXJIfl
+        CHfy2WzgT5lnv2VXolFAgfkXV0lNXjvnrmuoXjY=
+X-Google-Smtp-Source: ABdhPJw38GW7Jd9/T5ZKyY83NXcHUHvsQXKyX+wEJH7Xs4drgImtlSnXhRKnwAo8SfVTi2iPYpuSDA==
+X-Received: by 2002:aa7:9d0d:0:b0:50d:4fcc:7cb1 with SMTP id k13-20020aa79d0d000000b0050d4fcc7cb1mr8228419pfp.41.1651936798805;
+        Sat, 07 May 2022 08:19:58 -0700 (PDT)
+Received: from HOWEYXU-MB0.tencent.com ([203.205.141.111])
+        by smtp.gmail.com with ESMTPSA id p3-20020a622903000000b0050dc76281edsm5381003pfp.199.2022.05.07.08.19.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 07 May 2022 08:19:58 -0700 (PDT)
+From:   Hao Xu <haoxu.linux@gmail.com>
+To:     io-uring@vger.kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4/4] io_uring: implement multishot mode for accept
+Date:   Sat,  7 May 2022 23:20:09 +0800
+Message-Id: <20220507152009.87367-1-haoxu.linux@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1651742739-12338-8-git-send-email-quic_c_skakit@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Satya,
+From: Hao Xu <howeyxu@tencent.com>
 
-Thank you for the patch! Yet something to improve:
+Refactor io_accept() to support multishot mode.
 
-[auto build test ERROR on lee-mfd/for-mfd-next]
-[also build test ERROR on robh/for-next broonie-regulator/for-next v5.18-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+theoretical analysis:
+  1) when connections come in fast
+    - singleshot:
+              add accept sqe(userpsace) --> accept inline
+                              ^                 |
+                              |-----------------|
+    - multishot:
+             add accept sqe(userspace) --> accept inline
+                                              ^     |
+                                              |--*--|
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Satya-Priya/Add-Qualcomm-Technologies-Inc-PM8008-regulator-driver/20220505-173045
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
-config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20220507/202205072349.clMXCCaw-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/66f37a37cac5f149b7f08cc53508ca6363ea575a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Satya-Priya/Add-Qualcomm-Technologies-Inc-PM8008-regulator-driver/20220505-173045
-        git checkout 66f37a37cac5f149b7f08cc53508ca6363ea575a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+    we do accept repeatedly in * place until get EAGAIN
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+  2) when connections come in at a low pressure
+    similar thing like 1), we reduce a lot of userspace-kernel context
+    switch and useless vfs_poll()
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+tests:
+Did some tests, which goes in this way:
 
->> ERROR: modpost: "pm8008_get_regmap" [drivers/regulator/qcom-pm8008-regulator.ko] undefined!
+  server    client(multiple)
+  accept    connect
+  read      write
+  write     read
+  close     close
 
+Basically, raise up a number of clients(on same machine with server) to
+connect to the server, and then write some data to it, the server will
+write those data back to the client after it receives them, and then
+close the connection after write return. Then the client will read the
+data and then close the connection. Here I test 10000 clients connect
+one server, data size 128 bytes. And each client has a go routine for
+it, so they come to the server in short time.
+test 20 times before/after this patchset, time spent:(unit cycle, which
+is the return value of clock())
+before:
+  1930136+1940725+1907981+1947601+1923812+1928226+1911087+1905897+1941075
+  +1934374+1906614+1912504+1949110+1908790+1909951+1941672+1969525+1934984
+  +1934226+1914385)/20.0 = 1927633.75
+after:
+  1858905+1917104+1895455+1963963+1892706+1889208+1874175+1904753+1874112
+  +1874985+1882706+1884642+1864694+1906508+1916150+1924250+1869060+1889506
+  +1871324+1940803)/20.0 = 1894750.45
+
+(1927633.75 - 1894750.45) / 1927633.75 = 1.65%
+
+Signed-off-by: Hao Xu <howeyxu@tencent.com>
+[fold in setting io_op_def->ioprio for accept and other cleaning up]
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+---
+ fs/io_uring.c                 | 42 ++++++++++++++++++++++++++++++-----
+ include/uapi/linux/io_uring.h |  4 ++--
+ 2 files changed, 39 insertions(+), 7 deletions(-)
+
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e0d12af04cd1..f21172913336 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -1146,6 +1146,7 @@ static const struct io_op_def io_op_defs[] = {
+ 		.unbound_nonreg_file	= 1,
+ 		.pollin			= 1,
+ 		.poll_exclusive		= 1,
++		.ioprio			= 1,	/* used for flags */
+ 	},
+ 	[IORING_OP_ASYNC_CANCEL] = {
+ 		.audit_skip		= 1,
+@@ -5706,6 +5707,7 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
+ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ {
+ 	struct io_accept *accept = &req->accept;
++	unsigned flags;
+ 
+ 	if (sqe->len || sqe->buf_index)
+ 		return -EINVAL;
+@@ -5714,19 +5716,26 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	accept->addr_len = u64_to_user_ptr(READ_ONCE(sqe->addr2));
+ 	accept->flags = READ_ONCE(sqe->accept_flags);
+ 	accept->nofile = rlimit(RLIMIT_NOFILE);
++	flags = READ_ONCE(sqe->ioprio);
++	if (flags & ~IORING_ACCEPT_MULTISHOT)
++		return -EINVAL;
+ 
+ 	accept->file_slot = READ_ONCE(sqe->file_index);
+-	if (accept->file_slot && (accept->flags & SOCK_CLOEXEC))
++	if (accept->file_slot && ((accept->flags & SOCK_CLOEXEC) ||
++	   flags & IORING_ACCEPT_MULTISHOT))
+ 		return -EINVAL;
+ 	if (accept->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
+ 		return -EINVAL;
+ 	if (SOCK_NONBLOCK != O_NONBLOCK && (accept->flags & SOCK_NONBLOCK))
+ 		accept->flags = (accept->flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
++	if (flags & IORING_ACCEPT_MULTISHOT)
++		req->flags |= REQ_F_APOLL_MULTISHOT;
+ 	return 0;
+ }
+ 
+ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
+ {
++	struct io_ring_ctx *ctx = req->ctx;
+ 	struct io_accept *accept = &req->accept;
+ 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
+ 	unsigned int file_flags = force_nonblock ? O_NONBLOCK : 0;
+@@ -5734,6 +5743,7 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
+ 	struct file *file;
+ 	int ret, fd;
+ 
++retry:
+ 	if (!fixed) {
+ 		fd = __get_unused_fd_flags(accept->flags, accept->nofile);
+ 		if (unlikely(fd < 0))
+@@ -5745,8 +5755,12 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
+ 		if (!fixed)
+ 			put_unused_fd(fd);
+ 		ret = PTR_ERR(file);
+-		if (ret == -EAGAIN && force_nonblock)
+-			return -EAGAIN;
++		if (ret == -EAGAIN && force_nonblock) {
++			if ((req->flags & IO_APOLL_MULTI_POLLED) ==
++			    IO_APOLL_MULTI_POLLED)
++				ret = 0;
++			return ret;
++		}
+ 		if (ret == -ERESTARTSYS)
+ 			ret = -EINTR;
+ 		req_set_fail(req);
+@@ -5757,8 +5771,26 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
+ 		ret = io_install_fixed_file(req, file, issue_flags,
+ 					    accept->file_slot - 1);
+ 	}
+-	__io_req_complete(req, issue_flags, ret, 0);
+-	return 0;
++
++	if (!(req->flags & REQ_F_APOLL_MULTISHOT)) {
++		__io_req_complete(req, issue_flags, ret, 0);
++		return 0;
++	}
++	if (ret >= 0) {
++		bool filled;
++
++		spin_lock(&ctx->completion_lock);
++		filled = io_fill_cqe_aux(ctx, req->cqe.user_data, ret,
++					 IORING_CQE_F_MORE);
++		io_commit_cqring(ctx);
++		spin_unlock(&ctx->completion_lock);
++		if (!filled)
++			return -ECANCELED;
++		io_cqring_ev_posted(ctx);
++		goto retry;
++	}
++
++	return ret;
+ }
+ 
+ static int io_connect_prep_async(struct io_kiocb *req)
+diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+index f4d9ca62a5a6..7c3d70d12428 100644
+--- a/include/uapi/linux/io_uring.h
++++ b/include/uapi/linux/io_uring.h
+@@ -224,9 +224,9 @@ enum {
+ #define IORING_RECVSEND_POLL_FIRST	(1U << 0)
+ 
+ /*
+- * accept flags stored in accept_flags
++ * accept flags stored in sqe->ioprio
+  */
+-#define IORING_ACCEPT_MULTISHOT	(1U << 15)
++#define IORING_ACCEPT_MULTISHOT	(1U << 0)
+ 
+ /*
+  * IO completion data structure (Completion Queue Entry)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.0
+
