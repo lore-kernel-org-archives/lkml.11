@@ -2,112 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C043C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:07:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446591AbiEGPHk (ORCPT
+        id S1385632AbiEGPKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 11:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        Sat, 7 May 2022 11:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377471AbiEGPHa (ORCPT
+        with ESMTP id S238606AbiEGPKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 11:07:30 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66513F31;
-        Sat,  7 May 2022 08:03:42 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KwVxL4LtKzGpL4;
-        Sat,  7 May 2022 23:00:54 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 7 May 2022 23:03:39 +0800
-Received: from [10.174.178.247] (10.174.178.247) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 7 May 2022 23:03:39 +0800
-Subject: Re: [PATCH 2/2] ACPI: ARM Performance Monitoring Unit Table (APMT)
- initial support
-To:     Besar Wicaksono <bwicaksono@nvidia.com>, <rafael@kernel.org>,
-        <lenb@kernel.org>, <robert.moore@intel.com>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <lorenzo.pieralisi@arm.com>, <sudeep.holla@arm.com>
-CC:     <linux-tegra@vger.kernel.org>, <treding@nvidia.com>,
-        <jonathanh@nvidia.com>, <linux-acpi@vger.kernel.org>,
-        <devel@acpica.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220419205432.46021-1-bwicaksono@nvidia.com>
- <20220419205432.46021-3-bwicaksono@nvidia.com>
-From:   Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <bf994eb0-0e6d-fd0b-3499-8c28d2c13cc9@huawei.com>
-Date:   Sat, 7 May 2022 23:03:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Sat, 7 May 2022 11:10:44 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id DB7F2237E4
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 08:06:56 -0700 (PDT)
+Received: (qmail 74041 invoked by uid 1000); 7 May 2022 11:06:55 -0400
+Date:   Sat, 7 May 2022 11:06:55 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Schspa Shi <schspa@gmail.com>, andreyknvl@gmail.com,
+        balbi@kernel.org, jj251510319013@gmail.com, jannh@google.com,
+        Julia.Lawall@inria.fr, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
+Subject: Re: [PATCH] usb: gadget: fix race when gadget driver register via
+ ioctl
+Message-ID: <YnaLDxcaCGMmETuP@rowland.harvard.edu>
+References: <20220507120851.29948-1-schspa@gmail.com>
+ <YnaBwkhIxZ1wtIQX@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20220419205432.46021-3-bwicaksono@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.247]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnaBwkhIxZ1wtIQX@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/20 4:54, Besar Wicaksono wrote:
-> ARM Performance Monitoring Unit Table describes the properties of PMU
-> support in ARM-based system. The APMT table contains a list of nodes,
-> each represents a PMU in the system that conforms to ARM CoreSight PMU
-> architecture. The properties of each node include information required
-> to access the PMU (e.g. MMIO base address, interrupt number) and also
-> identification. For more detailed information, please refer to the
-> specification below:
->   * APMT: https://developer.arm.com/documentation/den0117/latest
->   * ARM Coresight PMU:
->          https://developer.arm.com/documentation/ihi0091/latest
+On Sat, May 07, 2022 at 04:27:14PM +0200, Greg KH wrote:
+> On Sat, May 07, 2022 at 08:08:51PM +0800, Schspa Shi wrote:
+> > The usb_gadget_register_driver doesn't have inside locks to protect the
+> > driver, and If there is two threads are registered at the same time via
+> > the ioctl syscall, the system will crash as syzbot reported.
+> > 
+> > Call trace as:
+> >   driver_register+0x220/0x3a0 drivers/base/driver.c:171
+> >   usb_gadget_register_driver_owner+0xfb/0x1e0
+> >     drivers/usb/gadget/udc/core.c:1546
+> >   raw_ioctl_run drivers/usb/gadget/legacy/raw_gadget.c:513 [inline]
+> >   raw_ioctl+0x1883/0x2730 drivers/usb/gadget/legacy/raw_gadget.c:1220
+> > 
+> > This routine allows two processes to register the same driver instance
+> > via ioctl syscall. which lead to a race condition.
+> > 
+> > We can fix it by adding a driver_lock to avoid double register.
+> > 
+> > Reported-by: syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
+> > Link: https://lore.kernel.org/all/000000000000e66c2805de55b15a@google.com/
+> > 
+> > Signed-off-by: Schspa Shi <schspa@gmail.com>
+> > ---
+> >  drivers/usb/gadget/legacy/raw_gadget.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
+> > index b3be8db1ff63..d7ff9c2b5397 100644
+> > --- a/drivers/usb/gadget/legacy/raw_gadget.c
+> > +++ b/drivers/usb/gadget/legacy/raw_gadget.c
+> > @@ -155,7 +155,9 @@ struct raw_dev {
+> >  	spinlock_t			lock;
+> >  
+> >  	const char			*udc_name;
+> > +	/* Protected by driver_lock for reentrant registration */
+> >  	struct usb_gadget_driver	driver;
+> > +	struct mutex			driver_lock;
 > 
-> The initial support adds the detection of APMT table and generic
-> infrastructure to create platform devices for ARM CoreSight PMUs.
-> Similar to IORT the root pointer of APMT is preserved during runtime
-> and each PMU platform device is given a pointer to the corresponding
-> APMT node.
+> Why are you adding another lock here?  What's wrong with the existing
+> lock in this structure that requires an additional one?
 > 
-> Signed-off-by: Besar Wicaksono <bwicaksono@nvidia.com>
-> ---
->   arch/arm64/Kconfig          |   1 +
->   drivers/acpi/arm64/Kconfig  |   3 +
->   drivers/acpi/arm64/Makefile |   1 +
->   drivers/acpi/arm64/apmt.c   | 176 ++++++++++++++++++++++++++++++++++++
->   drivers/acpi/bus.c          |   2 +
->   include/linux/acpi_apmt.h   |  19 ++++
->   6 files changed, 202 insertions(+)
->   create mode 100644 drivers/acpi/arm64/apmt.c
->   create mode 100644 include/linux/acpi_apmt.h
+> >  
+> >  	/* Reference to misc device: */
+> >  	struct device			*dev;
+> > @@ -188,6 +190,8 @@ static struct raw_dev *dev_new(void)
+> >  	spin_lock_init(&dev->lock);
+> >  	init_completion(&dev->ep0_done);
+> >  	raw_event_queue_init(&dev->queue);
+> > +	mutex_init(&dev->driver_lock);
+> > +
+> >  	return dev;
+> >  }
+> >  
+> > @@ -398,7 +402,9 @@ static int raw_release(struct inode *inode, struct file *fd)
+> >  	spin_unlock_irqrestore(&dev->lock, flags);
+> >  
+> >  	if (unregister) {
+> > +		mutex_lock(&dev->driver_lock);
+> >  		ret = usb_gadget_unregister_driver(&dev->driver);
+> > +		mutex_unlock(&dev->driver_lock);
+> >  		if (ret != 0)
+> >  			dev_err(dev->dev,
+> >  				"usb_gadget_unregister_driver() failed with %d\n",
+> > @@ -510,7 +516,9 @@ static int raw_ioctl_run(struct raw_dev *dev, unsigned long value)
+> >  	}
+> >  	spin_unlock_irqrestore(&dev->lock, flags);
+> >  
+> > +	mutex_lock(&dev->driver_lock);
+> >  	ret = usb_gadget_register_driver(&dev->driver);
+> > +	mutex_unlock(&dev->driver_lock);
 > 
-> +++ b/drivers/acpi/arm64/apmt.c
-> @@ -0,0 +1,176 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * ARM APMT table support.
-> + * Design document number: ARM DEN0117.
-> + *
-> + * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.
-> + *
-> + */
-> +
-> +#define pr_fmt(fmt)	"ACPI: APMT: " fmt
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/init.h>
-> +#include <linux/kernel.h>
-> +#include <linux/platform_device.h>
+> How can unregister race with register?
+> 
+> What ioctl is causing this race?  What userspace program is doing this?
+> Only one userspace program should be accessing this at once, right?
 
-Please include <linux/acpi_apmt.h>, here is the similar patch:
+These questions are on the right track.
 
-https://lore.kernel.org/lkml/CAJZ5v0gqr97AFuk855UZkcVpDnmj1Q6B2PE32zWmx4eKxbNvCw@mail.gmail.com/T/
+The problem here is not insufficient locking.  The problem is that 
+dev->state does not have a special state to indicate that the driver is 
+being registered.
 
-Thanks
-Hanjun
+Before calling usb_gadget_register_driver(), while still holding 
+dev->lock, the code should change dev->state to STATE_DEV_REGISTERING.  
+Then no race can occur, because the second thread to acquire the 
+spinlock will see that dev->state is not equal to STATE_DEV_INITIALIZED.
+
+Alan Stern
