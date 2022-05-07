@@ -2,99 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4232C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446094AbiEGIqp convert rfc822-to-8bit (ORCPT
+        id S1446121AbiEGItG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 04:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
+        Sat, 7 May 2022 04:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353489AbiEGIqn (ORCPT
+        with ESMTP id S1446110AbiEGItA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 04:46:43 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E950A3F304
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 01:42:55 -0700 (PDT)
-Received: from mail-yw1-f182.google.com ([209.85.128.182]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mcpz0-1oM2sW0TXG-00Zy7Z for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022
- 10:42:54 +0200
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2f83983782fso102669887b3.6
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 01:42:53 -0700 (PDT)
-X-Gm-Message-State: AOAM5322CmA4jcmXJFqubLD/uuMF9qvN0HIECDP4MsitlvhBxfrqvZvx
-        EI65BsGjoxaowsR4hGcxGdKmY4Q6whdy2mue2L0=
-X-Google-Smtp-Source: ABdhPJz41aUj/+pW1sZWxLrXajtnNs3IdnmCkPvNJurEZtj0IpvMA1ea1Z+O8FJy68YG/6GjY7AECeBWF00pOfGqm4g=
-X-Received: by 2002:a81:9213:0:b0:2f6:eaae:d22f with SMTP id
- j19-20020a819213000000b002f6eaaed22fmr6217535ywg.249.1651912972980; Sat, 07
- May 2022 01:42:52 -0700 (PDT)
+        Sat, 7 May 2022 04:49:00 -0400
+Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16F7C3F334;
+        Sat,  7 May 2022 01:45:14 -0700 (PDT)
+Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id 39CEF72C8FA;
+        Sat,  7 May 2022 11:45:14 +0300 (MSK)
+Received: by mua.local.altlinux.org (Postfix, from userid 508)
+        id 262197CE87A; Sat,  7 May 2022 11:45:14 +0300 (MSK)
+Date:   Sat, 7 May 2022 11:45:14 +0300
+From:   "Dmitry V. Levin" <ldv@altlinux.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] rfkill: uapi: fix RFKILL_IOCTL_MAX_SIZE ioctl request
+ definition
+Message-ID: <20220507084514.GA5026@altlinux.org>
+References: <20220506171534.99509-1-glebfm@altlinux.org>
+ <20220506172454.120319-1-glebfm@altlinux.org>
+ <YnYaVeCJA1VQuYie@kroah.com>
 MIME-Version: 1.0
-References: <20220507021424.12180-1-yuehaibing@huawei.com>
-In-Reply-To: <20220507021424.12180-1-yuehaibing@huawei.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 7 May 2022 10:42:36 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3haxtEjZL4jZ9a1xbZdEGAgG=NxDwWQ=syvQArett2Fw@mail.gmail.com>
-Message-ID: <CAK8P3a3haxtEjZL4jZ9a1xbZdEGAgG=NxDwWQ=syvQArett2Fw@mail.gmail.com>
-Subject: Re: [PATCH v2 -next] ASoC: mediatek: mt8195: Fix build warning
- without CONFIG_OF
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Trevor Wu <trevor.wu@mediatek.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:aEO9BWrzheQz+hIa4c4SSMNuFnz/+haayRgUjvx+Zdc0IImKCIi
- JO9oYhtDNI9CSucFvKMNKyIwrSfjdNk0RPllSBcqtHWbK9wHTWyjn3352SAMAfEgc3MF0EQ
- Azqad6qGUPzwbOCTkWoI5EMd+NjpHk0pxm2bgmQnhWqA3km37x1b10ICEm+58hM+mJhMvu+
- /6NaVSkuti9fPGQYuwz6w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:YgdEmg4tKuM=:a2Vtn7rv1eDzEUKV9sty1M
- IuVP9JW4hPq5tyfUzR+rxMGlrx5bE9t4EvfPujqYQbVRgd1qdwaQj8Fgkm3juLfBZGtXTcNfq
- SwGqZYlaourLDMmTtMxwSFrsy7QIKiJi+qaS2y/KXYRQOZePSeNguzUBJudJn62XuDc5JyMjd
- d0Igzc7IoN3y1NYlXcpcALU6Ihw+8hCfqs8fbjGKUW0tHcF91SYpghIghveCK6HHKMJiIoYTD
- vfVUVR6Q86DOeEO2RQO1v7qhqDd2tDyzgN5V/LifKOLxJqOMLUFjbc4RCVNA1Jb0zk3nB5ALA
- Jx9Cdze8UvwVUFRutKv4ySs0KbtrykA+iaci4QsqS6NqPmz116MgoyoCQxXAC1IlT4iHzmpx5
- 2h4rKY70r5NfKknIF4k4w6Rk/0BGf9Kmj5ygrxTiaIkc2lW019q311fu0mu52e+T0kkwWsR32
- wyTAj6w3kqUPXo8EhayVn/VX6yKrjdTlz0m2tccdbQ9++kiUuhQU5hKde+NKSmY4kh/oPL50F
- wOSAmqabtF3NK8rQSHB7YtDSFjJOTr/vmmZLZvbqM+nxnlqpMTBFI6W7RE4MB/ar0eAUvz6rT
- qdGhyVq08IAYrsU2SdhNcWFFFiyy1JW3K49DIZbwGC70XROe89fSQSJqfM5ynVe//p6aCQXw8
- voJA81MMBRS677t30MAy9y4vtN38YkE7GuvWYYfW61aBAK6dZhJPJKGESr46ACh/ZsS4=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnYaVeCJA1VQuYie@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 7, 2022 at 4:14 AM YueHaibing <yuehaibing@huawei.com> wrote:
->
-> sound/soc/mediatek/mt8195/mt8195-mt6359.c:1639:32: warning: ‘mt8195_mt6359_max98390_rt5682_card’ defined but not used [-Wunused-variable]
->  1639 | static struct mt8195_card_data mt8195_mt6359_max98390_rt5682_card = {
->       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> sound/soc/mediatek/mt8195/mt8195-mt6359.c:1634:32: warning: ‘mt8195_mt6359_rt1011_rt5682_card’ defined but not used [-Wunused-variable]
->  1634 | static struct mt8195_card_data mt8195_mt6359_rt1011_rt5682_card = {
->       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> sound/soc/mediatek/mt8195/mt8195-mt6359.c:1629:32: warning: ‘mt8195_mt6359_rt1019_rt5682_card’ defined but not used [-Wunused-variable]
->  1629 | static struct mt8195_card_data mt8195_mt6359_rt1019_rt5682_card = {
->       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> Since all users of this driver do need CONFIG_OF anyway, there is no
-> need to save a few bytes on kernel builds while CONFIG_OF disabled, so
-> just remove the #ifdef to fix this warning.
->
-> Fixes: 86a6b9c9dfff ("ASoC: mediatek: mt8195: add machine support for max98390 and rt5682")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
-> v2: remove #ifdef block as Arnd suggested
+On Sat, May 07, 2022 at 09:05:57AM +0200, Greg KH wrote:
+> On Fri, May 06, 2022 at 05:24:54PM +0000, Gleb Fotengauer-Malinovskiy wrote:
+> > Fixes: 54f586a91532 ("rfkill: make new event layout opt-in")
+> > Cc: stable@vger.kernel.org # 5.11+
+> > Signed-off-by: Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>
+> > ---
+> 
+> No changelog text at all?  I know I don't take patches like that, maybe
+> other subsystem maintainers are more lax?
+> 
+> Please provide a changelog...
 
-Looks good to me,
+The definition of RFKILL_IOCTL_MAX_SIZE introduced by commit 54f586a91532
+is unusable since it is based on RFKILL_IOC_EXT_SIZE which has not been
+defined.  Fix that by replacing the undefined constant with the constant
+which is intended to be used in this definition.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+
+
+-- 
+ldv
