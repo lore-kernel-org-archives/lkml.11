@@ -2,192 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA81CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446524AbiEGOKY (ORCPT
+        id S1391985AbiEGOPA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 10:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        Sat, 7 May 2022 10:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446516AbiEGOKM (ORCPT
+        with ESMTP id S236242AbiEGOO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 10:10:12 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD8145526;
-        Sat,  7 May 2022 07:06:25 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id e5so8360772pgc.5;
-        Sat, 07 May 2022 07:06:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GWQlqvW5av/MtO8yCNmmjt4jG3JJ3yBcvjIk01r0GHM=;
-        b=qxoTKuQx/zjhyFQ+JyZmCAuRJU5gKWkKTXH+vhx6IlmPr4UIzx8qQBT1d0dNmwlsu3
-         7sA/GB19v32FdCxCvwMsksYtvjED0o6lwoNO1+GTHWYTqQmCb7vv+MPSIbyHUlm4LPqq
-         E2QWigAn01WxQraD4FfwY1/xfTuA/P8YYBId/yAr3PSQpfoCHLjZ9pUGmFH0NSettN5F
-         dsfPOvO0aYaSTbbpb7Tw9Ej97aGJjAmGxhJ7646ImzEii9Cf1i7MGtqIhgVrsLCwlbmR
-         rukNbBV4p90r5zRER4kEIrS12/8VA+YjmsIFwbL+su1qoKWuFVHQzjgYNsSmdTs2G3XM
-         UAFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GWQlqvW5av/MtO8yCNmmjt4jG3JJ3yBcvjIk01r0GHM=;
-        b=5kGG0Jq+DTl8aO2Nx+ZBXwtD7sdONBo+J8aCLM+OCYeHHS7rSzKjs+py9pRkcGrQUy
-         2eftOtxmZ5oA8V77zaoqu1Ag0dEzlTK7bn+YxFSu9cvm/GIMLj+f5pC9sEdivagESpid
-         d8cnbgQQlCsyvTrE/PpH2EoR6z6rSLTFV+uqy+p9xLXwWUoz1Yfppg0d5AHajT0AVyh0
-         llP8/44FpQVLmSNcecMWa2FdIrvMACtttJfd2TiigiNG/6Q/9NgFiGecn8Iv8BJAJ7rH
-         Q6FnF25jGxPe+Ah5aJGZ5SGKxJqSYwhoblK/KdVaI5mvYag0ozWaAkQZmJi9v3s8VJ7R
-         3sSA==
-X-Gm-Message-State: AOAM531KMTGSYlhfTn7vYuxIZJFTwCN6f+DkxsnApegjUlPvgJNA9gyE
-        JFrsAUVH4KlkJPpOEiW45VCKKGoAS0TJ5w==
-X-Google-Smtp-Source: ABdhPJzAiLKoptVZbG+LjHRRp45n05E0JiPSgE7jy66qYHNLfHCzXqlM2n8i8AGS219bkFEjZK2Gaw==
-X-Received: by 2002:a65:6e8b:0:b0:3ab:a3fb:e95a with SMTP id bm11-20020a656e8b000000b003aba3fbe95amr6622654pgb.433.1651932384347;
-        Sat, 07 May 2022 07:06:24 -0700 (PDT)
-Received: from HOWEYXU-MB0.tencent.com ([106.53.33.166])
-        by smtp.gmail.com with ESMTPSA id j13-20020a170902c3cd00b0015e8d4eb2acsm3674813plj.246.2022.05.07.07.06.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 07 May 2022 07:06:24 -0700 (PDT)
-From:   Hao Xu <haoxu.linux@gmail.com>
-To:     io-uring@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] io_uring: let fast poll support multishot
-Date:   Sat,  7 May 2022 22:06:19 +0800
-Message-Id: <20220507140620.85871-4-haoxu.linux@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220507140620.85871-1-haoxu.linux@gmail.com>
-References: <20220507140620.85871-1-haoxu.linux@gmail.com>
+        Sat, 7 May 2022 10:14:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702C74889C;
+        Sat,  7 May 2022 07:11:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22838B80688;
+        Sat,  7 May 2022 14:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B80BDC385A5;
+        Sat,  7 May 2022 14:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651932668;
+        bh=yYbW1VYEkBgjUdJEWnHpf9fQF+9II7U7hTlVk4opQww=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DZaQZ602znpG9kKXvb6U3e1b76WAn84ZMPGk96M+A8YTLWZfwQBTKM2VzF34a5NPm
+         xE8ZgFMZebGSGTtzARm52yrtc7RkcYtqGaNKXHedPnnk0nJDxmSQaZf1+us2w7bRRW
+         3Q2mUyUlOo/bZ0BirakaLJ4rvo8KwBdhrbVSl/tkSvOmOx1N2+SOd521O2mGqfq86o
+         2xS9EavlzWbQ9gji/Z5aM+a/4i0UYTbHVlG9ufFKWIDAJdSRYEihs5iOtiqsk0Bov/
+         E+T/dWiQxLA3pxWNEW8ccSIjTpNa9SvsB6NP39eP8MgZzCxooXsreTa+krPwBUqrkG
+         NZtajDqUQzZ7Q==
+Date:   Sat, 7 May 2022 15:19:35 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yannick Brosseau <yannick.brosseau@gmail.com>
+Cc:     lars@metafoo.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
+        olivier.moysan@foss.st.com, paul@crapouillou.net,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: stm32: Fix check for spurious IRQs on
+ STM32F4
+Message-ID: <20220507151935.3d3fa270@jic23-huawei>
+In-Reply-To: <20220506225617.1774604-3-yannick.brosseau@gmail.com>
+References: <20220506225617.1774604-1-yannick.brosseau@gmail.com>
+        <20220506225617.1774604-3-yannick.brosseau@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Xu <howeyxu@tencent.com>
+On Fri,  6 May 2022 18:56:17 -0400
+Yannick Brosseau <yannick.brosseau@gmail.com> wrote:
 
-For operations like accept, multishot is a useful feature, since we can
-reduce a number of accept sqe. Let's integrate it to fast poll, it may
-be good for other operations in the future.
+> The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
+> in the control and status registers are aligned. This is true for the H7 and MP1
+> version, but not the F4.
+> 
+> Instead of comparing both registers bitwise, we check the bit in the status and control
+> for each interrupt we are interested in.
+> 
+> Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
 
-Signed-off-by: Hao Xu <howeyxu@tencent.com>
-[fold in cleaning up]
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
----
- fs/io_uring.c | 47 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 15 deletions(-)
+I don't entirely follow the flow here, so will be relying on the driver
+maintainers for feedback on this one (even more than normal!)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index c2ee184ac693..e0d12af04cd1 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5955,6 +5955,7 @@ static void io_poll_remove_entries(struct io_kiocb *req)
- 	rcu_read_unlock();
- }
- 
-+static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags);
- /*
-  * All poll tw should go through this. Checks for poll events, manages
-  * references, does rewait, etc.
-@@ -5963,10 +5964,10 @@ static void io_poll_remove_entries(struct io_kiocb *req)
-  * either spurious wakeup or multishot CQE is served. 0 when it's done with
-  * the request, then the mask is stored in req->cqe.res.
-  */
--static int io_poll_check_events(struct io_kiocb *req, bool locked)
-+static int io_poll_check_events(struct io_kiocb *req, bool *locked)
- {
- 	struct io_ring_ctx *ctx = req->ctx;
--	int v;
-+	int v, ret;
- 
- 	/* req->task == current here, checking PF_EXITING is safe */
- 	if (unlikely(req->task->flags & PF_EXITING))
-@@ -5990,23 +5991,37 @@ static int io_poll_check_events(struct io_kiocb *req, bool locked)
- 			req->cqe.res = vfs_poll(req->file, &pt) & req->apoll_events;
- 		}
- 
--		/* multishot, just fill an CQE and proceed */
--		if (req->cqe.res && !(req->apoll_events & EPOLLONESHOT)) {
--			__poll_t mask = mangle_poll(req->cqe.res & req->apoll_events);
-+		if ((unlikely(!req->cqe.res)))
-+			continue;
-+		if (req->apoll_events & EPOLLONESHOT)
-+			return 0;
-+
-+		/* multishot, just fill a CQE and proceed */
-+		if (!(req->flags & REQ_F_APOLL_MULTISHOT)) {
-+			__poll_t mask = mangle_poll(req->cqe.res &
-+						    req->apoll_events);
- 			bool filled;
- 
- 			spin_lock(&ctx->completion_lock);
--			filled = io_fill_cqe_aux(ctx, req->cqe.user_data, mask,
--						 IORING_CQE_F_MORE);
-+			filled = io_fill_cqe_aux(ctx, req->cqe.user_data,
-+						 mask, IORING_CQE_F_MORE);
- 			io_commit_cqring(ctx);
- 			spin_unlock(&ctx->completion_lock);
--			if (unlikely(!filled))
--				return -ECANCELED;
--			io_cqring_ev_posted(ctx);
--		} else if (req->cqe.res) {
--			return 0;
-+			if (filled) {
-+				io_cqring_ev_posted(ctx);
-+				continue;
-+			}
-+			return -ECANCELED;
- 		}
- 
-+		io_tw_lock(req->ctx, locked);
-+		if (unlikely(req->task->flags & PF_EXITING))
-+			return -EFAULT;
-+		ret = io_issue_sqe(req,
-+				   IO_URING_F_NONBLOCK|IO_URING_F_COMPLETE_DEFER);
-+		if (ret)
-+			return ret;
-+
- 		/*
- 		 * Release all references, retry if someone tried to restart
- 		 * task_work while we were executing it.
-@@ -6021,7 +6036,7 @@ static void io_poll_task_func(struct io_kiocb *req, bool *locked)
- 	struct io_ring_ctx *ctx = req->ctx;
- 	int ret;
- 
--	ret = io_poll_check_events(req, *locked);
-+	ret = io_poll_check_events(req, locked);
- 	if (ret > 0)
- 		return;
- 
-@@ -6046,7 +6061,7 @@ static void io_apoll_task_func(struct io_kiocb *req, bool *locked)
- 	struct io_ring_ctx *ctx = req->ctx;
- 	int ret;
- 
--	ret = io_poll_check_events(req, *locked);
-+	ret = io_poll_check_events(req, locked);
- 	if (ret > 0)
- 		return;
- 
-@@ -6286,7 +6301,7 @@ static int io_arm_poll_handler(struct io_kiocb *req, unsigned issue_flags)
- 	struct io_ring_ctx *ctx = req->ctx;
- 	struct async_poll *apoll;
- 	struct io_poll_table ipt;
--	__poll_t mask = EPOLLONESHOT | POLLERR | POLLPRI;
-+	__poll_t mask = POLLERR | POLLPRI;
- 	int ret;
- 
- 	if (!def->pollin && !def->pollout)
-@@ -6295,6 +6310,8 @@ static int io_arm_poll_handler(struct io_kiocb *req, unsigned issue_flags)
- 		return IO_APOLL_ABORTED;
- 	if ((req->flags & (REQ_F_POLLED|REQ_F_PARTIAL_IO)) == REQ_F_POLLED)
- 		return IO_APOLL_ABORTED;
-+	if (!(req->flags & REQ_F_APOLL_MULTISHOT))
-+		mask |= EPOLLONESHOT;
- 
- 	if (def->pollin) {
- 		mask |= POLLIN | POLLRDNORM;
--- 
-2.36.0
+One question inline.
+
+Jonathan
+
+> ---
+>  drivers/iio/adc/stm32-adc.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+> index a68ecbda6480..5b0f138333ee 100644
+> --- a/drivers/iio/adc/stm32-adc.c
+> +++ b/drivers/iio/adc/stm32-adc.c
+> @@ -1422,9 +1422,10 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
+>  		return IRQ_HANDLED;
+>  	}
+>  
+> -	if (!(status & mask))
+> +	if(!((status & regs->isr_eoc.mask) && (mask & regs->ier_eoc.mask)) ||
+> +           ((status & regs->isr_ovr.mask) && (mask & regs->ier_ovr.mask)))
+
+For this second condition if it is true, have we not already entered the previous
+if (status & regs->isr_ovr.mask) and hence never reached this check?
+There is a comment above that to say if we get there over mask should already be
+disable. If that's not true for some reason then we should also adjust that check
+and the comment.
+
+Or perhaps I'm getting confused by the bracketing and operator precedence.
+Should this not be...
+
+> +	if(!(((status & regs->isr_eoc.mask) && (mask & regs->ier_eoc.mask)) ||
+> +          ((status & regs->isr_ovr.mask) && (mask & regs->ier_ovr.mask))))
+? So as to be the equivalent of the !(status & mask) just checking bits separately.
+
+>  		dev_err_ratelimited(&indio_dev->dev,
+> -				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
+> +				    "Unexpected IRQ: CR1/IER=0x%08x, SR/ISR=0x%08x\n",
+>  				    mask, status);
+>  
+>  	return IRQ_NONE;
+> @@ -1438,7 +1439,9 @@ static irqreturn_t stm32_adc_isr(int irq, void *data)
+>  	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
+>  	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
+>  
+> -	if (!(status & mask))
+> +	/* Check that we have the interrupt we care about are enabled and active */
+> +        if(!((status & regs->isr_eoc.mask) && (mask & regs->ier_eoc.mask)) ||
+> +           ((status & regs->isr_ovr.mask) && (mask & regs->ier_ovr.mask)))
+>  		return IRQ_WAKE_THREAD;
+>  
+>  	if (status & regs->isr_ovr.mask) {
 
