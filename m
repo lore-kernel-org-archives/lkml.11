@@ -2,270 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 19:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF634C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 19:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447056AbiEGTxo (ORCPT
+        id S1376438AbiEGT4O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 15:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60124 "EHLO
+        Sat, 7 May 2022 15:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446945AbiEGTxX (ORCPT
+        with ESMTP id S233826AbiEGT4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 15:53:23 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE5A17E01
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 12:49:28 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id e24so14240374wrc.9
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 12:49:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DETHuK1AGW0MtJsQojTS8x33GEnXY46MVv0jFk7E9B0=;
-        b=GlIV/5K1t1kzfM1QGr+MNMcIh0/lAQSspc4ecGh1o7ZhfXG/KHZ9aofpH6dEXKeG2m
-         OIxEYr53FpB0aDtQcT6YHF2ReWEpzmrsusgffKu/Kt0UhLkSbYdVbchpNoWenchHrVZ6
-         ePgWAAwGGYfC1TYbInhugS4DloNOva5C9U7A6683nfip/ekmZOXTuN9DSEvSoIaJ8wJB
-         /XTGcQJR57Xu7AJ1SGeY/PRImCj6ZofiHGwvMn9r0iyAgL1xjJBK2iPqiaZH4tdlE/az
-         /eZ22ENCwrN0m++Lr004tQ7OnVP+34mDi9QJwiSZnKGIATnUXyBHabYvWTfsmwNokbaw
-         3CVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DETHuK1AGW0MtJsQojTS8x33GEnXY46MVv0jFk7E9B0=;
-        b=vzviGvAanj5N0oQinl2JUvJhmvh27F+qVGWdGpvKpzmpsFBVO8+UTSnKOC+WmdSH+e
-         9xZKI8bW2bi8Pq6awj+Xeolp+XICym4UC8nyllnxq0bVVVeSkU9NLAYpvu8WZLiAQfV1
-         58fRC63h1tNOpPafksMjojOwVFVf9FVUe53G4U6C6xhP1/hhxKfvISxPAnKNQG2rpthw
-         MJ4B5RDdF/Dqp6Lf8YwRUY3Y82GWq7/DHdDIY/uSYipOs3E65w9Al8ZKMdVW/BHQdIng
-         WYCMmmXNg1DhmlK/mmED5e6ThmGj6TCP9Tk1fRXKOsEgLAM71gZJrdmIN4p+PPjY3IA9
-         WZeA==
-X-Gm-Message-State: AOAM531Z+Viau8B/pa3oXDb90tKkrjB4RbGsLMCn5divcnmuNXXXMXh3
-        AkgXy/Jr6FzKz+9Dkg/KK29U7g==
-X-Google-Smtp-Source: ABdhPJwdsdVVW2Lv0AjKkCnSMjUPTG31+jBxHqmGitx66Evc8s590XHCcVKjwW8wvPqVyI4fWi4kfA==
-X-Received: by 2002:a5d:684b:0:b0:20a:e4d2:1206 with SMTP id o11-20020a5d684b000000b0020ae4d21206mr7743940wrw.599.1651952966644;
-        Sat, 07 May 2022 12:49:26 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id j6-20020a05600c1c0600b003942a244ec4sm8535027wms.9.2022.05.07.12.49.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 12:49:26 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Luca Weiss <luca@z3ntu.xyz>, David Heidelberg <david@ixit.cz>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 06/11] arm64: dts: qcom: add fallback compatible to PMIC GPIOs
-Date:   Sat,  7 May 2022 21:49:08 +0200
-Message-Id: <20220507194913.261121-7-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
-References: <20220507194913.261121-1-krzysztof.kozlowski@linaro.org>
+        Sat, 7 May 2022 15:56:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6085E101E6;
+        Sat,  7 May 2022 12:52:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02A8DB80839;
+        Sat,  7 May 2022 19:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 039C4C385A6;
+        Sat,  7 May 2022 19:52:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651953141;
+        bh=X/O4y/aRdXYaFetNBd9mMfz0q2LnvF4V1KFVjT57NfE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RXkd/hckRQqHEB1FqapYuyS2+P8NmVLo57OzPwrzxOVK0WZn0nzFRhGXgvnN7Vuef
+         1PJTYqBsIRsYckOwtfiKCpFCa5BBkKSsfFcaDU46euo90WSw3ew4sh7y3v9W0Kyjf3
+         T6XSo/Rzk8K2JrIrF2q/qZhu1cCW3CzpCOPvQqQUU7gcG49ELMi4ucVf6Kt6Uie+gM
+         azg67ZXatSFDwyo/YauiWHjeKx5ooTs1NbrG5sH/D1AKEZGWLoDvdpZn2AT3ydwDbw
+         3Kuj8nz4Z8Od89cah+KiDe0IbI554Rgh6SZExdUkvDVazickc6CLHt7nhk66OkDltt
+         6a5RM4d3Dg5Uw==
+Date:   Sat, 7 May 2022 22:53:56 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Johannes Holland <johannes.holland@infineon.com>
+Cc:     linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org, peterhuewe@gmx.de,
+        jgg@ziepe.ca, krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v2 2/4] tpm: Add tpm_tis_verify_crc to the
+ tpm_tis_phy_ops protocol layer
+Message-ID: <YnbOVFBWZVsjkdxQ@iki.fi>
+References: <20220506170013.22598-1-johannes.holland@infineon.com>
+ <20220506170013.22598-2-johannes.holland@infineon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506170013.22598-2-johannes.holland@infineon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The bindings require all PMIC GPIO nodes to have two compatibles -
-specific followed by SPMI or SSBI fallback.  Add the fallback to fix
-warnings like:
+On Fri, May 06, 2022 at 07:00:13PM +0200, Johannes Holland wrote:
+> Other than SPI TPMs, I2C TPMs implement a CRC feature for command and
+> response blobs. Add CRC validation to the TIS protocol according to the
+> TCG PC Client Platform TPM Profile (PTP) specification for TPM 2.0 v1.04
+> revision 14
+> 
+> The CRC is calculated over the entirety of the FIFO register. Since the
+> phy_ops layer is not aware when the core layer is done reading/writing
+> the FIFO, CRC verification must be triggered from the core layer. To
+> this end, add an optional phy_ops API call.
+> 
+> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 14 ++++++++++++++
+>  drivers/char/tpm/tpm_tis_core.h | 10 ++++++++++
+>  drivers/char/tpm/tpm_tis_i2c.c  | 28 ++++++++++++++++++++++++++++
+>  3 files changed, 52 insertions(+)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index dc56b976d816..f1c893a5a38f 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -289,6 +289,7 @@ static int tpm_tis_recv(struct tpm_chip *chip, u8 *buf, size_t count)
+>  	int size = 0;
+>  	int status;
+>  	u32 expected;
+> +	int rc;
+>  
+>  	if (count < TPM_HEADER_SIZE) {
+>  		size = -EIO;
+> @@ -328,6 +329,13 @@ static int tpm_tis_recv(struct tpm_chip *chip, u8 *buf, size_t count)
+>  		goto out;
+>  	}
+>  
+> +	rc = tpm_tis_verify_crc(priv, (size_t)size, buf);
+> +	if (rc < 0) {
+> +		dev_err(&chip->dev, "Error crc mismatch for response.\n");
+> +		size = rc;
+> +		goto out;
+> +	}
+> +
+>  out:
+>  	tpm_tis_ready(chip);
+>  	return size;
+> @@ -443,6 +451,12 @@ static int tpm_tis_send_main(struct tpm_chip *chip, const u8 *buf, size_t len)
+>  	if (rc < 0)
+>  		return rc;
+>  
+> +	rc = tpm_tis_verify_crc(priv, len, buf);
+> +	if (rc < 0) {
+> +		dev_err(&chip->dev, "Error crc mismatch for command.\n");
+> +		return rc;
+> +	}
+> +
+>  	/* go and do it */
+>  	rc = tpm_tis_write8(priv, TPM_STS(priv->locality), TPM_STS_GO);
+>  	if (rc < 0)
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+> index 6c203f36b8a1..66a5a13cd1df 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -121,6 +121,8 @@ struct tpm_tis_phy_ops {
+>  			  u8 *result, enum tpm_tis_io_mode mode);
+>  	int (*write_bytes)(struct tpm_tis_data *data, u32 addr, u16 len,
+>  			   const u8 *value, enum tpm_tis_io_mode mode);
+> +	int (*verify_crc)(struct tpm_tis_data *data, size_t len,
+> +			  const u8 *value);
+>  };
+>  
+>  static inline int tpm_tis_read_bytes(struct tpm_tis_data *data, u32 addr,
+> @@ -188,6 +190,14 @@ static inline int tpm_tis_write32(struct tpm_tis_data *data, u32 addr,
+>  	return rc;
+>  }
+>  
+> +static inline int tpm_tis_verify_crc(struct tpm_tis_data *data, size_t len,
+> +				     const u8 *value)
+> +{
+> +	if (!data->phy_ops->verify_crc)
+> +		return 0;
+> +	return data->phy_ops->verify_crc(data, len, value);
+> +}
+> +
+>  static inline bool is_bsw(void)
+>  {
+>  #ifdef CONFIG_X86
+> diff --git a/drivers/char/tpm/tpm_tis_i2c.c b/drivers/char/tpm/tpm_tis_i2c.c
+> index 34d12f78e7ab..5bae8374b877 100644
+> --- a/drivers/char/tpm/tpm_tis_i2c.c
+> +++ b/drivers/char/tpm/tpm_tis_i2c.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/gpio.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_gpio.h>
+> +#include <linux/crc-ccitt.h>
+>  #include <linux/tpm.h>
+>  #include "tpm_tis_core.h"
+>  
+> @@ -33,6 +34,7 @@
+>  #define TPM_I2C_INTERFACE_CAPABILITY 0x30
+>  #define TPM_I2C_DEVICE_ADDRESS 0x38
+>  #define TPM_I2C_DATA_CSUM_ENABLE 0x40
+> +#define TPM_DATA_CSUM 0x44
+>  #define TPM_I2C_DID_VID 0x48
+>  #define TPM_I2C_RID 0x4C
+>  
+> @@ -253,6 +255,24 @@ static int tpm_tis_i2c_write_bytes(struct tpm_tis_data *data, u32 addr, u16 len,
+>  	return 0;
+>  }
+>  
+> +static int tpm_tis_i2c_verify_crc(struct tpm_tis_data *data, size_t len,
+> +				  const u8 *value)
+> +{
+> +	u16 crc_tpm, crc_host;
+> +	int rc;
+> +
+> +	rc = tpm_tis_read16(data, TPM_DATA_CSUM, &crc_tpm);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	/* reflect crc result, regardless of host endianness */
+> +	crc_host = swab16(crc_ccitt(0, value, len));
+> +	if (crc_tpm != crc_host)
+> +		return -EIO;
+> +
+> +	return 0;
+> +}
+> +
+>  static int init_guard_time(struct tpm_tis_i2c_phy *phy)
+>  {
+>  	u32 i2c_caps;
+> @@ -286,12 +306,14 @@ static SIMPLE_DEV_PM_OPS(tpm_tis_pm, tpm_pm_suspend, tpm_tis_resume);
+>  static const struct tpm_tis_phy_ops tpm_i2c_phy_ops = {
+>  	.read_bytes = tpm_tis_i2c_read_bytes,
+>  	.write_bytes = tpm_tis_i2c_write_bytes,
+> +	.verify_crc = tpm_tis_i2c_verify_crc,
+>  };
+>  
+>  static int tpm_tis_i2c_probe(struct i2c_client *dev,
+>  			     const struct i2c_device_id *id)
+>  {
+>  	struct tpm_tis_i2c_phy *phy;
+> +	const u8 crc_enable = 1;
+>  	const u8 locality = 0;
+>  	int ret;
+>  
+> @@ -316,6 +338,12 @@ static int tpm_tis_i2c_probe(struct i2c_client *dev,
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = tpm_tis_i2c_write_bytes(&phy->priv, TPM_I2C_DATA_CSUM_ENABLE,
+> +				      sizeof(crc_enable), &crc_enable,
+> +				      TPM_TIS_PHYS_8);
+> +	if (ret)
+> +		return ret;
+> +
+>  	return tpm_tis_core_init(&dev->dev, &phy->priv, -1, &tpm_i2c_phy_ops,
+>  				 NULL);
+>  }
+> -- 
+> 2.34.1
+> 
 
-  msm8916-samsung-serranove.dtb: gpios@c000: compatible: ['qcom,pm8916-gpio'] is too short
+This looks quite finished patch, hold on with ack tho because I'd
+like ack prepending patches first.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/qcom/pm6350.dtsi      | 2 +-
- arch/arm64/boot/dts/qcom/pm660.dtsi       | 2 +-
- arch/arm64/boot/dts/qcom/pm8009.dtsi      | 2 +-
- arch/arm64/boot/dts/qcom/pm8150.dtsi      | 2 +-
- arch/arm64/boot/dts/qcom/pm8150b.dtsi     | 2 +-
- arch/arm64/boot/dts/qcom/pm8150l.dtsi     | 2 +-
- arch/arm64/boot/dts/qcom/pm8350.dtsi      | 2 +-
- arch/arm64/boot/dts/qcom/pm8350b.dtsi     | 2 +-
- arch/arm64/boot/dts/qcom/pm8916.dtsi      | 2 +-
- arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/pmm8155au_2.dtsi | 2 +-
- arch/arm64/boot/dts/qcom/pmr735b.dtsi     | 2 +-
- arch/arm64/boot/dts/qcom/pms405.dtsi      | 2 +-
- 13 files changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/pm6350.dtsi b/arch/arm64/boot/dts/qcom/pm6350.dtsi
-index c5d85064562b..f3056845e65f 100644
---- a/arch/arm64/boot/dts/qcom/pm6350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm6350.dtsi
-@@ -36,7 +36,7 @@ pm6350_resin: resin {
- 		};
- 
- 		pm6350_gpios: gpios@c000 {
--			compatible = "qcom,pm6350-gpio";
-+			compatible = "qcom,pm6350-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm660.dtsi b/arch/arm64/boot/dts/qcom/pm660.dtsi
-index c482663aad56..d0eefbb51663 100644
---- a/arch/arm64/boot/dts/qcom/pm660.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm660.dtsi
-@@ -171,7 +171,7 @@ vcoin: vcoin@83 {
- 		};
- 
- 		pm660_gpios: gpios@c000 {
--			compatible = "qcom,pm660-gpio";
-+			compatible = "qcom,pm660-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			gpio-ranges = <&pm660_gpios 0 0 13>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8009.dtsi b/arch/arm64/boot/dts/qcom/pm8009.dtsi
-index b126d7e7e4fb..d451922d2b95 100644
---- a/arch/arm64/boot/dts/qcom/pm8009.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8009.dtsi
-@@ -19,7 +19,7 @@ pm8009_pon: pon@800 {
- 		};
- 
- 		pm8009_gpios: gpio@c000 {
--			compatible = "qcom,pm8005-gpio";
-+			compatible = "qcom,pm8005-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8150.dtsi b/arch/arm64/boot/dts/qcom/pm8150.dtsi
-index 0df76f7b1cc1..72cd93ced4c5 100644
---- a/arch/arm64/boot/dts/qcom/pm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8150.dtsi
-@@ -127,7 +127,7 @@ rtc@6000 {
- 		};
- 
- 		pm8150_gpios: gpio@c000 {
--			compatible = "qcom,pm8150-gpio";
-+			compatible = "qcom,pm8150-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8150b.dtsi b/arch/arm64/boot/dts/qcom/pm8150b.dtsi
-index 058cc5107c75..28162f6fb61d 100644
---- a/arch/arm64/boot/dts/qcom/pm8150b.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8150b.dtsi
-@@ -112,7 +112,7 @@ pm8150b_adc_tm: adc-tm@3500 {
- 		};
- 
- 		pm8150b_gpios: gpio@c000 {
--			compatible = "qcom,pm8150b-gpio";
-+			compatible = "qcom,pm8150b-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8150l.dtsi b/arch/arm64/boot/dts/qcom/pm8150l.dtsi
-index 52f094a2b713..0642e7d5be35 100644
---- a/arch/arm64/boot/dts/qcom/pm8150l.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8150l.dtsi
-@@ -100,7 +100,7 @@ pm8150l_adc_tm: adc-tm@3500 {
- 		};
- 
- 		pm8150l_gpios: gpio@c000 {
--			compatible = "qcom,pm8150l-gpio";
-+			compatible = "qcom,pm8150l-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8350.dtsi b/arch/arm64/boot/dts/qcom/pm8350.dtsi
-index b10f33afa5e3..6e91dd7a48b3 100644
---- a/arch/arm64/boot/dts/qcom/pm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8350.dtsi
-@@ -45,7 +45,7 @@ pm8350_temp_alarm: temp-alarm@a00 {
- 		};
- 
- 		pm8350_gpios: gpio@8800 {
--			compatible = "qcom,pm8350-gpio";
-+			compatible = "qcom,pm8350-gpio", "qcom,spmi-gpio";
- 			reg = <0x8800>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8350b.dtsi b/arch/arm64/boot/dts/qcom/pm8350b.dtsi
-index f1d1d4c8edf8..d9512f01ed1e 100644
---- a/arch/arm64/boot/dts/qcom/pm8350b.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8350b.dtsi
-@@ -45,7 +45,7 @@ pm8350b_temp_alarm: temp-alarm@a00 {
- 		};
- 
- 		pm8350b_gpios: gpio@8800 {
--			compatible = "qcom,pm8350b-gpio";
-+			compatible = "qcom,pm8350b-gpio", "qcom,spmi-gpio";
- 			reg = <0x8800>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8916.dtsi b/arch/arm64/boot/dts/qcom/pm8916.dtsi
-index d58902432812..aedc0aa5602f 100644
---- a/arch/arm64/boot/dts/qcom/pm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8916.dtsi
-@@ -108,7 +108,7 @@ pm8916_mpps: mpps@a000 {
- 		};
- 
- 		pm8916_gpios: gpios@c000 {
--			compatible = "qcom,pm8916-gpio";
-+			compatible = "qcom,pm8916-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi b/arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi
-index 7072e5a2e73f..68e9122363ae 100644
---- a/arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmm8155au_1.dtsi
-@@ -116,7 +116,7 @@ pmm8155au_1_rtc: rtc@6000 {
- 		};
- 
- 		pmm8155au_1_gpios: gpio@c000 {
--			compatible = "qcom,pmm8155au-gpio";
-+			compatible = "qcom,pmm8155au-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pmm8155au_2.dtsi b/arch/arm64/boot/dts/qcom/pmm8155au_2.dtsi
-index 72075964fbb9..c307fc662511 100644
---- a/arch/arm64/boot/dts/qcom/pmm8155au_2.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmm8155au_2.dtsi
-@@ -89,7 +89,7 @@ die-temp@6 {
- 		};
- 
- 		pmm8155au_2_gpios: gpio@c000 {
--			compatible = "qcom,pmm8155au-gpio";
-+			compatible = "qcom,pmm8155au-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pmr735b.dtsi b/arch/arm64/boot/dts/qcom/pmr735b.dtsi
-index 604324188603..93a658eb4cdd 100644
---- a/arch/arm64/boot/dts/qcom/pmr735b.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmr735b.dtsi
-@@ -45,7 +45,7 @@ pmr735b_temp_alarm: temp-alarm@a00 {
- 		};
- 
- 		pmr735b_gpios: gpio@8800 {
--			compatible = "qcom,pmr735b-gpio";
-+			compatible = "qcom,pmr735b-gpio", "qcom,spmi-gpio";
- 			reg = <0x8800>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/qcom/pms405.dtsi b/arch/arm64/boot/dts/qcom/pms405.dtsi
-index 98d173a377d5..43190a5cfe33 100644
---- a/arch/arm64/boot/dts/qcom/pms405.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pms405.dtsi
-@@ -38,7 +38,7 @@ pms405_0: pms405@0 {
- 		#size-cells = <0>;
- 
- 		pms405_gpios: gpio@c000 {
--			compatible = "qcom,pms405-gpio";
-+			compatible = "qcom,pms405-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
--- 
-2.32.0
-
+BR, Jarkko
