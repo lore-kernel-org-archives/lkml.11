@@ -2,115 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B01C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  6 May 2022 23:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3212C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 00:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445020AbiEFXih (ORCPT
+        id S1378102AbiEGAMz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 19:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        Fri, 6 May 2022 20:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359057AbiEFXid (ORCPT
+        with ESMTP id S235557AbiEGAMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 19:38:33 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A53712D2;
-        Fri,  6 May 2022 16:34:49 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id s4so7037869qkh.0;
-        Fri, 06 May 2022 16:34:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AFw9PXyBSk/WNkQIM3l5UfsVFeJWVnrr4Za7pgabACc=;
-        b=XO+OHpIjgPeTs/y///sf+ed3H32QFspI/ckdPQ+QuOhooD5MNPjBdU66FwQDXUuQ2I
-         At/QbJu5ueSV0RrUanXBv7/1ynR75kUoKOIUKW3tfslQDHaatj6qb3pRZEvZloMKZ5O/
-         rwEFt3D7Js/BScdZV6PS37tjaXOTTee4ht/seY8HilobY04ZiEW+g6SyOe0CMcOg+fBh
-         DpXQHLmzZn3h+YxXWYo0qtlwsAPTVYn0oliWbgOScUBJVWUBy9fXmiJadxDmXGnzKGnc
-         HxK2dpDOSYNmOhszaSxjWKjHutnU7p8TVh4UiHONtuxRm/Bl2nIA0ruLhW8pIXAkdl45
-         AoGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AFw9PXyBSk/WNkQIM3l5UfsVFeJWVnrr4Za7pgabACc=;
-        b=cMknAGeWAdbqdVZE1rLqbIgFgddIlb3UsOsm1W8TF7Ueua8QlYF+949DkBv/cK3zPX
-         /MBbPei8tQVGY5VPj00gADwnsq9h5DrGrDevI/tAW6lia+iKbsTNuGLcYMXNZkR30l41
-         wlYDH9rwVDvJMt4qSjbkNhSw6NMAarLYznKoosyMdaKBGSOWq7SOPh80rRAeyDhHJsBv
-         jl9d8ksGkR5crWjfbRPjsfA6O4PCT2CuV/YevpaQomBebvReCZeRsSfeFNO2GoGBTmnQ
-         kFfa64l5NjslAskpg4EERt65dA+1LYtS1+l4tGGL5XcvKFIM8Ytd2MPRU56Mx0b23EcX
-         3cSw==
-X-Gm-Message-State: AOAM533NUl8CE2P1enpf0kExX3BFW5mwN+flIcizqXi3eVt7/JiVld0U
-        VBT5gtf+AH/W5KEgN7/K4vBi+l5tIA==
-X-Google-Smtp-Source: ABdhPJyW0u2IEPNyfZ1AaxvJac8N/QkiUyIlNj69PTP9P8cWFQX+Q59bi//nFWRJ+XMXdClogtWHHA==
-X-Received: by 2002:a05:620a:c52:b0:648:d550:5583 with SMTP id u18-20020a05620a0c5200b00648d5505583mr4259248qki.232.1651880088270;
-        Fri, 06 May 2022 16:34:48 -0700 (PDT)
-Received: from bytedance (ec2-52-72-174-210.compute-1.amazonaws.com. [52.72.174.210])
-        by smtp.gmail.com with ESMTPSA id 18-20020a05620a06d200b0069fc13ce213sm3119420qky.68.2022.05.06.16.34.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 16:34:47 -0700 (PDT)
-Date:   Fri, 6 May 2022 16:34:43 -0700
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [PATCH RFC v1 net-next 1/4] net: Introduce Qdisc backpressure
- infrastructure
-Message-ID: <20220506233443.GA3336@bytedance>
-References: <cover.1651800598.git.peilin.ye@bytedance.com>
- <f4090d129b685df72070f708294550fbc513f888.1651800598.git.peilin.ye@bytedance.com>
- <20220506133111.1d4bebf3@hermes.local>
+        Fri, 6 May 2022 20:12:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836B0712C0;
+        Fri,  6 May 2022 17:09:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A16A5B838E9;
+        Sat,  7 May 2022 00:09:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29B2CC385A9;
+        Sat,  7 May 2022 00:09:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651882145;
+        bh=4OY1Jefu1fmvLep2ds+yxr6CVewFp8hot+dWnzUVFG0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n7dSDibsel04jR/SHxPWg1pPi58vZhk+CAelMN3OSjvBhzwEFmKNOELd2kaylFI/0
+         RtQhYMw3qzfVS+hgNXR+pGQUVwwj0QLDlgPQyPvj1Eo4khB5EnknS1EbhEooXPaLD7
+         BVOL5ldKY362l3P5AnAXuwUOA1Iy222EJPrYBpREAqGZCSPheN2Yu3GnZ3b1ypywIo
+         7g4qtxcAxBwMLz8cUV4ssdKjv3hlPiJOMqcR524fz4Qx/F7p+hL1mTR8Vf54ikYnrj
+         LwEkuoYmAuYaoi65U9EEmI5SkLW+thforZjVHEOP3uryV2X0/N1S0OG5i5abRN5Og8
+         fH1TKuU/4IT7w==
+Date:   Fri, 6 May 2022 20:09:01 -0400
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Kai Huang <kai.huang@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Subject: Re: [PATCH v3 00/21] TDX host kernel support
+Message-ID: <YnW4nTub1BYUF15W@kernel.org>
+References: <de24ac7e-349c-e49a-70bb-31b9bc867b10@intel.com>
+ <9b388f54f13b34fe684ef77603fc878952e48f87.camel@intel.com>
+ <d98ca73b-2d2d-757d-e937-acc83cfedfb0@intel.com>
+ <c90a10763969077826f42be6f492e3a3e062326b.camel@intel.com>
+ <fc1ca04d94ad45e79c0297719d5ef50a7c33c352.camel@intel.com>
+ <664f8adeb56ba61774f3c845041f016c54e0f96e.camel@intel.com>
+ <1b681365-ef98-ec78-96dc-04e28316cf0e@intel.com>
+ <8bf596b45f68363134f431bcc550e16a9a231b80.camel@intel.com>
+ <6bb89ca6e7346f4334f06ea293f29fd12df70fe4.camel@intel.com>
+ <CAPcyv4iP3hcNNDxNdPT+iB0E4aUazfqFWwaa_dtHpVf+qKPNcQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220506133111.1d4bebf3@hermes.local>
+In-Reply-To: <CAPcyv4iP3hcNNDxNdPT+iB0E4aUazfqFWwaa_dtHpVf+qKPNcQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
-
-On Fri, May 06, 2022 at 01:31:11PM -0700, Stephen Hemminger wrote:
-> On Fri,  6 May 2022 12:44:22 -0700, Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> > +static inline void qdisc_backpressure_overlimit(struct Qdisc *sch, struct sk_buff *skb)
-> > +{
-> > +	struct sock *sk = skb->sk;
-> > +
-> > +	if (!sk || !sk_fullsock(sk))
-> > +		return;
-> > +
-> > +	if (cmpxchg(&sk->sk_backpressure_status, SK_UNTHROTTLED, SK_OVERLIMIT) == SK_UNTHROTTLED) {
-> > +		sock_hold(sk);
-> > +		list_add_tail(&sk->sk_backpressure_node, &sch->backpressure_list);
-> > +	}
-> > +}
+On Thu, May 05, 2022 at 06:51:20AM -0700, Dan Williams wrote:
+> [ add Mike ]
 > 
-> What if socket is closed? You are holding reference but application maybe gone.
+> On Thu, May 5, 2022 at 2:54 AM Kai Huang <kai.huang@intel.com> wrote:
+> [..]
+> >
+> > Hi Dave,
+> >
+> > Sorry to ping (trying to close this).
+> >
+> > Given we don't need to consider kmem-hot-add legacy PMEM after TDX module
+> > initialization, I think for now it's totally fine to exclude legacy PMEMs from
+> > TDMRs.  The worst case is when someone tries to use them as TD guest backend
+> > directly, the TD will fail to create.  IMO it's acceptable, as it is supposedly
+> > that no one should just use some random backend to run TD.
+> 
+> The platform will already do this, right? I don't understand why this
+> is trying to take proactive action versus documenting the error
+> conditions and steps someone needs to take to avoid unconvertible
+> memory. There is already the CONFIG_HMEM_REPORTING that describes
+> relative performance properties between initiators and targets, it
+> seems fitting to also add security properties between initiators and
+> targets so someone can enumerate the numa-mempolicy that avoids
+> unconvertible memory.
+> 
+> No, special casing in hotplug code paths needed.
+> 
+> >
+> > I think w/o needing to include legacy PMEM, it's better to get all TDX memory
+> > blocks based on memblock, but not e820.  The pages managed by page allocator are
+> > from memblock anyway (w/o those from memory hotplug).
+> >
+> > And I also think it makes more sense to introduce 'tdx_memblock' and
+> > 'tdx_memory' data structures to gather all TDX memory blocks during boot when
+> > memblock is still alive.  When TDX module is initialized during runtime, TDMRs
+> > can be created based on the 'struct tdx_memory' which contains all TDX memory
+> > blocks we gathered based on memblock during boot.  This is also more flexible to
+> > support other TDX memory from other sources such as CLX memory in the future.
+> >
+> > Please let me know if you have any objection?  Thanks!
+> 
+> It's already the case that x86 maintains sideband structures to
+> preserve memory after exiting the early memblock code. Mike, correct
+> me if I am wrong, but adding more is less desirable than just keeping
+> the memblock around?
 
-Thanks for pointing this out!  I just understood how sk_refcnt works
-together with sk_wmem_alloc.
+TBH, I didn't read the entire thread yet, but at the first glance, keeping
+memblock around is much more preferable that adding yet another { .start,
+.end, .flags } data structure. To keep memblock after boot all is needed is
+something like
 
-By the time we process this in-flight skb, sk_refcnt may have already
-reached 0, which means sk_free() may have already decreased that "extra" 1
-sk_wmem_alloc, so skb->destructor() may call __sk_free() while I "hold"
-the sock here.  Seems like a UAF.
+	select ARCH_KEEP_MEMBLOCK if INTEL_TDX_HOST
 
-> Or if output is stalled indefinitely?
+I'll take a closer look next week on the entire series, maybe I'm missing
+some details.
 
-It would be better to do a cleanup in sock destroying code, but I am
-trying to avoid acquiring Qdisc root_lock there.  I will try to come up
-with a better solution.
-
-Thanks,
-Peilin Ye
-
-
+-- 
+Sincerely yours,
+Mike.
