@@ -2,128 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F45EC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE19C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376812AbiEGObH (ORCPT
+        id S1385481AbiEGOha (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 10:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
+        Sat, 7 May 2022 10:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234096AbiEGObF (ORCPT
+        with ESMTP id S1347909AbiEGOh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 10:31:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97722DFC;
-        Sat,  7 May 2022 07:27:18 -0700 (PDT)
+        Sat, 7 May 2022 10:37:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F781580B;
+        Sat,  7 May 2022 07:33:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79108608C3;
-        Sat,  7 May 2022 14:27:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6414AC385A5;
-        Sat,  7 May 2022 14:27:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651933637;
-        bh=8jXCjBGJJPxlr9V8Zv0vyc5vMNnF06uj4+zEg0fhpsc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A3vs/lC4UGjixwmTZ9Oc+ZggDjdz1Rio+dfRcyFx7B9JZjuC7EHZZPCA20XyTJCu9
-         YCpuNVkfTX/txbkqNDZISV9INKPVYCJjLXJTUnJP1Va2ekU3OnXEAjfu91Z5UwOT+K
-         it/aFKi6szvE0V0mqKFCApv/KF/ECV+RzSz2dQsc=
-Date:   Sat, 7 May 2022 16:27:14 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     andreyknvl@gmail.com, balbi@kernel.org, jj251510319013@gmail.com,
-        stern@rowland.harvard.edu, jannh@google.com, Julia.Lawall@inria.fr,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
-Subject: Re: [PATCH] usb: gadget: fix race when gadget driver register via
- ioctl
-Message-ID: <YnaBwkhIxZ1wtIQX@kroah.com>
-References: <20220507120851.29948-1-schspa@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 402A960B3D;
+        Sat,  7 May 2022 14:33:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B8A3C385A9;
+        Sat,  7 May 2022 14:33:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651934019;
+        bh=QTQsvBXAXq+u552u7h6IkbyqINQY/MTcAhV9CyC5H2w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GzlWpqVpg2p5jIuObrLhrKSOypv6RjDK7ZulDZ7jfkMvZEDa7Zs8hykQeqF1/Cl9h
+         RYNvslJFfV+TFq4bmUhbTLIFG2g5HX6KMAqJ4OiEdg7RCQ8pMI6qHj/SRhWv0dz/hE
+         j4Qu4C9rYj5/saYBgjvTz+EmHx9Nc2cuSzwdgxrSQ7KQqxlDKE9UVYTnfyMONxDTbq
+         HnG4zvJeNBdqobtbokkaUMUc8S+wVWPxnTMP5ROMW4/hE/6738HgqLh/YW5mzfkKNI
+         xaK2BV805J08yvxEVtVdQ8P4C5DI7/HTwqfU5og+aUVewHEVXQuv9VUGeIzcyBUuiD
+         QriFlCg/yDJhQ==
+Date:   Sat, 7 May 2022 15:42:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     LI Qingwu <qing-wu.li@leica-geosystems.com.cn>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V3 3/5] iio: accel: sca3300: modified to support multi
+ chips
+Message-ID: <20220507154206.328e2877@jic23-huawei>
+In-Reply-To: <CAHp75VcD-UpG=ppuE2Du2SsQK66MYdrwhXvjHksN5=gqcppYqA@mail.gmail.com>
+References: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <20220504133612.604304-4-Qing-wu.Li@leica-geosystems.com.cn>
+        <CAHp75VeseZ2ChtbafmbgVavS4KvCvrQ4+XSRkeiJSyqr8__dSw@mail.gmail.com>
+        <AM9PR06MB7844E8FE0EDF712C769271DAD7C39@AM9PR06MB7844.eurprd06.prod.outlook.com>
+        <CAHp75VfEK_TXXA3NdGgjis7duHgoDo4aSOZntdO0wEGLw0sQ7g@mail.gmail.com>
+        <AM9PR06MB7844C01CA580F046FA570B43D7C29@AM9PR06MB7844.eurprd06.prod.outlook.com>
+        <CAHp75VcD-UpG=ppuE2Du2SsQK66MYdrwhXvjHksN5=gqcppYqA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220507120851.29948-1-schspa@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 07, 2022 at 08:08:51PM +0800, Schspa Shi wrote:
-> The usb_gadget_register_driver doesn't have inside locks to protect the
-> driver, and If there is two threads are registered at the same time via
-> the ioctl syscall, the system will crash as syzbot reported.
-> 
-> Call trace as:
->   driver_register+0x220/0x3a0 drivers/base/driver.c:171
->   usb_gadget_register_driver_owner+0xfb/0x1e0
->     drivers/usb/gadget/udc/core.c:1546
->   raw_ioctl_run drivers/usb/gadget/legacy/raw_gadget.c:513 [inline]
->   raw_ioctl+0x1883/0x2730 drivers/usb/gadget/legacy/raw_gadget.c:1220
-> 
-> This routine allows two processes to register the same driver instance
-> via ioctl syscall. which lead to a race condition.
-> 
-> We can fix it by adding a driver_lock to avoid double register.
-> 
-> Reported-by: syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
-> Link: https://lore.kernel.org/all/000000000000e66c2805de55b15a@google.com/
-> 
-> Signed-off-by: Schspa Shi <schspa@gmail.com>
-> ---
->  drivers/usb/gadget/legacy/raw_gadget.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
-> index b3be8db1ff63..d7ff9c2b5397 100644
-> --- a/drivers/usb/gadget/legacy/raw_gadget.c
-> +++ b/drivers/usb/gadget/legacy/raw_gadget.c
-> @@ -155,7 +155,9 @@ struct raw_dev {
->  	spinlock_t			lock;
->  
->  	const char			*udc_name;
-> +	/* Protected by driver_lock for reentrant registration */
->  	struct usb_gadget_driver	driver;
-> +	struct mutex			driver_lock;
+On Thu, 5 May 2022 20:01:22 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Why are you adding another lock here?  What's wrong with the existing
-lock in this structure that requires an additional one?
+> On Thu, May 5, 2022 at 4:12 PM LI Qingwu
+> <qing-wu.li@leica-geosystems.com.cn> wrote:
+> > > -----Original Message-----
+> > > From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > Sent: Wednesday, May 4, 2022 10:39 PM
+> > > On Wed, May 4, 2022 at 4:35 PM LI Qingwu
+> > > <qing-wu.li@leica-geosystems.com.cn> wrote: =20
+> > > > > From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > > > Sent: Wednesday, May 4, 2022 10:20 PM On Wed, May 4, 2022 at 3:36=
+ PM
+> > > > > LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote: =20
+>=20
+> ...
+>=20
+> > > > > > +struct sca3300_chip_info {
+> > > > > > +       const struct iio_chan_spec *channels;
+> > > > > > +       const int (*accel_scale_table)[2];
+> > > > > > +       const int *accel_scale_modes_map;
+> > > > > > +       const unsigned long *scan_masks;
+> > > > > > +       const int *avail_modes_table;
+> > > > > > +       const int *freq_modes_map;
+> > > > > > +       const int *freq_table;
+> > > > > > +       const u8 num_accel_scales;
+> > > > > > +       const u8 num_avail_modes;
+> > > > > > +       const u8 num_channels;
+> > > > > > +       const u8 num_freqs;
+> > > > > > +       const u8 chip_id; =20
+> > > > >
+> > > > > Why do you have const qualifier on all members?  The last one is
+> > > > > understandable, but the rest, esp. pointers should be justified. =
+=20
+> > > > Because I thought it was static and has fix value for each chip, un=
+acceptable =20
+> > > for you?
+> > >
+> > > But why const qualifier? What is the point of it for example for u8 m=
+embers if
+> > > the entire object is qualified as const below in the same patch?
+> > >
+> > > On top of that, please explain what in your opinion the "const ...
+> > > *foo" gives us, and what we will lose if we remove the "const" part o=
+ut of them. =20
+> >
+> > Ah, you are right, those const are unnecessary for nonpointer members.
+> > for the pointers, the contexts that the pointer points to are still wri=
+table.
+> > what about if I remove all the const from nonpointer and keep it for th=
+e pointers?
+> > Like=EF=BC=9A
+> > const struct iio_chan_spec *channels;
+> > const int (*accel_scale_table)[2];
+> > const int (*incli_scale_table)[2];
+> > const int *accel_scale_modes_map;
+> > const int *incli_scale_modes_map;
+> > const unsigned long *scan_masks;
+> > const int *avail_modes_table;
+> > const int *freq_modes_map;
+> > const int *freq_table;
+> > const char *name;
+> > u8 num_accel_scales;
+> > u8 num_incli_scales;
+> > u8 num_avail_modes;
+> > u8 num_channels;
+> > u8 num_freqs;
+> > u8 chip_id;
+> > bool angle; =20
+>=20
+> It's better, but you still need to justify the rest with explanation
+> in the commit message.
+> And I leave this to maintainers to say if the const:s are needed or not.
+Where they are being set to point to
+static const int array[]=20
+then to my mind it makes sense to have them as const as makes it nice and o=
+bvious
+what is going on.
 
->  
->  	/* Reference to misc device: */
->  	struct device			*dev;
-> @@ -188,6 +190,8 @@ static struct raw_dev *dev_new(void)
->  	spin_lock_init(&dev->lock);
->  	init_completion(&dev->ep0_done);
->  	raw_event_queue_init(&dev->queue);
-> +	mutex_init(&dev->driver_lock);
-> +
->  	return dev;
->  }
->  
-> @@ -398,7 +402,9 @@ static int raw_release(struct inode *inode, struct file *fd)
->  	spin_unlock_irqrestore(&dev->lock, flags);
->  
->  	if (unregister) {
-> +		mutex_lock(&dev->driver_lock);
->  		ret = usb_gadget_unregister_driver(&dev->driver);
-> +		mutex_unlock(&dev->driver_lock);
->  		if (ret != 0)
->  			dev_err(dev->dev,
->  				"usb_gadget_unregister_driver() failed with %d\n",
-> @@ -510,7 +516,9 @@ static int raw_ioctl_run(struct raw_dev *dev, unsigned long value)
->  	}
->  	spin_unlock_irqrestore(&dev->lock, flags);
->  
-> +	mutex_lock(&dev->driver_lock);
->  	ret = usb_gadget_register_driver(&dev->driver);
-> +	mutex_unlock(&dev->driver_lock);
+Jonathan
 
-How can unregister race with register?
+>=20
+> > > > > > +       const char *name;
+> > > > > > +}; =20
+>=20
 
-What ioctl is causing this race?  What userspace program is doing this?
-Only one userspace program should be accessing this at once, right?
-
-confused,
-
-greg k-h
