@@ -2,83 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B6E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446626AbiEGQE6 (ORCPT
+        id S1446635AbiEGQFC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 12:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        Sat, 7 May 2022 12:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237306AbiEGQEw (ORCPT
+        with ESMTP id S1446627AbiEGQE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 12:04:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D960FE027;
-        Sat,  7 May 2022 09:01:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87390B80AE5;
-        Sat,  7 May 2022 16:01:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04CA9C385A6;
-        Sat,  7 May 2022 16:01:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651939262;
-        bh=NHfiodbVnluSYWb96H0xbgRSiv4JTISVRIRQPyzuieM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YgC971pQOFnvnhI2RIkeZJ8woF2HDrbf6Vs/HHx8ZrvDxWb3SZSaLSARZxMh6lZvk
-         rQwUuWpKw1KycIqKF55KlhvYv620ecmdpME+DTsI6Ef24NK77F/k2e/FWmZhbeZWK4
-         XswlI0vrI8gCpflHrQszI46J6BjSntw49D2z7ZbITJBZQ7LGe9YIIpH59DsGp2jBXj
-         By4N0ZgmlD6w3TIl8niz0FYkz0gGrUEe5aRCGuXJf0Ej1kmF0uorEp63dPX0G0igWg
-         wH3ebHKsJBlGHCk5Uy2kXGuDo0hUWLqIc9IBf268SnYgIjnhAJbU8PJMdarYhERbSA
-         FWSdhWRTbGUQQ==
-Date:   Sat, 7 May 2022 17:09:29 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 05/10] iio: accel: bma400: Add separate channel for
- step counter
-Message-ID: <20220507170929.4fa967d8@jic23-huawei>
-In-Reply-To: <20220505133021.22362-6-jagathjog1996@gmail.com>
-References: <20220505133021.22362-1-jagathjog1996@gmail.com>
-        <20220505133021.22362-6-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 7 May 2022 12:04:58 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279CE12AF8
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 09:01:11 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id dk23so19486252ejb.8
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 09:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EEjFelFS20jkO4Qj4ob7I4X5U5OVEQ8vF/HCYLVafkA=;
+        b=TJ/UCa7zjhsvY8f1+l2nJ4qtsnLHQST0Rhd1k4UuUt6txkhhcxyeL6cl1O7/3fzIlw
+         Id6IVxyu6KQLzqBbUiRuNytkbovehemPKUuGguWKer+3FnSkIvwkuWpS+90eOFxADc5l
+         p+TGGxzuyqZamj3prMfE3PPeG1BgnRSJmhXgo5w2UXAt8srzKqE79PmMD0jkVVjawfHj
+         NfMbk/l2ypH2YwaNRX0VwfBrqZceAg4lScENlpY31Vi+utYuNpbUqYl7PXinQgu+Frws
+         IrG8BIA8dvoO0Y/WLGYQG+yU2UXTzFHrdGUmzMSgKaZAvgKXT80O3bEcygRlv1LJ3BAo
+         ipiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EEjFelFS20jkO4Qj4ob7I4X5U5OVEQ8vF/HCYLVafkA=;
+        b=5l81B0e0nkbZuH8MqGwwx/xtMyu12m4OF7EEysYpIEtzLXhGH4T4LD5YLJLgczNsPd
+         h7LZV/twR0Z1JYaGlVm3kOTK0kMvvFdIpbaW7tKyKbHbnjtKYLisvQgoT2y4kMOWKzrC
+         oX96+cYG3K1obua9WWSxYNwrVjT9li7akqVCXKJ5Qt/WaOTDFnbIeHT86s2kl6m9Ld8E
+         K7ZNLBY7JJUGQTuAUCfIwx2IcMy6j+rUz3lJmK51RIssVU2O3QZ4/uIVD3Kn+igphc80
+         HWrT5/4DiXpj4R6W2HQs2OJQiGDdOcS9wVlVRd4zP8X7T0pdBfzw8QSTpZMpUk4nhO7g
+         pk8Q==
+X-Gm-Message-State: AOAM533a5dMW1dx9oTtLhhKcEIROGjU4bSvIWppBGfwgcomB3OPAdWI8
+        8KkxZvu/YUGkeikgQKxhmFqBSw==
+X-Google-Smtp-Source: ABdhPJwtRto5hiYLsR+QHrgUUplzWtci9HQS6vAJ/b/CgrVBQsAbJfaavkt/qpAOhe/i1WEHNnh4yA==
+X-Received: by 2002:a17:907:1b20:b0:6da:649b:d99e with SMTP id mp32-20020a1709071b2000b006da649bd99emr7664191ejc.712.1651939269690;
+        Sat, 07 May 2022 09:01:09 -0700 (PDT)
+Received: from [192.168.0.232] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b26-20020a170906d11a00b006f3ef214dedsm3094167ejz.83.2022.05.07.09.01.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 May 2022 09:01:09 -0700 (PDT)
+Message-ID: <7588a043-19b0-f7c6-0f47-7024e2fb1a56@linaro.org>
+Date:   Sat, 7 May 2022 18:01:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/4] tpm: Add tpm_tis_i2c backend for tpm_tis_core
+Content-Language: en-US
+To:     Johannes Holland <johannes.holland@infineon.com>,
+        jarkko@kernel.org, linux-kernel@vger.kernel.org,
+        linux-integrity@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, krzysztof.kozlowski+dt@linaro.org,
+        Alexander Steffen <alexander.steffen@infineon.com>,
+        Amir Mizinski <amirmizi6@gmail.com>
+References: <20220506170013.22598-1-johannes.holland@infineon.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220506170013.22598-1-johannes.holland@infineon.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  5 May 2022 19:00:16 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
-
-> Added channel for step counter which can be enable or disable
-> through the sysfs interface.
+On 06/05/2022 19:00, Johannes Holland wrote:
+> Implement the TCG I2C Interface driver, as specified in the TCG PC
+> Client Platform TPM Profile (PTP) specification for TPM 2.0 v1.04
+> revision 14, section 8, I2C Interface Definition.
 > 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> ---
->  
-> +static int bma400_enable_steps(struct bma400_data *data, int val)
-> +{
-> +	int ret;
+
+> +static const struct i2c_device_id tpm_tis_i2c_id[] = {
+> +	{ "tpm_tis_i2c", 0 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, tpm_tis_i2c_id);
 > +
-> +	if (data->steps_enabled == val)
-> +		return 0;
+> +static const struct of_device_id of_tis_i2c_match[] = {
+> +	{ .compatible = "infineon,slb9673", },
+> +	{ .compatible = "tcg,tpm-tis-i2c", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, of_tis_i2c_match);
 > +
-> +	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG,
-> +				 BMA400_STEP_INT_MSK,
-> +				 FIELD_PREP(BMA400_STEP_INT_MSK, !!val));
-This gives a dubious x & !y warning
+> +static struct i2c_driver tpm_tis_i2c_driver = {
+> +	.driver = {
+> +		.owner = THIS_MODULE,
+> +		.name = "tpm_tis_i2c",
+> +		.pm = &tpm_tis_pm,
+> +		.of_match_table = of_match_ptr(of_tis_i2c_match),
 
-So I've changed it to val ? 1 : 0
+of_match_ptr does not match your of_device_id table - you will have
+warnings. Either mark them maybe_unused or skip of_match_ptr.
 
-Jonathan
 
-> +	if (ret)
-> +		return ret;
-> +	data->steps_enabled = val;
-> +	return ret;
-> +}
+Best regards,
+Krzysztof
