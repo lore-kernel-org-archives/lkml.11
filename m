@@ -2,297 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0537C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 15:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446570AbiEGPGS (ORCPT
+        id S1446571AbiEGPHe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 11:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        Sat, 7 May 2022 11:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446550AbiEGPFy (ORCPT
+        with ESMTP id S244346AbiEGPHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 11:05:54 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54164476F;
-        Sat,  7 May 2022 08:02:07 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id a15-20020a17090ad80f00b001dc2e23ad84so13298015pjv.4;
-        Sat, 07 May 2022 08:02:07 -0700 (PDT)
+        Sat, 7 May 2022 11:07:30 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5699240931;
+        Sat,  7 May 2022 08:03:43 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id r27so10970950iot.1;
+        Sat, 07 May 2022 08:03:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6gkoSFOyPPzO47GFBH6H76ByTgZlADmJrCRFgljxq6E=;
-        b=CaduLt9L+kJfEPF9xzJXkIO5VwXZY4Y40m0WC3KN+wG/TyZiM3PdKEBP48c3PCzOzC
-         awG0BJHT0E3Q6W2yWaZ8i3VjalynzLRe7f+44S8C4cGJUAEtJmKCePcJ2j1x6+X/NYOM
-         64y6AvMt1tiFcNWoCQ9ibhtR80yr2mdoGwX4M8rK09+QhDdVcfBj/5sWQeXApCmC+Cxd
-         HrHnO5eJvqqwVEHPVvUWBk+G/R8fH0+I1HxYMvYRfa27Icg1jf2OvyY9YjxeTAgtmhVB
-         WWaf/inctytBrltH9PBaQBFmHx/cMXa8yRydfLUMas2qUZtUqNYnbeIzyPWr4fkQ5yvk
-         ZvwQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CnjdUOz3duiKD1Uau0ijtSb5UBL+OJmQOYvavWmoZQ0=;
+        b=Goshd/Luda+YskWKjL4mFxR2CewMKg4Ngp0zTFvr681Uze/6UoYKLSsCuvwyykKdoV
+         eJgShn/IfVaDwDxxqtuVaiypmwMCNkgs3U7eD/IHcA+NTKJnwNJDfV75hCAxJn6fhlbn
+         65xdlhRV1o+T88gQd3VVfV6lPkB4h/kQdWVILeyrrRGThVgkiWqwoup9fFr2v39EUzxX
+         2bCMEg8qAMivg4zNvG6un1RFKMTRIwY+K2H9Et54yjnONGwjlXCMIgrhaWsbrSHJ3CbF
+         dLPxj2t56sOAmQTcpErCwm8om2QTvopW9vHpR2ZQYiHU3j7DhQkX5H4ADEhJCh74VYJo
+         UmfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6gkoSFOyPPzO47GFBH6H76ByTgZlADmJrCRFgljxq6E=;
-        b=O6XUPm8QWbaJdxny4tSsGeU1xYsDTIdrpxAl/0Jyxx5NiA/lzEPRqXpaPoN9j6FFmS
-         7UudRQDCEnauMHR32IrERy6MvKRb0u1woCxru98ZeRT/lVxElMKfhZDARU+o+aBpA14g
-         buIqnb/BDoL4FBvjSDb4umeU3dqyZKPxNXmo/sqilZzpcVBf6r6lBZwuVnwhb733uLh8
-         O5tS14iwRzojoXIr8Zdy7Qa8w5R78BJodTvpYU475vdnKWpvsL64BHUYSXdr7Y2YSsU/
-         BH1bXt58mfgXdk6jdHL25bvi2ss/Rib9YLoQwZ0ynhmquJBJozLE+Kwr8DGWdUZm0i3Q
-         yyRQ==
-X-Gm-Message-State: AOAM533EHMEVz8frveUnnjl6AjoiKjakKLydgV491dfurj9zDg1V+yZe
-        ZGI11ztAJihgMFYit2kRHPSGqpwVwU/nAg==
-X-Google-Smtp-Source: ABdhPJwWiMfZN8JuUxfjHnSN8j/2LC0Jkd9nv5SAdUKBsL/fgsvwNuYEFfGBNiOx1y3nzlnfsJi2SQ==
-X-Received: by 2002:a17:903:1107:b0:15e:f451:4034 with SMTP id n7-20020a170903110700b0015ef4514034mr5478393plh.3.1651935727228;
-        Sat, 07 May 2022 08:02:07 -0700 (PDT)
-Received: from localhost.localdomain ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id v21-20020a170902ca9500b0015e8d4eb2a8sm3711007pld.242.2022.05.07.08.02.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 08:02:06 -0700 (PDT)
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-X-Google-Original-From: Chanwoo Choi <cw00.choi@samsung.com>
-To:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     cw00.choi@samsung.com, myungjoo.ham@samsung.com,
-        kyungmin.park@samsung.com, johnson.wang@mediatek.com,
-        mka@chromium.org, jia-wei.chang@mediatek.com,
-        andrew-sh.cheng@mediatek.com, hsinyi@chromium.org,
-        sibis@codeaurora.org, saravanak@google.com
-Subject: [PATCH v2 4/5] PM / devfreq: passive: Keep cpufreq_policy for possible cpus
-Date:   Sun,  8 May 2022 00:01:44 +0900
-Message-Id: <20220507150145.531864-5-cw00.choi@samsung.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220507150145.531864-1-cw00.choi@samsung.com>
-References: <20220507150145.531864-1-cw00.choi@samsung.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CnjdUOz3duiKD1Uau0ijtSb5UBL+OJmQOYvavWmoZQ0=;
+        b=uQwl1WcM4hqKqDf/VXMysjxebO7MTn1UD6SXOt3RW0duYIbmJUeqnxie2UlzxG14Q3
+         hSZFC9JFwoHjThRJ/t1VAkctljPRI4lnyX47cPLHU/93w/2twGX/5eIG9ME/0mm/GUgM
+         /vMm7ms7dfk6gZkawROjKuea6x1hIXd2eSD8PWe87ZzIJoOq6XZca1Tr7YvAFh42IlkV
+         ZZxyMonpdkXYiY/hFBgzfuXGD+0Up8E8qOvSDbjbQHFvwvmMVt8KO2wD/Rmb9WxbPQed
+         ZjAzVQopu9P+YbARGPu7+YqAYaQ7XXavSFF1HNz+WPYdA6ybDItBrf5X+6EEAfKb1M0Z
+         y98g==
+X-Gm-Message-State: AOAM532XvPJhbYgjGxqij3RnHWVZFflzi6UlgJNwdFzcG6QV02+og18C
+        efdU+g7OJnBOCHCIl9ZJMvNY5O3ba7tLgUwy8O1cqjt/hjw=
+X-Google-Smtp-Source: ABdhPJyqVxv4uPynhji9t5jG0pJBv2D9XRWPEuRPww2y6vJC30NvmsubB9I6YkkamF8cCOWGkn9Xe0Ihs9a1gxmTp/4=
+X-Received: by 2002:a05:6602:2d90:b0:63d:b41e:e4e4 with SMTP id
+ k16-20020a0566022d9000b0063db41ee4e4mr3321613iow.172.1651935822769; Sat, 07
+ May 2022 08:03:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220507052451.12890-1-ojeda@kernel.org> <CABVgOSm5S2=QYnHJ+B0JbYtFYKBDRZiOhE5YMKKUKZU56d17HQ@mail.gmail.com>
+In-Reply-To: <CABVgOSm5S2=QYnHJ+B0JbYtFYKBDRZiOhE5YMKKUKZU56d17HQ@mail.gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sat, 7 May 2022 17:03:31 +0200
+Message-ID: <CANiq72=0ft6+QLbdwWD6cLm4FhWfv53GSg6HKEwxQ-q2N-UkOw@mail.gmail.com>
+Subject: Re: [PATCH v6 00/23] Rust support
+To:     David Gow <davidgow@google.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The passive governor requires the cpu data to get the next target frequency
-of devfreq device if depending on cpu. In order to reduce the unnecessary
-memory data, keep cpufreq_policy data for possible cpus instead of NR_CPU.
+Hi David,
 
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
----
- drivers/devfreq/governor.h         |  3 ++
- drivers/devfreq/governor_passive.c | 73 ++++++++++++++++++++++++------
- include/linux/devfreq.h            |  4 +-
- 3 files changed, 63 insertions(+), 17 deletions(-)
+On Sat, May 7, 2022 at 11:29 AM David Gow <davidgow@google.com> wrote:
+>
+> It's great to see some KUnit support here!
 
-diff --git a/drivers/devfreq/governor.h b/drivers/devfreq/governor.h
-index 335c4a491254..0adfebc0467a 100644
---- a/drivers/devfreq/governor.h
-+++ b/drivers/devfreq/governor.h
-@@ -49,6 +49,7 @@
- 
- /**
-  * struct devfreq_cpu_data - Hold the per-cpu data
-+ * @node:	list node
-  * @dev:	reference to cpu device.
-  * @first_cpu:	the cpumask of the first cpu of a policy.
-  * @opp_table:	reference to cpu opp table.
-@@ -60,6 +61,8 @@
-  * This is auto-populated by the governor.
-  */
- struct devfreq_cpu_data {
-+	struct list_head node;
-+
- 	struct device *dev;
- 	unsigned int first_cpu;
- 
-diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
-index a738a30eb3c0..b34dbe750c0a 100644
---- a/drivers/devfreq/governor_passive.c
-+++ b/drivers/devfreq/governor_passive.c
-@@ -18,6 +18,22 @@
- 
- #define HZ_PER_KHZ	1000
- 
-+static struct devfreq_cpu_data *
-+get_parent_cpu_data(struct devfreq_passive_data *p_data,
-+		    struct cpufreq_policy *policy)
-+{
-+	struct devfreq_cpu_data *parent_cpu_data;
-+
-+	if (!p_data || !policy)
-+		return NULL;
-+
-+	list_for_each_entry(parent_cpu_data, &p_data->cpu_data_list, node)
-+		if (parent_cpu_data->first_cpu == cpumask_first(policy->related_cpus))
-+			return parent_cpu_data;
-+
-+	return NULL;
-+}
-+
- static unsigned long get_target_freq_by_required_opp(struct device *p_dev,
- 						struct opp_table *p_opp_table,
- 						struct opp_table *opp_table,
-@@ -50,14 +66,24 @@ static int get_target_freq_with_cpufreq(struct devfreq *devfreq,
- 	struct devfreq_passive_data *p_data =
- 				(struct devfreq_passive_data *)devfreq->data;
- 	struct devfreq_cpu_data *parent_cpu_data;
-+	struct cpufreq_policy *policy;
- 	unsigned long cpu, cpu_cur, cpu_min, cpu_max, cpu_percent;
- 	unsigned long dev_min, dev_max;
- 	unsigned long freq = 0;
-+	int ret = 0;
- 
- 	for_each_online_cpu(cpu) {
--		parent_cpu_data = p_data->parent_cpu_data[cpu];
--		if (!parent_cpu_data || parent_cpu_data->first_cpu != cpu)
-+		policy = cpufreq_cpu_get(cpu);
-+		if (!policy) {
-+			ret = -EINVAL;
-+			continue;
-+		}
-+
-+		parent_cpu_data = get_parent_cpu_data(p_data, policy);
-+		if (!parent_cpu_data) {
-+			cpufreq_cpu_put(policy);
- 			continue;
-+		}
- 
- 		/* Get target freq via required opps */
- 		cpu_cur = parent_cpu_data->cur_freq * HZ_PER_KHZ;
-@@ -66,6 +92,7 @@ static int get_target_freq_with_cpufreq(struct devfreq *devfreq,
- 					devfreq->opp_table, cpu_cur);
- 		if (freq) {
- 			*target_freq = max(freq, *target_freq);
-+			cpufreq_cpu_put(policy);
- 			continue;
- 		}
- 
-@@ -80,9 +107,10 @@ static int get_target_freq_with_cpufreq(struct devfreq *devfreq,
- 		freq = dev_min + mult_frac(dev_max - dev_min, cpu_percent, 100);
- 
- 		*target_freq = max(freq, *target_freq);
-+		cpufreq_cpu_put(policy);
- 	}
- 
--	return 0;
-+	return ret;
- }
- 
- static int get_target_freq_with_devfreq(struct devfreq *devfreq,
-@@ -167,12 +195,11 @@ static int cpufreq_passive_notifier_call(struct notifier_block *nb,
- 	unsigned int cur_freq;
- 	int ret;
- 
--	if (event != CPUFREQ_POSTCHANGE || !freqs ||
--		!p_data->parent_cpu_data[freqs->policy->cpu])
-+	if (event != CPUFREQ_POSTCHANGE || !freqs)
- 		return 0;
- 
--	parent_cpu_data = p_data->parent_cpu_data[freqs->policy->cpu];
--	if (parent_cpu_data->cur_freq == freqs->new)
-+	parent_cpu_data = get_parent_cpu_data(p_data, freqs->policy);
-+	if (!parent_cpu_data || parent_cpu_data->cur_freq == freqs->new)
- 		return 0;
- 
- 	cur_freq = parent_cpu_data->cur_freq;
-@@ -195,7 +222,7 @@ static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
- 	struct devfreq_passive_data *p_data
- 			= (struct devfreq_passive_data *)devfreq->data;
- 	struct devfreq_cpu_data *parent_cpu_data;
--	int cpu, ret;
-+	int cpu, ret = 0;
- 
- 	if (p_data->nb.notifier_call) {
- 		ret = cpufreq_unregister_notifier(&p_data->nb,
-@@ -205,16 +232,26 @@ static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
- 	}
- 
- 	for_each_possible_cpu(cpu) {
--		parent_cpu_data = p_data->parent_cpu_data[cpu];
--		if (!parent_cpu_data)
-+		struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
-+		if (!policy) {
-+			ret = -EINVAL;
- 			continue;
-+		}
- 
-+		parent_cpu_data = get_parent_cpu_data(p_data, policy);
-+		if (!parent_cpu_data) {
-+			cpufreq_cpu_put(policy);
-+			continue;
-+		}
-+
-+		list_del(&parent_cpu_data->node);
- 		if (parent_cpu_data->opp_table)
- 			dev_pm_opp_put_opp_table(parent_cpu_data->opp_table);
- 		kfree(parent_cpu_data);
-+		cpufreq_cpu_put(policy);
- 	}
- 
--	return 0;
-+	return ret;
- }
- 
- static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
-@@ -229,6 +266,9 @@ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
- 	unsigned int cpu;
- 	int ret;
- 
-+	p_data->cpu_data_list
-+		= (struct list_head)LIST_HEAD_INIT(p_data->cpu_data_list);
-+
- 	p_data->nb.notifier_call = cpufreq_passive_notifier_call;
- 	ret = cpufreq_register_notifier(&p_data->nb, CPUFREQ_TRANSITION_NOTIFIER);
- 	if (ret) {
-@@ -238,15 +278,18 @@ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
- 	}
- 
- 	for_each_possible_cpu(cpu) {
--		if (p_data->parent_cpu_data[cpu])
--			continue;
--
- 		policy = cpufreq_cpu_get(cpu);
- 		if (!policy) {
- 			ret = -EPROBE_DEFER;
- 			goto err;
- 		}
- 
-+		parent_cpu_data = get_parent_cpu_data(p_data, policy);
-+		if (parent_cpu_data) {
-+			cpufreq_cpu_put(policy);
-+			continue;
-+		}
-+
- 		parent_cpu_data = kzalloc(sizeof(*parent_cpu_data),
- 						GFP_KERNEL);
- 		if (!parent_cpu_data) {
-@@ -275,7 +318,7 @@ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
- 		parent_cpu_data->min_freq = policy->cpuinfo.min_freq;
- 		parent_cpu_data->max_freq = policy->cpuinfo.max_freq;
- 
--		p_data->parent_cpu_data[cpu] = parent_cpu_data;
-+		list_add_tail(&parent_cpu_data->node, &p_data->cpu_data_list);
- 		cpufreq_cpu_put(policy);
- 	}
- 
-diff --git a/include/linux/devfreq.h b/include/linux/devfreq.h
-index ccebb5c84d62..2fca831db564 100644
---- a/include/linux/devfreq.h
-+++ b/include/linux/devfreq.h
-@@ -309,7 +309,7 @@ enum devfreq_parent_dev_type {
-  + * @this:		the devfreq instance of own device.
-  + * @nb:		the notifier block for DEVFREQ_TRANSITION_NOTIFIER or
-  *			CPUFREQ_TRANSITION_NOTIFIER list.
-- + * @cpu_data:		the state min/max/current frequency of all online cpu's
-+ + * @cpu_data_list:	the cpufreq_policy list of all possible cpus.
-  *
-  * The devfreq_passive_data have to set the devfreq instance of parent
-  * device with governors except for the passive governor. But, don't need to
-@@ -329,7 +329,7 @@ struct devfreq_passive_data {
- 	/* For passive governor's internal use. Don't need to set them */
- 	struct devfreq *this;
- 	struct notifier_block nb;
--	struct devfreq_cpu_data *parent_cpu_data[NR_CPUS];
-+	struct list_head cpu_data_list;
- };
- #endif
- 
--- 
-2.25.1
+Thanks!
 
+> It's also possible to run these tests using the KUnit wrapper tool with:
+> $ ./tools/testing/kunit/kunit.py run --kconfig_add CONFIG_RUST=y
+> --make_options LLVM=1 --arch x86_64 'rust_kernel_doctests'
+>
+> That also nicely formats the results.
+
+Indeed!
+
+    [16:55:52] ============ rust_kernel_doctests (70 subtests) ============
+    [16:55:52] [PASSED] rust_kernel_doctest_build_assert_rs_12_0
+    [16:55:52] [PASSED] rust_kernel_doctest_build_assert_rs_55_0
+    ...
+    [16:55:52] [PASSED] rust_kernel_doctest_types_rs_445_0
+    [16:55:52] [PASSED] rust_kernel_doctest_types_rs_509_0
+    [16:55:52] ============== [PASSED] rust_kernel_doctests ===============
+    [16:55:52] ============================================================
+    [16:55:52] Testing complete. Passed: 70, Failed: 0, Crashed: 0,
+    Skipped: 0, Errors: 0
+
+> That all being said, I can't say I'm thrilled with the test names
+> here: none of them are particularly descriptive, and they'll probably
+> not be static (which would make it difficult to track results /
+> regressions / etc between kernel versions). Neither of those are
+
+Yeah, the names are not great and would change from time to time
+across kernel versions.
+
+We could ask example writers to give each example a name, but that
+would make them fairly less convenient. For instance, sometimes they
+may be very small snippets interleaved with docs' prose (where giving
+a name may feel a bit of a burden, and people may end writing
+`foo_example1`, `foo_example2` etc. for each small "step" of an
+explanation). In other cases they may be very long, testing a wide API
+surface (e.g. when describing a module or type), where it is also hard
+to give non-generic names like `rbtree_doctest`. In those kind of
+cases, I think we would end up with not much better names than
+automatically generated ones.
+
+The other aspect is that, given they are part of the documentation,
+the prose or how things are explained/split may change, thus the
+doctests as well. For instance, one may need to split a very long
+`rbtree_doctest` in pieces, and then the name would need to change
+anyway.
+
+So I think we should avoid asking documentation writers to add a
+manual name, even if that means a bit ugly test names. Also this way
+they are consistently named. What do you think?
+
+One idea could be giving them a name based on the hash of the content
+and avoiding the line number, so that there is a higher chance for the
+name to stay the same even when the file gets modified for other
+reasons.
+
+> necessarily deal breakers, though it might make sense to hide them
+> behind a kernel option (like all other KUnit tests) so that they can
+> easily be excluded where they would otherwise clutter up results. (And
+
+Currently they are under `CONFIG_RUST_KERNEL_KUNIT_TEST` -- or do you
+mean something else?
+
+> if there's a way to properly name them, or maybe even split them into
+> per-file or per-module suites, that would make them a bit easier to
+> deal.) Additionally, there are some plans to taint the kernel[1] when
+
+Yeah, splitting them further is definitely possible. We are also
+likely splitting the `kernel` crate into several, which would also
+make the suites smaller etc. so perhaps further splits may not be
+needed.
+
+> Regardless, this is very neat, and I'm looking forward to taking a
+> closer look at it.
+
+Thanks again for taking a look and playing with it, I am glad you
+liked it! (even if it is just a first approximation, and only supports
+the `kernel` crate, etc.).
+
+Cheers,
+Miguel
