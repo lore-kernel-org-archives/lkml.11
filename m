@@ -2,130 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70082C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4378C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386277AbiEGQil (ORCPT
+        id S1442548AbiEGQnL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 12:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
+        Sat, 7 May 2022 12:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386208AbiEGQih (ORCPT
+        with ESMTP id S241566AbiEGQnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 12:38:37 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0E318378
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 09:34:50 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 247GYZsr111500;
-        Sat, 7 May 2022 11:34:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651941275;
-        bh=Hur27LN4fekLufj1k16EnyuF+7Y01NJ48WB1vYzscoU=;
-        h=Date:From:To:CC:Subject;
-        b=tXiML59uN5LW6pw2muk8PTW7+B1plviyQQwwtu3r5HFX7DEWEB7EWuhWunXpFMsCz
-         b1jYoWtoUpMmdEEXHjnuY0/Z+U2vuYpzz/UixyM3aQkk+hQo3aFbhIq19R5BlVuPDp
-         a60BB+QTflfPXsfndOJH+vxM/dt53FeJRIVP1ZPE=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 247GYZHE028615
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 7 May 2022 11:34:35 -0500
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sat, 7
- May 2022 11:34:35 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Sat, 7 May 2022 11:34:35 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 247GYZvu059962;
-        Sat, 7 May 2022 11:34:35 -0500
-Date:   Sat, 7 May 2022 11:34:35 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        <arm@kernel.org>, <soc@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Tony Lindgren <tony@atomide.com>
-Subject: [GIT PULL 2/2] ARM: dts: TI K2 updates for v5.19
-Message-ID: <20220507163435.tcg46cacwqhe7n64@busily>
+        Sat, 7 May 2022 12:43:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CCFDFB2;
+        Sat,  7 May 2022 09:39:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C1C2B80AE4;
+        Sat,  7 May 2022 16:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7670C385A5;
+        Sat,  7 May 2022 16:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651941559;
+        bh=FJdOwT69X41GLePtbzqNFP3tJgjdvaLGZc3c8OeOsuE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kmkA2u3hRqXbr4cJjFfCqMV1zYOd/Ll83YNcSA1pMSa9qQuhXnHldLmUrznXgN91H
+         /pc5ZtMqgSB0N9gM+KXeKWmj5xwVhlN7G+BARXg8cV9PHR9t3SFwuuyqEsCwC8k3wT
+         gHZcl7X56815UqVonYA1YSilK5bWDNP7B036DrPxh55GATVHNRmF5XJAniFIljTwpN
+         DPrCqvD0jV8TPo+BjxUXI5keQmnfg7VaZMXKJhEVhqgEGN6yhiuhN/LlnGrXjBjnRc
+         r/fHkMSEehgG2x1Mtxzt8aTZEhJUhLvTGHoJK7D7MolGfiWzaWH1Sad9YNNsR0Okx5
+         diU1oOIRRXsnQ==
+Date:   Sat, 7 May 2022 17:47:45 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krzk@kernel.org, krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH v3 3/3] iio: light: Add support for ltrf216a sensor
+Message-ID: <20220507174745.70666eeb@jic23-huawei>
+In-Reply-To: <8916313f-0974-0d2d-091b-17e5765c0304@collabora.com>
+References: <20220503144354.75438-1-shreeya.patel@collabora.com>
+        <20220503144354.75438-4-shreeya.patel@collabora.com>
+        <8916313f-0974-0d2d-091b-17e5765c0304@collabora.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vqftsuyxs5fplaqg"
-Content-Disposition: inline
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---vqftsuyxs5fplaqg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, 3 May 2022 22:37:49 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
 
-Hi ARM SoC maintainers,
+> Hi Jonathan,
+> 
 
-    Please pull:
+Hi Shreeya,
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+> 
+> Just one comment inline related to your previous review.
+> 
+> On 03/05/22 20:13, Shreeya Patel wrote:
+> > From: Zhigang Shi <Zhigang.Shi@liteon.com>
+> >
+> > Add initial support for ltrf216a ambient light sensor.
+> >
+> > Datasheet: gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTRF216A.pdf
+> > Co-developed-by: Shreeya Patel <shreeya.patel@collabora.com>
+> > Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+> > Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
+> > ---
+> >
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+...
 
-are available in the Git repository at:
+> > +struct ltrf216a_data {
+> > +	struct i2c_client *client;
+> > +	u32 int_time;
+> > +	u16 int_time_fac;
+> > +	u8 als_gain_fac;
+> > +	struct mutex mutex; /* Protect read and write operations */  
+> 
+> I wasn't really sure about your comment related to the lock description 
+> here.
+> I see we are using these locks in read_raw and write_raw functions only and
+> hence I've added the above comment.
+A lock should always ensure consistency of data (either in software or in
+hardware registers) so that we don't end up with odd results due to race
+conditions between multiple writers / readers.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git tags/ti-keysto=
-ne-dt-for-v5.19
+The comment for a lock should call out what 'data' is being protected.
 
-for you to fetch changes up to 6273a1864d437553ab4220d1abc010c5bb758ad2:
+In this particular case I'm not sure what that is. 
 
-  ARM: dts: keystone: Fix missing fallback and case in SPI NOR node compati=
-ble (2022-04-22 13:48:38 -0500)
+Take the *_get_lux() call in read_raw()
 
-----------------------------------------------------------------
-Keystone2 device tree updates for v5.19
+That performs a pair of calls to _read_data(). The _read_data() calls
+just check for valid data and then read the channels.  The i2c accesses will
+be protected by the underlying bus locks and I can't otherwise see anything
+in those calls that needs protecting with locks (all the data is local).
 
-* Cleanups for SPI NOR / flash
+Finally we have some maths done with data->als_gain_fac and data->int_time_fac
 
-----------------------------------------------------------------
-Krzysztof Kozlowski (2):
-      ARM: dts: keystone: Align SPI NOR node name with dtschema
-      ARM: dts: keystone: Fix missing fallback and case in SPI NOR node com=
-patible
+als_gain_fac is currently a constant in the driver (it's set only in probe I think).
 
- arch/arm/boot/dts/keystone-k2e-evm.dts  | 4 ++--
- arch/arm/boot/dts/keystone-k2g-evm.dts  | 2 +-
- arch/arm/boot/dts/keystone-k2g-ice.dts  | 2 +-
- arch/arm/boot/dts/keystone-k2hk-evm.dts | 4 ++--
- arch/arm/boot/dts/keystone-k2l-evm.dts  | 4 ++--
- 5 files changed, 8 insertions(+), 8 deletions(-)
+int_time_fac is more interesting.
+That is set alongside a register write in _set_int_time().
 
---=20
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5=
- 849D 1736 249D
+So I 'think' the entire purpose of the lock is to ensure that the
+value of integration time doesn't not change whilst a reading is progress
+(so we can do the right maths).
 
---vqftsuyxs5fplaqg
-Content-Type: application/pgp-signature; name="signature.asc"
+Hence the comment should be something along the lines of
 
------BEGIN PGP SIGNATURE-----
+/*
+ * Ensure cached value of integration time is consistent with hardware setting
+ * and remains constant during a measurement of Lux.
+ */
 
-iQIzBAABCgAdFiEE+KKGk1TrgjIXoxo03bWEnRc2JJ0FAmJ2n44ACgkQ3bWEnRc2
-JJ0tFhAAqPLkuqmvJv1Y4utKl8Hpa4Pst3VI9H1+bVnz5tDwWzUSx+4a1zQLxgcv
-ZcJkRTgMhlG8zGIzevGNErnVkbLmuqzdP/VNWNfsLN4ed/bxpMzMwg3DhUi/fyRg
-ZpotfG3Rut/F5U/AGgY0Qx/r02pRdXudoOLCsX8ZK+if05y4me6uk0CYc5oep2hD
-bTE/qAE04aCPhfUxSt6qULnj5vgITB7+EP2cDqLm6vpE+0pnu+zAYoLNsbv5jN9v
-pBmVNemnr62nPOOwfLfUT3130tnkA5wvKEdBGQDfBdoDuJBqBbQ0epaDFoyncUxr
-pJh2C2Y+Gs97G/04YiyADyalSmVBbe+CFOY6By+cYPBbOOkYdNY1etjdpGi1QaM1
-Uf1e7EGCZHOPlkouby9M1mmxx8ep1C2kkwELJXuv1YpPRcb/0hEclGViLs9J47v8
-LvEB4du31SqUiN0bs7z77OEUdgI8Fc9MzxziKaOmTHNwIkAHDTFMBhEHsBjZJes4
-oiKxT6Pm+V87rFfe6z5JuGitjVBv8G/tNXW13ZsHo4dKI9UdjmZuGv0sKL2yTlvg
-dTuQlTMlLC36Ax4fbSFBlluPOs0QDs9WGut+uVGrnGzu0spKInX0RIQ18m7FeHrg
-7nDm0peVFbzu3G/2tIXQT6K9fVsJvDIXrAjtFmla+y/lLuQciX4=
-=GYEt
------END PGP SIGNATURE-----
+This extra detail makes it easy to tell where the lock must be taken which
+is very useful for anyone modifying the driver in the future.
 
---vqftsuyxs5fplaqg--
+If they expand the scope of the lock, then they should also update the
+documentation to match.
+  
+> 
+> 
+> 
+> Thanks,
+> Shreeya Patel
+
