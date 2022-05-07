@@ -2,121 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 432F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 100CAC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 14:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384641AbiEGOl7 (ORCPT
+        id S1392288AbiEGOmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 10:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42036 "EHLO
+        Sat, 7 May 2022 10:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237457AbiEGOl4 (ORCPT
+        with ESMTP id S1385563AbiEGOmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 10:41:56 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED67BC8;
-        Sat,  7 May 2022 07:38:09 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id e189so10615966oia.8;
-        Sat, 07 May 2022 07:38:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nJOPPb18Oo0+/K8yxoE5qod8LtCarDUSMpTNksvDWi4=;
-        b=GVV1i2BDnyYYHDVrrTnPogQxFlVZ9SsU5k0irmRzJYyV9F+pJr9Vf2QfJib/h0rqD1
-         hqd8mkYqj1CuqHbmTeuDqcGbW+7p2f7tPKvLEHFMmaahz7UndB78VgyC8tb1HCT1Vh5H
-         qR7mcqcxtfWiiLv7rC6wNzgzWx8Mn8oA/HLs66h4RISTdErs2Lv/1bOYAPbXn485Zq4K
-         t+bipdYo041zCBNNhZarjT3sYpKGgRtHFnesTcz8/Ak1reKr7Tah5KxyYI51kH5gVCmv
-         eh2/6rRud9GVjxtubgqW7Ya4zsh7DTRI0ujv39JzSBsmqW2h/eGF56VAY+zAag1Q44kL
-         qlIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nJOPPb18Oo0+/K8yxoE5qod8LtCarDUSMpTNksvDWi4=;
-        b=lDcVNKWKOefrW1KFTAV3X85pbF+YCu9Eyo73Gx1O14aR/w6VTaHdc7Pzncix/U9cE5
-         /UbtHQ24JMCkPnilZiW5KgOXAOKykL1RdB0sbL29+qxRQrxRJucxYK77+YpH8nyfNW6a
-         lNEbTi6PIGaqRL8Rt+OoLz2RSBFDjwaBOd/XALof2b7VCDq7QslHzkqTFWh5NiKEEWEW
-         30NQFmtQnR4EAoqmPV//KWP2NA5/SQV4AQ+Yg1p0i0zKelGOq/cGrY+T2Q8OIVnCsUpF
-         VCeKZnphlBvO1+rq+3ZLoJmpZRWltwBoXAAqFLKWCwYDSzWv5zye62zaRm22Ap7voTom
-         g43g==
-X-Gm-Message-State: AOAM530U1K9jTSwKeZRXN8oqQERf4RgXdaqQFm6GRp8bdr9n8mzDM9hh
-        70UduK+h+fSwg3KgDI/c9REXlt2DrglqTo7eWC4=
-X-Google-Smtp-Source: ABdhPJxz2rDTHCIEhTyFmyrx8ADw8gfmFf8WPj575Q5NKkjoOnYOtow2/B+cPd6ER9LiwFlNn74HdnAL+hPDmO21C70=
-X-Received: by 2002:a05:6808:11c3:b0:2f9:62e0:ebe with SMTP id
- p3-20020a05680811c300b002f962e00ebemr3805925oiv.22.1651934289041; Sat, 07 May
- 2022 07:38:09 -0700 (PDT)
+        Sat, 7 May 2022 10:42:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E873E0EA;
+        Sat,  7 May 2022 07:38:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40EB660AFA;
+        Sat,  7 May 2022 14:38:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF39C385A5;
+        Sat,  7 May 2022 14:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651934302;
+        bh=BqPf3eWIIjQrK9/r/Z8NDj3BNQR3sDaLaLL6MbnKxr4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PmvehBWSa7i3TW4sVXMWr7bFqaqpFN8dAaC1KZdjwfJh1K8vNUNKRyzcqjDs7Z8Qa
+         1YZ+hLIx7gt6i2sHd6S8D48TQPAc5/1kmmid//p3WUwieDSilDVh4uHUysvrOMeAad
+         KDUkiy6QT7EpuzxfL9rnbYMy7QZxai8x5LKNatCzg3jgn/V72giZ1o8sV3e1181vm0
+         Ks3PYvCFzlxI4RPMQmC0lN8KBXdz5Nsc7b8v6E8gcQ6Qqe6h/xTBufC9+AAW3c/OWU
+         JVKZPHsndzBXhuHG79pWmHvN/7jW88CbJhzTa2ZTte2bvx8UYfKcZaquO3jB3nj7Zg
+         Sa4iFkl+h7jQw==
+Date:   Sat, 7 May 2022 15:46:49 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V3 5/5] iio: accel: sca3300: Add inclination channels
+Message-ID: <20220507154649.54d91a41@jic23-huawei>
+In-Reply-To: <20220504133612.604304-6-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220504133612.604304-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <20220504133612.604304-6-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <CANL0fFQRBZiVcEM0OOxkLqiAKf=rFssGetrwN6vWj5SsxX__mA@mail.gmail.com>
- <20220505082256.72c9ee43@hermes.local>
-In-Reply-To: <20220505082256.72c9ee43@hermes.local>
-From:   Gonsolo <gonsolo@gmail.com>
-Date:   Sat, 7 May 2022 16:37:58 +0200
-Message-ID: <CANL0fFSmqR4F=9bFgVRaKXyCDocwwhxySUBo5x=12900fhWn6A@mail.gmail.com>
-Subject: Re: Suspend/resume error with AWUS036ACM
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Stephen,
+On Wed,  4 May 2022 13:36:12 +0000
+LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
-> Contact Ubuntu.  The rule for upstream is if you load out of tree drivers
-> than that kernel is unsupported.
+> Different from SCA3300, SCL3300 can output inclination angles.
+> Angles are formed from acceleration with following equations:
+> ANG_X =3D atan2(accx / =E2=88=9A(accy^2 + accz^2)),
+> ANG_Y =3D atan2(accy / =E2=88=9A(accx^2 + accz^2)),
+> ANG_Z =3D atan2(accz / =E2=88=9A(accx^2 + accy^2)),
+>=20
+> The commit adds the output of the raw value, scale
+> and scale_available of angles.
+>=20
+> New interfaces:
+>   in_incli_scale
+>   in_incli_scale_available
+>   in_incli_x_raw
+>   in_incli_y_raw
+>   in_incli_z_raw
+> Data converted by application of scale to degrees.
+>=20
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
 
-I compiled a stock 5.17.5 kernel from git.kernel.org, installed
-without kernel headers (forcing dkms to not build proprietary drivers)
-and get the following errors *at boot time* (not suspend/resume):
+Don't add tags for other people.  They have to be explicitly given by the p=
+erson
+in question.
 
-  +0,000386] wlx00c0cab022a0: associate with 8c:6a:8d:9e:2a:88 (try 1/3)
-[  +0,001118] ================================================================================
-[  +0,000005] UBSAN: invalid-load in net/mac80211/status.c:1164:21
-[  +0,000004] load of value 255 is not a valid value for type '_Bool'
-[  +0,000003] CPU: 10 PID: 380 Comm: kworker/u256:5 Not tainted 5.17.5 #3
-[  +0,000004] Hardware name: To Be Filled By O.E.M. To Be Filled By
-O.E.M./X399 Phantom Gaming 6, BIOS P1.31 01/14/2021
-[  +0,000003] Workqueue: mt76 mt76u_tx_status_data [mt76_usb]
-[  +0,000009] Call Trace:
-[  +0,000002]  <TASK>
-[  +0,000003]  dump_stack_lvl+0x4c/0x63
-[  +0,000009]  dump_stack+0x10/0x12
-[  +0,000004]  ubsan_epilogue+0x9/0x45
-[  +0,000003]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-[  +0,000004]  ieee80211_tx_status_ext.cold+0x1e/0xb8 [mac80211]
-[  +0,000058]  ? __radix_tree_delete+0x91/0x100
-[  +0,000006]  mt76_tx_status_unlock+0x119/0x170 [mt76]
-[  +0,000011]  mt76x02_send_tx_status+0x1af/0x420 [mt76x02_lib]
-[  +0,000009]  mt76x02_tx_status_data+0x47/0x70 [mt76x02_lib]
-[  +0,000007]  mt76u_tx_status_data+0x67/0xc0 [mt76_usb]
-[  +0,000005]  process_one_work+0x21f/0x3f0
-[  +0,000005]  worker_thread+0x50/0x3d0
-[  +0,000004]  ? rescuer_thread+0x390/0x390
-[  +0,000003]  kthread+0xee/0x120
-[  +0,000003]  ? kthread_complete_and_exit+0x20/0x20
-[  +0,000004]  ret_from_fork+0x22/0x30
-[  +0,000005]  </TASK>
-[  +0,000001] ================================================================================
-[  +0,003098] wlx00c0cab022a0: RX AssocResp from 8c:6a:8d:9e:2a:88
-(capab=0x1411 status=0 aid=16)
+This isn't reflecting that people reviewed the code, but that they
+reviewed the code and are happy with it.  That's not yet the case
+and even if they are happy, it is up to individual reviewers to give
+a tag or not as they wish.
 
-I sent the first email because I suspected that the above (locking?)
-problem was totally unrelated to the GPU driver.
-I hope that this is more helpful.
+Easy to tell in my case as I don't use that email address for tags ;)
 
--- 
-g
+Jonathan
+
+
+
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+> ---
+>  drivers/iio/accel/sca3300.c | 79 ++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 77 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+> index 040f8e1a1327..cf588f014407 100644
+> --- a/drivers/iio/accel/sca3300.c
+> +++ b/drivers/iio/accel/sca3300.c
+> @@ -42,12 +42,18 @@
+>  #define SCA3300_VALUE_RS_ERROR	0x3
+>  #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
+> =20
+> +#define SCA3300_REG_ANG_CTRL 0x0C
+> +#define SCA3300_ANG_ENABLE   0x1F
+> +
+>  enum sca3300_scan_indexes {
+>  	SCA3300_ACC_X =3D 0,
+>  	SCA3300_ACC_Y,
+>  	SCA3300_ACC_Z,
+>  	SCA3300_TEMP,
+>  	SCA3300_TIMESTAMP,
+> +	SCA3300_INCLI_X,
+> +	SCA3300_INCLI_Y,
+> +	SCA3300_INCLI_Z,
+>  };
+> =20
+>  #define SCA3300_ACCEL_CHANNEL(index, reg, axis) {			\
+> @@ -71,6 +77,24 @@ enum sca3300_scan_indexes {
+>  	},								\
+>  }
+> =20
+> +#define SCA3300_INCLI_CHANNEL(index, reg, axis) {			\
+> +	.type =3D IIO_INCLI,						\
+> +	.address =3D reg,							\
+> +	.modified =3D 1,							\
+> +	.channel2 =3D IIO_MOD_##axis,					\
+> +	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),		\
+> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),			\
+> +	.info_mask_shared_by_type_available =3D				\
+> +	BIT(IIO_CHAN_INFO_SCALE),					\
+> +	.scan_index =3D index,						\
+> +	.scan_type =3D {							\
+> +		.sign =3D 's',						\
+> +		.realbits =3D 16,						\
+> +		.storagebits =3D 16,					\
+> +		.endianness =3D IIO_CPU,					\
+> +	},								\
+> +}
+> +
+>  #define SCA3300_TEMP_CHANNEL(index, reg) {				\
+>  		.type =3D IIO_TEMP,					\
+>  		.address =3D reg,						\
+> @@ -102,28 +126,54 @@ static const int scl3300_accel_scale_tbl[][2] =3D {=
+{0, 167}, {0, 333}, {0, 83}};
+>  static const int sca3300_accel_scale_modes_map[] =3D {0, 1, 2, 2};
+>  static const int scl3300_accel_scale_modes_map[] =3D {0, 1, 2};
+> =20
+> +static const int scl3300_incli_scale_tbl[][2] =3D {{0, 5495}};
+> +static const int scl3300_incli_scale_modes_map[] =3D {0, 0, 0};
+> +
+>  static const int sca3300_avail_modes_map[] =3D {0, 1, 2, 3};
+>  static const int scl3300_avail_modes_map[] =3D {0, 1, 3};
+> +
+> +static const struct iio_chan_spec scl3300_channels[] =3D {
+> +	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
+> +	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
+> +	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
+> +	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
+> +	IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP),
+> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
+> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
+> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
+> +};
+> +
+>  static const unsigned long sca3300_scan_masks[] =3D {
+>  	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+>  	BIT(SCA3300_TEMP),
+>  	0
+>  };
+> =20
+> +static const unsigned long scl3300_scan_masks[] =3D {
+> +	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+> +	BIT(SCA3300_TEMP) |
+> +	BIT(SCA3300_INCLI_X) | BIT(SCA3300_INCLI_Y) | BIT(SCA3300_INCLI_Z),
+> +	0
+> +};
+> +
+>  struct sca3300_chip_info {
+>  	const struct iio_chan_spec *channels;
+>  	const int (*accel_scale_table)[2];
+> +	const int (*incli_scale_table)[2];
+>  	const int *accel_scale_modes_map;
+> +	const int *incli_scale_modes_map;
+>  	const unsigned long *scan_masks;
+>  	const int *avail_modes_table;
+>  	const int *freq_modes_map;
+>  	const int *freq_table;
+>  	const u8 num_accel_scales;
+> +	const u8 num_incli_scales;
+>  	const u8 num_avail_modes;
+>  	const u8 num_channels;
+>  	const u8 num_freqs;
+>  	const u8 chip_id;
+>  	const char *name;
+> +	const bool angle;
+>  };
+> =20
+>  /**
+> @@ -156,24 +206,32 @@ static const struct sca3300_chip_info sca3300_chip_=
+tbl[] =3D {
+>  		.freq_table =3D sca3300_freq_tbl,
+>  		.scan_masks =3D sca3300_scan_masks,
+>  		.channels =3D sca3300_channels,
+> +		.incli_scale_modes_map =3D NULL,
+> +		.incli_scale_table =3D NULL,
+> +		.num_incli_scales =3D 0,
+>  		.num_avail_modes =3D 4,
+>  		.name =3D "sca3300",
+>  		.chip_id =3D 0x51,
+>  		.num_freqs =3D 2,
+> +		.angle =3D false,
+>  	},
+>  	{	.num_accel_scales =3D ARRAY_SIZE(scl3300_accel_scale_tbl)*2,
+> +		.num_incli_scales =3D ARRAY_SIZE(scl3300_incli_scale_tbl)*2,
+>  		.accel_scale_modes_map =3D scl3300_accel_scale_modes_map,
+> +		.incli_scale_modes_map =3D scl3300_incli_scale_modes_map,
+>  		.accel_scale_table =3D scl3300_accel_scale_tbl,
+> -		.num_channels =3D ARRAY_SIZE(sca3300_channels),
+> +		.incli_scale_table =3D scl3300_incli_scale_tbl,
+> +		.num_channels =3D ARRAY_SIZE(scl3300_channels),
+>  		.avail_modes_table =3D scl3300_avail_modes_map,
+>  		.freq_modes_map =3D scl3300_freq_modes_map,
+>  		.scan_masks =3D sca3300_scan_masks,
+>  		.freq_table =3D scl3300_freq_tbl,
+> -		.channels =3D sca3300_channels,
+> +		.channels =3D scl3300_channels,
+>  		.num_avail_modes =3D 3,
+>  		.name =3D "scl3300",
+>  		.chip_id =3D 0xC1,
+>  		.num_freqs =3D 3,
+> +		.angle =3D true,
+>  	},
+>  };
+> =20
+> @@ -382,6 +440,11 @@ static int sca3300_read_raw(struct iio_dev *indio_de=
+v,
+>  		if (ret)
+>  			return ret;
+>  		switch (chan->type) {
+> +		case IIO_INCLI:
+> +			index =3D data->chip->incli_scale_modes_map[reg_val];
+> +			*val =3D data->chip->incli_scale_table[index][0];
+> +			*val2 =3D data->chip->incli_scale_table[index][1];
+> +			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_ACCEL:
+>  			index =3D data->chip->accel_scale_modes_map[reg_val];
+>  			*val =3D data->chip->accel_scale_table[index][0];
+> @@ -473,6 +536,13 @@ static int sca3300_init(struct sca3300_data *sca_dat=
+a,
+>  	indio_dev->name =3D sca3300_chip_tbl[i].name;
+>  	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> =20
+> +	if (sca_data->chip->angle) {
+> +		ret =3D sca3300_write_reg(sca_data, SCA3300_REG_ANG_CTRL,
+> +					SCA3300_ANG_ENABLE);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	return 0;
+>  }
+> =20
+> @@ -508,6 +578,11 @@ static int sca3300_read_avail(struct iio_dev *indio_=
+dev,
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+> +		case IIO_INCLI:
+> +			*vals =3D (const int *)data->chip->incli_scale_table;
+> +			*length =3D data->chip->num_incli_scales;
+> +			*type =3D IIO_VAL_INT_PLUS_MICRO;
+> +			return IIO_AVAIL_LIST;
+>  		case IIO_ACCEL:
+>  			*vals =3D (const int *)data->chip->accel_scale_table;
+>  			*length =3D data->chip->num_accel_scales;
+
