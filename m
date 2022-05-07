@@ -2,93 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 195D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 17:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D5D3C43217
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 17:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380831AbiEGRJY (ORCPT
+        id S1446673AbiEGRJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 13:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
+        Sat, 7 May 2022 13:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232817AbiEGRJT (ORCPT
+        with ESMTP id S1446638AbiEGRIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 13:09:19 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0392ED
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 10:05:30 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id w17-20020a17090a529100b001db302efed6so9393330pjh.4
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 10:05:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fQevBTBeKpUzKv50B3EmDg66bPTsKLOnB8oIMrsHcyE=;
-        b=FmPfRS2YQBVMFibJdOsBt7cM5e1vN52codMOJbhINdBK/G5AzG7pj3MWmUrV1MZ8i1
-         bmG+qGJ+DxcH5gFqocEidEX3B0bo9fFCITJ2B/9IqvziG15g0Aspdd46a6zMoZ2Btfea
-         eaehY7c1mqOD6UxXZAMPTsKPZH7J6agdMoiJblMjTBjEOuxV6rq3YydVaXVULSVgumMT
-         /lCpwCQuJTfwo0a9IHH++0sJGxfUn7rBkNKTQwLGAL7kDfNDr0srfbAZka81VhUF0ca5
-         UPBDnavrbUSBJhNNxDXMcJ7NC2hQZgJPQQOoYLcUUUlpbQ8ymmsxGZaZXc4W2722NX+q
-         oEag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fQevBTBeKpUzKv50B3EmDg66bPTsKLOnB8oIMrsHcyE=;
-        b=fY1iVEW+jYHPlUz94XtjvTxob9zWa3+/1Q7pcQ9McEoICPJ3008ylCm96DQJ7RJVlW
-         EYnAzN6EmrrcAl8nwd1HD6z7l6pZnoxWSsGe4h9fdbdhfB9AWaIb4xt9zGVT6YtUhPKu
-         65iGFyn2WwR1MGIDpTWMVXlcWP2TgUhqP2kG2rtLqBMD/uXMCEQ9Tz0Cax8wUzq7VDQZ
-         MQO5Kk3jLgi3Otwlg9+3Z+6p5mjjyCmDgYPkZylhwRY24CpXbRKXpQi730815Dx8GkX0
-         z/kMaEtODV+rv8eTQyunDPWYCZsity29+lm3q4u3bauGmQsqOWmMW3QgeXHDcInPW0G8
-         WMzA==
-X-Gm-Message-State: AOAM5329bV6/usGQoLPDVjdSheYbtdK4yiDAlZmCh+ih7PA6bgaIcsk/
-        IQNG5dGgQjlDw/Ec5oxRDaM=
-X-Google-Smtp-Source: ABdhPJw84yKgG1x15dWcN3VSS+bSyG9ZjAKq9nyOHc3CF9KlKP/qYATY8uuD0QghXC1kR6UviI76qw==
-X-Received: by 2002:a17:902:aa06:b0:158:f13b:4859 with SMTP id be6-20020a170902aa0600b00158f13b4859mr8762110plb.141.1651943129987;
-        Sat, 07 May 2022 10:05:29 -0700 (PDT)
-Received: from localhost.localdomain ([103.230.148.187])
-        by smtp.gmail.com with ESMTPSA id k18-20020a170902761200b0015e8d4eb2d3sm3899531pll.285.2022.05.07.10.05.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 10:05:29 -0700 (PDT)
-From:   Gautam Menghani <gautammenghani201@gmail.com>
-To:     sj@kernel.org, skhan@linuxfoundation.org
-Cc:     Gautam Menghani <gautammenghani201@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Add documentation for Enum value 'NR_DAMON_OPS' in 
-Date:   Sat,  7 May 2022 22:26:20 +0530
-Message-Id: <20220507165620.110706-1-gautammenghani201@gmail.com>
+        Sat, 7 May 2022 13:08:41 -0400
+Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283D41BE82;
+        Sat,  7 May 2022 10:04:54 -0700 (PDT)
+Received: from mxbox4.masterlogin.de (unknown [192.168.10.79])
+        by mxout3.routing.net (Postfix) with ESMTP id 7F3A66055D;
+        Sat,  7 May 2022 17:04:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1651943092;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ix14kKhkfGJ0LxMzmCAvLzUtN0qvLqOmhQQPbdvCsFI=;
+        b=uzvPR9IL9rUuL6JyIRAxn1pjcNMQFBeFUYh8m75mxHhALtCwkHuG/oErktCF4Rwix518dx
+        1ilapP1rpHha2rdfg/9iCjQgts91aGy9Pv33Ij5mJ5s5qX+bK9IVLfNX556pjCpcqiCFwy
+        np+GpdURPQMTWvTN4ItDN2ZZPHACcfQ=
+Received: from localhost.localdomain (fttx-pool-80.245.74.2.bambit.de [80.245.74.2])
+        by mxbox4.masterlogin.de (Postfix) with ESMTPSA id 702A1800AB;
+        Sat,  7 May 2022 17:04:51 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-rockchip@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>
+Subject: [PATCH v3 2/6] net: dsa: mt7530: rework mt7530_hw_vlan_{add,del}
+Date:   Sat,  7 May 2022 19:04:36 +0200
+Message-Id: <20220507170440.64005-3-linux@fw-web.de>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220507155218.45706-1-sj@kernel.org>
-References: <20220507155218.45706-1-sj@kernel.org>
+In-Reply-To: <20220507170440.64005-1-linux@fw-web.de>
+References: <20220507170440.64005-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Mail-ID: d260aa6b-fd71-45f7-beb2-17018c2f97a8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the warning - "Enum value 'NR_DAMON_OPS' not described in 
-enum 'damon_ops_id'" generated by the command "make pdfdocs"
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+Rework vlan_add/vlan_del functions in preparation for dynamic cpu port.
+
+Currently BIT(MT7530_CPU_PORT) is added to new_members, even though
+mt7530_port_vlan_add() will be called on the CPU port too.
+
+Let DSA core decide when to call port_vlan_add for the CPU port, rather
+than doing it implicitly.
+
+We can do autonomous forwarding in a certain VLAN, but not add br0 to that
+VLAN and avoid flooding the CPU with those packets, if software knows it
+doesn't need to process them.
+
+Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
-Changes in v2:
-- Fix checkpatch warning of 75 characters per line
-- Fix email mismatch in from and signed by field
+v2: new patch
+---
+ drivers/net/dsa/mt7530.c | 30 ++++++++++++------------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
 
- include/linux/damon.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/include/linux/damon.h b/include/linux/damon.h
-index f23cbfa4248d..b972a7a3b6f0 100644
---- a/include/linux/damon.h
-+++ b/include/linux/damon.h
-@@ -262,6 +262,7 @@ struct damos {
-  *
-  * @DAMON_OPS_VADDR:	Monitoring operations for virtual address spaces
-  * @DAMON_OPS_PADDR:	Monitoring operations for the physical address space
-+ * @NR_DAMON_OPS:	Number of monitoring operations for a particular implementation
-  */
- enum damon_ops_id {
- 	DAMON_OPS_VADDR,
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 19f0035d4410..46dee0714382 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1522,11 +1522,11 @@ static void
+ mt7530_hw_vlan_add(struct mt7530_priv *priv,
+ 		   struct mt7530_hw_vlan_entry *entry)
+ {
++	struct dsa_port *dp = dsa_to_port(priv->ds, entry->port);
+ 	u8 new_members;
+ 	u32 val;
+ 
+-	new_members = entry->old_members | BIT(entry->port) |
+-		      BIT(MT7530_CPU_PORT);
++	new_members = entry->old_members | BIT(entry->port);
+ 
+ 	/* Validate the entry with independent learning, create egress tag per
+ 	 * VLAN and joining the port as one of the port members.
+@@ -1537,22 +1537,20 @@ mt7530_hw_vlan_add(struct mt7530_priv *priv,
+ 
+ 	/* Decide whether adding tag or not for those outgoing packets from the
+ 	 * port inside the VLAN.
+-	 */
+-	val = entry->untagged ? MT7530_VLAN_EGRESS_UNTAG :
+-				MT7530_VLAN_EGRESS_TAG;
+-	mt7530_rmw(priv, MT7530_VAWD2,
+-		   ETAG_CTRL_P_MASK(entry->port),
+-		   ETAG_CTRL_P(entry->port, val));
+-
+-	/* CPU port is always taken as a tagged port for serving more than one
++	 * CPU port is always taken as a tagged port for serving more than one
+ 	 * VLANs across and also being applied with egress type stack mode for
+ 	 * that VLAN tags would be appended after hardware special tag used as
+ 	 * DSA tag.
+ 	 */
++	if (dsa_port_is_cpu(dp))
++		val = MT7530_VLAN_EGRESS_STACK;
++	else if (entry->untagged)
++		val = MT7530_VLAN_EGRESS_UNTAG;
++	else
++		val = MT7530_VLAN_EGRESS_TAG;
+ 	mt7530_rmw(priv, MT7530_VAWD2,
+-		   ETAG_CTRL_P_MASK(MT7530_CPU_PORT),
+-		   ETAG_CTRL_P(MT7530_CPU_PORT,
+-			       MT7530_VLAN_EGRESS_STACK));
++		   ETAG_CTRL_P_MASK(entry->port),
++		   ETAG_CTRL_P(entry->port, val));
+ }
+ 
+ static void
+@@ -1571,11 +1569,7 @@ mt7530_hw_vlan_del(struct mt7530_priv *priv,
+ 		return;
+ 	}
+ 
+-	/* If certain member apart from CPU port is still alive in the VLAN,
+-	 * the entry would be kept valid. Otherwise, the entry is got to be
+-	 * disabled.
+-	 */
+-	if (new_members && new_members != BIT(MT7530_CPU_PORT)) {
++	if (new_members) {
+ 		val = IVL_MAC | VTAG_EN | PORT_MEM(new_members) |
+ 		      VLAN_VALID;
+ 		mt7530_write(priv, MT7530_VAWD1, val);
 -- 
 2.25.1
 
