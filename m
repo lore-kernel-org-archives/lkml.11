@@ -2,225 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA59C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A22C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:27:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351128AbiEGQbT (ORCPT
+        id S1380865AbiEGQbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 12:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
+        Sat, 7 May 2022 12:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240025AbiEGQbM (ORCPT
+        with ESMTP id S1354878AbiEGQbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 12:31:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64EC31222;
-        Sat,  7 May 2022 09:27:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F88961277;
-        Sat,  7 May 2022 16:27:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3E2C385A6;
-        Sat,  7 May 2022 16:27:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651940843;
-        bh=3rr8bPT1a3oSQb1SQ5wfvUm81Gi7wyQPTmJOEcdlh2A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dqm5PdfERD+8qcwDSg/e8RFozVMjEnfGErAOdc6LJrU22OqtG3qYIdJig/qdNMkxM
-         6KTnVBi7SyqV0XbQR8/qWp1OxotQ4YxBXyCFKUSVsdArXze2M6P5deYbpEyawuaIKq
-         /IL9tGVPxpQzRsgJq1sZUni/mXUoMcZZZQpQTl0YjD+SkUc3w41LeEn0YroQmGo31U
-         3ztBgNuHz7CsIUeg9iDRIyJLdPMOZjrgUT21T4XE57FepY/Tj/cNMGfWSvDgvi98wQ
-         zW453DBNKHr7+/iQl/V7RPAv8WxZ0YOshOMsEDoX4Nz9hhCJLN/GgIUBQ0vZTUkKux
-         q6Pd7LVcjG+gQ==
-Date:   Sat, 7 May 2022 17:35:51 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Subject: Re: [PATCH v3 2/2] iio: adc: ad4130: add AD4130 driver
-Message-ID: <20220507173551.1bc45a82@jic23-huawei>
-In-Reply-To: <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
-References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
-        <20220419150828.191933-3-cosmin.tanislav@analog.com>
-        <20220501170807.1e728524@jic23-huawei>
-        <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 7 May 2022 12:31:34 -0400
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B989A35A8B
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 09:27:43 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout02.posteo.de (Postfix) with ESMTPS id B4DF724010E
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 18:27:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
+        t=1651940860; bh=k0ASTfiS6TwGFLg/edUL08Y/fyise8EySIg2PekxSS8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rSJ4eiOukclbqPMoX8l9mO4qbNpWHEHt7hN++Z/aHGdk0WUP0oUKfv+KAvwZljSTu
+         dFENVsorV5H742KbA/eKUKPp6Um2s4QyswigATcQLkY11UgCBqBz/2oCto5s7M6dOD
+         Dff6biJ61fvBfsKzQVC3M+zevUCt1hgo4Pl3aoNd/At7h/+aFO29IHEhLOQO3Il/qF
+         vyFvRJrW2CIN0rvhvko5YiL5H9Bv0Lf2mrSAGI9D1zmeNYw5cF2plVk/iJIFaOe0KC
+         YmHQqZxiCy0Db+N5yPTZ5L4W04ZaJeJbE8qlacpxzJhUvVGAHae4dSqRX9PpMqsitM
+         XoND24Uk7ws6g==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4KwXsQ3gHDz6tmG;
+        Sat,  7 May 2022 18:27:38 +0200 (CEST)
+From:   Manuel Ullmann <labre@posteo.de>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev, davem@davemloft.net,
+        ndanilov@marvell.com, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, Jordan Leppert <jordanleppert@protonmail.com>,
+        Holger =?utf-8?Q?Hoffst=C3=A4tte?= 
+        <holger@applied-asynchrony.com>, koo5 <kolman.jindrich@gmail.com>
+Subject: [PATCH net-next v4] net: atlantic: always deep reset on pm op,
+ fixing up my null deref regression
+Date:   Sat, 07 May 2022 16:27:48 +0000
+Message-ID: <87zgjtz4sb.fsf@posteo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From 18dc080d8d4a30d0fcb45f24fd15279cc87c47d5 Mon Sep 17 00:00:00 2001
+Date: Wed, 4 May 2022 21:30:44 +0200
 
-> >   
-> >> +static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val)
-> >> +{
-> >> +	struct ad4130_state *st = iio_priv(indio_dev);
-> >> +	unsigned int eff;
-> >> +	int ret;
-> >> +
-> >> +	if (val > AD4130_FIFO_SIZE)
-> >> +		return -EINVAL;
-> >> +
-> >> +	/*
-> >> +	 * Always set watermark to a multiple of the number of enabled channels
-> >> +	 * to avoid making the FIFO unaligned.
-> >> +	 */
-> >> +	eff = rounddown(val, st->num_enabled_channels);
-> >> +
-> >> +	mutex_lock(&st->lock);
-> >> +
-> >> +	ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
-> >> +				 AD4130_WATERMARK_MASK,
-> >> +				 FIELD_PREP(AD4130_WATERMARK_MASK,
-> >> +					    ad4130_watermark_reg_val(eff)));
-> >> +	if (ret)
-> >> +		goto out;
-> >> +
-> >> +	st->effective_watermark = eff;
-> >> +	st->watermark = val;  
-> > 
-> > Hmm this is a potential inconsistency in the IIO ABI.
-> > ABI docs describes watermark as being number of 'scan elements' which is
-> > not the clearest text we could have gone with...
-> > 
-> > Now I may well have made a mistake in the following as it's rather a long time
-> > since I last looked at the core handling for this...
-> > 
-> > The core treats it as number datum (which is same as a scan) when using
-> > it for the main watermark attribute and also when using watermarks with the
-> > kfifo (the IIO fifo is made up of objects each of which is a scan. So kfifo_len()
-> > returns the number of scans.
-> >   
-> > Looking very quickly at a few other drivers
-> > adxl367 seems to use number of samples.
-> > adxl372 is using number of scans.
-> > bmc150 hardware seems to work on basis of frame count which I 'think' is probably scans.
-> > fxls8962 uses 'samples count' which is not clearly defined in the datasheet but there
-> > is an example showing that it's scans (I think)...
-> > lsm6dsx - some of the fifos used with this are based on tagged data so the connection to
-> > what hits the front end buffers is non obvious.
-> > 
-> > So, not great for consistency :(
-> > 
-> > Going forwards i think we should standardize the hardware fifo watermark on what is being
-> > used for the software watermark which I believe is number of scans.
-> > Not necessary much we can do about old drivers though due to risk of breaking ABI...
-> > We should make the documentation clearer though.
-> >   
-> 
-> I was confused too, but this seemed more logical to me at the time, and
-> since you didn't say anything regarding it on ADXL367, I did it the same
-> way here. I guess we can't go back and change it now on ADXL367, I'm
-> sorry for this. I'll fix it.
+The impact of this regression is the same for resume that I saw on
+thaw: the kernel hangs and nothing except SysRq rebooting can be done.
 
-I missed it.  Review is never perfect (mine definitely aren't!)
+Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
+par in pm functions, preventing null derefs"), where I disabled deep
+pm resets in suspend and resume, trying to make sense of the
+atl_resume_common() deep parameter in the first place.
 
-Thinking more on the adxl367. We still have a window to  fix that as
-the driver isn't yet in a release kernel.  Would you mind spinning a
-patch to fix that one?  Even if we miss the rc cycle (it's a bit tight
-timing wise) we can sneak it in as an early fix in stable without
-significant risk of breaking anyone's userspace.
+It turns out, that atlantic always has to deep reset on pm
+operations. Even though I expected that and tested resume, I screwed
+up by kexec-rebooting into an unpatched kernel, thus missing the
+breakage.
 
-There might be other drivers that have that interpretation we can't
-fix but if we can reduce the scope of the problem by changing the adxl367
-that would be great.
+This fixup obsoletes the deep parameter of atl_resume_common, but I
+leave the cleanup for the maintainers to post to mainline.
 
-We should also definitely improve the docs and perhaps add a note to say
-that due to need to maintain ABI, a few drivers use scans * number of channels
-rather than scans.
+Suspend and hibernation were successfully tested by the reporters.
 
-> 
-> >> +
-> >> +out:
-> >> +	mutex_unlock(&st->lock);
-> >> +
-> >> +	return ret;
-> >> +}
-> >> +  
-> > 
-> > 
-> > ...
-> >   
-> >> +
-> >> +static int ad4130_parse_fw_channel(struct iio_dev *indio_dev,
-> >> +				   struct fwnode_handle *child)
-> >> +{
-> >> +	struct ad4130_state *st = iio_priv(indio_dev);
-> >> +	unsigned int index = indio_dev->num_channels++;
-> >> +	struct device *dev = &st->spi->dev;
-> >> +	struct ad4130_chan_info *chan_info;
-> >> +	struct iio_chan_spec *chan;
-> >> +	u32 pins[2];
-> >> +	int ret;
-> >> +
-> >> +	if (index >= AD4130_MAX_CHANNELS)
-> >> +		return dev_err_probe(dev, -EINVAL, "Too many channels\n");
-> >> +
-> >> +	chan = &st->chans[index];
-> >> +	chan_info = &st->chans_info[index];
-> >> +
-> >> +	*chan = ad4130_channel_template;
-> >> +	chan->scan_type.realbits = st->chip_info->resolution;
-> >> +	chan->scan_type.storagebits = st->chip_info->resolution;
-> >> +	chan->scan_index = index;
-> >> +
-> >> +	chan_info->slot = AD4130_INVALID_SLOT;
-> >> +	chan_info->setup.fs = AD4130_FS_MIN;
-> >> +	chan_info->initialized = true;
-> >> +
-> >> +	ret = fwnode_property_read_u32_array(child, "diff-channels", pins,
-> >> +					     ARRAY_SIZE(pins));
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	ret = ad4130_validate_diff_channels(st, pins, ARRAY_SIZE(pins));
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	chan->channel = pins[0];
-> >> +	chan->channel2 = pins[1];
-> >> +
-> >> +	ret = ad4130_parse_fw_setup(st, child, &chan_info->setup);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	fwnode_property_read_u32(child, "adi,excitation-pin-0",
-> >> +				 &chan_info->iout0);
-> >> +	if (chan_info->setup.iout0_val != AD4130_IOUT_OFF) {  
-> > 
-> > It would be slightly better to set an explicit default value here as the fact it
-> > is 0 is hidden by the enum. e.g.
-> > 	chan_info->iout0 = AD4130_IOUT_OFF;
-> > 	fwnode_property_read_u32(child, "adi,excitation-pin-0",
-> > 			 	 &chan_info->iout0);
-> > 	if (chan_info->....
-> > That would save reviewers wondering what the default is and having to go
-> > check the enum (and I'm lazy :)  
-> 
-> I understand the idea, but the default value for iout0 is not
-> AD4130_IOUT_OFF. iout0 is the pin that iout0_val current is
-> applied to, and AD4130_IOUT_OFF is a value for iout0_val.
-> Look at ad4130_parse_fw_setup.
-> 
-> For iout0, I guess I could do
-> #define AD4130_AIN0	0x0
-> ...
-> chan_info->iout0 = AD4130_AIN0;
+Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preve=
+nting null derefs")
+Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4=
+MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=
+=3D@protonmail.com/
+Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
+Reported-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
+Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+CC: <stable@vger.kernel.org> # 5.10+
+Signed-off-by: Manuel Ullmann <labre@posteo.de>
+---
+I=E2=80=99m very sorry for this regression. It would be nice, if this could
+reach mainline before 5.18 release, if applicable. This restores the
+original suspend behaviour, while keeping the fix for hibernation. The
+fix for hibernation might not be the root cause, but still is the most
+simple fix for backporting to stable while the root cause is unknown
+to the maintainers.
 
-Oops.  I got confused.  Code is fine as it is.  Adding the define isn't going to make
-it much clearer.
- 
-> 
-> >> +		}
-> >> +	}
-> >> +
-> >> +	return ret;
-> >> +}
-> >> +
+Changes in v2:
+Patch formatting fixes
+=E2=80=93 Fix Fixes tag
+=E2=80=93 Simplify stable Cc tag
+=E2=80=93 Fix Signed-off-by tag
 
+Changes in v3:
+=E2=80=93 Prefixed commit reference with "commit" aka I managed to use
+  checkpatch.pl.
+=E2=80=93 Added Tested-by tags for the testing reporters.
+=E2=80=93 People start to get annoyed by my patch revision spamming. Should=
+ be
+  the last one.
+
+Changes in v4:
+=E2=80=93 Moved patch changelog to comment section
+=E2=80=93 Use unicode ndash for patch changelog list to avoid confusion with
+  diff in editors
+=E2=80=93 Expanded comment
+=E2=80=93 Targeting net-next by subject
+
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers=
+/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 3a529ee8c834..831833911a52 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -449,7 +449,7 @@ static int aq_pm_freeze(struct device *dev)
+=20
+ static int aq_pm_suspend_poweroff(struct device *dev)
+ {
+-	return aq_suspend_common(dev, false);
++	return aq_suspend_common(dev, true);
+ }
+=20
+ static int aq_pm_thaw(struct device *dev)
+@@ -459,7 +459,7 @@ static int aq_pm_thaw(struct device *dev)
+=20
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, false);
++	return atl_resume_common(dev, true);
+ }
+=20
+ static const struct dev_pm_ops aq_pm_ops =3D {
+
+base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+--=20
+2.35.1
