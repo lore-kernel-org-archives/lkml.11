@@ -2,223 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5386CC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 09:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25178C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 09:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383948AbiEGJYs (ORCPT
+        id S1383973AbiEGJ0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 05:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
+        Sat, 7 May 2022 05:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiEGJYq (ORCPT
+        with ESMTP id S229515AbiEGJ0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 05:24:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379703A5C0;
-        Sat,  7 May 2022 02:21:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C34DDB82A25;
-        Sat,  7 May 2022 09:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16FE1C385A9;
-        Sat,  7 May 2022 09:20:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651915257;
-        bh=r8f1G85CwWBXhZRvyRIEzk2UJ38tU9254k0pQ4QCqV8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tEvVqi5VyHya5cqMihERtNcpG0SZ4OLmqDFv+T4BdyPyUlc+B7/EuzwP0xrZqo/nd
-         CA0/Lv/jQ9sfZiSf2IipXTg/w2xVuDQi65A9dyyWcRnDRns2Tczw7MlRfqOY6QkRH+
-         RTaK/omywVK+PYvH21xH8nyZNOERkWGVfFeTW1SvyeCdCwOBBHAOdPBBXhWkjhpjQv
-         BktH9fVXs7/ItVAWISU5UksNCZQYpsRDBCYbGptSAj4mcGz/HtdP+Ir99/Z2N4Ktqr
-         IbS4Yrl1jVpYSPM2dthu+1hsbauwnwScGl+vlSnRLHP/k1Vp1RvjCYJppn36bpucBJ
-         kaIVJlQj5InJA==
-Received: by pali.im (Postfix)
-        id 21F06947; Sat,  7 May 2022 11:20:54 +0200 (CEST)
-Date:   Sat, 7 May 2022 11:20:54 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/6] irqchip/armada-370-xp: Implement SoC Error interrupts
-Message-ID: <20220507092054.b7yu23nj667l6xhy@pali>
-References: <20220506134029.21470-1-pali@kernel.org>
- <20220506134029.21470-3-pali@kernel.org>
- <87mtfu7ccd.wl-maz@kernel.org>
- <20220506183051.wimo7p4nuqfnl2aj@pali>
- <8735hmijlu.wl-maz@kernel.org>
- <20220506185546.n5rl3chyyauy4bjt@pali>
- <87levd7m2n.wl-maz@kernel.org>
+        Sat, 7 May 2022 05:26:50 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCD33C4B8
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 02:23:04 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id a191so8018740pge.2
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 02:23:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HsmL70Uxpre+Yuw44Bhf/DXDbaU8ZDKhOhdy778k+yo=;
+        b=mlR3d80AhkwzzC9PKqaXsMDhWbQVXMEC6MCnzg1peU4Wr/mTRivGCNYgM7QRHTa0ub
+         Z3V6OvjENlJU/wkZN2dPGw8DjSuZcoNR2oGUlIRRhQBVH/J/SmIEO4cp5zUEAua7DtmH
+         km6VJHxTPXPOkXf28Bfd8y2Oj/hJ5Li/5hWOGMIjZcnUHnrxLi2Ce7b4K6swCToXCf7T
+         kja+3ZAT4xc4qTctp1GdxZRAwko+jFMeVBxA7mgxWtFLT8zu8kr3WjghwHOyLiP52hWs
+         ZvWYhgOn07sFKhQ0KVq2vNxuL3N6cigDdOzFwBCEHPNwFpfeLQXgfP/Z5DqDonJBga7k
+         jzjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HsmL70Uxpre+Yuw44Bhf/DXDbaU8ZDKhOhdy778k+yo=;
+        b=lAJ6zwv1J7shC0R9AwKXhrgtNZBlSDox58YR5ZmwzjW0+eIo803vnlMDJ5SbcYHd66
+         mo3c8CzQCeNee+ggypp5YlyqMzrUtgxPqzn8eIFJ8Wmns6bdVoLvjugQUG65fR+UaQ28
+         XDLd9SCacVtoclItcG3lnJ5zzPKaIPI3dcavy1DAjVxPsJ5vMLquHR0L4onxjn8wBeJx
+         zAQC2Xg5RWkze18RHqR2dsXDSLwfnjSbzEqbxuin65NSPaeKSMH+VkgLoCw69mxgeWp1
+         Q74xSzw4KHaXu0eqj3IdWPwxrAN2AHcnYg2iDxai6Sote1r9s3lL8isdC6guQl9L3UzO
+         cDCQ==
+X-Gm-Message-State: AOAM532vVdYKQ83/+nghKgnU13nTM9jx5FGmA5Cz/borkIz36sCC7J5K
+        5/+jDtTrrJzqoyfYW0UpEq+C5Uz6YMF2tw==
+X-Google-Smtp-Source: ABdhPJyw3bAQ9HgqBVfd9NCUfNAz6xXstkZXK2fVR31183kcyPUZrKZY1G88F0L6iyNceYsna1Hw0Q==
+X-Received: by 2002:a63:c013:0:b0:3c1:df82:c8b3 with SMTP id h19-20020a63c013000000b003c1df82c8b3mr6045188pgg.141.1651915383734;
+        Sat, 07 May 2022 02:23:03 -0700 (PDT)
+Received: from [10.255.89.252] ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id y9-20020a17090322c900b0015e8d4eb2e7sm3216427plg.305.2022.05.07.02.22.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 May 2022 02:23:02 -0700 (PDT)
+Message-ID: <23e06fc6-84fe-122e-fc07-02c5bfa7d50b@bytedance.com>
+Date:   Sat, 7 May 2022 17:19:09 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87levd7m2n.wl-maz@kernel.org>
-User-Agent: NeoMutt/20180716
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: Re: Re: [PATCH 3/4] mm/memofy-failure.c: optimize hwpoison_filter
+Content-Language: en-US
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+Cc:     David Hildenbrand <david@redhat.com>, akpm@linux-foundation.org,
+        naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Wu Fengguang <fengguang.wu@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+References: <20220429142206.294714-1-pizhenwei@bytedance.com>
+ <20220429142206.294714-4-pizhenwei@bytedance.com>
+ <20220506085920.GC1356094@u2004>
+ <3c0e25fb-695d-4a29-6de4-c892f89cea7a@bytedance.com>
+ <ac3fc5b9-d09c-5fb6-998d-f7c655d7fa00@redhat.com>
+ <a60933f2-ef07-92a3-66cf-071670a03101@bytedance.com>
+ <20220507082045.GA1716199@u2004>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <20220507082045.GA1716199@u2004>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Saturday 07 May 2022 10:01:52 Marc Zyngier wrote:
-> On Fri, 06 May 2022 19:55:46 +0100,
-> Pali Rohár <pali@kernel.org> wrote:
-> > 
-> > On Friday 06 May 2022 19:47:25 Marc Zyngier wrote:
-> > > On Fri, 06 May 2022 19:30:51 +0100,
-> > > Pali Rohár <pali@kernel.org> wrote:
-> > > > 
-> > > > On Friday 06 May 2022 19:19:46 Marc Zyngier wrote:
-> > > > > On Fri, 06 May 2022 14:40:25 +0100,
-> > > > > Pali Rohár <pali@kernel.org> wrote:
-> > > > > > 
-> > > > > > +static void armada_370_xp_soc_err_irq_unmask(struct irq_data *d);
-> > > > > > +
-> > > > > >  static inline bool is_percpu_irq(irq_hw_number_t irq)
-> > > > > >  {
-> > > > > >  	if (irq <= ARMADA_370_XP_MAX_PER_CPU_IRQS)
-> > > > > > @@ -509,6 +517,27 @@ static void armada_xp_mpic_reenable_percpu(void)
-> > > > > >  		armada_370_xp_irq_unmask(data);
-> > > > > >  	}
-> > > > > >  
-> > > > > > +	/* Re-enable per-CPU SoC Error interrupts that were enabled before suspend */
-> > > > > > +	for (irq = 0; irq < soc_err_irq_num_regs * 32; irq++) {
-> > > > > > +		struct irq_data *data;
-> > > > > > +		int virq;
-> > > > > > +
-> > > > > > +		virq = irq_linear_revmap(armada_370_xp_soc_err_domain, irq);
-> > > > > > +		if (virq == 0)
-> > > > > > +			continue;
-> > > > > > +
-> > > > > > +		data = irq_get_irq_data(virq);
-> > > > > > +
-> > > > > > +		if (!irq_percpu_is_enabled(virq))
-> > > > > > +			continue;
-> > > > > > +
-> > > > > > +		armada_370_xp_soc_err_irq_unmask(data);
-> > > > > > +	}
-> > > > > 
-> > > > > So you do this loop and all these lookups, both here and in the resume
-> > > > > function (duplicated code!) just to be able to call the unmask
-> > > > > function?  This would be better served by two straight writes of the
-> > > > > mask register, which you'd conveniently save on suspend.
-> > > > > 
-> > > > > Yes, you have only duplicated the existing logic. But surely there is
-> > > > > something better to do.
-> > > > 
-> > > > Yes, I just used existing logic.
-> > > > 
-> > > > I'm not rewriting driver or doing big refactor of it, as this is not in
-> > > > the scope of the PCIe AER interrupt support.
-> > > 
-> > > Fair enough. By the same logic, I'm not taking any change to the
-> > > driver until it is put in a better shape. Your call.
-> > 
-> > If you are maintainer of this code then it is expected from _you_ to
-> > move the current code into _better shape_ as you wrote and expect. And
-> > then show us exactly, how new changes in this driver should look like,
-> > in examples.
+On 5/7/22 16:20, Naoya Horiguchi wrote:
+> On Sat, May 07, 2022 at 08:28:05AM +0800, zhenwei pi wrote:
+>>
+>> On 5/7/22 00:28, David Hildenbrand wrote:
+>>> On 06.05.22 15:38, zhenwei pi wrote:
+>>>>
+>>>>
+>>>> On 5/6/22 16:59, Naoya Horiguchi wrote:
+>>>>> On Fri, Apr 29, 2022 at 10:22:05PM +0800, zhenwei pi wrote:
+>>>>>> In the memory failure procedure, hwpoison_filter has higher priority,
+>>>>>> if memory_filter() filters the error event, there is no need to do
+>>>>>> the further work.
+>>>>>
+>>>>> Could you clarify what problem you are trying to solve (what does
+>>>>> "optimize" mean in this context or what is the benefit)?
+>>>>>
+>>>>
+>>>> OK. The background of this work:
+>>>> As well known, the memory failure mechanism handles memory corrupted
+>>>> event, and try to send SIGBUS to the user process which uses this
+>>>> corrupted page.
+>>>>
+>>>> For the virtualization case, QEMU catches SIGBUS and tries to inject MCE
+>>>> into the guest, and the guest handles memory failure again. Thus the
+>>>> guest gets the minimal effect from hardware memory corruption.
+>>>>
+>>>> The further step I'm working on:
+>>>> 1, try to modify code to decrease poisoned pages in a single place
+>>>> (mm/memofy-failure.c: simplify num_poisoned_pages_dec in this series).
 > 
-> Sorry, but that's not how this works. You are the one willing to
-> change a sub-par piece of code, you get to make it better. You
-> obviously have the means (the HW) and the incentive (these patches).
-> But you don't get to make something even more unmaintainable because
-> you're unwilling to do some extra work.
+> This is fine to me.
 > 
-> If you're unhappy with my position, that's fine. I suggest you take it
-> with Thomas, and maybe even Linus. As I suggested before, you can also
-> post a patch removing me as the irqchip maintainer. I'm sure that will
-> spark an interesting discussion.
-
-You have already suggested it in email [1] but apparently you are _not_
-maintainer of mvebu pci controller. get_maintainer.pl for part about
-which you have talked in [1] says:
-
-$ ./scripts/get_maintainer.pl -f drivers/pci/controller/pci-aardvark.c
-Thomas Petazzoni <thomas.petazzoni@bootlin.com> (maintainer:PCI DRIVER FOR AARDVARK (Marvell Armada 3700))
-"Pali Rohár" <pali@kernel.org> (maintainer:PCI DRIVER FOR AARDVARK (Marvell Armada 3700))
-Lorenzo Pieralisi <lorenzo.pieralisi@arm.com> (supporter:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS)
-Rob Herring <robh@kernel.org> (reviewer:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS)
-"Krzysztof Wilczyński" <kw@linux.com> (reviewer:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS)
-Bjorn Helgaas <bhelgaas@google.com> (supporter:PCI SUBSYSTEM)
-linux-pci@vger.kernel.org (open list:PCI DRIVER FOR AARDVARK (Marvell Armada 3700))
-linux-arm-kernel@lists.infradead.org (moderated list:PCI DRIVER FOR AARDVARK (Marvell Armada 3700))
-linux-kernel@vger.kernel.org (open list)
-
-So I do not have to remove anything, you are _not_ on that list.
-On the other hand, Thomas Petazzoni is on this list...
-
-> > > > > > +static int armada_xp_soc_err_irq_set_affinity(struct irq_data *d,
-> > > > > > +					      const struct cpumask *mask,
-> > > > > > +					      bool force)
-> > > > > > +{
-> > > > > > +	unsigned int cpu;
-> > > > > > +
-> > > > > > +	cpus_read_lock();
-> > > > > > +
-> > > > > > +	/* First disable IRQ on all cores */
-> > > > > > +	for_each_online_cpu(cpu)
-> > > > > > +		smp_call_on_cpu(cpu, armada_370_xp_soc_err_irq_mask_on_cpu, d, true);
-> > > > > > +
-> > > > > > +	/* Select a single core from the affinity mask which is online */
-> > > > > > +	cpu = cpumask_any_and(mask, cpu_online_mask);
-> > > > > > +	smp_call_on_cpu(cpu, armada_370_xp_soc_err_irq_unmask_on_cpu, d, true);
-> > > > > > +
-> > > > > > +	cpus_read_unlock();
-> > > > > > +
-> > > > > > +	irq_data_update_effective_affinity(d, cpumask_of(cpu));
-> > > > > > +
-> > > > > > +	return IRQ_SET_MASK_OK;
-> > > > > > +}
-> > > > > 
-> > > > > Aren't these per-CPU interrupts anyway? What does it mean to set their
-> > > > > affinity? /me rolls eyes...
-> > > > 
-> > > > Yes, they are per-CPU interrupts. But to mask or unmask particular
-> > > > interrupt for specific CPU is possible only from that CPU. CPU 0 just
-> > > > cannot move interrupt from CPU 0 to CPU 1. CPU 0 can only mask that
-> > > > interrupt and CPU 1 has to unmask it.
-> > > 
-> > > And that's no different form other per-CPU interrupts that have the
-> > > exact same requirements. NAK to this sort of hacks.
-> > 
-> > You forgot to mention in your previous email how to do it, right? So we
-> > are waiting...
+>>>>
+>>>> 2, try to use page_handle_poison() to handle SetPageHWPoison() and
+>>>> num_poisoned_pages_inc() together. It would be best to call
+>>>> num_poisoned_pages_inc() in a single place too. I'm not sure if this is
+>>>> possible or not, please correct me if I misunderstand.
 > 
-> I didn't forget. I explained that it should be handled just like any
-> other per-CPU interrupt. There is plenty of example of how to do that
-> in the tree (timers, for example), and if you had even looked at it,
-> you'd have seen that your approach most probably results in an
-> arbitrary pointer dereference on anything but CPU0 because the
-> requesting driver knows nothing about per-CPU interrupts.
+> SetPageHWPoison() can be cancelled in memory_failure(), so simply bundling
+> it with num_poisoned_pages_inc() might not be optimal.  I think that
+> action_result() is supposed to be called when memory error handling is
+> effective (not filtered, not cancelled). So moving num_poisoned_pages_inc()
+> (and notification code in your plan) into this function might be good.
 > 
-> But you're obviously trying to make a very different point here. I'll
-> let you play that game for as long as you want, no skin off my nose.
-> Maybe in the future, you'll be more interested in actively
-> collaborating on the kernel code instead of throwing your toys out of
-> the pram.
+OK, I'll remove this patch(mm/memofy-failure.c: optimize 
+hwpoison_filter) from this series, and fix the other 3 patches in the v2 
+version. Then try to implement/test as your suggestion in another series.
+
+>>>>
+>>>> 3, introduce memory failure notifier list in memory-failure.c: notify
+>>>> the corrupted PFN to someone who registers this list.
+>>>> If I can complete [1] and [2] part, [3] will be quite easy(just call
+>>>> notifier list after increasing poisoned page).
+>>>>
+>>>> 4, introduce memory recover VQ for memory balloon device, and registers
+>>>> memory failure notifier list. During the guest kernel handles memory
+>>>> failure, balloon device gets notified by memory failure notifier list,
+>>>> and tells the host to recover the corrupted PFN(GPA) by the new VQ.
+>>>
+>>> Most probably you might want to do that asynchronously, and once the
+>>> callback succeeds, un-poison the page.
+>>>
+>> Yes!
+>>
+>>>>
+>>>> 5, host side remaps the corrupted page(HVA), and tells the guest side to
+>>>> unpoison the PFN(GPA). Then the guest fixes the corrupted page(GPA)
+>>>> dynamically.
+>>>
+>>> I think QEMU already does that during reboots. Now it would be triggered
+>>> by the guest for individual pages.
+>>>
+>> Yes, currently QEMU supports to un-poison corrupted pages during
+>> reset/reboot. We can reuse some code to do the work in this case, this
+>> allows a VM to fix corrupted pages as soon as possible(also no need to
+>> reset/reboot).
+> 
+> So this finally allows to replace broken page mapped to guest with
+> a healthy page without rebooting the guest. That sounds helpful.
 > 
 > Thanks,
+> Naoya Horiguchi
+> 
+Yes, it's my plan. Thanks for your suggestions!
 
-The only _toy_ here is your broken mvebu board which your ego was unable
-to fix, and you have put it into recycling pile [2] and since than for
-months you are trying to reject every change or improvement in mvebu
-drivers and trying to find out a way how to remove all mvebu code, like
-if you were not able to fix your toy, then broke it also to all other
-people. You have already expressed this, but I'm not going to search
-emails more and find these your statements.
+>>
+>>>>
+>>>> Because [4] and [5] are related to balloon device, also CC Michael,
+>>>> David and Jason.
+>>>
+>>> Doesn't sound too crazy for me, although it's a shame that we always
+>>> have to use virtio-balloon for such fairly balloon-unrelated things.
+>>>
+>> Thanks!
+>>
+>> -- 
+>> zhenwei pi
 
-Sorry, I'm stopping here. This is just a prove that you are not
-qualified in reviewing mvebu code.
-
-[1] - https://lore.kernel.org/linux-pci/87mtk3tzum.wl-maz@kernel.org/
-[2] - https://lore.kernel.org/linux-pci/87pmx1zjjt.wl-maz@kernel.org/
+-- 
+zhenwei pi
