@@ -2,82 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 05:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 239B5C4167B
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 05:26:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378483AbiEGF3c (ORCPT
+        id S1383308AbiEGF3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 01:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
+        Sat, 7 May 2022 01:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343722AbiEGF33 (ORCPT
+        with ESMTP id S1382889AbiEGF3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 01:29:29 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CC5186FA;
-        Fri,  6 May 2022 22:25:42 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 2475NJLO010324;
-        Sat, 7 May 2022 14:23:20 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 2475NJLO010324
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1651901000;
-        bh=tyBhf7vinz91xAdojDk/vHB9k4N+USKeN0boS3UKMi0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MyQqkfukocT4P6SYGHT9jyZdlJSEclUtI/bfhgZbIYQ5tjayEQa9Cg6OyS+Lj+a/J
-         TP+64xIcG86oTCOuQat8leqB0WqsLtw5yeGEvsXs71/WGMDGVUahHqpsOFo2VXBbI/
-         DV/MFv7PgLeMLuh83hbxX8WuU2vP4R88esyLH3CFe2W16wqCix0Jd6e6XiJZghowEF
-         YMcas1Ab9Q7fg08rTUgSQSfh34cxz7WEwxsYG9i3xykI4WvNOMLkJIwdCVnLThhkdX
-         mAhZeaZdVP7GALzFOBSGGTbhigZ2BokpGf1Ngrhre4L34CZS4k6BOwv2HDA9VgRYZ3
-         4i6U0iwtXly1A==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?q?Breno=20Leit=C3=A3o?= <leitao@debian.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] crypto: vmx - Fix build error
-Date:   Sat,  7 May 2022 14:22:43 +0900
-Message-Id: <20220507052244.1426765-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Sat, 7 May 2022 01:29:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9341144A02;
+        Fri,  6 May 2022 22:25:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89A4260765;
+        Sat,  7 May 2022 05:25:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43419C385AE;
+        Sat,  7 May 2022 05:25:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651901156;
+        bh=6BK6vCkagIsVFppz/JVipf1RmADhTrfcI9FSaf5gg8g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uQ8vQAtoXbOMdKZs/Hb+kb+e+YEdLkz/KofQ0W2Nd8OoTZB+8YeP7qsPTPtQrB5sD
+         /ONF6g0iQiKKER3hd+X99A/WY68QdiZ7mvmTTMQte+jQK8pnqya3qO2rE6gva/7J9+
+         voktOZD/xtROG33LLMoBPHHP5/CoG6aykhPwk39aM9qA5l/o1rCEBu82UzodbsOOWc
+         eQMUSOfKscygnFpIO/XdVdQ6wZ+AiyQ+SGXwD3d4jAWcHCZMUV4/SCcd46DmRu40K4
+         1vZGDChQjcn7DVBnxTMqaWbzkYoSZlr95VwUdcu8cZCXKzKVDuh4yLgdgj38cHjuMI
+         MIRVlBTfuIelQ==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH v6 01/23] kallsyms: avoid hardcoding the buffer size
+Date:   Sat,  7 May 2022 07:23:59 +0200
+Message-Id: <20220507052451.12890-2-ojeda@kernel.org>
+In-Reply-To: <20220507052451.12890-1-ojeda@kernel.org>
+References: <20220507052451.12890-1-ojeda@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When I refactored this Makefile, I accidentally changed the CONFIG
-option.
+From: Boqun Feng <boqun.feng@gmail.com>
 
-Fixes: b52455a73db9 ("crypto: vmx - Align the short log with Makefile cleanups")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+This makes it easier to update the size later on.
+
+Furthermore, a static assert is added to ensure both are updated
+when that happens. The relationship used is one that keeps the new
+size (512+1) close to the original buffer size (500).
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
+This is a prerequisite patch, independently submitted at:
 
- drivers/crypto/vmx/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+    https://lore.kernel.org/lkml/20220506203443.24721-2-ojeda@kernel.org/
 
-diff --git a/drivers/crypto/vmx/Makefile b/drivers/crypto/vmx/Makefile
-index df93ba63b1cd..2560cfea1dec 100644
---- a/drivers/crypto/vmx/Makefile
-+++ b/drivers/crypto/vmx/Makefile
-@@ -3,7 +3,7 @@ obj-$(CONFIG_CRYPTO_DEV_VMX_ENCRYPT) += vmx-crypto.o
- vmx-crypto-objs := vmx.o aesp8-ppc.o ghashp8-ppc.o aes.o aes_cbc.o aes_ctr.o aes_xts.o ghash.o
+ scripts/kallsyms.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 8caabddf817c..82d6508bdf29 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -27,8 +27,18 @@
  
- quiet_cmd_perl = PERL    $@
--      cmd_perl = $(PERL) $< $(if $(CONFIG_LITTLE_ENDIAN), linux-ppc64le, linux-ppc64) > $@
-+      cmd_perl = $(PERL) $< $(if $(CONFIG_CPU_LITTLE_ENDIAN), linux-ppc64le, linux-ppc64) > $@
+ #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
  
- targets += aesp8-ppc.S ghashp8-ppc.S
++#define _stringify_1(x)	#x
++#define _stringify(x)	_stringify_1(x)
++
+ #define KSYM_NAME_LEN		128
  
++/* A substantially bigger size than the current maximum. */
++#define KSYM_NAME_LEN_BUFFER	512
++_Static_assert(
++	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
++	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
++);
++
+ struct sym_entry {
+ 	unsigned long long addr;
+ 	unsigned int len;
+@@ -197,15 +207,15 @@ static void check_symbol_range(const char *sym, unsigned long long addr,
+ 
+ static struct sym_entry *read_symbol(FILE *in)
+ {
+-	char name[500], type;
++	char name[KSYM_NAME_LEN_BUFFER+1], type;
+ 	unsigned long long addr;
+ 	unsigned int len;
+ 	struct sym_entry *sym;
+ 	int rc;
+ 
+-	rc = fscanf(in, "%llx %c %499s\n", &addr, &type, name);
++	rc = fscanf(in, "%llx %c %" _stringify(KSYM_NAME_LEN_BUFFER) "s\n", &addr, &type, name);
+ 	if (rc != 3) {
+-		if (rc != EOF && fgets(name, 500, in) == NULL)
++		if (rc != EOF && fgets(name, sizeof(name), in) == NULL)
+ 			fprintf(stderr, "Read error or end of file.\n");
+ 		return NULL;
+ 	}
 -- 
-2.32.0
+2.35.3
 
