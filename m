@@ -2,250 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 03:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC46C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 03:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445454AbiEGDg4 (ORCPT
+        id S1445467AbiEGDlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 23:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48990 "EHLO
+        Fri, 6 May 2022 23:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiEGDgw (ORCPT
+        with ESMTP id S245603AbiEGDkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 23:36:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E71B69703
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 20:33:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DB801CE38D4
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 03:33:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E4E8C385A6;
-        Sat,  7 May 2022 03:33:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651894384;
-        bh=F6uOs6JKmtFPrC0u+Dq3rbzRNK4TUBZwnsuyQBD+tuA=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=VjIfQZxJeJgAySK9Zp+qBDHogH7JqXWZ6b0ZHuHW2pCbAvrMVI5fAiC7wM6+5oe5M
-         +vDYxfn5ekDspV2dlpAuqUg1OekEQBHP3hT6CNhsQw3FaE91C5YMYdPdXAQpH1bzme
-         7y/6D9MZC068oiCOJO2bGNkyRqihKbfPmmK+ecGlLIgy4GpXIJ4cNtJzPdrm7524fX
-         u7g/2xwQlnidX5viG6FsjnBHl1+E9ZFijXjn0sYG8JzwAEWR/L/pLtAoKyy+2H+Xov
-         5Jw1QDMXYHOVxdeepEphG3Pgp6Wp4qSzna00b4Usp4ysyrP70S4X91RzeF7YPEZA65
-         moOkYNRXzOVzA==
-Message-ID: <a0fb04fc-21f6-e417-0160-4c7ef5c0b9c0@kernel.org>
-Date:   Sat, 7 May 2022 11:33:00 +0800
+        Fri, 6 May 2022 23:40:53 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2F96A00A;
+        Fri,  6 May 2022 20:37:08 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KwCls1GJ3zhYr3;
+        Sat,  7 May 2022 11:36:41 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 11:37:04 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 11:37:03 +0800
+Subject: Re: [PATCH v24 3/6] arm64: kdump: Reimplement crashkernel=X
+To:     Baoquan He <bhe@redhat.com>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        <kexec@lists.infradead.org>, Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+References: <20220506114402.365-1-thunder.leizhen@huawei.com>
+ <20220506114402.365-4-thunder.leizhen@huawei.com>
+ <20220506231032.GA122876@MiWiFi-R3L-srv>
+ <d9b21f31-6fd2-a898-9a70-c63ff4f36212@huawei.com>
+ <YnXUSBcFmEpxaqBf@MiWiFi-R3L-srv>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <9f6fdbb8-b6c5-3ca0-31b6-617175739e81@huawei.com>
+Date:   Sat, 7 May 2022 11:37:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [f2fs-dev] [PATCH 4/5] f2fs: do not stop GC when requiring a free
- section
+In-Reply-To: <YnXUSBcFmEpxaqBf@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220506232032.1264078-1-jaegeuk@kernel.org>
- <20220506232032.1264078-4-jaegeuk@kernel.org>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220506232032.1264078-4-jaegeuk@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/7 7:20, Jaegeuk Kim wrote:
-> The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
-> chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
-> segment as a victim all the time, resulting in checkpoint=disable failure,
-> for example. Let's pick another one, if we fail to collect it.
+
+
+On 2022/5/7 10:07, Baoquan He wrote:
+> On 05/07/22 at 09:34am, Leizhen (ThunderTown) wrote:
+>>
+>>
+>> On 2022/5/7 7:10, Baoquan He wrote:
+>>> On 05/06/22 at 07:43pm, Zhen Lei wrote:
+>>> ......  
+>>>> @@ -118,8 +162,7 @@ static void __init reserve_crashkernel(void)
+>>>>  	if (crash_base)
+>>>>  		crash_max = crash_base + crash_size;
+>>>>  
+>>>> -	/* Current arm64 boot protocol requires 2MB alignment */
+>>>> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
+>>>> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>>>>  					       crash_base, crash_max);
+>>>>  	if (!crash_base) {
+>>>>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+>>>> @@ -127,6 +170,11 @@ static void __init reserve_crashkernel(void)
+>>>>  		return;
+>>>>  	}
+>>>>  
+>>>
+>>> There's corner case missed, e.g
+>>> 1) ,high and ,low are specified, CONFIG_ZONE_DMA|DMA32 is not enabled;
+>>> 2) ,high and ,low are specified, the whole system memory is under 4G.
+>>>
+>>> Below judgement can filter them away:
+>>>         
+>>> 	if (crash_base > arm64_dma_phys_limit && crash_low_size &&
+>>> 	    reserve_crashkernel_low(crash_low_size)) {
+>>>
+>>> What's your opinion? Leave it and add document to notice user, or fix it
+>>> with code change?
+>>
+>> I think maybe we can leave it unchanged. If the user configures two memory ranges,
+>> we'd better apply for two. Otherwise, he'll be confused when he inquires. Currently,
+>> crash_low_size is non-zero only when 'crashkernel=Y,low' is explicitly configured.
 > 
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-> ---
->   fs/f2fs/f2fs.h              |  1 +
->   fs/f2fs/file.c              | 12 ++++++++----
->   fs/f2fs/gc.c                | 11 +++++++----
->   fs/f2fs/segment.c           |  3 ++-
->   fs/f2fs/super.c             |  3 ++-
->   include/trace/events/f2fs.h | 11 ++++++++---
->   6 files changed, 28 insertions(+), 13 deletions(-)
+> Then user need know the system information, e.g how much is the high
+> memory, low memory, if CONFIG_ZONE_DMA|DMA32 is enabled. And we need
+> describe these cases in document. Any corner case or exception need
+> be noted if we don't handle it in code.
 > 
-> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-> index d49b9b476592..27871f6efb01 100644
-> --- a/fs/f2fs/f2fs.h
-> +++ b/fs/f2fs/f2fs.h
-> @@ -1282,6 +1282,7 @@ struct f2fs_gc_control {
->   	bool no_bg_gc;			/* check the space and stop bg_gc */
->   	bool should_migrate_blocks;	/* should migrate blocks */
->   	bool err_gc_skipped;		/* return EAGAIN if GC skipped */
-> +	unsigned int nr_free_secs;	/* # of free sections to do GC */
->   };
->   
->   /* For s_flag in struct f2fs_sb_info */
-> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-> index 0e7d101c3e65..7072c2b86b2f 100644
-> --- a/fs/f2fs/file.c
-> +++ b/fs/f2fs/file.c
-> @@ -1650,7 +1650,8 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
->   	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
->   			.init_gc_type = FG_GC,
->   			.should_migrate_blocks = false,
-> -			.err_gc_skipped = true };
-> +			.err_gc_skipped = true,
-> +			.nr_free_secs = 0 };
->   	pgoff_t pg_start, pg_end;
->   	loff_t new_size = i_size_read(inode);
->   	loff_t off_end;
-> @@ -2453,7 +2454,8 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
->   	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
->   	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
->   			.no_bg_gc = false,
-> -			.should_migrate_blocks = false };
-> +			.should_migrate_blocks = false,
-> +			.nr_free_secs = 0 };
->   	__u32 sync;
->   	int ret;
->   
-> @@ -2494,7 +2496,8 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
->   			.init_gc_type = range->sync ? FG_GC : BG_GC,
->   			.no_bg_gc = false,
->   			.should_migrate_blocks = false,
-> -			.err_gc_skipped = range->sync };
-> +			.err_gc_skipped = range->sync,
-> +			.nr_free_secs = 0 };
->   	u64 end;
->   	int ret;
->   
-> @@ -2940,7 +2943,8 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
->   	struct f2fs_gc_control gc_control = {
->   			.init_gc_type = FG_GC,
->   			.should_migrate_blocks = true,
-> -			.err_gc_skipped = true };
-> +			.err_gc_skipped = true,
-> +			.nr_free_secs = 0 };
->   	int ret;
->   
->   	if (!capable(CAP_SYS_ADMIN))
-> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-> index ec3f6f876e76..f63576ff1c2d 100644
-> --- a/fs/f2fs/gc.c
-> +++ b/fs/f2fs/gc.c
-> @@ -147,6 +147,7 @@ static int gc_thread_func(void *data)
->   
->   		gc_control.init_gc_type = sync_mode ? FG_GC : BG_GC;
->   		gc_control.no_bg_gc = foreground;
-> +		gc_control.nr_free_secs = foreground ? 1 : 0;
->   
->   		/* if return value is not zero, no victim was selected */
->   		if (f2fs_gc(sbi, &gc_control))
-> @@ -1776,6 +1777,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
->   	unsigned int skipped_round = 0, round = 0;
->   
->   	trace_f2fs_gc_begin(sbi->sb, gc_type, gc_control->no_bg_gc,
-> +				gc_control->nr_free_secs,
->   				get_pages(sbi, F2FS_DIRTY_NODES),
->   				get_pages(sbi, F2FS_DIRTY_DENTS),
->   				get_pages(sbi, F2FS_DIRTY_IMETA),
-> @@ -1848,11 +1850,12 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
->   	if (gc_type == FG_GC)
->   		sbi->cur_victim_sec = NULL_SEGNO;
->   
-> -	if (gc_control->init_gc_type == FG_GC)
-> -		goto stop;
-> -
-> -	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
-> +	if ((gc_control->init_gc_type == FG_GC ||
-> +			!has_not_enough_free_secs(sbi, sec_freed, 0))) {
-> +		if (sec_freed < gc_control->nr_free_secs)
+> Caring about this very much because we have CI with existed test cases
+> to run on the system, and QA will check these manually too. Support
+> engineer need detailed document if anything special but happened.
+> Anything unclear or uncovered will be reported as bug to our kernel dev.
+> Guess your company do the similar thing like this.
+> 
+> This crashkerne,high and crashkernel,low reservation is special if we
+> allow ,high, ,low existing in the same zone. Imagine on system with
+> CONFIG_ZONE_DMA|DMA32 disabled, people copy the crashkernel=512M,high
+> and crashkernel=128M,low from other system, and he could get
+> crash_res at [5G, 5G+512M], while crash_low_res at [6G, 6G+128M]. Guess
+> how they will judge us.
 
-I missed to reset segno here, it may cause GC failure in next round due to
-sec_usage_check() returns true.
+OK, I got it.
 
-segno = NULL_SEGNO;
+> 
+>>
+>>>
+>>> I would suggest merging this series, Lei can add this corner case
+>>> handling on top. Since this is a newly added support, we don't have
+>>> to make it one step. Doing step by step can make reviewing easier.
+>>>
+>>>> +	if (crash_low_size && reserve_crashkernel_low(crash_low_size)) {
+>>>> +		memblock_phys_free(crash_base, crash_size);
+>>>> +		return;
+>>>> +	}
+>>>> +
+>>>>  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+>>>>  		crash_base, crash_base + crash_size, crash_size >> 20);
+>>>>  
+>>>> @@ -135,6 +183,9 @@ static void __init reserve_crashkernel(void)
+>>>>  	 * map. Inform kmemleak so that it won't try to access it.
+>>>>  	 */
+>>>>  	kmemleak_ignore_phys(crash_base);
+>>>> +	if (crashk_low_res.end)
+>>>> +		kmemleak_ignore_phys(crashk_low_res.start);
+>>>> +
+>>>>  	crashk_res.start = crash_base;
+>>>>  	crashk_res.end = crash_base + crash_size - 1;
+>>>>  	insert_resource(&iomem_resource, &crashk_res);
+>>>> -- 
+>>>> 2.25.1
+>>>>
+>>>
+>>> .
+>>>
+>>
+>> -- 
+>> Regards,
+>>   Zhen Lei
+>>
+> 
+> .
+> 
 
-Thanks,
-
-> +			goto gc_more;
->   		goto stop;
-> +	}
->   
->   	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
->   
-> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-> index bc63f0572c64..d6b9231ab0e1 100644
-> --- a/fs/f2fs/segment.c
-> +++ b/fs/f2fs/segment.c
-> @@ -528,7 +528,8 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
->   				.init_gc_type = BG_GC,
->   				.no_bg_gc = true,
->   				.should_migrate_blocks = false,
-> -				.err_gc_skipped = false };
-> +				.err_gc_skipped = false,
-> +				.nr_free_secs = 1 };
->   			f2fs_down_write(&sbi->gc_lock);
->   			f2fs_gc(sbi, &gc_control);
->   		}
-> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-> index 8b23fa6fc6b7..5d5b35067c3d 100644
-> --- a/fs/f2fs/super.c
-> +++ b/fs/f2fs/super.c
-> @@ -2084,7 +2084,8 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
->   			.victim_segno = NULL_SEGNO,
->   			.init_gc_type = FG_GC,
->   			.should_migrate_blocks = false,
-> -			.err_gc_skipped = true };
-> +			.err_gc_skipped = true,
-> +			.nr_free_secs = 1 };
->   
->   		f2fs_down_write(&sbi->gc_lock);
->   		err = f2fs_gc(sbi, &gc_control);
-> diff --git a/include/trace/events/f2fs.h b/include/trace/events/f2fs.h
-> index 6699174977a3..349679a72301 100644
-> --- a/include/trace/events/f2fs.h
-> +++ b/include/trace/events/f2fs.h
-> @@ -653,18 +653,21 @@ TRACE_EVENT(f2fs_background_gc,
->   TRACE_EVENT(f2fs_gc_begin,
->   
->   	TP_PROTO(struct super_block *sb, int gc_type, bool no_bg_gc,
-> +			unsigned int nr_free_secs,
->   			long long dirty_nodes, long long dirty_dents,
->   			long long dirty_imeta, unsigned int free_sec,
->   			unsigned int free_seg, int reserved_seg,
->   			unsigned int prefree_seg),
->   
-> -	TP_ARGS(sb, gc_type, no_bg_gc, dirty_nodes, dirty_dents, dirty_imeta,
-> +	TP_ARGS(sb, gc_type, no_bg_gc, nr_free_secs, dirty_nodes,
-> +		dirty_dents, dirty_imeta,
->   		free_sec, free_seg, reserved_seg, prefree_seg),
->   
->   	TP_STRUCT__entry(
->   		__field(dev_t,		dev)
->   		__field(int,		gc_type)
->   		__field(bool,		no_bg_gc)
-> +		__field(unsigned int,	nr_free_secs)
->   		__field(long long,	dirty_nodes)
->   		__field(long long,	dirty_dents)
->   		__field(long long,	dirty_imeta)
-> @@ -678,6 +681,7 @@ TRACE_EVENT(f2fs_gc_begin,
->   		__entry->dev		= sb->s_dev;
->   		__entry->gc_type	= gc_type;
->   		__entry->no_bg_gc	= no_bg_gc;
-> +		__entry->nr_free_secs	= nr_free_secs;
->   		__entry->dirty_nodes	= dirty_nodes;
->   		__entry->dirty_dents	= dirty_dents;
->   		__entry->dirty_imeta	= dirty_imeta;
-> @@ -687,12 +691,13 @@ TRACE_EVENT(f2fs_gc_begin,
->   		__entry->prefree_seg	= prefree_seg;
->   	),
->   
-> -	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nodes = %lld, "
-> -		"dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
-> +	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nr_free_secs = %u, "
-> +		"nodes = %lld, dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
->   		"rsv_seg:%d, prefree_seg:%u",
->   		show_dev(__entry->dev),
->   		show_gc_type(__entry->gc_type),
->   		__entry->no_bg_gc,
-> +		__entry->nr_free_secs,
->   		__entry->dirty_nodes,
->   		__entry->dirty_dents,
->   		__entry->dirty_imeta,
+-- 
+Regards,
+  Zhen Lei
