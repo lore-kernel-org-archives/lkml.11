@@ -2,102 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A27C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8A1C43217
 	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 12:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446348AbiEGMXE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 08:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        id S232866AbiEGMYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 7 May 2022 08:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbiEGMXB (ORCPT
+        with ESMTP id S232143AbiEGMY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 08:23:01 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CF11A05F
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 05:19:13 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id x9so7858447qts.6
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 05:19:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y+oiGSCZb6NX25tsDNXkBW7Afl7nrsXXqru9rnhpvLU=;
-        b=EVjVfXPYIT2pl1sW+WbBkp92OXUctBj433s+LBnmcW97uRKsPbxvx8bTWykOj7zQsr
-         TNnujS8Pb49zFu16u0ddLu3VKMjDcbfC6fXazegN8+f0mE3WAL1eV2SWMZWF3SeBguYU
-         Nhe8OO+Me6dzKehUPX5jOjwosHi9CRmaDd1nwtIKaocOYuFIg+qtpDXGXO+KGeVArJGD
-         4S9wUxxLXlhiG0VGwFrTLINb08hqJfEyko4cUJi22tnorrbQit3Zk+2z2vPue2U0/7TU
-         w47mD/gDrZ0ugqCxN1epRr3FceAe/MsC6iTsw1NwA52fOki95Q7IIaG1yt4pZR4SesjS
-         Cieg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y+oiGSCZb6NX25tsDNXkBW7Afl7nrsXXqru9rnhpvLU=;
-        b=TSjGa/cGm3pjse+Ih6UEXtDdp++zA3njiG0OwLws07IX6WH4oEvADybN73+lFV9yx9
-         V5u1oWWpunUZoe36WT7B339wGM3QLZCLrIBS6E8AcnT4Jtx4+GYG8ENOCfndD9TouBPA
-         g8peAf1IEx9hpp7uzjb7rIbSasc2fHEq4nyVPHHcJHP2Ni0Za6EXJpQSGP2ADya1Q41E
-         S+AmPLgGZD5lLOTz1zq9D4a9R1liBcA+rXlVkgdUY0xm0gBOxLwIIzbEJsQDnD+Lu8GZ
-         Rj+u1B3vc7HvMd7q4WLWkKGeogL6UHjfXr9bRPwzrYLBgTm8/XWuUwNGmxV8pA4R6RLX
-         8Z8w==
-X-Gm-Message-State: AOAM532vTuou9cpA27gDrACwpN1yUDkFu2m0Og3E54S9V1NNTE+/dres
-        KKkw+/VagEze7Y3FhhOIajLGfOJUF+oHYnh04iw=
-X-Google-Smtp-Source: ABdhPJx7wlfjWdeqEwgKDAGwo8OCpkZMyW9++BoZIi/ZIEDmLSzP4QUQMRq/5r+8+GSG4TnCXGtyUkhmypL2Xin0baM=
-X-Received: by 2002:a05:622a:134b:b0:2f3:d11e:3865 with SMTP id
- w11-20020a05622a134b00b002f3d11e3865mr1552279qtk.329.1651925951403; Sat, 07
- May 2022 05:19:11 -0700 (PDT)
+        Sat, 7 May 2022 08:24:29 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1199F1A3AC
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 05:20:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651926043; x=1683462043;
+  h=date:from:cc:subject:message-id:mime-version;
+  bh=dWE27ObTsmRFl4YwonH6s8TCzixHYcf9Ym+71uMqB9U=;
+  b=Z57OpDejTeKdwW1Pt608qJVZEAiFMYBgHjfz0z0G1kR9+pktCN7EcMQe
+   af5jM7aqZ8fCPymEUVuPw79b2TUtJuqb6AwNHin9cjTZn+fMjVucCGhpT
+   xVK4gmkdJc+0M9LBu2r5b7jbOPXnlWCR/xAv9z/Tqw6s6JyuISkxbH3pE
+   xE5DDTFoYXwhV+3WA63SfpdZfTM7Mj9+DnCZtrgOISwgMvtScJG8h4rOF
+   jzLHUM+sCy1omOXEObE8C5sjx3lEomgXQZzRz+bMo8H49D5kfBpLGRVPT
+   KkU+yXT9TWbmLWCnzOXLCEzutErQ/QRb7CgdkrWm9WbF2J+7VaAy4GnYi
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="267541471"
+X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
+   d="scan'208";a="267541471"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 05:20:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
+   d="scan'208";a="812782368"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 07 May 2022 05:20:41 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nnJQP-000EYL-1z;
+        Sat, 07 May 2022 12:20:41 +0000
+Date:   Sat, 7 May 2022 20:20:31 +0800
+From:   kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        swedhanav <swedhana.viswanathan@intel.com>
+Subject: [mchinth:sep_socwatch_linux_5_17 1/1]
+ drivers/platform/x86/socperf/socperfdrv.o: warning: objtool:
+ socperf_Service_IOCTL()+0x1e: unreachable instruction
+Message-ID: <202205072006.fzA1yAt5-lkp@intel.com>
 MIME-Version: 1.0
-References: <CAEQFVGZ=6K8wudbS--3z+JpKTsL_dfM-8Co7NwViRo0i3t2EZg@mail.gmail.com>
- <Ym2qdHAB6BMMlegB@thelio-3990X> <CAEQFVGZB6eAetmt1kk+TYbGxpfrDut37DEO_-1HECqM6FEERww@mail.gmail.com>
-In-Reply-To: <CAEQFVGZB6eAetmt1kk+TYbGxpfrDut37DEO_-1HECqM6FEERww@mail.gmail.com>
-From:   Mauro Rossi <issor.oruam@gmail.com>
-Date:   Sat, 7 May 2022 14:19:00 +0200
-Message-ID: <CAEQFVGby3Q1mf1GGJwkFyAgaq38NvVAMx6tQM+9LO+HE8Z8Z8A@mail.gmail.com>
-Subject: Re: arch/x86/entry/entry: RFC on recent kernels building error with
- llvm 11.0.2 internal assembler
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     luto@kernel.org, Chih-Wei Huang <cwhuang@android-x86.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > Alternatively, you could apply the hack that Nick inserted into Android
-> > for this issue if upgrading your toolchain or turning off the integrated
-> > assembler is not possible:
-> >
-> > https://android.googlesource.com/kernel/common/+/e58f084735b8abf744d61083b92172ee23d45aae
-> >
-> > I really do not mean to sound dismissive or rude, I apologize if it
-> > comes off that way, but we have worked quite hard to avoid inserting
-> > unnecessary workarounds, as they are ultimately technical debt that can
-> > be hard to manage over the long term.
-> >
-> > Cheers,
-> > Nathan
->
-> Thanks a lot Nathan
->
-> It is definitely the clang version 11.0.x which is not updated in aosp
-> Android 11 production tags
->
-> I will use Nick's workaround which works since only lsl %rax, %rax is
-> currently happening
->
-> Many thanks, problem solved
+tree:   https://github.com/mchinth/linux sep_socwatch_linux_5_17
+head:   279a0843e522ec88123ebc978d37ddb6bf7bb2b8
+commit: 279a0843e522ec88123ebc978d37ddb6bf7bb2b8 [1/1] Merge branch 'master' into sep_socwatch_linux_5_17
+config: x86_64-randconfig-a004-20220502 (https://download.01.org/0day-ci/archive/20220507/202205072006.fzA1yAt5-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/mchinth/linux/commit/279a0843e522ec88123ebc978d37ddb6bf7bb2b8
+        git remote add mchinth https://github.com/mchinth/linux
+        git fetch --no-tags mchinth sep_socwatch_linux_5_17
+        git checkout 279a0843e522ec88123ebc978d37ddb6bf7bb2b8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/platform/
 
-Hello,
-I'm back again because I was assuming that Nick's workaround was working ok,
-but I have found that ARCH=x86_64 i.e. 64bit built kernel is causing
-an immediate hard reboot at initrd execution,
-just after hitting [ENTER] at grub/efi menu.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-ARCh=x86 i.e. 32bit kernel binary is not affected, but is Nick's
-workaround targeting 32 bit kernel builds?
-Should it be modified to work for 64bit kernel binary?
+All warnings (new ones prefixed by >>):
 
-How do aosp android-mailine kernels avoid this instantaneous hard reboot issue?
-Mauro
+   drivers/platform/x86/socperf/socperfdrv.c:208:13: warning: no previous prototype for 'SOCPERF_Read_Data3' [-Wmissing-prototypes]
+     208 | extern VOID SOCPERF_Read_Data3(PVOID data_buffer)
+         |             ^~~~~~~~~~~~~~~~~~
+   drivers/platform/x86/socperf/socperfdrv.c:990:1: warning: no previous prototype for 'SOCPERF_Switch_Group3' [-Wmissing-prototypes]
+     990 | SOCPERF_Switch_Group3(VOID)
+         | ^~~~~~~~~~~~~~~~~~~~~
+   drivers/platform/x86/socperf/socperfdrv.c:1175:13: warning: no previous prototype for 'lwpmudrv_Stop_Mem' [-Wmissing-prototypes]
+    1175 | extern VOID lwpmudrv_Stop_Mem(VOID)
+         |             ^~~~~~~~~~~~~~~~~
+   drivers/platform/x86/socperf/socperfdrv.c:1392:22: warning: no previous prototype for 'socperf_Service_IOCTL' [-Wmissing-prototypes]
+    1392 | extern IOCTL_OP_TYPE socperf_Service_IOCTL(IOCTL_USE_INODE struct file *filp,
+         |                      ^~~~~~~~~~~~~~~~~~~~~
+   drivers/platform/x86/socperf/socperfdrv.c:1516:13: warning: no previous prototype for 'socperf_Device_Control' [-Wmissing-prototypes]
+    1516 | extern long socperf_Device_Control(IOCTL_USE_INODE struct file *filp,
+         |             ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/platform/x86/socperf/socperfdrv.c:1551:13: warning: no previous prototype for 'socperf_Device_Control_Compat' [-Wmissing-prototypes]
+    1551 | extern long socperf_Device_Control_Compat(struct file *filp, unsigned int cmd,
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/platform/x86/socperf/socperfdrv.c:1602:12: warning: no previous prototype for 'SOCPERF_Abnormal_Terminate' [-Wmissing-prototypes]
+    1602 | extern int SOCPERF_Abnormal_Terminate(void)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/platform/x86/socperf/socperfdrv.o: warning: objtool: socperf_Service_IOCTL()+0x1e: unreachable instruction
+--
+   drivers/platform/x86/socwatch/sw_driver.c: In function 'sw_collection_stop_i':
+   drivers/platform/x86/socwatch/sw_driver.c:573:101: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+     573 |                         "Warning: some trace_notifier probe functions could NOT be unregistered!\n");
+         |                                                                                                     ^
+   drivers/platform/x86/socwatch/sw_driver.c: In function 'sw_collection_poll_i':
+   drivers/platform/x86/socwatch/sw_driver.c:642:56: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+     642 |                 pw_pr_debug("DEBUG: EMPTY POLL LIST\n");
+         |                                                        ^
+   drivers/platform/x86/socwatch/sw_driver.c: In function 'sw_load_driver_i':
+   drivers/platform/x86/socwatch/sw_driver.c:1698:62: warning: suggest braces around empty body in an 'else' statement [-Wempty-body]
+    1698 |                         pw_pr_debug("OK, resetting worked\n");
+         |                                                              ^
+   drivers/platform/x86/socwatch/sw_driver.c: In function 'sw_unload_driver_i':
+   drivers/platform/x86/socwatch/sw_driver.c:1715:62: warning: suggest braces around empty body in an 'else' statement [-Wempty-body]
+    1715 |                         pw_pr_debug("OK, resetting worked\n");
+         |                                                              ^
+>> drivers/platform/x86/socwatch/sw_driver.o: warning: objtool: sw_unlocked_handle_ioctl_i()+0x171: unreachable instruction
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
