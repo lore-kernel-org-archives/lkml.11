@@ -2,92 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 02:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 02:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445294AbiEGCJz (ORCPT
+        id S1445320AbiEGCLN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 22:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48014 "EHLO
+        Fri, 6 May 2022 22:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356477AbiEGCJw (ORCPT
+        with ESMTP id S1445311AbiEGCLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 22:09:52 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12450289B5
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 19:06:07 -0700 (PDT)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kw9kj2Q2WzhYyc;
-        Sat,  7 May 2022 10:05:33 +0800 (CST)
-Received: from [10.174.179.215] (10.174.179.215) by
- canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 7 May 2022 10:05:53 +0800
-Subject: Re: [PATCH -next] ASoC: mediatek: mt8195: Fix build warning without
- CONFIG_OF
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Trevor Wu <trevor.wu@mediatek.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220506022638.15864-1-yuehaibing@huawei.com>
- <CAK8P3a2iPwOaRgrW6gw+8ZvxwKDROWFtoCz2LLF9RFDuDrEcJQ@mail.gmail.com>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <7204f405-444e-629b-67c5-db10959085ab@huawei.com>
-Date:   Sat, 7 May 2022 10:05:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        Fri, 6 May 2022 22:11:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01E77712EC
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 19:07:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651889244;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uUXwbLpTLxZYFyP+27myBTI1GHkm6PSXiROEx/k8PH0=;
+        b=dLdCLdME7/lMTWl75QKKqSmcj8BUMA7lCGPYIxAwCSIhZH+eKiYB28K5VaLvJI49kxV8/m
+        3nkDvF72j2KmdDd9ZSAynQ+9A2nUqcKWyfpfnwHhmSXudB8PQXSmkP24/hLYxYJVokyxdi
+        yApPnGL3HX9UXKflv516oC2VfDj8T/w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-653-rd5RSUnmNcC8E3e8MXqAjQ-1; Fri, 06 May 2022 22:07:20 -0400
+X-MC-Unique: rd5RSUnmNcC8E3e8MXqAjQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1FE79101AA42;
+        Sat,  7 May 2022 02:07:19 +0000 (UTC)
+Received: from localhost (ovpn-13-18.pek2.redhat.com [10.72.13.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EC0AF111E3EB;
+        Sat,  7 May 2022 02:07:12 +0000 (UTC)
+Date:   Sat, 7 May 2022 10:07:04 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH v24 3/6] arm64: kdump: Reimplement crashkernel=X
+Message-ID: <YnXUSBcFmEpxaqBf@MiWiFi-R3L-srv>
+References: <20220506114402.365-1-thunder.leizhen@huawei.com>
+ <20220506114402.365-4-thunder.leizhen@huawei.com>
+ <20220506231032.GA122876@MiWiFi-R3L-srv>
+ <d9b21f31-6fd2-a898-9a70-c63ff4f36212@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a2iPwOaRgrW6gw+8ZvxwKDROWFtoCz2LLF9RFDuDrEcJQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d9b21f31-6fd2-a898-9a70-c63ff4f36212@huawei.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/6 15:08, Arnd Bergmann wrote:
-> On Fri, May 6, 2022 at 4:26 AM YueHaibing <yuehaibing@huawei.com> wrote:
->>
->> sound/soc/mediatek/mt8195/mt8195-mt6359.c:1639:32: warning: ‘mt8195_mt6359_max98390_rt5682_card’ defined but not used [-Wunused-variable]
->>  1639 | static struct mt8195_card_data mt8195_mt6359_max98390_rt5682_card = {
->>       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> sound/soc/mediatek/mt8195/mt8195-mt6359.c:1634:32: warning: ‘mt8195_mt6359_rt1011_rt5682_card’ defined but not used [-Wunused-variable]
->>  1634 | static struct mt8195_card_data mt8195_mt6359_rt1011_rt5682_card = {
->>       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> sound/soc/mediatek/mt8195/mt8195-mt6359.c:1629:32: warning: ‘mt8195_mt6359_rt1019_rt5682_card’ defined but not used [-Wunused-variable]
->>  1629 | static struct mt8195_card_data mt8195_mt6359_rt1019_rt5682_card = {
->>       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> These variables is only used with CONFIG_OF, move it into the ifdef block.
->>
->> Fixes: 86a6b9c9dfff ("ASoC: mediatek: mt8195: add machine support for max98390 and rt5682")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+On 05/07/22 at 09:34am, Leizhen (ThunderTown) wrote:
 > 
-> It's generally better to remove the #ifdef rather than expanding it,
-> there is no need to
-> save a few bytes on kernel builds of this driver that disable
-> CONFIG_OF. Just drop
-> the of_match_ptr() macro as well.
+> 
+> On 2022/5/7 7:10, Baoquan He wrote:
+> > On 05/06/22 at 07:43pm, Zhen Lei wrote:
+> > ......  
+> >> @@ -118,8 +162,7 @@ static void __init reserve_crashkernel(void)
+> >>  	if (crash_base)
+> >>  		crash_max = crash_base + crash_size;
+> >>  
+> >> -	/* Current arm64 boot protocol requires 2MB alignment */
+> >> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
+> >> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+> >>  					       crash_base, crash_max);
+> >>  	if (!crash_base) {
+> >>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+> >> @@ -127,6 +170,11 @@ static void __init reserve_crashkernel(void)
+> >>  		return;
+> >>  	}
+> >>  
+> > 
+> > There's corner case missed, e.g
+> > 1) ,high and ,low are specified, CONFIG_ZONE_DMA|DMA32 is not enabled;
+> > 2) ,high and ,low are specified, the whole system memory is under 4G.
+> > 
+> > Below judgement can filter them away:
+> >         
+> > 	if (crash_base > arm64_dma_phys_limit && crash_low_size &&
+> > 	    reserve_crashkernel_low(crash_low_size)) {
+> > 
+> > What's your opinion? Leave it and add document to notice user, or fix it
+> > with code change?
+> 
+> I think maybe we can leave it unchanged. If the user configures two memory ranges,
+> we'd better apply for two. Otherwise, he'll be confused when he inquires. Currently,
+> crash_low_size is non-zero only when 'crashkernel=Y,low' is explicitly configured.
 
-Sure, will do that in v2.
+Then user need know the system information, e.g how much is the high
+memory, low memory, if CONFIG_ZONE_DMA|DMA32 is enabled. And we need
+describe these cases in document. Any corner case or exception need
+be noted if we don't handle it in code.
+
+Caring about this very much because we have CI with existed test cases
+to run on the system, and QA will check these manually too. Support
+engineer need detailed document if anything special but happened.
+Anything unclear or uncovered will be reported as bug to our kernel dev.
+Guess your company do the similar thing like this.
+
+This crashkerne,high and crashkernel,low reservation is special if we
+allow ,high, ,low existing in the same zone. Imagine on system with
+CONFIG_ZONE_DMA|DMA32 disabled, people copy the crashkernel=512M,high
+and crashkernel=128M,low from other system, and he could get
+crash_res at [5G, 5G+512M], while crash_low_res at [6G, 6G+128M]. Guess
+how they will judge us.
+
 > 
+> > 
+> > I would suggest merging this series, Lei can add this corner case
+> > handling on top. Since this is a newly added support, we don't have
+> > to make it one step. Doing step by step can make reviewing easier.
+> > 
+> >> +	if (crash_low_size && reserve_crashkernel_low(crash_low_size)) {
+> >> +		memblock_phys_free(crash_base, crash_size);
+> >> +		return;
+> >> +	}
+> >> +
+> >>  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+> >>  		crash_base, crash_base + crash_size, crash_size >> 20);
+> >>  
+> >> @@ -135,6 +183,9 @@ static void __init reserve_crashkernel(void)
+> >>  	 * map. Inform kmemleak so that it won't try to access it.
+> >>  	 */
+> >>  	kmemleak_ignore_phys(crash_base);
+> >> +	if (crashk_low_res.end)
+> >> +		kmemleak_ignore_phys(crashk_low_res.start);
+> >> +
+> >>  	crashk_res.start = crash_base;
+> >>  	crashk_res.end = crash_base + crash_size - 1;
+> >>  	insert_resource(&iomem_resource, &crashk_res);
+> >> -- 
+> >> 2.25.1
+> >>
+> > 
+> > .
+> > 
 > 
->         Arnd
+> -- 
+> Regards,
+>   Zhen Lei
 > 
-> .
-> 
+
