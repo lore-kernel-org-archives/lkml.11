@@ -2,92 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 062ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 21:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 22:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387566AbiEGWDa (ORCPT
+        id S1387589AbiEGWPS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 18:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
+        Sat, 7 May 2022 18:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350158AbiEGWD1 (ORCPT
+        with ESMTP id S237722AbiEGWPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 18:03:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EFF1A3A4
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 14:59:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 7 May 2022 18:15:16 -0400
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [IPv6:2001:4b7a:2000:18::168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1E0140EE
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 15:11:28 -0700 (PDT)
+Received: from Marijn-Arch-PC.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D93B660F19
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 21:59:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06DFDC385A6;
-        Sat,  7 May 2022 21:59:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1651960778;
-        bh=Ka1X3YltXKyKrA5wqKviT4NwESbjBhPlX4Lz/VQyqIE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Nrb95ZZQ19DPLKrY9f0/KQYOZkAtoYQi6gbHeTccHTKEWS0z5hMvyIkyaPC8/aINW
-         Ix7m0nunPoxUi32N87IKhjPLRHRtrcr4ydjgQM3/iofEAAAvXw+AGrrWoJRbktlfM3
-         gWEVaeesPGd+zf2P6C0gA2fZ0M90TdndEfgJcrxY=
-Date:   Sat, 7 May 2022 14:59:37 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     "lipeifeng@oppo.com" <lipeifeng@oppo.com>
-Cc:     michel <michel@lespinasse.org>, hughd <hughd@google.com>,
-        linux-mm <linux-mm@kvack.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Barry Song" <21cnbao@gmail.com>,
-        zhangshiming <zhangshiming@oppo.com>,
-        peifengl55 <peifengl55@gmail.com>
-Subject: Re: [PATCH] mm: fix align-error when get_addr in
- unmapped_area_topdown
-Message-Id: <20220507145937.6dbfc036f99addf9342bc5ce@linux-foundation.org>
-In-Reply-To: <2022050211305415626916@oppo.com>
-References: <20220412081014.399-1-lipeifeng@oppo.com>
-        <20220412142238.93e36cc4095e4e0b362db348@linux-foundation.org>
-        <2022041310411426044561@oppo.com>
-        <2022050110235766139218@oppo.com>
-        <20220501181041.6d53cb9ed54bf697840e36cc@linux-foundation.org>
-        <2022050211305415626916@oppo.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 184533F36F;
+        Sun,  8 May 2022 00:11:25 +0200 (CEST)
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     phone-devel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] dt-bindings: leds: qcom-lpg: Add compatible for PM660L LPG block
+Date:   Sun,  8 May 2022 00:11:20 +0200
+Message-Id: <20220507221123.2201668-1-marijn.suijten@somainline.org>
+X-Mailer: git-send-email 2.36.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2 May 2022 11:33:18 +0800 "lipeifeng@oppo.com" <lipeifeng@oppo.com> wrote:
+Document the availability of an LPG configuration for the PM660L PMIC in
+the Qualcomm Light Pulse Generator driver.
 
-> Hi Andrew：
-> 
-> Thanks for your quick response.
-> 
-> > They caused me some merge issues against mapletree, which I had
-> > resolved.  Mapletree is dropped at present so I set these patches aside
-> > until the next version of the mapletree patches are available.
-> 
-> Do we have a definite time for the next available version of the mapletree patches?
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-I merged v2 a couple of days ago.  It should be in mm-unstable then
-linux-next early next week.
+diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+index 409a4c7298e1..cd02811583ec 100644
+--- a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
++++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+@@ -17,6 +17,7 @@ description: >
+ properties:
+   compatible:
+     enum:
++      - qcom,pm660l-lpg
+       - qcom,pm8150b-lpg
+       - qcom,pm8150l-lpg
+       - qcom,pm8350c-pwm
+-- 
+2.36.0
 
-> Excuse me, is it possible for our patch to be independent of mapletree and brought in separately?
-
-Well, the changelog was rather unclear on the real-world end-user
-visible effects of the defect.  When these prioritization decisions are
-to be made, it really helps to have a clear view of the impact to our
-users.
-
-> 
-> > I've been holding your patches until Michel Lespinasse has had time to
-> > review them (and hopefully explain them to me ;)).  Please review
-> > earlier comments which Michel has provided and ensure that those
-> > comments have been fully addressed so we can hopefully move forward on
-> > this.
-> 
-> We will reply soon if Mr.Lespinasse provideds any advices or question.
-> And I haven't received any reply from Mr.Lespinasse yet, pls let me know
-> if i missed the reply.
-
-There was a big conference last week.
