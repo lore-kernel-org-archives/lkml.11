@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7645C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 06:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9443BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 06:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445855AbiEGGv7 (ORCPT
+        id S1445831AbiEGGwS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 02:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        Sat, 7 May 2022 02:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445865AbiEGGvc (ORCPT
+        with ESMTP id S1445818AbiEGGvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 02:51:32 -0400
+        Sat, 7 May 2022 02:51:37 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7885C853
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 23:47:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499365DA50
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 23:47:45 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KwHzW4wtfz9sWC;
-        Sat,  7 May 2022 08:47:03 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KwHzX0cDNz9sWD;
+        Sat,  7 May 2022 08:47:04 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id VbtUZhoeKJ5y; Sat,  7 May 2022 08:47:03 +0200 (CEST)
+        with ESMTP id ZzrV0dC9fKH8; Sat,  7 May 2022 08:47:04 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KwHzF2Q4Xz9sWF;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KwHzF2S3Tz9sWG;
         Sat,  7 May 2022 08:46:49 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 446118B76E;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4AA388B770;
         Sat,  7 May 2022 08:46:49 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 6A-jBhsNUua2; Sat,  7 May 2022 08:46:49 +0200 (CEST)
+        with ESMTP id haF3JkvLY1l7; Sat,  7 May 2022 08:46:49 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.101])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5CAF98B7B2;
-        Sat,  7 May 2022 08:46:48 +0200 (CEST)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1E6BC8B79F;
+        Sat,  7 May 2022 08:46:47 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2476kd9B1320485
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2476kfoR1320567
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sat, 7 May 2022 08:46:39 +0200
+        Sat, 7 May 2022 08:46:41 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2476kdLT1320484;
-        Sat, 7 May 2022 08:46:39 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2476kfK81320566;
+        Sat, 7 May 2022 08:46:41 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -51,66 +51,55 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         naveen.n.rao@linux.vnet.ibm.com
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2 04/25] powerpc/ftrace: Use is_offset_in_branch_range()
-Date:   Sat,  7 May 2022 08:46:06 +0200
-Message-Id: <912ae51782f5a53c44e435497c8c3fb5cc632387.1651905939.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v2 24/25] powerpc/inst: Remove PPC_INST_BL
+Date:   Sat,  7 May 2022 08:46:26 +0200
+Message-Id: <046cda7bcc2e2a43c454f9a0ad0998334f134bd4.1651905939.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1651905939.git.christophe.leroy@csgroup.eu>
 References: <cover.1651905939.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1651905980; l=1631; s=20211009; h=from:subject:message-id; bh=OWDdhcCtR60EJOCWc6cwIHh4xDhD5orD3drnjJOkPJg=; b=DTrJMFszzSiGLpG5XWwH6BJTQVMOEhWIt6cjGoxn5W6rjmv+I8LfDi5DWR3JXWL7Qy5RbaCXnSGG zqQ8vJQ+C58YQoEao++1bMuuWbKAoHbAHKiyB/BLAinnMw29DDfs
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1651905982; l=1300; s=20211009; h=from:subject:message-id; bh=sW/JSfIHiKBxCIZ62GcYgvl+OLyOrCgP+Naw3li71dY=; b=1ggnvNuUoUPCEzcrk+ATNfa9hA7P4XqD1fNUnqJ7wDvnQm/7Yo0rieQ8iM2OXWPUplrG0k7mwqSw mPyFtVuzARiTb2NLMB+RfPP5GpAP6tNqhM68TPu5njqdJYFcVAJt
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use is_offset_in_branch_range() instead of create_branch()
-to check if a target is within branch range.
+Convert last users of PPC_INST_BL to PPC_RAW_BL()
 
-This patch together with the previous one improves
-ftrace activation time by 7%
+And remove PPC_INST_BL.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/kernel/trace/ftrace.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ arch/powerpc/include/asm/ppc-opcode.h | 1 -
+ arch/powerpc/net/bpf_jit.h            | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
-index 3ce3697e8a7c..41c45b9c7f39 100644
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -89,11 +89,9 @@ ftrace_modify_code(unsigned long ip, ppc_inst_t old, ppc_inst_t new)
-  */
- static int test_24bit_addr(unsigned long ip, unsigned long addr)
- {
--	ppc_inst_t op;
- 	addr = ppc_function_entry((void *)addr);
+diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
+index 1871a86c5436..9ca8996ee1cd 100644
+--- a/arch/powerpc/include/asm/ppc-opcode.h
++++ b/arch/powerpc/include/asm/ppc-opcode.h
+@@ -290,7 +290,6 @@
+ #define PPC_INST_ADDIS			0x3c000000
+ #define PPC_INST_ADD			0x7c000214
+ #define PPC_INST_DIVD			0x7c0003d2
+-#define PPC_INST_BL			0x48000001
+ #define PPC_INST_BRANCH_COND		0x40800000
  
--	/* use the create_branch to verify that this offset can be branched */
--	return create_branch(&op, (u32 *)ip, addr, 0) == 0;
-+	return is_offset_in_branch_range(addr - ip);
- }
+ /* Prefixes */
+diff --git a/arch/powerpc/net/bpf_jit.h b/arch/powerpc/net/bpf_jit.h
+index 80d973da9093..a4f7880f959d 100644
+--- a/arch/powerpc/net/bpf_jit.h
++++ b/arch/powerpc/net/bpf_jit.h
+@@ -35,7 +35,7 @@
+ 	} while (0)
  
- static int is_bl_op(ppc_inst_t op)
-@@ -261,7 +259,6 @@ __ftrace_make_nop(struct module *mod,
- static unsigned long find_ftrace_tramp(unsigned long ip)
- {
- 	int i;
--	ppc_inst_t instr;
+ /* bl (unconditional 'branch' with link) */
+-#define PPC_BL(dest)	EMIT(PPC_INST_BL | (((dest) - (unsigned long)(image + ctx->idx)) & 0x03fffffc))
++#define PPC_BL(dest)	EMIT(PPC_RAW_BL((dest) - (unsigned long)(image + ctx->idx)))
  
- 	/*
- 	 * We have the compiler generated long_branch tramps at the end
-@@ -270,8 +267,7 @@ static unsigned long find_ftrace_tramp(unsigned long ip)
- 	for (i = NUM_FTRACE_TRAMPS - 1; i >= 0; i--)
- 		if (!ftrace_tramps[i])
- 			continue;
--		else if (create_branch(&instr, (void *)ip,
--				       ftrace_tramps[i], 0) == 0)
-+		else if (is_offset_in_branch_range(ftrace_tramps[i] - ip))
- 			return ftrace_tramps[i];
- 
- 	return 0;
+ /* "cond" here covers BO:BI fields. */
+ #define PPC_BCC_SHORT(cond, dest)					      \
 -- 
 2.35.1
 
