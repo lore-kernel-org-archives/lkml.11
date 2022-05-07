@@ -2,103 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 04:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0892C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 04:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445498AbiEGEJT (ORCPT
+        id S1445514AbiEGEuw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 00:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        Sat, 7 May 2022 00:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbiEGEIv (ORCPT
+        with ESMTP id S239457AbiEGEus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 00:08:51 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112884D24E;
-        Fri,  6 May 2022 21:05:05 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id x18so9197480plg.6;
-        Fri, 06 May 2022 21:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=2uSGBx/x9mOPYWvPzmpH4OCNKtIh5ITYrncfGU0t68U=;
-        b=OJn6x0xlPQJmxi61DlEijhdyX+U8xCh1N3mzJwFSm/QblR/h8SvUwR0e+7IDM6OHwi
-         lIRz9hpU8jR/ZXzAZqnQX0IuEnxNvJCaXJW7yXnInK4ipFRF08k4BMeh0ojAfOwYNM6/
-         mFiPTu/lcybyHA8QNF7lHf98JFege9omT02ZqJF3KX7i29W3uJRGHMOPshoK0mvTik6t
-         yn40kldUEh/Un1y6lvvPP9Rc/Fq7FdWm0TiEgWR9mza1DPAh97wI9pOdeP5diwyUlcT3
-         c40RMuT7jpGpQJ5Xh/CdLjsA2uXdbKBws3+xh4muAeNKFcUbU4Bq0HgQu8yZ5LXaBHpU
-         vqDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2uSGBx/x9mOPYWvPzmpH4OCNKtIh5ITYrncfGU0t68U=;
-        b=O0o+FCyqbDUO3KJpuqqDw8jl3vE/o9hco8srjfVJsctbBhSHrAMWUDH8sl0TrSdoWC
-         ir0gSh+PrhdwsPyUkiwXAEbMSiO6ORMDxvNEHsflFh7yvOS42Y68azipVUqCeKM1BTua
-         z5+pF9IxFsOSJF+ZWWvkTsevcWFiMiJQKn7yi0EN5mQobpZmpGs/o4nUCKxw8Z4VEWIx
-         kJpa14vbA18qorv84RhjMRb7cEtcHkVAhjJlC1rHo+v9cV1NRMQjht0t9xJsASm+88kf
-         iJQGqRJ9EMc3ZH3MycXlZ+FwGoIBy+dgqG9DHFmZguCs3wyQyD75gXiOfKJiMwRdeRUA
-         9HCg==
-X-Gm-Message-State: AOAM531xJSKfdfrtewUHQsE/6jCSW6tWeNNDl4VAwz391eFUmxXXOFvt
-        vnXrJKBldChchscMAVvJb+g=
-X-Google-Smtp-Source: ABdhPJxMMSqNOk2BOOld8R+euDj52ODM+s8lfIhjVju//yigkG0BCH8SZh+UapfmTeKrUaOaU3RmmQ==
-X-Received: by 2002:a17:902:ce0a:b0:156:72e2:f191 with SMTP id k10-20020a170902ce0a00b0015672e2f191mr6711375plg.76.1651896304517;
-        Fri, 06 May 2022 21:05:04 -0700 (PDT)
-Received: from [192.168.255.10] ([106.53.33.166])
-        by smtp.gmail.com with ESMTPSA id z1-20020a170902834100b0015e8d4eb1e4sm2562330pln.46.2022.05.06.21.05.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 21:05:04 -0700 (PDT)
-Message-ID: <3011998b-74b0-3a33-9ed9-f7d4d9cb2906@gmail.com>
-Date:   Sat, 7 May 2022 12:05:13 +0800
+        Sat, 7 May 2022 00:50:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3B469CE8;
+        Fri,  6 May 2022 21:46:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47687B83ABC;
+        Sat,  7 May 2022 04:46:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91B7CC385A6;
+        Sat,  7 May 2022 04:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651898816;
+        bh=nCKZYzPsjKkho5w7h4bpzf8tjClGnfHBkruyaF3rEaU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UQNMCUEE9Ja6+cJ4Ij5YLK4BK25Gj66eEJ6Idh4yOrzJOGD8jF/SL+efrSzwkrLlr
+         VqJMQbcmPmMthgYZUhiq0eqeeETYMhririXF4YHVUWWhiqErr7zkdA44wkJmHDThQQ
+         b92EAUZ8QbFVt9mEIyyWV3kVul1W5dsztLAd5afOW4o0flO5D39jsE3ImXP+Usq0zu
+         6Al7vGverSspIHzddJCZJTazcsKZvBwRvPCZg9VPxXqVFS+9Wnrs6qFiPbXwLpVAkn
+         6rxFF3fpJyQqz9PzGMIVE8Olvb1t6+lIRzrdHJgssWRuNX8smPxBuQOqT3wCoNaK6Q
+         AAHlQ9Xqci0lQ==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH] rethook: Reject getting a rethook if RCU is not watching
+Date:   Sat,  7 May 2022 13:46:52 +0900
+Message-Id: <165189881197.175864.14757002789194211860.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH 1/5] io_uring: add IORING_ACCEPT_MULTISHOT for accept
-To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <20220506070102.26032-1-haoxu.linux@gmail.com>
- <20220506070102.26032-2-haoxu.linux@gmail.com>
- <b60eb1c5-4836-5f62-315e-211a0fe03362@kernel.dk>
-From:   Hao Xu <haoxu.linux@gmail.com>
-In-Reply-To: <b60eb1c5-4836-5f62-315e-211a0fe03362@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 5/6/22 10:32 PM, Jens Axboe 写道:
-> On 5/6/22 1:00 AM, Hao Xu wrote:
->> From: Hao Xu <howeyxu@tencent.com>
->>
->> add an accept_flag IORING_ACCEPT_MULTISHOT for accept, which is to
->> support multishot.
->>
->> Signed-off-by: Hao Xu <howeyxu@tencent.com>
->> ---
->>   include/uapi/linux/io_uring.h | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
->> index fad63564678a..73bc7e54ac18 100644
->> --- a/include/uapi/linux/io_uring.h
->> +++ b/include/uapi/linux/io_uring.h
->> @@ -213,6 +213,11 @@ enum {
->>   #define IORING_ASYNC_CANCEL_FD	(1U << 1)
->>   #define IORING_ASYNC_CANCEL_ANY	(1U << 2)
->>   
->> +/*
->> + * accept flags stored in accept_flags
->> + */
->> +#define IORING_ACCEPT_MULTISHOT	(1U << 15)
-> 
-> It isn't stored in accept_flags, is it? This is an io_uring private
-> flag, and it's in ioprio. Which is honestly a good place for per-op
-> private flags, since nobody really uses ioprio outside of read/write
-> style requests. But the comment is wrong :-)
+Since the rethook_recycle() will involve the call_rcu() for reclaiming
+the rethook_instance, the rethook must be set up at the RCU available
+context (non idle). This rethook_recycle() in the rethook trampoline
+handler is inevitable, thus the RCU available check must be done before
+setting the rethook trampoline.
 
-Ah, yes, thanks for pointing it out, I forgot to update the comment
-> 
+This adds a rcu_is_watching() check in the rethook_try_get() so that
+it will return NULL if it is called when !rcu_is_watching().
+
+Fixes: 54ecbe6f1ed5 ("rethook: Add a generic return hook")
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+---
+ kernel/trace/rethook.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
+index b56833700d23..c69d82273ce7 100644
+--- a/kernel/trace/rethook.c
++++ b/kernel/trace/rethook.c
+@@ -154,6 +154,15 @@ struct rethook_node *rethook_try_get(struct rethook *rh)
+ 	if (unlikely(!handler))
+ 		return NULL;
+ 
++	/*
++	 * This expects the caller will set up a rethook on a function entry.
++	 * When the function returns, the rethook will eventually be reclaimed
++	 * or released in the rethook_recycle() with call_rcu().
++	 * This means the caller must be run in the RCU-availabe context.
++	 */
++	if (unlikely(!rcu_is_watching()))
++		return NULL;
++
+ 	fn = freelist_try_get(&rh->pool);
+ 	if (!fn)
+ 		return NULL;
 
