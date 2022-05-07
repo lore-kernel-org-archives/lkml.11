@@ -2,110 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6316AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 05:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D71C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 05:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445656AbiEGFab (ORCPT
+        id S1445617AbiEGFai (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 01:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        Sat, 7 May 2022 01:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445546AbiEGF35 (ORCPT
+        with ESMTP id S1445593AbiEGFaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 01:29:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F7968306;
-        Fri,  6 May 2022 22:26:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80A5CB80688;
-        Sat,  7 May 2022 05:26:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E092EC385A5;
-        Sat,  7 May 2022 05:26:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651901169;
-        bh=nQe0p43j/Mw8whyp4ledlH+zcvMZWDU55dgzK2n5vvg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OF1dtvrqgh7JV7TBLY6pybQPVbAGzqyyK0gC4hORuHRVXcGG/GFx3WtF0/Ws6vc85
-         HUcSlDjMLz+tkfcWz1rigww7UKkefowTZ6a62Y2GLkOV07IpJ048r7tF//37RsOO43
-         btltTV42NcWL8zQlbF0hOYuTPCQENZ9Npb6sH0vM6XA0hJAx+S1LLxIYnhat+90VOf
-         OSPK9urQLUl2rXgrj68qsYnFMb+RFK7N9NA4oolCGaD+l02BJkUtKsnWC7hw0knKkY
-         Al+Ua+bRCtx3ifvdHy6kAXhcGAZrTkGYtFxr+ZFoTXPTZWyJaH+ofzqKXYGzfkoZT+
-         9qe3yxEvxkXew==
-From:   Miguel Ojeda <ojeda@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Subject: [PATCH v6 04/23] kunit: take `kunit_assert` as `const`
-Date:   Sat,  7 May 2022 07:24:02 +0200
-Message-Id: <20220507052451.12890-5-ojeda@kernel.org>
-In-Reply-To: <20220507052451.12890-1-ojeda@kernel.org>
-References: <20220507052451.12890-1-ojeda@kernel.org>
+        Sat, 7 May 2022 01:30:25 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667916FA3A;
+        Fri,  6 May 2022 22:26:23 -0700 (PDT)
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 2475Q3fC030972;
+        Sat, 7 May 2022 14:26:03 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 2475Q3fC030972
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651901164;
+        bh=FfZkot1xX9/3A26jW6H/8b0WNAiDAR0EcY13U3/8Ct0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Q+FER/8w3E5h6Qsm1RElS6vuq+ZL8wApsSglUlUn9U53jWyLp4y2P9SBNF7xHSyT7
+         dKPa+Zt/YnrZct/IS0ChkpJ8UcISu5zND744AU65GLgiowTHpT35Rr5ZQltemvoXwr
+         xZIwgYJG0zYOuI7Oi68kS37hvB1an9E/7eMoI8gIXLBUoWSoUHspfjE8vBtnhARFzQ
+         UX4Hwe+oeLR/svhlTocHsw54+9/U741E8el6WSuEX08MF3aHwrarABm6bLQ8KPikMG
+         G/Uz8u7p6vEN9ROSAjf59+3jJxaS9SFrkq0Y12NJQrgfAuwFDFNjFYNkHXwI1sibAT
+         VgFZuCMCI8KGw==
+X-Nifty-SrcIP: [209.85.214.177]
+Received: by mail-pl1-f177.google.com with SMTP id d22so9272567plr.9;
+        Fri, 06 May 2022 22:26:03 -0700 (PDT)
+X-Gm-Message-State: AOAM533scEs/vByiND3hk9Ip1uikIKv0ja5UNlQldFT+V8gcPNS4v7/Z
+        LDqGE4zl2RviDMVdAItKEJg6wnbgcZfXQR7zMCM=
+X-Google-Smtp-Source: ABdhPJz/0IPfWjlKJGTu0YSnMBSWgwcJp83smiYNjc8NlYMvw4l6ht/5A57T92PaEldUnyvY+t3vLEb0KSQNQvhbfZs=
+X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
+ s7-20020a170902988700b001516e1c7082mr7014096plp.162.1651901162954; Fri, 06
+ May 2022 22:26:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220501130749.1123387-1-masahiroy@kernel.org>
+ <YnT3GtU975OsXVuN@gondor.apana.org.au> <CAK7LNASkQ_14NYu7K_eEOG4boBMpKEXyrOzDJMOjcT5paC7E1A@mail.gmail.com>
+ <YnXTPPXRlCpUvoKz@gondor.apana.org.au>
+In-Reply-To: <YnXTPPXRlCpUvoKz@gondor.apana.org.au>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sat, 7 May 2022 14:24:54 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAReyv20PAb1LdkoBhR_x1pvLQJA7a=jMZYf11TmK9h-iQ@mail.gmail.com>
+Message-ID: <CAK7LNAReyv20PAb1LdkoBhR_x1pvLQJA7a=jMZYf11TmK9h-iQ@mail.gmail.com>
+Subject: Re: [PATCH] crypto: vmx - Align the short log with Makefile cleanups
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?Q?Breno_Leit=C3=A3o?= <leitao@debian.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The `kunit_do_failed_assertion` function passes its
-`struct kunit_assert` argument to `kunit_fail`. This one,
-in turn, calls its `format` field passing the assert again
-as a `const` pointer.
+On Sat, May 7, 2022 at 11:02 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Sat, May 07, 2022 at 12:25:32AM +0900, Masahiro Yamada wrote:
+> >
+> > Sorry, I just noticed the 0day bot had reported the error.
+> >
+> > I sent v2.    (CONFIG_LITTLE_ENDIAN  --> CONFIG_CPU_LITTLE_ENDIAN)
+> >
+> > https://lore.kernel.org/lkml/20220506150820.1310802-1-masahiroy@kernel.org/
+> >
+> >
+> > Could you replace it, or fix it up, please?
+>
+> Please send me an incremental patch.
 
-Therefore, the whole chain may be made `const`.
+Done.
 
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
----
-This is a prerequisite patch, independently submitted at:
+BTW, you added a wrong Reported-by tag:
+https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git/commit/?id=b52455a73db95ef90fd3c2be84db77b55be43f46
 
-    https://lore.kernel.org/lkml/20220502093625.GA23225@kernel.org/
+It is a clean up patch, where 0day bot did not report anything.
 
- include/kunit/test.h | 2 +-
- lib/kunit/test.c     | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/kunit/test.h b/include/kunit/test.h
-index 00b9ff7783ab..2eff4f1beb42 100644
---- a/include/kunit/test.h
-+++ b/include/kunit/test.h
-@@ -774,7 +774,7 @@ void __printf(2, 3) kunit_log_append(char *log, const char *fmt, ...);
- void kunit_do_failed_assertion(struct kunit *test,
- 			       const struct kunit_loc *loc,
- 			       enum kunit_assert_type type,
--			       struct kunit_assert *assert,
-+			       const struct kunit_assert *assert,
- 			       const char *fmt, ...);
- 
- #define KUNIT_ASSERTION(test, assert_type, pass, assert_class, INITIALIZER, fmt, ...) do { \
-diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-index 3bca3bf5c15b..b84aed09a009 100644
---- a/lib/kunit/test.c
-+++ b/lib/kunit/test.c
-@@ -241,7 +241,7 @@ static void kunit_print_string_stream(struct kunit *test,
- }
- 
- static void kunit_fail(struct kunit *test, const struct kunit_loc *loc,
--		       enum kunit_assert_type type, struct kunit_assert *assert,
-+		       enum kunit_assert_type type, const struct kunit_assert *assert,
- 		       const struct va_format *message)
- {
- 	struct string_stream *stream;
-@@ -281,7 +281,7 @@ static void __noreturn kunit_abort(struct kunit *test)
- void kunit_do_failed_assertion(struct kunit *test,
- 			       const struct kunit_loc *loc,
- 			       enum kunit_assert_type type,
--			       struct kunit_assert *assert,
-+			       const struct kunit_assert *assert,
- 			       const char *fmt, ...)
- {
- 	va_list args;
+
+
 -- 
-2.35.3
-
+Best Regards
+Masahiro Yamada
