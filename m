@@ -2,106 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 038C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 10:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC12C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 10:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384362AbiEGKhS (ORCPT
+        id S1384430AbiEGKqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 06:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
+        Sat, 7 May 2022 06:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236372AbiEGKhP (ORCPT
+        with ESMTP id S1343737AbiEGKq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 06:37:15 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C992D1ED;
-        Sat,  7 May 2022 03:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651919609; x=1683455609;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tz4eaxNFw3OE/vYEfmWYD9ee4vGmGUyLKAFHoXsKn8Q=;
-  b=kgDPj8hGIsQ2S/dIq0sRi9iT4oiK18Z0EJR68cKN19CnmC2SyL5eoBFx
-   6K3q6O7VF845lDASmDO5Ue3HyFcunueF9PYPdUkNyLyLdAs6V1jgbnvjB
-   sZG2QxPp85lKrTZCeFjFvT55NJvSh+c+xB+JVkGmpcMATlVF+Lc9G+uVm
-   4Uu4DCKdCFXBiwUerjhIe0WcAtewvEKFrMCiU4aWiyUEiO7hxSyKvKzj5
-   PEqS9ZVyelpM8B+tBXKFMAvfZfSEm/Nsne2gt8jBxVllSoY4am+PzZ89n
-   2U9iATPW+tTqbrwqYHsaOrN244sa8ORH+ABixS90BTXmbWlo0St3P79hQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268589634"
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="268589634"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 03:33:29 -0700
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="550239830"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 03:33:23 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nnHkV-00D3B8-LA;
-        Sat, 07 May 2022 13:33:19 +0300
-Date:   Sat, 7 May 2022 13:33:19 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tan Jui Nee <jui.nee.tan@intel.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org, linux-i2c <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>
-Subject: Re: [PATCH v4 0/8] platform/x86: introduce p2sb_bar() helper
-Message-ID: <YnZK75D3fMvLSgAD@smile.fi.intel.com>
-References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
- <20220308205016.2c0112ad@md1za8fc.ad001.siemens.net>
- <YnJ0tdGTzTRYEISn@smile.fi.intel.com>
- <20220504171007.2f641098@md1za8fc.ad001.siemens.net>
- <CAHp75Vfh5DbiGQ4NLv+hhYyRx5wDbMjFmgO5sNZ7864ipRrDHg@mail.gmail.com>
+        Sat, 7 May 2022 06:46:29 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F8753A46
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 03:42:42 -0700 (PDT)
+Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KwP5w62gGzXdmx;
+        Sat,  7 May 2022 18:37:56 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 18:42:40 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 18:42:38 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: [PATCH -next v7 1/6] mm: page_table_check: using PxD_SIZE instead of PxD_PAGE_SIZE
+Date:   Sat, 7 May 2022 11:01:09 +0000
+Message-ID: <20220507110114.4128854-2-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220507110114.4128854-1-tongtiangen@huawei.com>
+References: <20220507110114.4128854-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vfh5DbiGQ4NLv+hhYyRx5wDbMjFmgO5sNZ7864ipRrDHg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 05:55:26PM +0200, Andy Shevchenko wrote:
-> On Wed, May 4, 2022 at 5:10 PM Henning Schild
-> <henning.schild@siemens.com> wrote:
-> > Am Wed, 4 May 2022 15:42:29 +0300
-> > schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:
+Compared with PxD_PAGE_SIZE, which is defined and used only on X86,
+PxD_SIZE is more common in each architecture. Therefore, it is more
+reasonable to use PxD_SIZE instead of PxD_PAGE_SIZE in page_table_check.c.
+At the same time, it is easier to support page table check in other
+architectures. The substitution has no functional impact on the x86.
 
-> ...
+Suggested-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ mm/page_table_check.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> > Let me know if you need it in another shape or form.
-> 
-> Form is okay, just would be nice if you can retest what I have in the
-> branch as an updated version.
-
-Is there any news? I would like to send a new version sooner than later.
-We may also apply the patches from this series and when you will be ready
-apply yours.
-
+diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+index 2458281bff89..eb0d0b71cdf6 100644
+--- a/mm/page_table_check.c
++++ b/mm/page_table_check.c
+@@ -177,7 +177,7 @@ void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
+ 
+ 	if (pmd_user_accessible_page(pmd)) {
+ 		page_table_check_clear(mm, addr, pmd_pfn(pmd),
+-				       PMD_PAGE_SIZE >> PAGE_SHIFT);
++				       PMD_SIZE >> PAGE_SHIFT);
+ 	}
+ }
+ EXPORT_SYMBOL(__page_table_check_pmd_clear);
+@@ -190,7 +190,7 @@ void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+ 
+ 	if (pud_user_accessible_page(pud)) {
+ 		page_table_check_clear(mm, addr, pud_pfn(pud),
+-				       PUD_PAGE_SIZE >> PAGE_SHIFT);
++				       PUD_SIZE >> PAGE_SHIFT);
+ 	}
+ }
+ EXPORT_SYMBOL(__page_table_check_pud_clear);
+@@ -219,7 +219,7 @@ void __page_table_check_pmd_set(struct mm_struct *mm, unsigned long addr,
+ 	__page_table_check_pmd_clear(mm, addr, *pmdp);
+ 	if (pmd_user_accessible_page(pmd)) {
+ 		page_table_check_set(mm, addr, pmd_pfn(pmd),
+-				     PMD_PAGE_SIZE >> PAGE_SHIFT,
++				     PMD_SIZE >> PAGE_SHIFT,
+ 				     pmd_write(pmd));
+ 	}
+ }
+@@ -234,7 +234,7 @@ void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
+ 	__page_table_check_pud_clear(mm, addr, *pudp);
+ 	if (pud_user_accessible_page(pud)) {
+ 		page_table_check_set(mm, addr, pud_pfn(pud),
+-				     PUD_PAGE_SIZE >> PAGE_SHIFT,
++				     PUD_SIZE >> PAGE_SHIFT,
+ 				     pud_write(pud));
+ 	}
+ }
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
