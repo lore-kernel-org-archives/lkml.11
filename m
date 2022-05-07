@@ -2,113 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E95C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA59C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346210AbiEGQYs (ORCPT
+        id S1351128AbiEGQbT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 12:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33548 "EHLO
+        Sat, 7 May 2022 12:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240717AbiEGQYp (ORCPT
+        with ESMTP id S240025AbiEGQbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 12:24:45 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39D420186;
-        Sat,  7 May 2022 09:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651940458; x=1683476458;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=/b/+Mr0B5Zhv55WA58zICS5As/BFDYSFtkZY5yJGamg=;
-  b=YudgmDP/5Ndca9n+OqqhclBIR3VUXtdzUKtiANrqiPKFIDCCUKI0WxKf
-   Qf2R7ehOJTlXpTxvJVFeoOy+e9Yp7DXS3Gy4hCXI/XR800vcvXEYDPNoN
-   bQHp0adi6jp5XgYyv8u41tEEZlEwxz5naSGYFJILkZM8fe1cRK0fy2uDK
-   WL6hrOtWX/26HusT5F5s1pim18K+X9q+PKbr4Z6lv8rC6dAJjYm65wmIt
-   CSCwlV+WsF77DXdzKP5cZK3ERgnXVrwBGPhu6HjECOHxNEm+7mqa+YTY3
-   fFxG+iVlEdtRMENs7bcfbSGOoI8Qv5/bBQiei4SjNUOh59K+IJajV5snW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="329278706"
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="329278706"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 09:20:54 -0700
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="586552379"
-Received: from hmendezc-mobl.amr.corp.intel.com (HELO ldmartin-desk2) ([10.252.138.85])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 09:20:54 -0700
-Date:   Sat, 7 May 2022 09:20:53 -0700
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Peter Jones <pjones@redhat.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH] fbdev: efifb: Fix a use-after-free due early fb_info
- cleanup
-Message-ID: <20220507162053.auo2idd5twvnxatj@ldmartin-desk2>
-References: <20220506132225.588379-1-javierm@redhat.com>
+        Sat, 7 May 2022 12:31:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64EC31222;
+        Sat,  7 May 2022 09:27:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F88961277;
+        Sat,  7 May 2022 16:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3E2C385A6;
+        Sat,  7 May 2022 16:27:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651940843;
+        bh=3rr8bPT1a3oSQb1SQ5wfvUm81Gi7wyQPTmJOEcdlh2A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dqm5PdfERD+8qcwDSg/e8RFozVMjEnfGErAOdc6LJrU22OqtG3qYIdJig/qdNMkxM
+         6KTnVBi7SyqV0XbQR8/qWp1OxotQ4YxBXyCFKUSVsdArXze2M6P5deYbpEyawuaIKq
+         /IL9tGVPxpQzRsgJq1sZUni/mXUoMcZZZQpQTl0YjD+SkUc3w41LeEn0YroQmGo31U
+         3ztBgNuHz7CsIUeg9iDRIyJLdPMOZjrgUT21T4XE57FepY/Tj/cNMGfWSvDgvi98wQ
+         zW453DBNKHr7+/iQl/V7RPAv8WxZ0YOshOMsEDoX4Nz9hhCJLN/GgIUBQ0vZTUkKux
+         q6Pd7LVcjG+gQ==
+Date:   Sat, 7 May 2022 17:35:51 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH v3 2/2] iio: adc: ad4130: add AD4130 driver
+Message-ID: <20220507173551.1bc45a82@jic23-huawei>
+In-Reply-To: <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
+References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
+        <20220419150828.191933-3-cosmin.tanislav@analog.com>
+        <20220501170807.1e728524@jic23-huawei>
+        <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220506132225.588379-1-javierm@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 03:22:25PM +0200, Javier Martinez Canillas wrote:
->Commit d258d00fb9c7 ("fbdev: efifb: Cleanup fb_info in .fb_destroy rather
->than .remove") attempted to fix a use-after-free error due driver freeing
->the fb_info in the .remove handler instead of doing it in .fb_destroy.
->
->But ironically that change introduced yet another use-after-free since the
->fb_info was still used after the free.
->
->This should fix for good by freeing the fb_info at the end of the handler.
->
->Fixes: d258d00fb9c7 ("fbdev: efifb: Cleanup fb_info in .fb_destroy rather than .remove")
 
-are these patches going through any CI before being applied? Maybe would
-be a good idea to cc intel-gfx mailing list on these fixes to have Intel
-CI to pick them up for some tests?
+> >   
+> >> +static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val)
+> >> +{
+> >> +	struct ad4130_state *st = iio_priv(indio_dev);
+> >> +	unsigned int eff;
+> >> +	int ret;
+> >> +
+> >> +	if (val > AD4130_FIFO_SIZE)
+> >> +		return -EINVAL;
+> >> +
+> >> +	/*
+> >> +	 * Always set watermark to a multiple of the number of enabled channels
+> >> +	 * to avoid making the FIFO unaligned.
+> >> +	 */
+> >> +	eff = rounddown(val, st->num_enabled_channels);
+> >> +
+> >> +	mutex_lock(&st->lock);
+> >> +
+> >> +	ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
+> >> +				 AD4130_WATERMARK_MASK,
+> >> +				 FIELD_PREP(AD4130_WATERMARK_MASK,
+> >> +					    ad4130_watermark_reg_val(eff)));
+> >> +	if (ret)
+> >> +		goto out;
+> >> +
+> >> +	st->effective_watermark = eff;
+> >> +	st->watermark = val;  
+> > 
+> > Hmm this is a potential inconsistency in the IIO ABI.
+> > ABI docs describes watermark as being number of 'scan elements' which is
+> > not the clearest text we could have gone with...
+> > 
+> > Now I may well have made a mistake in the following as it's rather a long time
+> > since I last looked at the core handling for this...
+> > 
+> > The core treats it as number datum (which is same as a scan) when using
+> > it for the main watermark attribute and also when using watermarks with the
+> > kfifo (the IIO fifo is made up of objects each of which is a scan. So kfifo_len()
+> > returns the number of scans.
+> >   
+> > Looking very quickly at a few other drivers
+> > adxl367 seems to use number of samples.
+> > adxl372 is using number of scans.
+> > bmc150 hardware seems to work on basis of frame count which I 'think' is probably scans.
+> > fxls8962 uses 'samples count' which is not clearly defined in the datasheet but there
+> > is an example showing that it's scans (I think)...
+> > lsm6dsx - some of the fifos used with this are based on tagged data so the connection to
+> > what hits the front end buffers is non obvious.
+> > 
+> > So, not great for consistency :(
+> > 
+> > Going forwards i think we should standardize the hardware fifo watermark on what is being
+> > used for the software watermark which I believe is number of scans.
+> > Not necessary much we can do about old drivers though due to risk of breaking ABI...
+> > We should make the documentation clearer though.
+> >   
+> 
+> I was confused too, but this seemed more logical to me at the time, and
+> since you didn't say anything regarding it on ADXL367, I did it the same
+> way here. I guess we can't go back and change it now on ADXL367, I'm
+> sorry for this. I'll fix it.
 
-pushed to drm-misc-fixes where the previous patch was applied.
+I missed it.  Review is never perfect (mine definitely aren't!)
 
-thanks
-LUcas De Marchi
+Thinking more on the adxl367. We still have a window to  fix that as
+the driver isn't yet in a release kernel.  Would you mind spinning a
+patch to fix that one?  Even if we miss the rc cycle (it's a bit tight
+timing wise) we can sneak it in as an early fix in stable without
+significant risk of breaking anyone's userspace.
 
->Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
->Reported-by: Andrzej Hajda <andrzej.hajda@intel.com>
->Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
->---
->
-> drivers/video/fbdev/efifb.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
->index cfa3dc0b4eee..b3d5f884c544 100644
->--- a/drivers/video/fbdev/efifb.c
->+++ b/drivers/video/fbdev/efifb.c
->@@ -259,12 +259,12 @@ static void efifb_destroy(struct fb_info *info)
-> 			memunmap(info->screen_base);
-> 	}
->
->-	framebuffer_release(info);
->-
-> 	if (request_mem_succeeded)
-> 		release_mem_region(info->apertures->ranges[0].base,
-> 				   info->apertures->ranges[0].size);
-> 	fb_dealloc_cmap(&info->cmap);
->+
->+	framebuffer_release(info);
-> }
->
-> static const struct fb_ops efifb_ops = {
->-- 
->2.35.1
->
+There might be other drivers that have that interpretation we can't
+fix but if we can reduce the scope of the problem by changing the adxl367
+that would be great.
+
+We should also definitely improve the docs and perhaps add a note to say
+that due to need to maintain ABI, a few drivers use scans * number of channels
+rather than scans.
+
+> 
+> >> +
+> >> +out:
+> >> +	mutex_unlock(&st->lock);
+> >> +
+> >> +	return ret;
+> >> +}
+> >> +  
+> > 
+> > 
+> > ...
+> >   
+> >> +
+> >> +static int ad4130_parse_fw_channel(struct iio_dev *indio_dev,
+> >> +				   struct fwnode_handle *child)
+> >> +{
+> >> +	struct ad4130_state *st = iio_priv(indio_dev);
+> >> +	unsigned int index = indio_dev->num_channels++;
+> >> +	struct device *dev = &st->spi->dev;
+> >> +	struct ad4130_chan_info *chan_info;
+> >> +	struct iio_chan_spec *chan;
+> >> +	u32 pins[2];
+> >> +	int ret;
+> >> +
+> >> +	if (index >= AD4130_MAX_CHANNELS)
+> >> +		return dev_err_probe(dev, -EINVAL, "Too many channels\n");
+> >> +
+> >> +	chan = &st->chans[index];
+> >> +	chan_info = &st->chans_info[index];
+> >> +
+> >> +	*chan = ad4130_channel_template;
+> >> +	chan->scan_type.realbits = st->chip_info->resolution;
+> >> +	chan->scan_type.storagebits = st->chip_info->resolution;
+> >> +	chan->scan_index = index;
+> >> +
+> >> +	chan_info->slot = AD4130_INVALID_SLOT;
+> >> +	chan_info->setup.fs = AD4130_FS_MIN;
+> >> +	chan_info->initialized = true;
+> >> +
+> >> +	ret = fwnode_property_read_u32_array(child, "diff-channels", pins,
+> >> +					     ARRAY_SIZE(pins));
+> >> +	if (ret)
+> >> +		return ret;
+> >> +
+> >> +	ret = ad4130_validate_diff_channels(st, pins, ARRAY_SIZE(pins));
+> >> +	if (ret)
+> >> +		return ret;
+> >> +
+> >> +	chan->channel = pins[0];
+> >> +	chan->channel2 = pins[1];
+> >> +
+> >> +	ret = ad4130_parse_fw_setup(st, child, &chan_info->setup);
+> >> +	if (ret)
+> >> +		return ret;
+> >> +
+> >> +	fwnode_property_read_u32(child, "adi,excitation-pin-0",
+> >> +				 &chan_info->iout0);
+> >> +	if (chan_info->setup.iout0_val != AD4130_IOUT_OFF) {  
+> > 
+> > It would be slightly better to set an explicit default value here as the fact it
+> > is 0 is hidden by the enum. e.g.
+> > 	chan_info->iout0 = AD4130_IOUT_OFF;
+> > 	fwnode_property_read_u32(child, "adi,excitation-pin-0",
+> > 			 	 &chan_info->iout0);
+> > 	if (chan_info->....
+> > That would save reviewers wondering what the default is and having to go
+> > check the enum (and I'm lazy :)  
+> 
+> I understand the idea, but the default value for iout0 is not
+> AD4130_IOUT_OFF. iout0 is the pin that iout0_val current is
+> applied to, and AD4130_IOUT_OFF is a value for iout0_val.
+> Look at ad4130_parse_fw_setup.
+> 
+> For iout0, I guess I could do
+> #define AD4130_AIN0	0x0
+> ...
+> chan_info->iout0 = AD4130_AIN0;
+
+Oops.  I got confused.  Code is fine as it is.  Adding the define isn't going to make
+it much clearer.
+ 
+> 
+> >> +		}
+> >> +	}
+> >> +
+> >> +	return ret;
+> >> +}
+> >> +
+
