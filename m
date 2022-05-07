@@ -2,259 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5068AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 09:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 09:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383891AbiEGJVZ (ORCPT
+        id S1383916AbiEGJXg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 05:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        Sat, 7 May 2022 05:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiEGJVV (ORCPT
+        with ESMTP id S229515AbiEGJXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 05:21:21 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B025657123;
-        Sat,  7 May 2022 02:17:34 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id e24so12997383wrc.9;
-        Sat, 07 May 2022 02:17:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gYHAJahK4aFx5yhwaNZC95xNZdXWvLOzC1m0kiecvQ0=;
-        b=RjhlQrji4Dvf+RBTCfI7lj7YO9ESDYT5EERE7DGVSFoBflB50W4BRYv1Mxo/orM5r4
-         6kCaHOUXVj99kxw17c9YR9o4L17kTWPYr/Z/pSDSEzPe4jBi9wAFEekKrpvv9MTk7uLN
-         mwU/vTnTh6gixFhWxaAB2/KTocG3AQIU0asl7tJ3vOofx7WGKavIyFgDE9Sr2pvseYDj
-         5iOL2umy3jXRJbYGSDxeMbaHlFAl7Zm3+s4C8b3xjvp3CADcPV2l1lZ8c2SCvuUA6zAe
-         UQ+uMGFHDpqk4Dsi2d6jT2fc+EHNPxAwIM2IoZ2LNn9eniVzI5vfr4nyI1T0skf+pdeu
-         RpiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gYHAJahK4aFx5yhwaNZC95xNZdXWvLOzC1m0kiecvQ0=;
-        b=ZR1W7dm/qki4cHqxJke3aoFywM3Mg6lwPl1+zr26d/xC3CkYhv6vuXuP60DJTfTFUn
-         LkXijU08cBrx+SZftHvyr2paAnAn/J2fb0ZhC+YYkxffdHgd9N9vtB734u687HHL0Mmz
-         ab4qAQ7uFxLtTU5dpu8Xl3zzJdrYHcigF1TRc6mys2t2TZXm1wIeam90a0Uelh2N4CrF
-         1CUxkIvOa4+t75mCtWxAaOIerjfGQvOR9NUpn90r800xLIJMrBCTTIO3Q+LMKLtUbpzV
-         0/bZf8ADi+4ZroEPJqtExBdG4O/S4BSUrY+6HB+oDwMKPq/tTJSq/5VMg2GRPfECxatp
-         5e6g==
-X-Gm-Message-State: AOAM531c4cfFsj0vPHm9gNiZX37F5oFidnfW6cBaqctj+EPo/nLZf9lr
-        61uPLtSoBoFKiswTBn65W3p1V1gmPd8=
-X-Google-Smtp-Source: ABdhPJx7pP8UICrd5MzoKSTyWN955VaL5dWfQNCslzmGqjz9WkZlC0LSE+KvWXdJbHsk8Yycf6kYOg==
-X-Received: by 2002:a5d:66c8:0:b0:20a:c807:6061 with SMTP id k8-20020a5d66c8000000b0020ac8076061mr5714915wrw.399.1651915053027;
-        Sat, 07 May 2022 02:17:33 -0700 (PDT)
-Received: from [192.168.8.198] ([85.255.237.69])
-        by smtp.gmail.com with ESMTPSA id p11-20020a1c544b000000b003942a244f30sm12455397wmi.9.2022.05.07.02.17.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 May 2022 02:17:32 -0700 (PDT)
-Message-ID: <9c4cff81-ff0f-4819-c41d-54f28dba2929@gmail.com>
-Date:   Sat, 7 May 2022 10:16:54 +0100
+        Sat, 7 May 2022 05:23:34 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF3957155
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 02:19:47 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KwMMF6VyNzhYxG;
+        Sat,  7 May 2022 17:19:21 +0800 (CST)
+Received: from [10.174.179.0] (10.174.179.0) by dggpemm500024.china.huawei.com
+ (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 7 May
+ 2022 17:19:45 +0800
+Message-ID: <e4e135fe-c3c0-19a6-67d8-23ac139627f6@huawei.com>
+Date:   Sat, 7 May 2022 17:19:45 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: linux-stable-5.10-y CVE-2022-1508 of io_uring module
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>, Guo Xuenan <guoxuenan@huawei.com>
-Cc:     lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        io-uring@vger.kernel.org, yi.zhang@huawei.com, houtao1@huawei.com
-References: <dd122760-5f87-10b1-e50d-388c2631c01a@kernel.dk>
- <20220505141159.3182874-1-guoxuenan@huawei.com>
- <7d54523e-372b-759b-1ebb-e0dbc181f18d@kernel.dk>
- <31ae3426-b835-3a3f-f6d1-aecad24066e8@gmail.com>
- <6c417ba7-d677-5076-5ce3-d3e174eb8899@kernel.dk>
- <4fc454ca-8b3a-28f6-2246-3ffb998f9f11@kernel.dk>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <4fc454ca-8b3a-28f6-2246-3ffb998f9f11@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+To:     <linux-kernel@vger.kernel.org>
+CC:     <suweifeng1@huawei.com>, <linfeilong@huawei.com>,
+        <akpm@linux-foundation.org>
+From:   "zhanghongtao (A)" <zhanghongtao22@huawei.com>
+Subject: [PATCH] drivers/uio: Fix system crashes during driver switchover
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.0]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/6/22 19:22, Jens Axboe wrote:
-> On 5/6/22 10:15 AM, Jens Axboe wrote:
->> On 5/6/22 9:57 AM, Pavel Begunkov wrote:
->>> On 5/6/22 03:16, Jens Axboe wrote:
->>>> On 5/5/22 8:11 AM, Guo Xuenan wrote:
->>>>> Hi, Pavel & Jens
->>>>>
->>>>> CVE-2022-1508[1] contains an patch[2] of io_uring. As Jones reported,
->>>>> it is not enough only apply [2] to stable-5.10.
->>>>> Io_uring is very valuable and active module of linux kernel.
->>>>> I've tried to apply these two patches[3] [4] to my local 5.10 code, I
->>>>> found my understanding of io_uring is not enough to resolve all conflicts.
->>>>>
->>>>> Since 5.10 is an important stable branch of linux, we would appreciate
->>>>> your help in solving this problem.
->>>>
->>>> Yes, this really needs to get buttoned up for 5.10. I seem to recall
->>>> there was a reproducer for this that was somewhat saner than the
->>>> syzbot one (which doesn't do anything for me). Pavel, do you have one?
->>>
->>> No, it was the only repro and was triggering the problem
->>> just fine back then
->>
->> I modified it a bit and I can now trigger it.
-> 
-> Pavel, why don't we just keep it really simple and just always save the
-> iter state in read/write, and use the restore instead of the revert?
+From: Hongtao Zhang <zhanghongtao22@huawei.com>
 
-The problem here is where we're doing revert. If it's done deep in
-the stack and then while unwinding someone decides to revert it again,
-e.g. blkdev_read_iter(), we're screwed.
+Switch the driver of the SPDK program that is being read and written from the uio_pci_generic driver to the NVMe driver
+(Unbind the UIO driver from the device and bind the NVMe driver to the device.) ,
+the system crashes and restarts, and the stacks of each crash are different.
+Bug reproduction: When the SPDK is reading or writing data, run the following command: /opt/spdk/setup.sh reset
+The one with a higher probability of occurrence is as follows:
+PANIC: "BUG: unable to handle kernel NULL pointer dereference at 0000000000000008"
+         PID: 0
+     COMMAND: "swapper/3"
+        TASK: ffff8bc3836f1e80  (1 of 8)  [THREAD_INFO: ffff8bc3836f1e80]
+         CPU: 3
+       STATE: TASK_RUNNING (PANIC)
+PID: 0      TASK: ffff8bc3836f1e80  CPU: 3   COMMAND: "swapper/3"
+ #0 [ffff8bca9ecc3c28] machine_kexec at ffffffff82e5e45b
+ #1 [ffff8bca9ecc3c80] __crash_kexec at ffffffff82f64e42
+ #2 [ffff8bca9ecc3d40] panic at ffffffff82ebab29
+ #3 [ffff8bca9ecc3dc8] oops_end at ffffffff82e23940
+ #4 [ffff8bca9ecc3de8] no_context at ffffffff82e71630
+ #5 [ffff8bca9ecc3e40] do_page_fault at ffffffff82e72301
+ #6 [ffff8bca9ecc3e70] async_page_fault at ffffffff8380125e
+    [exception RIP: _raw_spin_lock_irqsave+30]
+    RIP: ffffffff836a1cae  RSP: ffff8bca9ecc3f20  RFLAGS: 00010046
+    RAX: 0000000000000000  RBX: 0000000000000246  RCX: 0000000000000017
+    RDX: 0000000000000001  RSI: 0000000000000000  RDI: 0000000000000008
+    RBP: 0000000000000000   R8: 000000afb34e50f9   R9: 0000000000000000
+    R10: 0000000000000000  R11: 0000000000000000  R12: ffff8bca9ecc3f50
+    R13: 0000000000000004  R14: 0000000000000004  R15: 0000000000000000
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #7 [ffff8bca9ecc3f28] complete at ffffffff82f09bb8
+ #8 [ffff8bca9ecc3f48] blk_done_softirq at ffffffff832069d1
+ #9 [ffff8bca9ecc3f80] __softirqentry_text_start at ffffffff83a000e8
+#10 [ffff8bca9ecc3fe0] irq_exit at ffffffff82ec1119
+#11 [ffff8bca9ecc3ff0] call_function_single_interrupt at ffffffff83801daf
+--- <IRQ stack> ---
+#12 [ffff9866c319be08] call_function_single_interrupt at ffffffff83801daf
+    [exception RIP: native_safe_halt+14]
+    RIP: ffffffff836a188e  RSP: ffff9866c319beb0  RFLAGS: 00000246
+    RAX: ffffffff836a1580  RBX: 0000000000000003  RCX: 0000000000000000
+    RDX: 0000000000000001  RSI: 0000000000000000  RDI: 0000000000000000
+    RBP: 0000000000000003   R8: 000000afb3323415   R9: 0000000000000000
+    R10: ffff9866c3173ce0  R11: 000000000000009d  R12: 0000000000000000
+    R13: 0000000000000000  R14: 0000000000000000  R15: 0000000000000000
+    ORIG_RAX: ffffffffffffff04  CS: 0010  SS: 0018
+#13 [ffff9866c319beb0] default_idle at ffffffff836a159a
+#14 [ffff9866c319bed0] do_idle at ffffffff82ef1d4a
+#15 [ffff9866c319bf10] cpu_startup_entry at ffffffff82ef1fcf
+#16 [ffff9866c319bf30] start_secondary at ffffffff82e52667
+#17 [ffff9866c319bf50] secondary_startup_64 at ffffffff82e000e7
 
-The last attempt was backporting 20+ patches that would move revert
-into io_read/io_write, i.e. REQ_F_REISSUE, back that failed some of
-your tests back then. (was it read retry tests iirc?)
+After the driver switchover, the upper-layer program can still access the bar space of the NVMe disk controller and knock the doorbell.
+As a result, the interrupt process of the NVMe driver is abnormal and the system crashes.
+To solve this problem, a reference counting is added to prevent unbind execution before the application is closed or exited.
 
+Signed-off-by: Hongtao Zhang <zhanghongtao22@huawei.com>
+Reviewed-by: Weifeng Su <suweifeng1@huawei.com>
+---
+ drivers/uio/uio.c          | 13 +++++++++++++
+ include/linux/uio_driver.h |  1 +
+ 2 files changed, 14 insertions(+)
 
-> Then it's just a trivial backport of ff6165b2d7f6 and the trivial
-> io_uring patch after that.
-> 
-> 
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index ab9290ab4cae..138f204db72a 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -3429,6 +3429,7 @@ static int io_read(struct io_kiocb *req, bool force_nonblock,
->   	struct kiocb *kiocb = &req->rw.kiocb;
->   	struct iov_iter __iter, *iter = &__iter;
->   	struct io_async_rw *rw = req->async_data;
-> +	struct iov_iter_state iter_state;
->   	ssize_t io_size, ret, ret2;
->   	bool no_async;
->   
-> @@ -3458,6 +3459,7 @@ static int io_read(struct io_kiocb *req, bool force_nonblock,
->   	if (unlikely(ret))
->   		goto out_free;
->   
-> +	iov_iter_save_state(iter, &iter_state);
->   	ret = io_iter_do_read(req, iter);
->   
->   	if (!ret) {
-> @@ -3473,7 +3475,7 @@ static int io_read(struct io_kiocb *req, bool force_nonblock,
->   		if (req->file->f_flags & O_NONBLOCK)
->   			goto done;
->   		/* some cases will consume bytes even on error returns */
-> -		iov_iter_revert(iter, io_size - iov_iter_count(iter));
-> +		iov_iter_restore(iter, &iter_state);
->   		ret = 0;
->   		goto copy_iov;
->   	} else if (ret < 0) {
-> @@ -3557,6 +3559,7 @@ static int io_write(struct io_kiocb *req, bool force_nonblock,
->   	struct kiocb *kiocb = &req->rw.kiocb;
->   	struct iov_iter __iter, *iter = &__iter;
->   	struct io_async_rw *rw = req->async_data;
-> +	struct iov_iter_state iter_state;
->   	ssize_t ret, ret2, io_size;
->   
->   	if (rw)
-> @@ -3574,6 +3577,8 @@ static int io_write(struct io_kiocb *req, bool force_nonblock,
->   	else
->   		kiocb->ki_flags |= IOCB_NOWAIT;
->   
-> +	iov_iter_save_state(iter, &iter_state);
-> +
->   	/* If the file doesn't support async, just async punt */
->   	if (force_nonblock && !io_file_supports_async(req->file, WRITE))
->   		goto copy_iov;
-> @@ -3626,7 +3631,7 @@ static int io_write(struct io_kiocb *req, bool force_nonblock,
->   	} else {
->   copy_iov:
->   		/* some cases will consume bytes even on error returns */
-> -		iov_iter_revert(iter, io_size - iov_iter_count(iter));
-> +		iov_iter_restore(iter, &iter_state);
->   		ret = io_setup_async_rw(req, iovec, inline_vecs, iter, false);
->   		if (!ret)
->   			return -EAGAIN;
-> diff --git a/include/linux/uio.h b/include/linux/uio.h
-> index 27ff8eb786dc..cedb68e49e4f 100644
-> --- a/include/linux/uio.h
-> +++ b/include/linux/uio.h
-> @@ -26,6 +26,12 @@ enum iter_type {
->   	ITER_DISCARD = 64,
->   };
->   
-> +struct iov_iter_state {
-> +	size_t iov_offset;
-> +	size_t count;
-> +	unsigned long nr_segs;
-> +};
-> +
->   struct iov_iter {
->   	/*
->   	 * Bit 0 is the read/write bit, set if we're writing.
-> @@ -55,6 +61,14 @@ static inline enum iter_type iov_iter_type(const struct iov_iter *i)
->   	return i->type & ~(READ | WRITE);
->   }
->   
-> +static inline void iov_iter_save_state(struct iov_iter *iter,
-> +				       struct iov_iter_state *state)
-> +{
-> +	state->iov_offset = iter->iov_offset;
-> +	state->count = iter->count;
-> +	state->nr_segs = iter->nr_segs;
-> +}
-> +
->   static inline bool iter_is_iovec(const struct iov_iter *i)
->   {
->   	return iov_iter_type(i) == ITER_IOVEC;
-> @@ -226,6 +240,7 @@ ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
->   ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
->   			size_t maxsize, size_t *start);
->   int iov_iter_npages(const struct iov_iter *i, int maxpages);
-> +void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state);
->   
->   const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags);
->   
-> diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-> index 1b0a349fbcd9..00a66229d182 100644
-> --- a/lib/iov_iter.c
-> +++ b/lib/iov_iter.c
-> @@ -1857,3 +1857,39 @@ int iov_iter_for_each_range(struct iov_iter *i, size_t bytes,
->   	return err;
->   }
->   EXPORT_SYMBOL(iov_iter_for_each_range);
-> +
-> +/**
-> + * iov_iter_restore() - Restore a &struct iov_iter to the same state as when
-> + *     iov_iter_save_state() was called.
-> + *
-> + * @i: &struct iov_iter to restore
-> + * @state: state to restore from
-> + *
-> + * Used after iov_iter_save_state() to bring restore @i, if operations may
-> + * have advanced it.
-> + *
-> + * Note: only works on ITER_IOVEC, ITER_BVEC, and ITER_KVEC
-> + */
-> +void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state)
-> +{
-> +	if (WARN_ON_ONCE(!iov_iter_is_bvec(i) && !iter_is_iovec(i)) &&
-> +			 !iov_iter_is_kvec(i))
-> +		return;
-> +	i->iov_offset = state->iov_offset;
-> +	i->count = state->count;
-> +	/*
-> +	 * For the *vec iters, nr_segs + iov is constant - if we increment
-> +	 * the vec, then we also decrement the nr_segs count. Hence we don't
-> +	 * need to track both of these, just one is enough and we can deduct
-> +	 * the other from that. ITER_KVEC and ITER_IOVEC are the same struct
-> +	 * size, so we can just increment the iov pointer as they are unionzed.
-> +	 * ITER_BVEC _may_ be the same size on some archs, but on others it is
-> +	 * not. Be safe and handle it separately.
-> +	 */
-> +	BUILD_BUG_ON(sizeof(struct iovec) != sizeof(struct kvec));
-> +	if (iov_iter_is_bvec(i))
-> +		i->bvec -= state->nr_segs - i->nr_segs;
-> +	else
-> +		i->iov -= state->nr_segs - i->nr_segs;
-> +	i->nr_segs = state->nr_segs;
-> +}
-> 
+diff --git a/drivers/uio/uio.c b/drivers/uio/uio.c
+index 43afbb7c5ab9..cb8ed29a8648 100644
+--- a/drivers/uio/uio.c
++++ b/drivers/uio/uio.c
+@@ -31,6 +31,7 @@ static int uio_major;
+ static struct cdev *uio_cdev;
+ static DEFINE_IDR(uio_idr);
+ static const struct file_operations uio_fops;
++static DECLARE_WAIT_QUEUE_HEAD(refc_wait);
 
+ /* Protect idr accesses */
+ static DEFINE_MUTEX(minor_lock);
+@@ -501,6 +502,7 @@ static int uio_open(struct inode *inode, struct file *filep)
+ 	mutex_unlock(&idev->info_lock);
+ 	if (ret)
+ 		goto err_infoopen;
++	refcount_inc(&idev->dev_refc);
+
+ 	return 0;
+
+@@ -536,6 +538,9 @@ static int uio_release(struct inode *inode, struct file *filep)
+ 		ret = idev->info->release(idev->info, inode);
+ 	mutex_unlock(&idev->info_lock);
+
++	if (refcount_dec_and_test(&idev->dev_refc))
++			wake_up(&refc_wait);
++
+ 	module_put(idev->owner);
+ 	kfree(listener);
+ 	put_device(&idev->dev);
+@@ -937,6 +942,7 @@ int __uio_register_device(struct module *owner,
+
+ 	idev->owner = owner;
+ 	idev->info = info;
++	refcount_set(&idev->dev_refc, 0);
+ 	mutex_init(&idev->info_lock);
+ 	init_waitqueue_head(&idev->wait);
+ 	atomic_set(&idev->event, 0);
+@@ -1045,6 +1051,7 @@ void uio_unregister_device(struct uio_info *info)
+ {
+ 	struct uio_device *idev;
+ 	unsigned long minor;
++	unsigned int dref_count;
+
+ 	if (!info || !info->uio_dev)
+ 		return;
+@@ -1052,6 +1059,12 @@ void uio_unregister_device(struct uio_info *info)
+ 	idev = info->uio_dev;
+ 	minor = idev->minor;
+
++	dref_count = refcount_read(&idev->dev_refc);
++	if (dref_count > 0) {
++		dev_err(&idev->dev, "The device is in use, please close the file descriptor or kill the occupied process\n");
++		wait_event(refc_wait, !refcount_read(&idev->dev_refc));
++	}
++
+ 	mutex_lock(&idev->info_lock);
+ 	uio_dev_del_attributes(idev);
+
+diff --git a/include/linux/uio_driver.h b/include/linux/uio_driver.h
+index 47c5962b876b..28301dcc4d31 100644
+--- a/include/linux/uio_driver.h
++++ b/include/linux/uio_driver.h
+@@ -77,6 +77,7 @@ struct uio_device {
+ 	struct mutex		info_lock;
+ 	struct kobject          *map_dir;
+ 	struct kobject          *portio_dir;
++	refcount_t				dev_refc;
+ };
+
+ /**
 -- 
-Pavel Begunkov
+2.27.0
+
