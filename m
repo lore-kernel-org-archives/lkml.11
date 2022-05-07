@@ -2,171 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0118C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 01:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 01:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357287AbiEGBlL (ORCPT
+        id S1445243AbiEGBoz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 21:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
+        Fri, 6 May 2022 21:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445257AbiEGBlJ (ORCPT
+        with ESMTP id S234131AbiEGBou (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 21:41:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4346712DF
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 18:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651887440; x=1683423440;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=S0Bz8rP4s41uJJFTlsYVLSGlvcZ5POkxwtRvtC3Kw7o=;
-  b=kJIsBwnSZmgRzuftvRIFzraPZPNNi/jrKeqJ1aFaJZVNAZIUbCgSvFlf
-   UPOm6AqDShFMdo2em0ZtOQYn6Q9krmQpoA7qhz8Zz3Ekdi3MUvGxC7cX7
-   cfC25vyEeDf4opqUQsCphdxpaaOUuYOSgLhXh33bWP0x8AUUe9aD2NNAW
-   GIjWXtNhgAhrexokPMBCjQKkXpx0jVjDsPvNG8q+ScBRxwnzBkysiL2zp
-   10JdukMComPSId6gO9LBLXlErfWQZy/tJ+Kkyplel2Q9dEAILEqX9jNO+
-   78mA92UcE02wQsps+qHxqjxqr/IN2/HT1ZZqJE5e07Leqiqpjvz3YpkFN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="249161435"
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="249161435"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 18:37:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="550108812"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 06 May 2022 18:37:19 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nn9Nm-000E5s-9k;
-        Sat, 07 May 2022 01:37:18 +0000
-Date:   Sat, 7 May 2022 09:36:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        John Garry <john.garry@huawei.com>
-Subject: [krzk-github:n/qcom-ufs-opp-cleanups-v2-drv-owner-wip 5/7]
- drivers/scsi/scsi_proc.c:145:6: warning: syntax error: keyword 'while' is
- not allowed in global scope [syntaxError]
-Message-ID: <202205070933.wIiOiR2Q-lkp@intel.com>
+        Fri, 6 May 2022 21:44:50 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146844EF73;
+        Fri,  6 May 2022 18:41:06 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kw9996q3Nz1JBtn;
+        Sat,  7 May 2022 09:39:57 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 09:41:02 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 09:41:00 +0800
+Subject: Re: [PATCH v24 6/6] docs: kdump: Update the crashkernel description
+ for arm64
+To:     Baoquan He <bhe@redhat.com>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        <kexec@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+References: <20220506114402.365-1-thunder.leizhen@huawei.com>
+ <20220506114402.365-7-thunder.leizhen@huawei.com>
+ <20220506231451.GB122876@MiWiFi-R3L-srv>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <6e662eae-e788-13d3-368a-e88ed159fc85@huawei.com>
+Date:   Sat, 7 May 2022 09:41:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220506231451.GB122876@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/krzk/linux n/qcom-ufs-opp-cleanups-v2-drv-owner-wip
-head:   17609caecd53df20f631703ea084a70e7735b5d7
-commit: 157eb2ee8867afbae9dac3836e4c0bedb542e5c1 [5/7] scsi: proc: do not store proc_dir in scsi_host_template
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (cppcheck warning):
-        # apt-get install cppcheck
-        git checkout 157eb2ee8867afbae9dac3836e4c0bedb542e5c1
-        cppcheck --quiet --enable=style,performance,portability --template=gcc FILE
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
 
-cppcheck possible warnings: (new ones prefixed by >>, may not real problems)
+On 2022/5/7 7:14, Baoquan He wrote:
+> On 05/06/22 at 07:44pm, Zhen Lei wrote:
+>> Now arm64 has added support for "crashkernel=X,high" and
+>> "crashkernel=Y,low". Unlike x86, crash low memory is not allocated if
+>> "crashkernel=Y,low" is not specified.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>  Documentation/admin-guide/kernel-parameters.txt | 9 +++++++--
+>>  1 file changed, 7 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+>> index 3f1cc5e317ed4a5..aa44c61114aa4b8 100644
+>> --- a/Documentation/admin-guide/kernel-parameters.txt
+>> +++ b/Documentation/admin-guide/kernel-parameters.txt
+>> @@ -808,7 +808,7 @@
+>>  			Documentation/admin-guide/kdump/kdump.rst for an example.
+>>  
+>>  	crashkernel=size[KMG],high
+>> -			[KNL, X86-64] range could be above 4G. Allow kernel
+>> +			[KNL, X86-64, ARM64] range could be above 4G. Allow kernel
+>>  			to allocate physical memory region from top, so could
+>>  			be above 4G if system have more than 4G ram installed.
+>>  			Otherwise memory region will be allocated below 4G, if
+>> @@ -821,7 +821,7 @@
+>>  			that require some amount of low memory, e.g. swiotlb
+>>  			requires at least 64M+32K low memory, also enough extra
+>>  			low memory is needed to make sure DMA buffers for 32-bit
+>> -			devices won't run out. Kernel would try to allocate at
+>> +			devices won't run out. Kernel would try to allocate
+>>  			at least 256M below 4G automatically.
+>>  			This one let user to specify own low range under 4G
+>>  			for second kernel instead.
+>> @@ -829,6 +829,11 @@
+>>  			It will be ignored when crashkernel=X,high is not used
+>>  			or memory reserved is below 4G.
+>>  
+>> +			[KNL, ARM64] range in low memory.
+>> +			This one let user to specify a low range in DMA zone for
+>                                           ^ not needed,
+>                         Maybe Catalin can fix it when merging.
 
->> drivers/scsi/scsi_proc.c:145:6: warning: syntax error: keyword 'while' is not allowed in global scope [syntaxError]
-   void scsi_proc_hostdir_add(const struct scsi_host_template *sht)
-        ^
-   drivers/scsi/scsi_proc.c:464:61: warning: Parameter 'pos' can be declared with const [constParameter]
-   static void *scsi_seq_start(struct seq_file *sfile, loff_t *pos)
-                                                               ^
->> drivers/scsi/scsi_proc.c:115:12: warning: Uninitialized variable: dir->sht [uninitvar]
-     if (dir->sht == sht)
-              ^
-   drivers/scsi/scsi_proc.c:154:12: warning: Uninitialized variable: dir->sht [uninitvar]
-     if (dir->sht == sht) {
-              ^
-   drivers/scsi/scsi_proc.c:149:6: note: Assuming condition is false
-    if (!sht->show_info)
-        ^
-   drivers/scsi/scsi_proc.c:154:12: note: Uninitialized variable: dir->sht
-     if (dir->sht == sht) {
-              ^
+Delete "This one let user to" or the entire sentence? I understand it to be the former.
 
-vim +/while +145 drivers/scsi/scsi_proc.c
-
-   106	
-   107	static struct sht_proc_dir *
-   108	scsi_proc_find_sht_proc_dir(const struct scsi_host_template *sht)
-   109	{
-   110		struct sht_proc_dir *dir;
-   111	
-   112		lockdep_assert_held(&global_host_template_mutex);
-   113	
-   114		list_for_each_entry(dir, &sht_proc_dir_list, list) {
- > 115			if (dir->sht == sht)
-   116				return dir;
-   117		}
-   118	
-   119		return NULL;
-   120	}
-   121	
-   122	struct proc_dir_entry *
-   123	scsi_proc_get_proc_dir(const struct scsi_host_template *sht)
-   124	{
-   125		struct proc_dir_entry *proc_dir = NULL;
-   126		struct sht_proc_dir *dir;
-   127	
-   128		mutex_lock(&global_host_template_mutex);
-   129		dir = scsi_proc_find_sht_proc_dir(sht);
-   130		if (dir)
-   131			proc_dir = dir->proc_dir;
-   132		mutex_unlock(&global_host_template_mutex);
-   133	
-   134		return proc_dir;
-   135	}
-   136	EXPORT_SYMBOL_GPL(scsi_proc_get_proc_dir);
-   137	
-   138	/**
-   139	 * scsi_proc_hostdir_add - Create directory in /proc for a scsi host
-   140	 * @sht: owner of this directory
-   141	 *
-   142	 * Sets sht->proc_dir to the new directory.
-   143	 */
-   144	
- > 145	void scsi_proc_hostdir_add(const struct scsi_host_template *sht)
-   146	{
-   147		struct sht_proc_dir *dir;
-   148	
-   149		if (!sht->show_info)
-   150			return;
-   151	
-   152		mutex_lock(&global_host_template_mutex);
-   153		list_for_each_entry(dir, &sht_proc_dir_list, list) {
-   154			if (dir->sht == sht) {
-   155				dir->cnt++;
-   156				goto out;
-   157			}
-   158		}
-   159		dir = kzalloc(sizeof(*dir), GFP_KERNEL);
-   160		if (!dir)
-   161			goto out;
-   162	
-   163		dir->proc_dir = proc_mkdir(sht->proc_name, proc_scsi);
-   164		if (!dir->proc_dir) {
-   165			printk(KERN_ERR "%s: proc_mkdir failed for %s\n",
-   166			       __func__, sht->proc_name);
-   167			kfree(dir);
-   168			goto out;
-   169		}
-   170	
-   171		dir->cnt++;
-   172		list_add_tail(&dir->list, &sht_proc_dir_list);
-   173	
-   174	out:
-   175		mutex_unlock(&global_host_template_mutex);
-   176	}
-   177	
+> 
+> Other than this, LGTM,
+> 
+> Acked-by: Baoquan He <bhe@redhat.com>
+> 
+>> +			crash dump kernel.
+>> +			It will be ignored when crashkernel=X,high is not used.
+>> +
+>>  	cryptomgr.notests
+>>  			[KNL] Disable crypto self-tests
+>>  
+>> -- 
+>> 2.25.1
+>>
+> 
+> .
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+  Zhen Lei
