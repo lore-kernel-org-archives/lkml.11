@@ -2,273 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38840C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 12:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C839BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 12:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446356AbiEGMXQ (ORCPT
+        id S1347718AbiEGMYp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 08:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58830 "EHLO
+        Sat, 7 May 2022 08:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbiEGMXO (ORCPT
+        with ESMTP id S235109AbiEGMYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 08:23:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B08A1A05F;
-        Sat,  7 May 2022 05:19:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A53961195;
-        Sat,  7 May 2022 12:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A89C385A5;
-        Sat,  7 May 2022 12:19:26 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="AABRZPsa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651925964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fm20dKFLEN95Lca30SmFVNz0iun9FaCevlUQohqkehk=;
-        b=AABRZPsadmgcOUHlhsQtnOsFYvo6elhzEDB1GJ3/M1m7WXOGSBHZA3DR19O8+oASRouYm+
-        VrtK23nkdFwg9JsngQnRf47Smq/dJ0JpnTOcoFEg6lpoAGgruhvu9xRd5b/kEagFtaQ2/3
-        ZxD5m3l4Zh3WUGxQIWCA5ywDviCeo4I=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 25d93b7a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 7 May 2022 12:19:23 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] siphash: use one source of truth for siphash permutations
-Date:   Sat,  7 May 2022 14:19:09 +0200
-Message-Id: <20220507121909.974453-1-Jason@zx2c4.com>
+        Sat, 7 May 2022 08:24:39 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA1D37010;
+        Sat,  7 May 2022 05:20:52 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KwRHB6st8zXdmM;
+        Sat,  7 May 2022 20:16:06 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 20:20:50 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 20:20:49 +0800
+Subject: Re: [PATCH v24 3/6] arm64: kdump: Reimplement crashkernel=X
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+To:     Baoquan He <bhe@redhat.com>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        <kexec@lists.infradead.org>, Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+References: <20220506114402.365-1-thunder.leizhen@huawei.com>
+ <20220506114402.365-4-thunder.leizhen@huawei.com>
+ <20220506231032.GA122876@MiWiFi-R3L-srv>
+ <d9b21f31-6fd2-a898-9a70-c63ff4f36212@huawei.com>
+ <YnXUSBcFmEpxaqBf@MiWiFi-R3L-srv>
+ <9f6fdbb8-b6c5-3ca0-31b6-617175739e81@huawei.com>
+ <6e892914-74ae-2b8f-954e-342aaf4be870@huawei.com>
+ <0c7e91fb-10a3-f7e6-e856-0c865c71527b@huawei.com>
+Message-ID: <a0da4fdc-ad56-13c1-ad5d-243aa70091a3@huawei.com>
+Date:   Sat, 7 May 2022 20:20:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <0c7e91fb-10a3-f7e6-e856-0c865c71527b@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SipHash family of permutations is currently used in three places:
 
-- siphash.c itself, used in the ordinary way it was intended to use.
-- random32.c, in a construction from an anonymous contributor.
-- random.c, as part of its fast_mix function.
 
-Each one of these places reinvents the wheel with the same C code, same
-rotation constants, and same symmetry-breaking constants.
+On 2022/5/7 19:49, Leizhen (ThunderTown) wrote:
+> 
+> 
+> On 2022/5/7 17:35, Leizhen (ThunderTown) wrote:
+>>
+>>
+>> On 2022/5/7 11:37, Leizhen (ThunderTown) wrote:
+>>>
+>>>
+>>> On 2022/5/7 10:07, Baoquan He wrote:
+>>>> On 05/07/22 at 09:34am, Leizhen (ThunderTown) wrote:
+>>>>>
+>>>>>
+>>>>> On 2022/5/7 7:10, Baoquan He wrote:
+>>>>>> On 05/06/22 at 07:43pm, Zhen Lei wrote:
+>>>>>> ......  
+>>>>>>> @@ -118,8 +162,7 @@ static void __init reserve_crashkernel(void)
+>>>>>>>  	if (crash_base)
+>>>>>>>  		crash_max = crash_base + crash_size;
+>>>>>>>  
+>>>>>>> -	/* Current arm64 boot protocol requires 2MB alignment */
+>>>>>>> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
+>>>>>>> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>>>>>>>  					       crash_base, crash_max);
+>>>>>>>  	if (!crash_base) {
+>>>>>>>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+>>>>>>> @@ -127,6 +170,11 @@ static void __init reserve_crashkernel(void)
+>>>>>>>  		return;
+>>>>>>>  	}
+>>>>>>>  
+>>>>>>
+>>>>>> There's corner case missed, e.g
+>>>>>> 1) ,high and ,low are specified, CONFIG_ZONE_DMA|DMA32 is not enabled;
+>>>>>> 2) ,high and ,low are specified, the whole system memory is under 4G.
+>>>>>>
+>>>>>> Below judgement can filter them away:
+>>>>>>         
+>>>>>> 	if (crash_base > arm64_dma_phys_limit && crash_low_size &&
+>>>>>> 	    reserve_crashkernel_low(crash_low_size)) {
+>>>>>>
+>>>>>> What's your opinion? Leave it and add document to notice user, or fix it
+>>>>>> with code change?
 
-This commit tidies things up a bit by placing macros for the
-permutations and constants into siphash.h, where each of the three .c
-users can access them. It also leaves a note dissuading more users of
-them from emerging.
+I've now got the patch ready as suggested, to be as consistent as possible
+with x86.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c   | 30 +++++++-----------------------
- include/linux/prandom.h | 23 +++++++----------------
- include/linux/siphash.h | 28 ++++++++++++++++++++++++++++
- lib/siphash.c           | 32 ++++++++++----------------------
- 4 files changed, 52 insertions(+), 61 deletions(-)
+Just wait for next Monday Catalin's response: a seperate patch or v25?
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index a04ecfcb4f1e..87cf739929be 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -53,6 +53,7 @@
- #include <linux/uuid.h>
- #include <linux/uaccess.h>
- #include <linux/suspend.h>
-+#include <linux/siphash.h>
- #include <crypto/chacha.h>
- #include <crypto/blake2s.h>
- #include <asm/processor.h>
-@@ -1086,12 +1087,11 @@ struct fast_pool {
- 
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
- #ifdef CONFIG_64BIT
--	/* SipHash constants */
--	.pool = { 0x736f6d6570736575UL, 0x646f72616e646f6dUL,
--		  0x6c7967656e657261UL, 0x7465646279746573UL }
-+#define FASTMIX_PERM SIPHASH_PERMUTATION
-+	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
- #else
--	/* HalfSipHash constants */
--	.pool = { 0, 0, 0x6c796765U, 0x74656462U }
-+#define FASTMIX_PERM HSIPHASH_PERMUTATION
-+	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 }
- #endif
- };
- 
-@@ -1103,27 +1103,11 @@ static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
-  */
- static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
- {
--#ifdef CONFIG_64BIT
--#define PERM() do { \
--	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
--	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
--	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
--	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
--} while (0)
--#else
--#define PERM() do { \
--	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
--	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
--	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
--	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
--} while (0)
--#endif
--
- 	s[3] ^= v1;
--	PERM();
-+	FASTMIX_PERM(s[0], s[1], s[2], s[3]);
- 	s[0] ^= v1;
- 	s[3] ^= v2;
--	PERM();
-+	FASTMIX_PERM(s[0], s[1], s[2], s[3]);
- 	s[0] ^= v2;
- }
- 
-diff --git a/include/linux/prandom.h b/include/linux/prandom.h
-index 056d31317e49..a4aadd2dc153 100644
---- a/include/linux/prandom.h
-+++ b/include/linux/prandom.h
-@@ -10,6 +10,7 @@
- 
- #include <linux/types.h>
- #include <linux/percpu.h>
-+#include <linux/siphash.h>
- 
- u32 prandom_u32(void);
- void prandom_bytes(void *buf, size_t nbytes);
-@@ -27,15 +28,10 @@ DECLARE_PER_CPU(unsigned long, net_rand_noise);
-  * The core SipHash round function.  Each line can be executed in
-  * parallel given enough CPU resources.
-  */
--#define PRND_SIPROUND(v0, v1, v2, v3) ( \
--	v0 += v1, v1 = rol64(v1, 13),  v2 += v3, v3 = rol64(v3, 16), \
--	v1 ^= v0, v0 = rol64(v0, 32),  v3 ^= v2,                     \
--	v0 += v3, v3 = rol64(v3, 21),  v2 += v1, v1 = rol64(v1, 17), \
--	v3 ^= v0,                      v1 ^= v2, v2 = rol64(v2, 32)  \
--)
-+#define PRND_SIPROUND(v0, v1, v2, v3) SIPHASH_PERMUTATION(v0, v1, v2, v3)
- 
--#define PRND_K0 (0x736f6d6570736575 ^ 0x6c7967656e657261)
--#define PRND_K1 (0x646f72616e646f6d ^ 0x7465646279746573)
-+#define PRND_K0 (SIPHASH_CONST_0 ^ SIPHASH_CONST_2)
-+#define PRND_K1 (SIPHASH_CONST_1 ^ SIPHASH_CONST_3)
- 
- #elif BITS_PER_LONG == 32
- /*
-@@ -43,14 +39,9 @@ DECLARE_PER_CPU(unsigned long, net_rand_noise);
-  * This is weaker, but 32-bit machines are not used for high-traffic
-  * applications, so there is less output for an attacker to analyze.
-  */
--#define PRND_SIPROUND(v0, v1, v2, v3) ( \
--	v0 += v1, v1 = rol32(v1,  5),  v2 += v3, v3 = rol32(v3,  8), \
--	v1 ^= v0, v0 = rol32(v0, 16),  v3 ^= v2,                     \
--	v0 += v3, v3 = rol32(v3,  7),  v2 += v1, v1 = rol32(v1, 13), \
--	v3 ^= v0,                      v1 ^= v2, v2 = rol32(v2, 16)  \
--)
--#define PRND_K0 0x6c796765
--#define PRND_K1 0x74656462
-+#define PRND_SIPROUND(v0, v1, v2, v3) HSIPHASH_PERMUTATION(v0, v1, v2, v3)
-+#define PRND_K0 (HSIPHASH_CONST_0 ^ HSIPHASH_CONST_2)
-+#define PRND_K1 (HSIPHASH_CONST_1 ^ HSIPHASH_CONST_3)
- 
- #else
- #error Unsupported BITS_PER_LONG
-diff --git a/include/linux/siphash.h b/include/linux/siphash.h
-index cce8a9acc76c..3af1428da559 100644
---- a/include/linux/siphash.h
-+++ b/include/linux/siphash.h
-@@ -138,4 +138,32 @@ static inline u32 hsiphash(const void *data, size_t len,
- 	return ___hsiphash_aligned(data, len, key);
- }
- 
-+/*
-+ * These macros expose the raw SipHash and HalfSipHash permutations.
-+ * Do not use them directly! If you think you have a use for them,
-+ * be sure to CC the maintainer of this file explaining why.
-+ */
-+
-+#define SIPHASH_PERMUTATION(a, b, c, d) ( \
-+	(a) += (b), (b) = rol64((b), 13), (b) ^= (a), (a) = rol64((a), 32), \
-+	(c) += (d), (d) = rol64((d), 16), (d) ^= (c), \
-+	(a) += (d), (d) = rol64((d), 21), (d) ^= (a), \
-+	(c) += (b), (b) = rol64((b), 17), (b) ^= (c), (c) = rol64((c), 32))
-+
-+#define SIPHASH_CONST_0 0x736f6d6570736575ULL
-+#define SIPHASH_CONST_1 0x646f72616e646f6dULL
-+#define SIPHASH_CONST_2 0x6c7967656e657261ULL
-+#define SIPHASH_CONST_3 0x7465646279746573ULL
-+
-+#define HSIPHASH_PERMUTATION(a, b, c, d) ( \
-+	(a) += (b), (b) = rol32((b), 5), (b) ^= (a), (a) = rol32((a), 16), \
-+	(c) += (d), (d) = rol32((d), 8), (d) ^= (c), \
-+	(a) += (d), (d) = rol32((d), 7), (d) ^= (a), \
-+	(c) += (b), (b) = rol32((b), 13), (b) ^= (c), (c) = rol32((c), 16))
-+
-+#define HSIPHASH_CONST_0 0U
-+#define HSIPHASH_CONST_1 0U
-+#define HSIPHASH_CONST_2 0x6c796765U
-+#define HSIPHASH_CONST_3 0x74656462U
-+
- #endif /* _LINUX_SIPHASH_H */
-diff --git a/lib/siphash.c b/lib/siphash.c
-index 72b9068ab57b..71d315a6ad62 100644
---- a/lib/siphash.c
-+++ b/lib/siphash.c
-@@ -18,19 +18,13 @@
- #include <asm/word-at-a-time.h>
- #endif
- 
--#define SIPROUND \
--	do { \
--	v0 += v1; v1 = rol64(v1, 13); v1 ^= v0; v0 = rol64(v0, 32); \
--	v2 += v3; v3 = rol64(v3, 16); v3 ^= v2; \
--	v0 += v3; v3 = rol64(v3, 21); v3 ^= v0; \
--	v2 += v1; v1 = rol64(v1, 17); v1 ^= v2; v2 = rol64(v2, 32); \
--	} while (0)
-+#define SIPROUND SIPHASH_PERMUTATION(v0, v1, v2, v3)
- 
- #define PREAMBLE(len) \
--	u64 v0 = 0x736f6d6570736575ULL; \
--	u64 v1 = 0x646f72616e646f6dULL; \
--	u64 v2 = 0x6c7967656e657261ULL; \
--	u64 v3 = 0x7465646279746573ULL; \
-+	u64 v0 = SIPHASH_CONST_0; \
-+	u64 v1 = SIPHASH_CONST_1; \
-+	u64 v2 = SIPHASH_CONST_2; \
-+	u64 v3 = SIPHASH_CONST_3; \
- 	u64 b = ((u64)(len)) << 56; \
- 	v3 ^= key->key[1]; \
- 	v2 ^= key->key[0]; \
-@@ -389,19 +383,13 @@ u32 hsiphash_4u32(const u32 first, const u32 second, const u32 third,
- }
- EXPORT_SYMBOL(hsiphash_4u32);
- #else
--#define HSIPROUND \
--	do { \
--	v0 += v1; v1 = rol32(v1, 5); v1 ^= v0; v0 = rol32(v0, 16); \
--	v2 += v3; v3 = rol32(v3, 8); v3 ^= v2; \
--	v0 += v3; v3 = rol32(v3, 7); v3 ^= v0; \
--	v2 += v1; v1 = rol32(v1, 13); v1 ^= v2; v2 = rol32(v2, 16); \
--	} while (0)
-+#define HSIPROUND HSIPHASH_PERMUTATION(v0, v1, v2, v3)
- 
- #define HPREAMBLE(len) \
--	u32 v0 = 0; \
--	u32 v1 = 0; \
--	u32 v2 = 0x6c796765U; \
--	u32 v3 = 0x74656462U; \
-+	u32 v0 = HSIPHASH_CONST_0; \
-+	u32 v1 = HSIPHASH_CONST_1; \
-+	u32 v2 = HSIPHASH_CONST_2; \
-+	u32 v3 = HSIPHASH_CONST_3; \
- 	u32 b = ((u32)(len)) << 24; \
- 	v3 ^= key->key[1]; \
- 	v2 ^= key->key[0]; \
+
+
+>>
+>> I decided to modify the code and document. But the code changes aren't what
+>> you suggested. For the following reasons:
+>> 1. The memory allocated for 'high' may be partially under 4G. So the low
+>>    memory may not be enough. Of course, it's rare.
+>> 2. The second kernel can work properly only when the high and low memory
+>>    are successfully applied for. For example, high=128M, low=128M, but the
+>>    second kernel need 256M.
+>>
+>> So for the cases you listed:
+>> 1) ,high and ,low are specified, CONFIG_ZONE_DMA|DMA32 is not enabled;
+>>    --> Follow you suggestion, ignore crashkernel=Y,low, don't allocate low memory.
+>>
+>> @@ -100,6 +100,14 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+>>  {
+>>         unsigned long long low_base;
+>>
+>> +       /*
+>> +        * The kernel does not have any DMA zone, so the range of each DMA
+>> +        * zone is unknown. Please make sure both CONFIG_ZONE_DMA and
+>> +        * CONFIG_ZONE_DMA32 are also not set in the second kernel.
+>> +        */
+>> +       if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
+>> +               return 0;
+>> +
+>>
+>> 2) ,high and ,low are specified, the whole system memory is under 4G.
+>>    --> two memory ranges will be allocated, the size is what 'high' and 'low' specified.
+>>    --> Yes, the memory of 'low' may be above 'high', but the 'high' just hint allocation
+>>    --> from top, try high memory first. Of course, this may cause kexec to fail to load.
+>>    --> Because the memory of 'low' with small size will be used to store Image, etc..
+>>    --> But the memory of 'low' above 'high' is almost impossible, we use memblock API to
+>>    --> allocate memory from top to bottem, 'low' above 'high' need a sizeable memory block
+>>    --> (128M, 256M?) to be freed at init phase.
+>>    -->  Maybe I should add: crash_max = min(crash_base, CRASH_ADDR_LOW_MAX);
+>>    --> to make sure the memory of 'low' is always under 'high'
+> 
+> I have added the min() above.
+> 
+> Test result:
+> 1) ,high and ,low are specified, CONFIG_ZONE_DMA|DMA32 is not enabled;
+> root@localhost:~# dmesg | grep crash
+> [    0.000000] crashkernel reserved: 0x0000000420000000 - 0x0000000440000000 (512 MB)
+> [    0.000000] Kernel command line: console=ttyAMA0 root=/dev/vda rw panic_on_oops=1 oops=panic crashkernel=512M,high crashkernel=128M,low
+> 
+> 2) ,high and ,low are specified, the whole system memory is under 4G.
+> root@localhost:~# dmesg | grep crash
+> [    0.000000] crashkernel tmp reserved: 0x00000000f2800000 - 0x00000000fa800000 (128 MB)
+> [    0.000000] crashkernel low memory reserved: 0xca800000 - 0xd2800000 (128 MB)
+> [    0.000000] crashkernel reserved: 0x00000000d2800000 - 0x00000000f2800000 (512 MB)
+> [    0.000000] Kernel command line: console=ttyAMA0 root=/dev/vda rw panic_on_oops=1 oops=panic crashkernel=512M,high crashkernel=128M,low
+> 
+> test stub for 2):
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 5cb73bbd286b100..abbde2158a0976a 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -147,6 +147,7 @@ static void __init reserve_crashkernel(void)
+>         unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+>         char *cmdline = boot_command_line;
+>         int ret;
+> +       unsigned long long tmp_base;
+> 
+>         if (!IS_ENABLED(CONFIG_KEXEC_CORE))
+>                 return;
+> @@ -179,6 +180,11 @@ static void __init reserve_crashkernel(void)
+>         if (crash_base)
+>                 crash_max = crash_base + crash_size;
+> 
+> +       tmp_base = memblock_phys_alloc_range(crash_low_size, CRASH_ALIGN, crash_base, crash_max);
+> +       BUG_ON(!tmp_base);
+> +       pr_info("crashkernel tmp reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+> +               tmp_base, tmp_base + crash_low_size, crash_low_size >> 20);
+> +
+>         crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>                                                crash_base, crash_max);
+>         if (!crash_base) {
+> @@ -186,6 +192,7 @@ static void __init reserve_crashkernel(void)
+>                         crash_size);
+>                 return;
+>         }
+> +       memblock_phys_free(tmp_base, crash_low_size);
+> 
+>         if (crash_low_size && reserve_crashkernel_low(crash_low_size, crash_base)) {
+>                 memblock_phys_free(crash_base, crash_size);
+> 
+>>
+>>>>>
+>>>>> I think maybe we can leave it unchanged. If the user configures two memory ranges,
+>>>>> we'd better apply for two. Otherwise, he'll be confused when he inquires. Currently,
+>>>>> crash_low_size is non-zero only when 'crashkernel=Y,low' is explicitly configured.
+>>>>
+>>>> Then user need know the system information, e.g how much is the high
+>>>> memory, low memory, if CONFIG_ZONE_DMA|DMA32 is enabled. And we need
+>>>> describe these cases in document. Any corner case or exception need
+>>>> be noted if we don't handle it in code.
+>>>>
+>>>> Caring about this very much because we have CI with existed test cases
+>>>> to run on the system, and QA will check these manually too. Support
+>>>> engineer need detailed document if anything special but happened.
+>>>> Anything unclear or uncovered will be reported as bug to our kernel dev.
+>>>> Guess your company do the similar thing like this.
+>>>>
+>>>> This crashkerne,high and crashkernel,low reservation is special if we
+>>>> allow ,high, ,low existing in the same zone. Imagine on system with
+>>>> CONFIG_ZONE_DMA|DMA32 disabled, people copy the crashkernel=512M,high
+>>>> and crashkernel=128M,low from other system, and he could get
+>>>> crash_res at [5G, 5G+512M], while crash_low_res at [6G, 6G+128M]. Guess
+>>>> how they will judge us.
+>>>
+>>> OK, I got it.
+>>>
+>>>>
+>>>>>
+>>>>>>
+>>>>>> I would suggest merging this series, Lei can add this corner case
+>>>>>> handling on top. Since this is a newly added support, we don't have
+>>>>>> to make it one step. Doing step by step can make reviewing easier.
+>>>>>>
+>>>>>>> +	if (crash_low_size && reserve_crashkernel_low(crash_low_size)) {
+>>>>>>> +		memblock_phys_free(crash_base, crash_size);
+>>>>>>> +		return;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>>  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+>>>>>>>  		crash_base, crash_base + crash_size, crash_size >> 20);
+>>>>>>>  
+>>>>>>> @@ -135,6 +183,9 @@ static void __init reserve_crashkernel(void)
+>>>>>>>  	 * map. Inform kmemleak so that it won't try to access it.
+>>>>>>>  	 */
+>>>>>>>  	kmemleak_ignore_phys(crash_base);
+>>>>>>> +	if (crashk_low_res.end)
+>>>>>>> +		kmemleak_ignore_phys(crashk_low_res.start);
+>>>>>>> +
+>>>>>>>  	crashk_res.start = crash_base;
+>>>>>>>  	crashk_res.end = crash_base + crash_size - 1;
+>>>>>>>  	insert_resource(&iomem_resource, &crashk_res);
+>>>>>>> -- 
+>>>>>>> 2.25.1
+>>>>>>>
+>>>>>>
+>>>>>> .
+>>>>>>
+>>>>>
+>>>>> -- 
+>>>>> Regards,
+>>>>>   Zhen Lei
+>>>>>
+>>>>
+>>>> .
+>>>>
+>>>
+>>
+> 
+
 -- 
-2.35.1
-
+Regards,
+  Zhen Lei
