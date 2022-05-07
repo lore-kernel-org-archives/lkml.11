@@ -2,109 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9522DC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 16:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245709AbiEGQ5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 12:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        id S1386354AbiEGQ7c (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 7 May 2022 12:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232817AbiEGQ5P (ORCPT
+        with ESMTP id S232817AbiEGQ72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 12:57:15 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65871E3E6
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 09:53:27 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id t5so11822836edw.11
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 09:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mULbVU3wCOnYge1dYizSMDuB/AJIXOjjeNx0fYbxyYo=;
-        b=jhnkW8uoHzd4WSqw2VVEUIJzyyCR33UqotHXtcZQhc7859tIdIU1TxEPWAQM0gMc4s
-         +/vz47MJzAd+HCzh/kjl/escbiX74DNzXiLQdIDrsw2QQuzD1M5F2SLYM+SuTsmzyzd3
-         vVPV8kMUxBsMyEuS2D+vIIw+TWvM7zPEyvFrJD9DuWOda/6Lh6ueFQUlTPufTxynoBDy
-         iXSbwt/gDazMJY6R+B8+1hHJiSvHhsU42/5ASr6yrKfq9l+uWNq7ucn/lFVEz/WIsRYL
-         UzhQEgSvRBHxaZ8s7la12Ny3Zk0dxjm8+9rJOVdmkWus2wuTVvRB1gzR8dpzMyz1EhJl
-         RchQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mULbVU3wCOnYge1dYizSMDuB/AJIXOjjeNx0fYbxyYo=;
-        b=xV//1FTgOtTQu1JhmfnZkzwAmWe6J0nmdzblJfXbg+lDyV8Xk8fMtSnHFpoBz9H/Es
-         tCVqO37iuuXK+odWiTetexK6H4dvNk4KDu1uYZ0dxOaMLTppea5qUUxa0GwpHoBETsa2
-         SVt5vo0gzQWDDat852LmCndUj/J5u76qJ3yGD2cztoMW9EiBUge2WFGQ6aE8GD9AhDAk
-         q598Stj7+dJkyTf7eJr1RBKPE9UQmaht5/+Ew6mXAAaY32nbYFgAkfnftNDR4D6QOUhE
-         CRb+qSNv/8t8vzlpkqOC06Q839QxVVJq4AYVa+aDIasTiKBomTI7rCershI5ytBXxFuV
-         AVKw==
-X-Gm-Message-State: AOAM530Fs0TYfABRTKhhuilBNUvlDUxdpf6zhRNaQ8uiQjs7BFTKlmQy
-        U64tmf8cjenbkZhgd+9SQlikJw==
-X-Google-Smtp-Source: ABdhPJymWFf1Qr25QZQVvNUyaX7gOBGGoTFDURKo9c/7s/4051zUngEsdOBCijOEtBWIkL9lbvqJoA==
-X-Received: by 2002:a05:6402:35c7:b0:427:d231:3740 with SMTP id z7-20020a05640235c700b00427d2313740mr9261858edc.40.1651942406548;
-        Sat, 07 May 2022 09:53:26 -0700 (PDT)
-Received: from [192.168.0.233] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h23-20020a1709070b1700b006f3ef214e3fsm3176517ejl.165.2022.05.07.09.53.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 May 2022 09:53:26 -0700 (PDT)
-Message-ID: <3a9f9bb5-45fa-3cfa-b7a3-f6c2e630de41@linaro.org>
-Date:   Sat, 7 May 2022 18:53:25 +0200
+        Sat, 7 May 2022 12:59:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A051582C;
+        Sat,  7 May 2022 09:55:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C2461319;
+        Sat,  7 May 2022 16:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B216C385A5;
+        Sat,  7 May 2022 16:55:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651942539;
+        bh=iDXWB8WbgJ7CwMbmo7tkp0VNYg7b43C0lZdJPEkjEN0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QnaIpwdevcjd9b7Kpz0AARXsk61TJX25KNEyxPhfPgKUtwYzv0dByYXa+Mep+/+xZ
+         NbMCH1RbQhiLydUwSkI99yOOxqy1AtHrbJh/TiVGgAomLU9NTjIRwUHVL+Kd4MWZcV
+         O4sT6DLIYCkVtlOCOqPnBMc5A1xKAe6k21JLG0ZdSd6iEYqgTZFGG9OnR6jg3lEqHO
+         HWVsmtUvsJ0a6XXKNz+9dX9eXRb3nQfc+3QYReU6gq7ZmCb629WcOWQHAQ07H/+uei
+         +3YQ72P7bRG5SyheVlQxdCMT+/TDVyRakhNDtQYQJEQeiJ4mKOyJV23hORriAb1sMl
+         pF0vzrggVWl0Q==
+Date:   Sat, 7 May 2022 18:04:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH v3 2/2] iio: adc: ad4130: add AD4130 driver
+Message-ID: <20220507180210.4c48a85f@jic23-huawei>
+In-Reply-To: <39cb9ade-14af-c53b-bd42-06a9b965b57f@gmail.com>
+References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
+        <20220419150828.191933-3-cosmin.tanislav@analog.com>
+        <20220501170807.1e728524@jic23-huawei>
+        <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
+        <20220507173551.1bc45a82@jic23-huawei>
+        <39cb9ade-14af-c53b-bd42-06a9b965b57f@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH V3 1/4] dt-bindings: arm: fsl: add imx93 11x11 evk board
-Content-Language: en-US
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
-References: <20220507065309.3964937-1-peng.fan@oss.nxp.com>
- <20220507065309.3964937-2-peng.fan@oss.nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220507065309.3964937-2-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/05/2022 08:53, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Sat, 7 May 2022 19:49:17 +0300
+Cosmin Tanislav <demonsingur@gmail.com> wrote:
+
+> On 5/7/22 19:35, Jonathan Cameron wrote:
+> >   
+> >>>      
+> >>>> +static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val)
+> >>>> +{
+> >>>> +	struct ad4130_state *st = iio_priv(indio_dev);
+> >>>> +	unsigned int eff;
+> >>>> +	int ret;
+> >>>> +
+> >>>> +	if (val > AD4130_FIFO_SIZE)
+> >>>> +		return -EINVAL;
+> >>>> +
+> >>>> +	/*
+> >>>> +	 * Always set watermark to a multiple of the number of enabled channels
+> >>>> +	 * to avoid making the FIFO unaligned.
+> >>>> +	 */
+> >>>> +	eff = rounddown(val, st->num_enabled_channels);
+> >>>> +
+> >>>> +	mutex_lock(&st->lock);
+> >>>> +
+> >>>> +	ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
+> >>>> +				 AD4130_WATERMARK_MASK,
+> >>>> +				 FIELD_PREP(AD4130_WATERMARK_MASK,
+> >>>> +					    ad4130_watermark_reg_val(eff)));
+> >>>> +	if (ret)
+> >>>> +		goto out;
+> >>>> +
+> >>>> +	st->effective_watermark = eff;
+> >>>> +	st->watermark = val;  
+> >>>
+> >>> Hmm this is a potential inconsistency in the IIO ABI.
+> >>> ABI docs describes watermark as being number of 'scan elements' which is
+> >>> not the clearest text we could have gone with...
+> >>>
+> >>> Now I may well have made a mistake in the following as it's rather a long time
+> >>> since I last looked at the core handling for this...
+> >>>
+> >>> The core treats it as number datum (which is same as a scan) when using
+> >>> it for the main watermark attribute and also when using watermarks with the
+> >>> kfifo (the IIO fifo is made up of objects each of which is a scan. So kfifo_len()
+> >>> returns the number of scans.
+> >>>    
+> >>> Looking very quickly at a few other drivers
+> >>> adxl367 seems to use number of samples.
+> >>> adxl372 is using number of scans.
+> >>> bmc150 hardware seems to work on basis of frame count which I 'think' is probably scans.
+> >>> fxls8962 uses 'samples count' which is not clearly defined in the datasheet but there
+> >>> is an example showing that it's scans (I think)...
+> >>> lsm6dsx - some of the fifos used with this are based on tagged data so the connection to
+> >>> what hits the front end buffers is non obvious.
+> >>>
+> >>> So, not great for consistency :(
+> >>>
+> >>> Going forwards i think we should standardize the hardware fifo watermark on what is being
+> >>> used for the software watermark which I believe is number of scans.
+> >>> Not necessary much we can do about old drivers though due to risk of breaking ABI...
+> >>> We should make the documentation clearer though.
+> >>>      
+> >>
+> >> I was confused too, but this seemed more logical to me at the time, and
+> >> since you didn't say anything regarding it on ADXL367, I did it the same
+> >> way here. I guess we can't go back and change it now on ADXL367, I'm
+> >> sorry for this. I'll fix it.  
+> > 
+> > I missed it.  Review is never perfect (mine definitely aren't!)
+> > 
+> > Thinking more on the adxl367. We still have a window to  fix that as
+> > the driver isn't yet in a release kernel.  Would you mind spinning a
+> > patch to fix that one?  Even if we miss the rc cycle (it's a bit tight
+> > timing wise) we can sneak it in as an early fix in stable without
+> > significant risk of breaking anyone's userspace.
+> >   
 > 
-> Add the board imx93-11x11-evk in the binding docuemnt.
+> I hope Monday is not too late to do it?
+
+Any time next week should be fine.  If it ends up later that's fine as well.
+We have at least a few weeks until the 5.18 release and then if we were to land
+this during the first few weeks of the next cycle that would be fine as well.
+No one should be insane enough to not pick up at least the first few stable
+releases of a new kernel!
+
+> I can also try to do the changes tomorrow but I don't have the hardware
+> anymore so I won't be able to test until I get it back, which is only
+> next week.
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  Documentation/devicetree/bindings/arm/fsl.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
+> > There might be other drivers that have that interpretation we can't
+> > fix but if we can reduce the scope of the problem by changing the adxl367
+> > that would be great.
+> > 
+> > We should also definitely improve the docs and perhaps add a note to say
+> > that due to need to maintain ABI, a few drivers use scans * number of channels
+> > rather than scans.  
 > 
-> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-> index b8b0efa55339..391f92282453 100644
-> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
-> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-> @@ -910,6 +910,11 @@ properties:
->                - toradex,verdin-imx8mp-wifi  # Verdin iMX8M Plus Wi-Fi / BT Modules
->            - const: fsl,imx8mp
->  
-> +      - description: i.MX93 based Boards
-> +        items:
-> +          - const: fsl,imx93-11x11-evk    # i.MX93 11x11 EVK Board
+> I guess I could also do that at the same time.
 
-This should be rather an enum, because there will be more boards. With
-that change:
+Perfect :)
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Thanks for sorting this out.
 
-> +          - const: fsl,imx93
-> +
->        - description: PHYTEC phyCORE-i.MX8MP SoM based boards
->          items:
->            - const: phytec,imx8mp-phyboard-pollux-rdk # phyBOARD-Pollux RDK
+Jonathan
 
 
-Best regards,
-Krzysztof
