@@ -2,95 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A442C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 06:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 992ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 07:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445948AbiEGG6Z (ORCPT
+        id S1445957AbiEGHE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 02:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
+        Sat, 7 May 2022 03:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445927AbiEGG6S (ORCPT
+        with ESMTP id S239988AbiEGHEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 02:58:18 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DA95DD0C
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 23:54:33 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id e24so8869889pjt.2
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 23:54:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ea/7f8A4NPQmZCTH61ttxUc8ZcgpbXzjfNgGF4s2Ed8=;
-        b=HV26AlNcvQjy5U6VCD2LyHjl66aup0wiyAv9NbIbjwNj4A5rzlYWDAopGzbQlgCHfn
-         Vtt3dcN9sXGKfTkYkc45A3mkD7SLE8qP5yBaZOcWvPOpXLl0pCde87ILhrDTavB7RPHY
-         1WZgvdHqkKBBHxxDGvd7vOWgSCxEQE23wKXyC9XTKCg4WvSIitFpgtQjpdLZxsUfw8Bo
-         gJaSFkbXfhu52lZKOthl/9Q010pvSdraynadbyaEs6C153grIWgpOiu8ShONZIwTrJZE
-         D3VR55j8kTGmwxu/muldSinB74Z7u0/9P0we/UsSBfPy1k+xOb4ZIWEyTs+J1RcQlIzE
-         VrHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ea/7f8A4NPQmZCTH61ttxUc8ZcgpbXzjfNgGF4s2Ed8=;
-        b=5lnY2U75AhA1cPhxdm74kFd2Q0/1Es/ZeLYJHtd91mfAOUY2p/qWyHe26pjpJouKJl
-         O1A5qs5EbQmOf4jQkFEjlHI04WPjypyBMUoX7S+8889Z9j4ceEMu89JcbyyYwBCHfv04
-         SYRVkWh+/PLbw6JX3U2cEpBG/COwA+c1WLcQLELsPMVEFhmntdQNtOXz2SPWM+1NmTHR
-         M0tnQh1DM91W8ZEpFL/CLh8pwukvG88NQII4j4Nt8BW5ZksBZp9gUAkHr9O4KXkUmqHO
-         iDAevT0mQ+jyxhw9zviQlOJIcOdUj7pzxFglenyxA24CPg3PwxhoBDX7oA1o5jQ01xF5
-         c16Q==
-X-Gm-Message-State: AOAM530XAUkE5qjFt2y7XYQJUVq+eyCN9hdIZ6pNPOuujneLdsQ4/EHZ
-        RZXizZa7qP7x/7pCL5Cked0WwU4TWuVLZg==
-X-Google-Smtp-Source: ABdhPJwVFbDKu1C1H66AqhkbJbo0SmUKfhgk9fiE1NUon3vtipkhLVIjMHrAkhfw3aRf2T0XRpo4oA==
-X-Received: by 2002:a17:902:e742:b0:15e:9a7b:24c3 with SMTP id p2-20020a170902e74200b0015e9a7b24c3mr7311641plf.17.1651906473207;
-        Fri, 06 May 2022 23:54:33 -0700 (PDT)
-Received: from always-x1.www.tendawifi.com ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id y20-20020a1709027c9400b0015e8d4eb1ebsm2905162pll.53.2022.05.06.23.54.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 23:54:32 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     kbusch@kernel.org, hch@lst.de
-Cc:     sagi@grimberg.me, axboe@fb.com, linux-nvme@lists.infradead.org,
-        linux-kernel@vger.kernel.org, zhenwei pi <pizhenwei@bytedance.com>
-Subject: [PATCH 3/3] nvme: enable smart AEN
-Date:   Sat,  7 May 2022 14:50:26 +0800
-Message-Id: <20220507065026.260306-4-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220507065026.260306-1-pizhenwei@bytedance.com>
-References: <20220507065026.260306-1-pizhenwei@bytedance.com>
+        Sat, 7 May 2022 03:04:49 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7360142EF0
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 00:01:01 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KwJGy6pqPzhYTq;
+        Sat,  7 May 2022 15:00:26 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 15:00:59 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 7 May
+ 2022 15:00:59 +0800
+Message-ID: <2438f9e2-1e8e-56ce-b5cd-e4f44d9a03db@huawei.com>
+Date:   Sat, 7 May 2022 15:00:59 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10 v2] fix csdlock_debug cause arm64 boot panic
+Content-Language: en-US
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <rdunlap@infradead.org>
+CC:     <peterz@infradead.org>, <gor@linux.ibm.com>, <tglx@linutronix.de>,
+        <axboe@kernel.dk>, <arnd@arndb.de>
+References: <20220421071129.151794-1-chenzhongjin@huawei.com>
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <20220421071129.151794-1-chenzhongjin@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Try to enable AEN on host side, this is helpful to minitor the
-critical warning from the NVMe controller.
+ping for review.
 
-Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
----
- drivers/nvme/host/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e1846d04817f..f386a4f1d434 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1490,8 +1490,12 @@ int nvme_set_queue_count(struct nvme_ctrl *ctrl, int *count)
- }
- EXPORT_SYMBOL_GPL(nvme_set_queue_count);
- 
-+#define NVME_AEN_SMART \
-+	(NVME_AEN_CFG_SMART_CRIT_SPARE | NVME_AEN_CFG_SMART_CRIT_TEMPERATURE | \
-+	 NVME_AEN_CFG_SMART_CRIT_RELIABILITY | NVME_AEN_CFG_SMART_CRIT_MEDIA | \
-+	 NVME_AEN_CFG_SMART_CRIT_VOLATILE_MEMORY | NVME_AEN_CFG_SMART_CRIT_PMR_UNRELIABLE)
- #define NVME_AEN_SUPPORTED \
--	(NVME_AEN_CFG_NS_ATTR | NVME_AEN_CFG_FW_ACT | \
-+	(NVME_AEN_SMART | NVME_AEN_CFG_NS_ATTR | NVME_AEN_CFG_FW_ACT | \
- 	 NVME_AEN_CFG_ANA_CHANGE | NVME_AEN_CFG_DISC_CHANGE)
- 
- static void nvme_enable_aen(struct nvme_ctrl *ctrl)
--- 
-2.20.1
+On 2022/4/21 15:11, Chen Zhongjin wrote:
+> csdlock_debug is a early_param to enable csd_lock_wait
+> feature.
+> 
+> It uses static_branch_enable in early_param which triggers
+> a panic on arm64 with config:
+> CONFIG_SPARSEMEM=y
+> CONFIG_SPARSEMEM_VMEMMAP=n
+> 
+> The log shows:
+> Unable to handle kernel NULL pointer dereference at
+> virtual address ", '0' <repeats 16 times>, "
+> ...
+> Call trace:
+> __aarch64_insn_write+0x9c/0x18c
+> ...
+> static_key_enable+0x1c/0x30
+> csdlock_debug+0x4c/0x78
+> do_early_param+0x9c/0xcc
+> parse_args+0x26c/0x3a8
+> parse_early_options+0x34/0x40
+> parse_early_param+0x80/0xa4
+> setup_arch+0x150/0x6c8
+> start_kernel+0x8c/0x720
+> ...
+> Kernel panic - not syncing: Oops: Fatal exception
+> 
+> Call trace inside __aarch64_insn_write:
+> __nr_to_section
+> __pfn_to_page
+> phys_to_page
+> patch_map
+> __aarch64_insn_write
+> 
+> Here, with CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section returns
+> NULL and makes the NULL dereference because mem_section is
+> initialized in sparse_init after parse_early_param stage.
+> 
+> So, static_branch_enable shouldn't be used inside early_param.
+> To avoid this, I changed it to __setup and fixed this.
+> 
+> Reported-by: Chen jingwen <chenjingwen6@huawei.com>
+> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+> ---
+> Change v1 -> v2:
+> Fix return 1 for __setup
+> ---
+>  kernel/smp.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/smp.c b/kernel/smp.c
+> index 65a630f62363..381eb15cd28f 100644
+> --- a/kernel/smp.c
+> +++ b/kernel/smp.c
+> @@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
+>  	if (val)
+>  		static_branch_enable(&csdlock_debug_enabled);
+>  
+> -	return 0;
+> +	return 1;
+>  }
+> -early_param("csdlock_debug", csdlock_debug);
+> +__setup("csdlock_debug=", csdlock_debug);
+>  
+>  static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
+>  static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
 
