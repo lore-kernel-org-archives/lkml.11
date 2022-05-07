@@ -2,152 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 07:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F02ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446038AbiEGIAH (ORCPT
+        id S1383632AbiEGIGN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 04:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        Sat, 7 May 2022 04:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232420AbiEGIAF (ORCPT
+        with ESMTP id S232420AbiEGIGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 04:00:05 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740E918353
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 00:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651910179; x=1683446179;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QjP7gFNkYoRcvp5aKs/kvkBClgI5+qwDadM8XMqpay0=;
-  b=LQTx8XtY8CtFPxEkaTPtZIhP4L6mvOU9prXvZWMFmA9KRZRhuP5Rq9uM
-   y9PRH/kotP+/YtAEJeOf44LKV5WO6CfxVTCyTs2IDJBqZXi0DAdBVc1PQ
-   qu+Lu+kSYfTnovnrglWYKHRSiBwvlDbUrsrdIwCWMi30rMohq1cMixYnV
-   rHKxhxk0HwSV+CCQ+MJFlB0c6Ifs+gY2y+IZfwSr9ovtByG08h5EjW9kC
-   qm5orWWpkriJilL8vFsU+quLraDBoyED13w45gdiY7WQb3d90qh7VWqKl
-   A9yRkyklWmYPKtmkdHPPMmaZAk68JWAmQr7GFVb2achsKWPXarnEsB/Q/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="355108371"
-X-IronPort-AV: E=Sophos;i="5.91,206,1647327600"; 
-   d="scan'208";a="355108371"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 00:56:19 -0700
-X-IronPort-AV: E=Sophos;i="5.91,206,1647327600"; 
-   d="scan'208";a="564227035"
-Received: from sjin6-mobl1.ccr.corp.intel.com ([10.254.214.15])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 00:56:14 -0700
-Message-ID: <b5aa57a50bcc29c775587af81e629bac345ab25a.camel@intel.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>,
-        Yang Shi <shy828301@gmail.com>
-Cc:     Wei Xu <weixugc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Date:   Sat, 07 May 2022 15:56:12 +0800
-In-Reply-To: <CAPcyv4g7kyPsSKGT1rR4yy680VD6UJ8V7wzj0OUqN2y2-PjOpQ@mail.gmail.com>
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
-         <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
-         <CAPcyv4g7kyPsSKGT1rR4yy680VD6UJ8V7wzj0OUqN2y2-PjOpQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Sat, 7 May 2022 04:06:11 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFAB95AA7C;
+        Sat,  7 May 2022 01:02:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=tkwqm4F2hiHn48xSzCVsvhwNdnMuIuUf64oXwgqKA2o=; b=FdwqyopLQocQ4VUeM3kit/rLZd
+        BdCK8pa/UDoY8GStioaWz3Y9ormyN3yqGPh59F/9DEe2bBcKDTGb4mcTbmYgEnjqz949gEmdYa9ga
+        1vaCLqIJOBBcVyjEymlxsXHaGfo6zyM4b4WKctaxK2WWER63LxVvKVmYw1OEMzDWTSUOrfa07WVpv
+        BEOvUo32JxIF/YrSQrvOErKm4SO0bkJ/qx1weeUqGRSzowyQKbHOJO2lViU1mNQ82fLKqwQnwoals
+        uifmdUlKP20Oftxce+b4f0u7NxgHCkoXgNOpWHm1C2htb6HSGprKnk3XatWjhwxDJgFbuq9p5nm6I
+        SHem2w9A==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nnFOO-006Rgs-Mo; Sat, 07 May 2022 08:02:20 +0000
+Date:   Sat, 7 May 2022 01:02:20 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@ozlabs.org>,
+        "fnovak@us.ibm.com" <fnovak@us.ibm.com>
+Subject: Re: request_module DoS
+Message-ID: <YnYnjLXm6atlznPT@bombadil.infradead.org>
+References: <YnXiuhdZ49pKL/dK@gondor.apana.org.au>
+ <77ecde32-e868-5804-d9a5-3bb22d314777@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77ecde32-e868-5804-d9a5-3bb22d314777@csgroup.eu>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Dan,
-
-On Sun, 2022-05-01 at 11:35 -0700, Dan Williams wrote:
-> On Fri, Apr 29, 2022 at 8:59 PM Yang Shi <shy828301@gmail.com> wrote:
+On Sat, May 07, 2022 at 07:10:23AM +0000, Christophe Leroy wrote:
+> > There are some code paths in the kernel where you can reliably
+> > trigger a request_module of a non-existant module.  For example,
+> > if you attempt to load a non-existent crypto algorithm, or create
+> > a socket of a non-existent network family, it will result in a
+> > request_module call that is guaranteed to fail.
 > > 
-> > Hi Wei,
+> > As user-space can do this repeatedly, it can quickly overwhelm
+> > the concurrency limit in kmod.  This in itself is expected,
+> > however, at least on some platforms this appears to result in
+> > a live-lock.  Here is an example triggered by stress-ng on ppc64:
 > > 
-> > Thanks for the nice writing. Please see the below inline comments.
+> > [  579.845320] request_module: modprobe crypto-aegis256 cannot be processed, kmod busy with 50 threads for more than 5 seconds now
+> > [  580.414590] __request_module: 25 callbacks suppressed
+> > [  580.414597] request_module: kmod_concurrent_max (0) close to 0 (max_modprobes: 50), for module crypto-aegis256-all, throttling...
+> > [  580.423082] watchdog: CPU 784 self-detected hard LOCKUP @ plpar_hcall_norets_notrace+0x18/0x2c
+> > [  580.423097] watchdog: CPU 784 TB:1297691958559475, last heartbeat TB:1297686321743840 (11009ms ago)
+> > [  580.423099] Modules linked in: cast6_generic cast5_generic cast_common camellia_generic blowfish_generic blowfish_common tun nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 rfkill bonding tls ip_set nf_tables nfnetlink pseries_rng binfmt_misc drm drm_panel_orientation_quirks xfs libcrc32c sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp vmx_crypto dm_mirror dm_region_hash dm_log dm_mod fuse
+> > [  580.423136] CPU: 784 PID: 77071 Comm: stress-ng Kdump: loaded Not tainted 5.14.0-55.el9.ppc64le #1
+> > [  580.423139] NIP:  c0000000000f8ff4 LR: c0000000001f7c38 CTR: 0000000000000000
+> > [  580.423140] REGS: c0000043fdd7bd60 TRAP: 0900   Not tainted  (5.14.0-55.el9.ppc64le)
+> > [  580.423142] MSR:  800000000280b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE>  CR: 28008202  XER: 20040000
+> > [  580.423148] CFAR: 0000000000000c00 IRQMASK: 1
+> >                 GPR00: 0000000028008202 c0000044c46b3850 c000000002a46f00 0000000000000000
+> >                 GPR04: ffffffffffffffff 0000000000000000 0000000000000010 c000000002a83060
+> >                 GPR08: 0000000000000000 0000000000000001 0000000000000001 0000000000000000
+> >                 GPR12: c0000000001b9530 c0000043ffe16700 0000000200000117 0000000010185ea8
+> >                 GPR16: 0000000010212150 0000000010186198 00000000101863a0 000000001021b3c0
+> >                 GPR20: 0000000000000001 0000000000000000 0000000000000001 00000000000000ff
+> >                 GPR24: c0000043f4a00e14 c0000043fafe0e00 000000000c440000 0000000000000000
+> >                 GPR28: c0000043f4a00e00 c0000043f4a00e00 c0000000021e0e00 c000000002561aa0
+> > [  580.423166] NIP [c0000000000f8ff4] plpar_hcall_norets_notrace+0x18/0x2c
+> > [  580.423168] LR [c0000000001f7c38] __pv_queued_spin_lock_slowpath+0x528/0x530
+> > [  580.423173] Call Trace:
+> > [  580.423174] [c0000044c46b3850] [0000000100006b60] 0x100006b60 (unreliable)
+> > [  580.423177] [c0000044c46b3910] [c000000000ea6948] _raw_spin_lock_irqsave+0xa8/0xc0
+> > [  580.423182] [c0000044c46b3940] [c0000000001dd7c0] prepare_to_wait_event+0x40/0x200
+> > [  580.423185] [c0000044c46b39a0] [c00000000019e9e0] __request_module+0x320/0x510
+> > [  580.423188] [c0000044c46b3ac0] [c0000000006f1a14] crypto_alg_mod_lookup+0x1e4/0x2e0
+> > [  580.423192] [c0000044c46b3b60] [c0000000006f2178] crypto_alloc_tfm_node+0xa8/0x1a0
+> > [  580.423194] [c0000044c46b3be0] [c0000000006f84f8] crypto_alloc_aead+0x38/0x50
+> > [  580.423196] [c0000044c46b3c00] [c00000000072cba0] aead_bind+0x70/0x140
+> > [  580.423199] [c0000044c46b3c40] [c000000000727824] alg_bind+0xb4/0x210
+> > [  580.423201] [c0000044c46b3cc0] [c000000000bc2ad4] __sys_bind+0x114/0x160
+> > [  580.423205] [c0000044c46b3d90] [c000000000bc2b48] sys_bind+0x28/0x40
+> > [  580.423207] [c0000044c46b3db0] [c000000000030880] system_call_exception+0x160/0x300
+> > [  580.423209] [c0000044c46b3e10] [c00000000000c168] system_call_vectored_common+0xe8/0x278
+> > [  580.423213] --- interrupt: 3000 at 0x7fff9b824464
+> > [  580.423214] NIP:  00007fff9b824464 LR: 0000000000000000 CTR: 0000000000000000
+> > [  580.423215] REGS: c0000044c46b3e80 TRAP: 3000   Not tainted  (5.14.0-55.el9.ppc64le)
+> > [  580.423216] MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42004802  XER: 00000000
+> > [  580.423221] IRQMASK: 0
+> >                 GPR00: 0000000000000147 00007fffdcff2780 00007fff9b917100 0000000000000004
+> >                 GPR04: 00007fffdcff27e0 0000000000000058 0000000000000000 0000000000000000
+> >                 GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+> >                 GPR12: 0000000000000000 00007fff9bc9efe0 0000000200000117 0000000010185ea8
+> >                 GPR16: 0000000010212150 0000000010186198 00000000101863a0 000000001021b3c0
+> >                 GPR20: 0000000000000004 00007fffdcff2a00 0000000300000117 00000000101862b8
+> >                 GPR24: 0000000000000004 0000000046401570 0000000046401120 0000000046404650
+> >                 GPR28: 0000000000000020 0000000000000020 0000000000000060 0000000046404bf0
+> > [  580.423236] NIP [00007fff9b824464] 0x7fff9b824464
+> > [  580.423237] LR [0000000000000000] 0x0
+> > [  580.423238] --- interrupt: 3000
+> > [  580.423239] Instruction dump:
+> > [  580.423241] e8690000 7c0803a6 3884fff8 78630100 78840020 4bfffeb8 3c4c0295 3842df24
+> > [  580.423244] 7c421378 7c000026 90010008 44000022 <38800000> 988d0931 80010008 7c0ff120
 > > 
-> > On Fri, Apr 29, 2022 at 7:10 PM Wei Xu <weixugc@google.com> wrote:
-> > > 
-> > > The current kernel has the basic memory tiering support: Inactive
-> > > pages on a higher tier NUMA node can be migrated (demoted) to a lower
-> > > tier NUMA node to make room for new allocations on the higher tier
-> > > NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
-> > > migrated (promoted) to a higher tier NUMA node to improve the
-> > > performance.
-> > > 
-> > > A tiering relationship between NUMA nodes in the form of demotion path
-> > > is created during the kernel initialization and updated when a NUMA
-> > > node is hot-added or hot-removed.  The current implementation puts all
-> > > nodes with CPU into the top tier, and then builds the tiering hierarchy
-> > > tier-by-tier by establishing the per-node demotion targets based on
-> > > the distances between nodes.
-> > > 
-> > > The current memory tiering interface needs to be improved to address
-> > > several important use cases:
-> > > 
-> > > * The current tiering initialization code always initializes
-> > >   each memory-only NUMA node into a lower tier.  But a memory-only
-> > >   NUMA node may have a high performance memory device (e.g. a DRAM
-> > >   device attached via CXL.mem or a DRAM-backed memory-only node on
-> > >   a virtual machine) and should be put into the top tier.
-> > > 
-> > > * The current tiering hierarchy always puts CPU nodes into the top
-> > >   tier. But on a system with HBM (e.g. GPU memory) devices, these
-> > >   memory-only HBM NUMA nodes should be in the top tier, and DRAM nodes
-> > >   with CPUs are better to be placed into the next lower tier.
-> > > 
-> > > * Also because the current tiering hierarchy always puts CPU nodes
-> > >   into the top tier, when a CPU is hot-added (or hot-removed) and
-> > >   triggers a memory node from CPU-less into a CPU node (or vice
-> > >   versa), the memory tiering hierarchy gets changed, even though no
-> > >   memory node is added or removed.  This can make the tiering
-> > >   hierarchy much less stable.
-> > 
-> > I'd prefer the firmware builds up tiers topology then passes it to
-> > kernel so that kernel knows what nodes are in what tiers. No matter
-> > what nodes are hot-removed/hot-added they always stay in their tiers
-> > defined by the firmware. I think this is important information like
-> > numa distances. NUMA distance alone can't satisfy all the usecases
-> > IMHO.
-> 
-> Just want to note here that the platform firmware can only describe
-> the tiers of static memory present at boot. CXL hotplug breaks this
-> model and the kernel is left to dynamically determine the device's
-> performance characteristics and the performance of the topology to
-> reach that device. Now, the platform firmware does set expectations
-> for the perfomance class of different memory ranges, but there is no
-> way to know in advance the performance of devices that will be asked
-> to be physically or logically added to the memory configuration. That
-> said, it's probably still too early to define ABI for those
-> exceptional cases where the kernel needs to make a policy decision
-> about a device that does not fit into the firmware's performance
-> expectations, but just note that there are limits to the description
-> that platform firmware can provide.
-> 
+> > Would it be possible to modify kmod so that in such cases that
+> > request_module calls fail more quickly rather than repeatedly
+> > obtaining a spinlock that appears to be under high contention?
 
-Does this mean we will need some kind of in-kernel memory latency
-measurement mechanism to determine the tier of the memory device
-finally?
+kmod count limit is lockless but prepare_to_wait_event() does hold a
+lock...
 
-Best Regards,
-Huang, Ying
+You can try to reproduce by using adding a new test type for crypto-aegis256
+on lib/test_kmod.c. These tests however can try something similar but other
+modules.
 
-> I agree that NUMA distance alone is inadequate and the kernel needs to
-> make better use of data like ACPI HMAT to determine the default
-> tiering order.
+/tools/testing/selftests/kmod/kmod.sh -t 0008
+/tools/testing/selftests/kmod/kmod.sh -t 0009
 
+I can't decipher this yet.
 
+  Luis
