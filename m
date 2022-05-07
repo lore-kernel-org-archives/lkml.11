@@ -2,156 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 160F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 17:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E42BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 17:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386572AbiEGR0X (ORCPT
+        id S1386527AbiEGRep (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 13:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46602 "EHLO
+        Sat, 7 May 2022 13:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386462AbiEGR0P (ORCPT
+        with ESMTP id S233409AbiEGRel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 13:26:15 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6ACA33A0C
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 10:22:26 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id y3so19637020ejo.12
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 10:22:26 -0700 (PDT)
+        Sat, 7 May 2022 13:34:41 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF221D0C0
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 10:30:54 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id z2so18132354ejj.3
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 10:30:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zjNtbhJZkCD7x/ngN33A8mLoiActa9teuEHp5A3WQlI=;
-        b=PUJm3rcrmpeRZzIZJJsMojTvU8Sg+/mOTgkl3T+44NGBwBXWjK9VPMMQy8p7BNFHGJ
-         KJE8XQCLrCi9TnjqvCmmveQZQkpATdz5cUX3K3HYxItJCgpZ4PVAhUkRGiiVk9x8ZeCc
-         jiUcPys7YkdAgyDZAf7PKtf31D69QpWHZLFpGamEboDYiIQqoiXNcwoxF0XYAq/UVJOL
-         H06hRxj0tfTeTAvDspSz3Kf0l/eu+8LuabUKHjbBoCmKkyiu0TCj415TvcDOBdDBl61e
-         VNHzdo1GCh+2DkRyvVUj6izcSN4GKKwWwm3jnoJapEJbH/X+4fkXv5b/1ifVhkuofmWN
-         zq/g==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SbGNwQXbrJylNFijJzYWuzwhfMF9JmIb4u30urdLo90=;
+        b=bPxox2idQ5mR+ZFEf9mfeAxCDTS84W20pUAAr0BAsuIU6hEdstpbHfWZFBKAsJLFU9
+         ElJdN/QYHmpMXFO4F3E/to6yH7mhKnRsB+z77K9YaCScoNDi4r9VBISYrwNWPgrPO5yg
+         UCPEJQERyMfz+7EaUWKSAM5jJ6WElGolbN/xw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zjNtbhJZkCD7x/ngN33A8mLoiActa9teuEHp5A3WQlI=;
-        b=chiE4BHCo+kZavfdvCSGGISt18gS8Fm+NYN5SuaaVgj32dLwYXsq4izFmTniDmNi30
-         s9BEDMtIaAO91xpf44EStVNEQJLKg5JjQ4SXupki+NUpeqDZeTnpCKOhQr0dmlrHK13W
-         YQQOIiZayc639QtI0Wj/0OCJFfPFEZ5x2DU/TVPUZ0XGOATyz/xcsA2yOyyhwb0aUbqA
-         1aGDLlKG5ng9KhlLyNDvyegWwTtplywJV4f9I1paRXxvHYfvLk8GLuZP9fSLRm2i3Iw0
-         P8BTACz6yTSO+kzGyOm3uKC0uDTcjAmqUm67zd8UibcahgCJT1aNAtPJvTcgDJcVFk9V
-         hY4Q==
-X-Gm-Message-State: AOAM530lVbZiVZpMLtTo/eeYT62NkXVzPoHZugLSQm2p2IZ8LR1WZdOM
-        4Zjhe7LJDtCF7ZeO421X63iQs1i+dOY8gwTv
-X-Google-Smtp-Source: ABdhPJwGYRwQnDVRNO9isAjt5BT0cMvMCkDJOfr1Wfy9Egw4c8XZ1rQxI/fKnZvDZ1EDz2Ls3i8z9Q==
-X-Received: by 2002:a17:907:3e92:b0:6f4:7ab4:20a5 with SMTP id hs18-20020a1709073e9200b006f47ab420a5mr8346124ejc.620.1651944145395;
-        Sat, 07 May 2022 10:22:25 -0700 (PDT)
-Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i24-20020a05640200d800b0042617ba63a8sm3904995edu.50.2022.05.07.10.22.24
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SbGNwQXbrJylNFijJzYWuzwhfMF9JmIb4u30urdLo90=;
+        b=U+l9buL8i8CS/qfWxklxS4a23QDsWms4qqrCrnoBEYmI/6BvPBo/ntPQv6S6IczJ5u
+         gfIiSI1PB9KtarahWy+jSvtmjGuU0gtFYKlrAgUHXo8Sr3CSUf1eNM49nf401fnHygc9
+         qBKp0O9gg4qkUp8y6OyBv4dYW+jm+AnuCeAoWu8h+/fw1EJBZZ2N+2SvJxZd6OOAAyIi
+         m61L+5xyQYB811I+g3IsBpb4lAWW9Oc3zJ9vCJ0D5me9HlT0BK1BXLrkx+1TA1OapR12
+         yDdWtb8fInfvIzFnjgymr4fIKBAvXxtNJDR9DzlW6DEmtvYv3cE9m9Gf6hWTsp5H3W24
+         pXMg==
+X-Gm-Message-State: AOAM532tpiF5kwz+G8qN7W/EYsB+Bx384YjkHDdFhC+Tu585qYsfMn3G
+        dvp0BRYQ8jXIxCRqBDPYN3cuBGY0zmqc3Uez
+X-Google-Smtp-Source: ABdhPJyPnwvLvSSXLUMoeeyWVmnFjH6qpQ+yCEfFG5cmGrXTnagppbWxYyFafqES6Ggty/+qEheL8g==
+X-Received: by 2002:a17:906:5811:b0:6e8:47dd:c55d with SMTP id m17-20020a170906581100b006e847ddc55dmr8152609ejq.191.1651944652490;
+        Sat, 07 May 2022 10:30:52 -0700 (PDT)
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
+        by smtp.gmail.com with ESMTPSA id b4-20020a0564021f0400b0042617ba63ccsm3728450edb.86.2022.05.07.10.30.51
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 May 2022 10:22:24 -0700 (PDT)
-Message-ID: <9bcdec7e-2b09-56ac-f798-1c3971a87f46@linaro.org>
-Date:   Sat, 7 May 2022 19:22:23 +0200
+        Sat, 07 May 2022 10:30:51 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id r1-20020a1c2b01000000b00394398c5d51so6094298wmr.2
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 10:30:51 -0700 (PDT)
+X-Received: by 2002:a05:600c:4f06:b0:394:836b:1552 with SMTP id
+ l6-20020a05600c4f0600b00394836b1552mr3211905wmq.145.1651944650603; Sat, 07
+ May 2022 10:30:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] dt-bindings: watchdog: improve QCOM compatible parsing
- for modern chips
-Content-Language: en-US
-To:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Cc:     ~okias/devicetree@lists.sr.ht, Rob Herring <robh@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220111212310.97566-1-david@ixit.cz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220111212310.97566-1-david@ixit.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220507052451.12890-1-ojeda@kernel.org> <20220507052451.12890-8-ojeda@kernel.org>
+In-Reply-To: <20220507052451.12890-8-ojeda@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 7 May 2022 10:30:34 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh00UW9i+hGYjmLZW5MOAti9FFBarGBL909k5PfH4r2fg@mail.gmail.com>
+Message-ID: <CAHk-=wh00UW9i+hGYjmLZW5MOAti9FFBarGBL909k5PfH4r2fg@mail.gmail.com>
+Subject: Re: [PATCH v6 07/23] rust: import upstream `alloc` crate
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/01/2022 22:23, David Heidelberg wrote:
-> Parse compatible as expected for modern QCOMs.
-> 
-> Fixes warnings as:
-> arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: watchdog@17980000: compatible: ['qcom,apss-wdt-sdm845', 'qcom,kpss-wdt'] is too long
->         From schema: Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: watchdog@17980000: compatible: Additional items are not allowed ('qcom,kpss-wdt' was unexpected)
->         From schema: Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> 
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
-> v2:
->  - updated compatible list as two compatibles has been added upstream
->  -> resolve merge conflict
-> ---
->  .../bindings/watchdog/qcom-wdt.yaml           | 37 +++++++++++--------
->  1 file changed, 21 insertions(+), 16 deletions(-)
+On Fri, May 6, 2022 at 10:26 PM Miguel Ojeda <ojeda@kernel.org> wrote:
+>
+> This is a subset of the Rust standard library `alloc` crate,
+> version 1.60.0, from:
+>
+>     https://github.com/rust-lang/rust/tree/1.60.0/library/alloc/src
+>
+> The files are copied as-is, with no modifications whatsoever
+> (not even adding the SPDX identifiers).
+>
+> The next patch modifies [..]
 
-It seems this patch received three reviews but was not picked up. David,
-do you plan to work on this?
+Now, the next patch clarifies this, but I think that you should at
+least mention the actual copyright license status here.
 
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> index 16c6f82a13ca..4ff8c59c59ab 100644
-> --- a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> @@ -14,22 +14,27 @@ allOf:
->  
->  properties:
->    compatible:
-> -    enum:
-> -      - qcom,apss-wdt-qcs404
-> -      - qcom,apss-wdt-sc7180
-> -      - qcom,apss-wdt-sc7280
-> -      - qcom,apss-wdt-sdm845
-> -      - qcom,apss-wdt-sdx55
-> -      - qcom,apss-wdt-sm6350
-> -      - qcom,apss-wdt-sm8150
-> -      - qcom,apss-wdt-sm8250
-> -      - qcom,kpss-timer
-> -      - qcom,kpss-wdt
-> -      - qcom,kpss-wdt-apq8064
-> -      - qcom,kpss-wdt-ipq4019
-> -      - qcom,kpss-wdt-ipq8064
-> -      - qcom,kpss-wdt-msm8960
-> -      - qcom,scss-timer
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - qcom,apss-wdt-qcs404
-> +              - qcom,apss-wdt-sc7180
-> +              - qcom,apss-wdt-sc7280
-> +              - qcom,apss-wdt-sdm845
-> +              - qcom,apss-wdt-sdx55
-> +              - qcom,apss-wdt-sm6350
-> +              - qcom,apss-wdt-sm8150
-> +              - qcom,apss-wdt-sm8250
-> +          - const: qcom,kpss-wdt
-> +      - items:
-> +          - enum:
-> +              - qcom,kpss-wdt
-> +              - qcom,kpss-timer
-> +              - qcom,kpss-wdt-apq8064
-> +              - qcom,kpss-wdt-ipq4019
-> +              - qcom,kpss-wdt-ipq8064
-> +              - qcom,kpss-wdt-msm8960
+Yes, it's MIT/Apache, and yes, that's GPLv2 compatible, but that's not
+obvious from this fairly large patch.
 
-These do not look correct without appropriate fallback.
+And when you then do things like "git blame" to look at where code
+came from, you'll see all this code came in through a commit that says
+"copied as-is" with just a link that may or may not be stable and
+available to whoever looks at it then.
 
-> +              - qcom,scss-timer
->  
->    reg:
->      maxItems: 1
+So keep the link for the actual details, but I think that when
+importing big chunks like this it's just a good idea to make that
+original license explicit rather than "look at that link".
 
+Just saying "MIT or Apache" here, and then having the link as the
+"here are the details" would make me happier.
 
-Best regards,
-Krzysztof
+I use git blame all the time to find who to contact when there are
+issues, and in that kind of workflow it's fairly unhelpful to see some
+reference to "The next patch".
+
+So I agree whole-heartedly with the "import the original, do the
+required changes separately", but I would like to see that original
+import really explicitly clarify the license status, and not require
+people to dig for it through external links.
+
+              Linus
