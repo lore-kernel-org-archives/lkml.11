@@ -2,152 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 00:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5650C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 00:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445068AbiEGAft (ORCPT
+        id S1445075AbiEGAf5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 6 May 2022 20:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
+        Fri, 6 May 2022 20:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235355AbiEGAfp (ORCPT
+        with ESMTP id S1445071AbiEGAfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 6 May 2022 20:35:45 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FE15BE51
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 17:32:00 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so12196230pju.2
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 17:32:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Wn0dXbP2ZNZ5rtmEUdIAq+AKjqvzHBKlvsWStfjh/W0=;
-        b=fOrVM+EV4Gunf/aPtxP1nt32zwg0Xwz4PfvGKYnHCgQwFAwWTfFddYQ/YZ4R+7AKqb
-         yiWWR2ufEtrREpn9n4vplBM48DbtYM0u7ut3ChXkCkslhGtgm7lKrSesCev0H/+ruwKV
-         RUcFjA56oR02AtOyIvEG4He/xOKdub2cATeQ45KylHC3J+N4e1sr09CX/oxFTm32kvDD
-         bEiuOeH3vz12FQVgretkDDpYELaFELIc6FVOqt4G4YCPKtGSfn8wwoIMX7mXf31T6X0Q
-         BAX8mKz3jEOI6r6BdE8CROzOUylSc5p6GfOJjTDCIieZRNatDok1m5TYn7FWJm8VPh0D
-         oIjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Wn0dXbP2ZNZ5rtmEUdIAq+AKjqvzHBKlvsWStfjh/W0=;
-        b=gzbWchQ+JvMAL0yD1LyDX8vmp6bF0vmxum8pumeWAj044eEPZqMVkGb5uL/zV9EOv5
-         PdHF4dX6hbJWWAi1TVrv7ks4ewutRV/+gShGZcxJJdRHcoIkZP8vXt1Ty7xrRhDiDuMd
-         rj68391IZyOo+31YIxz44Hiw4xjqItUUyZC62KRwHZ7FcsYqFvvyfvEFPXeBAr1BkmBo
-         DWXfZzlnleQng2O3Qom0R2enzMf5hRIhpTXfCyy2M9yd9yaB0rMjsaVTiPOI/SQnVTsW
-         myckyFQcf+knv9OysZ1mfuxleI8YHLcC3JKO+ByLy53EBT5mN5emRl/ryDvaWiGNGH5f
-         gDAA==
-X-Gm-Message-State: AOAM532gbR26kE5Ej8lNgxVrBVMnkRGwP315vU5r/ckfhVMEhfvCqvnL
-        D+PpSLyvW7oIlyXTEJd6fAiLqg==
-X-Google-Smtp-Source: ABdhPJyckdf3ooD9/x8FQrTgykRhfqi6qP1ZrPcpvmWgj2IWql69kx0Wu/RQ52gT5LiMdQFMnHPxLw==
-X-Received: by 2002:a17:902:bd05:b0:158:544d:6557 with SMTP id p5-20020a170902bd0500b00158544d6557mr6514519pls.70.1651883520388;
-        Fri, 06 May 2022 17:32:00 -0700 (PDT)
-Received: from [10.255.89.252] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id u1-20020a17090341c100b0015e8d4eb278sm2471067ple.194.2022.05.06.17.31.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 17:31:59 -0700 (PDT)
-Message-ID: <a60933f2-ef07-92a3-66cf-071670a03101@bytedance.com>
-Date:   Sat, 7 May 2022 08:28:05 +0800
+        Fri, 6 May 2022 20:35:52 -0400
+Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC6586543F;
+        Fri,  6 May 2022 17:32:07 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id C2F1A5344B9;
+        Sat,  7 May 2022 10:32:02 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nn8Ma-008ucI-Uc; Sat, 07 May 2022 10:32:00 +1000
+Date:   Sat, 7 May 2022 10:32:00 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     tytso <tytso@mit.edu>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-fsdevel@vger.kernel.org,
+        Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+Message-ID: <20220507003200.GM1949718@dread.disaster.area>
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
+ <YnRf5CNN2yNKVu0B@mit.edu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Re: [PATCH 3/4] mm/memofy-failure.c: optimize hwpoison_filter
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>
-Cc:     akpm@linux-foundation.org, naoya.horiguchi@nec.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Wu Fengguang <fengguang.wu@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-References: <20220429142206.294714-1-pizhenwei@bytedance.com>
- <20220429142206.294714-4-pizhenwei@bytedance.com>
- <20220506085920.GC1356094@u2004>
- <3c0e25fb-695d-4a29-6de4-c892f89cea7a@bytedance.com>
- <ac3fc5b9-d09c-5fb6-998d-f7c655d7fa00@redhat.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <ac3fc5b9-d09c-5fb6-998d-f7c655d7fa00@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnRf5CNN2yNKVu0B@mit.edu>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=6275be06
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=kj9zAlcOel0A:10 a=oZkIemNP1mAA:10 a=7-415B0cAAAA:8
+        a=6tRzxmq33S4bAUIDdMMA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 05, 2022 at 04:38:12PM -0700, tytso wrote:
+> On Tue, May 03, 2022 at 02:23:23PM +0200, Miklos Szeredi wrote:
+> > 
+> > : - root
+> > bar - an attribute
+> > foo: - a folder (can contain attributes and/or folders)
+> > 
+> > The contents of a folder is represented by a null separated list of names.
+> > 
+> > Examples:
+> > 
+> > $ getfattr -etext -n ":" .
+> > # file: .
+> > :="mnt:\000mntns:"
+> 
+> In your example, does it matter what "." is?  It looks like in some
+> cases, it makes no difference at all, and in other cases, like this,
+> '.' *does* matter:
+> 
+> > $ getfattr -etext -n ":mnt:info" .
+> > # file: .
+> > :mnt:info="21 1 254:0 / / rw,relatime - ext4 /dev/root rw\012"
+> 
+> Is that right?
+> 
+> > $ getfattr -etext -n ":mntns:" .
+> > # file: .
+> > :mntns:="21:\00022:\00024:\00025:\00023:\00026:\00027:\00028:\00029:\00030:\00031:"
+> 
+> What is this returning?  All possible mount name spaces?  Or all of
+> the mount spaces where '.' happens to exist?
+> 
+> Also, using the null character means that we can't really use shell
+> scripts calling getfattr.
 
-On 5/7/22 00:28, David Hildenbrand wrote:
-> On 06.05.22 15:38, zhenwei pi wrote:
->>
->>
->> On 5/6/22 16:59, Naoya Horiguchi wrote:
->>> On Fri, Apr 29, 2022 at 10:22:05PM +0800, zhenwei pi wrote:
->>>> In the memory failure procedure, hwpoison_filter has higher priority,
->>>> if memory_filter() filters the error event, there is no need to do
->>>> the further work.
->>>
->>> Could you clarify what problem you are trying to solve (what does
->>> "optimize" mean in this context or what is the benefit)?
->>>
->>
->> OK. The background of this work:
->> As well known, the memory failure mechanism handles memory corrupted
->> event, and try to send SIGBUS to the user process which uses this
->> corrupted page.
->>
->> For the virtualization case, QEMU catches SIGBUS and tries to inject MCE
->> into the guest, and the guest handles memory failure again. Thus the
->> guest gets the minimal effect from hardware memory corruption.
->>
->> The further step I'm working on:
->> 1, try to modify code to decrease poisoned pages in a single place
->> (mm/memofy-failure.c: simplify num_poisoned_pages_dec in this series).
->>
->> 2, try to use page_handle_poison() to handle SetPageHWPoison() and
->> num_poisoned_pages_inc() together. It would be best to call
->> num_poisoned_pages_inc() in a single place too. I'm not sure if this is
->> possible or not, please correct me if I misunderstand.
->>
->> 3, introduce memory failure notifier list in memory-failure.c: notify
->> the corrupted PFN to someone who registers this list.
->> If I can complete [1] and [2] part, [3] will be quite easy(just call
->> notifier list after increasing poisoned page).
->>
->> 4, introduce memory recover VQ for memory balloon device, and registers
->> memory failure notifier list. During the guest kernel handles memory
->> failure, balloon device gets notified by memory failure notifier list,
->> and tells the host to recover the corrupted PFN(GPA) by the new VQ.
-> 
-> Most probably you might want to do that asynchronously, and once the
-> callback succeeds, un-poison the page.
-> 
-Yes!
+Yeah, it should be returning an attr per namespace, not an attr
+whose value contains all the valid namespaces.
 
->>
->> 5, host side remaps the corrupted page(HVA), and tells the guest side to
->> unpoison the PFN(GPA). Then the guest fixes the corrupted page(GPA)
->> dynamically.
-> 
-> I think QEMU already does that during reboots. Now it would be triggered
-> by the guest for individual pages.
-> 
-Yes, currently QEMU supports to un-poison corrupted pages during 
-reset/reboot. We can reuse some code to do the work in this case, this 
-allows a VM to fix corrupted pages as soon as possible(also no need to 
-reset/reboot).
+i.e. if the next level of the heirachy is 21, 22, 24, .... we should
+be seeing a listing of multiple attributes with naming like:
 
->>
->> Because [4] and [5] are related to balloon device, also CC Michael,
->> David and Jason.
-> 
-> Doesn't sound too crazy for me, although it's a shame that we always
-> have to use virtio-balloon for such fairly balloon-unrelated things.
-> 
-Thanks!
+:mntns:21:
+:mntns:22:
+:mntns:24:
+....
 
+rather than an attribute whose value contains the names of the
+attrbiutes in the next layer of the heirarchy. Then we can just
+pull the namespace we want and feed it directly to:
+
+$ getfattr -n ":mntns:21:"
+
+and we get a list of all the attributes available for that
+namespace...
+
+> I understand that the problem is that in
+> some cases, you might want to return a pathname, and NULL is the only
+> character which is guaranteed not to show up in a pathname.  However,
+> it makes parsing the returned value in a shell script exciting.
+
+We shouldn't be returning the names of children in an attribute
+value. We have a syscall API for doing this that - listxattr() will
+iterate attribute names just like a directory does with readdir()
+via listxattr(). IOWs, we should not need to encode the next layer
+of child attribute names into the value of the parent attribute - if
+we do a listxattr on a parent that has children, return the list of
+child names as individual attribute names....
+
+(Yes, I know listxattr null separates the attribute names - it's a
+godawful kernel API - but that's not the programmatic interface
+we should expose at the shell script level.)
+
+Cheers,
+
+Dave.
 -- 
-zhenwei pi
+Dave Chinner
+david@fromorbit.com
