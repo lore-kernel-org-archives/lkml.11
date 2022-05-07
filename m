@@ -2,182 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25178C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 09:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F50DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 09:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383973AbiEGJ0v (ORCPT
+        id S1384091AbiEGJ1A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 05:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
+        Sat, 7 May 2022 05:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiEGJ0u (ORCPT
+        with ESMTP id S1383986AbiEGJ0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 05:26:50 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCD33C4B8
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 02:23:04 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id a191so8018740pge.2
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 02:23:04 -0700 (PDT)
+        Sat, 7 May 2022 05:26:55 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518CE4F450
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 02:23:09 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id cu23-20020a17090afa9700b001d98d8e53b7so9292361pjb.0
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 02:23:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HsmL70Uxpre+Yuw44Bhf/DXDbaU8ZDKhOhdy778k+yo=;
-        b=mlR3d80AhkwzzC9PKqaXsMDhWbQVXMEC6MCnzg1peU4Wr/mTRivGCNYgM7QRHTa0ub
-         Z3V6OvjENlJU/wkZN2dPGw8DjSuZcoNR2oGUlIRRhQBVH/J/SmIEO4cp5zUEAua7DtmH
-         km6VJHxTPXPOkXf28Bfd8y2Oj/hJ5Li/5hWOGMIjZcnUHnrxLi2Ce7b4K6swCToXCf7T
-         kja+3ZAT4xc4qTctp1GdxZRAwko+jFMeVBxA7mgxWtFLT8zu8kr3WjghwHOyLiP52hWs
-         ZvWYhgOn07sFKhQ0KVq2vNxuL3N6cigDdOzFwBCEHPNwFpfeLQXgfP/Z5DqDonJBga7k
-         jzjw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ocCDoyGiSy1GdWrHu5CjFRRUzgHkg0CZyH7/vS7PmVg=;
+        b=PlI3z0yq2ISTxCAfw67M32w7ZLLVYK6FDfA1HHYzyBFcnRmEtCexMsELLaKsqrARGJ
+         BbfNzbcN8Z3tAtL9lDmq7L21CmgLskN47R0GQEW2MlqoHKww78KcdOkwzrngw8d7YJPe
+         K6AzBN3lSusWlmnqoTCq/K/l9L93IGgTF2hJo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HsmL70Uxpre+Yuw44Bhf/DXDbaU8ZDKhOhdy778k+yo=;
-        b=lAJ6zwv1J7shC0R9AwKXhrgtNZBlSDox58YR5ZmwzjW0+eIo803vnlMDJ5SbcYHd66
-         mo3c8CzQCeNee+ggypp5YlyqMzrUtgxPqzn8eIFJ8Wmns6bdVoLvjugQUG65fR+UaQ28
-         XDLd9SCacVtoclItcG3lnJ5zzPKaIPI3dcavy1DAjVxPsJ5vMLquHR0L4onxjn8wBeJx
-         zAQC2Xg5RWkze18RHqR2dsXDSLwfnjSbzEqbxuin65NSPaeKSMH+VkgLoCw69mxgeWp1
-         Q74xSzw4KHaXu0eqj3IdWPwxrAN2AHcnYg2iDxai6Sote1r9s3lL8isdC6guQl9L3UzO
-         cDCQ==
-X-Gm-Message-State: AOAM532vVdYKQ83/+nghKgnU13nTM9jx5FGmA5Cz/borkIz36sCC7J5K
-        5/+jDtTrrJzqoyfYW0UpEq+C5Uz6YMF2tw==
-X-Google-Smtp-Source: ABdhPJyw3bAQ9HgqBVfd9NCUfNAz6xXstkZXK2fVR31183kcyPUZrKZY1G88F0L6iyNceYsna1Hw0Q==
-X-Received: by 2002:a63:c013:0:b0:3c1:df82:c8b3 with SMTP id h19-20020a63c013000000b003c1df82c8b3mr6045188pgg.141.1651915383734;
-        Sat, 07 May 2022 02:23:03 -0700 (PDT)
-Received: from [10.255.89.252] ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id y9-20020a17090322c900b0015e8d4eb2e7sm3216427plg.305.2022.05.07.02.22.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 May 2022 02:23:02 -0700 (PDT)
-Message-ID: <23e06fc6-84fe-122e-fc07-02c5bfa7d50b@bytedance.com>
-Date:   Sat, 7 May 2022 17:19:09 +0800
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ocCDoyGiSy1GdWrHu5CjFRRUzgHkg0CZyH7/vS7PmVg=;
+        b=URzVGHKuZDDRJlEGXD8HubmAhEy9gaD/9q+05+WQIVuoW0GKLB/U7onzXe2NE4KGdM
+         xgmFZs2YlPw68ABOlfQlgkDW2JCHMO1ioC7POJaDTX2N9SOMRdmdTFNCbMtkVa8tWswj
+         +2Hy/kzJMEQ2eXZqxvXMBFCo8cnCYKWfhBaW9A+tW6s0k9Va4c+Yo1SGn0sinaLNBt+M
+         SsJ2HXlEqUvXrtZNpFAzL041B99iu5IpUEOMMnSZzgXjgl9HdSrzjcobSGHyAmBaNp6o
+         xvzmNgVTUVRpLdlL9CgBds20qpheN1vzHrmE1JJSqd1RMZQKcFP25xzxlBHzxTTiZhXC
+         /h5w==
+X-Gm-Message-State: AOAM5305yO0o49fp4wmMf0yzjWSDPS5buKQ5FhiWhc4bcgVd2R9xzCZE
+        Qg7Zz3XGVDsY7L5Ir+EJ8U57SQ==
+X-Google-Smtp-Source: ABdhPJyLHkvHes6TtzlOPrA5G3JwBYupi+1Lwa2I0beUXgtwuv2eqvmXIpSdBbj6R+57Q0uXuwlYNw==
+X-Received: by 2002:a17:902:b948:b0:153:9994:b587 with SMTP id h8-20020a170902b94800b001539994b587mr7807093pls.68.1651915388553;
+        Sat, 07 May 2022 02:23:08 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa79423000000b0050dc76281c6sm4769532pfo.160.2022.05.07.02.23.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 May 2022 02:23:08 -0700 (PDT)
+Date:   Sat, 7 May 2022 02:23:07 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: Re: [PATCH v6 07/23] rust: import upstream `alloc` crate
+Message-ID: <202205070214.AC7C566@keescook>
+References: <20220507052451.12890-1-ojeda@kernel.org>
+ <20220507052451.12890-8-ojeda@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Re: Re: [PATCH 3/4] mm/memofy-failure.c: optimize hwpoison_filter
-Content-Language: en-US
-To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
-Cc:     David Hildenbrand <david@redhat.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Wu Fengguang <fengguang.wu@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-References: <20220429142206.294714-1-pizhenwei@bytedance.com>
- <20220429142206.294714-4-pizhenwei@bytedance.com>
- <20220506085920.GC1356094@u2004>
- <3c0e25fb-695d-4a29-6de4-c892f89cea7a@bytedance.com>
- <ac3fc5b9-d09c-5fb6-998d-f7c655d7fa00@redhat.com>
- <a60933f2-ef07-92a3-66cf-071670a03101@bytedance.com>
- <20220507082045.GA1716199@u2004>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220507082045.GA1716199@u2004>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220507052451.12890-8-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/7/22 16:20, Naoya Horiguchi wrote:
-> On Sat, May 07, 2022 at 08:28:05AM +0800, zhenwei pi wrote:
->>
->> On 5/7/22 00:28, David Hildenbrand wrote:
->>> On 06.05.22 15:38, zhenwei pi wrote:
->>>>
->>>>
->>>> On 5/6/22 16:59, Naoya Horiguchi wrote:
->>>>> On Fri, Apr 29, 2022 at 10:22:05PM +0800, zhenwei pi wrote:
->>>>>> In the memory failure procedure, hwpoison_filter has higher priority,
->>>>>> if memory_filter() filters the error event, there is no need to do
->>>>>> the further work.
->>>>>
->>>>> Could you clarify what problem you are trying to solve (what does
->>>>> "optimize" mean in this context or what is the benefit)?
->>>>>
->>>>
->>>> OK. The background of this work:
->>>> As well known, the memory failure mechanism handles memory corrupted
->>>> event, and try to send SIGBUS to the user process which uses this
->>>> corrupted page.
->>>>
->>>> For the virtualization case, QEMU catches SIGBUS and tries to inject MCE
->>>> into the guest, and the guest handles memory failure again. Thus the
->>>> guest gets the minimal effect from hardware memory corruption.
->>>>
->>>> The further step I'm working on:
->>>> 1, try to modify code to decrease poisoned pages in a single place
->>>> (mm/memofy-failure.c: simplify num_poisoned_pages_dec in this series).
+On Sat, May 07, 2022 at 07:24:05AM +0200, Miguel Ojeda wrote:
+> This is a subset of the Rust standard library `alloc` crate,
+> version 1.60.0, from:
 > 
-> This is fine to me.
+>     https://github.com/rust-lang/rust/tree/1.60.0/library/alloc/src
 > 
->>>>
->>>> 2, try to use page_handle_poison() to handle SetPageHWPoison() and
->>>> num_poisoned_pages_inc() together. It would be best to call
->>>> num_poisoned_pages_inc() in a single place too. I'm not sure if this is
->>>> possible or not, please correct me if I misunderstand.
-> 
-> SetPageHWPoison() can be cancelled in memory_failure(), so simply bundling
-> it with num_poisoned_pages_inc() might not be optimal.  I think that
-> action_result() is supposed to be called when memory error handling is
-> effective (not filtered, not cancelled). So moving num_poisoned_pages_inc()
-> (and notification code in your plan) into this function might be good.
-> 
-OK, I'll remove this patch(mm/memofy-failure.c: optimize 
-hwpoison_filter) from this series, and fix the other 3 patches in the v2 
-version. Then try to implement/test as your suggestion in another series.
+> The files are copied as-is, with no modifications whatsoever
+> (not even adding the SPDX identifiers).
 
->>>>
->>>> 3, introduce memory failure notifier list in memory-failure.c: notify
->>>> the corrupted PFN to someone who registers this list.
->>>> If I can complete [1] and [2] part, [3] will be quite easy(just call
->>>> notifier list after increasing poisoned page).
->>>>
->>>> 4, introduce memory recover VQ for memory balloon device, and registers
->>>> memory failure notifier list. During the guest kernel handles memory
->>>> failure, balloon device gets notified by memory failure notifier list,
->>>> and tells the host to recover the corrupted PFN(GPA) by the new VQ.
->>>
->>> Most probably you might want to do that asynchronously, and once the
->>> callback succeeds, un-poison the page.
->>>
->> Yes!
->>
->>>>
->>>> 5, host side remaps the corrupted page(HVA), and tells the guest side to
->>>> unpoison the PFN(GPA). Then the guest fixes the corrupted page(GPA)
->>>> dynamically.
->>>
->>> I think QEMU already does that during reboots. Now it would be triggered
->>> by the guest for individual pages.
->>>
->> Yes, currently QEMU supports to un-poison corrupted pages during
->> reset/reboot. We can reuse some code to do the work in this case, this
->> allows a VM to fix corrupted pages as soon as possible(also no need to
->> reset/reboot).
-> 
-> So this finally allows to replace broken page mapped to guest with
-> a healthy page without rebooting the guest. That sounds helpful.
-> 
-> Thanks,
-> Naoya Horiguchi
-> 
-Yes, it's my plan. Thanks for your suggestions!
+$ cd ~/src/rust
+$ git checkout 1.60.0 -b krust
+$ git submodule update --init --recursive
 
->>
->>>>
->>>> Because [4] and [5] are related to balloon device, also CC Michael,
->>>> David and Jason.
->>>
->>> Doesn't sound too crazy for me, although it's a shame that we always
->>> have to use virtio-balloon for such fairly balloon-unrelated things.
->>>
->> Thanks!
->>
->> -- 
->> zhenwei pi
+$ cd ~/src/linux
+$ b4 shazam -P _ 20220507052451.12890-8-ojeda@kernel.org
+$ cd rust/alloc
+$ find . -type f -name '*.rs' | xargs sha256sum | \
+	(cd ~/src/rust/library/alloc/src && \
+	 sha256sum -c -)
+./raw_vec.rs: OK
+./str.rs: OK
+./boxed.rs: OK
+./alloc.rs: OK
+./fmt.rs: OK
+./slice.rs: OK
+./borrow.rs: OK
+./vec/into_iter.rs: OK
+./vec/spec_extend.rs: OK
+./vec/drain_filter.rs: OK
+./vec/mod.rs: OK
+./vec/set_len_on_drop.rs: OK
+./vec/is_zero.rs: OK
+./vec/drain.rs: OK
+./vec/partial_eq.rs: OK
+./lib.rs: OK
+./macros.rs: OK
+./collections/mod.rs: OK
+./string.rs: OK
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
 -- 
-zhenwei pi
+Kees Cook
