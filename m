@@ -2,104 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51029C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47838C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 08:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446129AbiEGItl (ORCPT
+        id S1446138AbiEGIu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 04:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
+        Sat, 7 May 2022 04:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358391AbiEGIti (ORCPT
+        with ESMTP id S1358391AbiEGIuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 04:49:38 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751493CFD6;
-        Sat,  7 May 2022 01:45:53 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id c125so10388780iof.9;
-        Sat, 07 May 2022 01:45:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3afSRUyqURqd+oMSYddARQ8dgu6A28njYvK52vqSOHE=;
-        b=bsipmcypY4Nr9F6rxV0qF+/yrplNPZ0IzUaGSZBCHKoawh7Fip9CQSr7T9i2N0RRqw
-         iGKGF4cDgKmJ6eoHx6k0ezlu79rFPVUtTqpMoe3f6F7fT6iXT3VJHIN02m0SIWnLfzfF
-         QtRH3qHSNFE0OUI4opgLeKF/ieievW5RVFPYRS42dhcAXTy4TwANrFbcmxpOabTh4gO7
-         x63GRFN2/z+INwysjq9EKstBst8u2GfgG8WJHmpybw7iW3+LWrryu6tbRd1W47Pqa2lX
-         DtboSk8/TbzieN8V4f3XB+LTsdhXmDjt7XFb/2yZQ1u+nMvgFUH9kFQUwEvRpiaF1AE9
-         7Tsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3afSRUyqURqd+oMSYddARQ8dgu6A28njYvK52vqSOHE=;
-        b=4rHATvJ+ED6VIipoyyX1mI4eOHqXgMrE9rCNfuj0h4oANzTE5oEXzJsnAZYzocWizj
-         z/0E0fL0SbxNW+TXDnyrbnMh8bFJmhBIs4oRNyBpmduBJvBHSMtoMfmoOilztqZRy8zi
-         KauJbHphOpPUkmJUAxaWFdKKh1M1wvXQZBJVQ2pBmmtxWytUt2ZiBAYCZ7JAEYTw9AMk
-         Drgz3CExxotMhv5DnO4QlQYwk2/J9c8gHjO3jHf7d2Ksubfg23UvEBrv/fq4KlmYnkPF
-         fwXjplEghvL+31Izq9pH7ti086m03R1TVpLfyKBEV8c/Pc+pPIh4Eej1OT2dpNd+Lchl
-         ai/w==
-X-Gm-Message-State: AOAM533Q/pLcqMyWpl0MRZYLJv/fYGaGH9Yfxnl2yWOVUTnuypDobuT0
-        2w6ez+lQeJSndjJDt/4KNskTDTD2DAie5w59vuU=
-X-Google-Smtp-Source: ABdhPJzVvfTAFB1H+iKYF8/l+675Y66bzPEAl6PZoc8GS14ISO+vI49zY9FgcEZBnSnvbXQTIlqAVC8fTwYdsIaDRow=
-X-Received: by 2002:a05:6638:16cf:b0:32b:6ee7:8d7d with SMTP id
- g15-20020a05663816cf00b0032b6ee78d7dmr3125574jat.256.1651913152910; Sat, 07
- May 2022 01:45:52 -0700 (PDT)
+        Sat, 7 May 2022 04:50:20 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E97C48380;
+        Sat,  7 May 2022 01:46:34 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KwLWx0db2zXdkZ;
+        Sat,  7 May 2022 16:41:49 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 16:46:32 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.36) by
+ dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 7 May 2022 16:46:31 +0800
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arch@vger.kernel.org>, <stable@vger.kernel.org>
+CC:     <peterz@infradead.org>, <tglx@linutronix.de>, <namit@vmware.com>,
+        <gor@linux.ibm.com>, <rdunlap@infradead.org>,
+        <gregkh@linuxfoundation.org>, <sashal@kernel.org>,
+        <chenzhongjin@huawei.com>
+Subject: [PATCH 5.10 v3] locking/csd_lock: fix csdlock_debug cause arm64 boot panic
+Date:   Sat, 7 May 2022 16:45:10 +0800
+Message-ID: <20220507084510.14761-1-chenzhongjin@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220507052451.12890-1-ojeda@kernel.org> <20220507052451.12890-19-ojeda@kernel.org>
- <202205070114.88C59DF@keescook>
-In-Reply-To: <202205070114.88C59DF@keescook>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Sat, 7 May 2022 10:45:41 +0200
-Message-ID: <CANiq72mfUkZDpsAj6ZRWYhydzRq2F45PWOjw1V=k5zh=TX6a7A@mail.gmail.com>
-Subject: Re: [PATCH v6 18/23] docs: add Rust documentation
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Finn Behrens <me@kloenk.de>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wu XiangCheng <bobwxc@email.cn>, Gary Guo <gary@garyguo.net>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Yuki Okushi <jtitor@2k36.org>, Wei Liu <wei.liu@kernel.org>,
-        Daniel Xu <dxu@dxuuu.xyz>, Julian Merkle <me@jvmerkle.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.36]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 7, 2022 at 10:15 AM Kees Cook <keescook@chromium.org> wrote:
->
-> I like the docs! :) It'll be interesting to see how we can grow
-> cross-linking between rustdoc and kerndoc.
+csdlock_debug is a early_param to enable csd_lock_wait
+feature.
 
-Thanks!
+It uses static_branch_enable in early_param which triggers
+a panic on arm64 with config:
+CONFIG_SPARSEMEM=y
+CONFIG_SPARSEMEM_VMEMMAP=n
 
-For cross-referencing, my plan is to start on the Rust side by
-allowing to link C files and items (either their generated docs or the
-source file), since we do that often in the Rust docs. The goal is
-that one can just write an "intra-doc link" in Rust docs just like any
-other one, e.g.:
+The log shows:
+Unable to handle kernel NULL pointer dereference at
+virtual address ", '0' <repeats 16 times>, "
+...
+Call trace:
+__aarch64_insn_write+0x9c/0x18c
+...
+static_key_enable+0x1c/0x30
+csdlock_debug+0x4c/0x78
+do_early_param+0x9c/0xcc
+parse_args+0x26c/0x3a8
+parse_early_options+0x34/0x40
+parse_early_param+0x80/0xa4
+setup_arch+0x150/0x6c8
+start_kernel+0x8c/0x720
+...
+Kernel panic - not syncing: Oops: Fatal exception
 
-    /// Wraps the kernel's [`struct sk_buff`].
-    #[repr(transparent)]
-    pub struct SkBuff(UnsafeCell<bindings::sk_buff>);
+Call trace inside __aarch64_insn_write:
+__nr_to_section
+__pfn_to_page
+phys_to_page
+patch_map
+__aarch64_insn_write
 
-so that it is as easy as possible to add them.
+Here, with CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section returns
+NULL and makes the NULL dereference because mem_section is
+initialized in sparse_init after parse_early_param stage.
 
-Cheers,
-Miguel
+So, static_branch_enable shouldn't be used inside early_param.
+To avoid this, I changed it to __setup and fixed this.
+
+Reported-by: Chen jingwen <chenjingwen6@huawei.com>
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+---
+Change v2 -> v3:
+Add module name in title
+
+Change v1 -> v2:
+Fix return 1 for __setup
+---
+
+ kernel/smp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 65a630f62363..381eb15cd28f 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
+ 	if (val)
+ 		static_branch_enable(&csdlock_debug_enabled);
+ 
+-	return 0;
++	return 1;
+ }
+-early_param("csdlock_debug", csdlock_debug);
++__setup("csdlock_debug=", csdlock_debug);
+ 
+ static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
+ static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
+-- 
+2.17.1
+
