@@ -2,79 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C2A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 12:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 558FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 12:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384714AbiEGMaN (ORCPT
+        id S1384768AbiEGMe4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 08:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
+        Sat, 7 May 2022 08:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231705AbiEGMaH (ORCPT
+        with ESMTP id S1384695AbiEGMey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 08:30:07 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86FF3AA56
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 05:26:20 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D5BAB1A07E0;
-        Sat,  7 May 2022 14:26:18 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A7B7B1A07DC;
-        Sat,  7 May 2022 14:26:18 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 29469180031D;
-        Sat,  7 May 2022 20:26:17 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] ASoc: fsl_micfil: explicitly clear CHnF flags
-Date:   Sat,  7 May 2022 20:14:14 +0800
-Message-Id: <1651925654-32060-2-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651925654-32060-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1651925654-32060-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Sat, 7 May 2022 08:34:54 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862BE10FE4
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 05:31:07 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id m20so18877581ejj.10
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 05:31:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VbilywkyD/M8bgsQ+Goos9KyMxX3bX3Ox36YlxJ8d/c=;
+        b=jSWuncNAiU0XkPaOT1H89zBzD0IQbe9EpFSJVAJNDrfrhJ475C3/F1a3IRUpkfdmfl
+         z5FYvQB3AxePJWNCui/KXqmyoKXJvtMUI3YmIK3SI/XfbdKwbALc15eOsfve/uT1hAV5
+         KrV5JwXSKPUIr6C9cB0qe+O8iSfy6eiSlf7p6ihESMr7M1iGsnLs0ze8PAOL35nKHjCi
+         TrulnuUgvOH98Ktl1Y+5P9gLjG69IA+KtlBrubuLth9BWu3HNiuqdsoC70GxoAqZ6bux
+         Ew2//PR/5ufgtbHfTK62Pagl53ORU3lyO6MqepZsTijkUelvniZTwsuIS3MPFNeP7YNz
+         Du8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VbilywkyD/M8bgsQ+Goos9KyMxX3bX3Ox36YlxJ8d/c=;
+        b=zq77+Fc3TwSykY7LmIRF4fNEAv5DVqeLnsbHH5b6pVura2kXm8oEX4ydkPyKglW2ID
+         Vgym0uqGwaSADztg+52gi/KmWXS0ZTfbw2a22lP3xaDZvBCRNBuBdlJkqbNltIkhmKYs
+         cq28OlWPA8d1oHPWJXSIFDCkwJPjDdGc6B6ZH8vu0kSTEH7lsRyHZ+0c5PQhpZq0UgHG
+         j+mIHmiGFUg+F8Pkg4Zctm81OsZPaflHteTMBXsa+1JC4JhRdZlhsnNSHyy0RZFjuKCi
+         035JGbQN8rJIert0SI4CMMtrOf/G50ITbUvzzgyMwZ89DjssJHOlV6BQDnwKjXygXGK0
+         DgIQ==
+X-Gm-Message-State: AOAM531L6GUuwxTsH9LGxeQXT05jorzTYdQE46ejLEdfX1/XMBFV9SxQ
+        A3lzg3S2+K/acSt3u4jXIks=
+X-Google-Smtp-Source: ABdhPJwgi2oAExzw1tYk1Mg5zfE640UsZvBoS4IF5pYyh1DxuoHxiAg8VieZVSJo8xU8ihZXToPuwA==
+X-Received: by 2002:a17:907:7e9f:b0:6f6:e9ce:9939 with SMTP id qb31-20020a1709077e9f00b006f6e9ce9939mr4108603ejc.456.1651926665959;
+        Sat, 07 May 2022 05:31:05 -0700 (PDT)
+Received: from pca.lan (ptr-dc5856ogfk7hh0p2zet.18120a2.ip6.access.telenet.be. [2a02:1811:bc80:f7f0:311d:17d5:927c:28c5])
+        by smtp.gmail.com with ESMTPSA id d23-20020aa7d697000000b0042617ba63absm3468466edr.53.2022.05.07.05.31.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 May 2022 05:31:05 -0700 (PDT)
+From:   Pieterjan Camerlynck <pieterjan.camerlynck@gmail.com>
+To:     shengjiu.wang@gmail.com, Xiubo.Lee@gmail.com
+Cc:     alsa-devel@alsa-project.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Pieterjan Camerlynck <pieterjan.camerlynck@gmail.com>
+Subject: [PATCH] ASoC: fsl_sai: fix incorrect mclk number in error message
+Date:   Sat,  7 May 2022 14:31:01 +0200
+Message-Id: <20220507123101.10938-1-pieterjan.camerlynck@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There may be failure when start 1 channel recording after
-8 channels recording. The reason is that the CHnF
-flags are not cleared successfully by software reset.
+In commit <c3ecef21c3f26> ("ASoC: fsl_sai: add sai master mode support")
+the loop was changed to start iterating from 1 instead of 0. The error
+message however was not updated, reporting the wrong clock to the user.
 
-This issue is triggerred by the change of clearing
-software reset bit.
-
-CHnF flags are write 1 clear bits. Clear them by force
-write.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Signed-off-by: Pieterjan Camerlynck <pieterjan.camerlynck@gmail.com>
 ---
- sound/soc/fsl/fsl_micfil.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ sound/soc/fsl/fsl_sai.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/fsl_micfil.c b/sound/soc/fsl/fsl_micfil.c
-index 2149fac0dcc6..e4d1da55293e 100644
---- a/sound/soc/fsl/fsl_micfil.c
-+++ b/sound/soc/fsl/fsl_micfil.c
-@@ -190,6 +190,14 @@ static int fsl_micfil_reset(struct device *dev)
- 	if (ret)
- 		return ret;
- 
-+	/*
-+	 * Set SRES should clear CHnF flags, But even add delay here
-+	 * the CHnF may not be cleared sometimes, so clear CHnF explicitly.
-+	 */
-+	ret = regmap_write_bits(micfil->regmap, REG_MICFIL_STAT, 0xFF, 0xFF);
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
- 
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index ffc24afb5a7a..f0602077b385 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -1054,7 +1054,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
+ 		sai->mclk_clk[i] = devm_clk_get(&pdev->dev, tmp);
+ 		if (IS_ERR(sai->mclk_clk[i])) {
+ 			dev_err(&pdev->dev, "failed to get mclk%d clock: %ld\n",
+-					i + 1, PTR_ERR(sai->mclk_clk[i]));
++					i, PTR_ERR(sai->mclk_clk[i]));
+ 			sai->mclk_clk[i] = NULL;
+ 		}
+ 	}
 -- 
-2.17.1
+2.25.1
 
