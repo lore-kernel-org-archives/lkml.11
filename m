@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C579C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 06:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  7 May 2022 06:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445865AbiEGGww (ORCPT
+        id S1445913AbiEGGw5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 02:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
+        Sat, 7 May 2022 02:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445946AbiEGGwR (ORCPT
+        with ESMTP id S1445953AbiEGGwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 02:52:17 -0400
+        Sat, 7 May 2022 02:52:18 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031766543F
-        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 23:48:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42545C869
+        for <linux-kernel@vger.kernel.org>; Fri,  6 May 2022 23:48:10 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KwHzg0pVMz9sWK;
-        Sat,  7 May 2022 08:47:11 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KwHzh1LsSz9sWL;
+        Sat,  7 May 2022 08:47:12 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id IijcZ8lsJNtr; Sat,  7 May 2022 08:47:11 +0200 (CEST)
+        with ESMTP id CDYpqlOeHOPS; Sat,  7 May 2022 08:47:12 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KwHzF3GP2z9sWN;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KwHzF3Nv9z9sWP;
         Sat,  7 May 2022 08:46:49 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 621B38B76E;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 684BD8B770;
         Sat,  7 May 2022 08:46:49 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 7KPs2nU8qn7p; Sat,  7 May 2022 08:46:49 +0200 (CEST)
+        with ESMTP id zrMZarL3zrno; Sat,  7 May 2022 08:46:49 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.101])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 40E458B7AB;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 36E238B7AA;
         Sat,  7 May 2022 08:46:47 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2476kfdK1320571
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2476kdgK1320502
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sat, 7 May 2022 08:46:41 +0200
+        Sat, 7 May 2022 08:46:39 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2476kf6j1320570;
-        Sat, 7 May 2022 08:46:41 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2476kdNR1320501;
+        Sat, 7 May 2022 08:46:39 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -51,75 +51,93 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         naveen.n.rao@linux.vnet.ibm.com
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2 25/25] powerpc/opcodes: Remove unused PPC_INST_XXX macros
-Date:   Sat,  7 May 2022 08:46:27 +0200
-Message-Id: <a589a4d81b519629835889d855ca232ba574e4b2.1651905939.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v2 08/25] powerpc: Add CONFIG_PPC64_ELF_ABI_V1 and CONFIG_PPC64_ELF_ABI_V2
+Date:   Sat,  7 May 2022 08:46:10 +0200
+Message-Id: <1eca1addbc550167da9841c7340a010d0c4b2200.1651905939.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1651905939.git.christophe.leroy@csgroup.eu>
 References: <cover.1651905939.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1651905982; l=2923; s=20211009; h=from:subject:message-id; bh=pV3LNsUwDLHbNMELI+9s3LvNdD+cK5R0Uilc4bWSJuA=; b=dy1MlVxhbR1iF1HeceoXlf7i3uUOZodLvQLGMxKpRmjX6OOd0/HYMFm6Wpr6DtHwh3jZwClKDQV6 AGsmS61NDzMx2AzXni4kNsBRj2Dq1NZ670+pVAt/JKrVBhPdbBIY
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1651905980; l=2625; s=20211009; h=from:subject:message-id; bh=NBoBcjsTO1tovFFuP2hBDk2AHE9R2iPK5NfoSRq7M98=; b=DZh2pV1ifDmBcrlI497pyoU09c1q7aHPs55ChkN7kxFO9dRv2OnanUGY9WjjPKtidXyiEmCGvUFt +fmiHcW+BaJSMm8dLwBOcMHRFSVAnIv6Uv2302eSyw42uPeousfg
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following PPC_INST_XXX macros are not used anymore
-outside ppc-opcode.h:
-	- PPC_INST_LD
-	- PPC_INST_STD
-	- PPC_INST_ADDIS
-	- PPC_INST_ADD
-	- PPC_INST_DIVD
+At the time being, we use CONFIG_CPU_LITTLE_ENDIAN and
+CONFIG_CPU_BIG_ENDIAN to pass -mabi=elfv1 or elfv2 to
+compiler, then define a PPC64_ELF_ABI_v1 or PPC64_ELF_ABI_v2
+macro in asm/types.h based on _CALL_ELF define set by the compiler.
 
-Remove them.
+Make it more straight forward with a CONFIG option that
+is directly usable.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/include/asm/ppc-opcode.h | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ arch/powerpc/Makefile                  | 10 +++++-----
+ arch/powerpc/boot/Makefile             |  2 ++
+ arch/powerpc/platforms/Kconfig.cputype |  6 ++++++
+ 3 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
-index 9ca8996ee1cd..b9d6f95b66e9 100644
---- a/arch/powerpc/include/asm/ppc-opcode.h
-+++ b/arch/powerpc/include/asm/ppc-opcode.h
-@@ -285,11 +285,6 @@
- #define PPC_INST_TRECHKPT		0x7c0007dd
- #define PPC_INST_TRECLAIM		0x7c00075d
- #define PPC_INST_TSR			0x7c0005dd
--#define PPC_INST_LD			0xe8000000
--#define PPC_INST_STD			0xf8000000
--#define PPC_INST_ADDIS			0x3c000000
--#define PPC_INST_ADD			0x7c000214
--#define PPC_INST_DIVD			0x7c0003d2
- #define PPC_INST_BRANCH_COND		0x40800000
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index eb541e730d3c..1ba98be84101 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -89,10 +89,10 @@ endif
  
- /* Prefixes */
-@@ -462,10 +457,10 @@
- 	(0x100000c7 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
- #define PPC_RAW_VCMPEQUB_RC(vrt, vra, vrb) \
- 	(0x10000006 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
--#define PPC_RAW_LD(r, base, i)		(PPC_INST_LD | ___PPC_RT(r) | ___PPC_RA(base) | IMM_DS(i))
-+#define PPC_RAW_LD(r, base, i)		(0xe8000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_DS(i))
- #define PPC_RAW_LWZ(r, base, i)		(0x80000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_L(i))
- #define PPC_RAW_LWZX(t, a, b)		(0x7c00002e | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
--#define PPC_RAW_STD(r, base, i)		(PPC_INST_STD | ___PPC_RS(r) | ___PPC_RA(base) | IMM_DS(i))
-+#define PPC_RAW_STD(r, base, i)		(0xf8000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_DS(i))
- #define PPC_RAW_STDCX(s, a, b)		(0x7c0001ad | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_LFSX(t, a, b)		(0x7c00042e | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_STFSX(s, a, b)		(0x7c00052e | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
-@@ -476,8 +471,8 @@
- #define PPC_RAW_ADDE(t, a, b)		(0x7c000114 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_ADDZE(t, a)		(0x7c000194 | ___PPC_RT(t) | ___PPC_RA(a))
- #define PPC_RAW_ADDME(t, a)		(0x7c0001d4 | ___PPC_RT(t) | ___PPC_RA(a))
--#define PPC_RAW_ADD(t, a, b)		(PPC_INST_ADD | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
--#define PPC_RAW_ADD_DOT(t, a, b)	(PPC_INST_ADD | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
-+#define PPC_RAW_ADD(t, a, b)		(0x7c000214 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
-+#define PPC_RAW_ADD_DOT(t, a, b)	(0x7c000214 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
- #define PPC_RAW_ADDC(t, a, b)		(0x7c000014 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_ADDC_DOT(t, a, b)	(0x7c000014 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
- #define PPC_RAW_NOP()			PPC_RAW_ORI(0, 0, 0)
+ ifdef CONFIG_PPC64
+ ifndef CONFIG_CC_IS_CLANG
+-cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(call cc-option,-mabi=elfv1)
+-cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(call cc-option,-mcall-aixdesc)
+-aflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(call cc-option,-mabi=elfv1)
+-aflags-$(CONFIG_CPU_LITTLE_ENDIAN)	+= -mabi=elfv2
++cflags-$(CONFIG_PPC64_ELF_ABI_V1)	+= $(call cc-option,-mabi=elfv1)
++cflags-$(CONFIG_PPC64_ELF_ABI_V1)	+= $(call cc-option,-mcall-aixdesc)
++aflags-$(CONFIG_PPC64_ELF_ABI_V1)	+= $(call cc-option,-mabi=elfv1)
++aflags-$(CONFIG_PPC64_ELF_ABI_V2)	+= -mabi=elfv2
+ endif
+ endif
+ 
+@@ -141,7 +141,7 @@ endif
+ 
+ CFLAGS-$(CONFIG_PPC64)	:= $(call cc-option,-mtraceback=no)
+ ifndef CONFIG_CC_IS_CLANG
+-ifdef CONFIG_CPU_LITTLE_ENDIAN
++ifdef CONFIG_PPC64_ELF_ABI_V2
+ CFLAGS-$(CONFIG_PPC64)	+= $(call cc-option,-mabi=elfv2,$(call cc-option,-mcall-aixdesc))
+ AFLAGS-$(CONFIG_PPC64)	+= $(call cc-option,-mabi=elfv2)
+ else
+diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+index 4b4827c475c6..b6d4fe04c594 100644
+--- a/arch/powerpc/boot/Makefile
++++ b/arch/powerpc/boot/Makefile
+@@ -49,6 +49,8 @@ ifdef CONFIG_CPU_BIG_ENDIAN
+ BOOTCFLAGS	+= -mbig-endian
+ else
+ BOOTCFLAGS	+= -mlittle-endian
++endif
++ifdef CONFIG_PPC64_ELF_ABI_V2
+ BOOTCFLAGS	+= $(call cc-option,-mabi=elfv2)
+ endif
+ 
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index e2e1fec91c6e..9bfcf972d21d 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -556,6 +556,12 @@ config CPU_LITTLE_ENDIAN
+ 
+ endchoice
+ 
++config PPC64_ELF_ABI_V1
++	def_bool PPC64 && CPU_BIG_ENDIAN
++
++config PPC64_ELF_ABI_V2
++	def_bool PPC64 && CPU_LITTLE_ENDIAN
++
+ config PPC64_BOOT_WRAPPER
+ 	def_bool n
+ 	depends on CPU_LITTLE_ENDIAN
 -- 
 2.35.1
 
