@@ -2,90 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E030C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 10:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB63C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 11:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232528AbiEHKxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 06:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
+        id S231908AbiEHLG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 07:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231674AbiEHKxB (ORCPT
+        with ESMTP id S230432AbiEHLG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 06:53:01 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFB0B86F;
-        Sun,  8 May 2022 03:49:11 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id n10so21888607ejk.5;
-        Sun, 08 May 2022 03:49:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iddYG1Rb4tvpla03/UsMyBFX9rB+DvQUSfmApZMvI9E=;
-        b=IkijBn+aso3oEEmXipspRhtd94LYOI62nlHAc8Qt8OXvtmM+Hpo7cINcOO4I/zpeG0
-         6i1vHt3bJ3Gvs7P92YNRNWl+0MQZmQd6Pa080Bdry0iWETSIuu9OtgvgjHNLdOabas2r
-         XcWi/3tl8JlXhxWRWXDBc8pKplAP1qBauWvTChL4kpnfrAvq0Zky0ib+V8STFBhQKz5E
-         vgKzROdvBVdm3Z7qAAqPOx+vyrPgCFUoUGywc7I/Y896Bvufc33EEtEFLKVEocNzbhZL
-         O+R4U8mT1BRVaGSbiYMumGzoKunoX0vTc7jg4Ew18Pi/NIpvti35GI4U/QWPQUVAJ3kO
-         gfKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iddYG1Rb4tvpla03/UsMyBFX9rB+DvQUSfmApZMvI9E=;
-        b=elovzcj86+FyD3oZqLxnNVPMqeH4Wxxk62QFB3GvnDtWRNwX6LLp3QQwpmjIO9xgFw
-         iYJPr21/xb2q+S7RcJh96r9oorRnmcqrzLd+/zqqZ1UjFnyHhw8RUsR0vsSEq8FqF8t2
-         svqet/t/+wvhi0yuWOAKuzG2APS4Ldm0N1yfbmBuSlehWW0EMcVFnRXERTeUVjFs+BLF
-         M9+pvtzkqO6h4q4QdbajgYiW7vSEsS0JE38kM+EJ6kzP7oJTol0WEN+5JOUrdkwGloD6
-         DfBRBeXnrVIOFv97b2ngPEjFwzwkjpmaZ4pjrKrvfawNfgUeO5v2zkIv5oa67XQTwMG8
-         /gWQ==
-X-Gm-Message-State: AOAM531FpfAIOLBJW6Jn5HQUrobnUB3GPiEsG3ew0Idmq2cnWJoOXDri
-        fdyImGp3CBgWXFguLaonln8=
-X-Google-Smtp-Source: ABdhPJwPqM11DpkoohC1S8GN7nYKsErm30mvSyKKdKohNWosCthVywZpnwdbSdvgmoLNgOOevaLVyg==
-X-Received: by 2002:a17:907:6d84:b0:6f4:94e2:e708 with SMTP id sb4-20020a1709076d8400b006f494e2e708mr10331759ejc.199.1652006950192;
-        Sun, 08 May 2022 03:49:10 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpezg-94-253-144-244-cbl.xnet.hr. [94.253.144.244])
-        by smtp.googlemail.com with ESMTPSA id hg12-20020a1709072ccc00b006f3ef214e0csm3917471ejc.114.2022.05.08.03.49.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 03:49:09 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmitry.baryshkov@linaro.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v3 08/11] dt-bindings: clock: qcom: ipq8074: add USB GDSCs
-Date:   Sun,  8 May 2022 12:48:52 +0200
-Message-Id: <20220508104855.78804-8-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220508104855.78804-1-robimarko@gmail.com>
-References: <20220508104855.78804-1-robimarko@gmail.com>
+        Sun, 8 May 2022 07:06:26 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE81ADF1B
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 04:02:36 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652007754;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7G+zUj54eBfyktDcZa4ZbAJ+odaEfrQMWJTCSbKdy3k=;
+        b=iGAXFGuLvVo6RpqFLMh0I7GAsJs9x6RUuD0iLq6O3k1p1jaLIT1/Dnjl1o8u3Mk8My2mvO
+        P3I5idFwbQ2uMmyBEghYRQAOJ52/jbcCUG9kpi7BDGQqqxgS1M4Knh2rfp1xSkGv2OqYup
+        GSybEJMYYY+ieyrk1J32AG14PfLXRTU7sMUyHloRCtBoKES1lZXKjc32wqh6Md/fjKI1J0
+        QuU6Fox4owf6UrYQzJCl0HXVDRAenF6AMq3e5Zl3mQ30S/jhXFddru6bjClYUnvmFI6WSI
+        coRXikGGhJzUQfhprSwM/G20Usso5Oq7HnlArGepFuPbe4/8v7oJkBd1yISKTg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652007754;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7G+zUj54eBfyktDcZa4ZbAJ+odaEfrQMWJTCSbKdy3k=;
+        b=fMm0K8kzoOwNve1dseEdxD4RAMHY82afC7BOqFI9E8ghspP/h/+mXruaz2MaO63rE24efU
+        +7qpfIyUWZ8o00Aw==
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
+ per-console locking
+In-Reply-To: <ca6b70a2-9bcc-fb86-200c-e1714c9d53be@baylibre.com>
+References: <Ymfgis0EAw0Oxoa5@alley> <Ymfwk+X0CHq6ex3s@alley>
+ <CGME20220427070833eucas1p27a32ce7c41c0da26f05bd52155f0031c@eucas1p2.samsung.com>
+ <2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com>
+ <Ymjy3rHRenba7r7R@alley>
+ <b6c1a8ac-c691-a84d-d3a1-f99984d32f06@samsung.com>
+ <87fslyv6y3.fsf@jogness.linutronix.de>
+ <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
+ <87k0b6blz2.fsf@jogness.linutronix.de>
+ <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
+ <Ym/Z7PYPqvWPEjuL@alley>
+ <45849b63-d7a8-5cc3-26ad-256a28d09991@samsung.com>
+ <87pmktm2a9.fsf@jogness.linutronix.de>
+ <87a6bwapij.fsf@jogness.linutronix.de>
+ <87zgjvd2zb.fsf@jogness.linutronix.de>
+ <b7c81f02-039e-e877-d7c3-6834728d2117@samsung.com>
+ <ca6b70a2-9bcc-fb86-200c-e1714c9d53be@baylibre.com>
+Date:   Sun, 08 May 2022 13:08:33 +0206
+Message-ID: <871qx4qoc6.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for the USB GDSCs found in IPQ8074 GCC.
+Hi Neil,
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- include/dt-bindings/clock/qcom,gcc-ipq8074.h | 3 +++
- 1 file changed, 3 insertions(+)
+On 2022-05-06, Neil Armstrong <narmstrong@baylibre.com> wrote:
+> Thanks all for figuring out the issue, perhaps other uart drivers
+> could fall in the same issue if startup code isn't protected with
+> lock?
 
-diff --git a/include/dt-bindings/clock/qcom,gcc-ipq8074.h b/include/dt-bindings/clock/qcom,gcc-ipq8074.h
-index 5f0928785d7a..e4991d303708 100644
---- a/include/dt-bindings/clock/qcom,gcc-ipq8074.h
-+++ b/include/dt-bindings/clock/qcom,gcc-ipq8074.h
-@@ -368,4 +368,7 @@
- #define GCC_PCIE1_AXI_MASTER_STICKY_ARES	130
- #define GCC_PCIE0_AXI_SLAVE_STICKY_ARES		131
- 
-+#define USB0_GDSC				0
-+#define USB1_GDSC				1
-+
- #endif
--- 
-2.36.0
+When preparing for the official patch submission [0], I needed quite a
+bit of time to understand why another function (meson_uart_reset) should
+not and cannot acquire the port->lock.
 
+I then started investigating some other drivers and indeed I see lots of
+potential problems. Any console initializing port->lock from the
+driver's probe() is probably wrong (and there are lots of them). But as
+I've learned with the meson driver, the details are subtle. Each driver
+will need to be carefully evaluated to see if it is actually safe.
+
+uart_ops->startup() is called without holding port->lock. If the device
+is a console, it is already registered and printing.
+
+driver->probe() is called without holding port->lock. If the device is a
+console, it is already registered and printing.
+
+For both functions, port->lock might not be initialized yet, so blindly
+acquiring it is wrong.
+
+Note that this is not related to the introduction of kthread printing.
+
+I've put it on my TODO list to go through the ~76 console drivers to
+investigate their startup() and probe() implementations. But I will not
+be able to do this quickly. My time might be better spent writing to all
+the maintainers asking them to please verify the usage.
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/20220508103547.626355-1-john.ogness@linutronix.de
