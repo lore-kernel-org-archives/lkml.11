@@ -2,78 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 16:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5423FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 16:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235495AbiEHQTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 12:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37230 "EHLO
+        id S235498AbiEHQUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 12:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235384AbiEHQTA (ORCPT
+        with ESMTP id S235317AbiEHQUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 12:19:00 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB34101DA
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 09:15:09 -0700 (PDT)
-Received: from dslb-094-219-036-010.094.219.pools.vodafone-ip.de ([94.219.36.10] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nnjYn-00045H-RK; Sun, 08 May 2022 18:15:05 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 5/5] staging: r8188eu: read back action code from ieee80211_mgmt
-Date:   Sun,  8 May 2022 18:14:51 +0200
-Message-Id: <20220508161451.115847-6-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220508161451.115847-1-martin@kaiser.cx>
-References: <20220508161451.115847-1-martin@kaiser.cx>
+        Sun, 8 May 2022 12:20:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFA6116B
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 09:16:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D513A61214
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 16:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D21AFC385AC;
+        Sun,  8 May 2022 16:16:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652026583;
+        bh=CkIfvyZhn3UwDJ95LJhpy4E2fC0AEDACS/lXd1lmtwM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JGdlu0gLkAb4XE6UFvVOrQL6j2fjO/l6RdQhmATeanZ1iTdtm2tZFccq3eWQB9q+E
+         VFBx+xKbpKkvYmW6Ei4J1Xo4vKGUPPIPf2Hxh0w/uvM0LVhvj8T27N4NfRJ1xUTIli
+         XV2fOkCDlnt+GhlYNh0WckeoeJYrMGD4JtoHexNPrYFiNHNzy38X0t0zSZeQiYIHL3
+         yvDv9UZZHwV6MkL4hIZfUl0K8HIMed3lvnE5TxrK1eKT6k0UCCU1R/YYVwvFwQyLVo
+         bHxiTLDjYh2p/jwA6Yzpz+Wf0RXNKz4B2Mcmkaswo5bwDY1RePoM6CX/QnrDqFkwLk
+         /1qwsgtP83pqw==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH v2 0/4] unified way to use static key and optimize pgtable_l4_enabled
+Date:   Mon,  9 May 2022 00:07:45 +0800
+Message-Id: <20220508160749.984-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read the back action code from struct ieee80211_mgmt.
+Currently, riscv has several features which may not be supported on all
+riscv platforms, for example, FPU, SV48, SV57 and so on. To support
+unified kernel Image style, we need to check whether the feature is
+suportted or not. If the check sits at hot code path, then performance
+will be impacted a lot. static key can be used to solve the issue. In
+the past, FPU support has been converted to use static key mechanism.
+I believe we will have similar cases in the future. For example, the
+SV48 support can take advantage of static key[1].
 
-struct ieee80211_mgmt contains an "action" union. Each of its members
-starts with an 8-bit action code. Treat the union as addba_req when we
-read the action code although we do not yet know if it is an addba_req.
-This approach is similar to ieee80211_iface_process_skb.
+patch1 is a simple W=1 warning fix.
+patch2 introduces an unified mechanism to use static key for riscv cpu
+features.
+patch3 converts has_cpu() to use the mechanism.
+patch4 uses the mechanism to optimize pgtable_l4|[l5]_enabled.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+[1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index 2a7b85aefa56..8a9236ba7c66 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -1471,7 +1471,6 @@ unsigned int OnAction_back(struct adapter *padapter, struct recv_frame *precv_fr
- 	struct sta_info *psta = NULL;
- 	struct recv_reorder_ctrl *preorder_ctrl;
- 	unsigned char		*frame_body;
--	unsigned char		action;
- 	unsigned short	tid, status;
- 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
- 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
-@@ -1494,8 +1493,8 @@ unsigned int OnAction_back(struct adapter *padapter, struct recv_frame *precv_fr
- 
- 	if (!pmlmeinfo->HT_enable)
- 		return _SUCCESS;
--	action = frame_body[1];
--	switch (action) {
-+	/* All union members start with an action code, it's ok to use addba_req. */
-+	switch (mgmt->u.action.u.addba_req.action_code) {
- 	case WLAN_ACTION_ADDBA_REQ:
- 		memcpy(&pmlmeinfo->ADDBA_req, &frame_body[2], sizeof(struct ADDBA_request));
- 		process_addba_req(padapter, (u8 *)&pmlmeinfo->ADDBA_req, mgmt->sa);
+Since v1:
+ - Add a W=1 warning fix
+ - Fix W=1 error
+ - Based on v5.18-rcN, since SV57 support is added, so convert
+   pgtable_l5_enabled as well.
+
+Jisheng Zhang (4):
+  riscv: mm: init: make pt_ops_set_[early|late|fixmap] static
+  riscv: introduce unified static key mechanism for CPU features
+  riscv: replace has_fpu() with system_supports_fpu()
+  riscv: convert pgtable_l4|[l5]_enabled to static key
+
+ arch/riscv/Makefile                 |   3 +
+ arch/riscv/include/asm/cpufeature.h | 110 ++++++++++++++++++++++++++++
+ arch/riscv/include/asm/pgalloc.h    |  16 ++--
+ arch/riscv/include/asm/pgtable-64.h |  40 +++++-----
+ arch/riscv/include/asm/pgtable.h    |   5 +-
+ arch/riscv/include/asm/switch_to.h  |   9 +--
+ arch/riscv/kernel/cpu.c             |   4 +-
+ arch/riscv/kernel/cpufeature.c      |  29 ++++++--
+ arch/riscv/kernel/process.c         |   2 +-
+ arch/riscv/kernel/signal.c          |   4 +-
+ arch/riscv/mm/init.c                |  52 ++++++-------
+ arch/riscv/mm/kasan_init.c          |  16 ++--
+ arch/riscv/tools/Makefile           |  22 ++++++
+ arch/riscv/tools/cpucaps            |   7 ++
+ arch/riscv/tools/gen-cpucaps.awk    |  40 ++++++++++
+ 15 files changed, 274 insertions(+), 85 deletions(-)
+ create mode 100644 arch/riscv/include/asm/cpufeature.h
+ create mode 100644 arch/riscv/tools/Makefile
+ create mode 100644 arch/riscv/tools/cpucaps
+ create mode 100755 arch/riscv/tools/gen-cpucaps.awk
+
 -- 
-2.30.2
+2.34.1
 
