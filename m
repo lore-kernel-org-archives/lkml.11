@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3905CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 905F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbiEHTWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38882 "EHLO
+        id S231407AbiEHTXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiEHTQ4 (ORCPT
+        with ESMTP id S231784AbiEHTQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 15:16:56 -0400
+        Sun, 8 May 2022 15:16:15 -0400
 Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736D1C67;
-        Sun,  8 May 2022 12:11:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D03E12AF3;
+        Sun,  8 May 2022 12:11:15 -0700 (PDT)
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 248J8qSP030019;
-        Mon, 9 May 2022 04:08:55 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 248J8qSP030019
+        by conuserg-09.nifty.com with ESMTP id 248J8qST030019;
+        Mon, 9 May 2022 04:08:59 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 248J8qST030019
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652036935;
-        bh=Ql9G6KPWQ5/mHxdBx/eeInIlMujjp41xuyJMJCRCA5c=;
+        s=dec2015msa; t=1652036940;
+        bh=NbZ7pwRZzhstYNOGa0D84mgW7HWxQb4YiLGDnzdynzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztPH/8k6+i1rw3/PSuikV9E/KpQSkWQKS8jKTSuXctYml6nGCgtXN3Lw+MjReDkKu
-         qs1D7oG9NkckiJKqCktbIpyKaUoKCGluQ2sxtRyQ/u5EBI4IDFOp/qLu6S4IkyULV6
-         ylX4XYU7bDSkky+1anBK8kmB3hjcDeJtHgiM6tHpyTNCk5IaANaQFqTak25OFg9RwU
-         1Jeh6LXyFV6TXnxVNwA+HPkLV+nCyVPq7JnHcXthPFqp21Jt8EvQCN3CQke06hhxIN
-         Q5L7vyEjIlKFuAW/dJrN2SuJDf/cfcE4vrIdWQ8YPpsFz6U5GUwN0nSccJL3zQbjZk
-         LNvgWpicNgwIg==
+        b=vrzvm5AMLteU0RInbs/wQ/1OtdLd8LmuT+GgmlX2t5VmN4TOXXqNpQ0mTTjQj9nrt
+         o0fmkjXOnGXEOVfVRH/ni3H73IZlWUb52GM8Olq/ypYHKUgj2UJ2EHd8upAKl49WMA
+         w5qqbWAbIYH2sMaMxN+d6qwizbXYsl1d/qU1lTBxoHSGDJaJzAx4QEjbDbNbxs1PgX
+         aByElzro7/4i3DwIzG5nAFsT75endE552hmkd9iuHp4iLd5L4WvbFJxSLyVWzeRblD
+         o9RzAXhxlvTEnXKsEctLKoWemtt9m+fGtG65ItMF9yN+BFp1jTtGadNNQYYwv0Q3et
+         D9hgjYL/XQV2w==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
@@ -42,9 +42,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Ard Biesheuvel <ardb@kernel.org>,
         Sami Tolvanen <samitolvanen@google.com>,
         Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v4 02/14] modpost: change the license of EXPORT_SYMBOL to bool type
-Date:   Mon,  9 May 2022 04:06:19 +0900
-Message-Id: <20220508190631.2386038-3-masahiroy@kernel.org>
+Subject: [PATCH v4 06/14] kbuild: link symbol CRCs at final link, removing CONFIG_MODULE_REL_CRCS
+Date:   Mon,  9 May 2022 04:06:23 +0900
+Message-Id: <20220508190631.2386038-7-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220508190631.2386038-1-masahiroy@kernel.org>
 References: <20220508190631.2386038-1-masahiroy@kernel.org>
@@ -54,280 +54,541 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There were more EXPORT_SYMBOL types in the past. The following commits
-removed unused ones.
+include/{linux,asm-generic}/export.h defines a weak symbol, __crc_*
+as a placeholder.
 
- - f1c3d73e973c ("module: remove EXPORT_SYMBOL_GPL_FUTURE")
- - 367948220fce ("module: remove EXPORT_UNUSED_SYMBOL*")
+Genksyms writes the version CRCs into the linker script, which will be
+used for filling the __crc_* symbols. The linker script format depends
+on CONFIG_MODULE_REL_CRCS. If it is enabled, __crc_* holds the offset
+to the reference of CRC.
 
-There are 3 remaining in enum export, but export_unknown does not make
-any sense because we never expect such a situation like "we do not know
-how it was exported".
+It is time to get rid of this complexity.
 
-If the symbol name starts with "__ksymtab_", but the section name
-does not start with "___ksymtab+" or "___ksymtab_gpl+", it is not an
-exported symbol.
+Now that modpost parses text files (.*.cmd) to collect all the CRCs,
+it can generate C code that will be linked to the vmlinux or modules.
 
-It occurs when a variable starting with "__ksymtab_" is directly defined:
+Generate a new C file, .vmlinux.export.c, which contains the CRCs of
+symbols exported by vmlinux. It is compiled and linked to vmlinux in
+scripts/link-vmlinux.sh.
 
-   int __ksymtab_foo;
+Put the CRCs of symbols exported by modules into the existing *.mod.c
+files. No additional build step is needed for modules. As before,
+*.mod.c are compiled and linked to *.ko in scripts/Makefile.modfinal.
 
-Presumably, there is no practical issue for using such a weird variable
-name (but there is no good reason for doing so, either).
+No linker magic is used here. The new C implementation works in the
+same way, whether CONFIG_RELOCATABLE is enabled or not.
+CONFIG_MODULE_REL_CRCS is no longer needed.
 
-Anyway, that is not an exported symbol. Setting export_unknown is not
-the right thing to do. Do not call sym_add_exported() in this case.
-
-With pointless export_unknown removed, the export type finally becomes
-boolean (either EXPORT_SYMBOL or EXPORT_SYMBOL_GPL).
-
-I renamed the field name to is_gpl_only. EXPORT_SYMBOL_GPL sets it true.
-Only GPL-compatible modules can use it.
-
-I removed the orphan comment, "How a symbol is exported", which is
-unrelated to sec_mismatch_count. It is about enum export.
-See commit bd5cbcedf446 ("kbuild: export-type enhancement to modpost.c")
+Previously, Kbuild invoked additional $(LD) to update the CRCs in
+objects, but this step is unneeded too.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
 Tested-by: Nathan Chancellor <nathan@kernel.org>
 ---
 
 Changes in v4:
-  - Rebase again because I dropped
-     https://patchwork.kernel.org/project/linux-kbuild/patch/20220501084032.1025918-11-masahiroy@kernel.org/
-  - Remove warning message because I plan to change this hunk again in a later commit
-  - Remove orphan comment
+  - Rename .vmlinux-symver.c to .vmlinux.export.c
+    because I notice this approach is useful for further cleanups,
+    not only for modversioning but also for overall EXPORT_SYMBOL.
 
 Changes in v3:
   - New patch
 
- scripts/mod/modpost.c | 108 ++++++++++++------------------------------
- 1 file changed, 30 insertions(+), 78 deletions(-)
+ arch/powerpc/Kconfig            |  1 -
+ arch/s390/Kconfig               |  1 -
+ arch/um/Kconfig                 |  1 -
+ include/asm-generic/export.h    | 22 ++++++++--------------
+ include/linux/export-internal.h | 16 ++++++++++++++++
+ include/linux/export.h          | 30 ++++++++----------------------
+ init/Kconfig                    |  4 ----
+ kernel/module.c                 | 10 +---------
+ scripts/Makefile.build          | 27 ++++-----------------------
+ scripts/genksyms/genksyms.c     | 17 ++++-------------
+ scripts/link-vmlinux.sh         | 18 +++++++++++++-----
+ scripts/mod/modpost.c           | 28 ++++++++++++++++++++++++----
+ 12 files changed, 78 insertions(+), 97 deletions(-)
+ create mode 100644 include/linux/export-internal.h
 
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 174edabb74fa..a4e8dd889e29 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -566,7 +566,6 @@ config RELOCATABLE
+ 	bool "Build a relocatable kernel"
+ 	depends on PPC64 || (FLATMEM && (44x || FSL_BOOKE))
+ 	select NONSTATIC_KERNEL
+-	select MODULE_REL_CRCS if MODVERSIONS
+ 	help
+ 	  This builds a kernel image that is capable of running at the
+ 	  location the kernel is loaded at. For ppc32, there is no any
+diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+index 77b5a03de13a..aa5848004c76 100644
+--- a/arch/s390/Kconfig
++++ b/arch/s390/Kconfig
+@@ -567,7 +567,6 @@ endchoice
+ 
+ config RELOCATABLE
+ 	bool "Build a relocatable kernel"
+-	select MODULE_REL_CRCS if MODVERSIONS
+ 	default y
+ 	help
+ 	  This builds a kernel image that retains relocation information
+diff --git a/arch/um/Kconfig b/arch/um/Kconfig
+index 4d398b80aea8..e8983d098e73 100644
+--- a/arch/um/Kconfig
++++ b/arch/um/Kconfig
+@@ -106,7 +106,6 @@ config LD_SCRIPT_DYN
+ 	bool
+ 	default y
+ 	depends on !LD_SCRIPT_STATIC
+-	select MODULE_REL_CRCS if MODVERSIONS
+ 
+ config LD_SCRIPT_DYN_RPATH
+ 	bool "set rpath in the binary" if EXPERT
+diff --git a/include/asm-generic/export.h b/include/asm-generic/export.h
+index 07a36a874dca..51ce72ce80fa 100644
+--- a/include/asm-generic/export.h
++++ b/include/asm-generic/export.h
+@@ -2,6 +2,14 @@
+ #ifndef __ASM_GENERIC_EXPORT_H
+ #define __ASM_GENERIC_EXPORT_H
+ 
++/*
++ * This comment block is used by fixdep. Please do not remove.
++ *
++ * When CONFIG_MODVERSIONS is changed from n to y, all source files having
++ * EXPORT_SYMBOL variants must be re-compiled because genksyms is run as a
++ * side effect of the .o build rule.
++ */
++
+ #ifndef KSYM_FUNC
+ #define KSYM_FUNC(x) x
+ #endif
+@@ -12,9 +20,6 @@
+ #else
+ #define KSYM_ALIGN 4
+ #endif
+-#ifndef KCRC_ALIGN
+-#define KCRC_ALIGN 4
+-#endif
+ 
+ .macro __put, val, name
+ #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
+@@ -43,17 +48,6 @@ __ksymtab_\name:
+ __kstrtab_\name:
+ 	.asciz "\name"
+ 	.previous
+-#ifdef CONFIG_MODVERSIONS
+-	.section ___kcrctab\sec+\name,"a"
+-	.balign KCRC_ALIGN
+-#if defined(CONFIG_MODULE_REL_CRCS)
+-	.long __crc_\name - .
+-#else
+-	.long __crc_\name
+-#endif
+-	.weak __crc_\name
+-	.previous
+-#endif
+ #endif
+ .endm
+ 
+diff --git a/include/linux/export-internal.h b/include/linux/export-internal.h
+new file mode 100644
+index 000000000000..77175d561058
+--- /dev/null
++++ b/include/linux/export-internal.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Please do not include this explicitly.
++ * This is used by C files generated by modpost.
++ */
++
++#ifndef __LINUX_EXPORT_INTERNAL_H__
++#define __LINUX_EXPORT_INTERNAL_H__
++
++#include <linux/compiler.h>
++#include <linux/types.h>
++
++#define SYMBOL_CRC(sym, crc, sec)   \
++	u32 __section("___kcrctab" sec "+" #sym) __crc_##sym = crc
++
++#endif /* __LINUX_EXPORT_INTERNAL_H__ */
+diff --git a/include/linux/export.h b/include/linux/export.h
+index 27d848712b90..6c8e24e723bd 100644
+--- a/include/linux/export.h
++++ b/include/linux/export.h
+@@ -11,6 +11,14 @@
+  * hackers place grumpy comments in header files.
+  */
+ 
++/*
++ * This comment block is used by fixdep. Please do not remove.
++ *
++ * When CONFIG_MODVERSIONS is changed from n to y, all source files having
++ * EXPORT_SYMBOL variants must be re-compiled because genksyms is run as a
++ * side effect of the .o build rule.
++ */
++
+ #ifndef __ASSEMBLY__
+ #ifdef MODULE
+ extern struct module __this_module;
+@@ -19,26 +27,6 @@ extern struct module __this_module;
+ #define THIS_MODULE ((struct module *)0)
+ #endif
+ 
+-#ifdef CONFIG_MODVERSIONS
+-/* Mark the CRC weak since genksyms apparently decides not to
+- * generate a checksums for some symbols */
+-#if defined(CONFIG_MODULE_REL_CRCS)
+-#define __CRC_SYMBOL(sym, sec)						\
+-	asm("	.section \"___kcrctab" sec "+" #sym "\", \"a\"	\n"	\
+-	    "	.weak	__crc_" #sym "				\n"	\
+-	    "	.long	__crc_" #sym " - .			\n"	\
+-	    "	.previous					\n")
+-#else
+-#define __CRC_SYMBOL(sym, sec)						\
+-	asm("	.section \"___kcrctab" sec "+" #sym "\", \"a\"	\n"	\
+-	    "	.weak	__crc_" #sym "				\n"	\
+-	    "	.long	__crc_" #sym "				\n"	\
+-	    "	.previous					\n")
+-#endif
+-#else
+-#define __CRC_SYMBOL(sym, sec)
+-#endif
+-
+ #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
+ #include <linux/compiler.h>
+ /*
+@@ -85,7 +73,6 @@ struct kernel_symbol {
+ /*
+  * For every exported symbol, do the following:
+  *
+- * - If applicable, place a CRC entry in the __kcrctab section.
+  * - Put the name of the symbol and namespace (empty string "" for none) in
+  *   __ksymtab_strings.
+  * - Place a struct kernel_symbol entry in the __ksymtab section.
+@@ -98,7 +85,6 @@ struct kernel_symbol {
+ 	extern typeof(sym) sym;							\
+ 	extern const char __kstrtab_##sym[];					\
+ 	extern const char __kstrtabns_##sym[];					\
+-	__CRC_SYMBOL(sym, sec);							\
+ 	asm("	.section \"__ksymtab_strings\",\"aMS\",%progbits,1	\n"	\
+ 	    "__kstrtab_" #sym ":					\n"	\
+ 	    "	.asciz 	\"" #sym "\"					\n"	\
+diff --git a/init/Kconfig b/init/Kconfig
+index ddcbefe535e9..f5b14318dfcb 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -2136,10 +2136,6 @@ config ASM_MODVERSIONS
+ 	  assembly. This can be enabled only when the target architecture
+ 	  supports it.
+ 
+-config MODULE_REL_CRCS
+-	bool
+-	depends on MODVERSIONS
+-
+ config MODULE_SRCVERSION_ALL
+ 	bool "Source checksum for all modules"
+ 	help
+diff --git a/kernel/module.c b/kernel/module.c
+index 6cea788fd965..c9e2342da28e 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -1231,11 +1231,6 @@ static int try_to_force_load(struct module *mod, const char *reason)
+ 
+ #ifdef CONFIG_MODVERSIONS
+ 
+-static u32 resolve_rel_crc(const s32 *crc)
+-{
+-	return *(u32 *)((void *)crc + *crc);
+-}
+-
+ static int check_version(const struct load_info *info,
+ 			 const char *symname,
+ 			 struct module *mod,
+@@ -1264,10 +1259,7 @@ static int check_version(const struct load_info *info,
+ 		if (strcmp(versions[i].name, symname) != 0)
+ 			continue;
+ 
+-		if (IS_ENABLED(CONFIG_MODULE_REL_CRCS))
+-			crcval = resolve_rel_crc(crc);
+-		else
+-			crcval = *crc;
++		crcval = *crc;
+ 		if (versions[i].crc == crcval)
+ 			return 1;
+ 		pr_debug("Found checksum %X vs module %lX\n",
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index a1023868775f..ddd9080fc028 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -128,7 +128,6 @@ $(obj)/%.i: $(src)/%.c FORCE
+ 
+ genksyms = scripts/genksyms/genksyms		\
+ 	$(if $(1), -T $(2))			\
+-	$(if $(CONFIG_MODULE_REL_CRCS), -R)	\
+ 	$(if $(KBUILD_PRESERVE), -p)		\
+ 	-r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
+ 
+@@ -162,19 +161,11 @@ ifdef CONFIG_MODVERSIONS
+ # o if <file>.o doesn't contain a __ksymtab version, i.e. does
+ #   not export symbols, it's done.
+ # o otherwise, we calculate symbol versions using the good old
+-#   genksyms on the preprocessed source and postprocess them in a way
+-#   that they are usable as a linker script
+-# o generate .tmp_<file>.o from <file>.o using the linker to
+-#   replace the unresolved symbols __crc_exported_symbol with
+-#   the actual value of the checksum generated by genksyms
+-# o remove .tmp_<file>.o to <file>.o
++#   genksyms on the preprocessed source and dump them into the .cmd file.
++# o modpost will extract versions from that file and create *.c files that will
++#   be compiled and linked to the kernel and/or modules.
+ 
+-# Generate .o.symversions files for each .o with exported symbols, and link these
+-# to the kernel and/or modules at the end.
+-
+-genksyms_format_rel_crc := [^_]*__crc_\([^ ]*\) = \.; LONG(\([^)]*\)).*
+-genksyms_format_normal := __crc_\(.*\) = \(.*\);
+-genksyms_format := $(if $(CONFIG_MODULE_REL_CRCS),$(genksyms_format_rel_crc),$(genksyms_format_normal))
++genksyms_format := __crc_\(.*\) = \(.*\);
+ 
+ gen_symversions =								\
+ 	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
+@@ -188,12 +179,6 @@ gen_symversions =								\
+ 
+ cmd_gen_symversions_c =	$(call gen_symversions,c)
+ 
+-cmd_modversions =								\
+-	if [ -r $@.symversions ]; then						\
+-		$(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@ 		\
+-			-T $@.symversions;					\
+-		mv -f $(@D)/.tmp_$(@F) $@;					\
+-	fi
+ endif
+ 
+ ifdef CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+@@ -273,7 +258,6 @@ define rule_cc_o_c
+ 	$(call cmd,checkdoc)
+ 	$(call cmd,gen_objtooldep)
+ 	$(call cmd,gen_symversions_c)
+-	$(if $(CONFIG_LTO_CLANG),,$(call cmd,modversions))
+ 	$(call cmd,record_mcount)
+ endef
+ 
+@@ -282,7 +266,6 @@ define rule_as_o_S
+ 	$(call cmd,gen_ksymdeps)
+ 	$(call cmd,gen_objtooldep)
+ 	$(call cmd,gen_symversions_S)
+-	$(call cmd,modversions)
+ endef
+ 
+ # Built-in and composite module parts
+@@ -296,8 +279,6 @@ ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
+ quiet_cmd_cc_prelink_modules = LD [M]  $@
+       cmd_cc_prelink_modules =						\
+ 	$(LD) $(ld_flags) -r -o $@					\
+-               $(shell [ -s $(@:.prelink.o=.o.symversions) ] &&		\
+-                       echo -T $(@:.prelink.o=.o.symversions))		\
+ 		--whole-archive $(filter-out FORCE,$^)			\
+ 		$(cmd_objtool)
+ 
+diff --git a/scripts/genksyms/genksyms.c b/scripts/genksyms/genksyms.c
+index 4827c5abe5b7..6e6933ae7911 100644
+--- a/scripts/genksyms/genksyms.c
++++ b/scripts/genksyms/genksyms.c
+@@ -33,7 +33,7 @@ char *cur_filename;
+ int in_source_file;
+ 
+ static int flag_debug, flag_dump_defs, flag_reference, flag_dump_types,
+-	   flag_preserve, flag_warnings, flag_rel_crcs;
++	   flag_preserve, flag_warnings;
+ 
+ static int errors;
+ static int nsyms;
+@@ -681,10 +681,7 @@ void export_symbol(const char *name)
+ 			fputs(">\n", debugfile);
+ 
+ 		/* Used as a linker script. */
+-		printf(!flag_rel_crcs ? "__crc_%s = 0x%08lx;\n" :
+-		       "SECTIONS { .rodata : ALIGN(4) { "
+-		       "__crc_%s = .; LONG(0x%08lx); } }\n",
+-		       name, crc);
++		printf("__crc_%s = 0x%08lx;\n", name, crc);
+ 	}
+ }
+ 
+@@ -733,7 +730,6 @@ static void genksyms_usage(void)
+ 	      "  -q, --quiet           Disable warnings (default)\n"
+ 	      "  -h, --help            Print this message\n"
+ 	      "  -V, --version         Print the release version\n"
+-	      "  -R, --relative-crc    Emit section relative symbol CRCs\n"
+ #else				/* __GNU_LIBRARY__ */
+ 	      "  -s                    Select symbol prefix\n"
+ 	      "  -d                    Increment the debug level (repeatable)\n"
+@@ -745,7 +741,6 @@ static void genksyms_usage(void)
+ 	      "  -q                    Disable warnings (default)\n"
+ 	      "  -h                    Print this message\n"
+ 	      "  -V                    Print the release version\n"
+-	      "  -R                    Emit section relative symbol CRCs\n"
+ #endif				/* __GNU_LIBRARY__ */
+ 	      , stderr);
+ }
+@@ -766,14 +761,13 @@ int main(int argc, char **argv)
+ 		{"preserve", 0, 0, 'p'},
+ 		{"version", 0, 0, 'V'},
+ 		{"help", 0, 0, 'h'},
+-		{"relative-crc", 0, 0, 'R'},
+ 		{0, 0, 0, 0}
+ 	};
+ 
+-	while ((o = getopt_long(argc, argv, "s:dwqVDr:T:phR",
++	while ((o = getopt_long(argc, argv, "s:dwqVDr:T:ph",
+ 				&long_opts[0], NULL)) != EOF)
+ #else				/* __GNU_LIBRARY__ */
+-	while ((o = getopt(argc, argv, "s:dwqVDr:T:phR")) != EOF)
++	while ((o = getopt(argc, argv, "s:dwqVDr:T:ph")) != EOF)
+ #endif				/* __GNU_LIBRARY__ */
+ 		switch (o) {
+ 		case 'd':
+@@ -813,9 +807,6 @@ int main(int argc, char **argv)
+ 		case 'h':
+ 			genksyms_usage();
+ 			return 0;
+-		case 'R':
+-			flag_rel_crcs = 1;
+-			break;
+ 		default:
+ 			genksyms_usage();
+ 			return 1;
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index eceb3ee7ec06..6aee2401f3ad 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -88,11 +88,6 @@ modpost_link()
+ 		gen_initcalls
+ 		lds="-T .tmp_initcalls.lds"
+ 
+-		if is_enabled CONFIG_MODVERSIONS; then
+-			gen_symversions
+-			lds="${lds} -T .tmp_symversions.lds"
+-		fi
+-
+ 		# This might take a while, so indicate that we're doing
+ 		# an LTO link
+ 		info LTO ${1}
+@@ -183,6 +178,10 @@ vmlinux_link()
+ 		libs="${KBUILD_VMLINUX_LIBS}"
+ 	fi
+ 
++	if is_enabled CONFIG_MODULES; then
++		objs="${objs} .vmlinux.export.o"
++	fi
++
+ 	if [ "${SRCARCH}" = "um" ]; then
+ 		wl=-Wl,
+ 		ld="${CC}"
+@@ -312,6 +311,7 @@ cleanup()
+ 	rm -f vmlinux.o
+ 	rm -f .vmlinux.d
+ 	rm -f .vmlinux.objs
++	rm -f .vmlinux.export.c
+ }
+ 
+ # Use "make V=1" to debug this script
+@@ -373,6 +373,14 @@ if is_enabled CONFIG_DEBUG_INFO_BTF; then
+ 	fi
+ fi
+ 
++if is_enabled CONFIG_MODULES; then
++	info CC .vmlinux.export.c
++	${CC} ${NOSTDINC_FLAGS} ${LINUXINCLUDE} \
++	      ${KBUILD_CPPFLAGS} ${KBUILD_CFLAGS} \
++	      ${KBUILD_CFLAGS_KERNEL} ${CFLAGS_KERNEL} \
++	      -c -o .vmlinux.export.o .vmlinux.export.c
++fi
++
+ kallsymso=""
+ kallsymso_prev=""
+ kallsyms_vmlinux=""
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index d9efbd5b31a6..a78b75f0eeb0 100644
+index 54f957952723..b46653d46e3d 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -30,7 +30,7 @@ static bool all_versions;
- static bool external_module;
- /* Only warn about unresolved symbols */
- static bool warn_unresolved;
--/* How a symbol is exported */
-+
- static int sec_mismatch_count;
- static bool sec_mismatch_warn_only = true;
- /* ignore missing files */
-@@ -47,12 +47,6 @@ static bool error_occurred;
- #define MAX_UNRESOLVED_REPORTS	10
- static unsigned int nr_unresolved;
- 
--enum export {
--	export_plain,
--	export_gpl,
--	export_unknown
--};
--
- /* In kernel, this size is defined in linux/module.h;
-  * here we use Elf_Addr instead of long for covering cross-compile
-  */
-@@ -219,7 +213,7 @@ struct symbol {
- 	bool crc_valid;
- 	bool weak;
- 	bool is_static;		/* true if symbol is not global */
--	enum export  export;       /* Type of export */
-+	bool is_gpl_only;	/* exported by EXPORT_SYMBOL_GPL */
- 	char name[];
- };
- 
-@@ -316,34 +310,6 @@ static void add_namespace(struct list_head *head, const char *namespace)
- 	}
+@@ -1040,6 +1040,7 @@ static void add_header(struct buffer *b, struct module *mod)
+ 	buf_printf(b, "#define INCLUDE_VERMAGIC\n");
+ 	buf_printf(b, "#include <linux/build-salt.h>\n");
+ 	buf_printf(b, "#include <linux/elfnote-lto.h>\n");
++	buf_printf(b, "#include <linux/export-internal.h>\n");
+ 	buf_printf(b, "#include <linux/vermagic.h>\n");
+ 	buf_printf(b, "#include <linux/compiler.h>\n");
+ 	buf_printf(b, "\n");
+@@ -1074,20 +1075,26 @@ static void add_header(struct buffer *b, struct module *mod)
+ 		buf_printf(b, "\nMODULE_INFO(staging, \"Y\");\n");
  }
  
--static const struct {
--	const char *str;
--	enum export export;
--} export_list[] = {
--	{ .str = "EXPORT_SYMBOL",            .export = export_plain },
--	{ .str = "EXPORT_SYMBOL_GPL",        .export = export_gpl },
--	{ .str = "(unknown)",                .export = export_unknown },
--};
--
--
--static const char *export_str(enum export ex)
--{
--	return export_list[ex].str;
--}
--
--static enum export export_no(const char *s)
--{
--	int i;
--
--	if (!s)
--		return export_unknown;
--	for (i = 0; export_list[i].export != export_unknown; i++) {
--		if (strcmp(export_list[i].str, s) == 0)
--			return export_list[i].export;
--	}
--	return export_unknown;
--}
--
- static void *sym_get_data_by_offset(const struct elf_info *info,
- 				    unsigned int secindex, unsigned long offset)
+-static void check_symversions(struct module *mod)
++static void add_exported_symbols(struct buffer *buf, struct module *mod)
  {
-@@ -374,18 +340,6 @@ static const char *sec_name(const struct elf_info *info, int secindex)
+ 	struct symbol *sym;
  
- #define strstarts(str, prefix) (strncmp(str, prefix, strlen(prefix)) == 0)
+ 	if (!modversions)
+ 		return;
  
--static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
--{
--	const char *secname = sec_name(elf, sec);
--
--	if (strstarts(secname, "___ksymtab+"))
--		return export_plain;
--	else if (strstarts(secname, "___ksymtab_gpl+"))
--		return export_gpl;
--	else
--		return export_unknown;
--}
--
- static void sym_update_namespace(const char *symname, const char *namespace)
- {
- 	struct symbol *s = find_symbol(symname);
-@@ -405,7 +359,7 @@ static void sym_update_namespace(const char *symname, const char *namespace)
- }
- 
- static struct symbol *sym_add_exported(const char *name, struct module *mod,
--				       enum export export)
-+				       bool gpl_only)
- {
- 	struct symbol *s = find_symbol(name);
- 
-@@ -417,7 +371,7 @@ static struct symbol *sym_add_exported(const char *name, struct module *mod,
- 
- 	s = alloc_symbol(name);
- 	s->module = mod;
--	s->export    = export;
-+	s->is_gpl_only = gpl_only;
- 	list_add_tail(&s->list, &mod->exported_symbols);
- 	hash_add_symbol(s);
- 
-@@ -689,8 +643,6 @@ static void handle_modversion(const struct module *mod,
- static void handle_symbol(struct module *mod, struct elf_info *info,
- 			  const Elf_Sym *sym, const char *symname)
- {
--	const char *name;
--
- 	switch (sym->st_shndx) {
- 	case SHN_COMMON:
- 		if (strstarts(symname, "__gnu_lto_")) {
-@@ -724,12 +676,15 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
- 	default:
- 		/* All exported symbols */
- 		if (strstarts(symname, "__ksymtab_")) {
--			enum export export;
-+			const char *name, *secname;
- 
- 			name = symname + strlen("__ksymtab_");
--			export = export_from_secname(info,
--						     get_secindex(info, sym));
--			sym_add_exported(name, mod, export);
-+			secname = sec_name(info, get_secindex(info, sym));
-+
-+			if (strstarts(secname, "___ksymtab_gpl+"))
-+				sym_add_exported(name, mod, true);
-+			else if (strstarts(secname, "___ksymtab+"))
-+				sym_add_exported(name, mod, false);
- 		}
- 		if (strcmp(symname, "init_module") == 0)
- 			mod->has_init = true;
-@@ -2140,20 +2095,6 @@ void buf_write(struct buffer *buf, const char *s, int len)
- 	buf->pos += len;
- }
- 
--static void check_for_gpl_usage(enum export exp, const char *m, const char *s)
--{
--	switch (exp) {
--	case export_gpl:
--		error("GPL-incompatible module %s.ko uses GPL-only symbol '%s'\n",
--		      m, s);
--		break;
--	case export_plain:
--	case export_unknown:
--		/* ignore */
--		break;
--	}
--}
--
- static void check_exports(struct module *mod)
- {
- 	struct symbol *s, *exp;
-@@ -2192,8 +2133,9 @@ static void check_exports(struct module *mod)
- 			add_namespace(&mod->missing_namespaces, exp->namespace);
- 		}
- 
--		if (!mod->is_gpl_compatible)
--			check_for_gpl_usage(exp->export, basename, exp->name);
-+		if (!mod->is_gpl_compatible && exp->is_gpl_only)
-+			error("GPL-incompatible module %s.ko uses GPL-only symbol '%s'\n",
-+			      basename, exp->name);
- 	}
- }
- 
-@@ -2437,6 +2379,7 @@ static void read_dump(const char *fname)
- 		unsigned int crc;
- 		struct module *mod;
- 		struct symbol *s;
-+		bool gpl_only;
- 
- 		if (!(symname = strchr(line, '\t')))
- 			goto fail;
-@@ -2454,12 +2397,22 @@ static void read_dump(const char *fname)
- 		crc = strtoul(line, &d, 16);
- 		if (*symname == '\0' || *modname == '\0' || *d != '\0')
- 			goto fail;
-+
-+		if (!strcmp(export, "EXPORT_SYMBOL_GPL")) {
-+			gpl_only = true;
-+		} else if (!strcmp(export, "EXPORT_SYMBOL")) {
-+			gpl_only = false;
-+		} else {
-+			error("%s: unknown license %s. skip", symname, export);
++	/* record CRCs for exported symbols */
++	buf_printf(buf, "\n");
+ 	list_for_each_entry(sym, &mod->exported_symbols, list) {
+ 		if (!sym->crc_valid) {
+ 			warn("EXPORT symbol \"%s\" [%s%s] version generation failed, symbol will not be versioned.\n"
+ 			     "Is \"%s\" prototyped in <asm/asm-prototypes.h>?\n",
+ 			     sym->name, mod->name, mod->is_vmlinux ? "" : ".ko",
+ 			     sym->name);
 +			continue;
-+		}
-+
- 		mod = find_module(modname);
- 		if (!mod) {
- 			mod = new_module(modname);
- 			mod->from_dump = true;
  		}
--		s = sym_add_exported(symname, mod, export_no(export));
-+		s = sym_add_exported(symname, mod, gpl_only);
- 		s->is_static = false;
- 		sym_set_crc(symname, crc);
- 		sym_update_namespace(symname, namespace);
-@@ -2481,9 +2434,9 @@ static void write_dump(const char *fname)
++
++		buf_printf(buf, "SYMBOL_CRC(%s, 0x%08x, \"%s\");\n",
++			   sym->name, sym->crc, sym->is_gpl_only ? "_gpl" : "");
+ 	}
+ }
+ 
+@@ -1224,6 +1231,18 @@ static void write_if_changed(struct buffer *b, const char *fname)
+ 	write_buf(b, fname);
+ }
+ 
++static void write_vmlinux_export_c_file(struct module *mod)
++{
++	struct buffer buf = { };
++
++	buf_printf(&buf,
++		   "#include <linux/export-internal.h>\n");
++
++	add_exported_symbols(&buf, mod);
++	write_if_changed(&buf, ".vmlinux.export.c");
++	free(buf.p);
++}
++
+ /* do sanity checks, and generate *.mod.c file */
+ static void write_mod_c_file(struct module *mod)
+ {
+@@ -1235,6 +1254,7 @@ static void write_mod_c_file(struct module *mod)
+ 	check_exports(mod);
+ 
+ 	add_header(&buf, mod);
++	add_exported_symbols(&buf, mod);
+ 	add_versions(&buf, mod);
+ 	add_depends(&buf, mod);
+ 	add_moddevtable(&buf, mod);
+@@ -1432,9 +1452,9 @@ int main(int argc, char **argv)
  		if (mod->from_dump)
  			continue;
- 		list_for_each_entry(sym, &mod->exported_symbols, list) {
--			buf_printf(&buf, "0x%08x\t%s\t%s\t%s\t%s\n",
-+			buf_printf(&buf, "0x%08x\t%s\t%s\tEXPORT_SYMBOL%s\t%s\n",
- 				   sym->crc, sym->name, mod->name,
--				   export_str(sym->export),
-+				   sym->is_gpl_only ? "_GPL" : "",
- 				   sym->namespace ?: "");
- 		}
- 	}
-@@ -2604,9 +2557,8 @@ int main(int argc, char **argv)
  
- 		for (s = symbolhash[n]; s; s = s->next) {
- 			if (s->is_static)
--				error("\"%s\" [%s] is a static %s\n",
--				      s->name, s->module->name,
--				      export_str(s->export));
-+				error("\"%s\" [%s] is a static EXPORT_SYMBOL\n",
-+				      s->name, s->module->name);
- 		}
+-		check_symversions(mod);
+-
+-		if (!mod->is_vmlinux)
++		if (mod->is_vmlinux)
++			write_vmlinux_export_c_file(mod);
++		else
+ 			write_mod_c_file(mod);
  	}
  
 -- 
