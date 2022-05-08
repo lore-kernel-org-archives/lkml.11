@@ -2,63 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 206CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16995C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234719AbiEHP3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 11:29:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
+        id S234762AbiEHPaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 11:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234762AbiEHP3a (ORCPT
+        with ESMTP id S234692AbiEHPaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 11:29:30 -0400
-Received: from mail-m17638.qiye.163.com (mail-m17638.qiye.163.com [59.111.176.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C6E101F4;
-        Sun,  8 May 2022 08:25:29 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPV6:2001:250:6801:5501:163d:f2ff:fecb:5632])
-        by mail-m17638.qiye.163.com (Hmail) with ESMTPA id 5C89C1C0243;
-        Sun,  8 May 2022 23:25:27 +0800 (CST)
-From:   Chukun Pan <amadeus@jmu.edu.cn>
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Chukun Pan <amadeus@jmu.edu.cn>
-Subject: Re: Re: [PATCH] arm64: dts: allwinner: define USB3 Ethernet on NanoPi R1S H5
-Date:   Sun,  8 May 2022 23:25:05 +0800
-Message-Id: <20220508152505.7762-1-amadeus@jmu.edu.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <4393725.LvFx2qVVIh@kista>
-References: <4393725.LvFx2qVVIh@kista>
+        Sun, 8 May 2022 11:30:15 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A2EB87
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 08:26:25 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id a11so10265838pff.1
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 08:26:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wlb5sCv0vT9DKd6Y0pxChn3TRESHpDGd2RiWXJbPiOA=;
+        b=A8uBy/esNOEbUqh4vOntGYm1YMVp8KTDNwiHyleMxFUxETUvcSv6DZ39zZIcwk5yYw
+         86UrDKPKDKAZMR7dwUoHWD+jUB4gtgw1yCKhEiU7ARnW49msAlzrKSzQ8vYFlTYpNIt4
+         hQLknIHiDmcV0B5wHAtIxy+UOOM5eEY20zDhI9WMiJaDrUjdvDVuVJ7iiy5qzG1y47jV
+         5gEm227YJe0hvNojSjOoSAN3C1iYnEXrtZFcNuKVuuM/p8p/52As0MlF3Mk2EzYn6wr/
+         J7bXPbCej7CVuXF4I6IX7/Rq1hiMYtnD6AFcfLgLxgY9EZUeI+It1LKO31oPmsw6uMey
+         wxog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wlb5sCv0vT9DKd6Y0pxChn3TRESHpDGd2RiWXJbPiOA=;
+        b=LPT/3b5w0zQtdaK9Yy8FddcHtCsQaNBgN+7D46blPISxLqRph0HTTs1AfpjzpZO9Np
+         gpC+wy11U8T7odlOL0TALjAVL+79O9LBhCmuxaJT7x4JX8PRgX90ssOJCpsaA+ob8ijL
+         V495YhJvuyX+pyUsXr2qMLBrzw4iWpOws20rp+j0CyUKyzi7CnCwLD+xmG+f3St2eDoO
+         ioq3UhAwxKnPfiPijNAx5ieHVApfNKvuaZ0b0I1UgLyCLQv0Ci28CY/a1FBbXBnYq+WR
+         fPibguxraISp5ugUutyBClKGaVcT0mWLYoS1RkVj97H0/WEXGtvn/lYItB3ebVAArXxQ
+         zJvA==
+X-Gm-Message-State: AOAM5323lFFwnSCoH7QiztpYhG2bvfIFktmWmKMWWGqQUomv9pJtgZ5u
+        ADfSf9Fh4v9Wz+O/SQQLf3tAyIfgTu0K7Q==
+X-Google-Smtp-Source: ABdhPJwrAUBJu+P2n6cQJedLTi8BGUZ973hWDTaS8Y3nr73sK+kVeWZgWILLCvpX1mBPKLFMAkg+uw==
+X-Received: by 2002:aa7:9d0d:0:b0:50d:4fcc:7cb1 with SMTP id k13-20020aa79d0d000000b0050d4fcc7cb1mr11948987pfp.41.1652023584948;
+        Sun, 08 May 2022 08:26:24 -0700 (PDT)
+Received: from localhost ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id a19-20020a170902b59300b0015e8d4eb229sm5253221pls.115.2022.05.08.08.26.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 08:26:24 -0700 (PDT)
+Date:   Sun, 8 May 2022 23:26:21 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        mike.kravetz@oracle.com, akpm@linux-foundation.org, sj@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [RFC PATCH 0/3] Introduce new huge_ptep_get_access_flags()
+ interface
+Message-ID: <YnfhHejDgjgyqEcb@FVFYT0MHHV2J.usts.net>
+References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUJOQkNWS0JITEsdH08aQh
-        oaVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OTY6DQw5UT04KgwZGkICOT86
-        EAMaCjpVSlVKTU5JS0lITklMTE5LVTMWGhIXVRoWGh8eDgg7ERYOVR4fDlUYFUVZV1kSC1lBWUlL
-        S0pBSU5LQU1DS0pBTk5LSkFKTUgfQR1JHR1BHR4YGUFOTUhJWVdZCAFZQUpMSE03Bg++
-X-HM-Tid: 0a80a4468858d993kuws5c89c1c0243
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > --- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-> > +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-> > @@ -21,7 +21,8 @@ / {
-> >  
-> >  	aliases {
-> >  		ethernet0 = &emac;
-> > -		ethernet1 = &rtl8189etv;
-> > +		ethernet1 = &rtl8153;
-> > +		ethernet2 = &rtl8189etv;
+On Sun, May 08, 2022 at 04:58:51PM +0800, Baolin Wang wrote:
+> Hi,
+> 
+> As Mike pointed out [1], the huge_ptep_get() will only return one specific
+> pte value for the CONT-PTE or CONT-PMD size hugetlb on ARM64 system, which
+> will not take into account the subpages' dirty or young bits of a CONT-PTE/PMD
+> size hugetlb page. That will make us miss dirty or young flags of a CONT-PTE/PMD
+> size hugetlb page for those functions that want to check the dirty or
+> young flags of a hugetlb page. For example, the gather_hugetlb_stats() will
+> get inaccurate dirty hugetlb page statistics, and the DAMON for hugetlb monitoring
+> will also get inaccurate access statistics.
+> 
+> To fix this issue, one approach is that we can define an ARM64 specific huge_ptep_get()
+> implementation, which will take into account any subpages' dirty or young bits.
 
-> Additionally, it's not a good idea to change order of ethernet nodes. It can 
-> affect mac address assigning procedure in bootloader.
+IIUC, we could get the page size by page_size(pte_page(pte)).
+So, how about the following implementation of huge_ptep_get()?
+Does this work for you?
 
-There is no eth1addr in uboot, so this doesn't affect the mac address.
-The network order in the kernel is eth0(emac) / eth1(rtl8153) / wlan0,
-so I think it would be better to change it this way.
+pte_t huge_ptep_get(pte_t *ptep)
+{
+	int ncontig, i;
+	size_t pgsize;
+	pte_t orig_pte = ptep_get(ptep);
 
-Thanks,
-Chukun
+	if (!pte_present(orig_pte) || !pte_cont(orig_pte))
+		return orig_pte;
 
+	ncontig = num_contig_ptes(page_size(pte_page(orig_pte)), &pgsize);
+
+	for (i = 0; i < ncontig; i++, ptep++) {
+		pte_t pte = ptep_get(ptep);
+
+		if (pte_dirty(pte))
+			orig_pte = pte_mkdirty(orig_pte);
+
+		if (pte_young(pte))
+			orig_pte = pte_mkyoung(orig_pte);
+	}
+
+	return orig_pte;
+}
+
+> However we should add a new parameter for ARM64 specific huge_ptep_get() to check
+> how many continuous PTEs or PMDs in this CONT-PTE/PMD size hugetlb, that means we
+> should convert all the places using huge_ptep_get(), meanwhile most places using
+> huge_ptep_get() did not care about the dirty or young flags at all.
+> 
+> So instead of changing the prototype of huge_ptep_get(), this patch set introduces
+> a new huge_ptep_get_access_flags() interface and define an ARM64 specific implementation,
+> that will take into account any subpages' dirty or young bits for CONT-PTE/PMD size
+> hugetlb page. And we can only change to use huge_ptep_get_access_flags() for those
+> functions that care about the dirty or young flags of a hugetlb page.
+> 
+> [1] https://lore.kernel.org/linux-mm/85bd80b4-b4fd-0d3f-a2e5-149559f2f387@oracle.com/
+> 
+> Baolin Wang (3):
+>   arm64/hugetlb: Introduce new huge_ptep_get_access_flags() interface
+>   fs/proc/task_mmu: Change to use huge_ptep_get_access_flags()
+>   mm/damon/vaddr: Change to use huge_ptep_get_access_flags()
+> 
+>  arch/arm64/include/asm/hugetlb.h |  2 ++
+>  arch/arm64/mm/hugetlbpage.c      | 24 ++++++++++++++++++++++++
+>  fs/proc/task_mmu.c               |  3 ++-
+>  include/asm-generic/hugetlb.h    |  7 +++++++
+>  mm/damon/vaddr.c                 |  5 +++--
+>  5 files changed, 38 insertions(+), 3 deletions(-)
+> 
+> -- 
+> 1.8.3.1
+> 
+> 
