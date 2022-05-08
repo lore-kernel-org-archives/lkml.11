@@ -2,316 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD24C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4185AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234678AbiEHP3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 11:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        id S234777AbiEHP3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 11:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234664AbiEHP2y (ORCPT
+        with ESMTP id S234693AbiEHP3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 11:28:54 -0400
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 451BCBF77;
-        Sun,  8 May 2022 08:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Zdk4/
-        W1gLEfSq23ElvcOwM3KoNgAxe5BDUhIjFTlIXg=; b=ahmEGSWmyu0T7i5Ap1cYq
-        KsanRO+G2dcLoDPZ7WWssMjMsaa1gOZgegQb6qqrjtMgNp2fOhOrQ3XD7KR7HofK
-        7sKRT2S/2fSwe1ZdGnwJDxSFXYnmNrqFS3ah2hTxgewlraKtylaqGO5eFbhDLwYt
-        I6d2ZkqmLArnLKlUQ3Dbp4=
-Received: from localhost (unknown [14.154.30.57])
-        by smtp10 (Coremail) with SMTP id DsCowAC32gPS3Hdih__rBQ--.37673S2;
-        Sun, 08 May 2022 23:08:03 +0800 (CST)
-From:   Junwen Wu <wudaemon@163.com>
-To:     daniel.lezcano@linaro.org, Zhang Rui <rui.zhang@intel.com>,
-        Junwen Wu <wudaemon@163.com>, rafael@kernel.org,
-        amitk@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        viresh.kumar@linaro.org
-Subject: Re: [PATCH v1] thermal/core: change mm alloc method to avoid kernel warning
-Date:   Sun,  8 May 2022 15:07:50 +0000
-Message-ID: <ddbbc1db-2dd3-0c4d-26c0-0992867d35be@linaro.org> (raw)
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <df7e04d86dd64dc85125d536434d93bab3d6314d.camel@intel.com>
-References: <ddbbc1db-2dd3-0c4d-26c0-0992867d35be@linaro.org>
+        Sun, 8 May 2022 11:29:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFF0BF7E
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 08:25:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 708D6B80D71
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 15:25:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C17C385A4;
+        Sun,  8 May 2022 15:25:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652023515;
+        bh=Pl22avJ1YQeNIqd6ZWRgGsSi9fOYqfLWvfVuUSqty58=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=JSsUpQlHVR39ZJNNXbJWQQrFnwzRwlod5vCUk5F2vEANTHzHmIblAv4bt21IgM6B9
+         3aICofjaG4yfjJBejO8zoMVy6hMmbtrbVrHS9jg2vKU79soFK7WgnoHuRrZDlEuqLJ
+         8vEUhAveh9nvOHIZ3Tw4ywgeYTRWLmxoYrDR+vkbzzZYlVYHo0+PhETQySZC4OH4m7
+         x6vXtz+Qw12NmUpsv+jkyYuneCnUnsJDfuKEuiD+bZAKr0z5a6xfSN2b6RxQ7etrrd
+         qkDg8UY2ThYd+I3fSr7JRUfjgnDgroHfW9R6BzZ4lXX9qkAZzCyFuddort0pHe2Vcs
+         pWdd1bTZHFAWQ==
+Message-ID: <77e870dd-fd7a-f58e-79fb-d0e5b8fbfc16@kernel.org>
+Date:   Sun, 8 May 2022 23:25:11 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowAC32gPS3Hdih__rBQ--.37673S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxtry5Cw1DWw17WryfZF1kXwb_yoW3AFyxpF
-        nxJa45Zr4UX3WkGay3Gw4DX3sY9F1Sqa47JaykK3s5KF45J3sxWa4DJry2yryrGrW09Fyr
-        K3Wqvr98C3yjyFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piWrX_UUUUU=
-X-Originating-IP: [14.154.30.57]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/xtbBxxP6bWB0HLuOKwAAsV
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [f2fs-dev] [PATCH 4/5] f2fs: do not stop GC when requiring a free
+ section
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220506232032.1264078-1-jaegeuk@kernel.org>
+ <20220506232032.1264078-4-jaegeuk@kernel.org>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220506232032.1264078-4-jaegeuk@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220508150750.-AVnbE_5eME_5X0oa1Pqfwp4UnKGjlkoeSu8r_-4xdg@z>
 
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-
-On 19/04/2022 15:54, Zhang Rui wrote:
-> CC Viresh.
+On 2022/5/7 7:20, Jaegeuk Kim wrote:
+> The f2fs_gc uses a bitmap to indicate pinned sections, but when disabling
+> chckpoint, we call f2fs_gc() with NULL_SEGNO which selects the same dirty
+> segment as a victim all the time, resulting in checkpoint=disable failure,
+> for example. Let's pick another one, if we fail to collect it.
 > 
-> On Tue, 2022-04-19 at 11:14 +0200, Daniel Lezcano wrote:
->> On 19/04/2022 10:48, Zhang Rui wrote:
->>> large
->>>
->>> IMO, unless we can fix both places, I'd suggest we skip allocating
->>> and
->>> creating the broken trans_table attr. Like a prototype patch below
->>
->> Why not create a thermal debugfs with real useful information and
->> get
->> rid of this broken code ?
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+> ---
+>   fs/f2fs/f2fs.h              |  1 +
+>   fs/f2fs/file.c              | 12 ++++++++----
+>   fs/f2fs/gc.c                | 11 +++++++----
+>   fs/f2fs/segment.c           |  3 ++-
+>   fs/f2fs/super.c             |  3 ++-
+>   include/trace/events/f2fs.h | 11 ++++++++---
+>   6 files changed, 28 insertions(+), 13 deletions(-)
 > 
-> The idea looks good to me.
+> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+> index d49b9b476592..27871f6efb01 100644
+> --- a/fs/f2fs/f2fs.h
+> +++ b/fs/f2fs/f2fs.h
+> @@ -1282,6 +1282,7 @@ struct f2fs_gc_control {
+>   	bool no_bg_gc;			/* check the space and stop bg_gc */
+>   	bool should_migrate_blocks;	/* should migrate blocks */
+>   	bool err_gc_skipped;		/* return EAGAIN if GC skipped */
+> +	unsigned int nr_free_secs;	/* # of free sections to do GC */
+>   };
+>   
+>   /* For s_flag in struct f2fs_sb_info */
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 0e7d101c3e65..7072c2b86b2f 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -1650,7 +1650,8 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
+>   	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
+>   			.init_gc_type = FG_GC,
+>   			.should_migrate_blocks = false,
+> -			.err_gc_skipped = true };
+> +			.err_gc_skipped = true,
+> +			.nr_free_secs = 0 };
+>   	pgoff_t pg_start, pg_end;
+>   	loff_t new_size = i_size_read(inode);
+>   	loff_t off_end;
+> @@ -2453,7 +2454,8 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
+>   	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+>   	struct f2fs_gc_control gc_control = { .victim_segno = NULL_SEGNO,
+>   			.no_bg_gc = false,
+> -			.should_migrate_blocks = false };
+> +			.should_migrate_blocks = false,
+> +			.nr_free_secs = 0 };
+>   	__u32 sync;
+>   	int ret;
+>   
+> @@ -2494,7 +2496,8 @@ static int __f2fs_ioc_gc_range(struct file *filp, struct f2fs_gc_range *range)
+>   			.init_gc_type = range->sync ? FG_GC : BG_GC,
+>   			.no_bg_gc = false,
+>   			.should_migrate_blocks = false,
+> -			.err_gc_skipped = range->sync };
+> +			.err_gc_skipped = range->sync,
+> +			.nr_free_secs = 0 };
+>   	u64 end;
+>   	int ret;
+>   
+> @@ -2940,7 +2943,8 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
+>   	struct f2fs_gc_control gc_control = {
+>   			.init_gc_type = FG_GC,
+>   			.should_migrate_blocks = true,
+> -			.err_gc_skipped = true };
+> +			.err_gc_skipped = true,
+> +			.nr_free_secs = 0 };
+>   	int ret;
+>   
+>   	if (!capable(CAP_SYS_ADMIN))
+> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+> index ec3f6f876e76..f63576ff1c2d 100644
+> --- a/fs/f2fs/gc.c
+> +++ b/fs/f2fs/gc.c
+> @@ -147,6 +147,7 @@ static int gc_thread_func(void *data)
+>   
+>   		gc_control.init_gc_type = sync_mode ? FG_GC : BG_GC;
+>   		gc_control.no_bg_gc = foreground;
+> +		gc_control.nr_free_secs = foreground ? 1 : 0;
 
->What about doing a percentile approach of the state indexes changes 
->instead of a raw matrix full of zeros ? So we show the most significant 
->transitions, perhaps something like:
->
->99%:	7->6	6->7
->98%:	6->5	5->6
->95%:	5->4	4->5
->90%:	7->5	5->7
->80%:	6->4	4->6
->70%:	7->1	7->2
->50%:	...	...
+if init_gc_type is BG_GC, sec_freed won't increase for background GC due to
+below statement:
 
->total:	123456	124573
+		if (gc_type == FG_GC &&
+				get_valid_blocks(sbi, segno, false) == 0)
+			seg_freed++;
 
+It may cause gc thread migrates lots of segments in each round?
 
->And another statistics file containing some timings information like the 
->total duration in mitigation, and the duration in the most significant 
->states above?
+	if ((gc_control->init_gc_type == FG_GC ||
+			!has_not_enough_free_secs(sbi, sec_freed, 0))) {
+		if (sec_freed < gc_control->nr_free_secs)
+			goto gc_more;
+		goto stop;
+	}
 
-Viresh, Zhang Rui,  Daniel,sorry for the delay indeed ,the trans_table is always full of zero,
-I introduce 'show_state' node(tunnable by user,default set as max_states/2) ,thus only show show_state'th  trans count
-to the max trans count change stats. in this way trans_table_show's buffer always less than PAGE_SIZE
-I create a patch v2
-like this:
-/sys/class/thermal/cooling_device0/stats # cat trans_table
- From  :    Index_change
-state 0:      ->1( 1)      ->2( 2)      ->7( 1)
-state 1:      ->0( 1)      ->2( 1)
-state 2:      ->0( 2)      ->1( 1)
+>   
+>   		/* if return value is not zero, no victim was selected */
+>   		if (f2fs_gc(sbi, &gc_control))
+> @@ -1776,6 +1777,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
+>   	unsigned int skipped_round = 0, round = 0;
+>   
+>   	trace_f2fs_gc_begin(sbi->sb, gc_type, gc_control->no_bg_gc,
+> +				gc_control->nr_free_secs,
+>   				get_pages(sbi, F2FS_DIRTY_NODES),
+>   				get_pages(sbi, F2FS_DIRTY_DENTS),
+>   				get_pages(sbi, F2FS_DIRTY_IMETA),
+> @@ -1848,11 +1850,12 @@ int f2fs_gc(struct f2fs_sb_info *sbi, struct f2fs_gc_control *gc_control)
+>   	if (gc_type == FG_GC)
+>   		sbi->cur_victim_sec = NULL_SEGNO;
+>   
+> -	if (gc_control->init_gc_type == FG_GC)
+> -		goto stop;
+> -
+> -	if (!has_not_enough_free_secs(sbi, sec_freed, 0))
+> +	if ((gc_control->init_gc_type == FG_GC ||
+> +			!has_not_enough_free_secs(sbi, sec_freed, 0))) {
+> +		if (sec_freed < gc_control->nr_free_secs)
+> +			goto gc_more;
+>   		goto stop;
+> +	}
+>   
+>   	if (skipped_round <= MAX_SKIP_GC_COUNT || skipped_round * 2 < round) {
+>   
+> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+> index bc63f0572c64..d6b9231ab0e1 100644
+> --- a/fs/f2fs/segment.c
+> +++ b/fs/f2fs/segment.c
+> @@ -528,7 +528,8 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
+>   				.init_gc_type = BG_GC,
+>   				.no_bg_gc = true,
+>   				.should_migrate_blocks = false,
+> -				.err_gc_skipped = false };
+> +				.err_gc_skipped = false,
+> +				.nr_free_secs = 1 };
 
-here is the patch:
-From 64a7fefd008cb890a4a9ea4efd0dd388ac536ad5 Mon Sep 17 00:00:00 2001
-From: Junwen Wu <wudaemon@163.com>
-Date: Sun, 8 May 2022 14:50:14 +0000
-Subject: [PATCH v2] thermal/core: Make trans_table tunnable to avoid some
- needless zero output
+.init_gc_type is BG_GC, so !has_not_enough_free_secs(sbi, sec_freed, 0) condition
+should be enough to exit?
 
-Very high cooling device max state value make trans_table node prompt File too large.
-we introduce show_state node, tunnable by user,thus trans_table only show show_state'th
-trans count to the max trans count, in this way trans_table_show's buffer is
-always less than PAGE_SIZE and shows the important changes.
+	if ((gc_control->init_gc_type == FG_GC ||
+			!has_not_enough_free_secs(sbi, sec_freed, 0))) {
+		if (sec_freed < gc_control->nr_free_secs)
+			goto gc_more;
+		goto stop;
+	}
 
-Signed-off-by: Junwen Wu <wudaemon@163.com>
----
-V1 -> V2: avoid some needless zero output
- drivers/thermal/thermal_sysfs.c | 136 +++++++++++++++++++++++---------
- 1 file changed, 99 insertions(+), 37 deletions(-)
+Thanks,
 
-diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
-index f154bada2906..1496088a1638 100644
---- a/drivers/thermal/thermal_sysfs.c
-+++ b/drivers/thermal/thermal_sysfs.c
-@@ -656,6 +656,7 @@ struct cooling_dev_stats {
- 	spinlock_t lock;
- 	unsigned int total_trans;
- 	unsigned long state;
-+	unsigned long show_state;
- 	unsigned long max_states;
- 	ktime_t last_time;
- 	ktime_t *time_in_state;
-@@ -752,60 +753,119 @@ reset_store(struct device *dev, struct device_attribute *attr, const char *buf,
- 	return count;
- }
- 
--static ssize_t trans_table_show(struct device *dev,
--				struct device_attribute *attr, char *buf)
-+static ssize_t
-+show_state_store(struct device *dev, struct device_attribute *attr, const char *buf,
-+            size_t count)
- {
--	struct thermal_cooling_device *cdev = to_cooling_device(dev);
--	struct cooling_dev_stats *stats = cdev->stats;
--	ssize_t len = 0;
--	int i, j;
-+        struct thermal_cooling_device *cdev = to_cooling_device(dev);
-+        struct cooling_dev_stats *stats = cdev->stats;
-+        unsigned long state;
-+	ssize_t ret;
- 
--	len += snprintf(buf + len, PAGE_SIZE - len, " From  :    To\n");
--	len += snprintf(buf + len, PAGE_SIZE - len, "       : ");
--	for (i = 0; i < stats->max_states; i++) {
--		if (len >= PAGE_SIZE)
--			break;
--		len += snprintf(buf + len, PAGE_SIZE - len, "state%2u  ", i);
--	}
--	if (len >= PAGE_SIZE)
--		return PAGE_SIZE;
-+        spin_lock(&stats->lock);
- 
--	len += snprintf(buf + len, PAGE_SIZE - len, "\n");
-+	ret = kstrtoul(buf, 10, &state);
-+        if (ret || (state > stats->max_states))
-+		goto unlock;
- 
--	for (i = 0; i < stats->max_states; i++) {
--		if (len >= PAGE_SIZE)
--			break;
-+	stats->show_state = state;
-+unlock:
-+	spin_unlock(&stats->lock);
-+        return count;
-+}
- 
--		len += snprintf(buf + len, PAGE_SIZE - len, "state%2u:", i);
-+static ssize_t
-+show_state_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+        struct thermal_cooling_device *cdev = to_cooling_device(dev);
-+        struct cooling_dev_stats *stats = cdev->stats;
-+
-+	return sprintf(buf, "%lu\n", stats->show_state);
-+}
-+
-+static int find_show_state( int *nums, int numsSize, int k, unsigned int *max_value)
-+{
-+    int i, min = INT_MAX, max = 0;
-+    for( i = 0; i < numsSize; ++i )
-+    {
-+        min = nums[i] < min ? nums[i] : min;
-+        max = nums[i] > max ? nums[i] : max;
-+    }
-+    int l = min, r = max, mid, cnt = 0;
-+    while( l < r )
-+    {
-+        mid = r - (r - l) / 2;
-+        for( i = 0; i < numsSize; ++i )
-+        {
-+            if( nums[i] >= mid )
-+                ++cnt;
-+        }
-+        if( cnt < k )
-+        {
-+            r = mid - 1;
-+            cnt = 0;
-+        }
-+        else
-+        {
-+            l = mid;
-+            cnt = 0;
-+        }
-+    }
-+     *max_value = max;
-+    return l;
-+}
- 
--		for (j = 0; j < stats->max_states; j++) {
--			if (len >= PAGE_SIZE)
--				break;
--			len += snprintf(buf + len, PAGE_SIZE - len, "%8u ",
--				stats->trans_table[i * stats->max_states + j]);
--		}
--		if (len >= PAGE_SIZE)
--			break;
--		len += snprintf(buf + len, PAGE_SIZE - len, "\n");
--	}
- 
--	if (len >= PAGE_SIZE) {
--		pr_warn_once("Thermal transition table exceeds PAGE_SIZE. Disabling\n");
--		return -EFBIG;
--	}
--	return len;
-+
-+static ssize_t trans_table_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct thermal_cooling_device *cdev = to_cooling_device(dev);
-+        struct cooling_dev_stats *stats = cdev->stats;
-+        ssize_t len = 0;
-+        int i, j;
-+        unsigned int show_state_value = 0;
-+	unsigned int max_state_value = 0;
-+
-+        len += snprintf(buf + len, PAGE_SIZE - len, " From  :    Index_change\n");
-+        for (i = 0; i < stats->max_states; i++) {
-+                show_state_value = find_show_state(&stats->trans_table[i * stats->max_states], stats->max_states, stats->show_state, &max_state_value);
-+                if (max_state_value) {
-+                        len += snprintf(buf + len, PAGE_SIZE - len, "state%2u:", i);
-+                }
-+                else {
-+                        continue;
-+                }
-+
-+                for (j = 0; j < stats->max_states; j++) {
-+                        if (stats->trans_table[i * stats->max_states + j] && (show_state_value <= stats->trans_table[i * stats->max_states + j])) {
-+                                len += snprintf(buf + len, PAGE_SIZE - len, "     ->%u(%u)",j, stats->trans_table[i * stats->max_states + j]);
-+                        }
-+                }
-+                if (len >= PAGE_SIZE)
-+                        break;
-+                len += snprintf(buf + len, PAGE_SIZE - len, "\n");
-+        }
-+
-+        if (len >= PAGE_SIZE) {
-+                pr_warn_once("Thermal transition table exceeds PAGE_SIZE. Disabling\n");
-+                return -EFBIG;
-+        }
-+        return len;
- }
- 
- static DEVICE_ATTR_RO(total_trans);
- static DEVICE_ATTR_RO(time_in_state_ms);
- static DEVICE_ATTR_WO(reset);
- static DEVICE_ATTR_RO(trans_table);
-+static DEVICE_ATTR_RW(show_state);
- 
- static struct attribute *cooling_device_stats_attrs[] = {
- 	&dev_attr_total_trans.attr,
- 	&dev_attr_time_in_state_ms.attr,
- 	&dev_attr_reset.attr,
- 	&dev_attr_trans_table.attr,
-+	&dev_attr_show_state.attr,
- 	NULL
- };
- 
-@@ -829,7 +889,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- 	var += sizeof(*stats->time_in_state) * states;
- 	var += sizeof(*stats->trans_table) * states * states;
- 
--	stats = kzalloc(var, GFP_KERNEL);
-+	stats = kvzalloc(var, GFP_KERNEL);
- 	if (!stats)
- 		return;
- 
-@@ -838,6 +898,8 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- 	cdev->stats = stats;
- 	stats->last_time = ktime_get();
- 	stats->max_states = states;
-+	/* default set show_state = max_states/2 */
-+	stats->show_state = states / 2;
- 
- 	spin_lock_init(&stats->lock);
- 
-@@ -848,7 +910,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- 
- static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
- {
--	kfree(cdev->stats);
-+	kvfree(cdev->stats);
- 	cdev->stats = NULL;
- }
- 
--- 
-2.25.1
-
-
+>   			f2fs_down_write(&sbi->gc_lock);
+>   			f2fs_gc(sbi, &gc_control);
+>   		}
+> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+> index 8b23fa6fc6b7..5d5b35067c3d 100644
+> --- a/fs/f2fs/super.c
+> +++ b/fs/f2fs/super.c
+> @@ -2084,7 +2084,8 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
+>   			.victim_segno = NULL_SEGNO,
+>   			.init_gc_type = FG_GC,
+>   			.should_migrate_blocks = false,
+> -			.err_gc_skipped = true };
+> +			.err_gc_skipped = true,
+> +			.nr_free_secs = 1 };
+>   
+>   		f2fs_down_write(&sbi->gc_lock);
+>   		err = f2fs_gc(sbi, &gc_control);
+> diff --git a/include/trace/events/f2fs.h b/include/trace/events/f2fs.h
+> index 6699174977a3..349679a72301 100644
+> --- a/include/trace/events/f2fs.h
+> +++ b/include/trace/events/f2fs.h
+> @@ -653,18 +653,21 @@ TRACE_EVENT(f2fs_background_gc,
+>   TRACE_EVENT(f2fs_gc_begin,
+>   
+>   	TP_PROTO(struct super_block *sb, int gc_type, bool no_bg_gc,
+> +			unsigned int nr_free_secs,
+>   			long long dirty_nodes, long long dirty_dents,
+>   			long long dirty_imeta, unsigned int free_sec,
+>   			unsigned int free_seg, int reserved_seg,
+>   			unsigned int prefree_seg),
+>   
+> -	TP_ARGS(sb, gc_type, no_bg_gc, dirty_nodes, dirty_dents, dirty_imeta,
+> +	TP_ARGS(sb, gc_type, no_bg_gc, nr_free_secs, dirty_nodes,
+> +		dirty_dents, dirty_imeta,
+>   		free_sec, free_seg, reserved_seg, prefree_seg),
+>   
+>   	TP_STRUCT__entry(
+>   		__field(dev_t,		dev)
+>   		__field(int,		gc_type)
+>   		__field(bool,		no_bg_gc)
+> +		__field(unsigned int,	nr_free_secs)
+>   		__field(long long,	dirty_nodes)
+>   		__field(long long,	dirty_dents)
+>   		__field(long long,	dirty_imeta)
+> @@ -678,6 +681,7 @@ TRACE_EVENT(f2fs_gc_begin,
+>   		__entry->dev		= sb->s_dev;
+>   		__entry->gc_type	= gc_type;
+>   		__entry->no_bg_gc	= no_bg_gc;
+> +		__entry->nr_free_secs	= nr_free_secs;
+>   		__entry->dirty_nodes	= dirty_nodes;
+>   		__entry->dirty_dents	= dirty_dents;
+>   		__entry->dirty_imeta	= dirty_imeta;
+> @@ -687,12 +691,13 @@ TRACE_EVENT(f2fs_gc_begin,
+>   		__entry->prefree_seg	= prefree_seg;
+>   	),
+>   
+> -	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nodes = %lld, "
+> -		"dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
+> +	TP_printk("dev = (%d,%d), gc_type = %s, no_background_GC = %d, nr_free_secs = %u, "
+> +		"nodes = %lld, dents = %lld, imeta = %lld, free_sec:%u, free_seg:%u, "
+>   		"rsv_seg:%d, prefree_seg:%u",
+>   		show_dev(__entry->dev),
+>   		show_gc_type(__entry->gc_type),
+>   		__entry->no_bg_gc,
+> +		__entry->nr_free_secs,
+>   		__entry->dirty_nodes,
+>   		__entry->dirty_dents,
+>   		__entry->dirty_imeta,
