@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A767FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 14:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 14:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233834AbiEHOaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 10:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
+        id S233889AbiEHOaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 10:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233661AbiEHOaQ (ORCPT
+        with ESMTP id S233818AbiEHOaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 10:30:16 -0400
+        Sun, 8 May 2022 10:30:17 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4284E60D7;
-        Sun,  8 May 2022 07:26:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8D8616E;
+        Sun,  8 May 2022 07:26:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652019986; x=1683555986;
+  t=1652019987; x=1683555987;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7k1HLML8EiHrtt/rP2Re4XQ7J53RxaR/YSDTSazTTZk=;
-  b=mDNZBk/F6ymbScrrn2zRqqte+YSrNAxqxvXfQ09ZG46lUqfoldFm39u2
-   BDogJ4OGDtoTB+JHrhaqkF8XFag/9g8XnZMvV0JyEM62Bvyhu0sb3G4RX
-   mh6lODgctFbdDKyXGJu1nI7R6Ju5GC9Q9975XRKXC0rX3Rxz6HCrYhAVo
-   UJRUQV4tEbepKmYZKb3vQlTKELYE0GxrZ4VgHbIiczsMxIQ+HI7/Y0CW3
-   BlWiPDYbugg5mPHNduhtFZrPB6Wx5o777yrhhuoXYk2Fh+JZx0S5Bq811
-   comdZzkhI13uIGpBKEfRQOyvg6/stDDdvWGzuNV19SsY3O09lKITYaMZy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="268488488"
+  bh=S0EjhMlKDCnq5cx0QKROhfjTmNL3jGBBvjPg1zolwPo=;
+  b=Nb146FdOhZ6AUtlJ309AQwHV8ex1MN9GvgN0qqdqAQqhsv+W0ji7Y05L
+   +9vnyJlCiGcepBsqZaGwTsL2AstYbAPATDEUCcAWx06ajanlTneCKmEa1
+   4Fm6+ysaEvXC2MNjz8d4EDApRVujrsVoOaOso6lNAI5DYJZK4782BT0xW
+   hKcLhOsva4oyAxehPSIItXz2ZZ8O3odNJkHA2HC4H8AWFKjReLXbnnoZu
+   NyHkxGisPVbx/IsIHLPTm1QbHg1w1MGekMTs1WB4L549d5r4YLLHrYSKj
+   98k9CV07nufqCucLiSPEekW8oppoxUMk9zOGxCq76BS7A/ARDUVeHzzCl
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="268488487"
 X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="268488488"
+   d="scan'208";a="268488487"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 07:26:25 -0700
 X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="737738698"
+   d="scan'208";a="737738697"
 Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
   by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 07:26:25 -0700
 From:   matthew.gerlach@linux.intel.com
 To:     dinguyen@kernel.org, robh+dt@kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         krzysztof.kozlowski+dt@linaro.org
-Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 2/3] dt-bindings: intel: add binding for Intel n6000
-Date:   Sun,  8 May 2022 07:26:23 -0700
-Message-Id: <20220508142624.491045-3-matthew.gerlach@linux.intel.com>
+Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy Engine
+Date:   Sun,  8 May 2022 07:26:22 -0700
+Message-Id: <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
 References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
@@ -57,29 +56,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-Add the binding string for the Agilex based Intel n6000 board.
+Add device tree bindings documentation for the Intel Hard
+Processor System (HPS) Copy Engine.
 
 Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-v3:
-  - added Acked-by
----
- Documentation/devicetree/bindings/arm/intel,socfpga.yaml | 1 +
- 1 file changed, 1 insertion(+)
+v4:
+  - move from soc to soc/intel/
 
-diff --git a/Documentation/devicetree/bindings/arm/intel,socfpga.yaml b/Documentation/devicetree/bindings/arm/intel,socfpga.yaml
-index 6e043459fcd5..61a454a40e87 100644
---- a/Documentation/devicetree/bindings/arm/intel,socfpga.yaml
-+++ b/Documentation/devicetree/bindings/arm/intel,socfpga.yaml
-@@ -18,6 +18,7 @@ properties:
-         items:
-           - enum:
-               - intel,n5x-socdk
-+              - intel,socfpga-agilex-n6000
-               - intel,socfpga-agilex-socdk
-           - const: intel,socfpga-agilex
- 
+v3:
+  - remove unused label
+  - move from misc to soc
+  - remove 0x from #address-cells/#size-cells values
+  - change hps_cp_eng@0 to dma-controller@0
+  - remote inaccurate 'items:' tag
+---
+ .../soc/intel/intel,hps-copy-engine.yaml      | 51 +++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+
+diff --git a/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+new file mode 100644
+index 000000000000..8634865015cd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright (C) 2022, Intel Corporation
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/soc/intel/intel,hps-copy-engine.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Intel HPS Copy Engine
++
++maintainers:
++  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
++
++description: |
++  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
++  a bootable image from host memory to HPS DDR.  Additionally, there is a
++  register the HPS can use to indicate the state of booting the copied image as
++  well as a keep-a-live indication to the host.
++
++properties:
++  compatible:
++    const: intel,hps-copy-engine
++
++  '#dma-cells':
++    const: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    bus@80000000 {
++        compatible = "simple-bus";
++        reg = <0x80000000 0x60000000>,
++              <0xf9000000 0x00100000>;
++        reg-names = "axi_h2f", "axi_h2f_lw";
++        #address-cells = <2>;
++        #size-cells = <1>;
++        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
++
++        dma-controller@0 {
++            compatible = "intel,hps-copy-engine";
++            reg = <0x00000000 0x00000000 0x00001000>;
++            #dma-cells = <1>;
++        };
++    };
 -- 
 2.25.1
 
