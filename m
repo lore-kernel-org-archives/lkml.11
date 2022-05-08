@@ -2,152 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29833C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235199AbiEHTGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        id S230352AbiEHTGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344561AbiEHSE2 (ORCPT
+        with ESMTP id S244940AbiEHSqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 14:04:28 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAA1FE3
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:00:37 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id ba17so13905980edb.5
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 11:00:37 -0700 (PDT)
+        Sun, 8 May 2022 14:46:00 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E473B85F;
+        Sun,  8 May 2022 11:42:10 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id s14so11988909plk.8;
+        Sun, 08 May 2022 11:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tcaHO+HqpMQv3+DLpIAhYp2C5r7z6Gel9BfrGJWEBrQ=;
-        b=IlM4lhJlJ2d07BNY1D8txDkP1oAW3YcNeZ93q2oLYgogCvo5k208E0ZRRp7wmn5zzn
-         uzTzmLz4eArNamcc6FiQQahescDgwY/UeBnXOlNABtKk6MEX/oddgfacXW29CPBwl2Nd
-         RKZah5ByfhTGR6tJynRj1ekttHDm8vScstcIA=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IMO3JIMi22IO+hwWBmWKXtb8kUpSnjqE7Vl3ahEaqwI=;
+        b=K8N5U77Yr6n4pHiUjWYuQl7IfGe4W8zWHrZoWQJBeu/1bJVfNUxsb3zRetjDM6lYLk
+         hazhGdYvcyPSMbsTy6QZcLCBsA4Lq3I894wxZ9NB2h/2gmKMp43uiB6X2Zsi58kuoTx4
+         0yFzTOWeS1AP/VMfGeZwHTsSa5eGiNR2hCq7947GWfBFOJ7mq0L8+6dj7QvEt+WB8Izm
+         WMNd7PpWoyohy9dxeL6gwWc8Y0a6iCQY867QiYW4CSFTwzF9vfFl6A1JSr1/uwKZkupr
+         Oiw7qsIynoUGRj3h/0xG6fvB4OOQpHmLxh+MXpzC5mRzfwaowCsjFm7OD9UMx+lzkPtr
+         zOQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tcaHO+HqpMQv3+DLpIAhYp2C5r7z6Gel9BfrGJWEBrQ=;
-        b=Fa416WCZVyHMkod1r4QAKp6bNupdn5tcQPR/NI+gp0uJgkBe0SdWp7t2DhYT1oi2Ps
-         KzOFo5bu3LA1OqCMSQmWQraV4boz0Y//QGfQPST7ob8CNT04CehN4mx2a3ka0j+vevuq
-         2hZrUlVqF8UW8WS4ihSQQFSDV2BRtz8SKRFxlrYub+jrnCW7jedHQbMhmhVnjBju+S8j
-         RJgaWDoShpOflYK02/20qPtwOebXvYY/bwFaHg6v5m4uTJBYz3wR+sfh3KsM0Mk7wyB8
-         n5+mLe3aJ2jAzFqHQRVK+A2bXAltt0KnP5QcUfcN0FTEqOUGTW/0YURbvZXKKSymvDc3
-         2NHA==
-X-Gm-Message-State: AOAM531hKCycw/O9z+yH+yrfGUpLtGRtcpcBroUCa0mEgK5FuJM33POH
-        iYr1Wgqpmd2GzClPw32SnJ0avI6ID2SySGiT
-X-Google-Smtp-Source: ABdhPJxkwIFcMkQNm1jDtlp7H1rE4Cgj+6rMHnymX0Qc780ZJ+rNiW/R8AfiQhbVSgAMWQEN/phW1Q==
-X-Received: by 2002:a05:6402:17c7:b0:425:d52c:8907 with SMTP id s7-20020a05640217c700b00425d52c8907mr13532553edy.15.1652032835650;
-        Sun, 08 May 2022 11:00:35 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id ev6-20020a17090729c600b006f3ef214df6sm4224202ejc.92.2022.05.08.11.00.34
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IMO3JIMi22IO+hwWBmWKXtb8kUpSnjqE7Vl3ahEaqwI=;
+        b=ksNSeEtGo7v4TArHC/4KYA/KQu3LYBlPqqNZCKoCa9sA00js7aoCOnwSEhoks8zYZr
+         QhdmlCvOvIgrQv72dmuh608va3QyYYFB2ddg2DeQLJDxLLzb2PvlFtUFKL+4YfKPlYvK
+         FErNbnj0kKyzu4HMXNHiwNNa7W76sR0cN3DyDkBvIJNtUC5ZaWh1JTetx37bWksKriED
+         uljf03OzElSt1PV99AbG4VZtBqyqRi4yFMCuWybu7whNLTbU+su1x11JgOzs3ff4iPBd
+         6A8/6A5nQULAxeM6z0QZ5lC0tF/J55YWiZTsQd73ulzRHPUHddM+M8yVQWKRurxmhBw2
+         pXSQ==
+X-Gm-Message-State: AOAM53141apoL6WPT8f64kxIi4XvTGg7KOCdEDGQF4HQTc3xfIMdB29o
+        zrWS0wXOIESDeV9H1zgAl9ntdgea+7ZX7g==
+X-Google-Smtp-Source: ABdhPJz5w8CFl7rCXPIolx29bkbpweJz41F2IEFIvYrs59TbolXN5i67/eGp5kjzMSaZWwXM+IPiDA==
+X-Received: by 2002:a17:902:e5d2:b0:15e:9467:187 with SMTP id u18-20020a170902e5d200b0015e94670187mr13183152plf.123.1652035329537;
+        Sun, 08 May 2022 11:42:09 -0700 (PDT)
+Received: from [172.30.1.41] ([14.32.163.5])
+        by smtp.gmail.com with ESMTPSA id 2-20020aa79242000000b0050dc762813csm6968013pfp.22.2022.05.08.11.42.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 11:00:34 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id e24so16599195wrc.9
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 11:00:34 -0700 (PDT)
-X-Received: by 2002:adf:dfc8:0:b0:20a:d256:5b5c with SMTP id
- q8-20020adfdfc8000000b0020ad2565b5cmr10724888wrn.97.1652032834122; Sun, 08
- May 2022 11:00:34 -0700 (PDT)
+        Sun, 08 May 2022 11:42:09 -0700 (PDT)
+Message-ID: <fa739928-ed1d-ed6f-52c2-541319d9cc2f@gmail.com>
+Date:   Mon, 9 May 2022 03:42:05 +0900
 MIME-Version: 1.0
-References: <165201148069.536527.1960632033331546251.tglx@xen13>
-In-Reply-To: <165201148069.536527.1960632033331546251.tglx@xen13>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 8 May 2022 11:00:17 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
-Message-ID: <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
-Subject: Re: [GIT pull] core/urgent for v5.18-rc6
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Zhangfei Gao <zhangfei.gao@foxmail.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Dave Hansen <dave.hansen@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during
+ transitions
+Content-Language: en-US
+To:     Heiko Stuebner <heiko@sntech.de>,
+        Brian Norris <briannorris@chromium.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+References: <20220406014842.2771799-1-briannorris@chromium.org>
+ <582e3645-b24e-356e-7f0f-0d37bb1e32e6@gmail.com>
+ <6c6ec0db-111c-e48f-57ce-0e444a0d168e@gmail.com> <44651538.fMDQidcC6G@phil>
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+In-Reply-To: <44651538.fMDQidcC6G@phil>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 8, 2022 at 5:05 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> A single bugfix for the PASID management code, which freed the PASID too
-> early. The PASID needs to be tied to the mm lifetime, not to the address
-> space lifetime.
+On 22. 5. 9. 00:07, Heiko Stuebner wrote:
+> Am Samstag, 7. Mai 2022, 16:21:59 CEST schrieb Chanwoo Choi:
+>> On 22. 4. 14. 08:13, Chanwoo Choi wrote:
+>>> On 22. 4. 14. 07:45, Heiko Stübner wrote:
+>>>> Hi,
+>>>>
+>>>> Am Donnerstag, 14. April 2022, 00:14:40 CEST schrieb Chanwoo Choi:
+>>>>> On 22. 4. 6. 10:48, Brian Norris wrote:
+>>>>>> See the previous patch ("soc: rockchip: power-domain: Manage resource
+>>>>>> conflicts with firmware") for a thorough explanation of the conflicts.
+>>>>>> While ARM Trusted Firmware may be modifying memory controller and
+>>>>>> power-domain states, we need to block the kernel's power-domain driver.
+>>>>>>
+>>>>>> If the power-domain driver is disabled, there is no resource conflict
+>>>>>> and this becomes a no-op.
+>>>>>>
+>>>>>> Signed-off-by: Brian Norris <briannorris@chromium.org>
+>>>>>> ---
+>>>>>>
+>>>>>>     drivers/devfreq/rk3399_dmc.c | 13 +++++++++++++
+>>>>>>     1 file changed, 13 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/devfreq/rk3399_dmc.c
+>>>>>> b/drivers/devfreq/rk3399_dmc.c
+>>>>>> index e494d1497d60..daff40702615 100644
+>>>>>> --- a/drivers/devfreq/rk3399_dmc.c
+>>>>>> +++ b/drivers/devfreq/rk3399_dmc.c
+>>>>>> @@ -21,6 +21,7 @@
+>>>>>>     #include <linux/rwsem.h>
+>>>>>>     #include <linux/suspend.h>
+>>>>>> +#include <soc/rockchip/pm_domains.h>
+>>>>>>     #include <soc/rockchip/rk3399_grf.h>
+>>>>>>     #include <soc/rockchip/rockchip_sip.h>
+>>>>>> @@ -93,6 +94,16 @@ static int rk3399_dmcfreq_target(struct device
+>>>>>> *dev, unsigned long *freq,
+>>>>>>         mutex_lock(&dmcfreq->lock);
+>>>>>> +    /*
+>>>>>> +     * Ensure power-domain transitions don't interfere with ARM
+>>>>>> Trusted
+>>>>>> +     * Firmware power-domain idling.
+>>>>>> +     */
+>>>>>> +    err = rockchip_pmu_block();
+>>>>>> +    if (err) {
+>>>>>> +        dev_err(dev, "Failed to block PMU: %d\n", err);
+>>>>>> +        goto out_unlock;
+>>>>>> +    }
+>>>>>> +
+>>>>>>         /*
+>>>>>>          * Some idle parameters may be based on the DDR controller
+>>>>>> clock, which
+>>>>>>          * is half of the DDR frequency.
+>>>>>> @@ -198,6 +209,8 @@ static int rk3399_dmcfreq_target(struct device
+>>>>>> *dev, unsigned long *freq,
+>>>>>>         dmcfreq->volt = target_volt;
+>>>>>>     out:
+>>>>>> +    rockchip_pmu_unblock();
+>>>>>> +out_unlock:
+>>>>>>         mutex_unlock(&dmcfreq->lock);
+>>>>>>         return err;
+>>>>>>     }
+>>>>>
+>>>>> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+>>>>
+>>>> so I guess you're ok with me picking up both patches, right?
+>>>> [Just making sure :-) ]
+>>>
+>>> This patch have the dependency of latest devfreq-next branch.
+>>> So that need to make the immutable branch between rockchip and devfreq.
+>>>
+>>
+>> Hi Heiko and Brian,
+>>
+>> Is there any other progress?
+>>
+>> IMHO, if rockchip maintainer reply the acked-by from patch1
+>> and then agree these patches to be applied to devfreq.git,
+>> I can take them.
+> 
+> sounds good to me. Patch1 looks good and correct to me, so
+> I've added a Reviewed-by for it and it defintily makes sense for
+> both to go through the devfreq tree then, so we don't need
+> additional stable-branches :-)
 
-So I have to once more complain about the -tip tree "Link:" usage.
+OK. I'll take them with your reviewed-by tag. Thanks.
 
-Again, the commit has a link to the patch *submission*, which is
-almost entirely useless. There's no link to the actual problem the
-patch fixes.
 
-It does have a "Fixes:" link, and it has an "explanation", but the
-explanation doesn't actually make much sense to me.
-
-The *sensible* thing for an iommu driver to do is to just do a
-mmget/mmput, and then the whole "drop PASIX on last mmput() (ie in
-__mmput)" makes lots of sense.
-
-The commit claims that's not what the iommu drivers do, but it's
-really hard to tell *what* it is that does a mmgrab. It just says
-
-  "the IOMMU driver holds a reference on the mm itself, not the address space"
-
-but then I tried to see where such references are held, and I couldn't find it.
-
-*Must* users do mmget/mmput, and the commit even says that's the
-logical thing to do. Apparently something that the iommu code relies
-on does the mmgrab/mmdrop thing, but I really would have liked to know
-what that is.
-
-Yes, "mmgab" is the right thing to do if all you want is the "struct
-mm_struct", and don't actually care about the page tables themselves,
-and don't want to have the refcount keep page tables alive. But you'd
-think the iommu code really does want the page tables.
-
-So it would have been really nice to have an explanation for what it
-was that did the mmgrab, especially since the commit itself makes it
-clear that the logical thing to do seems to be just mmget/put. No?
-
-I _really_ wish the -tip tree had more links to the actual problem
-reports and explanations, rather than links to the patch submission.
-
-One has the actual issue. The other just has the information that is
-already in the commit, and the "Link:" adds almost no actual value
-(yes, yes, you can see late "Acked-by" etc, but that really isn't
-worth it).
-
-I've pulled this, because I definitely believe the issue is real. I
-just wish I could see _what_ the issue was.
-
-Put another way: I can see that
-
-    Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
-
-in the commit, but I don't have a clue what the actual report was, and
-there really isn't enough information in the commit itself, except for
-a fairly handwavy "Device drivers might, for instance, still need to
-flush operations.."
-
-I don't want to know what device drivers _might_ do. I would want to
-have an actual pointer to what they do and where.
-
-I suspect it's related to mmu_notifiers or something, but I really
-would have liked a more exact "this is where things go wrong".
-
-I also *suspect* that this is all about that _loong_ thread (picking
-one email almost at random) here:
-
-   https://lore.kernel.org/all/a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com/
-
-but if so, the confusion I see in that thread is even more reason to
-have more background for what is going on.
-
-Anyway, this is merged in my tree, but I'm having trouble following
-the logic, which is why I'm writing this long email to complain about
-lack of context.
-
-               Linus
+-- 
+Best Regards,
+Samsung Electronics
+Chanwoo Choi
