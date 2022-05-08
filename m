@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E6AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbiEHMma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 08:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
+        id S233178AbiEHMmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 08:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232146AbiEHMm0 (ORCPT
+        with ESMTP id S232146AbiEHMma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 08:42:26 -0400
+        Sun, 8 May 2022 08:42:30 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD51E0FF
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:38:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DB4FD19
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:38:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652013516; x=1683549516;
+  t=1652013520; x=1683549520;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ss1Py9xKSsfOz68o9vHCUmEfR+D8C1SL1jYJcqrSmD8=;
-  b=h5lPD25yg9pB42xAjf+6ooDujvldZoHiGTkpOiRq+SlnJTV6Hr5gE7lF
-   72k0Vxb5gJFnIa2xLDQWrasYIdqyfiyQd9N02rfVov+IIs0B7J74q5XCm
-   UXm3goywtoLmucCnaUAa83uyE9KWmtgCQwSaJteBepagoKM37aQNgzr8u
-   M3/m4UBWjarP1X4bE52nQHsSeVZzN81bVK9NYzdS9OFaG6RgI9a1NHc+G
-   hab3gA8d11Cy8UkyBNmQSQrXjWtgDSLep4R/zAZb69Ox/7Bp2aCN1lK94
-   VNj8SfhCqb/YMs2ma3Akz0KNIZ0c7UoWq03phxM/25uy4Wz4/hkayy/o3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="267674807"
+  bh=dhHzVPtGCmtqjw7nHlmUc46+bVg8lesIZ0/A9YXT9us=;
+  b=HQQNIojWPq/p+dUBGDPgUV5XC6tEtWn5wQsP9dbw6rQDYS6qlLQurpe6
+   6S2s/6dX2YbDop4XfHductYCZr1wDVHCIFwgaK+2WM7C6MwMTOEj3Uk0a
+   z8wZ9sOYDngxMZb1gWEIMZIcxW9KWQUcAe5D8D6s+rbzG+KkmdErpkXRK
+   HuUFPBQzz/2iYlV6K8dTldA61zm5l4ZyV5jctcH9z2+A3cUt2t31PEpLz
+   EVE90VgcykxZtJF14JYMX4v1Xar+z13kFCDxdPjgU+lCFgKQpYbuR1lpz
+   S4t/YWPx04tC1ULQ9dsbV5/WQFrxjl+cOiFiAz541iL9IlLCOxlePFX66
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="267674811"
 X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="267674807"
+   d="scan'208";a="267674811"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 05:38:36 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 05:38:40 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="710143729"
+   d="scan'208";a="710143749"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 08 May 2022 05:38:34 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 08 May 2022 05:38:38 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
         Alex Williamson <alex.williamson@redhat.com>,
@@ -46,9 +46,9 @@ Cc:     Jacob jun Pan <jacob.jun.pan@intel.com>,
         Liu Yi L <yi.l.liu@intel.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 1/4] iommu/vt-d: Block force-snoop domain attaching if no SC support
-Date:   Sun,  8 May 2022 20:35:22 +0800
-Message-Id: <20220508123525.1973626-2-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 3/4] iommu/vt-d: Remove domain_update_iommu_snooping()
+Date:   Sun,  8 May 2022 20:35:24 +0800
+Message-Id: <20220508123525.1973626-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
 References: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
@@ -58,32 +58,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the attach_dev callback of the default domain ops, if the domain has
-been set force_snooping, but the iommu hardware of the device does not
-support SC(Snoop Control) capability, the callback should block it and
-return a corresponding error code.
+The IOMMU force snooping capability is not required to be consistent
+among all the IOMMUs anymore. Remove force snooping capability check
+in the IOMMU hot-add path and domain_update_iommu_snooping() becomes
+a dead code now.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/intel/iommu.c | 34 +---------------------------------
+ 1 file changed, 1 insertion(+), 33 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2990f80c5e08..b4802f4055a0 100644
+index 048ebfbd5fcb..444d51a18c93 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -4367,6 +4367,9 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
- 	if (!iommu)
- 		return -ENODEV;
+@@ -533,33 +533,6 @@ static void domain_update_iommu_coherency(struct dmar_domain *domain)
+ 	rcu_read_unlock();
+ }
  
-+	if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
-+		return -EOPNOTSUPP;
+-static bool domain_update_iommu_snooping(struct intel_iommu *skip)
+-{
+-	struct dmar_drhd_unit *drhd;
+-	struct intel_iommu *iommu;
+-	bool ret = true;
+-
+-	rcu_read_lock();
+-	for_each_active_iommu(iommu, drhd) {
+-		if (iommu != skip) {
+-			/*
+-			 * If the hardware is operating in the scalable mode,
+-			 * the snooping control is always supported since we
+-			 * always set PASID-table-entry.PGSNP bit if the domain
+-			 * is managed outside (UNMANAGED).
+-			 */
+-			if (!sm_supported(iommu) &&
+-			    !ecap_sc_support(iommu->ecap)) {
+-				ret = false;
+-				break;
+-			}
+-		}
+-	}
+-	rcu_read_unlock();
+-
+-	return ret;
+-}
+-
+ static int domain_update_iommu_superpage(struct dmar_domain *domain,
+ 					 struct intel_iommu *skip)
+ {
+@@ -3606,12 +3579,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+ 			iommu->name);
+ 		return -ENXIO;
+ 	}
+-	if (!ecap_sc_support(iommu->ecap) &&
+-	    domain_update_iommu_snooping(iommu)) {
+-		pr_warn("%s: Doesn't support snooping.\n",
+-			iommu->name);
+-		return -ENXIO;
+-	}
 +
- 	/* check if this iommu agaw is sufficient for max mapped address */
- 	addr_width = agaw_to_width(iommu->agaw);
- 	if (addr_width > cap_mgaw(iommu->cap))
+ 	sp = domain_update_iommu_superpage(NULL, iommu) - 1;
+ 	if (sp >= 0 && !(cap_super_page_val(iommu->cap) & (1 << sp))) {
+ 		pr_warn("%s: Doesn't support large page.\n",
 -- 
 2.25.1
 
