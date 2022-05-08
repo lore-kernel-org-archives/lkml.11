@@ -2,87 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4269C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233188AbiEHMmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 08:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
+        id S233190AbiEHMxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 08:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233147AbiEHMme (ORCPT
+        with ESMTP id S233121AbiEHMxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 08:42:34 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C06FD2D
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:38:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652013523; x=1683549523;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eGei70TdCcyqJEmDRek1hExpZpSxGelpQ6HhzQKlC2s=;
-  b=J1Pvi03ZKwxsNHhzpH8+QM+rLJI4cBWpk67/IFBy7DvVE075GxGCqUGv
-   A1KsSU2/+D7tSkffzw917taJGh7B3BBEzVYFSLV9RzRDV60uZde/+3dGj
-   Dj7E9rTBvN9RBRB2slZx+u61MXApOWN8BwYLes2ZdoF9KkC9NA/fq3UEu
-   Lah976zfY+pNZ0RRTPqLcKnYwhqMjk2iu/EHJcPhRtFdNI+nAlcbmul9s
-   5/ukSZvMBJ7CFoABw8XlUMmGbKfMx7PWNqW04JpL1TYm5jmcp9J7DayaL
-   zn3xowMwDz7ftPklXn9jGq0O7JwwgNhuUQQLYOOY4HSG4dreXK85seaeO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="267674816"
-X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="267674816"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 05:38:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="710143757"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 08 May 2022 05:38:41 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>
-Cc:     Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 4/4] iommu/vt-d: Remove hard coding PGSNP bit in PASID entries
-Date:   Sun,  8 May 2022 20:35:25 +0800
-Message-Id: <20220508123525.1973626-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
-References: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
+        Sun, 8 May 2022 08:53:18 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603BCDF20
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:49:27 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id k1so11551018pll.4
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 05:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9CgvYRHO+zyjILbsXpuCYz5kUi3xutsr2ZbyqD78JvA=;
+        b=yj7HlQlC9P/3bif3QvZacoMfkS8sumx0VL9jmM+inS90KT1x4FNGuHZ+EY5D+NR407
+         73/EfgTOpZAjVrPhAXM0Zk3NdZEwkX7Jt3e3GjnvQ2ztPSXecKFakNVgFEK5FM2sTvs1
+         ldGVXJ1cYGpxvutBdDFsDCsTJ1Eyn86qZ7QO2ASGExIUiHap2IrqFRszKB1CIz/5ZWke
+         4MwpsBWsxQetTEEYhdq6jNB4xmgeMDC0NTXnTFvT0hYRijNZFo8atgdiIsr55Y/rrbBL
+         V0U1wob3zNDWadtMs1T850NOFYPqTwmSMpqnziPlh/KCC9qqD57b1YLMjlOUAFbLeS4L
+         3TjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9CgvYRHO+zyjILbsXpuCYz5kUi3xutsr2ZbyqD78JvA=;
+        b=o2DFpCDQFsfnn0drLJuMJSWU8Ut+3864IpudgVxw7bCu7cGd0maRQN8GOBD7mbs94s
+         EgKGezDhXt4ehlGUc825tr0AMWMjXwhrh4yzxyTt4CH3IajlvvQJcdBWLQAJfoNs0jE2
+         sKOk0cF+C8PUjCOf1an0Lex+dU8JD8bHP0dMHtZ+97CVzG2yFrQRVYMbg2DUFs6euy2A
+         ronqKdP5Y5IwGrCmZVKkgnrAwZq0iHTt9HpxgoXEc8BVImBiRm28iMI6x73skSLej2l3
+         R1QwfPpNJHhDpnNrmmR7CLrSbAAVa8Eifp8qJLPJBFjp4itZFIcCkcFyORpqtyComWNG
+         lqyg==
+X-Gm-Message-State: AOAM531G7TFUvrI9Qd9pY+0e2WkDsqf6ai67ouQA7NoY85Xb6U8ZGbTJ
+        Sa+LW4vFJmz6Vb1wZNkQN9H0i9vZZM0iqJBE
+X-Google-Smtp-Source: ABdhPJyz+ZeUJu57xCM99ZO3D/oL59Iu+3Go2FgbA5WiT03U2A7ip9gH11prhONktOjJgoIELiZw0Q==
+X-Received: by 2002:a17:902:6b0b:b0:158:f889:edd9 with SMTP id o11-20020a1709026b0b00b00158f889edd9mr11993926plk.122.1652014166759;
+        Sun, 08 May 2022 05:49:26 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id t3-20020a17090aae0300b001d5e1b124a0sm10756372pjq.7.2022.05.08.05.49.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 May 2022 05:49:26 -0700 (PDT)
+Message-ID: <df7755df-869d-86a9-bcd5-db0fd2762d31@kernel.dk>
+Date:   Sun, 8 May 2022 06:49:24 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 0/4] fast poll multishot mode
+Content-Language: en-US
+To:     Hao Xu <haoxu.linux@gmail.com>, io-uring@vger.kernel.org
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <20220507140620.85871-1-haoxu.linux@gmail.com>
+ <305fd65b-310c-9a9b-cb8c-6cbc3d00dbcb@kernel.dk>
+ <390a7780-b02b-b086-803c-a8540abfd436@gmail.com>
+ <f0a6c58f-62c0-737b-7125-9f75f8432496@kernel.dk>
+ <0b52bbd2-56de-c213-df3f-73f0f83a1f3a@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <0b52bbd2-56de-c213-df3f-73f0f83a1f3a@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As enforce_cache_coherency has been introduced into the iommu_domain_ops,
-the kernel component which owns the iommu domain is able to opt-in its
-requirement for force snooping support. The iommu driver has no need to
-hard code the page snoop control bit in the PASID table entries anymore.
+On 5/7/22 11:21 AM, Hao Xu wrote:
+> 在 2022/5/8 上午12:11, Jens Axboe 写道:
+>> On 5/7/22 10:05 AM, Hao Xu wrote:
+>>>> But we still need to consider direct accept with multishot... Should
+>>>> probably be an add-on patch as I think it'd get a bit more complicated
+>>>> if we need to be able to cheaply find an available free fixed fd slot.
+>>>> I'll try and play with that.
+>>>
+>>> I'm tending to use a new mail account to send v4 rather than the gmail
+>>> account since the git issue seems to be network related.
+>>> I'll also think about the fixed fd problem.
+>>
+>> Two basic attached patches that attempt do just alloc a fixed file
+>> descriptor for this case. Not tested at all... We return the fixed file
+>> slot in this case since we have to, to let the application know what was
+>> picked. I kind of wish we'd done that with direct open/accept to begin
+>> with anyway, a bit annoying that fixed vs normal open/accept behave
+>> differently.
+>>
+>> Anyway, something to play with, and I'm sure it can be made better.
+>>
+> Thanks. I tried to fix the mail account issue, still unclear what is
+> wrong, and too late at my timezone now, I'll try to send v4 tomorrow
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- drivers/iommu/intel/pasid.c | 3 ---
- 1 file changed, 3 deletions(-)
+No worries. IN the meantime, I played with allocated direct descriptors
+yesterday and implemented them for openat/openat2/accept:
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index d19dd66a670c..cb4c1d0cf25c 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -710,9 +710,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	pasid_set_fault_enable(pte);
- 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
- 
--	if (domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
--		pasid_set_pgsnp(pte);
--
- 	/*
- 	 * Since it is a second level only translation setup, we should
- 	 * set SRE bit as well (addresses are expected to be GPAs).
+https://git.kernel.dk/cgit/linux-block/log/?h=fastpoll-mshot
+
+It's independent of multishot accept in the sense that you can use it
+without that, but multishot accept requires it with fixed files.
+
+
 -- 
-2.25.1
+Jens Axboe
 
