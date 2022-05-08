@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB10C43217
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32711C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbiEHTWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
+        id S230309AbiEHTWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiEHTQ4 (ORCPT
+        with ESMTP id S231532AbiEHTPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 15:16:56 -0400
+        Sun, 8 May 2022 15:15:54 -0400
 Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C65D12AC9;
-        Sun,  8 May 2022 12:11:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C7312AC7;
+        Sun,  8 May 2022 12:11:12 -0700 (PDT)
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 248J8qSZ030019;
-        Mon, 9 May 2022 04:09:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 248J8qSZ030019
+        by conuserg-09.nifty.com with ESMTP id 248J8qSN030019;
+        Mon, 9 May 2022 04:08:52 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 248J8qSN030019
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652036946;
-        bh=OcOEuS6jEbLubdZRYm9mI6nzM08ugGxo0tuefY4hIgE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eZIpxuzVQHOvCGKNVQ5Q6EAgacFycWrfDwgPpm2YKbP1W++sglrhEvb9r5tAdP9hF
-         jbwUBL64udYCus7CP7ecavOjz9/2rI05jDDwHKGWw4FUu5xHLm82MK5RfSJCJPejlh
-         fVEvTrV4q5+NbuFSlC8IeUCJ1Y704vJ9K589+WFxhfmhrA6PObfKIUrEDNsxejJtnf
-         frJsolICKjQQbSFEYfpBXB+POTOHj9ou5vfWdM6FbTNtiBVVT74Adc6L9FA4SMWEJ3
-         dWJrettiH4X1yEbXJlT3e1ozeP0N64/06keDh4ebbNhs8nS1wUtilGU2z7gsNes0Y/
-         2etN8KymddvOw==
+        s=dec2015msa; t=1652036933;
+        bh=+vYUwETkJzeHMTCZ91mKcqrVUk+DZUgc4qJxVJGLB84=;
+        h=From:To:Cc:Subject:Date:From;
+        b=F4LJf0izMBoQwKKxFHapf/UWVkpce+bBOiPQDjYdwhGn4tjnhTYWvzVVqkcyPq804
+         wDV3dj2VXzZ3nUn50spW30wo44yeinntn/zLBECDNy+HKuo4c5WjW594yBUMLi9HJT
+         wh0d+02rTX2YFYjP5EQT1idNsaC0NZxLKCzsyElUxjIq91/u5NWViltNUAbCDr/fI1
+         c4RsAMtN7VODeWSApmkeeIwtBppqcGR83Ocb9ZjcSCDL6dvRZ/T1gTzeJUi+3NL62D
+         i3XLkjzJPLGGjjGT9pziJq2TeZyq+C4VDoadGLSYb3U3a6/WRGfI2AjWqpDZg7phzF
+         89WOSAQW+ZG/A==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
@@ -42,63 +42,81 @@ Cc:     linux-kernel@vger.kernel.org,
         Ard Biesheuvel <ardb@kernel.org>,
         Sami Tolvanen <samitolvanen@google.com>,
         Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v4 12/14] kbuild: make *.mod rule robust against too long argument error
-Date:   Mon,  9 May 2022 04:06:29 +0900
-Message-Id: <20220508190631.2386038-13-masahiroy@kernel.org>
+Subject: [PATCH v4 00/14] kbuild: yet another series of cleanups (modpost, LTO, MODULE_REL_CRCS, export.h)
+Date:   Mon,  9 May 2022 04:06:17 +0900
+Message-Id: <20220508190631.2386038-1-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220508190631.2386038-1-masahiroy@kernel.org>
-References: <20220508190631.2386038-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like built-in.a, the command length of the *.mod rule scales with
-the depth of the directory times the number of objects in the Makefile.
+This is the third batch of cleanups in this development cycle.
 
-Add $(obj)/ by the shell command (awk) instead of by Make's builtin
-function.
+Major changes in v4:
+ - Move static EXPORT_SYMBOL check to a script
+ - Some refactoring
 
-In-tree modules still have some room to the limit (ARG_MAX=2097152),
-but this is more future-proof for big modules in a deep directory.
+Major changes in v3:
 
-For example, you can build i915 as a module (CONFIG_DRM_I915=m) and
-compare drivers/gpu/drm/i915/.i915.mod.cmd with/without this commit.
+ - Generate symbol CRCs as C code, and remove CONFIG_MODULE_REL_CRCS.
 
-The issue is more critical for external modules because the M= path
-can be very long as Jeff Johnson reported before [1].
+Major changes in v2:
 
-[1] https://lore.kernel.org/linux-kbuild/4c02050c4e95e4cb8cc04282695f8404@codeaurora.org/
+ - V1 did not work with CONFIG_MODULE_REL_CRCS.
+   I fixed this for v2.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
----
+ - Reflect some review comments in v1
 
-(no changes since v2)
+ - Refactor the code more
 
-Changes in v2:
-  - New patch
+ - Avoid too long argument error
 
- scripts/Makefile.build | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 8f1a355df7aa..f546b5f1f33f 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -270,8 +270,8 @@ $(obj)/%.o: $(src)/%.c $(recordmcount_source) FORCE
- 	$(call if_changed_rule,cc_o_c)
- 	$(call cmd,force_checksrc)
- 
--cmd_mod = echo $(addprefix $(obj)/, $(call real-search, $*.o, .o, -objs -y -m)) | \
--	$(AWK) -v RS='( |\n)' '!x[$$0]++' > $@
-+cmd_mod = echo $(call real-search, $*.o, .o, -objs -y -m) | \
-+	$(AWK) -v RS='( |\n)' '!x[$$0]++ { print("$(obj)/"$$0) }' > $@
- 
- $(obj)/%.mod: FORCE
- 	$(call if_changed,mod)
+
+Masahiro Yamada (14):
+  modpost: remove left-over cross_compile declaration
+  modpost: change the license of EXPORT_SYMBOL to bool type
+  modpost: split the section mismatch checks into section-check.c
+  modpost: add sym_find_with_module() helper
+  modpost: extract symbol versions from *.cmd files
+  kbuild: link symbol CRCs at final link, removing
+    CONFIG_MODULE_REL_CRCS
+  kbuild: stop merging *.symversions
+  genksyms: adjust the output format to modpost
+  kbuild: do not create *.prelink.o for Clang LTO or IBT
+  kbuild: check static EXPORT_SYMBOL* by script instead of modpost
+  kbuild: make built-in.a rule robust against too long argument error
+  kbuild: make *.mod rule robust against too long argument error
+  kbuild: add cmd_and_savecmd macro
+  kbuild: rebuild multi-object modules when objtool is updated
+
+ arch/powerpc/Kconfig            |    1 -
+ arch/s390/Kconfig               |    1 -
+ arch/um/Kconfig                 |    1 -
+ include/asm-generic/export.h    |   22 +-
+ include/linux/export-internal.h |   16 +
+ include/linux/export.h          |   30 +-
+ init/Kconfig                    |    4 -
+ kernel/module.c                 |   10 +-
+ scripts/Kbuild.include          |   10 +-
+ scripts/Makefile.build          |  134 +--
+ scripts/Makefile.lib            |    7 -
+ scripts/Makefile.modfinal       |    5 +-
+ scripts/Makefile.modpost        |    9 +-
+ scripts/check-local-export      |   48 +
+ scripts/genksyms/genksyms.c     |   18 +-
+ scripts/link-vmlinux.sh         |   33 +-
+ scripts/mod/Makefile            |    2 +-
+ scripts/mod/modpost.c           | 1499 ++++---------------------------
+ scripts/mod/modpost.h           |   35 +-
+ scripts/mod/section-check.c     | 1222 +++++++++++++++++++++++++
+ 20 files changed, 1551 insertions(+), 1556 deletions(-)
+ create mode 100644 include/linux/export-internal.h
+ create mode 100755 scripts/check-local-export
+ create mode 100644 scripts/mod/section-check.c
+
 -- 
 2.32.0
 
