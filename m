@@ -2,159 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C496C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D80A6C4167B
 	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235642AbiEHTDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        id S238846AbiEHTGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237066AbiEHRJA (ORCPT
+        with ESMTP id S238191AbiEHScE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 13:09:00 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB50F64D5;
-        Sun,  8 May 2022 10:05:09 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id m190so9551213ybf.4;
-        Sun, 08 May 2022 10:05:09 -0700 (PDT)
+        Sun, 8 May 2022 14:32:04 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B962DF7;
+        Sun,  8 May 2022 11:28:14 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d22so11937911plr.9;
+        Sun, 08 May 2022 11:28:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W7Hl8BOx+adgs6geATfRW0o3lLPBvMogTGQ28EqLWaA=;
-        b=lkgMS1iIMVf9Fy72wcDl3MPVgbNj/S+8G4i7KuAJf12aCIWl55+lPEek3+Cenow8nR
-         9MKVshPKYtnCcMk0rVsRWXFDArby9lCwKFGx4DgqDTMfaDG5QVPNOwZkTwC9Jxkj/nIJ
-         Fk8j//X0r1kVv6Hg9udaF6oXWF5ny36hAwfrx01HEKaXznS6k51vQHJcyrclwvM51Y4F
-         P8dDk9/UJdLMJqBB3t106A3sIj91Zja4D7bj+rVDqRf4X/8WxBR2+t5oR05XYbHwr0OD
-         gMrsjh8hipq/WHjgIOHvgegA/bDIyxTeulYWnzhA1fAHcwgksc4HHVHiPW2o6Mx4XIQL
-         KsfQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=L0vTBUu7cERNrSt/2j/cpvelXrPJBDUXqkluepqf8b8=;
+        b=jSsthn14SJCrQ++glajXqdmZL710hNBoeiChvIIa2mF54enjFgsN60hFht2Ig41Y/F
+         s15VvMWd/z9OCWjSezTGMmY2w1Xk90IIymsv2zGmFAHbB+0kjZr5M23Ex7pAUV8YLSXx
+         i/QIgEi39FE6nPWsZwuVxbEmWf8HThYWGvVJyIlhUjMgbozOpZOm1P31r5iC73NzWcOn
+         Q+NOAdGnq0tzlWX9SGruGL7rgOkCKccpNd2zGoJsqJvoaOH0rJYyw7zp9aNTNKGhoBX+
+         HsQT2OVDnX5mnAKsyK1uGvOTvmD2vVaGz7fgfyCQ8ktGlH/gHfMLD0n6ekbJ5Y5YN8YF
+         jv1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W7Hl8BOx+adgs6geATfRW0o3lLPBvMogTGQ28EqLWaA=;
-        b=NLvw2lJxStQrCuNvjfyO3xqPZop1Y6fSBnXPAyn5Jb16O/nLYkMe8pcacj3AaIMLrU
-         yh80XV/vMjncQnFzaL+IR8hLopiWn4NluKY+MU8joZJAz0VXOKnNU2pJTD3u1wg0V3EF
-         da/DrMgUyQHuOCgaXz4ceZLE214XIgEXdVse3ukVjV8DVspYLjhS4BLmDwl3cwhzlPEK
-         6V0wWkD9usNJoXRSbq4lvHI7OxwI0EFaw0eEyNUjTKPYOq6I2fjZF44JcfkTwGdxFJ17
-         OfSAcFpF6YWOy/3aPnC5s2EFhfmCQqLCWLWXNZutEsqlx3m2l7gy78lSJd8KXtppXc0g
-         43Vg==
-X-Gm-Message-State: AOAM532TsM53Y7Wf5lP6ueTL403WXA9xn+JPbuZi6WHamWYOnxFdGzs3
-        fLzT9h7WVywc7xZc44dKB15BNc5Tjqz23ielG3c=
-X-Google-Smtp-Source: ABdhPJy+9aAnBuxa0JfhTFZ4aaqwddQqqO8njeM70HqTBYBOqN1hLMd22aoooSxKWRQg+5rhDWM0uUI6VEpipsrsGMI=
-X-Received: by 2002:a05:6902:143:b0:628:7cf1:f2a9 with SMTP id
- p3-20020a056902014300b006287cf1f2a9mr9464807ybh.51.1652029508882; Sun, 08 May
- 2022 10:05:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=L0vTBUu7cERNrSt/2j/cpvelXrPJBDUXqkluepqf8b8=;
+        b=MzrpBYrViDDEaJA6B03/PItHrkfao5EpWU+4yA+z+/ql5PARR4hvSj41qQq4gxHibG
+         EySzDANWliYeJjarsl4p+SatmvKxsXhoJJqhzS5Rvs5xDgxFPGqZhmH9HnF36CeKNRBA
+         Y2ezdv+p6i2+U7V5glbCgTSs7uRUgXXVOQASJGp/MRkfmR6f2XVGx5JuNDRJ7Eu76bGj
+         M+gLm4D7GgbBoFosngE/uUtxwGkF7YVGfwgwC5DFB4OshIQqNMzXblIgV0941JlQaGa0
+         08NkU3yVvz9anesvnf+qyR0UUKxwjhs0ZF98lTbKNEeoi4Eb2aO121vzMt+GHxqCGwfy
+         Pz8A==
+X-Gm-Message-State: AOAM530PFARqatliSGYIQp0w2M3txVSwfd5XqWsKt5VPEmVpBvmdGQka
+        PDwwBqmHArXamfHP06KiSvA=
+X-Google-Smtp-Source: ABdhPJz5nkrHBlEe+ZEiZjuwSpdX5J++4ul6PD3fhb/JnsqyltoFFFtmmBQ3dkbNfrlUPRbhl0WYJQ==
+X-Received: by 2002:a17:90a:f3cb:b0:1d9:62d4:25db with SMTP id ha11-20020a17090af3cb00b001d962d425dbmr14412062pjb.222.1652034493427;
+        Sun, 08 May 2022 11:28:13 -0700 (PDT)
+Received: from gmail.com ([2601:600:8500:5f14:d627:c51e:516e:a105])
+        by smtp.gmail.com with ESMTPSA id c2-20020aa79522000000b0050dc7628164sm7038349pfp.62.2022.05.08.11.28.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 11:28:12 -0700 (PDT)
+Date:   Sun, 8 May 2022 11:28:07 -0700
+From:   Andrei Vagin <avagin@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>, stable@kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH] fs: sendfile handles O_NONBLOCK of out_fd
+Message-ID: <YngLt9seLZBQ6Cer@gmail.com>
+References: <20220415005015.525191-1-avagin@gmail.com>
+ <CANaxB-wcf0Py9eCeA8YKcBSnwzW6pKAD5edCDUadebmo=JLYhA@mail.gmail.com>
+ <20220507145224.a9b6555969d6e66586b6514c@linux-foundation.org>
 MIME-Version: 1.0
-References: <20220507170440.64005-1-linux@fw-web.de> <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org>
- <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de> <2509116.Lt9SDvczpP@phil>
- <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
-In-Reply-To: <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Sun, 8 May 2022 13:04:56 -0400
-Message-ID: <CAMdYzYrG8bK-Yo15RjhhCQKS4ZQW53ePu1q4gbGxVVNKPJHBWg@mail.gmail.com>
-Subject: Re: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional and
- add rgmii-mode to mt7531
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Ungerer <gerg@kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=koi8-r
+Content-Disposition: inline
+In-Reply-To: <20220507145224.a9b6555969d6e66586b6514c@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 8, 2022 at 8:12 AM Frank Wunderlich <frank-w@public-files.de> wrote:
->
-> Hi Heiko
->
-> > Gesendet: Sonntag, 08. Mai 2022 um 11:41 Uhr
-> > Von: "Heiko Stuebner" <heiko@sntech.de>
-> > Am Sonntag, 8. Mai 2022, 08:24:37 CEST schrieb Frank Wunderlich:
-> > > Am 7. Mai 2022 22:01:22 MESZ schrieb Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>:
-> > > >On 07/05/2022 19:04, Frank Wunderlich wrote:
-> > > >> From: Frank Wunderlich <frank-w@public-files.de>
-> > > >>
-> > > >> Make reset optional as driver already supports it,
-> > > >
-> > > >I do not see the connection between hardware needing or not needing a
-> > > >reset GPIO and a driver supporting it or not... What does it mean?
-> > >
-> > > My board has a shared gpio-reset between gmac and switch, so both will resetted if it
-> > > is asserted. Currently it is set to the gmac and is aquired exclusive. Adding it to switch results in 2 problems:
-> > >
-> > > - due to exclusive and already mapped to gmac, switch driver exits as it cannot get the reset-gpio again.
-> > > - if i drop the reset from gmac and add to switch, it resets the gmac and this takes too long for switch
-> > > to get up. Of course i can increase the wait time after reset,but dropping reset here was the easier way.
-> > >
-> > > Using reset only on gmac side brings the switch up.
-> >
-> > I think the issue is more for the description itself.
-> >
-> > Devicetree is only meant to describe the hardware and does in general don't
-> > care how any firmware (Linux-kernel, *BSD, etc) handles it. So going with
-> > "the kernel does it this way" is not a valid reason for a binding change ;-) .
-> >
-> > Instead in general want to reason that there are boards without this reset
-> > facility and thus make it optional for those.
->
-> if only the wording is the problem i try to rephrase it from hardware PoV.
->
-> maybe something like this?
->
-> https://github.com/frank-w/BPI-R2-4.14/commits/5.18-mt7531-mainline2/Documentation/devicetree/bindings/net/dsa/mediatek%2Cmt7530.yaml
->
-> Another way is maybe increasing the delay after the reset (to give more time all
-> come up again), but imho it is no good idea resetting the gmac/mdio-bus from the
-> child device.
->
-> have not looked into the gmac driver if this always  does the initial reset to
-> have a "clean state". In this initial reset the switch will be resetted too
-> and does not need an additional one which needs the gmac/mdio initialization
-> to be done again.
+On Sat, May 07, 2022 at 02:52:24PM -0700, Andrew Morton wrote:
+> On Mon, 2 May 2022 00:01:46 -0700 Andrei Vagin <avagin@gmail.com> wrote:
+> 
+> > Andrew, could you take a look at this patch?
+> > 
+> > Here is a small reproducer for the problem:
+> > 
+> > #define _GNU_SOURCE /* See feature_test_macros(7) */
+> > #include <fcntl.h>
+> > #include <stdio.h>
+> > #include <unistd.h>
+> > #include <errno.h>
+> > #include <sys/stat.h>
+> > #include <sys/types.h>
+> > #include <sys/sendfile.h>
+> > 
+> > 
+> > #define FILE_SIZE (1UL << 30)
+> > int main(int argc, char **argv) {
+> >         int p[2], fd;
+> > 
+> >         if (pipe2(p, O_NONBLOCK))
+> >                 return 1;
+> > 
+> >         fd = open(argv[1], O_RDWR | O_TMPFILE, 0666);
+> >         if (fd < 0)
+> >                 return 1;
+> >         ftruncate(fd, FILE_SIZE);
+> > 
+> >         if (sendfile(p[1], fd, 0, FILE_SIZE) == -1) {
+> >                 fprintf(stderr, "FAIL\n");
+> >         }
+> >         if (sendfile(p[1], fd, 0, FILE_SIZE) != -1 || errno != EAGAIN) {
+> >                 fprintf(stderr, "FAIL\n");
+> >         }
+> >         return 0;
+> > }
+> > 
+> > It worked before b964bf53e540, it is stuck after b964bf53e540, and it
+> > works again with this fix.
+> 
+> Thanks.  How did b964bf53e540 cause this?  do_splice_direct()
+> accidentally does the right thing even when SPLICE_F_NONBLOCK was not
+> passed?
 
-For clarification, the reset gpio line is purely to reset the phy.
-If having the switch driver own the reset gpio instead of the gmac
-breaks initialization that means there's a bug in the gmac driver
-handling phy init.
-In testing I've seen issues moving the reset line to the mdio node
-with other phys and the stmmac gmac driver, so I do believe this is
-the case.
+do_splice_direct() calls pipe_write that handles O_NONBLOCK. Here is
+a trace log from the reproducer:
 
->
-> > > >> allow port 5 as
-> > > >> cpu-port
-> > > >
-> > > >How do you allow it here?
-> > >
-> > > Argh, seems i accidentally removed this part and have not recognized while checking :(
-> > >
-> > > It should only change description of reg for ports to:
-> > >
-> > > "Port address described must be 5 or 6 for CPU port and from 0 to 5 for user ports."
->
-> noticed that the target-phase is not removed but squashed in the first bindings-patch.
-> This was a rebasing error and not intented...will fix in next version.
->
-> regards Frank
+ 1)               |  __x64_sys_sendfile64() {
+ 1)               |    do_sendfile() {
+ 1)               |      __fdget()
+ 1)               |      rw_verify_area()
+ 1)               |      __fdget()
+ 1)               |      rw_verify_area()
+ 1)               |      do_splice_direct() {
+ 1)               |        rw_verify_area()
+ 1)               |        splice_direct_to_actor() {
+ 1)               |          do_splice_to() {
+ 1)               |            rw_verify_area()
+ 1)               |            generic_file_splice_read()
+ 1) + 74.153 us   |          }
+ 1)               |          direct_splice_actor() {
+ 1)               |            iter_file_splice_write() {
+ 1)               |              __kmalloc()
+ 1)   0.148 us    |              pipe_lock();
+ 1)   0.153 us    |              splice_from_pipe_next.part.0();
+ 1)   0.162 us    |              page_cache_pipe_buf_confirm();
+... 16 times
+ 1)   0.159 us    |              page_cache_pipe_buf_confirm();
+ 1)               |              vfs_iter_write() {
+ 1)               |                do_iter_write() {
+ 1)               |                  rw_verify_area()
+ 1)               |                  do_iter_readv_writev() {
+ 1)               |                    pipe_write() {
+ 1)               |                      mutex_lock()
+ 1)   0.153 us    |                      mutex_unlock();
+ 1)   1.368 us    |                    }
+ 1)   1.686 us    |                  }
+ 1)   5.798 us    |                }
+ 1)   6.084 us    |              }
+ 1)   0.174 us    |              kfree();
+ 1)   0.152 us    |              pipe_unlock();
+ 1) + 14.461 us   |            }
+ 1) + 14.783 us   |          }
+ 1)   0.164 us    |          page_cache_pipe_buf_release();
+... 16 times
+ 1)   0.161 us    |          page_cache_pipe_buf_release();
+ 1)               |          touch_atime()
+ 1) + 95.854 us   |        }
+ 1) + 99.784 us   |      }
+ 1) ! 107.393 us  |    }
+ 1) ! 107.699 us  |  }
+
+> 
+> I assume that Al will get to this.  Meanwhile I can toss it
+> into linux-next to get some exposure and so it won't be lost.
+> 
