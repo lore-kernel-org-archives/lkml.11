@@ -2,165 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80A6C4167B
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F75C4167E
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238846AbiEHTGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
+        id S238882AbiEHTGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238191AbiEHScE (ORCPT
+        with ESMTP id S1378051AbiEHSkd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 14:32:04 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B962DF7;
-        Sun,  8 May 2022 11:28:14 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id d22so11937911plr.9;
-        Sun, 08 May 2022 11:28:14 -0700 (PDT)
+        Sun, 8 May 2022 14:40:33 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD658DF40
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:36:41 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id i19so23004777eja.11
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 11:36:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L0vTBUu7cERNrSt/2j/cpvelXrPJBDUXqkluepqf8b8=;
-        b=jSsthn14SJCrQ++glajXqdmZL710hNBoeiChvIIa2mF54enjFgsN60hFht2Ig41Y/F
-         s15VvMWd/z9OCWjSezTGMmY2w1Xk90IIymsv2zGmFAHbB+0kjZr5M23Ex7pAUV8YLSXx
-         i/QIgEi39FE6nPWsZwuVxbEmWf8HThYWGvVJyIlhUjMgbozOpZOm1P31r5iC73NzWcOn
-         Q+NOAdGnq0tzlWX9SGruGL7rgOkCKccpNd2zGoJsqJvoaOH0rJYyw7zp9aNTNKGhoBX+
-         HsQT2OVDnX5mnAKsyK1uGvOTvmD2vVaGz7fgfyCQ8ktGlH/gHfMLD0n6ekbJ5Y5YN8YF
-         jv1A==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xBmn7X1sKMD561MY32VMh/zOVxyDoB4sLlJH4mBK1Yg=;
+        b=dr3n8iEg3Okpi2+98RAFGyaZsIkZq224vHkxOm2jpXBTr4bMWowz9Nq+aeGy5w2pE1
+         ZJ6350+ep2T6lHqgbhVu2oD65CQstrAqa+O3z6jHA46o2ZwHqJCfHDRMc+xQCXNRYAjR
+         Y3/d9df793izCkwXzJqiiChoAuyFekvCT/hKg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L0vTBUu7cERNrSt/2j/cpvelXrPJBDUXqkluepqf8b8=;
-        b=MzrpBYrViDDEaJA6B03/PItHrkfao5EpWU+4yA+z+/ql5PARR4hvSj41qQq4gxHibG
-         EySzDANWliYeJjarsl4p+SatmvKxsXhoJJqhzS5Rvs5xDgxFPGqZhmH9HnF36CeKNRBA
-         Y2ezdv+p6i2+U7V5glbCgTSs7uRUgXXVOQASJGp/MRkfmR6f2XVGx5JuNDRJ7Eu76bGj
-         M+gLm4D7GgbBoFosngE/uUtxwGkF7YVGfwgwC5DFB4OshIQqNMzXblIgV0941JlQaGa0
-         08NkU3yVvz9anesvnf+qyR0UUKxwjhs0ZF98lTbKNEeoi4Eb2aO121vzMt+GHxqCGwfy
-         Pz8A==
-X-Gm-Message-State: AOAM530PFARqatliSGYIQp0w2M3txVSwfd5XqWsKt5VPEmVpBvmdGQka
-        PDwwBqmHArXamfHP06KiSvA=
-X-Google-Smtp-Source: ABdhPJz5nkrHBlEe+ZEiZjuwSpdX5J++4ul6PD3fhb/JnsqyltoFFFtmmBQ3dkbNfrlUPRbhl0WYJQ==
-X-Received: by 2002:a17:90a:f3cb:b0:1d9:62d4:25db with SMTP id ha11-20020a17090af3cb00b001d962d425dbmr14412062pjb.222.1652034493427;
-        Sun, 08 May 2022 11:28:13 -0700 (PDT)
-Received: from gmail.com ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id c2-20020aa79522000000b0050dc7628164sm7038349pfp.62.2022.05.08.11.28.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 11:28:12 -0700 (PDT)
-Date:   Sun, 8 May 2022 11:28:07 -0700
-From:   Andrei Vagin <avagin@gmail.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>, stable@kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH] fs: sendfile handles O_NONBLOCK of out_fd
-Message-ID: <YngLt9seLZBQ6Cer@gmail.com>
-References: <20220415005015.525191-1-avagin@gmail.com>
- <CANaxB-wcf0Py9eCeA8YKcBSnwzW6pKAD5edCDUadebmo=JLYhA@mail.gmail.com>
- <20220507145224.a9b6555969d6e66586b6514c@linux-foundation.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xBmn7X1sKMD561MY32VMh/zOVxyDoB4sLlJH4mBK1Yg=;
+        b=A39Q55R6TZkb9GuWI7L6u0SuqWeGp89Ck6aZib+dx/1jn56OtCTzEMPbsMrtEV5jBt
+         mYnZnQmdrSFZdu9wWGQCNC+rAMM6y5IDzRz8kartp2Zz9GSR2OeeIWJdZ9ckZy3hDuap
+         53tFmb0xCOIS03kfpuQ+brnA6cFJUtlqPHhcDCTE3vRPfL7owNGYAaWSFqmbomyXSfAn
+         aLQLiMgG9EfOeJBimInOHBbh0FP5IJCJBiwsreHwFAIG5Jw/S444E9d1kX3ixMCsZHpk
+         UOs9hdDhqWep2XFnEd0XphwZpO1G1hLLSXjaSzMpICbJ3s6tpX3+l2ySOxfLkfAarCxB
+         oEVQ==
+X-Gm-Message-State: AOAM533tBLKIqb4wWuk674xOV0LhIEZegbEXPA6mxp+wJQsrYYMZ9GKd
+        xxgWnG7YWmd4zpc3+gU8R+D3j1s+DHedCt3y
+X-Google-Smtp-Source: ABdhPJxtH2wIKz2peAtt3wLzL4JzTxH/PAm+vbzZziEufVv8RawVhdbA19MsLxlzKxbWHrMV9IHv2A==
+X-Received: by 2002:a17:907:1c20:b0:6f4:639e:9400 with SMTP id nc32-20020a1709071c2000b006f4639e9400mr11323490ejc.485.1652035000138;
+        Sun, 08 May 2022 11:36:40 -0700 (PDT)
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
+        by smtp.gmail.com with ESMTPSA id cn18-20020a0564020cb200b0042617ba639esm5099113edb.40.2022.05.08.11.36.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 May 2022 11:36:39 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id x18so16693665wrc.0
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 11:36:39 -0700 (PDT)
+X-Received: by 2002:adf:dfc8:0:b0:20a:d256:5b5c with SMTP id
+ q8-20020adfdfc8000000b0020ad2565b5cmr10818059wrn.97.1652034999135; Sun, 08
+ May 2022 11:36:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
-In-Reply-To: <20220507145224.a9b6555969d6e66586b6514c@linux-foundation.org>
+References: <165201148069.536527.1960632033331546251.tglx@xen13>
+ <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com> <CAHk-=whj6m0B9ys4XyE4AAPPoXE7XpBtxL7mD3Rk6EYX1=Ugng@mail.gmail.com>
+In-Reply-To: <CAHk-=whj6m0B9ys4XyE4AAPPoXE7XpBtxL7mD3Rk6EYX1=Ugng@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 8 May 2022 11:36:23 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiEC-Jdx4iTP5NQ0a8stsU+SL0DjbTwhQ+mvPGNBXyMag@mail.gmail.com>
+Message-ID: <CAHk-=wiEC-Jdx4iTP5NQ0a8stsU+SL0DjbTwhQ+mvPGNBXyMag@mail.gmail.com>
+Subject: Re: [GIT pull] core/urgent for v5.18-rc6
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Zhangfei Gao <zhangfei.gao@foxmail.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 07, 2022 at 02:52:24PM -0700, Andrew Morton wrote:
-> On Mon, 2 May 2022 00:01:46 -0700 Andrei Vagin <avagin@gmail.com> wrote:
-> 
-> > Andrew, could you take a look at this patch?
-> > 
-> > Here is a small reproducer for the problem:
-> > 
-> > #define _GNU_SOURCE /* See feature_test_macros(7) */
-> > #include <fcntl.h>
-> > #include <stdio.h>
-> > #include <unistd.h>
-> > #include <errno.h>
-> > #include <sys/stat.h>
-> > #include <sys/types.h>
-> > #include <sys/sendfile.h>
-> > 
-> > 
-> > #define FILE_SIZE (1UL << 30)
-> > int main(int argc, char **argv) {
-> >         int p[2], fd;
-> > 
-> >         if (pipe2(p, O_NONBLOCK))
-> >                 return 1;
-> > 
-> >         fd = open(argv[1], O_RDWR | O_TMPFILE, 0666);
-> >         if (fd < 0)
-> >                 return 1;
-> >         ftruncate(fd, FILE_SIZE);
-> > 
-> >         if (sendfile(p[1], fd, 0, FILE_SIZE) == -1) {
-> >                 fprintf(stderr, "FAIL\n");
-> >         }
-> >         if (sendfile(p[1], fd, 0, FILE_SIZE) != -1 || errno != EAGAIN) {
-> >                 fprintf(stderr, "FAIL\n");
-> >         }
-> >         return 0;
-> > }
-> > 
-> > It worked before b964bf53e540, it is stuck after b964bf53e540, and it
-> > works again with this fix.
-> 
-> Thanks.  How did b964bf53e540 cause this?  do_splice_direct()
-> accidentally does the right thing even when SPLICE_F_NONBLOCK was not
-> passed?
+On Sun, May 8, 2022 at 11:09 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Looks like it is
+>
+>  ->(*sva_bind)()
+>     -> intel_svm_bind_mm()
+>       -> mmu_notifier_register(&svm->notifier, mm)
+>
+> and yes, the mmu notifiers annoyingly end up doing an mmgrab [..]
 
-do_splice_direct() calls pipe_write that handles O_NONBLOCK. Here is
-a trace log from the reproducer:
+Side note: quite independently of this mmgrab issue, I think the code
+in question is *very* suspect and horrendously fragile.
 
- 1)               |  __x64_sys_sendfile64() {
- 1)               |    do_sendfile() {
- 1)               |      __fdget()
- 1)               |      rw_verify_area()
- 1)               |      __fdget()
- 1)               |      rw_verify_area()
- 1)               |      do_splice_direct() {
- 1)               |        rw_verify_area()
- 1)               |        splice_direct_to_actor() {
- 1)               |          do_splice_to() {
- 1)               |            rw_verify_area()
- 1)               |            generic_file_splice_read()
- 1) + 74.153 us   |          }
- 1)               |          direct_splice_actor() {
- 1)               |            iter_file_splice_write() {
- 1)               |              __kmalloc()
- 1)   0.148 us    |              pipe_lock();
- 1)   0.153 us    |              splice_from_pipe_next.part.0();
- 1)   0.162 us    |              page_cache_pipe_buf_confirm();
-... 16 times
- 1)   0.159 us    |              page_cache_pipe_buf_confirm();
- 1)               |              vfs_iter_write() {
- 1)               |                do_iter_write() {
- 1)               |                  rw_verify_area()
- 1)               |                  do_iter_readv_writev() {
- 1)               |                    pipe_write() {
- 1)               |                      mutex_lock()
- 1)   0.153 us    |                      mutex_unlock();
- 1)   1.368 us    |                    }
- 1)   1.686 us    |                  }
- 1)   5.798 us    |                }
- 1)   6.084 us    |              }
- 1)   0.174 us    |              kfree();
- 1)   0.152 us    |              pipe_unlock();
- 1) + 14.461 us   |            }
- 1) + 14.783 us   |          }
- 1)   0.164 us    |          page_cache_pipe_buf_release();
-... 16 times
- 1)   0.161 us    |          page_cache_pipe_buf_release();
- 1)               |          touch_atime()
- 1) + 95.854 us   |        }
- 1) + 99.784 us   |      }
- 1) ! 107.393 us  |    }
- 1) ! 107.699 us  |  }
+In particular, the code ends up being called through things like this:
 
-> 
-> I assume that Al will get to this.  Meanwhile I can toss it
-> into linux-next to get some exposure and so it won't be lost.
-> 
+     handle = iommu_sva_bind_device(uacce->parent, current->mm, NULL);
+
+and then that Intel svm.c code does this:
+
+                svm->pasid = mm->pasid;
+                svm->mm = mm;
+                svm->flags = flags;
+
+and saves off that mm pointer in the 'svm' structure.
+
+AND IT NEVER TAKES ANY REFERENCE TO IT AT ALL!
+
+It then does
+
+        mm = svm->mm;
+
+later at some unspecified time, and the 'mm' might long since have died.
+
+In other words, the code works almost by accident - the only user of
+the 'mm' pointer seems to be that mmu_notifier_register() thing, so it
+basically treats the 'struct mm_struct' as something as a random
+cookie.
+
+And yes, the mmu notifiers do then take that mmgrab reference to the
+mm, so it all works.
+
+But it sure looks horrendously ugly. Saving off a 'struct mm_struct'
+pointer with having basically an accidental reference to it is WRONG.
+
+In fact, it will save off that pointer whether it then actually does
+the mmu_notifier thing on it, because the code actually does
+
+                [...]
+                svm->mm = mm;
+                svm->flags = flags;
+                INIT_LIST_HEAD_RCU(&svm->devs);
+
+                if (!(flags & SVM_FLAG_SUPERVISOR_MODE)) {
+                        svm->notifier.ops = &intel_mmuops;
+                        ret = mmu_notifier_register(&svm->notifier, mm);
+                [...]
+
+so that mmu_notifier_register() call is conditional. On the freeing
+path, it then uses that "svm->notifier.ops" pointer as a "did we
+register this thing or not" flag, so again - it all technically
+*works*, but this is all horrendously ugly and wrong on so many
+levels, keeping pointers around with very dubious reference counting
+indeed.
+
+               Linus
