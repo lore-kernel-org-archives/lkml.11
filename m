@@ -2,68 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB5BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA78C4167D
 	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239861AbiEHTH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52720 "EHLO
+        id S239842AbiEHTHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379975AbiEHSov (ORCPT
+        with ESMTP id S237379AbiEHRM1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 14:44:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D39BBE04
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:41:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98174612AB
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 049F7C385B1;
-        Sun,  8 May 2022 18:41:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652035260;
-        bh=tD/Da+t5Y2v4PFqm2+dfJQeXB5CoZm2hrbkJsc99IsQ=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Qe7tM50gj7L/cmGsw6S0h+1RdfTYKRrE1ZZHZ4+e+tDkpbn0VTIzwUDQ/Vfz4nzGR
-         jGadjqeA2119Ox+ZlUmPylu+Hj325f4wmGSpSam/wSkPu5hSxJLejSA15VuSgaQ9EU
-         No8R1YdB7+CgC2QDqBsL4tjATl4eTpXcD2nWFCVfJq64GOv+sCBFiS4QurFzY4DRUy
-         Ilt11qdbwYPgRvwJNvR1awpfT/eCPPStcQhpKrwiQmMhpDvg5ESp7KO5PFUdgae3vu
-         L7hKJ2Si1AUKjemNobdjfY8ydJpFvDVvHJg/mU5JYRogG2yZCS1IRrRpdobdl2zy64
-         B091DwEA+b3Hg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E23B8E5D087;
-        Sun,  8 May 2022 18:40:59 +0000 (UTC)
-Subject: Re: [GIT pull] timers/urgent for v5.18-rc6
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <165201148510.536527.10163841261763309889.tglx@xen13>
-References: <165201148069.536527.1960632033331546251.tglx@xen13> <165201148510.536527.10163841261763309889.tglx@xen13>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <165201148510.536527.10163841261763309889.tglx@xen13>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-urgent-2022-05-08
-X-PR-Tracked-Commit-Id: 2c33d775ef4c25c0e1e1cc0fd5496d02f76bfa20
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ea82593bad9a77f6f14c9701c13ff7368b22f027
-Message-Id: <165203525992.974.17660962951273192852.pr-tracker-bot@kernel.org>
-Date:   Sun, 08 May 2022 18:40:59 +0000
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, x86@kernel.org
+        Sun, 8 May 2022 13:12:27 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3B3B7EC;
+        Sun,  8 May 2022 10:08:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=rCdXSvZjp6F8gmuuM1Bzn/n/1RjrsEENuke5qJWo6Ik=; b=ZITLMC7DKkB4Trwc7bNWRzlWiR
+        uT0nYzvCip831JpgQyklirM6W5ZtBvwI/rbUgZG25OXn37GktTQvcDVwZvekFIFN3RlwQjbeMxQNZ
+        t8svRibUKtQ5pSma7ZHwD4rhYKKSKUMuCXUudxB/lKBTjcYTiXuIP90H0LBavuHykOSLAYZBR0n+N
+        xlbmj9fmytKxcHJHrhHJQrB6rfhARHN0rdqB7mMnuDA1ZrH+oqN64jvGi1P+6adiJ4DRVajMHBRqD
+        xcUx+jC59ig3ERAVQ/K3bOHlarpWldz6ZU9Jf6bS+1+KW5lZVKfkttKna9E0jBro6nPjtg4Fm6//P
+        zy6sUqmw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nnkOI-002foo-RN; Sun, 08 May 2022 17:08:18 +0000
+Date:   Sun, 8 May 2022 18:08:18 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        mike.kravetz@oracle.com, akpm@linux-foundation.org, sj@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [RFC PATCH 0/3] Introduce new huge_ptep_get_access_flags()
+ interface
+Message-ID: <Ynf5Aje8FXlPdOSl@casper.infradead.org>
+References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun,  8 May 2022 14:05:24 +0200 (CEST):
+On Sun, May 08, 2022 at 04:58:51PM +0800, Baolin Wang wrote:
+> As Mike pointed out [1], the huge_ptep_get() will only return one specific
+> pte value for the CONT-PTE or CONT-PMD size hugetlb on ARM64 system, which
+> will not take into account the subpages' dirty or young bits of a CONT-PTE/PMD
+> size hugetlb page. That will make us miss dirty or young flags of a CONT-PTE/PMD
+> size hugetlb page for those functions that want to check the dirty or
+> young flags of a hugetlb page. For example, the gather_hugetlb_stats() will
+> get inaccurate dirty hugetlb page statistics, and the DAMON for hugetlb monitoring
+> will also get inaccurate access statistics.
+> 
+> To fix this issue, one approach is that we can define an ARM64 specific huge_ptep_get()
+> implementation, which will take into account any subpages' dirty or young bits.
+> However we should add a new parameter for ARM64 specific huge_ptep_get() to check
+> how many continuous PTEs or PMDs in this CONT-PTE/PMD size hugetlb, that means we
+> should convert all the places using huge_ptep_get(), meanwhile most places using
+> huge_ptep_get() did not care about the dirty or young flags at all.
+> 
+> So instead of changing the prototype of huge_ptep_get(), this patch set introduces
+> a new huge_ptep_get_access_flags() interface and define an ARM64 specific implementation,
+> that will take into account any subpages' dirty or young bits for CONT-PTE/PMD size
+> hugetlb page. And we can only change to use huge_ptep_get_access_flags() for those
+> functions that care about the dirty or young flags of a hugetlb page.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-urgent-2022-05-08
+I question whether this is the right approach.  I understand that
+different hardware implementations have different requirements here,
+but at least one that I'm aware of (AMD Zen 2/3) requires that all
+PTEs that are part of a contig PTE must have identical A/D bits.  Now,
+you could say that's irrelevant because it's x86 and we don't currently
+support contPTE on x86, but I wouldn't be surprised to see that other
+hardware has the same requirement.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ea82593bad9a77f6f14c9701c13ff7368b22f027
+So what if we make that a Linux requirement?  Setting a contPTE dirty or
+accessed becomes a bit more expensive (although still one/two cachelines,
+so not really much more expensive than a single write).  Then there's no
+need to change the "get" side of things because they're always identical.
 
-Thank you!
+It does mean that we can't take advantage of hardware setting A/D bits,
+unless hardware can be persuaded to behave this way.  I don't have any
+ARM specs in front of me to check.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+I don't have a hard objection to your approach, I just want to discuss
+other possibilities.
