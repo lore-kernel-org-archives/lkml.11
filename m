@@ -2,130 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 904D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234594AbiEHPMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 11:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
+        id S234643AbiEHPR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 11:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234437AbiEHPM3 (ORCPT
+        with ESMTP id S234601AbiEHPRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 11:12:29 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6827BDFA6
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 08:08:39 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so267786pjq.2
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 08:08:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fD2NKbHhBWw9eBsTe1mP9moLD1y5EWQbU6ALqfSO3Wk=;
-        b=Ko5uJ/CgpE5N5MzJuVdoLFcIe/sxyftWIVZjtDxdgeLVWbZWp0M6rPUJPN1+PXytou
-         qAvVZYxAiRj+V6jION1XzQFQPubTbA7zhrctojMA/iDOCSmMf6EMDiFhy/r8V0Q06Pde
-         Z06oGmVf2UEf6ziTvny8IfiLye5VKghQ/36ETPbyo9VfUbNgznX3xLD8eOe+NyJLg/BQ
-         f1rUXK0goNeVvCqA6juraDYy7J39zHYTw+gqLtduxTTAwUAgHCj2e/CEJ7BBV7i5e7ku
-         zocBrpFUOUhuQxNTsLFBh6cLJreZjXAULTTBWeQi6crfiqLZ1RmbA1ww6ax/+LrO/+Mp
-         rxUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fD2NKbHhBWw9eBsTe1mP9moLD1y5EWQbU6ALqfSO3Wk=;
-        b=tI6ZcD0gX6jKPoDi1tX/BjGRdeqacWr/iWttbc9m4n+N1WpYZ2ApkvEPLu2OhM7G0r
-         omSvesCsAOwg9dNNR0zFwO+fy+8nK9E0jkPbYyCgBMVhMr9V4PrDcIIye3wkM3wVDGRO
-         AYC3IkExQceEvvkgBcQhic5Dk6AJNi6GW3noQTIj7gPGabCUsgI0RBTWYkyV60xX8sYJ
-         ETasVZ6o/MdBxwasOJsSn52sXX3mdKa57xZWVBa0DA1UmIEpVeMGAHR17IwlvbyQHndU
-         UWl4ZilpOM29WLqNbXNqh+6QL046l/SJzqJQqJPA0WDVziS2ep9XJQoqYWJ5T8ATj21y
-         Z3RA==
-X-Gm-Message-State: AOAM531Rs7ZsQlImbB2wzX7v00nU0qeBwdH/vuVitbTCpKwzSBo78CRp
-        Iy2N3C5iUC2vqFwyjCHuLRDkpaohUd/FIPnoFUM=
-X-Google-Smtp-Source: ABdhPJx3MQBXUbBbVVYmpzfJnFj1/Qtv2DRUENonD04/QNtnwvF0qPfte0ACHEjRM6aPJbZ1fN5sSg==
-X-Received: by 2002:a17:90a:b307:b0:1bd:37f3:f0fc with SMTP id d7-20020a17090ab30700b001bd37f3f0fcmr22377422pjr.132.1652022518742;
-        Sun, 08 May 2022 08:08:38 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (104-237-153-19.ip.linodeusercontent.com. [104.237.153.19])
-        by smtp.gmail.com with ESMTPSA id c6-20020aa79526000000b0050dc7628155sm6881214pfp.47.2022.05.08.08.08.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 08:08:38 -0700 (PDT)
-Date:   Sun, 8 May 2022 23:08:32 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel@vger.kernel.org, James Clark <James.Clark@arm.com>,
-        German Gomez <german.gomez@arm.com>
-Subject: Re: [PATCH V2 00/23] perf intel-pt: Better support for perf record
- --cpu
-Message-ID: <20220508150832.GA278102@leoy-ThinkPad-X240s>
-References: <20220506122601.367589-1-adrian.hunter@intel.com>
+        Sun, 8 May 2022 11:17:17 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 08 May 2022 08:13:27 PDT
+Received: from mx1.arbitrary.ch (may.arbitrary.ch [IPv6:2a01:4f8:221:3641::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A07ADF20
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 08:13:27 -0700 (PDT)
+Received: from [0.0.0.0] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: peter)
+        by mx1.arbitrary.ch (Postfix) with ESMTPSA id C618314EE0D7;
+        Sun,  8 May 2022 16:56:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=arbitrary.ch;
+        s=mx1-arbitrary-ch; t=1652021793;
+        bh=45/69u/Kyw1A3HHSPSfkFbn8AxFRBJSrAkChF2wibpI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=P53WUHv/EG5cqw2Vn/+gR69BnnVreV6ecqcT+FqYOK3SEv5Ufb84ygSR+sBxc+gZy
+         GTdK9X9YUa142/zTanEu6hjcusvas7Xo5ZsHLbrBy0LGoGdA4Pnb+g1eQ4FpXZIfPG
+         sgAeI4tcpVyzD7Ymo276lAYI9N2yC4ZaoVHM1u8LONUwA88k9l17xm1N50BLJNZHVT
+         OEWfjgrlOHt3eS5/daC5kvdDbWcZwF8tK7vtKeCkm0r3nZNTn19Rq+gA3YQOin+GWX
+         4sV//jYK9rOjU2Lbwd/Q5OAto7NoZoiaReH/9rznJLmz00nkpIjVmQkwenFSIUcP2I
+         A+JhN0F0cbSnA==
+Message-ID: <8e472c9e-2076-bc25-5912-8433adf7b579@arbitrary.ch>
+Date:   Sun, 8 May 2022 16:56:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220506122601.367589-1-adrian.hunter@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+From:   Peter Gerber <peter@arbitrary.ch>
+To:     kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH] Decouple slub_debug= from no_hash_pointers again
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Adrian,
+While, as mentioned in 792702911f58, no_hash_pointers is what
+one wants for debugging, this option is also used for hardening.
 
-On Fri, May 06, 2022 at 03:25:38PM +0300, Adrian Hunter wrote:
-> Hi
-> 
-> Here are V2 patches to support capturing Intel PT sideband events such as
-> mmap, task, context switch, text poke etc, on every CPU even when tracing
-> selected user_requested_cpus.  That is, when using the perf record -C or
->  --cpu option.
-> 
-> This is needed for:
-> 1. text poke: a text poke on any CPU affects all CPUs
-> 2. tracing user space: a user space process can migrate between CPUs so
-> mmap events that happen on a different CPU can be needed to decode a
-> user_requested_cpus CPU.
-> 
-> For example:
-> 
-> 	Trace on CPU 1:
-> 
-> 	perf record --kcore -C 1 -e intel_pt// &
-> 
-> 	Start a task on CPU 0:
-> 
-> 	taskset 0x1 testprog &
-> 
-> 	Migrate it to CPU 1:
-> 
-> 	taskset -p 0x2 <testprog pid>
-> 
-> 	Stop tracing:
-> 
-> 	kill %1
-> 
-> 	Prior to these changes there will be errors decoding testprog
-> 	in userspace because the comm and mmap events for testprog will not
-> 	have been captured.
+Various places recommend or use slub_debug for hardening:
 
-Thanks a lot for this patch set, I believe this is a common issue for
-AUX trace (not only for Intel-PT), so I verified this patch set for both
-Arm CoreSight and SPE; unfortunately both cannot see MMAP events for
-migrated task.  I used below commands:
+a) The Kernel Self Protection Project lists slub_debug as
+   a recommended setting. [1]
+b) Debian offers package hardening-runtime [2] which enables
+   slub_debug for hardening.
+c) Security- and privacy-oriented Tails enables slub_debug
+   by default [3].
 
-  # perf record -B -N --no-bpf-event -e cs_etm//u -C 0 -- taskset --cpu-list 1 uname
-  # perf script  --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
-  0
+I understand that encountering hashed pointers during debugging
+is most unwanted. Thus, I updated the documentation to make
+it as clear as possible that no_hash_pointers is what one
+wants when using slub_debug for debugging. I also added a
+mentioned of the hardening use case in order to discourage
+any other, well-meant, tries to disable hashing with slub_debug.
 
+[1]: https://kernsec.org/wiki/index.php/Kernel_Self_Protection_Project/Recommended_Settings
+[2]: https://packages.debian.org/bullseye/hardening-runtime
+[3]: https://tails.boum.org/contribute/design/kernel_hardening/
 
-  # perf record -B -N --no-bpf-event -e arm_spe_0//u -C 0 -- taskset --cpu-list 1 uname
-  # perf script --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
-  0
+Fixes: 792702911f58 ("slub: force on no_hash_pointers when slub_debug is enabled")
+Cc: Stephen Boyd <swboyd@chromium.org>
+Cc: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/kernel-hardening/202204121715.11B2CA80@keescook/T/#t
+---
+ Documentation/admin-guide/kernel-parameters.txt |  5 +++--
+ Documentation/vm/slub.rst                       | 10 ++++++++++
+ include/linux/kernel.h                          |  2 --
+ mm/slub.c                                       |  4 ----
+ 4 files changed, 13 insertions(+), 8 deletions(-)
 
-I didn't dive into details for this patch set, so I cannot say the
-failure is caused by any issue in this patch set.  But it's definitely
-we need to look into for Arm platforms to root cause what's the reason
-it cannot record MMAP events properly when migrate tasks.  Loop James
-and German for this reason.
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed..8987c07e206c 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5344,8 +5344,9 @@
+ 			culprit if slab objects become corrupted. Enabling
+ 			slub_debug can create guard zones around objects and
+ 			may poison objects when not in use. Also tracks the
+-			last alloc / free. For more information see
+-			Documentation/vm/slub.rst.
++			last alloc / free. If used for debugging, rather
++			than hardening, also set no_hash_pointers.
++			For more information see Documentation/vm/slub.rst.
+ 
+ 	slub_max_order= [MM, SLUB]
+ 			Determines the maximum allowed order for slabs.
+diff --git a/Documentation/vm/slub.rst b/Documentation/vm/slub.rst
+index d3028554b1e9..1ae6c27d0ff0 100644
+--- a/Documentation/vm/slub.rst
++++ b/Documentation/vm/slub.rst
+@@ -41,6 +41,16 @@ slub_debug=<Debug-Options>,<slab name1>,<slab name2>,...
+ 	Enable options only for select slabs (no spaces
+ 	after a comma)
+ 
++.. hint::
++
++   **Also enable no_hash_pointers** for debugging. Otherwise, only hashed
++   pointers are printed.
++
++   Hashing is disabled by default because this option, despite having
++   debug in its name, is also in useed to provide `additional hardening`_.
++
++.. _additional hardening: https://kernsec.org/wiki/index.php/Kernel_Self_Protection_Project/Recommended_Settings
++
+ Multiple blocks of options for all slabs or selected slabs can be given, with
+ blocks of options delimited by ';'. The last of "all slabs" blocks is applied
+ to all slabs except those that match one of the "select slabs" block. Options
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index fe6efb24d151..e3d9d3879495 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -229,8 +229,6 @@ int sscanf(const char *, const char *, ...);
+ extern __scanf(2, 0)
+ int vsscanf(const char *, const char *, va_list);
+ 
+-extern int no_hash_pointers_enable(char *str);
+-
+ extern int get_option(char **str, int *pint);
+ extern char *get_options(const char *str, int nints, int *ints);
+ extern unsigned long long memparse(const char *ptr, char **retptr);
+diff --git a/mm/slub.c b/mm/slub.c
+index ed5c2c03a47a..b78ccfde9214 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -4800,10 +4800,6 @@ void __init kmem_cache_init(void)
+ 	if (debug_guardpage_minorder())
+ 		slub_max_order = 0;
+ 
+-	/* Print slub debugging pointers without hashing */
+-	if (__slub_debug_enabled())
+-		no_hash_pointers_enable(NULL);
+-
+ 	kmem_cache_node = &boot_kmem_cache_node;
+ 	kmem_cache = &boot_kmem_cache;
+ 
+-- 
+2.35.1
 
-Thanks,
-Leo
