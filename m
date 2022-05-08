@@ -2,64 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5101C35296
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238971AbiEHTIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
+        id S236002AbiEHTIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238521AbiEHRr5 (ORCPT
+        with ESMTP id S238820AbiEHSWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 13:47:57 -0400
-X-Greylist: delayed 331 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 08 May 2022 10:44:04 PDT
-Received: from fx.arvanta.net (static-213-198-238-194.adsl.eunet.rs [213.198.238.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E74DBE10;
-        Sun,  8 May 2022 10:44:04 -0700 (PDT)
-Received: from m1 (unknown [10.5.1.15])
-        by fx.arvanta.net (Postfix) with ESMTP id D245E2B2FB;
-        Sun,  8 May 2022 19:38:29 +0200 (CEST)
-Date:   Sun, 8 May 2022 19:38:30 +0200
-From:   Milan =?utf-8?Q?P=2E_Stani=C4=87?= <mps@arvanta.net>
-To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     Philip Rinn <rinni@inventati.org>, wens@csie.org,
-        Samuel Holland <samuel@sholland.org>, robh+dt@kernel.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] arm64: dts: allwinner: a64: olinuxino: Enable audio
-Message-ID: <YngAFrGeivZpJ5dK@m1>
-References: <4fc41278-c46c-6486-a336-f2a329bd6bd0@sholland.org>
- <20220407155145.10891-1-rinni@inventati.org>
- <40976a35-2241-a2f0-c9be-dd32c1b51814@sholland.org>
- <4727823.31r3eYUQgx@kista>
+        Sun, 8 May 2022 14:22:39 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17449AE65
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:18:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652033928; x=1683569928;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=GtdZ1E9Jkp9Y4LzBoCJIoFrMBZvx8eD6iNyCc5Ta3xo=;
+  b=OC+xffa+sJ/CZgMzQ5QM0FJTiQo5G1wzATK7JwxNA9iLLR6ckrs+5wY0
+   /n1JAHmj7RN/lPmOtKrp9txNZZu8LCzl9W6Sh7NclHH0Vnh4ghgHDQwnc
+   Ga1XbOAq0bugTNL37+Vx+eNiciGenN39ACmJUYqUF6xBfHYTuQHQo/Wpc
+   Mcm+ejQjWaWQ6ClTBrEJp9L/E7RX3whqwF2n/snZ6i7uM7lptmDCYoAfi
+   hpaSqnm8yzzE0IGq1edfo0fvQaH/DV9jvr3LWjvy4lBTDZ8ffF31mimQ1
+   xOpSNI7D0lDMpPU4kjgaVMJ8regv/kJfiQos16WQiE4GIdkK7vEcldwM8
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="355298516"
+X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
+   d="scan'208";a="355298516"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 11:18:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
+   d="scan'208";a="655578036"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 May 2022 11:18:46 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nnlUT-000FhR-RF;
+        Sun, 08 May 2022 18:18:45 +0000
+Date:   Mon, 9 May 2022 02:18:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        0day robot <lkp@intel.com>, Junwen Wu <wudaemon@163.com>
+Subject: drivers/thermal/thermal_sysfs.c:794:5: warning: ISO C90 forbids
+ mixed declarations and code
+Message-ID: <202205090229.ZuiS9dze-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4727823.31r3eYUQgx@kista>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-04-10 at 20:23, Jernej Škrabec wrote:
-> Dne petek, 08. april 2022 ob 00:06:01 CEST je Samuel Holland napisal(a):
-> > On 4/7/22 10:51 AM, Philip Rinn wrote:
-> > > Enable the audio hardware on the Olimex A64-OLinuXino board family.
-> > > Tested on the A64-OLinuXino-2Ge8G-IND variant.
-> > > 
-> > > Signed-off-by: Philip Rinn <rinni@inventati.org>
-> > 
-> > Acked-by: Samuel Holland <samuel@sholland.org>
-> 
-> Applied to sunxi/dt-for-5.19. Thanks!
+tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220508-232600/Zhang-Rui/thermal-thermal_stats-skip-broken-trans_table/20220419-165035
+head:   a9158ddd9f2a97e356583d0bdb81c4e6822e6ad7
+commit: a9158ddd9f2a97e356583d0bdb81c4e6822e6ad7 thermal/core: change mm alloc method to avoid kernel warning
+date:   3 hours ago
+config: m68k-randconfig-r021-20220508 (https://download.01.org/0day-ci/archive/20220509/202205090229.ZuiS9dze-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a9158ddd9f2a97e356583d0bdb81c4e6822e6ad7
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review UPDATE-20220508-232600/Zhang-Rui/thermal-thermal_stats-skip-broken-trans_table/20220419-165035
+        git checkout a9158ddd9f2a97e356583d0bdb81c4e6822e6ad7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-About week ago I made nearly same patch but Jernej pointed me to this
-one. I applied this patch and it works like one I made.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Audio output works fine, but recording doesn't work at all in my tests.
-I can hear myself from microphone on headphones quite fine but 'arecord'
-records only some kind of white noise. Tried all alsamixer widget
-combinations but didn't managed to record anything.
+All warnings (new ones prefixed by >>):
 
-Kind regards
+   drivers/thermal/thermal_sysfs.c: In function 'find_show_state':
+>> drivers/thermal/thermal_sysfs.c:794:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     794 |     int l = min, r = max, mid, cnt = 0;
+         |     ^~~
+
+
+vim +794 drivers/thermal/thermal_sysfs.c
+
+   785	
+   786	static int find_show_state( int *nums, int numsSize, int k, unsigned int *max_value)
+   787	{
+   788	    int i, min = INT_MAX, max = 0;
+   789	    for( i = 0; i < numsSize; ++i )
+   790	    {
+   791	        min = nums[i] < min ? nums[i] : min;
+   792	        max = nums[i] > max ? nums[i] : max;
+   793	    }
+ > 794	    int l = min, r = max, mid, cnt = 0;
+   795	    while( l < r )
+   796	    {
+   797	        mid = r - (r - l) / 2;
+   798	        for( i = 0; i < numsSize; ++i )
+   799	        {
+   800	            if( nums[i] >= mid )
+   801	                ++cnt;
+   802	        }
+   803	        if( cnt < k )
+   804	        {
+   805	            r = mid - 1;
+   806	            cnt = 0;
+   807	        }
+   808	        else
+   809	        {
+   810	            l = mid;
+   811	            cnt = 0;
+   812	        }
+   813	    }
+   814	     *max_value = max;
+   815	    return l;
+   816	}
+   817	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
