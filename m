@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A181C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEE9C35296
 	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378614AbiEHTLn (ORCPT
+        id S1379514AbiEHTLq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        Sun, 8 May 2022 15:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237683AbiEHTEg (ORCPT
+        with ESMTP id S237863AbiEHTEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 15:04:36 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFECA2B4
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 12:00:32 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id h127-20020a1c2185000000b003946c466c17so210735wmh.4
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 12:00:32 -0700 (PDT)
+        Sun, 8 May 2022 15:04:40 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122DDDDE
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 12:00:35 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id j15so16738378wrb.2
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 12:00:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1XeJnNNlIllodvcVQo3PDKeXH2oW9QkUYejnaC12tvI=;
-        b=EKLb8gFApnhW1NHMOvk+HTnlP5d2IGcAS2IJkExF+KZUAFIXqmLMINZEwKiXIcd+PX
-         GeWTv2PjtyigU6V14+/nkFywTtyo65wizpAdkkboK8pdgfqzN+PzGMUwo4O1l2ZFgCFU
-         Gy8ec67I/C7DsrhErMIpBYpCgTfcUA/6dX8jGmOGnHpN8G3MkSn1pDEhuGYLmWhHmGAX
-         jURzzE1OSPkaJu8qL7qKeUR7DbunQnafGYNtKt2anQugwEOhiII0PZEqP1Lpbv/xMPnJ
-         WGSXmsKx4Jci2WDX/6FJdn2c5T8pKFFRHO4jTyZab3ylxEMTT5HwUfC30hOIrfhkAsvp
-         VsGg==
+        bh=mMwemA1KBr+zaynR0+gGDDohbL3jNdImjBWzdvOknd8=;
+        b=EKtj9FmoJmyr7uYOyeb7nMFyHdD1zia/sjrPRiCyT+J8yo1CQN+YccLI1tcJSuVl10
+         y2M02JQk1GHo8X7n1gMYaNNIbnaDELayQurEp9mspRqcXxrLxRJoaDhqXpGmclwy193H
+         ow/LDsq2FlBGJqO+vn4caA5HuaIIY01+rzzlsBlApA39FLqyQo2ftfoVO6WG4OoshcWN
+         amj0kDQCe5XquyWjqcR0i86Oce3A2wsz1O3Of2wmAF4QpMIsFNN3MQ1M0uvO/KZ5miwh
+         h9V6LKleVlcyueROSR7e9v1LLkni2viH+sGl2ehMGnqtfY9KbqdeHzMKYv7cuU8Gnj8U
+         rw1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1XeJnNNlIllodvcVQo3PDKeXH2oW9QkUYejnaC12tvI=;
-        b=hgBsBOGGSN6qppCCFVHhdZdqoAPpcVk4nK6AJTvSkiwsfJG5by1E1nuBxLONzbxSAf
-         Z/5C/O4UggFFv/S6AJFG5mBP+r9JYZIy0Y2L8FY7mUNf/ofoJgJwisVhMWDZPaRPNrdz
-         1naLbG4UuGKcw3A/9WuvGNFUNE8/0CztRZXkhQuhltlUAISy3uKHSL+wnmyzmChamV8R
-         h/h3/3qjbPgSn0nZC3tnecPZofs64jY8Bs0OtTIu31HdQG/YEClIfqKYnKi6WJiYbUsG
-         Ub0dTLUiTuUxCaws/w5++Jozyxvlyx6CMtcwidN6Cm7mS2bZ0mL30Wy+K6+zDhLlTs45
-         iRHw==
-X-Gm-Message-State: AOAM533o+RXe3RLzXrksis0qRGm2pGubWUBj31lQG3mb2go54dfhpVF2
-        1agNPfx8Glc4iMvQsdLmHpmhCA==
-X-Google-Smtp-Source: ABdhPJwwRntsdzFUuXKfkmpqvNijx908tSi2UxBRgQNCzWBUOaPaiLjRkknap7Jh4nyl+xg16ddrDg==
-X-Received: by 2002:a05:600c:4994:b0:394:dcb:d66d with SMTP id h20-20020a05600c499400b003940dcbd66dmr19323600wmp.178.1652036431415;
-        Sun, 08 May 2022 12:00:31 -0700 (PDT)
+        bh=mMwemA1KBr+zaynR0+gGDDohbL3jNdImjBWzdvOknd8=;
+        b=x28OwRTbK3Z/IysDrN6+L5/PUyq+Q1s8IVw79MU3g0LpGq00tZRLp9PESOCqSZRmBU
+         shkhrbSqG/4wcc1JvjB41kKAnSH3fGaFdnZG//djkyY8zw4HPgEVrI5OAKjpqaCqPCmY
+         sTT2syiWfX59675oPTSSLRGppbxTX/3DEtscv0beputjs6fNIQVzdS1fPxM+VrzH+ToK
+         zVgAsGJVF1wL9jexzM+EgMuOptOo2IO8WVNPGndbMOMPipovQ8gJERpNt5H3VzQAT0Bg
+         kyBXiVquISz5tnPoGHwAVio8eaOUBT9QiEpuV2cY54Jvekm1yMvFHjKrSpBJhj6Do2Eb
+         CSNA==
+X-Gm-Message-State: AOAM530ptzNbFP64KhrMlFojkJX6ylnTKFgy6JzuD4KkNyIU8pASfNWK
+        EFYLFsKw0nOMgLhDlu+2nymhjw==
+X-Google-Smtp-Source: ABdhPJwn2fQPOM2L3JnuiJ6deNhGCDHhqvrOJr1Y+w1dWYse552yfSIZSbwVBC26KFirLL3OjH8A8g==
+X-Received: by 2002:a5d:444f:0:b0:20a:cd55:8c32 with SMTP id x15-20020a5d444f000000b0020acd558c32mr11382140wrr.586.1652036434655;
+        Sun, 08 May 2022 12:00:34 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id n16-20020a05600c3b9000b00394699f803dsm10552348wms.46.2022.05.08.12.00.30
+        by smtp.googlemail.com with ESMTPSA id n16-20020a05600c3b9000b00394699f803dsm10552348wms.46.2022.05.08.12.00.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 12:00:30 -0700 (PDT)
+        Sun, 08 May 2022 12:00:34 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     heiko@sntech.de, ardb@kernel.org, herbert@gondor.apana.org.au,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
@@ -56,9 +56,9 @@ Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rockchip@lists.infradead.org,
         Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v7 25/33] dt-bindings: crypto: rockchip: convert to new driver bindings
-Date:   Sun,  8 May 2022 18:59:49 +0000
-Message-Id: <20220508185957.3629088-26-clabbe@baylibre.com>
+Subject: [PATCH v7 28/33] arm64: dts: rockchip: rk3399: add crypto node
+Date:   Sun,  8 May 2022 18:59:52 +0000
+Message-Id: <20220508185957.3629088-29-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508185957.3629088-1-clabbe@baylibre.com>
 References: <20220508185957.3629088-1-clabbe@baylibre.com>
@@ -68,124 +68,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The latest addition to the rockchip crypto driver need to update the
-driver bindings.
+The rk3399 has a crypto IP handled by the rk3288 crypto driver so adds a
+node for it.
 
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- .../crypto/rockchip,rk3288-crypto.yaml        | 85 +++++++++++++++++--
- 1 file changed, 77 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-index 8a219d439d02..5bb6bf4699ff 100644
---- a/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-+++ b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-@@ -13,6 +13,8 @@ properties:
-   compatible:
-     enum:
-       - rockchip,rk3288-crypto
-+      - rockchip,rk3328-crypto
-+      - rockchip,rk3399-crypto
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index 8db8b2dba12d..27ab2c377140 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -582,6 +582,26 @@ saradc: saradc@ff100000 {
+ 		status = "disabled";
+ 	};
  
-   reg:
-     maxItems: 1
-@@ -21,21 +23,88 @@ properties:
-     maxItems: 1
- 
-   clocks:
-+    minItems: 3
-     maxItems: 4
- 
-   clock-names:
--    items:
--      - const: aclk
--      - const: hclk
--      - const: sclk
--      - const: apb_pclk
-+    minItems: 3
-+    maxItems: 4
- 
-   resets:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 3
- 
-   reset-names:
--    items:
--      - const: crypto-rst
-+    minItems: 1
-+    maxItems: 3
++	crypto0: crypto@ff8b0000 {
++		compatible = "rockchip,rk3399-crypto";
++		reg = <0x0 0xff8b0000 0x0 0x4000>;
++		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru HCLK_M_CRYPTO0>, <&cru HCLK_S_CRYPTO0>, <&cru SCLK_CRYPTO0>;
++		clock-names = "hclk_master", "hclk_slave", "sclk";
++		resets = <&cru SRST_CRYPTO0>, <&cru SRST_CRYPTO0_S>, <&cru SRST_CRYPTO0_M>;
++		reset-names = "rst_master", "rst_slave", "crypto-rst";
++	};
 +
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: rockchip,rk3288-crypto
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 4
-+        clock-names:
-+          items:
-+            - const: aclk
-+            - const: hclk
-+            - const: sclk
-+            - const: apb_pclk
-+          minItems: 4
-+        resets:
-+          maxItems: 1
-+        reset-names:
-+          items:
-+            - const: crypto-rst
-+          maxItems: 1
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: rockchip,rk3328-crypto
-+    then:
-+      properties:
-+        clocks:
-+          maxItems: 3
-+        clock-names:
-+          items:
-+            - const: hclk_master
-+            - const: hclk_slave
-+            - const: sclk
-+          maxItems: 3
-+        resets:
-+          maxItems: 1
-+        reset-names:
-+          items:
-+            - const: crypto-rst
-+          maxItems: 1
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: rockchip,rk3399-crypto
-+    then:
-+      properties:
-+        clocks:
-+          maxItems: 3
-+        clock-names:
-+          items:
-+            - const: hclk_master
-+            - const: hclk_slave
-+            - const: sclk
-+          maxItems: 3
-+        resets:
-+          minItems: 3
-+        reset-names:
-+          items:
-+            - const: rst_master
-+            - const: rst_slave
-+            - const: crypto-rst
-+          minItems: 3
- 
- required:
-   - compatible
++	crypto1: crypto@ff8b8000 {
++		compatible = "rockchip,rk3399-crypto";
++		reg = <0x0 0xff8b8000 0x0 0x4000>;
++		interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru HCLK_M_CRYPTO1>, <&cru HCLK_S_CRYPTO1>, <&cru SCLK_CRYPTO1>;
++		clock-names = "hclk_master", "hclk_slave", "sclk";
++		resets = <&cru SRST_CRYPTO1>, <&cru SRST_CRYPTO1_S>, <&cru SRST_CRYPTO1_M>;
++		reset-names = "rst_master", "rst_slave", "crypto-rst";
++	};
++
+ 	i2c1: i2c@ff110000 {
+ 		compatible = "rockchip,rk3399-i2c";
+ 		reg = <0x0 0xff110000 0x0 0x1000>;
 -- 
 2.35.1
 
