@@ -2,79 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA32C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA2EC4167D
 	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238679AbiEHTGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
+        id S231262AbiEHTGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237344AbiEHSKH (ORCPT
+        with ESMTP id S1379968AbiEHSov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 14:10:07 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1987663B4;
-        Sun,  8 May 2022 11:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dXIZlnwHK15rrJZENweUDVLbVsO7X3h09BOXkfnZAVs=; b=BeB2FaaWyCXFJfYPOVlGrRxyyh
-        JkDouCOTyf7MkyluZIxxnUmR87Z/DW0C77jKJIqfoUoI4nPE1ilfTi9PvRLwTXhJhdLROFvWDHHMp
-        000VX4SrbogSTZvQ4ISTjHh4zNfXVtbK/k9ItAde5GaNKad/et01ucOFYnGCdxFOMk8ivYtMYUiOa
-        LxiuMlpYfAy3bAi35IgiKblbkjCiRIRjJVG9azAjXg28jNJSRdKKWlpLRQquoU1LzZCBVcNqNjl2k
-        T6r3MF4ww2+rXqRroJFYp5Aw18fci0MKTzKr92fIKjYfvoNR8En2Q9Oq1MQTSBonEX0blOhFfkm3u
-        xJL5hOLA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nnlIH-002hid-TS; Sun, 08 May 2022 18:06:09 +0000
-Date:   Sun, 8 May 2022 19:06:09 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        kunit-dev@googlegroups.com, linux-arm-kernel@lists.infradead.org,
-        linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org
-Subject: Re: [PATCH v6 00/23] Rust support
-Message-ID: <YngGkZTy+byxnD5n@casper.infradead.org>
-References: <20220507052451.12890-1-ojeda@kernel.org>
- <202205070056.ACC3C3D@keescook>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205070056.ACC3C3D@keescook>
+        Sun, 8 May 2022 14:44:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1561BCA6
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:41:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79DE9612A0
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E1F8DC385B0;
+        Sun,  8 May 2022 18:40:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652035259;
+        bh=782JbC/pDhsfGTVohWw4dLV3JHYCIq5I1J9oQSm5Fjk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=FgFlBvh8CwQhKZ1FQmzeISr9Ji7huqeMKWx7dAA/SrImjC5zIaYXg9J3VhSC1DXLe
+         GZmeFo109B0vZX3ujsZymvQv5sfv04ncgIvHoIHIJ68E+LRK+JnpIdTXuqpdequ8Xw
+         EIAK7PWon6lZ1gXV9tr4wUOvdUPhNHI7awqnJSHlOtU1eAc2S1I1eO920ckz7OuGqR
+         Z56AuttSqtUXnTH9zyjshPhem5MvEicpX9B0pVnoSd2jyXIUwYh9lhSCWEZnDeTxGr
+         7BFqDpOcJh9TQe6NIHu0NV9u7t+5g4O8CTft4wYXVsuYB9wvABgp++7eBar96wWH5X
+         3cMaswpAqZxXA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBF09F03876;
+        Sun,  8 May 2022 18:40:59 +0000 (UTC)
+Subject: Re: [GIT pull] irq/urgent for v5.18-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <165201148219.536527.2201418994305067142.tglx@xen13>
+References: <165201148069.536527.1960632033331546251.tglx@xen13> <165201148219.536527.2201418994305067142.tglx@xen13>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <165201148219.536527.2201418994305067142.tglx@xen13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-urgent-2022-05-08
+X-PR-Tracked-Commit-Id: 8707898e22fd665bc1d7b18b809be4b56ce25bdd
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9692df0581eae29abcc925ca3c12babc6c194741
+Message-Id: <165203525975.974.810523761998126342.pr-tracker-bot@kernel.org>
+Date:   Sun, 08 May 2022 18:40:59 +0000
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 07, 2022 at 01:06:18AM -0700, Kees Cook wrote:
-> On Sat, May 07, 2022 at 07:23:58AM +0200, Miguel Ojeda wrote:
-> > ## Patch series status
-> > 
-> > The Rust support is still to be considered experimental. However,
-> > support is good enough that kernel developers can start working on the
-> > Rust abstractions for subsystems and write drivers and other modules.
-> 
-> I'd really like to see this landed for a few reasons:
-> 
-> - It's under active development, and I'd rather review the changes
->   "normally", incrementally, etc. Right now it can be hard to re-review
->   some of the "mostly the same each version" patches in the series.
-> 
-> - I'd like to break the catch-22 of "ask for a new driver to be
->   written in rust but the rust support isn't landed" vs "the rust
->   support isn't landed because there aren't enough drivers". It
->   really feels like "release early, release often" is needed here;
->   it's hard to develop against -next. :)
-> 
-> Should we give it a try for this coming merge window?
+The pull request you sent on Sun,  8 May 2022 14:05:21 +0200 (CEST):
 
-I'm broadly in favour of that.  It's just code, we can always drop it
-again or fix it.  There's sufficient development community around it
-that it's hardly going to become abandonware.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-urgent-2022-05-08
 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9692df0581eae29abcc925ca3c12babc6c194741
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
