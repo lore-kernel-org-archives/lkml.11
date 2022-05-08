@@ -2,108 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D788FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232952AbiEHMfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 08:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
+        id S233016AbiEHMlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 08:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232146AbiEHMfI (ORCPT
+        with ESMTP id S232146AbiEHMlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 08:35:08 -0400
-X-Greylist: delayed 19087 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 08 May 2022 05:31:18 PDT
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85757BF53;
-        Sun,  8 May 2022 05:31:18 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 7E21628004991;
-        Sun,  8 May 2022 14:31:16 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 72166119437; Sun,  8 May 2022 14:31:16 +0200 (CEST)
-Date:   Sun, 8 May 2022 14:31:16 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Liguang Zhang <zhangliguang@linux.alibaba.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 5.10 126/599] PCI: pciehp: Clear cmd_busy bit in polling
- mode
-Message-ID: <20220508123116.GA27352@wunner.de>
-References: <20220405070258.802373272@linuxfoundation.org>
- <20220405070302.589741179@linuxfoundation.org>
- <20220409081314.GA19452@amd>
+        Sun, 8 May 2022 08:41:16 -0400
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2B1261F
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:37:26 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2ef5380669cso119721757b3.9
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 05:37:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VuJms/7a1Fox6UxpgPi9Undwrl7KJZiaeog6B+JELcQ=;
+        b=ybmIW7T5t43ZPNwEQL+rAnQdovWfEUDtovGqS16yWN4UtHFcnKa02ohqPtBFVPjnAd
+         WtjEAbp6oUGVWDjKuIKp30+cLQKUhs1P3jYsnkjYL7LFuID+E9oI6Lv9WkvoIRR4ytYq
+         wqxbDSIzoDeucb9XM+UjJvtZyU8vY6TZq2sSK/NlrrpDg0PwVgQ0GrAN2lvu/1ZfBDkE
+         lOc+YQ3lPGCUY2XRGtl+fntttry2yWMgZrHp/RDfFOt9VFoE90Qrd3hPlluWefbRGRFP
+         BSG19GDwJVbOAZ5rxUESwV5lBRLIZqZjqidgMaSjuo+/uGR5sxvSBPbBf0q7OKPEhNPj
+         vmVQ==
+X-Gm-Message-State: AOAM5325K+6N8KEzUp50cKzqk6p1rCCIEfSyTheB3M/PvysV9/VT0gRu
+        GQJdVuy39B3Jn4Ca1ht/eVC7LImQ7sIjOqzRUig=
+X-Google-Smtp-Source: ABdhPJwqPVBmsbXYYleGS+D6FFVgxG71RmE5EyifsmaLuQSBOUC4KaebQhU7H5hZiCQNN/alYIXz1JtjByrUlXJG2AA=
+X-Received: by 2002:a81:8cf:0:b0:2f4:da59:9eef with SMTP id
+ 198-20020a8108cf000000b002f4da599eefmr10253166ywi.78.1652013445268; Sun, 08
+ May 2022 05:37:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409081314.GA19452@amd>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220306171009.1973074-1-mailhol.vincent@wanadoo.fr>
+ <20220508100907.61231-1-mailhol.vincent@wanadoo.fr> <CAK8P3a3Fw2T0WSkxv4DiTG2wGkKcs24StPx-BG_vi=ffa9OLVA@mail.gmail.com>
+In-Reply-To: <CAK8P3a3Fw2T0WSkxv4DiTG2wGkKcs24StPx-BG_vi=ffa9OLVA@mail.gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Sun, 8 May 2022 21:37:14 +0900
+Message-ID: <CAMZ6RqK9d0hFwYebaArKjod4LJVGQgfDygpbGdBu-4BCDUR_SA@mail.gmail.com>
+Subject: Re: [RESEND PATCH v1] x86/build: add -fno-builtin flag to prevent shadowing
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 10:13:15AM +0200, Pavel Machek wrote:
-> > From: Liguang Zhang <zhangliguang@linux.alibaba.com>
-> > 
-> > Writes to a Downstream Port's Slot Control register are PCIe hotplug
-> > "commands."  If the Port supports Command Completed events, software must
-> > wait for a command to complete before writing to Slot Control again.
-> > 
-> > pcie_do_write_cmd() sets ctrl->cmd_busy when it writes to Slot Control.  If
-> > software notification is enabled, i.e., PCI_EXP_SLTCTL_HPIE and
-> > PCI_EXP_SLTCTL_CCIE are set, ctrl->cmd_busy is cleared by pciehp_isr().
-> > 
-> > But when software notification is disabled, as it is when pcie_init()
-> > powers off an empty slot, pcie_wait_cmd() uses pcie_poll_cmd() to poll for
-> > command completion, and it neglects to clear ctrl->cmd_busy, which leads to
-> > spurious timeouts:
-> 
-> I'm pretty sure this fixes the problem, but... it is still not fully
-> correct.
-> 
-> > +++ b/drivers/pci/hotplug/pciehp_hpc.c
-> > @@ -98,6 +98,8 @@ static int pcie_poll_cmd(struct controll
-> >  		if (slot_status & PCI_EXP_SLTSTA_CC) {
-> >  			pcie_capability_write_word(pdev, PCI_EXP_SLTSTA,
-> >  						   PCI_EXP_SLTSTA_CC);
-> > +			ctrl->cmd_busy = 0;
-> > +			smp_mb();
-> >  			return 1;
-> >  		}
-> 
-> Is the memory barrier neccessary? I don't see corresponding memory
-> barrier for reading.
-> 
-> If it is neccessary, should we have WRITE_ONCE at the very least, or
-> probably normal atomic operations?
+Hi Arnd,
 
-The cmd_busy flag is set by pcie_do_write_cmd() before writing the
-Slot Control register and it is then cleared by pciehp_isr().
++CC: Kees Cook
 
-The purpose of the memory barriers is to ensure that order.
-IOW, we want to avoid a scenario where the write to cmd_busy in
-pcie_do_write_cmd() hasn't been committed to memory yet, the Slot Control
-write is performed, an interrupt occurs and is handled, the interrupt
-handler writes cmd_busy = 0 and only then is the cmd_busy = 1 write
-in pcie_do_write_cmd() committed to memory.
+On Sun. 8 May 2022 at 19:27, Arnd Bergmann <arnd@kernel.org> wrote:
+> On Sun, May 8, 2022 at 12:09 PM Vincent Mailhol
+> <mailhol.vincent@wanadoo.fr> wrote:
+> >
+> > Aside of the __builtin_foo() ones, x86 does not directly rely on any
+> > builtin functions.
+> >
+> > However, such builtin functions are not explicitly deactivated,
+> > creating some collisions, concrete example being ffs() from bitops.h,
+> > c.f.:
+> >
+> > | ./arch/x86/include/asm/bitops.h:283:28: warning: declaration of 'ffs' shadows a built-in function [-Wshadow]
+> > |   283 | static __always_inline int ffs(int x)
+> >
+> > This patch adds -fno-builtin to KBUILD_CFLAGS for the x86
+> > architectures in order to prevent shadowing of builtin functions.
+> >
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > ---
+> > FYI, I tested this patch on a "make allyesconfig" for both x86_32 and
+> > x86_64.
+> >
+> > This is a resend. Only difference is that I dropped the RFC flag and
+> > added Arnd in CC because he did a similar patch to fix ffs shadow
+> > warnings in the past:
+> >
+> > https://lore.kernel.org/all/20201026160006.3704027-1-arnd@kernel.org/
+>
+> I think this is a correct change, but unfortunately it exposes a clang bug
+>  with -mregparm=3. Nick should be able to provide more details, I think
+> he has a plan.
 
-That said, you're right that such a scenario is impossible if
-cmd_busy is cleared by the synchronous pcie_poll_cmd()
-instead of the asynchronous pciehp_isr().
+Interesting. I admittedly did not do extensive tests on clang
+but I would have expected the Linux kernel bot to have warned me
+on my previous patch.
 
-Care to submit a patch to remove the memory barrier in this single
-location?
+I did research on mregparm and clang. I found this thread:
+https://lore.kernel.org/r/20220208225350.1331628-9-keescook@chromium.org
 
-A WRITE_ONCE() (i.e. a mere compiler barrier instead of a proper
-cacheline flush) is not sufficient to avoid the above scenario.
-An atomic bitop would work, but wouldn't offer advantages compared
-to the status quo.
+and the associated LLVM issue:
+https://github.com/llvm/llvm-project/issues/53645
 
-Thanks,
+Those threads mention that some clang builtins become unusable
+when combining -mregparm=3 and -m32. But I could not find a
+bug reference about -mregparm=3 and -fno-builtin combination.
 
-Lukas
+Could you just double confirm that you indeed saw the issue with
+-fno-builtin? If that the case, I am really curious to get the
+details :)
+
+
+Yours sincerely,
+Vincent Mailhol
