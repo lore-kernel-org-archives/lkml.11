@@ -2,101 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0751C43217
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbiEHJxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 05:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
+        id S229573AbiEHJx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 05:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232575AbiEHJpx (ORCPT
+        with ESMTP id S243410AbiEHJkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 05:45:53 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B93DFBA;
-        Sun,  8 May 2022 02:42:02 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nndQD-0008Ms-Hg; Sun, 08 May 2022 11:41:49 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     linux-rockchip@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org, frank-w@public-files.de
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
-        =?ISO-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Subject: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional and add rgmii-mode to mt7531
-Date:   Sun, 08 May 2022 11:41:48 +0200
-Message-ID: <2509116.Lt9SDvczpP@phil>
-In-Reply-To: <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de>
-References: <20220507170440.64005-1-linux@fw-web.de> <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org> <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        Sun, 8 May 2022 05:40:52 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302E3DEF3;
+        Sun,  8 May 2022 02:37:01 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0VCZu2JX_1652002614;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCZu2JX_1652002614)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sun, 08 May 2022 17:36:55 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        catalin.marinas@arm.com, will@kernel.org
+Cc:     tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
+        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, arnd@arndb.de, baolin.wang@linux.alibaba.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH v2 2/3] mm: rmap: Fix CONT-PTE/PMD size hugetlb issue when migration
+Date:   Sun,  8 May 2022 17:36:40 +0800
+Message-Id: <1ec8a987be1a5400e077260a300d0079564b1472.1652002221.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
+References: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
+In-Reply-To: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
+References: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Sonntag, 8. Mai 2022, 08:24:37 CEST schrieb Frank Wunderlich:
-> Am 7. Mai 2022 22:01:22 MESZ schrieb Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>:
-> >On 07/05/2022 19:04, Frank Wunderlich wrote:
-> >> From: Frank Wunderlich <frank-w@public-files.de>
-> >> 
-> >> Make reset optional as driver already supports it, 
-> >
-> >I do not see the connection between hardware needing or not needing a
-> >reset GPIO and a driver supporting it or not... What does it mean?
-> 
-> My board has a shared gpio-reset between gmac and switch, so both will resetted if it is asserted. Currently it is set to the gmac and is aquired exclusive. Adding it to switch results in 2 problems:
-> 
-> - due to exclusive and already mapped to gmac, switch driver exits as it cannot get the reset-gpio again.
-> - if i drop the reset from gmac and add to switch, it resets the gmac and this takes too long for switch to get up. Of course i can increase the wait time after reset,but dropping reset here was the easier way.
-> 
-> Using reset only on gmac side brings the switch up.
+On some architectures (like ARM64), it can support CONT-PTE/PMD size
+hugetlb, which means it can support not only PMD/PUD size hugetlb:
+2M and 1G, but also CONT-PTE/PMD size: 64K and 32M if a 4K page
+size specified.
 
-I think the issue is more for the description itself.
+When migrating a hugetlb page, we will get the relevant page table
+entry by huge_pte_offset() only once to nuke it and remap it with
+a migration pte entry. This is correct for PMD or PUD size hugetlb,
+since they always contain only one pmd entry or pud entry in the
+page table.
 
-Devicetree is only meant to describe the hardware and does in general don't
-care how any firmware (Linux-kernel, *BSD, etc) handles it. So going with
-"the kernel does it this way" is not a valid reason for a binding change ;-) .
+However this is incorrect for CONT-PTE and CONT-PMD size hugetlb,
+since they can contain several continuous pte or pmd entry with
+same page table attributes. So we will nuke or remap only one pte
+or pmd entry for this CONT-PTE/PMD size hugetlb page, which is
+not expected for hugetlb migration. The problem is we can still
+continue to modify the subpages' data of a hugetlb page during
+migrating a hugetlb page, which can cause a serious data consistent
+issue, since we did not nuke the page table entry and set a
+migration pte for the subpages of a hugetlb page.
 
-Instead in general want to reason that there are boards without this reset
-facility and thus make it optional for those.
+To fix this issue, we should change to use huge_ptep_clear_flush()
+to nuke a hugetlb page table, and remap it with set_huge_pte_at()
+and set_huge_swap_pte_at() when migrating a hugetlb page, which
+already considered the CONT-PTE or CONT-PMD size hugetlb.
 
-Heiko
+Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+---
+ mm/rmap.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-> >> allow port 5 as
-> >> cpu-port 
-> >
-> >How do you allow it here?
-> 
-> Argh, seems i accidentally removed this part and have not recognized while checking :(
-> 
-> It should only change description of reg for ports to:
-> 
-> "Port address described must be 5 or 6 for CPU port and from 0 to 5 for user ports."
-> 
-> regards Frank
-> 
-
-
-
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 6fdd198..7cf2408 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1924,13 +1924,15 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 					break;
+ 				}
+ 			}
++
++			/* Nuke the hugetlb page table entry */
++			pteval = huge_ptep_clear_flush(vma, address, pvmw.pte);
+ 		} else {
+ 			flush_cache_page(vma, address, pte_pfn(*pvmw.pte));
++			/* Nuke the page table entry. */
++			pteval = ptep_clear_flush(vma, address, pvmw.pte);
+ 		}
+ 
+-		/* Nuke the page table entry. */
+-		pteval = ptep_clear_flush(vma, address, pvmw.pte);
+-
+ 		/* Set the dirty flag on the folio now the pte is gone. */
+ 		if (pte_dirty(pteval))
+ 			folio_mark_dirty(folio);
+@@ -2015,7 +2017,10 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 			pte_t swp_pte;
+ 
+ 			if (arch_unmap_one(mm, vma, address, pteval) < 0) {
+-				set_pte_at(mm, address, pvmw.pte, pteval);
++				if (folio_test_hugetlb(folio))
++					set_huge_pte_at(mm, address, pvmw.pte, pteval);
++				else
++					set_pte_at(mm, address, pvmw.pte, pteval);
+ 				ret = false;
+ 				page_vma_mapped_walk_done(&pvmw);
+ 				break;
+@@ -2024,7 +2029,10 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 				       !anon_exclusive, subpage);
+ 			if (anon_exclusive &&
+ 			    page_try_share_anon_rmap(subpage)) {
+-				set_pte_at(mm, address, pvmw.pte, pteval);
++				if (folio_test_hugetlb(folio))
++					set_huge_pte_at(mm, address, pvmw.pte, pteval);
++				else
++					set_pte_at(mm, address, pvmw.pte, pteval);
+ 				ret = false;
+ 				page_vma_mapped_walk_done(&pvmw);
+ 				break;
+@@ -2050,7 +2058,11 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 				swp_pte = pte_swp_mksoft_dirty(swp_pte);
+ 			if (pte_uffd_wp(pteval))
+ 				swp_pte = pte_swp_mkuffd_wp(swp_pte);
+-			set_pte_at(mm, address, pvmw.pte, swp_pte);
++			if (folio_test_hugetlb(folio))
++				set_huge_swap_pte_at(mm, address, pvmw.pte,
++						     swp_pte, vma_mmu_pagesize(vma));
++			else
++				set_pte_at(mm, address, pvmw.pte, swp_pte);
+ 			trace_set_migration_pte(address, pte_val(swp_pte),
+ 						compound_order(&folio->page));
+ 			/*
+-- 
+1.8.3.1
 
