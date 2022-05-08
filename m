@@ -2,131 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 21:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD51C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 21:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233249AbiEHVq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 17:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        id S233273AbiEHVtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 17:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbiEHVq0 (ORCPT
+        with ESMTP id S233276AbiEHVsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 17:46:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7954DFAB
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 14:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652046152; x=1683582152;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gAfLF8CFVZ/vW71EH8Bx4/JhmuMGckhfC5tTLQ3bB00=;
-  b=LHc+iJ+R8rddNCqN6XFaandleajEuRT43p4ziCart/SHHwTopnjQi0BT
-   Gd4RJD79Njgnf/bPZz9ecMAGBgLXf+RGN6CaRNIb1FBTAK/4OfhHJx7Q4
-   UHK1H6pygd2c2ZnrYsCgFzOGRFxStLOKZddkTut2cVKsEB9uAvkOp2R2W
-   oZfYsrYDi18gAP7AMRYoH6PdTJ2whZSJ64CCKUXFx/ZhXe+nqDRaURR+0
-   VpPGFglal4S3RcqgvSdxc9atsh+2FhXiGsaasY0GiCPvBMqeqNcUUcWeT
-   Lr3V/UlV3yp7gGp0KcVNAdeboZYUO8ID3FH9adbwhmACrQZI67gMKv+2b
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="266477399"
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="266477399"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 14:42:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="539528989"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 08 May 2022 14:42:30 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nnofd-000FrT-Na;
-        Sun, 08 May 2022 21:42:29 +0000
-Date:   Mon, 9 May 2022 05:41:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:axboe/linux-block/fastpoll-mshot 97/98]
- fs/io_uring.c:4743:11: warning: variable 'ret' is uninitialized when used
- here
-Message-ID: <202205090529.AQs5GOej-lkp@intel.com>
+        Sun, 8 May 2022 17:48:54 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56506445;
+        Sun,  8 May 2022 14:45:02 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so9763420wms.3;
+        Sun, 08 May 2022 14:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sz9yDMbWolCR5CSm2J/3vC7zIKazVJISgiLAk/Sxmjk=;
+        b=odEgRES1w3ohIoQJFJMZIgwiqx0w9ikZ5ahO6mKSOCp5MV2nmKdXmMa7ejQCzBEk4V
+         6R1CSUB6tZptfCRhrKnB1vNWbOLi64YT2Hi+c0HL9+oYjINMASi5tDhYdw1fCJODPbC0
+         10rOjcK0UOKfoJ9Xc2hOCRXvC4k93g2wuIfbmyvn8OAYISHIKxVyzlFQ6Z5BC1EeRkS8
+         TNbylN5WqYiOAPbiz7hubby5HgaJazQtdpHYw8dsoEzhyXIqBJQyR2QLMLXiSuU4ogmj
+         mHCIC/h9Ee/4LheQ8KaApm5E5dDQkinwP02y2XvlLjowe5BZWJZSU3awpGaNzlP1y1Or
+         98Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sz9yDMbWolCR5CSm2J/3vC7zIKazVJISgiLAk/Sxmjk=;
+        b=3Kwd00JdbKJTfx+8mGkVFSgKQt3KkMQTdvSPXVj8Oot83KtMKlt5MxEzRF5uxLpH89
+         uM1KoSopDNokwGuWVr8cW0kwUI/eO/ROSIyzOR9w9qVHI1NyQ9sXxYD3B0WLnxyFYZur
+         ggKk/TRO+tqfpgpqWR5lbN8O1hNSw/1UyoyT2r1DJBwlaFG0oNnoKpfHQt0AhYwRDruA
+         l08bhi/z3V41cdICvSlM9isFjgyeKRRNODYEHSxGLaAF8bmH6rwPB/Q00HAXZaWtyV0m
+         dgS/DpANONSNDHD9EM0i5eiFVMmfFrh2/NUqm3/6s5BKw2fc2FdKJZ0O3zJl1ZCyQ1cb
+         moKA==
+X-Gm-Message-State: AOAM533zBDHKzO1RDGSHKNcr2BkQgCZTBSvL6CjrikhbPo1PHu/WY+yk
+        7dh0TnAER4NjiyXAUTzYI10=
+X-Google-Smtp-Source: ABdhPJzsQei1PUBRbz+zo5dt6pV/R1IwS6bibqDjpiffCWMdTH92R5BM6ZHxo9cYWaGnJYzDCUJvbw==
+X-Received: by 2002:a05:600c:4187:b0:394:4cf8:7c61 with SMTP id p7-20020a05600c418700b003944cf87c61mr13164229wmh.119.1652046301468;
+        Sun, 08 May 2022 14:45:01 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l17-20020adff491000000b0020c6a524fe0sm9283123wro.98.2022.05.08.14.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 14:45:01 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Martin Schiller <ms@dev.tdt.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] x25: remove redundant pointer dev
+Date:   Sun,  8 May 2022 22:45:00 +0100
+Message-Id: <20220508214500.60446-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/fastpoll-mshot
-head:   883f288d64ca56518398dfa59bbdbfae1215ec03
-commit: 8e0d731f259198aac32de79f7059d34b94fc0fb3 [97/98] io_uring: allow allocated fixed files for openat/openat2
-config: riscv-buildonly-randconfig-r005-20220508 (https://download.01.org/0day-ci/archive/20220509/202205090529.AQs5GOej-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a385645b470e2d3a1534aae618ea56b31177639f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/8e0d731f259198aac32de79f7059d34b94fc0fb3
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/fastpoll-mshot
-        git checkout 8e0d731f259198aac32de79f7059d34b94fc0fb3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+Pointer dev is being assigned a value that is never used, the assignment
+and the variable are redundant and can be removed. Also replace null check
+with the preferred !ptr idiom.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Cleans up clang scan warning:
+net/x25/x25_proc.c:94:26: warning: Although the value stored to 'dev' is
+used in the enclosing expression, the value is never actually read
+from 'dev' [deadcode.DeadStores]
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ net/x25/x25_proc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
->> fs/io_uring.c:4743:11: warning: variable 'ret' is uninitialized when used here [-Wuninitialized]
-                           return ret;
-                                  ^~~
-   fs/io_uring.c:4736:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   fs/io_uring.c:6174:2: error: call to undeclared function '__io_poll_clean'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           __io_poll_clean(req);
-           ^
-   fs/io_uring.c:6174:2: note: did you mean '__io_fill_cqe'?
-   fs/io_uring.c:2166:20: note: '__io_fill_cqe' declared here
-   static inline bool __io_fill_cqe(struct io_ring_ctx *ctx, u64 user_data,
-                      ^
-   1 warning and 1 error generated.
-
-
-vim +/ret +4743 fs/io_uring.c
-
-  4730	
-  4731	static int io_fixed_file_install(struct io_kiocb *req, unsigned int issue_flags,
-  4732					 struct file *file, unsigned int file_slot)
-  4733	{
-  4734		int alloc_slot = file_slot == UINT_MAX;
-  4735		struct io_ring_ctx *ctx = req->ctx;
-  4736		int ret;
-  4737	
-  4738		if (alloc_slot) {
-  4739			io_ring_submit_lock(ctx, issue_flags);
-  4740			file_slot = io_file_bitmap_get(ctx);
-  4741			if (unlikely(file_slot < 0)) {
-  4742				io_ring_submit_unlock(ctx, issue_flags);
-> 4743				return ret;
-  4744			}
-  4745		}
-  4746	
-  4747		ret = io_install_fixed_file(req, file, issue_flags, file_slot);
-  4748		if (alloc_slot) {
-  4749			io_ring_submit_unlock(ctx, issue_flags);
-  4750			return file_slot;
-  4751		}
-  4752	
-  4753		return ret;
-  4754	}
-  4755	
-
+diff --git a/net/x25/x25_proc.c b/net/x25/x25_proc.c
+index 3bddcbdf2e40..91a2aade3960 100644
+--- a/net/x25/x25_proc.c
++++ b/net/x25/x25_proc.c
+@@ -79,7 +79,6 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
+ {
+ 	struct sock *s;
+ 	struct x25_sock *x25;
+-	struct net_device *dev;
+ 	const char *devname;
+ 
+ 	if (v == SEQ_START_TOKEN) {
+@@ -91,7 +90,7 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
+ 	s = sk_entry(v);
+ 	x25 = x25_sk(s);
+ 
+-	if (!x25->neighbour || (dev = x25->neighbour->dev) == NULL)
++	if (!x25->neighbour || !x25->neighbour->dev)
+ 		devname = "???";
+ 	else
+ 		devname = x25->neighbour->dev->name;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
