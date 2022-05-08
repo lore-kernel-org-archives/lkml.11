@@ -2,95 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6824FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 16:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB92C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 16:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235316AbiEHQQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 12:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        id S235362AbiEHQS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 12:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235257AbiEHQQ0 (ORCPT
+        with ESMTP id S235352AbiEHQSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 12:16:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFDFDEF5;
-        Sun,  8 May 2022 09:12:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDC1D6121A;
-        Sun,  8 May 2022 16:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8460DC385A4;
-        Sun,  8 May 2022 16:12:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652026355;
-        bh=P6W2XUCIDtOr95rgU7d3QpyWeAEQjkqN2CvdZhRnVUM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fEy8y0LNeJNz4tKeHwzbIhiCFHWOYrSj5lgBMNLoTwocZIanfrS13yFAKvj1LlZjg
-         x/y7Dd1dJ5hmo8bU5yGGAA+BVxNhZNk7GVMjm6R+o8rg8PNxweRSNgD0tec1AWE/op
-         ZeNb9L4CFjGEFYkQUg4u8KeTWwb1EgjT288lw1YQ=
-Date:   Sun, 8 May 2022 18:12:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Justin Forbes <jforbes@fedoraproject.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.17 162/225] ASoC: Intel: sof_es8336: Add a quirk for
- Huawei Matebook D15
-Message-ID: <Ynfr8LxLZpNvbQ77@kroah.com>
-References: <20220504153110.096069935@linuxfoundation.org>
- <20220504153124.439720094@linuxfoundation.org>
- <YnLk9DLTZcVjTdK/@fedora64.linuxtx.org>
+        Sun, 8 May 2022 12:18:51 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2943F101DA
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 09:15:01 -0700 (PDT)
+Received: from dslb-094-219-036-010.094.219.pools.vodafone-ip.de ([94.219.36.10] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nnjYf-00045H-Fu; Sun, 08 May 2022 18:14:57 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 1/5] staging: r8188eu: read addr2 from ieee80211_mgmt
+Date:   Sun,  8 May 2022 18:14:47 +0200
+Message-Id: <20220508161451.115847-2-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220508161451.115847-1-martin@kaiser.cx>
+References: <20220508161451.115847-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnLk9DLTZcVjTdK/@fedora64.linuxtx.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 03:41:24PM -0500, Justin Forbes wrote:
-> On Wed, May 04, 2022 at 06:46:40PM +0200, Greg Kroah-Hartman wrote:
-> > From: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > 
-> > [ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
-> > 
-> > Based on experimental tests, Huawei Matebook D15 actually uses
-> > both gpio0 and gpio1: the first one controls the speaker, while
-> > the other one controls the headphone.
-> > 
-> > Also, the headset is mapped as MIC1, instead of MIC2.
-> > 
-> > So, add a quirk for it.
-> > 
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> > Link: https://lore.kernel.org/r/d678aef9fc9a07aced611aa7cb8c9b800c649e5a.1649357263.git.mchehab@kernel.org
-> > Signed-off-by: Mark Brown <broonie@kernel.org>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>
-> > ---
-> 
-> This patch is missing some dependencies and fails to build:
-> 
-> sound/soc/intel/boards/sof_es8336.c:261:41: error: 'SOF_ES8336_HEADPHONE_GPIO' undeclared here (not in a function)
->   261 |                 .driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
-> 
-> SOF_ES8336_HEADPHONE_GPIO was defined in upstream commit:
-> 6e1ff1459e008 ASoC: Intel: sof_es8336: support a separate gpio to control headphone
-> which appeared with 5.18-rc4
-> 
-> sound/soc/intel/boards/sof_es8336.c:262:41: error: 'SOC_ES8336_HEADSET_MIC1' undeclared here (not in a function)
->   262 |                                         SOC_ES8336_HEADSET_MIC1)
-> 
-> SOC_ES8336_HEADSET_MIC1 was defined in upstream commit: 
-> 7c7bb2a059b22 ASoC: Intel: sof_es8336: add a quirk for headset at mic1 port
-> which also appeared with 5.18-rc4
-> 
-> We either need to bring in these 2 commits or drop this one from the
-> stable queue.
+Define a struct ieee80211_mgmt variable in the OnAction_back function. Use
+it to read addr2. For management frames, addr2 is the source address (sa).
 
-I've dropped this one now, thanks.
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-greg k-h
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 848b5051aa13..2f67e3c08191 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -1467,7 +1467,7 @@ unsigned int OnDisassoc(struct adapter *padapter, struct recv_frame *precv_frame
+ 
+ unsigned int OnAction_back(struct adapter *padapter, struct recv_frame *precv_frame)
+ {
+-	u8 *addr;
++	struct ieee80211_mgmt *mgmt = (struct ieee80211_mgmt *)precv_frame->rx_data;
+ 	struct sta_info *psta = NULL;
+ 	struct recv_reorder_ctrl *preorder_ctrl;
+ 	unsigned char		*frame_body;
+@@ -1485,8 +1485,7 @@ unsigned int OnAction_back(struct adapter *padapter, struct recv_frame *precv_fr
+ 		if (!(pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS))
+ 			return _SUCCESS;
+ 
+-	addr = GetAddr2Ptr(pframe);
+-	psta = rtw_get_stainfo(pstapriv, addr);
++	psta = rtw_get_stainfo(pstapriv, mgmt->sa);
+ 
+ 	if (!psta)
+ 		return _SUCCESS;
+@@ -1501,12 +1500,12 @@ unsigned int OnAction_back(struct adapter *padapter, struct recv_frame *precv_fr
+ 		switch (action) {
+ 		case RTW_WLAN_ACTION_ADDBA_REQ: /* ADDBA request */
+ 			memcpy(&pmlmeinfo->ADDBA_req, &frame_body[2], sizeof(struct ADDBA_request));
+-			process_addba_req(padapter, (u8 *)&pmlmeinfo->ADDBA_req, addr);
++			process_addba_req(padapter, (u8 *)&pmlmeinfo->ADDBA_req, mgmt->sa);
+ 
+ 			if (pmlmeinfo->bAcceptAddbaReq)
+-				issue_action_BA(padapter, addr, RTW_WLAN_ACTION_ADDBA_RESP, 0);
++				issue_action_BA(padapter, mgmt->sa, RTW_WLAN_ACTION_ADDBA_RESP, 0);
+ 			else
+-				issue_action_BA(padapter, addr, RTW_WLAN_ACTION_ADDBA_RESP, 37);/* reject ADDBA Req */
++				issue_action_BA(padapter, mgmt->sa, RTW_WLAN_ACTION_ADDBA_RESP, 37);/* reject ADDBA Req */
+ 			break;
+ 		case RTW_WLAN_ACTION_ADDBA_RESP: /* ADDBA response */
+ 			status = get_unaligned_le16(&frame_body[3]);
+-- 
+2.30.2
+
