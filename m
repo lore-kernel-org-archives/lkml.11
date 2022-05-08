@@ -2,147 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF350C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29833C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236104AbiEHTG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
+        id S235199AbiEHTGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354848AbiEHSeL (ORCPT
+        with ESMTP id S1344561AbiEHSE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 14:34:11 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FD32DF7;
-        Sun,  8 May 2022 11:30:20 -0700 (PDT)
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 248IU6Hg021713;
-        Mon, 9 May 2022 03:30:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 248IU6Hg021713
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652034607;
-        bh=lYdfiXpHTiwBCIC8Ig2nInkqB5OuwCT5uW2/zGo7dOE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=N9Qtj8XTZZpzZImTNAb2diQQG3iM7RCIb9vpt++PynIkvAhBO/Aq5pa79mSFUk7BD
-         fpaPTY5OpD0RiGhvHMmhRfZ7bv+V1yElb9Vola0sKt6ljrKMnR0X/cDbO6Ahn06rE0
-         JRV3aqnnl+y8YCk4gspRXgxEoTbGE5/ntk1yqS+WuMkkJ+HeggorYy3jzpfyekeGup
-         wscBlaOmn7ENTdsQCTnJGN2aQdzU3XixtiDBSW7G/mB172v+dmHRVihhGIBC+RPvO5
-         Zx2lQVtBZFbwIWvgZcSg+IH+ShFDxV+6dS5Ke94eNROPBCWqFwCMpLlRCNJRODxwmL
-         nmKAjiAn5iaLg==
-X-Nifty-SrcIP: [209.85.210.179]
-Received: by mail-pf1-f179.google.com with SMTP id bo5so10468308pfb.4;
-        Sun, 08 May 2022 11:30:06 -0700 (PDT)
-X-Gm-Message-State: AOAM5321nUQDmkNs36fpsxDNR90BlKMbqLoEk0A4/8b2gPfdEpsCkPcn
-        nv0fZNHEiBTiha7b4ONieKSX6Eb0j2CvO2xR1Ew=
-X-Google-Smtp-Source: ABdhPJzSZw3CPCsDznAcGlLU11AUbvg46ozEB8e0OAnUju+5EAH166Q3DSIdjEyp9NwVCGBOR0PvXe4zM/kxvMm2SEI=
-X-Received: by 2002:a05:6a00:24cc:b0:50d:58bf:5104 with SMTP id
- d12-20020a056a0024cc00b0050d58bf5104mr12632485pfv.36.1652034605828; Sun, 08
- May 2022 11:30:05 -0700 (PDT)
+        Sun, 8 May 2022 14:04:28 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAA1FE3
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:00:37 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id ba17so13905980edb.5
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 11:00:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tcaHO+HqpMQv3+DLpIAhYp2C5r7z6Gel9BfrGJWEBrQ=;
+        b=IlM4lhJlJ2d07BNY1D8txDkP1oAW3YcNeZ93q2oLYgogCvo5k208E0ZRRp7wmn5zzn
+         uzTzmLz4eArNamcc6FiQQahescDgwY/UeBnXOlNABtKk6MEX/oddgfacXW29CPBwl2Nd
+         RKZah5ByfhTGR6tJynRj1ekttHDm8vScstcIA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tcaHO+HqpMQv3+DLpIAhYp2C5r7z6Gel9BfrGJWEBrQ=;
+        b=Fa416WCZVyHMkod1r4QAKp6bNupdn5tcQPR/NI+gp0uJgkBe0SdWp7t2DhYT1oi2Ps
+         KzOFo5bu3LA1OqCMSQmWQraV4boz0Y//QGfQPST7ob8CNT04CehN4mx2a3ka0j+vevuq
+         2hZrUlVqF8UW8WS4ihSQQFSDV2BRtz8SKRFxlrYub+jrnCW7jedHQbMhmhVnjBju+S8j
+         RJgaWDoShpOflYK02/20qPtwOebXvYY/bwFaHg6v5m4uTJBYz3wR+sfh3KsM0Mk7wyB8
+         n5+mLe3aJ2jAzFqHQRVK+A2bXAltt0KnP5QcUfcN0FTEqOUGTW/0YURbvZXKKSymvDc3
+         2NHA==
+X-Gm-Message-State: AOAM531hKCycw/O9z+yH+yrfGUpLtGRtcpcBroUCa0mEgK5FuJM33POH
+        iYr1Wgqpmd2GzClPw32SnJ0avI6ID2SySGiT
+X-Google-Smtp-Source: ABdhPJxkwIFcMkQNm1jDtlp7H1rE4Cgj+6rMHnymX0Qc780ZJ+rNiW/R8AfiQhbVSgAMWQEN/phW1Q==
+X-Received: by 2002:a05:6402:17c7:b0:425:d52c:8907 with SMTP id s7-20020a05640217c700b00425d52c8907mr13532553edy.15.1652032835650;
+        Sun, 08 May 2022 11:00:35 -0700 (PDT)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id ev6-20020a17090729c600b006f3ef214df6sm4224202ejc.92.2022.05.08.11.00.34
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 May 2022 11:00:34 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id e24so16599195wrc.9
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 11:00:34 -0700 (PDT)
+X-Received: by 2002:adf:dfc8:0:b0:20a:d256:5b5c with SMTP id
+ q8-20020adfdfc8000000b0020ad2565b5cmr10724888wrn.97.1652032834122; Sun, 08
+ May 2022 11:00:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220505072244.1155033-1-masahiroy@kernel.org>
-In-Reply-To: <20220505072244.1155033-1-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 9 May 2022 03:28:55 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQg2JG2DAuRJmNLryDh_o_PoFUXnJ+6C=-AE+NXZy9pTg@mail.gmail.com>
-Message-ID: <CAK7LNAQg2JG2DAuRJmNLryDh_o_PoFUXnJ+6C=-AE+NXZy9pTg@mail.gmail.com>
-Subject: Re: [PATCH v3 00/15] kbuild: yet another series of cleanups (modpost,
- LTO, MODULE_REL_CRCS)
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     clang-built-linux <clang-built-linux@googlegroups.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nicolas Schier a <nicolas@fjasle.eu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-um@lists.infradead.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>
+References: <165201148069.536527.1960632033331546251.tglx@xen13>
+In-Reply-To: <165201148069.536527.1960632033331546251.tglx@xen13>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 8 May 2022 11:00:17 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
+Message-ID: <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
+Subject: Re: [GIT pull] core/urgent for v5.18-rc6
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Zhangfei Gao <zhangfei.gao@foxmail.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 5, 2022 at 4:24 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+On Sun, May 8, 2022 at 5:05 AM Thomas Gleixner <tglx@linutronix.de> wrote:
 >
->
-> This is the third batch of cleanups in this development cycle.
->
-> Major changes in v3:
->
->  - Generate symbol CRCs as C code, and remove CONFIG_MODULE_REL_CRCS.
->
-> Major changes in v2:
->
->  - V1 did not work with CONFIG_MODULE_REL_CRCS.
->    I fixed this for v2.
->
->  - Reflect some review comments in v1
->
->  - Refactor the code more
->
->  - Avoid too long argument error
->
->
-> Masahiro Yamada (15):
->   modpost: mitigate false-negatives for static EXPORT_SYMBOL checks
->   modpost: change the license of EXPORT_SYMBOL to bool type
->   modpost: merge add_{intree_flag,retpoline,staging_flag} to add_header
->   modpost: move *.mod.c generation to write_mod_c_files()
->   kbuild: generate a list of objects in vmlinux
->   kbuild: record symbol versions in *.cmd files
->   modpost: extract symbol versions from *.cmd files
->   kbuild: link symbol CRCs at final link, removing
->     CONFIG_MODULE_REL_CRCS
->   kbuild: stop merging *.symversions
->   genksyms: adjust the output format to modpost
->   kbuild: do not create *.prelink.o for Clang LTO or IBT
->   modpost: simplify the ->is_static initialization
->   modpost: use hlist for hash table implementation
->   kbuild: make built-in.a rule robust against too long argument error
->   kbuild: make *.mod rule robust against too long argument error
+> A single bugfix for the PASID management code, which freed the PASID too
+> early. The PASID needs to be tied to the mm lifetime, not to the address
+> space lifetime.
 
+So I have to once more complain about the -tip tree "Link:" usage.
 
-Only 03-06 were applied.
+Again, the commit has a link to the patch *submission*, which is
+almost entirely useless. There's no link to the actual problem the
+patch fixes.
 
-I will send v4 for the rest.
-(I rewrote the static EXPORT checks).
+It does have a "Fixes:" link, and it has an "explanation", but the
+explanation doesn't actually make much sense to me.
 
->
->  arch/powerpc/Kconfig         |   1 -
->  arch/s390/Kconfig            |   1 -
->  arch/um/Kconfig              |   1 -
->  include/asm-generic/export.h |  22 +-
->  include/linux/export.h       |  30 +--
->  include/linux/symversion.h   |  13 +
->  init/Kconfig                 |   4 -
->  kernel/module.c              |  10 +-
->  scripts/Kbuild.include       |   4 +
->  scripts/Makefile.build       | 118 +++------
->  scripts/Makefile.lib         |   7 -
->  scripts/Makefile.modfinal    |   5 +-
->  scripts/Makefile.modpost     |   9 +-
->  scripts/genksyms/genksyms.c  |  18 +-
->  scripts/link-vmlinux.sh      |  46 ++--
->  scripts/mod/file2alias.c     |   2 -
->  scripts/mod/list.h           |  52 ++++
->  scripts/mod/modpost.c        | 449 ++++++++++++++++++++---------------
->  scripts/mod/modpost.h        |   2 +
->  19 files changed, 402 insertions(+), 392 deletions(-)
->  create mode 100644 include/linux/symversion.h
->
-> --
-> 2.32.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20220505072244.1155033-1-masahiroy%40kernel.org.
+The *sensible* thing for an iommu driver to do is to just do a
+mmget/mmput, and then the whole "drop PASIX on last mmput() (ie in
+__mmput)" makes lots of sense.
 
+The commit claims that's not what the iommu drivers do, but it's
+really hard to tell *what* it is that does a mmgrab. It just says
 
+  "the IOMMU driver holds a reference on the mm itself, not the address space"
 
--- 
-Best Regards
-Masahiro Yamada
+but then I tried to see where such references are held, and I couldn't find it.
+
+*Must* users do mmget/mmput, and the commit even says that's the
+logical thing to do. Apparently something that the iommu code relies
+on does the mmgrab/mmdrop thing, but I really would have liked to know
+what that is.
+
+Yes, "mmgab" is the right thing to do if all you want is the "struct
+mm_struct", and don't actually care about the page tables themselves,
+and don't want to have the refcount keep page tables alive. But you'd
+think the iommu code really does want the page tables.
+
+So it would have been really nice to have an explanation for what it
+was that did the mmgrab, especially since the commit itself makes it
+clear that the logical thing to do seems to be just mmget/put. No?
+
+I _really_ wish the -tip tree had more links to the actual problem
+reports and explanations, rather than links to the patch submission.
+
+One has the actual issue. The other just has the information that is
+already in the commit, and the "Link:" adds almost no actual value
+(yes, yes, you can see late "Acked-by" etc, but that really isn't
+worth it).
+
+I've pulled this, because I definitely believe the issue is real. I
+just wish I could see _what_ the issue was.
+
+Put another way: I can see that
+
+    Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
+
+in the commit, but I don't have a clue what the actual report was, and
+there really isn't enough information in the commit itself, except for
+a fairly handwavy "Device drivers might, for instance, still need to
+flush operations.."
+
+I don't want to know what device drivers _might_ do. I would want to
+have an actual pointer to what they do and where.
+
+I suspect it's related to mmu_notifiers or something, but I really
+would have liked a more exact "this is where things go wrong".
+
+I also *suspect* that this is all about that _loong_ thread (picking
+one email almost at random) here:
+
+   https://lore.kernel.org/all/a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com/
+
+but if so, the confusion I see in that thread is even more reason to
+have more background for what is going on.
+
+Anyway, this is merged in my tree, but I'm having trouble following
+the logic, which is why I'm writing this long email to complain about
+lack of context.
+
+               Linus
