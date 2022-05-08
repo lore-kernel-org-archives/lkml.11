@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68690C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232622AbiEHJ3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 05:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        id S232649AbiEHJ33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 05:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232803AbiEHJ2z (ORCPT
+        with ESMTP id S233328AbiEHJ3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 05:28:55 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA18E0F7
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 02:24:52 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id k14so9698013pga.0
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 02:24:52 -0700 (PDT)
+        Sun, 8 May 2022 05:29:02 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43043E019
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 02:25:13 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id v11so9872644pff.6
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 02:25:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5BXrzgVYvBGmdSlnVtQEfhW9GvqhlJo5cHBeUasgrT0=;
-        b=m/cdnGfmFdCyz4qMJ0TDedpp4hXKvP4FdzdgVPwdRA1JPMyl3HH2PXSs/zqmjUK8Yj
-         j8LLh7IwZZE2asbvtbREP1KYtwMzE8ZaIAOZHKe13HpEeROLSUxD29VQZ753AAcupuPr
-         4WXZeM+Agimptk0ri1iS7S/VTB5ON/yhUDfGxeGixUP8diFW0gPYwMd94tk3VDrpDsHp
-         fclXv5S2hWlTszfCAm+rHAUmOqVkXBPbcAvKR7bHveM+VZ4yw+kgDE8nEojKhPZ2R+R4
-         HY4/stC/o9G1CJPbZ3bIZabeWDJTmg5ddkgT7zoW+JEn2QGhfID6UE+FGnJr0Agy67zo
-         8mWw==
+        bh=OU6pd7Lt5oEt5wQwCFS/HKNGGyS7IdmjRp7WJd3VCBc=;
+        b=VYzAF5l8qRONudNoXTyyFhGy2XU3HjJxX3qp8CjpbWOCT2IPYWpcvvhZF6tbChhEwY
+         M0jKhE9EwSZMWQfMbvz94GyB9ij1vVR31af+M1PecOl8YEYuTQ5K3C+QkQVNm+RLBKnZ
+         p5AQ5O38clalATtODtnQaw55MF5CmTy7ZnBJpGvABD5YMMP22nZ2iSbsgQAmeIsl/S8c
+         rAuZX1qsUNXW+wsh9BplsYeL53DYHgPUCe82bzjo0cBjP/XWGu/jy1/f5/GIMZnorzlc
+         oqAHLohWmN0NMpFivSIjteroUTobmY3QMy27V+omI0BDtezhgtZCH/JTUI7B1KyH9EOw
+         2EZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5BXrzgVYvBGmdSlnVtQEfhW9GvqhlJo5cHBeUasgrT0=;
-        b=VXUNnP3xfDhEh/b/H43cDwsu8RIyd8A6k8HSTqBSRD8rQBIVnnT8d54Ye5EpvW0mJe
-         DbPsnwEDJBYEm+QzD9OY0ooH15b52A82ahvaNJNcKrgBzG1Ira1OK6HKW9FkoDVYitZe
-         RNxXrJmcWwau8l2a+mHO2WPwAs4ozyhPRviHFqb/fehE6QVXs6JEruv4uOHSFX6jM5ij
-         XC0pPy4elWasRaN+jCaxrAaZpSpRK1H6YANopVeNZ7200m5GJNXyH/wj2rlNrpEZReEy
-         jMG+MpnF0VljaVVQyhZ9oWNvwMeXSEprbH220BAgdKGBVLdgM79LL1JmZUpv5BtV3OJL
-         k4Kg==
-X-Gm-Message-State: AOAM532u/HxRSWDS5WcWMd6SnuzHMgFGM2fpYzNFbqPqgLvrjPwLW/7k
-        Yn+5cUy7eHh2Ve4u4jj8X5TEiQ==
-X-Google-Smtp-Source: ABdhPJxOaWtOaVBRUtO1R715aj1dzFF6MiY8rXICAcPeEyvZK4qcijUvkS/3X+ACJ2ULeHrFJ0ha7Q==
-X-Received: by 2002:a05:6a00:ad0:b0:4e1:2d96:2ab0 with SMTP id c16-20020a056a000ad000b004e12d962ab0mr11095296pfl.3.1652001891834;
-        Sun, 08 May 2022 02:24:51 -0700 (PDT)
+        bh=OU6pd7Lt5oEt5wQwCFS/HKNGGyS7IdmjRp7WJd3VCBc=;
+        b=t/1bDqFQKf02N8gUj9PxHpSsRQMAECBxsPWPV7VpbsrJ8hIRVgxFLaLuSG2j/hO0S9
+         GK0i/zXNE6Fijy0MKlw6uW0eEgeAVCgDgcllya6IM3fakxpkJK3ft2O4P9S0NlLjSZF6
+         SgsBH0xUTaWYuFrMqXubeTScPzUdOybK04kj89iN75vKxCjUjEcfDVzQC/pXp5uZkW2Q
+         rn45gvq//vRyl5u98xi9kXdGtlbD2knhFACoMylAx0vBv3I6J47ZgL7JLgYDra96H5U5
+         RQqcomOIp41Cg3rfVXajcENvaALr9jEmFAV55TBxWloPlmYHbGq/ykRWv+ZDdrnlRoLr
+         UwAQ==
+X-Gm-Message-State: AOAM5319M9sBFhqRwMK9USLlBih0pfsmRU1HJk6Q1WJGte/Yjm1TqNbd
+        7qDeqsFTkH40EoF1IvgJApLRUDkFelgRVSyy2Go=
+X-Google-Smtp-Source: ABdhPJxYqLiPKaLWN09mBoe00Vgc7c3NuWoEV7CefgVwsrzN0PVqkEg03n3NtbU2BsytbS1yNk2R5w==
+X-Received: by 2002:a05:6a00:88f:b0:510:7a49:b72f with SMTP id q15-20020a056a00088f00b005107a49b72fmr10682181pfj.21.1652001912589;
+        Sun, 08 May 2022 02:25:12 -0700 (PDT)
 Received: from localhost.localdomain (104-237-153-19.ip.linodeusercontent.com. [104.237.153.19])
-        by smtp.gmail.com with ESMTPSA id t63-20020a638142000000b003c14af505f7sm6155088pgd.15.2022.05.08.02.24.42
+        by smtp.gmail.com with ESMTPSA id t63-20020a638142000000b003c14af505f7sm6155088pgd.15.2022.05.08.02.25.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 02:24:51 -0700 (PDT)
+        Sun, 08 May 2022 02:25:12 -0700 (PDT)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -65,9 +65,9 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Ali Saidi <alisaidi@amazon.com>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v2 04/11] perf mem: Add statistics for peer snooping
-Date:   Sun,  8 May 2022 17:23:39 +0800
-Message-Id: <20220508092346.255826-5-leo.yan@linaro.org>
+Subject: [PATCH v2 06/11] perf c2c: Use explicit names for display macros
+Date:   Sun,  8 May 2022 17:23:41 +0800
+Message-Id: <20220508092346.255826-7-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508092346.255826-1-leo.yan@linaro.org>
 References: <20220508092346.255826-1-leo.yan@linaro.org>
@@ -77,68 +77,181 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have added the flag PERF_MEM_SNOOPX_PEER to support cache
-snooping from peer core or cluster, this patch is to add statistics for
-this new flag.
+Perf c2c tool has an assumption that it heavily depends on HITM snoop
+type to detect cache false sharing, unfortunately, HITM is not supported
+on some architectures.
+
+Essentially, perf c2c tool wants to find some very costly snooping
+operations for false cache sharing, this means it's not necessarily
+to stick using HITM tags and we can explore other snooping types
+(e.g. SNOOPX_PEER).
+
+For this reason, this patch renames HITM related display macros with
+suffix '_HITM', so it can be distinct if later add more display types
+for on other snooping type.
 
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
 Tested-by: Ali Saidi <alisaidi@amazon.com>
 ---
- tools/perf/util/mem-events.c | 11 ++++++++++-
- tools/perf/util/mem-events.h |  1 +
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ tools/perf/builtin-c2c.c | 58 ++++++++++++++++++++--------------------
+ 1 file changed, 29 insertions(+), 29 deletions(-)
 
-diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
-index 5dca1882c284..6cd2b6ffb4a4 100644
---- a/tools/perf/util/mem-events.c
-+++ b/tools/perf/util/mem-events.c
-@@ -525,6 +525,7 @@ int c2c_decode_stats(struct c2c_stats *stats, struct mem_info *mi)
- 	u64 op     = data_src->mem_op;
- 	u64 lvl    = data_src->mem_lvl;
- 	u64 snoop  = data_src->mem_snoop;
-+	u64 snoopx = data_src->mem_snoopx;
- 	u64 lock   = data_src->mem_lock;
- 	u64 blk    = data_src->mem_blk;
- 	/*
-@@ -567,10 +568,17 @@ do {				\
- 			if (lvl & P(LVL, IO))  stats->ld_io++;
- 			if (lvl & P(LVL, LFB)) stats->ld_fbhit++;
- 			if (lvl & P(LVL, L1 )) stats->ld_l1hit++;
--			if (lvl & P(LVL, L2 )) stats->ld_l2hit++;
-+			if (lvl & P(LVL, L2)) {
-+				if (snoopx & P(SNOOPX, PEER))
-+					stats->ld_peer++;
-+				else
-+					stats->ld_l2hit++;
-+			}
- 			if (lvl & P(LVL, L3 )) {
- 				if (snoop & P(SNOOP, HITM))
- 					HITM_INC(lcl_hitm);
-+				else if (snoopx & P(SNOOPX, PEER))
-+					stats->ld_peer++;
- 				else
- 					stats->ld_llchit++;
- 			}
-@@ -661,6 +669,7 @@ void c2c_add_stats(struct c2c_stats *stats, struct c2c_stats *add)
- 	stats->ld_l1hit		+= add->ld_l1hit;
- 	stats->ld_l2hit		+= add->ld_l2hit;
- 	stats->ld_llchit	+= add->ld_llchit;
-+	stats->ld_peer		+= add->ld_peer;
- 	stats->lcl_hitm		+= add->lcl_hitm;
- 	stats->rmt_hitm		+= add->rmt_hitm;
- 	stats->tot_hitm		+= add->tot_hitm;
-diff --git a/tools/perf/util/mem-events.h b/tools/perf/util/mem-events.h
-index 8a8b568baeee..4879b841c841 100644
---- a/tools/perf/util/mem-events.h
-+++ b/tools/perf/util/mem-events.h
-@@ -75,6 +75,7 @@ struct c2c_stats {
- 	u32	ld_l1hit;            /* count of loads that hit L1D */
- 	u32	ld_l2hit;            /* count of loads that hit L2D */
- 	u32	ld_llchit;           /* count of loads that hit LLC */
-+	u32	ld_peer;             /* count of loads that hit peer core or cluster cache */
- 	u32	lcl_hitm;            /* count of loads with local HITM  */
- 	u32	rmt_hitm;            /* count of loads with remote HITM */
- 	u32	tot_hitm;            /* count of loads with local and remote HITM */
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index baa003c150b1..180208a4085f 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -114,16 +114,16 @@ struct perf_c2c {
+ };
+ 
+ enum {
+-	DISPLAY_LCL,
+-	DISPLAY_RMT,
+-	DISPLAY_TOT,
++	DISPLAY_LCL_HITM,
++	DISPLAY_RMT_HITM,
++	DISPLAY_TOT_HITM,
+ 	DISPLAY_MAX,
+ };
+ 
+ static const char *display_str[DISPLAY_MAX] = {
+-	[DISPLAY_LCL] = "Local",
+-	[DISPLAY_RMT] = "Remote",
+-	[DISPLAY_TOT] = "Total",
++	[DISPLAY_LCL_HITM] = "Local",
++	[DISPLAY_RMT_HITM] = "Remote",
++	[DISPLAY_TOT_HITM] = "Total",
+ };
+ 
+ static const struct option c2c_options[] = {
+@@ -807,15 +807,15 @@ static double percent_hitm(struct c2c_hist_entry *c2c_he)
+ 	total = &hists->stats;
+ 
+ 	switch (c2c.display) {
+-	case DISPLAY_RMT:
++	case DISPLAY_RMT_HITM:
+ 		st  = stats->rmt_hitm;
+ 		tot = total->rmt_hitm;
+ 		break;
+-	case DISPLAY_LCL:
++	case DISPLAY_LCL_HITM:
+ 		st  = stats->lcl_hitm;
+ 		tot = total->lcl_hitm;
+ 		break;
+-	case DISPLAY_TOT:
++	case DISPLAY_TOT_HITM:
+ 		st  = stats->tot_hitm;
+ 		tot = total->tot_hitm;
+ 	default:
+@@ -1181,15 +1181,15 @@ node_entry(struct perf_hpp_fmt *fmt __maybe_unused, struct perf_hpp *hpp,
+ 			advance_hpp(hpp, ret);
+ 
+ 			switch (c2c.display) {
+-			case DISPLAY_RMT:
++			case DISPLAY_RMT_HITM:
+ 				ret = display_metrics(hpp, stats->rmt_hitm,
+ 						      c2c_he->stats.rmt_hitm);
+ 				break;
+-			case DISPLAY_LCL:
++			case DISPLAY_LCL_HITM:
+ 				ret = display_metrics(hpp, stats->lcl_hitm,
+ 						      c2c_he->stats.lcl_hitm);
+ 				break;
+-			case DISPLAY_TOT:
++			case DISPLAY_TOT_HITM:
+ 				ret = display_metrics(hpp, stats->tot_hitm,
+ 						      c2c_he->stats.tot_hitm);
+ 				break;
+@@ -1545,9 +1545,9 @@ static struct c2c_dimension dim_tot_loads = {
+ };
+ 
+ static struct c2c_header percent_hitm_header[] = {
+-	[DISPLAY_LCL] = HEADER_BOTH("Lcl", "Hitm"),
+-	[DISPLAY_RMT] = HEADER_BOTH("Rmt", "Hitm"),
+-	[DISPLAY_TOT] = HEADER_BOTH("Tot", "Hitm"),
++	[DISPLAY_LCL_HITM] = HEADER_BOTH("Lcl", "Hitm"),
++	[DISPLAY_RMT_HITM] = HEADER_BOTH("Rmt", "Hitm"),
++	[DISPLAY_TOT_HITM] = HEADER_BOTH("Tot", "Hitm"),
+ };
+ 
+ static struct c2c_dimension dim_percent_hitm = {
+@@ -2018,15 +2018,15 @@ static bool he__display(struct hist_entry *he, struct c2c_stats *stats)
+ 	c2c_he = container_of(he, struct c2c_hist_entry, he);
+ 
+ 	switch (c2c.display) {
+-	case DISPLAY_LCL:
++	case DISPLAY_LCL_HITM:
+ 		he->filtered = filter_display(c2c_he->stats.lcl_hitm,
+ 					      stats->lcl_hitm);
+ 		break;
+-	case DISPLAY_RMT:
++	case DISPLAY_RMT_HITM:
+ 		he->filtered = filter_display(c2c_he->stats.rmt_hitm,
+ 					      stats->rmt_hitm);
+ 		break;
+-	case DISPLAY_TOT:
++	case DISPLAY_TOT_HITM:
+ 		he->filtered = filter_display(c2c_he->stats.tot_hitm,
+ 					      stats->tot_hitm);
+ 		break;
+@@ -2049,13 +2049,13 @@ static inline bool is_valid_hist_entry(struct hist_entry *he)
+ 		return true;
+ 
+ 	switch (c2c.display) {
+-	case DISPLAY_LCL:
++	case DISPLAY_LCL_HITM:
+ 		has_record = !!c2c_he->stats.lcl_hitm;
+ 		break;
+-	case DISPLAY_RMT:
++	case DISPLAY_RMT_HITM:
+ 		has_record = !!c2c_he->stats.rmt_hitm;
+ 		break;
+-	case DISPLAY_TOT:
++	case DISPLAY_TOT_HITM:
+ 		has_record = !!c2c_he->stats.tot_hitm;
+ 		break;
+ 	default:
+@@ -2752,11 +2752,11 @@ static int setup_display(const char *str)
+ 	const char *display = str ?: "tot";
+ 
+ 	if (!strcmp(display, "tot"))
+-		c2c.display = DISPLAY_TOT;
++		c2c.display = DISPLAY_TOT_HITM;
+ 	else if (!strcmp(display, "rmt"))
+-		c2c.display = DISPLAY_RMT;
++		c2c.display = DISPLAY_RMT_HITM;
+ 	else if (!strcmp(display, "lcl"))
+-		c2c.display = DISPLAY_LCL;
++		c2c.display = DISPLAY_LCL_HITM;
+ 	else {
+ 		pr_err("failed: unknown display type: %s\n", str);
+ 		return -1;
+@@ -2846,9 +2846,9 @@ static int setup_coalesce(const char *coalesce, bool no_source)
+ 		return -1;
+ 
+ 	if (asprintf(&c2c.cl_resort, "offset,%s",
+-		     c2c.display == DISPLAY_TOT ?
++		     c2c.display == DISPLAY_TOT_HITM ?
+ 		     "tot_hitm" :
+-		     c2c.display == DISPLAY_RMT ?
++		     c2c.display == DISPLAY_RMT_HITM ?
+ 		     "rmt_hitm,lcl_hitm" :
+ 		     "lcl_hitm,rmt_hitm") < 0)
+ 		return -ENOMEM;
+@@ -3005,11 +3005,11 @@ static int perf_c2c__report(int argc, const char **argv)
+ 		     "ld_rmthit,rmt_hitm,"
+ 		     "dram_lcl,dram_rmt";
+ 
+-	if (c2c.display == DISPLAY_TOT)
++	if (c2c.display == DISPLAY_TOT_HITM)
+ 		sort_str = "tot_hitm";
+-	else if (c2c.display == DISPLAY_RMT)
++	else if (c2c.display == DISPLAY_RMT_HITM)
+ 		sort_str = "rmt_hitm";
+-	else if (c2c.display == DISPLAY_LCL)
++	else if (c2c.display == DISPLAY_LCL_HITM)
+ 		sort_str = "lcl_hitm";
+ 
+ 	c2c_hists__reinit(&c2c.hists, output_str, sort_str);
 -- 
 2.25.1
 
