@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 14:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8025C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 14:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233905AbiEHOa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 10:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
+        id S233930AbiEHOac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 10:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233823AbiEHOaR (ORCPT
+        with ESMTP id S233832AbiEHOaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 10:30:17 -0400
+        Sun, 8 May 2022 10:30:18 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164106164;
-        Sun,  8 May 2022 07:26:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DEB60D7;
+        Sun,  8 May 2022 07:26:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652019987; x=1683555987;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=r4HJTOfC25H3VcKQz3KRyOmyhRGSiIPaSaWM7GPA5Ss=;
-  b=f4w5kiP/wQv8UBIXK34fnSIIIX8FWys4+Y0FONreUoXOoN4UkWHRZXIg
-   Y0/BMVOly60fB/OcJkvTdb5HD3CVWNXXmKm8HFzUDYTDRymBQGzXZLb8G
-   9qjCcBW3HWKjyTxKYFl93QqFNJCTgRuir9VaYOE4H2AyBi2GNLyBFvR16
-   2qB58XH18x0YfuXm4ZPbynDIv2VjHNDW0SNpSCvUEsFS16vVlkeU2hZLz
-   wur2XA1X9660SrUcwq+RLSmPfTbLDMrFec/J+9/SOCskd8KAIV0VqZ7t+
-   mQGILBSNdqCGUnJoRQvfmOdfS3lUCj6FOgcgplgikgqm8qRcjcy+ZHb+A
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="268488486"
+  t=1652019988; x=1683555988;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=owflUxJwye43Jslm11MI/MaUZtH0owF4PzzUJNNfyZ0=;
+  b=IYsxrc0NnbQ0DudQz/FLaFEgqcT0N68GMVkHA89d2GMGMfiTymfd9fU9
+   Us2VhZQoaOABmWWToLZUP917QAZVXSpBWvcLteXTFQV8vulgOMkcYeKxs
+   H0UlWPPvDNxHoi9OZ+1bvMTIVwRhDmHkerlDPK1qVpQ/pflTh6X49KSKG
+   s/NN6sDV7qCoPw/ZKgeUn6Y4W3luYitPN955Tm2IXAosTl1AY7xk+sfxW
+   8ngQLdil2qPVhFfnO+Ry1trKbW1ituWNc9U6Gu7l+wPKQ+NGcytOC6MiK
+   GirhT9DiRBbic0SxrDIquDNVfK+aRQg1/ANb0MysURHUvd04FEWOncjrx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="268488489"
 X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="268488486"
+   d="scan'208";a="268488489"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 07:26:25 -0700
 X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
-   d="scan'208";a="737738696"
+   d="scan'208";a="737738699"
 Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
   by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 07:26:25 -0700
 From:   matthew.gerlach@linux.intel.com
@@ -42,10 +42,12 @@ To:     dinguyen@kernel.org, robh+dt@kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         krzysztof.kozlowski+dt@linaro.org
 Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Subject: [PATCH v4 0/3] Add device tree for Intel n6000
-Date:   Sun,  8 May 2022 07:26:21 -0700
-Message-Id: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
+Subject: [PATCH v4 3/3] arm64: dts: intel: add device tree for n6000
+Date:   Sun,  8 May 2022 07:26:24 -0700
+Message-Id: <20220508142624.491045-4-matthew.gerlach@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
+References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -54,52 +56,115 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-This patch set adds a device tree for the Hard Processor System (HPS)
-on an Agilex based Intel n6000 board.
+Add a device tree for the n6000 instantiation of Agilex
+Hard Processor System (HPS).
 
-Patch 1 defines the device tree binding for the HPS Copy Engine IP
-used to copy a bootable image from host memory to HPS DDR.
-
-Patch 2 defines the binding for the Intel n6000 board itself.
-
-Patch 3 adds the device tree for the n6000 board.
-
-Changelog v3 -> v4:
-  - move binding yaml from soc to soc/intel
-
-Changelog v2 -> v3:
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+---
+v3:
+  - add unit number to memory node
   - remove unused label
-  - move from misc to soc
   - remove 0x from #address-cells/#size-cells values
   - change hps_cp_eng@0 to dma-controller@0
-  - remote inaccurate 'items:' tag
-  - added Acked-by
-  - add unit number to memory node
   - remove spi node with unaccepted compatible value
 
-Changelog v1 -> v2:
-  - add dt binding for copy enging
-  - add dt binding for n6000 board
+v2:
   - fix copy engine node name
   - fix compatible field for copy engine
   - remove redundant status field
   - add compatibility field for the board
   - fix SPDX
   - fix how osc1 clock frequency is set
-
-Matthew Gerlach (3):
-  dt-bindings: soc: add bindings for Intel HPS Copy Engine
-  dt-bindings: intel: add binding for Intel n6000
-  arm64: dts: intel: add device tree for n6000
-
- .../bindings/arm/intel,socfpga.yaml           |  1 +
- .../soc/intel/intel,hps-copy-engine.yaml      | 51 ++++++++++++++
+---
  arch/arm64/boot/dts/intel/Makefile            |  3 +-
  .../boot/dts/intel/socfpga_agilex_n6000.dts   | 66 +++++++++++++++++++
- 4 files changed, 120 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+ 2 files changed, 68 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
 
+diff --git a/arch/arm64/boot/dts/intel/Makefile b/arch/arm64/boot/dts/intel/Makefile
+index 0b5477442263..c2a723838344 100644
+--- a/arch/arm64/boot/dts/intel/Makefile
++++ b/arch/arm64/boot/dts/intel/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_agilex_socdk.dtb \
++dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_agilex_n6000.dtb \
++				socfpga_agilex_socdk.dtb \
+ 				socfpga_agilex_socdk_nand.dtb \
+ 				socfpga_n5x_socdk.dtb
+ dtb-$(CONFIG_ARCH_KEEMBAY) += keembay-evm.dtb
+diff --git a/arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts b/arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
+new file mode 100644
+index 000000000000..6231a69204b1
+--- /dev/null
++++ b/arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
+@@ -0,0 +1,66 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2021-2022, Intel Corporation
++ */
++#include "socfpga_agilex.dtsi"
++
++/ {
++	model = "SoCFPGA Agilex n6000";
++	compatible = "intel,socfpga-agilex-n6000", "intel,socfpga-agilex";
++
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart0;
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		ethernet2 = &gmac2;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@0 {
++		device_type = "memory";
++		/* We expect the bootloader to fill in the reg */
++		reg = <0 0 0 0>;
++	};
++
++	soc {
++		bus@80000000 {
++			compatible = "simple-bus";
++			reg = <0x80000000 0x60000000>,
++				<0xf9000000 0x00100000>;
++			reg-names = "axi_h2f", "axi_h2f_lw";
++			#address-cells = <2>;
++			#size-cells = <1>;
++			ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
++
++			dma-controller@0 {
++				compatible = "intel,hps-copy-engine";
++				reg = <0x00000000 0x00000000 0x00001000>;
++				#dma-cells = <1>;
++			};
++		};
++	};
++};
++
++&osc1 {
++	clock-frequency = <25000000>;
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&watchdog0 {
++	status = "okay";
++};
++
++&fpga_mgr {
++	status = "disabled";
++};
 -- 
 2.25.1
 
