@@ -2,166 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 801D8C4321E
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 254DBC41535
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240651AbiEHTIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
+        id S241193AbiEHTIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237753AbiEHR2e (ORCPT
+        with ESMTP id S1379988AbiEHSox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 13:28:34 -0400
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F879DED0
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 10:24:43 -0700 (PDT)
-Received: by mail-ed1-f50.google.com with SMTP id ba17so13848788edb.5
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 10:24:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wqd1pfOpFBNim3pwEebs2UZOYdL6NZjjBjoV+dIe6iY=;
-        b=Fa7QmJcNo9SbT+IHpWFUIRIB7pilgr4sqMl/rPj/8sa13GAJqZBvJG9GreTTzTPIeF
-         pn1bId3gtRSSVKeShFNhmACtM2Wje1WDxpiAAoH40mQ1zGCsMa4R3y9YyIQciMA6HaPe
-         7uMxltjyniEsTBRCfqcN8+Q0GwGNABCT9TM6X8WujSYuXiZN1jER0SqMGHxNeobdFmp3
-         VqNHYJNhNw9yjS2OZJqFqrjuhtm/IcpliGZslXH4SaStId0c8oWJuPNh+9BdJXMbdJWU
-         YH4ddX2JnDgCqVFBU6Y6xFaEvjUD1tJ8YzvFGfdMtXsJElj6uqd3wzXquEUdqypOJ5Kx
-         t/WQ==
-X-Gm-Message-State: AOAM531lSrJBBhNuLlIUi2GSWuM1QfYMTOPDv8PGwjjIgI/K4cBjPP5t
-        8AMJEEJVoYAfcA5Uo130Xy0=
-X-Google-Smtp-Source: ABdhPJyo/rfuIQKNUAXvvILf5E3b882Jcte6XFXtzxTuyZm+ayghbOJg1YOFA1rXbKlUpGy3fKe2Nw==
-X-Received: by 2002:aa7:ca15:0:b0:428:3259:984a with SMTP id y21-20020aa7ca15000000b004283259984amr13826192eds.59.1652030681735;
-        Sun, 08 May 2022 10:24:41 -0700 (PDT)
-Received: from [10.9.0.34] ([46.166.128.205])
-        by smtp.gmail.com with ESMTPSA id qs24-20020a170906459800b006f3ef214e66sm4143967ejc.204.2022.05.08.10.24.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 10:24:41 -0700 (PDT)
-Message-ID: <3d65baac-93b6-7f21-1bf6-9b17d1fce843@linux.com>
-Date:   Sun, 8 May 2022 20:24:38 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Reply-To: alex.popov@linux.com
-Subject: Re: [PATCH v2 01/13] arm64: stackleak: fix current_top_of_stack()
-Content-Language: en-US
-To:     Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     akpm@linux-foundation.org, catalin.marinas@arm.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        luto@kernel.org, will@kernel.org
-References: <20220427173128.2603085-1-mark.rutland@arm.com>
- <20220427173128.2603085-2-mark.rutland@arm.com>
-From:   Alexander Popov <alex.popov@linux.com>
-In-Reply-To: <20220427173128.2603085-2-mark.rutland@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Sun, 8 May 2022 14:44:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD8AB85F
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:41:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53B42B80EA3
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F1EAEC385AF;
+        Sun,  8 May 2022 18:40:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652035260;
+        bh=To0H3REJDnUxGONC8RvxewdFgEv8lZWnNRseQeban4o=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=UCJe2e68f2gmO50T28F1yl5zRjPM8bSQp9leZggicSrsslRvpkUxW6IcQEMflqHIX
+         I+jskciRdQgOvgW3c7p+N66FFDU8aIVF2ttrwi2Mydn7rGLZNnv9ZfTqeldGbVJ5Fq
+         iK1cPOBniR4AsE6v2zkoWZPVaNQ0V5jnGvTf0evVAskkhAetSgVGYS0xV0cGcgQiTD
+         8Bp5oPOYzlPDterrnamPburhfjgPgFl3QKadYElSzwc6wl/EjQQPpgPMsQkxnSY+n8
+         QXlUlUYyF8L6ndWRSK31gkcyAKkn2bB3hF324iYI2ZCiIpZuu1v6wowmC7lK2mlyF+
+         5qWPcL6mMKqzA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D0900F03928;
+        Sun,  8 May 2022 18:40:59 +0000 (UTC)
+Subject: Re: [GIT pull] locking/urgent for v5.18-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <165201148366.536527.18041857851988281678.tglx@xen13>
+References: <165201148069.536527.1960632033331546251.tglx@xen13> <165201148366.536527.18041857851988281678.tglx@xen13>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <165201148366.536527.18041857851988281678.tglx@xen13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-urgent-2022-05-08
+X-PR-Tracked-Commit-Id: 60cc5468daaefc18ffc081dc484bdaa1bd270561
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: ede4c6d78a32f9b7dfdb12d5edf8c8c4c84c729a
+Message-Id: <165203525984.974.8985636765269566104.pr-tracker-bot@kernel.org>
+Date:   Sun, 08 May 2022 18:40:59 +0000
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark!
+The pull request you sent on Sun,  8 May 2022 14:05:22 +0200 (CEST):
 
-On 27.04.2022 20:31, Mark Rutland wrote:
-> Due to some historical confusion, arm64's current_top_of_stack() isn't
-> what the stackleak code expects. This could in theory result in a number
-> of problems, and practically results in an unnecessary performance hit.
-> We can avoid this by aligning the arm64 implementation with the x86
-> implementation.
-> 
-> The arm64 implementation of current_top_of_stack() was added
-> specifically for stackleak in commit:
-> 
->    0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
-> 
-> This was intended to be equivalent to the x86 implementation, but the
-> implementation, semantics, and performance characteristics differ
-> wildly:
-> 
-> * On x86, current_top_of_stack() returns the top of the current task's
->    task stack, regardless of which stack is in active use.
-> 
->    The implementation accesses a percpu variable which the x86 entry code
->    maintains, and returns the location immediately above the pt_regs on
->    the task stack (above which x86 has some padding).
-> 
-> * On arm64 current_top_of_stack() returns the top of the stack in active
->    use (i.e. the one which is currently being used).
-> 
->    The implementation checks the SP against a number of
->    potentially-accessible stacks, and will BUG() if no stack is found.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-urgent-2022-05-08
 
-As I could understand, for arm64, calling stackleak_erase() not from the thread 
-stack would bring troubles because current_top_of_stack() would return an 
-unexpected address from a foreign stack. Is this correct?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/ede4c6d78a32f9b7dfdb12d5edf8c8c4c84c729a
 
-But this bug doesn't happen because arm64 always calls stackleak_erase() from 
-the current thread stack. Right?
+Thank you!
 
-> The core stackleak_erase() code determines the upper bound of stack to
-> erase with:
-> 
-> | if (on_thread_stack())
-> |         boundary = current_stack_pointer;
-> | else
-> |         boundary = current_top_of_stack();
-> 
-> On arm64 stackleak_erase() is always called on a task stack, and
-> on_thread_stack() should always be true. On x86, stackleak_erase() is
-> mostly called on a trampoline stack, and is sometimes called on a task
-> stack.
-> 
-> Currently, this results in a lot of unnecessary code being generated for
-> arm64 for the impossible !on_thread_stack() case. Some of this is
-> inlined, bloating stackleak_erase(), while portions of this are left
-> out-of-line and permitted to be instrumented (which would be a
-> functional problem if that code were reachable).
-
-Sorry, I didn't understand this part about instrumentation. Could you elaborate 
-please?
-
-> As a first step towards improving this, this patch aligns arm64's
-> implementation of current_top_of_stack() with x86's, always returning
-> the top of the current task's stack. With GCC 11.1.0 this results in the
-> bulk of the unnecessary code being removed, including all of the
-> out-of-line instrumentable code.
-> 
-> While I don't believe there's a functional problem in practice I've
-> marked this as a fix since the semantic was clearly wrong, the fix
-> itself is simple, and other code might rely upon this in future.
-> 
-> Fixes: 0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
-> Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> Cc: Alexander Popov <alex.popov@linux.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Andy Lutomirski <luto@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Will Deacon <will@kernel.org>
-> ---
->   arch/arm64/include/asm/processor.h | 10 ++++------
->   1 file changed, 4 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-> index 73e38d9a540ce..6b1a12c23fe77 100644
-> --- a/arch/arm64/include/asm/processor.h
-> +++ b/arch/arm64/include/asm/processor.h
-> @@ -381,12 +381,10 @@ long get_tagged_addr_ctrl(struct task_struct *task);
->    * of header definitions for the use of task_stack_page.
->    */
->   
-> -#define current_top_of_stack()								\
-> -({											\
-> -	struct stack_info _info;							\
-> -	BUG_ON(!on_accessible_stack(current, current_stack_pointer, 1, &_info));	\
-> -	_info.high;									\
-> -})
-> +/*
-> + * The top of the current task's task stack
-> + */
-> +#define current_top_of_stack()	((unsigned long)current->stack + THREAD_SIZE)
->   #define on_thread_stack()	(on_task_stack(current, current_stack_pointer, 1, NULL))
->   
->   #endif /* __ASSEMBLY__ */
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
