@@ -2,98 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE385C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 00:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC61C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 00:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344179AbiEHAYf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 20:24:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
+        id S234483AbiEHAft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 7 May 2022 20:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbiEHAY0 (ORCPT
+        with ESMTP id S229974AbiEHAfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 20:24:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2B510CA
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 17:20:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7B79B80CB3
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 00:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F13BBC385A5;
-        Sun,  8 May 2022 00:20:31 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RWoY6whx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651969230;
+        Sat, 7 May 2022 20:35:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A39D2B9
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 17:31:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651969916;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=n1Nbn66kBHdnSXivPE3WcHST5AT2Su5zyz1tMG3BgD8=;
-        b=RWoY6whxz3Mxuv2vtz54IsZ8emVat0BL7au5BTpo1/rEHe+VF8AiPi4T77LRanY3LBE57W
-        OI+N3oWjFZg6eCBIvAM6ANDqpSXnB9EVr5Yy9f/NvW0t22lUe/dJIhOk3EKHCnqilEglD8
-        uv3MZS2MAaN8JFUvcwSY1OIWmY50BjA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8acbde0f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 8 May 2022 00:20:30 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stafford Horne <shorne@gmail.com>
-Subject: [PATCH v2] init: call time_init() before rand_initialize()
-Date:   Sun,  8 May 2022 02:20:18 +0200
-Message-Id: <20220508002018.117030-1-Jason@zx2c4.com>
-In-Reply-To: <YnbgAGgC0DFBvLcL@zx2c4.com>
-References: <YnbgAGgC0DFBvLcL@zx2c4.com>
+        bh=7oJ/pNGEcyEUOU4PfPLwqKmVyn82Hpz01lnvE5XFThg=;
+        b=PwhAQJAq1Z1NOqb3kxcQqY3VsO5zL5BGfoAk8ghOwdtWLrY8kSH5pMYJIiNPn7DU6vOxnl
+        Gp513uAAPoqmlqGQU2YK0zTt9LYry9ohm5kJecvksyiPSEbPL8T8eaK3SrQgBX7/oJGsdO
+        M4ytLisv4biJKmH2yV7OM+uuRYw0bXU=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-193-evukXkT1MXuQHtgwS17ndg-1; Sat, 07 May 2022 20:31:54 -0400
+X-MC-Unique: evukXkT1MXuQHtgwS17ndg-1
+Received: by mail-qt1-f199.google.com with SMTP id a18-20020ac85b92000000b002f3c5e0a098so5133166qta.7
+        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 17:31:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=7oJ/pNGEcyEUOU4PfPLwqKmVyn82Hpz01lnvE5XFThg=;
+        b=52PpV9pGKfVbIWc2YpGQ1mnz5C9Syv5Q2mdSOcTh8N1oWLoc5SSz4A+g1UT7VS1mPQ
+         /DsY0ziVfCZAavJg/FSfeZMXN15uao1iA7G0XGSM7+PqvHRb/zJNPNOBsGPPIFIrMOEm
+         9yuwr80YpC0r7Cmm+RuBsXACBEytrYzOgNJjZbScIHOILcDNHBTXFfgp7pWxOCwOLigB
+         UfwYUxwVxetNCPLP8T1omFyGwKnrAwqXChEWWXWIPWfo4ohOBRi0DB38r1RjAiEjjUOo
+         WSc8ze3qXIKFj4vJvZfV/Dg3zvHFXCWAvmbOvmWRmgJ1BMYt3jaXxhvbm10UT35Du9+9
+         mhqw==
+X-Gm-Message-State: AOAM5303c9AZIPDbAqGkWBtziBPVANo1jGPRC4p/h47gIUAq0f4XAnPw
+        /p35kNzAisz3g57ndPY2zknKy7HpfDHfi2ICIPNrooXVMGCGF+6WyEXmAO2bJZtF2QRKKqftZlN
+        KV9hrd33SFz6AJSRaSkdnSmmt
+X-Received: by 2002:ae9:de47:0:b0:69f:8818:fe78 with SMTP id s68-20020ae9de47000000b0069f8818fe78mr7627077qkf.32.1651969914172;
+        Sat, 07 May 2022 17:31:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwYIJsa/PnyIM3Bnxy8zBrAyaPRSk7/RvDKyW0rFlL6k56vpQe0r5UM3VF5ScwkkDtgIa7QvQ==
+X-Received: by 2002:ae9:de47:0:b0:69f:8818:fe78 with SMTP id s68-20020ae9de47000000b0069f8818fe78mr7627071qkf.32.1651969913922;
+        Sat, 07 May 2022 17:31:53 -0700 (PDT)
+Received: from [10.23.153.165] ([46.248.132.196])
+        by smtp.gmail.com with ESMTPSA id p185-20020a37bfc2000000b0069fc13ce24fsm4764442qkf.128.2022.05.07.17.31.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 May 2022 17:31:52 -0700 (PDT)
+Message-ID: <5480feb2-9b02-1c03-2396-d8cc75f981c9@redhat.com>
+Date:   Sun, 8 May 2022 02:31:51 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] mm: fix is_pinnable_page against on cma page
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        John Dias <joaodias@google.com>
+References: <20220502173558.2510641-1-minchan@kernel.org>
+ <29d0c1c3-a44e-4573-7e7e-32be07544dbe@redhat.com>
+ <YnAhaRNjmIhtGUjk@google.com>
+ <08e9855c-395d-f40c-de3d-1ec8b644bfe8@redhat.com>
+ <YnFJss0doXGCmq3w@google.com>
+ <da07530d-92ad-7aef-2f2b-d115f878ef76@redhat.com>
+ <YnMC1jFoPvNLWqnG@google.com> <YnNzPlehofB57XXU@google.com>
+ <dd4588a4-c1ca-481c-ac33-06abef6cf70a@oracle.com>
+ <YnQIoVqXZQGILt6F@xz-m1.local>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YnQIoVqXZQGILt6F@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently time_init() is called after rand_initialize(), but
-rand_initialize() makes use of the timer on various platforms, and
-sometimes this timer needs to be initialized by time_init() first. In
-order for random_get_entropy() to not return zero during early boot when
-it's potentially used as an entropy source, reverse the order of these
-two calls. The block doing random initialization was right before
-time_init() before, so changing the order shouldn't have any complicated
-effects.
+On 05.05.22 19:25, Peter Xu wrote:
+> On Thu, May 05, 2022 at 10:00:07AM -0700, Mike Kravetz wrote:
+>> Gigantic pages can only be migrated IF there is another (already allocated)
+>> gigantic page available.  The routine to try and allocate a page 'on the fly'
+>> for migration will fail if passed a gigantic size.  There 'might' be a free
+>> pre-allocated gigantic page.  However, if the user set up CMA reserves for
+>> gigantic page allocations it is likely the free gigantic page is also in CMA.
+>> Therefore, it can not be used for this migration.  So, unless my reasoning
+>> is wrong, FOLL_LONGTERM would almost always fail for gigantic pages in CMA.
+> 
+> I'm probably not familiar enough with CMA, but.. I just noticed that if CMA
+> is destined to not be able to be pinned then maybe it'll lose quite a few
+> scenarios where pinning is a possible use case.  It doesn't even need to be
+> the major use case, but as long as it's possible (e.g. hypervisors hosting
+> virtual machines with device assignment) it'll be a hard no to CMA, which
+> seems to be a pity.
+> 
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Stafford Horne <shorne@gmail.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v1->v2:
-- Clarified commit message; code remains the same.
+Well, the same applies to ZONE_MOVABLE as well, unfortunately.
+Eventually, we might want to disable placing hugetlb pages on CMA areas
+if it turns out to be a problem. In case of ZONE_MOVABLE we can already
+fail "gracefully" when trying offlining (although that's really far from
+beautiful).
 
-This lives in random.git and will be in linux-next for testing.
-
- init/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/init/main.c b/init/main.c
-index 98182c3c2c4b..e37ec99cf56d 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1035,6 +1035,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	softirq_init();
- 	timekeeping_init();
- 	kfence_init();
-+	time_init();
- 
- 	/*
- 	 * For best initial stack canary entropy, prepare it after:
-@@ -1049,7 +1050,6 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	add_device_randomness(command_line, strlen(command_line));
- 	boot_init_stack_canary();
- 
--	time_init();
- 	perf_event_init();
- 	profile_init();
- 	call_function_init();
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
