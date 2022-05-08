@@ -2,274 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C314C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2040C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbiEHJyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 05:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
+        id S229542AbiEHKAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 06:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244266AbiEHJky (ORCPT
+        with ESMTP id S229456AbiEHJ76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 05:40:54 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552A2DEEA;
-        Sun,  8 May 2022 02:36:59 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0VCZxoXx_1652002612;
-Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCZxoXx_1652002612)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 08 May 2022 17:36:53 +0800
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-To:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        catalin.marinas@arm.com, will@kernel.org
-Cc:     tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
-        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
-        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, arnd@arndb.de, baolin.wang@linux.alibaba.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [PATCH v2 1/3] mm: change huge_ptep_clear_flush() to return the original pte
-Date:   Sun,  8 May 2022 17:36:39 +0800
-Message-Id: <012a484019e7ad77c39deab0af52a6755d8438c8.1652002221.git.baolin.wang@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
-References: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
-In-Reply-To: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
-References: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
+        Sun, 8 May 2022 05:59:58 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96822640A;
+        Sun,  8 May 2022 02:56:08 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id l18so21736475ejc.7;
+        Sun, 08 May 2022 02:56:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rMTzwniKsJKBvHw/Xx6/XM/Pnx3ZZPbw95CMSttKIV8=;
+        b=o5wIsfUNM+VbOjSBIhIyUrCRtI5jh2afkgfbkTbrgJWOWiAWbeVtPSJUHvBSEi/yr6
+         m/u7oFiFVMr7YqzcjbJ4WiFHVi2+cddY7rgU/vA7sjbPvJZxsRr9+y3QEhYslDzZr1tb
+         RZZkZbYVrfJcLo3tx8yJGAeCOyETwIAl+ixbYuEla8mUDu4OES43Nqzvp6P0fFhqF1e6
+         x4kFgVGCyXqO3ihRho5v9e4roW/hNqytoywmuaN3mb7kcvhDej2V422n5YuckxMBw0Oy
+         Knhwx61ZlDQ6WsVn8ze7HJEH3lK5M6/AcFKdI14QhXVIs8Igh4BBVWLvaab2kqsCWf2t
+         lEKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rMTzwniKsJKBvHw/Xx6/XM/Pnx3ZZPbw95CMSttKIV8=;
+        b=RZe40s+qgwKoSdEPGmrwkm9c8S05FcZgqfF9lGKnP3pXc29wl8MkbqnGUK1TuJZnnK
+         MpbqAhk1gpLhFq6BFcdjxYgBWsWj+3Szsq5NeiGCkeFwN0n7q16tSCPK6Ss2SnrFe1OQ
+         VLGe8+SW7TwbX7O5aP6h6rBuX3aKnNabNdT5JEKZa6Gz7++ZumS0WEvwzz42PJnMGmbF
+         IabIeGkiA+eG/3Oj14vVnQTjmKEb+7gAYy5RH9lCcCfw7m5cua7hwRyw6tXlthX7TxHa
+         SME0W2uOMlYoQaeDq7ZMkEqSQpq3+SubZ7RHtEu6KNN47hNoKNOWXT/wWeBacccmvN0d
+         8Ruw==
+X-Gm-Message-State: AOAM533DUqyKOISkuB9EVx6kA4EeLgoLBv5UiruF4026XHg0yQoD6syj
+        rASJuNao2VsDyUyhQkSrgc1wCrA3X0lir+oc7jrwTIQUMaxStj0i
+X-Google-Smtp-Source: ABdhPJxmNNQmwZNo8ah9X+MPI91et4WY6i1uhtxjMTikXV0qZBM9zGPzh3XBqhqdhtOO8cw7DdOiASQMyi8Nx4Ef2Xg=
+X-Received: by 2002:a17:907:3e8c:b0:6f4:4fdb:6f24 with SMTP id
+ hs12-20020a1709073e8c00b006f44fdb6f24mr10204116ejc.44.1652003767031; Sun, 08
+ May 2022 02:56:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220505152521.71019-1-markuss.broks@gmail.com>
+ <20220505152521.71019-2-markuss.broks@gmail.com> <CAHp75VfUA3qnZnkPQB3TRpPDwe+F+Q6rv9dQmq2xLfw9PmJ8LA@mail.gmail.com>
+ <20220507211402.GD11004@duo.ucw.cz>
+In-Reply-To: <20220507211402.GD11004@duo.ucw.cz>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 8 May 2022 11:55:31 +0200
+Message-ID: <CAHp75Vd=iD4QO2SV5h_P4GowVEy4Afk4nVyLezVa4w2u4jKybA@mail.gmail.com>
+Subject: Re: [PATCH v8 1/3] leds: ktd2692: Avoid duplicate error messages on
+ probe deferral
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is incorrect to use ptep_clear_flush() to nuke a hugetlb page
-table when unmapping or migrating a hugetlb page, and will change
-to use huge_ptep_clear_flush() instead in the following patches.
+On Sat, May 7, 2022 at 11:14 PM Pavel Machek <pavel@ucw.cz> wrote:
+>
+> Hi!
+>
+> > > Use dev_err_probe instead of dev_err to avoid duplicate error
+> > > messages if the GPIO allocation makes the probe defer.
+> >
+> > Thanks!
+> >
+> > There are two improvements we can make here.
+> > 1) adding a Fixes tag, so it can be backported to stable kernels;
+> > 2) see below.
+>
+> I don't believe this is severe-enough error to be worth stable.
 
-So this is a preparation patch, which changes the huge_ptep_clear_flush()
-to return the original pte to help to nuke a hugetlb page table.
+Fixes tag is good to have in either case, but I agree that is not so critical.
 
-Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Acked-by: Mike Kravetz <mike.kravetz@oracle.com>
----
- arch/arm64/include/asm/hugetlb.h   |  4 ++--
- arch/arm64/mm/hugetlbpage.c        | 12 +++++-------
- arch/ia64/include/asm/hugetlb.h    |  4 ++--
- arch/mips/include/asm/hugetlb.h    |  9 ++++++---
- arch/parisc/include/asm/hugetlb.h  |  4 ++--
- arch/powerpc/include/asm/hugetlb.h |  9 ++++++---
- arch/s390/include/asm/hugetlb.h    |  6 +++---
- arch/sh/include/asm/hugetlb.h      |  4 ++--
- arch/sparc/include/asm/hugetlb.h   |  4 ++--
- include/asm-generic/hugetlb.h      |  4 ++--
- mm/hugetlb.c                       |  2 +-
- 11 files changed, 33 insertions(+), 29 deletions(-)
-
-diff --git a/arch/arm64/include/asm/hugetlb.h b/arch/arm64/include/asm/hugetlb.h
-index 1242f71..616b2ca 100644
---- a/arch/arm64/include/asm/hugetlb.h
-+++ b/arch/arm64/include/asm/hugetlb.h
-@@ -39,8 +39,8 @@ extern pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
- extern void huge_ptep_set_wrprotect(struct mm_struct *mm,
- 				    unsigned long addr, pte_t *ptep);
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--extern void huge_ptep_clear_flush(struct vm_area_struct *vma,
--				  unsigned long addr, pte_t *ptep);
-+extern pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+				   unsigned long addr, pte_t *ptep);
- #define __HAVE_ARCH_HUGE_PTE_CLEAR
- extern void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
- 			   pte_t *ptep, unsigned long sz);
-diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-index cbace1c..ca8e65c 100644
---- a/arch/arm64/mm/hugetlbpage.c
-+++ b/arch/arm64/mm/hugetlbpage.c
-@@ -486,19 +486,17 @@ void huge_ptep_set_wrprotect(struct mm_struct *mm,
- 		set_pte_at(mm, addr, ptep, pfn_pte(pfn, hugeprot));
- }
- 
--void huge_ptep_clear_flush(struct vm_area_struct *vma,
--			   unsigned long addr, pte_t *ptep)
-+pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+			    unsigned long addr, pte_t *ptep)
- {
- 	size_t pgsize;
- 	int ncontig;
- 
--	if (!pte_cont(READ_ONCE(*ptep))) {
--		ptep_clear_flush(vma, addr, ptep);
--		return;
--	}
-+	if (!pte_cont(READ_ONCE(*ptep)))
-+		return ptep_clear_flush(vma, addr, ptep);
- 
- 	ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
--	clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
-+	return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
- }
- 
- static int __init hugetlbpage_init(void)
-diff --git a/arch/ia64/include/asm/hugetlb.h b/arch/ia64/include/asm/hugetlb.h
-index 7e46ebd..65d3811 100644
---- a/arch/ia64/include/asm/hugetlb.h
-+++ b/arch/ia64/include/asm/hugetlb.h
-@@ -23,8 +23,8 @@ static inline int is_hugepage_only_range(struct mm_struct *mm,
- #define is_hugepage_only_range is_hugepage_only_range
- 
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long addr, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long addr, pte_t *ptep)
- {
- }
- 
-diff --git a/arch/mips/include/asm/hugetlb.h b/arch/mips/include/asm/hugetlb.h
-index c214440..fd69c88 100644
---- a/arch/mips/include/asm/hugetlb.h
-+++ b/arch/mips/include/asm/hugetlb.h
-@@ -43,16 +43,19 @@ static inline pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
- }
- 
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long addr, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long addr, pte_t *ptep)
- {
-+	pte_t pte;
-+
- 	/*
- 	 * clear the huge pte entry firstly, so that the other smp threads will
- 	 * not get old pte entry after finishing flush_tlb_page and before
- 	 * setting new huge pte entry
- 	 */
--	huge_ptep_get_and_clear(vma->vm_mm, addr, ptep);
-+	pte = huge_ptep_get_and_clear(vma->vm_mm, addr, ptep);
- 	flush_tlb_page(vma, addr);
-+	return pte;
- }
- 
- #define __HAVE_ARCH_HUGE_PTE_NONE
-diff --git a/arch/parisc/include/asm/hugetlb.h b/arch/parisc/include/asm/hugetlb.h
-index a69cf9e..25bc560 100644
---- a/arch/parisc/include/asm/hugetlb.h
-+++ b/arch/parisc/include/asm/hugetlb.h
-@@ -28,8 +28,8 @@ static inline int prepare_hugepage_range(struct file *file,
- }
- 
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long addr, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long addr, pte_t *ptep)
- {
- }
- 
-diff --git a/arch/powerpc/include/asm/hugetlb.h b/arch/powerpc/include/asm/hugetlb.h
-index 6a1a1ac..8a5674f 100644
---- a/arch/powerpc/include/asm/hugetlb.h
-+++ b/arch/powerpc/include/asm/hugetlb.h
-@@ -43,11 +43,14 @@ static inline pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
- }
- 
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long addr, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long addr, pte_t *ptep)
- {
--	huge_ptep_get_and_clear(vma->vm_mm, addr, ptep);
-+	pte_t pte;
-+
-+	pte = huge_ptep_get_and_clear(vma->vm_mm, addr, ptep);
- 	flush_hugetlb_page(vma, addr);
-+	return pte;
- }
- 
- #define __HAVE_ARCH_HUGE_PTEP_SET_ACCESS_FLAGS
-diff --git a/arch/s390/include/asm/hugetlb.h b/arch/s390/include/asm/hugetlb.h
-index 32c3fd6..f22beda 100644
---- a/arch/s390/include/asm/hugetlb.h
-+++ b/arch/s390/include/asm/hugetlb.h
-@@ -50,10 +50,10 @@ static inline void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
- 		set_pte(ptep, __pte(_SEGMENT_ENTRY_EMPTY));
- }
- 
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long address, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long address, pte_t *ptep)
- {
--	huge_ptep_get_and_clear(vma->vm_mm, address, ptep);
-+	return huge_ptep_get_and_clear(vma->vm_mm, address, ptep);
- }
- 
- static inline int huge_ptep_set_access_flags(struct vm_area_struct *vma,
-diff --git a/arch/sh/include/asm/hugetlb.h b/arch/sh/include/asm/hugetlb.h
-index ae4de7b..e727cc9 100644
---- a/arch/sh/include/asm/hugetlb.h
-+++ b/arch/sh/include/asm/hugetlb.h
-@@ -21,8 +21,8 @@ static inline int prepare_hugepage_range(struct file *file,
- }
- 
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long addr, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long addr, pte_t *ptep)
- {
- }
- 
-diff --git a/arch/sparc/include/asm/hugetlb.h b/arch/sparc/include/asm/hugetlb.h
-index 53838a1..b50aa6f 100644
---- a/arch/sparc/include/asm/hugetlb.h
-+++ b/arch/sparc/include/asm/hugetlb.h
-@@ -21,8 +21,8 @@ pte_t huge_ptep_get_and_clear(struct mm_struct *mm, unsigned long addr,
- 			      pte_t *ptep);
- 
- #define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
--					 unsigned long addr, pte_t *ptep)
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-+					  unsigned long addr, pte_t *ptep)
- {
- }
- 
-diff --git a/include/asm-generic/hugetlb.h b/include/asm-generic/hugetlb.h
-index 896f341..a57d667 100644
---- a/include/asm-generic/hugetlb.h
-+++ b/include/asm-generic/hugetlb.h
-@@ -84,10 +84,10 @@ static inline pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
- #endif
- 
- #ifndef __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
--static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
-+static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
- 		unsigned long addr, pte_t *ptep)
- {
--	ptep_clear_flush(vma, addr, ptep);
-+	return ptep_clear_flush(vma, addr, ptep);
- }
- #endif
- 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 8605d7e..61a21af 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -5342,7 +5342,7 @@ static vm_fault_t hugetlb_wp(struct mm_struct *mm, struct vm_area_struct *vma,
- 		ClearHPageRestoreReserve(new_page);
- 
- 		/* Break COW or unshare */
--		huge_ptep_clear_flush(vma, haddr, ptep);
-+		(void)huge_ptep_clear_flush(vma, haddr, ptep);
- 		mmu_notifier_invalidate_range(mm, range.start, range.end);
- 		page_remove_rmap(old_page, vma, true);
- 		hugepage_add_new_anon_rmap(new_page, vma, haddr);
 -- 
-1.8.3.1
-
+With Best Regards,
+Andy Shevchenko
