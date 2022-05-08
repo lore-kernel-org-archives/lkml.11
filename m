@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32711C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A7FC4167D
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiEHTWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
+        id S230382AbiEHTW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbiEHTPy (ORCPT
+        with ESMTP id S231182AbiEHTRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 15:15:54 -0400
+        Sun, 8 May 2022 15:17:13 -0400
 Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C7312AC7;
-        Sun,  8 May 2022 12:11:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493185F84;
+        Sun,  8 May 2022 12:11:19 -0700 (PDT)
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 248J8qSN030019;
-        Mon, 9 May 2022 04:08:52 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 248J8qSN030019
+        by conuserg-09.nifty.com with ESMTP id 248J8qSX030019;
+        Mon, 9 May 2022 04:09:03 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 248J8qSX030019
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652036933;
-        bh=+vYUwETkJzeHMTCZ91mKcqrVUk+DZUgc4qJxVJGLB84=;
-        h=From:To:Cc:Subject:Date:From;
-        b=F4LJf0izMBoQwKKxFHapf/UWVkpce+bBOiPQDjYdwhGn4tjnhTYWvzVVqkcyPq804
-         wDV3dj2VXzZ3nUn50spW30wo44yeinntn/zLBECDNy+HKuo4c5WjW594yBUMLi9HJT
-         wh0d+02rTX2YFYjP5EQT1idNsaC0NZxLKCzsyElUxjIq91/u5NWViltNUAbCDr/fI1
-         c4RsAMtN7VODeWSApmkeeIwtBppqcGR83Ocb9ZjcSCDL6dvRZ/T1gTzeJUi+3NL62D
-         i3XLkjzJPLGGjjGT9pziJq2TeZyq+C4VDoadGLSYb3U3a6/WRGfI2AjWqpDZg7phzF
-         89WOSAQW+ZG/A==
+        s=dec2015msa; t=1652036944;
+        bh=7dVosA98YsgJAc1+4NwlKOpt2daMW/NjA4iASuFudpw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=v567Pj5GkH9qyqgf1aE9TntJT+yjdXuw4QMOStvVTv8qOpX9wzdNOoBLi3PvqEF2S
+         vKbc8AURe1DmvvshndOInFInjaHdtLIFeHPQMCsoWFkpHg/BSp9xeph0yuCe7EmDHO
+         btzmcymQDVTlLOpt3rm8S7zn/qiN7hJXjTUnT1l0BvUv6hXeHf7uazePIwMdyNq8xS
+         9DAmpyA8AqfCGBMPPhBECL/YKJuJwB0hTSs+2eNqXGmPwzZR3JtVcktZzmx901vRZd
+         izJAHnNVE8foareCu3qE4k8aetZnUFOSHieu7Y0B5I3KGJ/oCNnmazTa4h/I/JQBkL
+         k8jmasqrFzAmg==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
@@ -42,81 +42,226 @@ Cc:     linux-kernel@vger.kernel.org,
         Ard Biesheuvel <ardb@kernel.org>,
         Sami Tolvanen <samitolvanen@google.com>,
         Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v4 00/14] kbuild: yet another series of cleanups (modpost, LTO, MODULE_REL_CRCS, export.h)
-Date:   Mon,  9 May 2022 04:06:17 +0900
-Message-Id: <20220508190631.2386038-1-masahiroy@kernel.org>
+Subject: [PATCH v4 10/14] kbuild: check static EXPORT_SYMBOL* by script instead of modpost
+Date:   Mon,  9 May 2022 04:06:27 +0900
+Message-Id: <20220508190631.2386038-11-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220508190631.2386038-1-masahiroy@kernel.org>
+References: <20220508190631.2386038-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the third batch of cleanups in this development cycle.
+The 'static' specifier and EXPORT_SYMBOL() are an odd combination.
 
-Major changes in v4:
- - Move static EXPORT_SYMBOL check to a script
- - Some refactoring
+Commit 15bfc2348d54 ("modpost: check for static EXPORT_SYMBOL*
+functions") tried to detect it, but this check has false negatives.
 
-Major changes in v3:
+Here is the sample code.
 
- - Generate symbol CRCs as C code, and remove CONFIG_MODULE_REL_CRCS.
+  Makefile:
 
-Major changes in v2:
+    obj-y += foo1.o foo2.o
 
- - V1 did not work with CONFIG_MODULE_REL_CRCS.
-   I fixed this for v2.
+  foo1.c:
 
- - Reflect some review comments in v1
+    #include <linux/export.h>
+    static void foo(void) {}
+    EXPORT_SYMBOL(foo);
 
- - Refactor the code more
+  foo2.c:
 
- - Avoid too long argument error
+    void foo(void) {}
 
+foo1.c exports the static symbol 'foo', but modpost cannot catch it
+because it is fooled by foo2.c, which has a global symbol with the
+same name.
 
+s->is_static is cleared if a global symbol with the same name is found
+somewhere, but EXPORT_SYMBOL() and the global symbol do not necessarily
+belong to the same compilation unit.
 
-Masahiro Yamada (14):
-  modpost: remove left-over cross_compile declaration
-  modpost: change the license of EXPORT_SYMBOL to bool type
-  modpost: split the section mismatch checks into section-check.c
-  modpost: add sym_find_with_module() helper
-  modpost: extract symbol versions from *.cmd files
-  kbuild: link symbol CRCs at final link, removing
-    CONFIG_MODULE_REL_CRCS
-  kbuild: stop merging *.symversions
-  genksyms: adjust the output format to modpost
-  kbuild: do not create *.prelink.o for Clang LTO or IBT
-  kbuild: check static EXPORT_SYMBOL* by script instead of modpost
-  kbuild: make built-in.a rule robust against too long argument error
-  kbuild: make *.mod rule robust against too long argument error
-  kbuild: add cmd_and_savecmd macro
-  kbuild: rebuild multi-object modules when objtool is updated
+This check should be done per compilation unit, but I do not know how
+to do it in modpost. modpost runs against vmlinux.o or modules, which
+merges multiple objects, then forgets their origin.
 
- arch/powerpc/Kconfig            |    1 -
- arch/s390/Kconfig               |    1 -
- arch/um/Kconfig                 |    1 -
- include/asm-generic/export.h    |   22 +-
- include/linux/export-internal.h |   16 +
- include/linux/export.h          |   30 +-
- init/Kconfig                    |    4 -
- kernel/module.c                 |   10 +-
- scripts/Kbuild.include          |   10 +-
- scripts/Makefile.build          |  134 +--
- scripts/Makefile.lib            |    7 -
- scripts/Makefile.modfinal       |    5 +-
- scripts/Makefile.modpost        |    9 +-
- scripts/check-local-export      |   48 +
- scripts/genksyms/genksyms.c     |   18 +-
- scripts/link-vmlinux.sh         |   33 +-
- scripts/mod/Makefile            |    2 +-
- scripts/mod/modpost.c           | 1499 ++++---------------------------
- scripts/mod/modpost.h           |   35 +-
- scripts/mod/section-check.c     | 1222 +++++++++++++++++++++++++
- 20 files changed, 1551 insertions(+), 1556 deletions(-)
- create mode 100644 include/linux/export-internal.h
+It is true modpost gets access to the lists of all the member objects
+(.vmlinux.objs and *.mod), but it is impossible to parse individual
+objects in modpost; they might be LLVM IR instead of ELF when
+CONFIG_LTO_CLANG=y.
+
+Add a simple bash script to parse the output from ${NM}. This works for
+CONFIG_LTO_CLANG=y because llvm-nm can dump symbols of LLVM bitcode.
+
+Revert 15bfc2348d54.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+Changes in v4:
+  - New patch
+
+ scripts/Makefile.build     |  4 ++++
+ scripts/check-local-export | 48 ++++++++++++++++++++++++++++++++++++++
+ scripts/mod/modpost.c      | 28 +---------------------
+ 3 files changed, 53 insertions(+), 27 deletions(-)
  create mode 100755 scripts/check-local-export
- create mode 100644 scripts/mod/section-check.c
 
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 838ea5e83174..c2a173b3fd60 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -244,9 +244,12 @@ cmd_gen_ksymdeps = \
+ 	$(CONFIG_SHELL) $(srctree)/scripts/gen_ksymdeps.sh $@ >> $(dot-target).cmd
+ endif
+ 
++cmd_check_local_export = $(srctree)/scripts/check-local-export $@
++
+ define rule_cc_o_c
+ 	$(call cmd_and_fixdep,cc_o_c)
+ 	$(call cmd,gen_ksymdeps)
++	$(call cmd,check_local_export)
+ 	$(call cmd,checksrc)
+ 	$(call cmd,checkdoc)
+ 	$(call cmd,gen_objtooldep)
+@@ -257,6 +260,7 @@ endef
+ define rule_as_o_S
+ 	$(call cmd_and_fixdep,as_o_S)
+ 	$(call cmd,gen_ksymdeps)
++	$(call cmd,check_local_export)
+ 	$(call cmd,gen_objtooldep)
+ 	$(call cmd,gen_symversions_S)
+ endef
+diff --git a/scripts/check-local-export b/scripts/check-local-export
+new file mode 100755
+index 000000000000..d1721fa63057
+--- /dev/null
++++ b/scripts/check-local-export
+@@ -0,0 +1,48 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Copyright (C) 2022 Masahiro Yamada
++
++set -e
++set -o pipefail
++
++declare -A symbol_types
++declare -a export_symbols
++
++exit_code=0
++
++while read value type name
++do
++	# to avoid error for clang LTO; $name may be empty
++	if [[ $value = -* && -z $name ]]; then
++		continue
++	fi
++
++	# The first field (value) may be empty. If so, fix it up.
++	if [[ -z $name ]]; then
++	   name=${type}
++	   type=${value}
++	fi
++
++	# save (name, type) in the associative array
++	symbol_types[$name]=$type
++
++	# append the exported symbol to the array
++	if [[ $name == __ksymtab_* ]]; then
++		export_symbols+=(${name#__ksymtab_})
++	fi
++done < <(${NM} ${1} 2>/dev/null)
++
++# Catch error in the process substitution
++wait $!
++
++for name in "${export_symbols[@]}"
++do
++	# nm(3) says "If lowercase, the symbol is usually local"
++	if [[ ${symbol_types[$name]} =~ [a-z] ]]; then
++		echo "$@: error: local symbol '${name}' was exported" >&2
++		exit_code=1
++	fi
++done
++
++exit ${exit_code}
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 018527d96680..fa73ddb6a6cf 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -212,7 +212,6 @@ struct symbol {
+ 	unsigned int crc;
+ 	bool crc_valid;
+ 	bool weak;
+-	bool is_static;		/* true if symbol is not global */
+ 	bool is_gpl_only;	/* exported by EXPORT_SYMBOL_GPL */
+ 	char name[];
+ };
+@@ -242,7 +241,7 @@ static struct symbol *alloc_symbol(const char *name)
+ 
+ 	memset(s, 0, sizeof(*s));
+ 	strcpy(s->name, name);
+-	s->is_static = true;
++
+ 	return s;
+ }
+ 
+@@ -875,20 +874,6 @@ static void read_symbols(const char *modname)
+ 					     sym_get_data(&info, sym));
+ 	}
+ 
+-	// check for static EXPORT_SYMBOL_* functions && global vars
+-	for (sym = info.symtab_start; sym < info.symtab_stop; sym++) {
+-		unsigned char bind = ELF_ST_BIND(sym->st_info);
+-
+-		if (bind == STB_GLOBAL || bind == STB_WEAK) {
+-			struct symbol *s =
+-				find_symbol(remove_dot(info.strtab +
+-						       sym->st_name));
+-
+-			if (s)
+-				s->is_static = false;
+-		}
+-	}
+-
+ 	check_sec_ref(mod, modname, &info);
+ 
+ 	if (!mod->is_vmlinux) {
+@@ -1318,7 +1303,6 @@ static void read_dump(const char *fname)
+ 			mod->from_dump = true;
+ 		}
+ 		s = sym_add_exported(symname, mod, gpl_only);
+-		s->is_static = false;
+ 		sym_set_crc(s, crc);
+ 		sym_update_namespace(symname, namespace);
+ 	}
+@@ -1383,7 +1367,6 @@ int main(int argc, char **argv)
+ 	char *missing_namespace_deps = NULL;
+ 	char *dump_write = NULL, *files_source = NULL;
+ 	int opt;
+-	int n;
+ 	LIST_HEAD(dump_lists);
+ 	struct dump_list *dl, *dl2;
+ 
+@@ -1459,15 +1442,6 @@ int main(int argc, char **argv)
+ 	if (sec_mismatch_count && !sec_mismatch_warn_only)
+ 		error("Section mismatches detected.\n"
+ 		      "Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.\n");
+-	for (n = 0; n < SYMBOL_HASH_SIZE; n++) {
+-		struct symbol *s;
+-
+-		for (s = symbolhash[n]; s; s = s->next) {
+-			if (s->is_static)
+-				error("\"%s\" [%s] is a static EXPORT_SYMBOL\n",
+-				      s->name, s->module->name);
+-		}
+-	}
+ 
+ 	if (nr_unresolved > MAX_UNRESOLVED_REPORTS)
+ 		warn("suppressed %u unresolved symbol warnings because there were too many)\n",
 -- 
 2.32.0
 
