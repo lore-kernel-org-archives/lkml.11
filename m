@@ -2,131 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 904D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 15:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234580AbiEHPLK convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 11:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        id S234594AbiEHPMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 11:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234437AbiEHPLG (ORCPT
+        with ESMTP id S234437AbiEHPM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 11:11:06 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5062ADF76;
-        Sun,  8 May 2022 08:07:14 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nniV4-0000vT-EH; Sun, 08 May 2022 17:07:10 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Brian Norris <briannorris@chromium.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Chanwoo Choi <cwchoi00@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
-Date:   Sun, 08 May 2022 17:07:09 +0200
-Message-ID: <44651538.fMDQidcC6G@phil>
-In-Reply-To: <6c6ec0db-111c-e48f-57ce-0e444a0d168e@gmail.com>
-References: <20220406014842.2771799-1-briannorris@chromium.org> <582e3645-b24e-356e-7f0f-0d37bb1e32e6@gmail.com> <6c6ec0db-111c-e48f-57ce-0e444a0d168e@gmail.com>
+        Sun, 8 May 2022 11:12:29 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6827BDFA6
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 08:08:39 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so267786pjq.2
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 08:08:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fD2NKbHhBWw9eBsTe1mP9moLD1y5EWQbU6ALqfSO3Wk=;
+        b=Ko5uJ/CgpE5N5MzJuVdoLFcIe/sxyftWIVZjtDxdgeLVWbZWp0M6rPUJPN1+PXytou
+         qAvVZYxAiRj+V6jION1XzQFQPubTbA7zhrctojMA/iDOCSmMf6EMDiFhy/r8V0Q06Pde
+         Z06oGmVf2UEf6ziTvny8IfiLye5VKghQ/36ETPbyo9VfUbNgznX3xLD8eOe+NyJLg/BQ
+         f1rUXK0goNeVvCqA6juraDYy7J39zHYTw+gqLtduxTTAwUAgHCj2e/CEJ7BBV7i5e7ku
+         zocBrpFUOUhuQxNTsLFBh6cLJreZjXAULTTBWeQi6crfiqLZ1RmbA1ww6ax/+LrO/+Mp
+         rxUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fD2NKbHhBWw9eBsTe1mP9moLD1y5EWQbU6ALqfSO3Wk=;
+        b=tI6ZcD0gX6jKPoDi1tX/BjGRdeqacWr/iWttbc9m4n+N1WpYZ2ApkvEPLu2OhM7G0r
+         omSvesCsAOwg9dNNR0zFwO+fy+8nK9E0jkPbYyCgBMVhMr9V4PrDcIIye3wkM3wVDGRO
+         AYC3IkExQceEvvkgBcQhic5Dk6AJNi6GW3noQTIj7gPGabCUsgI0RBTWYkyV60xX8sYJ
+         ETasVZ6o/MdBxwasOJsSn52sXX3mdKa57xZWVBa0DA1UmIEpVeMGAHR17IwlvbyQHndU
+         UWl4ZilpOM29WLqNbXNqh+6QL046l/SJzqJQqJPA0WDVziS2ep9XJQoqYWJ5T8ATj21y
+         Z3RA==
+X-Gm-Message-State: AOAM531Rs7ZsQlImbB2wzX7v00nU0qeBwdH/vuVitbTCpKwzSBo78CRp
+        Iy2N3C5iUC2vqFwyjCHuLRDkpaohUd/FIPnoFUM=
+X-Google-Smtp-Source: ABdhPJx3MQBXUbBbVVYmpzfJnFj1/Qtv2DRUENonD04/QNtnwvF0qPfte0ACHEjRM6aPJbZ1fN5sSg==
+X-Received: by 2002:a17:90a:b307:b0:1bd:37f3:f0fc with SMTP id d7-20020a17090ab30700b001bd37f3f0fcmr22377422pjr.132.1652022518742;
+        Sun, 08 May 2022 08:08:38 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (104-237-153-19.ip.linodeusercontent.com. [104.237.153.19])
+        by smtp.gmail.com with ESMTPSA id c6-20020aa79526000000b0050dc7628155sm6881214pfp.47.2022.05.08.08.08.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 08:08:38 -0700 (PDT)
+Date:   Sun, 8 May 2022 23:08:32 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org, James Clark <James.Clark@arm.com>,
+        German Gomez <german.gomez@arm.com>
+Subject: Re: [PATCH V2 00/23] perf intel-pt: Better support for perf record
+ --cpu
+Message-ID: <20220508150832.GA278102@leoy-ThinkPad-X240s>
+References: <20220506122601.367589-1-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506122601.367589-1-adrian.hunter@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Samstag, 7. Mai 2022, 16:21:59 CEST schrieb Chanwoo Choi:
-> On 22. 4. 14. 08:13, Chanwoo Choi wrote:
-> > On 22. 4. 14. 07:45, Heiko Stübner wrote:
-> >> Hi,
-> >>
-> >> Am Donnerstag, 14. April 2022, 00:14:40 CEST schrieb Chanwoo Choi:
-> >>> On 22. 4. 6. 10:48, Brian Norris wrote:
-> >>>> See the previous patch ("soc: rockchip: power-domain: Manage resource
-> >>>> conflicts with firmware") for a thorough explanation of the conflicts.
-> >>>> While ARM Trusted Firmware may be modifying memory controller and
-> >>>> power-domain states, we need to block the kernel's power-domain driver.
-> >>>>
-> >>>> If the power-domain driver is disabled, there is no resource conflict
-> >>>> and this becomes a no-op.
-> >>>>
-> >>>> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> >>>> ---
-> >>>>
-> >>>>    drivers/devfreq/rk3399_dmc.c | 13 +++++++++++++
-> >>>>    1 file changed, 13 insertions(+)
-> >>>>
-> >>>> diff --git a/drivers/devfreq/rk3399_dmc.c 
-> >>>> b/drivers/devfreq/rk3399_dmc.c
-> >>>> index e494d1497d60..daff40702615 100644
-> >>>> --- a/drivers/devfreq/rk3399_dmc.c
-> >>>> +++ b/drivers/devfreq/rk3399_dmc.c
-> >>>> @@ -21,6 +21,7 @@
-> >>>>    #include <linux/rwsem.h>
-> >>>>    #include <linux/suspend.h>
-> >>>> +#include <soc/rockchip/pm_domains.h>
-> >>>>    #include <soc/rockchip/rk3399_grf.h>
-> >>>>    #include <soc/rockchip/rockchip_sip.h>
-> >>>> @@ -93,6 +94,16 @@ static int rk3399_dmcfreq_target(struct device 
-> >>>> *dev, unsigned long *freq,
-> >>>>        mutex_lock(&dmcfreq->lock);
-> >>>> +    /*
-> >>>> +     * Ensure power-domain transitions don't interfere with ARM 
-> >>>> Trusted
-> >>>> +     * Firmware power-domain idling.
-> >>>> +     */
-> >>>> +    err = rockchip_pmu_block();
-> >>>> +    if (err) {
-> >>>> +        dev_err(dev, "Failed to block PMU: %d\n", err);
-> >>>> +        goto out_unlock;
-> >>>> +    }
-> >>>> +
-> >>>>        /*
-> >>>>         * Some idle parameters may be based on the DDR controller 
-> >>>> clock, which
-> >>>>         * is half of the DDR frequency.
-> >>>> @@ -198,6 +209,8 @@ static int rk3399_dmcfreq_target(struct device 
-> >>>> *dev, unsigned long *freq,
-> >>>>        dmcfreq->volt = target_volt;
-> >>>>    out:
-> >>>> +    rockchip_pmu_unblock();
-> >>>> +out_unlock:
-> >>>>        mutex_unlock(&dmcfreq->lock);
-> >>>>        return err;
-> >>>>    }
-> >>>
-> >>> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
-> >>
-> >> so I guess you're ok with me picking up both patches, right?
-> >> [Just making sure :-) ]
-> > 
-> > This patch have the dependency of latest devfreq-next branch.
-> > So that need to make the immutable branch between rockchip and devfreq.
-> > 
+Hi Adrian,
+
+On Fri, May 06, 2022 at 03:25:38PM +0300, Adrian Hunter wrote:
+> Hi
 > 
-> Hi Heiko and Brian,
+> Here are V2 patches to support capturing Intel PT sideband events such as
+> mmap, task, context switch, text poke etc, on every CPU even when tracing
+> selected user_requested_cpus.  That is, when using the perf record -C or
+>  --cpu option.
 > 
-> Is there any other progress?
+> This is needed for:
+> 1. text poke: a text poke on any CPU affects all CPUs
+> 2. tracing user space: a user space process can migrate between CPUs so
+> mmap events that happen on a different CPU can be needed to decode a
+> user_requested_cpus CPU.
 > 
-> IMHO, if rockchip maintainer reply the acked-by from patch1
-> and then agree these patches to be applied to devfreq.git,
-> I can take them.
+> For example:
+> 
+> 	Trace on CPU 1:
+> 
+> 	perf record --kcore -C 1 -e intel_pt// &
+> 
+> 	Start a task on CPU 0:
+> 
+> 	taskset 0x1 testprog &
+> 
+> 	Migrate it to CPU 1:
+> 
+> 	taskset -p 0x2 <testprog pid>
+> 
+> 	Stop tracing:
+> 
+> 	kill %1
+> 
+> 	Prior to these changes there will be errors decoding testprog
+> 	in userspace because the comm and mmap events for testprog will not
+> 	have been captured.
 
-sounds good to me. Patch1 looks good and correct to me, so
-I've added a Reviewed-by for it and it defintily makes sense for
-both to go through the devfreq tree then, so we don't need
-additional stable-branches :-)
+Thanks a lot for this patch set, I believe this is a common issue for
+AUX trace (not only for Intel-PT), so I verified this patch set for both
+Arm CoreSight and SPE; unfortunately both cannot see MMAP events for
+migrated task.  I used below commands:
 
-Thanks
-Heiko
+  # perf record -B -N --no-bpf-event -e cs_etm//u -C 0 -- taskset --cpu-list 1 uname
+  # perf script  --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+  0
 
 
+  # perf record -B -N --no-bpf-event -e arm_spe_0//u -C 0 -- taskset --cpu-list 1 uname
+  # perf script --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+  0
+
+I didn't dive into details for this patch set, so I cannot say the
+failure is caused by any issue in this patch set.  But it's definitely
+we need to look into for Arm platforms to root cause what's the reason
+it cannot record MMAP events properly when migrate tasks.  Loop James
+and German for this reason.
+
+Thanks,
+Leo
