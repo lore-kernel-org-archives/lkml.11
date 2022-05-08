@@ -2,80 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD593C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 08:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E31C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 09:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231523AbiEHJDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 05:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        id S231728AbiEHJNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 05:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiEHJDB (ORCPT
+        with ESMTP id S231348AbiEHJNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 05:03:01 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FAABCB9;
-        Sun,  8 May 2022 01:59:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R461e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VCZrFBZ_1652000346;
-Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCZrFBZ_1652000346)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 08 May 2022 16:59:07 +0800
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-To:     catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        mike.kravetz@oracle.com, akpm@linux-foundation.org, sj@kernel.org
-Cc:     baolin.wang@linux.alibaba.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [RFC PATCH 3/3] mm/damon/vaddr: Change to use huge_ptep_get_access_flags()
-Date:   Sun,  8 May 2022 16:58:54 +0800
-Message-Id: <bfef01549847df7645bac0eacab74b4dde693e04.1651998586.git.baolin.wang@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
-References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
-In-Reply-To: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
-References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
+        Sun, 8 May 2022 05:13:42 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9842DF16
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 02:09:53 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 31AD621B0C;
+        Sun,  8 May 2022 09:09:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652000992; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wm9GHihpawg1Ivkqby7mqYAJB0ZTAOMMvqz4svNr5YQ=;
+        b=IgNJPzb857uUDodg3nsG4usbDabSh5SwfLmvwRa87NFvcJyfNfzMVidwzwS+A6LuH+/Ao4
+        +lwTtSuuvUZ8xh1VEUjF5RLT36QbDZDEoEgN13HJzJLXd2xNO4iwfpbIt5tOGJxse4pFrW
+        D1KZ8k8Jsy5sTxBgqI/zHaa+gN+Q5WE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652000992;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wm9GHihpawg1Ivkqby7mqYAJB0ZTAOMMvqz4svNr5YQ=;
+        b=OIQQxY1Ug7wwqUNFcyLOSsSEZ8746OxgKMjWXSp2ipi+kAAuO/Vrd4KkxVL+PHzNNrH+iu
+        lOXnOB+7dvPDtNDA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 1EEBF2C141;
+        Sun,  8 May 2022 09:09:52 +0000 (UTC)
+Date:   Sun, 08 May 2022 11:09:52 +0200
+Message-ID: <s5h1qx4o0f3.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Forest Crossman <cyrozap@gmail.com>
+Cc:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: usb-audio: Don't get sample rate for MCT Trigger 5 USB-to-HDMI
+In-Reply-To: <20220504002444.114011-2-cyrozap@gmail.com>
+References: <20220504002444.114011-2-cyrozap@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ARM64 platform can support CONT-PTE/PMD size hugetlb, which can
-contain seravel continuous pte or pmd entries. However current
-huge_ptep_get() only return one specific pte value for the CONT-PTE
-or CONT-PMD size hugetlb, which did not take into accounts the
-subpages' dirty or young flags. That will make the hugetlb pages
-monitoring inaccurate with missing young flags.
+On Wed, 04 May 2022 02:24:44 +0200,
+Forest Crossman wrote:
+> 
+> This device doesn't support reading the sample rate, so we need to apply
+> this quirk to avoid a 15-second delay waiting for three timeouts.
+> 
+> Signed-off-by: Forest Crossman <cyrozap@gmail.com>
 
-Thus change to use huge_ptep_get_access_flags() taking into accounts
-the subpages' dirty or young flags of a CONT-PTE/PMD size hugetlb.
+Thanks, applied now.
 
-Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
----
- mm/damon/vaddr.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/mm/damon/vaddr.c b/mm/damon/vaddr.c
-index d6abf76..29459ed 100644
---- a/mm/damon/vaddr.c
-+++ b/mm/damon/vaddr.c
-@@ -400,7 +400,8 @@ static void damon_hugetlb_mkold(pte_t *pte, struct mm_struct *mm,
- 				struct vm_area_struct *vma, unsigned long addr)
- {
- 	bool referenced = false;
--	pte_t entry = huge_ptep_get(pte);
-+	pte_t entry = huge_ptep_get_access_flags(pte,
-+					huge_page_size(hstate_vma(vma)));
- 	struct page *page = pte_page(entry);
- 
- 	get_page(page);
-@@ -557,7 +558,7 @@ static int damon_young_hugetlb_entry(pte_t *pte, unsigned long hmask,
- 	pte_t entry;
- 
- 	ptl = huge_pte_lock(h, walk->mm, pte);
--	entry = huge_ptep_get(pte);
-+	entry = huge_ptep_get_access_flags(pte, huge_page_size(h));
- 	if (!pte_present(entry))
- 		goto out;
- 
--- 
-1.8.3.1
-
+Takashi
