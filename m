@@ -2,160 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2365EC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2321CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbiEHThh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32892 "EHLO
+        id S231468AbiEHTsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiEHThg (ORCPT
+        with ESMTP id S229445AbiEHTsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 15:37:36 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB9C3A7;
-        Sun,  8 May 2022 12:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=4mLftaBBuTjP2XTniAvnLGikepUJRhX9xUhDsG68+dk=; b=fMEWDhl58fiO1/+d8N6FaYkaD7
-        XNLSZ4b9AQLY/KI5Ld2YVwYIJaMsVKcbpuY8ukTjXjzQiQAPsot1+ovdBsbBrkrTdWmMTwxKdC/MJ
-        3JLDyhd5Pm9iZzI2aDndtHNxDwMcJfI++Q+LK91DTDQzC1Ju45mGrhoKwsNq3FBYo29VMN9wSkpG7
-        Zkr+Ts+Qfqi+5WcLIZpk8rOeeQvSg87Mt79DeXhrN44ocz0HbdywluvtIBwjEMDsQdI96X0fWa2gx
-        4h1zPmx0ipIX/BNrQoq2Vlp7YHcmYh+h4bE9DRE40t+QXBl+JQ/KT7QCrH6dHPtypmcz1cv3/Nxw/
-        zSFzROpQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nnmf0-002lOD-OI; Sun, 08 May 2022 19:33:42 +0000
-Date:   Sun, 8 May 2022 20:33:42 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [GIT UPDATE] pagecache tree
-Message-ID: <YngbFluT9ftR5dqf@casper.infradead.org>
+        Sun, 8 May 2022 15:48:10 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED98B849;
+        Sun,  8 May 2022 12:44:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652039024;
+        bh=mGjWYLEwtu+ry5GXvt2ravbif89/+OFp+v9Ndwokqdo=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=KPG+FxkKQDZ5nsfn9b/rDbyRj/EIqKAafJrmd0UKHk3sF7F0EpIr9E0HuW+sj9MmE
+         F6jSp87+YhIrpWvSy/70KQZZgiUasjqmT3gk+bqpdehgm0Tu1LSAxs+xcWauIFHWJO
+         LN0zyxBJ2Q90EaNevt4+QnKnN3sWHZxrhChH4Y5M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M59C8-1noskF3cxw-001D9L; Sun, 08
+ May 2022 21:43:43 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 1/7] dt-bindings: timer: nuvoton,npcm7xx-timer: Allow specifying all clocks
+Date:   Sun,  8 May 2022 21:43:26 +0200
+Message-Id: <20220508194333.2170161-2-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220508194333.2170161-1-j.neuschaefer@gmx.net>
+References: <20220508194333.2170161-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:+B8D9NNv1GquKXyh+yewe8u/YXwDSp0omRF9EcPdcedfR2AXylE
+ J1AAfDCtk1qY+HAxFunLVRrV18OJHIvc7EDyOOtcTwouPCChp/DNsHnUQHZDqgWERyuPagV
+ X3P1BvR4gdkav6U/K/2NPsrhWLngw/NR5mURmKEnd+ZzDRYHM7q7F0VB6IL7wxqCkulSdi9
+ N3W8ciYjZX4nRwIkhXYvg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3V62gOaobJc=:u7MPmttD/cbQagij6o+M6e
+ A1ZgpIfOP04t2VpF2yls4Fr1yKyPFRpoJAVOsfVK3lip+W4IH6N1atgx+OYVetTttNeE6sJe8
+ UFvKAKZ7rIDLPMnxXkzCQ1HTarfQ8W+Zdsks+9dSjg25zN1RbNF+wUUfeS1qBa4yj21neK38i
+ +FsmfZSiHWlv9dIa14fF+lceiHFEElLdVfZK1uj+YZbqPveniamE8ccpQIK0/U1xuFaFgCKsU
+ 6CsIy0FsbEE9DdBDpwL0FDsfkAUHJ8CLvvIVEtmHIAf8Xo3YId+07sCAZLFKCPH12bvRQPqSx
+ AtdPOYd+4htYu86XBjRSkKiHSkG9w2hG/XtTEGea32xKLScSm7Mue2rPzc1PhK8FyelEb3Fhk
+ kfB65E7zXM3FTwmUcSkZKQsMSHpsobQpHu7t3+mYvYFt0E3iVe3ld0dsWUGL7l8/0veOTPTdk
+ Hfl89lyE9m/kuTbw2DycNFTu08GAlP3+8hfpCdI8Qbp0GvmYlYqyGDOlAJ3sZCqZor6+x1OkE
+ fks595DFnq3ROcqdSVcSqvtx5Gp5WLVrAwAp+pC0MyzboFr/0erS1Wosk6O6QCSrc+xrGw4Du
+ s9ZnU7q9PXs6aiR06M8ckI4AZuIUlxggw8Aa1lGiOh69MokAfR3mnxSZ83zwopw0Np1eYRneb
+ 5mkm5b3cok+GZ8QLShpqXTBICOXyzxW9/d1gXsL7PY7QfCvjA6y8IvFt/8n60BT+Jxj6YMfsl
+ EvTPmKJSW3pcYtthQu5mPTaR9BL3KvcHzROGLEFbAszRf6BhamQJx8zWC7oGL9NAzEowy/ZIE
+ 39fepLWo06hJoD64GqoCZmf6uQ6gK/wV8Y8EcIGhBe5yRniHbRo43EzVlwppfdWCjwYASYEca
+ QQRS3fC1+C71MdUIpJdvuRq9k85w7VejOD/Oj5bLgM1/5EihGiA0CsjHWs/m5Sjw3633cTci2
+ tdmO2yicl189R7qgV92XYLkvyVi2TL/C+WASWvEkZ8F4VwBKk289fpCssVSTDQRCud5PwkTpU
+ AGVvu1qOjbkaFI/DRQsk+P2ODF8N6DLo9cKituwDI3IwO8qU7ifhLkfAnKzWfMAIcD64b30/8
+ 6v6fStfcg2PBro=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The timer module contains multiple timers. In the WPCM450 SoC, each timer
+runs off a clock can be gated individually. To model this correctly, the
+timer node in the devicetree needs to take multiple clock inputs.
 
-I've just finished going through my email from last week, fixing up
-various patches and adding new R-b lines.  You can find the git tree
-here: git://git.infradead.org/users/willy/pagecache.git for-next
-or https://git.infradead.org/users/willy/pagecache.git/shortlog/refs/heads/for-next
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
+=2D--
 
-I'll send out some separate series as a reply to this mail, but here's
-the shortlog:
+v3:
+- Add R-b tag
 
-Matthew Wilcox (Oracle) (105):
-      scsicam: Fix use of page cache
-      ext4: Use page_symlink() instead of __page_symlink()
-      namei: Merge page_symlink() and __page_symlink()
-      namei: Convert page_symlink() to use memalloc_nofs_save()
-      f2fs: Convert f2fs_grab_cache_page() to use scoped memory APIs
-      ext4: Allow GFP_FS allocations in ext4_da_convert_inline_data_to_extent()
-      ext4: Use scoped memory API in mext_page_double_lock()
-      ext4: Use scoped memory APIs in ext4_da_write_begin()
-      ext4: Use scoped memory APIs in ext4_write_begin()
-      fs: Remove AOP_FLAG_NOFS
-      fs: Remove aop_flags parameter from netfs_write_begin()
-      fs: Remove aop flags parameter from block_write_begin()
-      fs: Remove aop flags parameter from cont_write_begin()
-      fs: Remove aop flags parameter from grab_cache_page_write_begin()
-      fs: Remove aop flags parameter from nobh_write_begin()
-      fs: Remove flags parameter from aops->write_begin
-      buffer: Call aops write_begin() and write_end() directly
-      namei: Call aops write_begin() and write_end() directly
-      ntfs3: Call ntfs_write_begin() and ntfs_write_end() directly
-      ntfs3: Remove fsdata parameter from ntfs_extend_initialized_size()
-      hfs: Call hfs_write_begin() and generic_write_end() directly
-      hfsplus: Call hfsplus_write_begin() and generic_write_end() directly
-      ext4: Call aops write_begin() and write_end() directly
-      f2fs: Call aops write_begin() and write_end() directly
-      i915: Call aops write_begin() and write_end() directly
-      fs: Remove pagecache_write_begin() and pagecache_write_end()
-      filemap: Update the folio_lock documentation
-      filemap: Update the folio_mark_dirty documentation
-      readahead: Use a folio in read_pages()
-      fs: Convert is_dirty_writeback() to take a folio
-      mm/readahead: Convert page_cache_async_readahead to take a folio
-      buffer: Rewrite nobh_truncate_page() to use folios
-      fs: Introduce aops->read_folio
-      fs: Add read_folio documentation
-      fs: Convert netfs_readpage to netfs_read_folio
-      fs: Convert iomap_readpage to iomap_read_folio
-      fs: Convert block_read_full_page() to block_read_full_folio()
-      fs: Convert mpage_readpage to mpage_read_folio
-      fs: Convert simple_readpage to simple_read_folio
-      affs: Convert affs to read_folio
-      afs: Convert afs_symlink_readpage to afs_symlink_read_folio
-      befs: Convert befs to read_folio
-      btrfs: Convert btrfs to read_folio
-      cifs: Convert cifs to read_folio
-      coda: Convert coda to read_folio
-      cramfs: Convert cramfs to read_folio
-      ecryptfs: Convert ecryptfs to read_folio
-      efs: Convert efs symlinks to read_folio
-      erofs: Convert erofs zdata to read_folio
-      ext4: Convert ext4 to read_folio
-      f2fs: Convert f2fs to read_folio
-      freevxfs: Convert vxfs_immed to read_folio
-      fuse: Convert fuse to read_folio
-      hostfs: Convert hostfs to read_folio
-      hpfs: Convert symlinks to read_folio
-      isofs: Convert symlinks and zisofs to read_folio
-      jffs2: Convert jffs2 to read_folio
-      jfs: Convert metadata pages to read_folio
-      nfs: Convert nfs to read_folio
-      ntfs: Convert ntfs to read_folio
-      ocfs2: Convert ocfs2 to read_folio
-      orangefs: Convert orangefs to read_folio
-      romfs: Convert romfs to read_folio
-      squashfs: Convert squashfs to read_folio
-      ubifs: Convert ubifs to read_folio
-      udf: Convert adinicb and symlinks to read_folio
-      vboxsf: Convert vboxsf to read_folio
-      mm: Convert swap_readpage to call read_folio instead of readpage
-      mm,fs: Remove aops->readpage
-      jffs2: Pass the file pointer to jffs2_do_readpage_unlock()
-      nfs: Pass the file pointer to nfs_symlink_filler()
-      fs: Change the type of filler_t
-      mm/filemap: Hoist filler_t decision to the top of do_read_cache_folio()
-      fs: Add aops->release_folio
-      iomap: Convert to release_folio
-      9p: Convert to release_folio
-      afs: Convert to release_folio
-      btrfs: Convert to release_folio
-      ceph: Convert to release_folio
-      cifs: Convert to release_folio
-      erofs: Convert to release_folio
-      ext4: Convert to release_folio
-      f2fs: Convert to release_folio
-      gfs2: Convert to release_folio
-      hfs: Convert to release_folio
-      hfsplus: Convert to release_folio
-      jfs: Convert to release_folio
-      nfs: Convert to release_folio
-      nilfs2: Remove comment about releasepage
-      ocfs2: Convert to release_folio
-      orangefs: Convert to release_folio
-      reiserfs: Convert to release_folio
-      ubifs: Convert to release_folio
-      fs: Remove last vestiges of releasepage
-      reiserfs: Convert release_buffer_page() to use a folio
-      jbd2: Convert jbd2_journal_try_to_free_buffers to take a folio
-      jbd2: Convert release_buffer_page() to use a folio
-      fs: Change try_to_free_buffers() to take a folio
-      fs: Convert drop_buffers() to use a folio
-      fs: Add free_folio address space operation
-      orangefs: Convert to free_folio
-      nfs: Convert to free_folio
-      secretmem: Convert to free_folio
-      fs: Remove aops->freepage
-      Appoint myself page cache maintainer
+v2:
+- no changes
+=2D--
+ .../devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml  | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Miaohe Lin (1):
-      filemap: Remove obsolete comment in lock_page
+diff --git a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer=
+.yaml b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+index 0cbc26a721514..023c999113c38 100644
+=2D-- a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+@@ -23,7 +23,13 @@ properties:
+       - description: The timer interrupt of timer 0
+
+   clocks:
+-    maxItems: 1
++    items:
++      - description: The reference clock for timer 0
++      - description: The reference clock for timer 1
++      - description: The reference clock for timer 2
++      - description: The reference clock for timer 3
++      - description: The reference clock for timer 4
++    minItems: 1
+
+ required:
+   - compatible
+=2D-
+2.35.1
 
