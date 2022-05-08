@@ -2,90 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA78C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DCCC41535
 	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239842AbiEHTHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S239876AbiEHTIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237379AbiEHRM1 (ORCPT
+        with ESMTP id S1379417AbiEHSoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 13:12:27 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3B3B7EC;
-        Sun,  8 May 2022 10:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rCdXSvZjp6F8gmuuM1Bzn/n/1RjrsEENuke5qJWo6Ik=; b=ZITLMC7DKkB4Trwc7bNWRzlWiR
-        uT0nYzvCip831JpgQyklirM6W5ZtBvwI/rbUgZG25OXn37GktTQvcDVwZvekFIFN3RlwQjbeMxQNZ
-        t8svRibUKtQ5pSma7ZHwD4rhYKKSKUMuCXUudxB/lKBTjcYTiXuIP90H0LBavuHykOSLAYZBR0n+N
-        xlbmj9fmytKxcHJHrhHJQrB6rfhARHN0rdqB7mMnuDA1ZrH+oqN64jvGi1P+6adiJ4DRVajMHBRqD
-        xcUx+jC59ig3ERAVQ/K3bOHlarpWldz6ZU9Jf6bS+1+KW5lZVKfkttKna9E0jBro6nPjtg4Fm6//P
-        zy6sUqmw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nnkOI-002foo-RN; Sun, 08 May 2022 17:08:18 +0000
-Date:   Sun, 8 May 2022 18:08:18 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        mike.kravetz@oracle.com, akpm@linux-foundation.org, sj@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH 0/3] Introduce new huge_ptep_get_access_flags()
- interface
-Message-ID: <Ynf5Aje8FXlPdOSl@casper.infradead.org>
-References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
+        Sun, 8 May 2022 14:44:04 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6BBDF40;
+        Sun,  8 May 2022 11:40:13 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id p12so10508341pfn.0;
+        Sun, 08 May 2022 11:40:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=k+SEgZtU6OqEyglEHf513mkMo6bNpZuHdtrr6hv8Nq8=;
+        b=SAISvop68z0vD+mD4/R20kGa98LoxlJ+uBQk0DwsI/NyJTYD4AgTjvxG/cZhEyCY55
+         QQ3SLLUjtdJgU0qiyWSXJwBQJ1Dm1Cqw9gC6hbJpC+Ys49b5zv2oQx9sTlFh3uZk9I9q
+         Dc5NC9mWIxfyvsYQPbdctiRdViKHc2567iQIdjzj7Rys84xVnudPom0sITZGL2N1PLXK
+         NOFdhrTejbSV8+TyQlL4p9MUJq3Ezd9ryw9wHeHjAGXwv9b6bqVYbkx3rRfcAhF+F0z5
+         6f/0ckPo16wbrbpb8DeCKrh73d/xV0AlWEKIpkIfQBKC9JwMhGYrUlLbxmIdiMhvU25a
+         G5SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=k+SEgZtU6OqEyglEHf513mkMo6bNpZuHdtrr6hv8Nq8=;
+        b=5tL2NlzNIHeaNRzZYvwLByTNgWQib5+IovFmClCyf9XptGsCwb8xWkFqS27Kz6YCdh
+         rIykPXtMhFiInMA5VMrKgJsAJg84DGLbfwHx7xmWtm1Xb0JrgiX28G621SxSXnovVXff
+         kcIdDI3j5ReDtMml+rO/HjIB9+2izsNg96oA896P0woNQBYEuHyhuv2Gknc6Ms/nvJb8
+         GJLjYpv1TpfOK2oI6+GW3cac+QBiuNcOr86o3BYGticVCQBY1qcMeUKNU1ws1IjWpOH5
+         dusN8PsT2doL6LOZUY+fdMYRMZDL5c9FxFTA/FJJKkVdYOSZulzlmA6cf+K5mNIVSY7u
+         MK4A==
+X-Gm-Message-State: AOAM531JDlUhNaEY/ITLnW2YkUtD3MbCdUw/W9acVLzbA4eJ/THap3Bv
+        rgNXv0hi851wfELqhqw+xBI=
+X-Google-Smtp-Source: ABdhPJzlbs1CoS4KmQp8exvRi+/96RIvfDY0MOLHGDeTBFMfC636egYHAxJMCYFRKhQuaQwr+BNoFg==
+X-Received: by 2002:a05:6a00:b8b:b0:50d:6080:6be7 with SMTP id g11-20020a056a000b8b00b0050d60806be7mr12703385pfj.56.1652035213112;
+        Sun, 08 May 2022 11:40:13 -0700 (PDT)
+Received: from [172.30.1.41] ([14.32.163.5])
+        by smtp.gmail.com with ESMTPSA id s186-20020a625ec3000000b0050dc76281a2sm6970759pfb.124.2022.05.08.11.40.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 May 2022 11:40:12 -0700 (PDT)
+Message-ID: <2b8f0e62-ab3c-23bd-f9e8-590df3af12be@gmail.com>
+Date:   Mon, 9 May 2022 03:40:08 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC PATCH 0/2] rockchip / devfreq: Coordinate DRAM controller
+ resources between ATF and kernel
+Content-Language: en-US
+To:     Brian Norris <briannorris@chromium.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+References: <20220406014842.2771799-1-briannorris@chromium.org>
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+In-Reply-To: <20220406014842.2771799-1-briannorris@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 04:58:51PM +0800, Baolin Wang wrote:
-> As Mike pointed out [1], the huge_ptep_get() will only return one specific
-> pte value for the CONT-PTE or CONT-PMD size hugetlb on ARM64 system, which
-> will not take into account the subpages' dirty or young bits of a CONT-PTE/PMD
-> size hugetlb page. That will make us miss dirty or young flags of a CONT-PTE/PMD
-> size hugetlb page for those functions that want to check the dirty or
-> young flags of a hugetlb page. For example, the gather_hugetlb_stats() will
-> get inaccurate dirty hugetlb page statistics, and the DAMON for hugetlb monitoring
-> will also get inaccurate access statistics.
+Hi Brian,
+
+On 22. 4. 6. 10:48, Brian Norris wrote:
+> On Rockchip RK3399, there are a few hardware resources that are shared
+> between firmware (ARM Trusted Firmware) and kernel (power domain
+> driver) that need to be coordinated properly for DRAM DVFS to work
+> reliably. See patch 1 for plenty more description.
 > 
-> To fix this issue, one approach is that we can define an ARM64 specific huge_ptep_get()
-> implementation, which will take into account any subpages' dirty or young bits.
-> However we should add a new parameter for ARM64 specific huge_ptep_get() to check
-> how many continuous PTEs or PMDs in this CONT-PTE/PMD size hugetlb, that means we
-> should convert all the places using huge_ptep_get(), meanwhile most places using
-> huge_ptep_get() did not care about the dirty or young flags at all.
+> These fixes are based in part on the specification in the RK3399, and in
+> part based on extrapolation and observation. Any confirmation about the
+> behavior of PMU_CRU_GATEDIS_CON0, etc., is welcome.
 > 
-> So instead of changing the prototype of huge_ptep_get(), this patch set introduces
-> a new huge_ptep_get_access_flags() interface and define an ARM64 specific implementation,
-> that will take into account any subpages' dirty or young bits for CONT-PTE/PMD size
-> hugetlb page. And we can only change to use huge_ptep_get_access_flags() for those
-> functions that care about the dirty or young flags of a hugetlb page.
+> Otherwise, see the patches.
+> 
+> Regards,
+> Brian
+> 
+> 
+> Brian Norris (2):
+>    soc: rockchip: power-domain: Manage resource conflicts with firmware
+>    PM / devfreq: rk3399_dmc: Block PMU during transitions
+> 
+>   drivers/devfreq/rk3399_dmc.c      |  13 ++++
+>   drivers/soc/rockchip/pm_domains.c | 118 ++++++++++++++++++++++++++++++
+>   include/soc/rockchip/pm_domains.h |  25 +++++++
+>   3 files changed, 156 insertions(+)
+>   create mode 100644 include/soc/rockchip/pm_domains.h
+> 
 
-I question whether this is the right approach.  I understand that
-different hardware implementations have different requirements here,
-but at least one that I'm aware of (AMD Zen 2/3) requires that all
-PTEs that are part of a contig PTE must have identical A/D bits.  Now,
-you could say that's irrelevant because it's x86 and we don't currently
-support contPTE on x86, but I wouldn't be surprised to see that other
-hardware has the same requirement.
+Applied them. with Heiko reviewed-by tag for patch1.
 
-So what if we make that a Linux requirement?  Setting a contPTE dirty or
-accessed becomes a bit more expensive (although still one/two cachelines,
-so not really much more expensive than a single write).  Then there's no
-need to change the "get" side of things because they're always identical.
-
-It does mean that we can't take advantage of hardware setting A/D bits,
-unless hardware can be persuaded to behave this way.  I don't have any
-ARM specs in front of me to check.
-
-I don't have a hard objection to your approach, I just want to discuss
-other possibilities.
+-- 
+Best Regards,
+Samsung Electronics
+Chanwoo Choi
