@@ -2,159 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60062C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 00:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B14C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 00:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232196AbiEHAcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 20:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37190 "EHLO
+        id S1345521AbiEHAkq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 7 May 2022 20:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiEHAcp (ORCPT
+        with ESMTP id S229906AbiEHAkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 7 May 2022 20:32:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECED41707C
-        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 17:28:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651969735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/JVQ4SI8lG6xRIzugQ8tXt+YN3SSvNLYRKRIdK5XTMU=;
-        b=eiCO2CefpmsX2/wz2ElXk5eSBCllpNAKRIqXn929BPIix/aX900N6XgvBfQ7KLA851IDcj
-        xvfLM0pJlzko2JZFqHyC5VF2s8BUOE582LB+UtoN87mDlIhckXrWfIvoMoM0QEl5qTWijD
-        NT1Lj7dzxmwEI2ewaXTiRTuD7Q2Lumk=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-2tY7ty2CNJ-N-lzz6NmTBQ-1; Sat, 07 May 2022 20:28:54 -0400
-X-MC-Unique: 2tY7ty2CNJ-N-lzz6NmTBQ-1
-Received: by mail-qk1-f200.google.com with SMTP id o13-20020a05620a0d4d00b0069f47054e58so7409448qkl.13
-        for <linux-kernel@vger.kernel.org>; Sat, 07 May 2022 17:28:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=/JVQ4SI8lG6xRIzugQ8tXt+YN3SSvNLYRKRIdK5XTMU=;
-        b=i5AKSr6WIDZYHwltfGCBJNVvtEWNZFzR4++t26bqT8WaM+Jx1FrwWP5Oqvz5BRARKK
-         n/uqvLNZUKEscWwEG1f2uQiOh+5f1QbRsLSqO8TCZn2VwBt6BRX3ePznvVsQmG08EFOl
-         I5ACtvlBQOWjkWZXv56/XjTBH98A4VE2ayw7ZsvGia85UyRBWbDXMJeKtwxndPyO5iN5
-         jEVMX9exK2lhkb8ClcdEmy3ifgoMwA601BBDRIDqqYMIvB5b4mmhyJnqWaDhVPiOKNxA
-         XZImRPcqYpt2rYozzNii66u5z6gXySK5HTRtnUbpfc8kzRSVHNtxiT4Xh41n24t0EhEV
-         DmPw==
-X-Gm-Message-State: AOAM533kaM1ytMiNZs1IaibAS7ce7oXKgrgVKC0i6PiwdVHNII7ES5sp
-        rb88o1e4rKQFN6i3ZGb+9NI7H1a5FMaDvq+V0u9w5B8i2We40DncwDRBypM3zzsl2dyA8KMon5m
-        5SJ/MzuaD48Wzc5YQ5Q/RpiSi
-X-Received: by 2002:a0c:cc08:0:b0:45a:8f81:d8a8 with SMTP id r8-20020a0ccc08000000b0045a8f81d8a8mr8527270qvk.88.1651969734234;
-        Sat, 07 May 2022 17:28:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyWPkh3zBSc9oc61q1WzL0NdJ1Avcf+UZ74YgB60XC3dfGeDmiVRDE4qcyYoknIHnJJK5aBVQ==
-X-Received: by 2002:a0c:cc08:0:b0:45a:8f81:d8a8 with SMTP id r8-20020a0ccc08000000b0045a8f81d8a8mr8527257qvk.88.1651969733946;
-        Sat, 07 May 2022 17:28:53 -0700 (PDT)
-Received: from [10.23.153.165] ([46.248.132.196])
-        by smtp.gmail.com with ESMTPSA id c2-20020ac80542000000b002f39b99f67bsm4852527qth.21.2022.05.07.17.28.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 May 2022 17:28:53 -0700 (PDT)
-Message-ID: <efe00fa8-1a85-f687-b717-e22997dc42d7@redhat.com>
-Date:   Sun, 8 May 2022 02:28:51 +0200
+        Sat, 7 May 2022 20:40:41 -0400
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01473AC
+        for <linux-kernel@vger.kernel.org>; Sat,  7 May 2022 17:36:51 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id 05938240026
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 02:36:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
+        t=1651970210; bh=eRJ72IYITlVDpKnZ6+UmjwqGp62CGsHXISCjq+X2pUU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PAok8vRxXvgVG/GaWnfIYBGcpramlP56iBb5i/MDcwepGnKrMLkK3y35DoY7BA7hP
+         b5lW8X5tEsPKN60rd/GPa/2kitH70eMITGsuWKcEPkrmS9kjWY5S66bhIJbo3i5QEL
+         br4GNSEmZGPKsDrgSnfBiD7KICn48dzr1cPHN4/OeqjCYbJAXRFFWWq4dVJ8muOQ+8
+         jEM13+I4hlRS3ZV5lbhLTSynukGX8hTQAuR381F/u0w5VbR5obE26c/KD/3t3IRHte
+         s/QfOIw9m1PO7jH9VK1VpqKFCGcy44tYrpdD2sNB56/JRMyZK5NeF9ZrhxcmbHsWXu
+         gjhEdDLI5rRtw==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4Kwljr30zTz9rxG;
+        Sun,  8 May 2022 02:36:48 +0200 (CEST)
+From:   Manuel Ullmann <labre@posteo.de>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev, davem@davemloft.net,
+        ndanilov@marvell.com, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, Jordan Leppert <jordanleppert@protonmail.com>,
+        Holger Hoffstaette <holger@applied-asynchrony.com>,
+        koo5 <kolman.jindrich@gmail.com>
+Subject: [PATCH v6] net: atlantic: always deep reset on pm op, fixing up my
+ null deref regression
+Date:   Sun, 08 May 2022 00:36:46 +0000
+Message-ID: <87bkw8dfmp.fsf@posteo.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] mm: fix is_pinnable_page against on cma page
-Content-Language: en-US
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        John Dias <joaodias@google.com>
-References: <20220502173558.2510641-1-minchan@kernel.org>
- <29d0c1c3-a44e-4573-7e7e-32be07544dbe@redhat.com>
- <YnAhaRNjmIhtGUjk@google.com>
- <08e9855c-395d-f40c-de3d-1ec8b644bfe8@redhat.com>
- <YnFJss0doXGCmq3w@google.com>
- <da07530d-92ad-7aef-2f2b-d115f878ef76@redhat.com>
- <YnMC1jFoPvNLWqnG@google.com> <YnNzPlehofB57XXU@google.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YnNzPlehofB57XXU@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05.05.22 08:48, Minchan Kim wrote:
-> On Wed, May 04, 2022 at 03:48:54PM -0700, Minchan Kim wrote:
->> On Tue, May 03, 2022 at 06:02:33PM +0200, David Hildenbrand wrote:
->>> On 03.05.22 17:26, Minchan Kim wrote:
->>>> On Tue, May 03, 2022 at 03:15:24AM +0200, David Hildenbrand wrote:
->>>>>
->>>>>>>>> However, I assume we have the same issue right now already with
->>>>>>> ZONE_MOVABLE and MIGRATE_CMA when trying to pin a page residing on these
->>>>>>
->>>>>> ZONE_MOVALBE is also changed dynamically?
->>>>>>
->>>>>
->>>>> Sorry, with "same issue" I meant failing to pin if having to migrate and
->>>>> the page is temporarily unmovable.
->>>>>
->>>>>>> there are temporarily unmovable and we fail to migrate. But it would now
->>>>>>> apply even without ZONE_MOVABLE or MIGRATE_CMA. Hm...
->>>>>>
->>>>>> Didn't parse your last mention.
->>>>>
->>>>> On a system that neither uses ZONE_MOVABLE nor MIGRATE_CMA we might have
->>>>> to migrate now when pinning.
->>>>
->>>> I don't understand your point. My problem is pin_user_pages with
->>>> FOLL_LONGTERM. It shouldn't pin a page from ZONE_MOVABLE and cma area
->>>> without migrating page out of movable zone or CMA area.
->>>> That's why try_grab_folio checks whether target page stays in those
->>>> movable areas. However, to check CMA area, is_migrate_cma_page is
->>>> racy so the FOLL_LONGTERM flag semantic is broken right now.
->>>>
->>>> Do you see any problem of the fix?
->>>
->>> My point is that you might decide to migrate a page because you stumble
->>> over MIGRATE_ISOLATE, although there is no need to reject long-term
->>> pinning and to trigger page migration.
->>>
->>> Assume a system without ZONE_MOVABLE and without MIGRATE_CMA. Assume
->>> someone reserves gigantic pages (alloc_contig_range()) and you have
->>> concurrent long-term pinning on a page that is no MIGRATE_ISOLATE.
->>>
->>> GUP would see MIGRATE_ISOLATE and would reject pinning. The page has to
->>> be migrated, which can fail if the page is temporarily unmovable.
->>
->> A dump question since I'm not familiar with hugetlb.
->>
->> Is above reasonable scenario?
->>
->> The gigantic page is about to be created using alloc_contig_range so
->> they has MIGRATE_ISOLATE as temporal state. It means no one uses the
->> page yet so I guess the page is not mapped at userspace but other is
->> trying to access the page using pin_user_pages?
->>
-> 
-> Too dump question. Never mind.
-> Posted v2 - https://lore.kernel.org/all/20220505064429.2818496-1-minchan@kernel.org/T/#u
+From 18dc080d8d4a30d0fcb45f24fd15279cc87c47d5 Mon Sep 17 00:00:00 2001
+Date: Wed, 4 May 2022 21:30:44 +0200
 
-Sorry for the late reply, still traveling :)
+The impact of this regression is the same for resume that I saw on
+thaw: the kernel hangs and nothing except SysRq rebooting can be done.
 
-Just so we're on the same page: MIGRATE_ISOLATE would be set on
-pageblocks that contain either free or movable pages. In case of movable
-pages, they are in uese.
+Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
+par in pm functions, preventing null derefs"), where I disabled deep
+pm resets in suspend and resume, trying to make sense of the
+atl_resume_common() deep parameter in the first place.
 
-Regarding your is_cma_page() proposal, I think we might want to consider
-that if it really turns out to be a problem. For now, I'm fine with just
-documenting it.
+It turns out, that atlantic always has to deep reset on pm
+operations. Even though I expected that and tested resume, I screwed
+up by kexec-rebooting into an unpatched kernel, thus missing the
+breakage.
 
-Thanks!
+This fixup obsoletes the deep parameter of atl_resume_common, but I
+leave the cleanup for the maintainers to post to mainline.
 
+Suspend and hibernation were successfully tested by the reporters.
+
+Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preventing null derefs")
+Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=@protonmail.com/
+Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
+Reported-by: Holger Hoffstaette <holger@applied-asynchrony.com>
+Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
+Tested-by: Holger Hoffstaette <holger@applied-asynchrony.com>
+CC: <stable@vger.kernel.org> # 5.10+
+Signed-off-by: Manuel Ullmann <labre@posteo.de>
+---
+I'm very sorry for this regression. It would be nice, if this could
+reach mainline before 5.18 release, if applicable. This restores the
+original suspend behaviour, while keeping the fix for hibernation. The
+fix for hibernation might not be the root cause, but still is the most
+simple fix for backporting to stable while the root cause is unknown
+to the maintainers.
+
+Changes in v2:
+Patch formatting fixes
+~ Fix Fixes tag
+~ Simplify stable Cc tag
+~ Fix Signed-off-by tag
+
+Changes in v3:
+~ Prefixed commit reference with "commit" aka I managed to use
+  checkpatch.pl.
+~ Added Tested-by tags for the testing reporters.
+~ People start to get annoyed by my patch revision spamming. Should be
+  the last one.
+
+Changes in v4:
+~ Moved patch changelog to comment section
+~ Use unicode ndash for patch changelog list to avoid confusion with
+  diff in editors
+~ Expanded comment
+~ Targeting net-next by subject
+
+Changes in v5:
+~ Changed my MTA transfer encoding to 8 bit instead of
+  quoted-printable. Git should like this a bit more.
+
+Changes in v6:
+~ Reducing content to 7 bit chars, because nipa did not apply v4 and v5, while
+  git does against a fresh net-next HEAD. Maybe it chokes on the
+  additional bit.
+~ Omitting target tree to resemble the last passing patch version the most.
+
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+
+base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 3a529ee8c834..831833911a52 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -449,7 +449,7 @@ static int aq_pm_freeze(struct device *dev)
+ 
+ static int aq_pm_suspend_poweroff(struct device *dev)
+ {
+-	return aq_suspend_common(dev, false);
++	return aq_suspend_common(dev, true);
+ }
+ 
+ static int aq_pm_thaw(struct device *dev)
+@@ -459,7 +459,7 @@ static int aq_pm_thaw(struct device *dev)
+ 
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, false);
++	return atl_resume_common(dev, true);
+ }
+ 
+ static const struct dev_pm_ops aq_pm_ops = {
+
+base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
 -- 
-Thanks,
-
-David / dhildenb
-
+2.35.1
