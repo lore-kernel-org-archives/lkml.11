@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F36C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 125CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbiEHTsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
+        id S229692AbiEHTs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230323AbiEHTsL (ORCPT
+        with ESMTP id S231340AbiEHTsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 15:48:11 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1760BC23;
-        Sun,  8 May 2022 12:44:19 -0700 (PDT)
+        Sun, 8 May 2022 15:48:13 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9B8B849;
+        Sun,  8 May 2022 12:44:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1652039025;
-        bh=n76/hLRRaMIrLkiSBCnvLg8F9/bppo8blXTP7lMhyu8=;
+        s=badeba3b8450; t=1652039032;
+        bh=STTQoU0Sy8AHWtV5pttLaup41ExmdLj7vMbHpMMcIaI=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=JsMF/b6z2Skbt7dmEjaQFgi6n9aqnm+yZEXi1SShVosusMlDmprqtCk7KYMW+xJGh
-         Kzzk9IFiSm7haSLwph0ncQnntmtHe5hKRPQh+fH6h58KpHinu+tm6JFvzfa+G0M5us
-         Vf7GANO/ublwGjiAzpZccFqkGZMm1bd0N7eyaHJI=
+        b=YX/rOCUpfUos0952/SYCVcW3WeHHLmrfMa+TpEoqiKWo/5gghjBsirvjryF8uyO1k
+         hl221DfyokbMxUUhatWD2Ur8TSkSgJlYWCqXP6y3TU59UUVvbfBPv6fRqjKQ/Jeogw
+         2GSuQzWAi/PAgh7bZwFOmVxnIOMFWPe7X4+b/u+s=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MWzfl-1nH8hM1DHl-00XIKc; Sun, 08
- May 2022 21:43:45 +0200
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7QxB-1nrZRd2Fif-017jSc; Sun, 08
+ May 2022 21:43:52 +0200
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
 Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
@@ -46,89 +46,95 @@ Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
         Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v3 2/7] clocksource: timer-npcm7xx: Enable timer 1 clock before use
-Date:   Sun,  8 May 2022 21:43:27 +0200
-Message-Id: <20220508194333.2170161-3-j.neuschaefer@gmx.net>
+Subject: [PATCH v3 5/7] ARM: dts: wpcm450: Add clock controller node
+Date:   Sun,  8 May 2022 21:43:30 +0200
+Message-Id: <20220508194333.2170161-6-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220508194333.2170161-1-j.neuschaefer@gmx.net>
 References: <20220508194333.2170161-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:pWq1JPNigWSSaZHAqUAune7+HNV0oDFRi3ixapHifQJW0Vw3bl/
- ZoyJWWix1P1YxeKAny6kOHF4FsWecJhiDo5Op2QjeFM+JDOeeYyzhycm3Hw/owLu+uB7wj/
- VLvVbzMZeQ9vIrhVFIlFCv/3JfTOULSFwDy3qoDCRrYVsVipPTVfSv+YfbSTYkNyvE0TRd3
- UzseGXZwNwnHRnzeqk74Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9SqJwJa9skw=:TtwrXU+6EBNvKZjWzfmS89
- Op3XOyAcftg/gHGbODC7HSllJCQpDC4Q6PGOTYQsPRxJXHQakAPqqg1f0SD1KV+oePCXNTgYf
- L2CsSSYunb75A1sOVWh287HuaW8PsMNscNn5caV/yZ2Yvs8c9zUth8DWjfk+3v4guVXxkw9Ht
- H37inUOmOpm5ryEzdTiaFbSk2EtggvmfDAXi2m2kzxYjW54dXAF2dd0ly+MYezDoST4aVEMjj
- 0Rg4/8lp4FlmvVL1GtmGW9dIcAAAxO1Zn4hXmKKwsmkq9+R8FOAUlyPVu0wLJ/XHENWR4q4t0
- bmzvxRE78a47zxKMe7qZMUGl8mS+wmPExe4HqCfL9Bq4Y/i1JdaQB1n58fahr0p90AdIyUsAh
- 6AUc8ZlTc9c82fexYbiigJpo+IB+m5pnGPK2pUP+Z8xNC7Yixminpqm3ZKTHDL9B6Z04yRuxF
- eqoPCuxO17cKZ8k2D5g7gXiqz9DrlfhQEeWzjRRwEJZXbHcu994oU8zlaffRRYCDZUwZPgMHp
- PIi8g6IfWxMHqHjhSAbn4dYEEasd4DlIkfqCsWEKbYj/Ts65v2q3xAAHeo41XiBPflBCWO1+d
- f8sfLZqyTi8K0WhsiDmRlIcWGyi1U4BqL+UuwlIpZMGiEQ6bT2a99QU8smbictQWGntTrWYDM
- vyhk4/T02WVt69YxD7GtcaDqzAbEsQFdz+Lvi/Lufkkn+qLfa44pysndmuGhGcQ9CEHuUqtkq
- 34ybixg9Mb7U9OiKBrODAltqZ2nJhxr1ZzMWgUBJgNfsj9WsfIuD2VhSO2/nFdSQe+MnvWTh8
- YD8cFADF+QJnsS+rPo7h4bBFdmPQh3X8uC5j43xasIZawB/Sx5bXpLiucqjgZVs4ij8JSpR7M
- YaNfTJi9hKV2/CeFnRj43RUsRZ7DvNV/KR7PxTE1lHSJ22nS8fLyp2HdMUv34wBo7Wyo9ri3B
- mT2Mag489GvzYFH4uOrKxK/y9W5KAVd6pSBKia123ORKtbX0b1rzdEMrRST9gIFr2c2xdqo3+
- hYPbmoy/Ptem282D/WFggiKkkgtaLs3B+4Lil3tRlwsDyvd0K4qofFScheSdTXvj9+OsXnVsG
- 4NGl0QfWIdGqXA=
+X-Provags-ID: V03:K1:0ezSuU0zJBwh/ZGu333EDA+hPHK33sk6Mj8LKS926qLuWkkV0Lr
+ dlWJ34pFrBPMP+BubdQlge6s8v05g/+Pw8q/DkOblN8fJZJXz6/G+h55hNbBSRoVg5QhuME
+ c96yu2NoB9ByjKLcIk9UWVAlf3xUNrZdS+U7kt13w8l9lH6rxbylF9SfU8+ygCu1iIR94GN
+ EeW6+i0WdHMcl83YXieiw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hBfIvakNOYo=:mxNjkROiVYonEK1pOMv76V
+ AV7jo26iOQybtrajPGVaCxGrHTPgAyZsyu50/u9Mmv4K1driDuNWXBaowvw1FtK8/mzmpBhoD
+ ek9Nq6pzPavd+mUnYrSTtbMQV1ScIKduBP28Fy4Qu4GpS9JPoV/m/hxGwn1wEZ1KTyj9gYO2t
+ mavKGYhY3MnbowCvFso/PyyHDGjChrTjPwl9pnXIpZ4Pwh/e4TG7od9X3Hs0MWrOdZZJ8x6Hp
+ H7CXRX74gqZp4XW/WFCBGjdxKGKS74Qvm1l3qa/yKWjjI14j2saDfR8Y84/OVbmPiexWIhhis
+ hf3djXzT1jG6d5ngB/nQsdoj1Z9rKa73s+AGAjdkYHU7XvaGMvmXMOEZ97dDM6bfQrGn93jv+
+ gpUkNpSWVMygGr55tm8k64U63O0SvECs8O1K5wXu+b5b/jEDKrLIc+mn9+uMA/SU0EnKW49Zk
+ EqVHNPAmRUVVzAxC8HbChhxIIitk3lQq6rfvYgtuZAnhPbIwEQzAxN2Ib5ZPebbqTJ4LHmC4d
+ dLOJi8sRBEFuP1X6S9zVIVrATxtzeFJHG6mH2xUrmXAf5x2pPBaSjzU9McfoF+lOAnSROtxoC
+ P9BGHAuiHW4iyEtnapDrDCE8M5ThGPAo7qNrHh2grPwhTgsYDPB7zma97V0qzfpmo1wxAtT4M
+ v32a5Cwa+QgGbCo1J5pID+cFDXj40XRQVxvJsZb5e9Xw1tMQLu/DlLWJ0+M30Lv9UlLnW6ys1
+ dzK0ZpBoYa0jSJgcNhItaXBjEhSAFDv8ZY6wfgkpvz1vvtwPCFoYnMm6/w+GxrTYOq6+cT2SX
+ LNdE3V2AGtV+XiupBIGJBFtSahNzuCCFybs5TjiIF70sBN2bXq2Km3a1sTTkCvhiq2B6aRqo0
+ vM2YkBjGuGAbW4XbYuQjAfITGIPYxnd/v7Hf3VnWP02TZVRj10k+KQgYqc8Ppn388JlW+N80P
+ nnaKS+A2SWH/82N9jMiGR9DrnMLF1RnSwACB0szJuQ7jIFfeGs38LqQ2sUs7h9T7K7zZaTcJD
+ 8+KITAnYZQ5ck33U0ABcd6j+skb4e+u6zUOurQT7nJoTu/haYTONEYx3WXf3nPdEzW+0ynB9e
+ XadG9D6dDllPFc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the WPCM450 SoC, the clocks for each timer can be gated individually.
-To prevent the timer 1 clock from being gated, enable it explicitly.
+This declares the clock controller and the necessary 48 Mhz reference
+clock in the WPCM450 device. Switching devices over to the clock
+controller is intentionally done in a separate patch to give time for
+the clock controller driver to land.
 
 Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 =2D--
 
 v3:
-- no changes
+- Change clock-output-names and clock-names from "refclk" to "ref"
 
 v2:
-- Provide context in pr_warn message
-
-v1:
-- https://lore.kernel.org/lkml/20220422183012.444674-3-j.neuschaefer@gmx.n=
+- https://lore.kernel.org/lkml/20220429172030.398011-6-j.neuschaefer@gmx.n=
 et/
+- no changes
 =2D--
- drivers/clocksource/timer-npcm7xx.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm/boot/dts/nuvoton-wpcm450.dtsi | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/clocksource/timer-npcm7xx.c b/drivers/clocksource/tim=
-er-npcm7xx.c
-index a00520cbb660a..9af30af5f989a 100644
-=2D-- a/drivers/clocksource/timer-npcm7xx.c
-+++ b/drivers/clocksource/timer-npcm7xx.c
-@@ -188,6 +188,7 @@ static void __init npcm7xx_clocksource_init(void)
+diff --git a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi b/arch/arm/boot/dts/nu=
+voton-wpcm450.dtsi
+index 1c63ab14c4383..515e943787416 100644
+=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
++++ b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
+@@ -39,6 +39,14 @@ clk24m: clock-24mhz {
+ 		#clock-cells =3D <0>;
+ 	};
 
- static int __init npcm7xx_timer_init(struct device_node *np)
- {
-+	struct clk *clk;
- 	int ret;
-
- 	ret =3D timer_of_init(np, &npcm7xx_to);
-@@ -199,6 +200,15 @@ static int __init npcm7xx_timer_init(struct device_no=
-de *np)
- 	npcm7xx_to.of_clk.rate =3D npcm7xx_to.of_clk.rate /
- 		(NPCM7XX_Tx_MIN_PRESCALE + 1);
-
-+	/* Enable the clock for timer1, if it exists */
-+	clk =3D of_clk_get(np, 1);
-+	if (clk) {
-+		if (!IS_ERR(clk))
-+			clk_prepare_enable(clk);
-+		else
-+			pr_warn("%pOF: Failed to get clock for timer1: %pe", np, clk);
-+	}
++	refclk: clock-48mhz {
++		/* 48 MHz reference oscillator */
++		compatible =3D "fixed-clock";
++		clock-output-names =3D "ref";
++		clock-frequency =3D <48000000>;
++		#clock-cells =3D <0>;
++	};
 +
- 	npcm7xx_clocksource_init();
- 	npcm7xx_clockevents_init();
+ 	soc {
+ 		compatible =3D "simple-bus";
+ 		#address-cells =3D <1>;
+@@ -51,6 +59,15 @@ gcr: syscon@b0000000 {
+ 			reg =3D <0xb0000000 0x200>;
+ 		};
 
++		clk: clock-controller@b0000200 {
++			compatible =3D "nuvoton,wpcm450-clk";
++			reg =3D <0xb0000200 0x100>;
++			clocks =3D <&refclk>;
++			clock-names =3D "ref";
++			#clock-cells =3D <1>;
++			#reset-cells =3D <1>;
++		};
++
+ 		serial0: serial@b8000000 {
+ 			compatible =3D "nuvoton,wpcm450-uart";
+ 			reg =3D <0xb8000000 0x20>;
 =2D-
 2.35.1
 
