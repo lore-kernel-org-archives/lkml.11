@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 147CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 02:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6887EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 02:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447163AbiEHCpI (ORCPT
+        id S1447181AbiEHCpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 7 May 2022 22:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
+        Sat, 7 May 2022 22:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387819AbiEHCnv (ORCPT
+        with ESMTP id S1387887AbiEHCnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 7 May 2022 22:43:51 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2065.outbound.protection.outlook.com [40.107.220.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC46101DA;
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2050.outbound.protection.outlook.com [40.107.244.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D706C11146;
         Sat,  7 May 2022 19:40:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m/UQ6lqeQHcln7VcvXXS98UJ0Uzay9dNNpWXOaIF3pKUkxdnGhg6ggHcZiG4shvgXzHrlvyyQbhA90DDD0i1kkdjb5DxCVxetvRwVqbOnhx8AJnshBF/7FabOhbJy8mIE090zHDnhvkcgtTANkk19qehDYxpd5O9u7ZqSts1Me1AwOpDPAjhUjuBj7zBoyxwIXvZGqnSVT8GcmdNj+CnIYxPWkrUWADuNqWLw7FMabMTgcHDdEy5wLRgHytyTlH2lREo9kXo5H0ixp3pqZwFUx6XOM76oLHA0/+CMaofQ0k+h9s79cdU4tLXcMgpaBitBRQU/N9ux2j12KCWO4JDog==
+ b=EnrkHQp88xnO+WSQ3YyFOi154++tJ/bopOC0s32bezPw7E5yAnI76Mb8fgCETyZgpg7Kz5erHAQdnXUOZh0lON3WGu/KxtkSx2PpQEHJNwKDP7WJfAw9o+103TCubPh0ndi2oz7o8Dm+taE6m8leELRStQDRckx1glaZOjEsi/k++C/BEGq7NG0WcCr8loF8kkjiJ6jyWxXjR8YBMV4UMCFrBpR7GRntu9vSbaZb5ptx6xhtab0n8S9CxByQAJ/YBAhfVs9fjkTdolDMlbhbyoUQq8X9l+CVDnJmoLQCtAD3XfScf4GXvN1VgcDThcMlRbejHS7cOFj2LQt3kuO1yA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vtj28FiXPxbrdc5np/3iL0uaPrU8U/jQ4a4ntnM+95g=;
- b=fGQ5IZIAUFOg+tHpV016+1/TNZoA7RnxvnVhuU7qqpNFWGY9bNhLcsF2NRaEl11SKyIzG2y1XED11KEtLwgV+E0tsXR0gzu91bgd8WiEMRpVAy4YrQ6J8isn0apNUE07oLi4yZev2uU5SXgPZAlk4o3Htk4ACEBYskgbOf7I2xQagKTSu3mQ0mjhDUBCbxFlKVBzgVctn5SAR81W8ITEFLZaxsykQfEbci182AV9fHln0SD6gDlc4sT0Zohx+sFP3O/7YM+jORjZRkC5G2GfEdZpYt9Twk2XPoVZCW+PuTx1tnaVJBhqaFXfg7RFZGdl1E9aL5x/TBHcCs7fIipH4A==
+ bh=1yK4Qa0zeGPeiFYUjxGppQ/ALcBU/cbha+9o1LSDrRI=;
+ b=YGZvKBHl+BREhHug+CygE2oaE8YX3hItpa+tM414LDNe/g0Amnpb534jfMBvFLCKvDwWY4fH95vFbKbOLoFS6pR/Z8Q1gx56TmXAtUpIW21nNqkAMAHIl+HYBxOyrXHjkAWvHlbQGcw+x8islTRd4ykskdOs2v7eQj4+nsVzTy71/JAnsLlEGMoT4t+2UWlAPinPaRYAKknwVEPbo+PkFQr9NhqFB6UEHKLcKT5OZ4mFo2sPYVZXRDyqqgzmkNShSocLp3Hrpp8WHPwm2AiEVowrt2zMWYHFivD6q8TlX9nErHhb5h2bi7iOzEzsXaaS6mlZWzOxvFLB3EVQBogbnw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vtj28FiXPxbrdc5np/3iL0uaPrU8U/jQ4a4ntnM+95g=;
- b=X537hFb33hNdks3IWWl9aw2JAhK01TfoxySbGo02nUzYFK9XJ6Fp+YDDUfEmKfj1lNzBUTHZvHPNrVKMLQ86XHzLV8V6fPcPXFAhUqBgDs8dRLCUauWFJe4+2oJL1SXEyH6HcFopu8KXADaZY7bMLim3hKZrXumg+rXEjJRqesw=
-Received: from MW4PR04CA0050.namprd04.prod.outlook.com (2603:10b6:303:6a::25)
- by MN2PR12MB4517.namprd12.prod.outlook.com (2603:10b6:208:267::16) with
+ bh=1yK4Qa0zeGPeiFYUjxGppQ/ALcBU/cbha+9o1LSDrRI=;
+ b=wauChpFf0wOwz5SPZolYgrQye9Ie2SRZOUPOlJTvQ6Az6/QBY6gqdFKv0zuuJEMUebldvC0jaV2n8awgjEMe/LlCNKPWxTsKQJeXJQq0M02zcwmd/w0WimHz/RDr1PB+m4DCp+CzzeF3LTxcFJsZDum9FpH2RMYM409XEZBY3MY=
+Received: from MW2PR2101CA0005.namprd21.prod.outlook.com (2603:10b6:302:1::18)
+ by BN6PR1201MB0259.namprd12.prod.outlook.com (2603:10b6:405:58::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Sun, 8 May
- 2022 02:39:57 +0000
-Received: from CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6a:cafe::26) by MW4PR04CA0050.outlook.office365.com
- (2603:10b6:303:6a::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20 via Frontend
- Transport; Sun, 8 May 2022 02:39:56 +0000
+ 2022 02:39:59 +0000
+Received: from CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:302:1:cafe::5f) by MW2PR2101CA0005.outlook.office365.com
+ (2603:10b6:302:1::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.3 via Frontend
+ Transport; Sun, 8 May 2022 02:39:58 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,22 +48,22 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT010.mail.protection.outlook.com (10.13.175.88) with Microsoft SMTP
+ CO1NAM11FT040.mail.protection.outlook.com (10.13.174.140) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 02:39:56 +0000
+ 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 02:39:58 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 7 May
- 2022 21:39:52 -0500
+ 2022 21:39:56 -0500
 From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
 CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
         <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
         <terry.bowman@amd.com>,
         Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4 09/15] KVM: SVM: Refresh AVIC configuration when changing APIC mode
-Date:   Sat, 7 May 2022 21:39:24 -0500
-Message-ID: <20220508023930.12881-10-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v4 14/15] KVM: SVM: Use target APIC ID to complete x2AVIC IRQs when possible
+Date:   Sat, 7 May 2022 21:39:29 -0500
+Message-ID: <20220508023930.12881-15-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
 References: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
@@ -75,74 +75,75 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 759f26dc-4003-4aec-f472-08da309c09f9
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4517:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4517616CE2B8B32195F5C614F3C79@MN2PR12MB4517.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 92763385-2e29-4d18-74b3-08da309c0b55
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0259:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB0259379EF3C69164AC27627BF3C79@BN6PR1201MB0259.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RgOULHr4UYI57Vw87E6itqMguo5OhfnG7SJRX92kSzd6yICoY31xCnvx3PAAq7HkxQ6K/YDB4NjawbLxR9cnfQTNdfH+F8maeRO34mUYkfjAL4ZdfAv6ULiLaGhTRRiUiFJrJGqq6E2KEsA+BzCkMhqqLzCFumSKjmWfUh1VAXPhojEO2d//0bTTG4hn4fSDeIXijghHSgPukfwuGPM1gszvZqxy1lJKqD7UGgH6zOkBheycjjKnW4xHb8umHpHOMBdalOXJ389sesF+HPmXE6suRqpfI6MMx6cyifZYTx0tsf42cP6gHpjXBM5B3YoPUltSTsjQfVlNc0be9CZwpsmtSXohMMWZCKarYaCoPXLvT6QoEy5Vim6T5NwYOifWfdAlcwwfxMMISl59JfFcj9yd6xxIlLPebukkgLEJeK1T+MYZ/xMu+WFwPL6l46EUQVu56J1Vz4NnnyAUUhcBGw5xdGkV0TwQbUC9iddN8OsWO8Gtmke899WLm+oXBtuu4YABmvETHbGI5uZ7RrfVmFx5bC5KYbyxBnWtW26uFbmCQroVb0fTOjfOnlq5Tr8lDVqTaIOFZdY8BeDagNi9tRUkzZtScmMu+/RfYV9dlaniuztAIvMRrFpzSSwPploxJyxzSRYGGFOjXp45YbQw/NPoBitWUVAzp5lGAFIOkzaLc1q+OF9b4BFjqo0z6SjeMUsC2NG4wVR36oci5niOdQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7696005)(508600001)(86362001)(70586007)(54906003)(110136005)(82310400005)(356005)(316002)(6666004)(81166007)(2906002)(70206006)(16526019)(186003)(336012)(47076005)(426003)(36756003)(2616005)(5660300002)(83380400001)(40460700003)(26005)(1076003)(8676002)(4326008)(44832011)(8936002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: IGkJeJYL4z61q/gGNPFYTuRrgOv8LC/p1/UmmveAiFOSjAbw2BhgH/jWi9k1STUF8eqzQwJDlkLTVZDu3FCcxbcKlxG1vP3OIQw76ydM9xEQhCsryaglovTdKSjvMxQb2JNKf5TcCjnLJvevWeX3gVirbimLxJauozncvTqKnFC/1bz2mOnG+7jKG4rsSrswKP1oHXyLWqY62P/yaIjv3EgTIXiozAFEgU0KQNpWsXfubzmwCNecoHE5V466GPTg/KRTDtUWXBeEkmhbac22GqMoWHl9ElEdhFoinh3V0/fmLvwQA0PEoVa+rjOaSBQl4JPZomWlVED8TDfTF8gojjB7nHqqraCBmNpL6brYQ8/dtaChhs4YG6dxD3d3ptrznhiYTVZTvCrzuCJHAy87IDsX2FlAQaHdQWmO6Q2RcP5y5UIZSgGXm6DXLVYMQEN/Jj2ak9sZ9GnYq2B5Sicaq/LY7nLk6d1kF+lNtwt+Yt0wOCZOyj3zPHFyWB7lsQWOk5CqHwwImCYCxRLkgy0UGvTLm3RUJWIdVRd9scOyIe7GDmfm4RyPp8MVIYtZ971ovcM/G1hBgBMOKaUKqpjVoZxKqn0xC/ps4ZuITVE2KOT/Bkg24PlH2V59Oeh03ewPxTSDkuSvQjIEIFrFUrUCO1CM9VmZ8grqVF9lqnRSYtNCWUIpJz+xkF8yXOMfiuLhnVmBp1XwPUhzh9tW37JruA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36860700001)(2906002)(82310400005)(36756003)(70586007)(5660300002)(44832011)(8676002)(70206006)(4326008)(16526019)(54906003)(8936002)(1076003)(83380400001)(110136005)(40460700003)(86362001)(186003)(2616005)(7696005)(26005)(336012)(316002)(47076005)(426003)(81166007)(6666004)(356005)(508600001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 02:39:56.4879
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 02:39:58.7652
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 759f26dc-4003-4aec-f472-08da309c09f9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92763385-2e29-4d18-74b3-08da309c0b55
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4517
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0259
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AMD AVIC can support xAPIC and x2APIC virtualization,
-which requires changing x2APIC bit VMCB and MSR intercepton
-for x2APIC MSRs. Therefore, call avic_refresh_apicv_exec_ctrl()
-to refresh configuration accordingly.
+For x2AVIC, the index from incomplete IPI #vmexit info is invalid
+for logical cluster mode. Only ICRH/ICRL values can be used
+to determine the IPI destination APIC ID.
 
+Since QEMU defines guest physical APIC ID to be the same as
+vCPU ID, it can be used to quickly identify the target vCPU to deliver IPI,
+and avoid the overhead from searching through all vCPUs to match the target
+vCPU.
+
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- arch/x86/kvm/svm/avic.c | 12 ++++++++++++
- arch/x86/kvm/svm/svm.c  |  1 +
- 2 files changed, 13 insertions(+)
+ arch/x86/kvm/svm/avic.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 16ce2d50efac..a82981722018 100644
+index ceed4b39b884..617dd4732a9a 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -691,6 +691,18 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
- 	avic_handle_ldr_update(vcpu);
- }
+@@ -379,7 +379,26 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+ 			/* For xAPIC logical mode, the index is for logical APIC table. */
+ 			apic_id = avic_logical_id_table[index] & 0x1ff;
+ 		} else {
+-			return -EINVAL;
++			/* For x2APIC logical mode, cannot leverage the index.
++			 * Instead, calculate physical ID from logical ID in ICRH.
++			 */
++			int apic;
++			int first = ffs(icrh & 0xffff);
++			int last = fls(icrh & 0xffff);
++			int cluster = (icrh & 0xffff0000) >> 16;
++
++			/*
++			 * If the x2APIC logical ID sub-field (i.e. icrh[15:0]) contains zero
++			 * or more than 1 bits, we cannot match just one vcpu to kick for
++			 * fast path.
++			 */
++			if (!first || (first != last))
++				return -EINVAL;
++
++			apic = first - 1;
++			if ((apic < 0) || (apic > 15) || (cluster >= 0xfffff))
++				return -EINVAL;
++			apic_id = (cluster << 4) + apic;
+ 		}
+ 	}
  
-+void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
-+{
-+	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
-+		return;
-+
-+	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
-+		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
-+		return;
-+	}
-+	avic_refresh_apicv_exec_ctrl(vcpu);
-+}
-+
- static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
- {
- 	int ret = 0;
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 314628b6bff4..9066568fd19d 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4692,6 +4692,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.enable_nmi_window = svm_enable_nmi_window,
- 	.enable_irq_window = svm_enable_irq_window,
- 	.update_cr8_intercept = svm_update_cr8_intercept,
-+	.set_virtual_apic_mode = avic_set_virtual_apic_mode,
- 	.refresh_apicv_exec_ctrl = avic_refresh_apicv_exec_ctrl,
- 	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
- 	.apicv_post_state_restore = avic_apicv_post_state_restore,
 -- 
 2.25.1
 
