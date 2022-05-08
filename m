@@ -2,112 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DCCC41535
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F56C4167E
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239876AbiEHTIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
+        id S239906AbiEHTID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379417AbiEHSoE (ORCPT
+        with ESMTP id S239231AbiEHR5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 14:44:04 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6BBDF40;
-        Sun,  8 May 2022 11:40:13 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id p12so10508341pfn.0;
-        Sun, 08 May 2022 11:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=k+SEgZtU6OqEyglEHf513mkMo6bNpZuHdtrr6hv8Nq8=;
-        b=SAISvop68z0vD+mD4/R20kGa98LoxlJ+uBQk0DwsI/NyJTYD4AgTjvxG/cZhEyCY55
-         QQ3SLLUjtdJgU0qiyWSXJwBQJ1Dm1Cqw9gC6hbJpC+Ys49b5zv2oQx9sTlFh3uZk9I9q
-         Dc5NC9mWIxfyvsYQPbdctiRdViKHc2567iQIdjzj7Rys84xVnudPom0sITZGL2N1PLXK
-         NOFdhrTejbSV8+TyQlL4p9MUJq3Ezd9ryw9wHeHjAGXwv9b6bqVYbkx3rRfcAhF+F0z5
-         6f/0ckPo16wbrbpb8DeCKrh73d/xV0AlWEKIpkIfQBKC9JwMhGYrUlLbxmIdiMhvU25a
-         G5SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=k+SEgZtU6OqEyglEHf513mkMo6bNpZuHdtrr6hv8Nq8=;
-        b=5tL2NlzNIHeaNRzZYvwLByTNgWQib5+IovFmClCyf9XptGsCwb8xWkFqS27Kz6YCdh
-         rIykPXtMhFiInMA5VMrKgJsAJg84DGLbfwHx7xmWtm1Xb0JrgiX28G621SxSXnovVXff
-         kcIdDI3j5ReDtMml+rO/HjIB9+2izsNg96oA896P0woNQBYEuHyhuv2Gknc6Ms/nvJb8
-         GJLjYpv1TpfOK2oI6+GW3cac+QBiuNcOr86o3BYGticVCQBY1qcMeUKNU1ws1IjWpOH5
-         dusN8PsT2doL6LOZUY+fdMYRMZDL5c9FxFTA/FJJKkVdYOSZulzlmA6cf+K5mNIVSY7u
-         MK4A==
-X-Gm-Message-State: AOAM531JDlUhNaEY/ITLnW2YkUtD3MbCdUw/W9acVLzbA4eJ/THap3Bv
-        rgNXv0hi851wfELqhqw+xBI=
-X-Google-Smtp-Source: ABdhPJzlbs1CoS4KmQp8exvRi+/96RIvfDY0MOLHGDeTBFMfC636egYHAxJMCYFRKhQuaQwr+BNoFg==
-X-Received: by 2002:a05:6a00:b8b:b0:50d:6080:6be7 with SMTP id g11-20020a056a000b8b00b0050d60806be7mr12703385pfj.56.1652035213112;
-        Sun, 08 May 2022 11:40:13 -0700 (PDT)
-Received: from [172.30.1.41] ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id s186-20020a625ec3000000b0050dc76281a2sm6970759pfb.124.2022.05.08.11.40.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 11:40:12 -0700 (PDT)
-Message-ID: <2b8f0e62-ab3c-23bd-f9e8-590df3af12be@gmail.com>
-Date:   Mon, 9 May 2022 03:40:08 +0900
+        Sun, 8 May 2022 13:57:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9F3DFEA;
+        Sun,  8 May 2022 10:53:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6846461295;
+        Sun,  8 May 2022 17:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA49C385A4;
+        Sun,  8 May 2022 17:53:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652032424;
+        bh=yJPX175r8pvytkUmcDbH5hMaqjBtCATCSaDdEMwa2IQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hp79yaL4qI6PvDBH7yU5WthuS86G4hkqP2zY+E/O5qqGE2V6ebZh69X/9c2wOStuv
+         BGAquKs2hyhD6hRePX54dTHilMTBC4+qdZkDIo7iaLRe/Oe11v8+H5SG8aUI4Tz++W
+         YvaXLzEgVWj94qMpV/EIzgMlkhxeAq/VGpRVlkpB2nN9iQ2I3QbxJDxfBIQUwNmOpC
+         8pws1hrUyxUO3m+urjcuCTaTTZsHkf+d1IJaUUxUZpiyE8mpmSYmK7Cz7nJ889hV2U
+         tYJ/jtzZeJ2mUrIoEnk6otfTk3mJXVwKP2nPJgl9dBqPgK9SdWYFD1OcLIi9ynYKAl
+         j1V74AsHiE6EA==
+Date:   Sun, 8 May 2022 19:02:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: imu: st_lsm6dsx: Switch from of headers to
+ mod_devicetable.h
+Message-ID: <20220508190212.3fc02a3f@jic23-huawei>
+In-Reply-To: <20220507173440.29053-1-andriy.shevchenko@linux.intel.com>
+References: <20220507173440.29053-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH 0/2] rockchip / devfreq: Coordinate DRAM controller
- resources between ATF and kernel
-Content-Language: en-US
-To:     Brian Norris <briannorris@chromium.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-References: <20220406014842.2771799-1-briannorris@chromium.org>
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-In-Reply-To: <20220406014842.2771799-1-briannorris@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Brian,
+On Sat,  7 May 2022 20:34:40 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-On 22. 4. 6. 10:48, Brian Norris wrote:
-> On Rockchip RK3399, there are a few hardware resources that are shared
-> between firmware (ARM Trusted Firmware) and kernel (power domain
-> driver) that need to be coordinated properly for DRAM DVFS to work
-> reliably. See patch 1 for plenty more description.
+> There is nothing directly using of specific interfaces in this driver,
+> so lets not include the headers.
 > 
-> These fixes are based in part on the specification in the RK3399, and in
-> part based on extrapolation and observation. Any confirmation about the
-> behavior of PMU_CRU_GATEDIS_CON0, etc., is welcome.
-> 
-> Otherwise, see the patches.
-> 
-> Regards,
-> Brian
-> 
-> 
-> Brian Norris (2):
->    soc: rockchip: power-domain: Manage resource conflicts with firmware
->    PM / devfreq: rk3399_dmc: Block PMU during transitions
-> 
->   drivers/devfreq/rk3399_dmc.c      |  13 ++++
->   drivers/soc/rockchip/pm_domains.c | 118 ++++++++++++++++++++++++++++++
->   include/soc/rockchip/pm_domains.h |  25 +++++++
->   3 files changed, 156 insertions(+)
->   create mode 100644 include/soc/rockchip/pm_domains.h
-> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for all the normal boring reasons.
 
-Applied them. with Heiko reviewed-by tag for patch1.
+Thanks,
 
--- 
-Best Regards,
-Samsung Electronics
-Chanwoo Choi
+Jonathan
+
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> index 8d4201b86e87..35556cd04284 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> @@ -6,11 +6,11 @@
+>   */
+>  
+>  #include <linux/kernel.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/i3c/device.h>
+>  #include <linux/i3c/master.h>
+>  #include <linux/slab.h>
+> -#include <linux/of.h>
+>  #include <linux/regmap.h>
+>  
+>  #include "st_lsm6dsx.h"
+
