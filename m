@@ -2,116 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 12:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiEHMlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 08:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
+        id S233058AbiEHMmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 08:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232146AbiEHMlQ (ORCPT
+        with ESMTP id S232146AbiEHMmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 08:41:16 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2B1261F
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:37:26 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2ef5380669cso119721757b3.9
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 05:37:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VuJms/7a1Fox6UxpgPi9Undwrl7KJZiaeog6B+JELcQ=;
-        b=ybmIW7T5t43ZPNwEQL+rAnQdovWfEUDtovGqS16yWN4UtHFcnKa02ohqPtBFVPjnAd
-         WtjEAbp6oUGVWDjKuIKp30+cLQKUhs1P3jYsnkjYL7LFuID+E9oI6Lv9WkvoIRR4ytYq
-         wqxbDSIzoDeucb9XM+UjJvtZyU8vY6TZq2sSK/NlrrpDg0PwVgQ0GrAN2lvu/1ZfBDkE
-         lOc+YQ3lPGCUY2XRGtl+fntttry2yWMgZrHp/RDfFOt9VFoE90Qrd3hPlluWefbRGRFP
-         BSG19GDwJVbOAZ5rxUESwV5lBRLIZqZjqidgMaSjuo+/uGR5sxvSBPbBf0q7OKPEhNPj
-         vmVQ==
-X-Gm-Message-State: AOAM5325K+6N8KEzUp50cKzqk6p1rCCIEfSyTheB3M/PvysV9/VT0gRu
-        GQJdVuy39B3Jn4Ca1ht/eVC7LImQ7sIjOqzRUig=
-X-Google-Smtp-Source: ABdhPJwqPVBmsbXYYleGS+D6FFVgxG71RmE5EyifsmaLuQSBOUC4KaebQhU7H5hZiCQNN/alYIXz1JtjByrUlXJG2AA=
-X-Received: by 2002:a81:8cf:0:b0:2f4:da59:9eef with SMTP id
- 198-20020a8108cf000000b002f4da599eefmr10253166ywi.78.1652013445268; Sun, 08
- May 2022 05:37:25 -0700 (PDT)
+        Sun, 8 May 2022 08:42:23 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8EC389A
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 05:38:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652013514; x=1683549514;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qSKUj5BCwE6SV0HTt3tJ3ivcwbJGH956cwe7y7FlJJU=;
+  b=IousItechp8aU3j90I3ngg2dGEe0ACboPcVUV9eu7v1nz0gxak9oYQtc
+   HOlEnpX3SaJk77ItKzGYbukBb+U0E4HhepIQ/azJ8IIwuvUFLfiLxx0qv
+   Swbqqw2eg1+9r7TGDuia8FK1bXzFq5FkfwZKEQfvmpdCbRg644KkFZj9Z
+   RIfIEOTrJYvfbI0Mh2MSUF2mJ9795toOxJCGP7NsHnFJ+t7a+PdpJqcyM
+   5kJwoh9fbyhxn1FM8b+JpFOM0Cj+P/MYmC0LB0p5d+eBACYLzsTOHOAhs
+   foFbPXWndhYjw4sTarmxztqezscPRsM0Jl8VsvlGqJVOV3JkfENRyqKYA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="267674802"
+X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
+   d="scan'208";a="267674802"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 05:38:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; 
+   d="scan'208";a="710143723"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 08 May 2022 05:38:31 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>
+Cc:     Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v4 0/4] iommu/vt-d: Force snooping improvement
+Date:   Sun,  8 May 2022 20:35:21 +0800
+Message-Id: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220306171009.1973074-1-mailhol.vincent@wanadoo.fr>
- <20220508100907.61231-1-mailhol.vincent@wanadoo.fr> <CAK8P3a3Fw2T0WSkxv4DiTG2wGkKcs24StPx-BG_vi=ffa9OLVA@mail.gmail.com>
-In-Reply-To: <CAK8P3a3Fw2T0WSkxv4DiTG2wGkKcs24StPx-BG_vi=ffa9OLVA@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sun, 8 May 2022 21:37:14 +0900
-Message-ID: <CAMZ6RqK9d0hFwYebaArKjod4LJVGQgfDygpbGdBu-4BCDUR_SA@mail.gmail.com>
-Subject: Re: [RESEND PATCH v1] x86/build: add -fno-builtin flag to prevent shadowing
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+Hi folks,
 
-+CC: Kees Cook
+Previously, the IOMMU capability of enforcing cache coherency was queried
+through iommu_capable(IOMMU_CAP_CACHE_COHERENCY). This is a global
+capability, hence the IOMMU driver reports support for this capability
+only when all IOMMUs in the system has this support.
 
-On Sun. 8 May 2022 at 19:27, Arnd Bergmann <arnd@kernel.org> wrote:
-> On Sun, May 8, 2022 at 12:09 PM Vincent Mailhol
-> <mailhol.vincent@wanadoo.fr> wrote:
-> >
-> > Aside of the __builtin_foo() ones, x86 does not directly rely on any
-> > builtin functions.
-> >
-> > However, such builtin functions are not explicitly deactivated,
-> > creating some collisions, concrete example being ffs() from bitops.h,
-> > c.f.:
-> >
-> > | ./arch/x86/include/asm/bitops.h:283:28: warning: declaration of 'ffs' shadows a built-in function [-Wshadow]
-> > |   283 | static __always_inline int ffs(int x)
-> >
-> > This patch adds -fno-builtin to KBUILD_CFLAGS for the x86
-> > architectures in order to prevent shadowing of builtin functions.
-> >
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > ---
-> > FYI, I tested this patch on a "make allyesconfig" for both x86_32 and
-> > x86_64.
-> >
-> > This is a resend. Only difference is that I dropped the RFC flag and
-> > added Arnd in CC because he did a similar patch to fix ffs shadow
-> > warnings in the past:
-> >
-> > https://lore.kernel.org/all/20201026160006.3704027-1-arnd@kernel.org/
->
-> I think this is a correct change, but unfortunately it exposes a clang bug
->  with -mregparm=3. Nick should be able to provide more details, I think
-> he has a plan.
+Commit 6043257b1de06 ("iommu: Introduce the domain op
+enforce_cache_coherency()") converts this into a per-domain test-and-set
+option, and the previous iommu_capable(IOMMU_CAP_CACHE_COHERENCY) is
+deprecated.
 
-Interesting. I admittedly did not do extensive tests on clang
-but I would have expected the Linux kernel bot to have warned me
-on my previous patch.
+This is a follow-up series which improves the Intel IOMMU driver to
+support the per-domain scheme better.
 
-I did research on mregparm and clang. I found this thread:
-https://lore.kernel.org/r/20220208225350.1331628-9-keescook@chromium.org
+Best regards,
+baolu
 
-and the associated LLVM issue:
-https://github.com/llvm/llvm-project/issues/53645
+Change log:
+v4:
+ - Flush caches after changing PGSNP bit in the right way.
 
-Those threads mention that some clang builtins become unusable
-when combining -mregparm=3 and -m32. But I could not find a
-bug reference about -mregparm=3 and -fno-builtin combination.
+v3:
+ - https://lore.kernel.org/linux-iommu/20220506052727.1689687-1-baolu.lu@linux.intel.com/
+ - Hold the device_domain_lock when check and set force snooping.
+ - Refind the commit messages.
 
-Could you just double confirm that you indeed saw the issue with
--fno-builtin? If that the case, I am really curious to get the
-details :)
+v2:
+ - https://lore.kernel.org/linux-iommu/20220505010710.1477739-1-baolu.lu@linux.intel.com/
+ - Check whether force_snooping has already been set in
+   intel_iommu_enforce_cache_coherency().
+ - Set PGSNP pasid bit field during domain attaching if forcing_snooping
+   is set.
+ - Remove redundant list_empty() checks.
+ - Add dmar_domain->set_pte_snp and set it if force snooping is enforced
+   on a domain with 2nd-level translation.
 
+v1:
+ - https://lore.kernel.org/linux-iommu/20220501112434.874236-1-baolu.lu@linux.intel.com
+ - Initial post.
 
-Yours sincerely,
-Vincent Mailhol
+Lu Baolu (4):
+  iommu/vt-d: Block force-snoop domain attaching if no SC support
+  iommu/vt-d: Check domain force_snooping against attached devices
+  iommu/vt-d: Remove domain_update_iommu_snooping()
+  iommu/vt-d: Remove hard coding PGSNP bit in PASID entries
+
+ include/linux/intel-iommu.h |  1 +
+ drivers/iommu/intel/pasid.h |  2 +
+ drivers/iommu/intel/iommu.c | 90 ++++++++++++++++++++++---------------
+ drivers/iommu/intel/pasid.c | 45 +++++++++++++++++--
+ 4 files changed, 99 insertions(+), 39 deletions(-)
+
+-- 
+2.25.1
+
