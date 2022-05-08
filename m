@@ -2,81 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BDDC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B98C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  8 May 2022 19:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239483AbiEHTHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 15:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
+        id S239537AbiEHTHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 15:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238209AbiEHR1t (ORCPT
+        with ESMTP id S1379961AbiEHSov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 13:27:49 -0400
+        Sun, 8 May 2022 14:44:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DF8DED0
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 10:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AB1B85F
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 11:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9512A6127C
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 17:23:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83812C385AC;
-        Sun,  8 May 2022 17:23:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="EJMfnS5L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652030636;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OY+nHI0YO6kQCBNTlVRD8FLakJgR/zoriqgGdSPfjBU=;
-        b=EJMfnS5LiNVA/YwaUPsNY3gMvEgWOytlhQ/WJAOcmR7VyX529vbsns7pecoytsnFpvM0q0
-        ceFFJFF4cszAQsPLECUOcrb4TQ5kzW2rNPiKob/CF4XfiygclPjFfZAshzt4krQPLfEYwn
-        /6o0LL0tkoAYrQLNJHwcpof4RC9ut38=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3cffb8ff (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 8 May 2022 17:23:55 +0000 (UTC)
-Date:   Sun, 8 May 2022 19:23:52 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH] random: use symbolic constants for crng_init states
-Message-ID: <Ynf8qMmN+AAofKMy@zx2c4.com>
-References: <20220508112609.138889-1-Jason@zx2c4.com>
- <d0b220993b2fb1d306bb959707ceb374596de559.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <d0b220993b2fb1d306bb959707ceb374596de559.camel@perches.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E97161225
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C361DC385AC;
+        Sun,  8 May 2022 18:40:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652035259;
+        bh=LBec9Q4x0I+hgg8iZumGkIvC4abGfEW5goBzTShxtMs=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=hwRzwH9GRlzDzfyAYV+uXWigpRVCPSCBxeDwdYzoXVReSpIqp2SbDHBGLx8aNJ5kD
+         7ZIL7mBq2am3twTI2enefOt10kLghjk+PfckoS63DN8KPr+4hnaF+nbfntdO5Tt7Aq
+         cJ7iahkVmJsq8bmZJRO45aYOc7vy08h2MbX0DmynxUx6Zf0samkoaAlBkemwLBrsWf
+         Wbmejc1JsK3PAjvUQz97LOQoWf2KOdVxTmZK5aIqiyOdrKQQ3FtV0B2tQB2+0zA6dh
+         WcsQHNp7m8I3YnRShy4/nF2T5Hcshk8ZmBf9d10HFevq2isLfQfwXdnd3nPS7EiKho
+         /2mAXz2i7oU8g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A65B0E5D087;
+        Sun,  8 May 2022 18:40:59 +0000 (UTC)
+Subject: Re: [GIT pull] core/urgent for v5.18-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <165201148069.536527.1960632033331546251.tglx@xen13>
+References: <165201148069.536527.1960632033331546251.tglx@xen13>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <165201148069.536527.1960632033331546251.tglx@xen13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git core-urgent-2022-05-08
+X-PR-Tracked-Commit-Id: 2667ed10d9f01e250ba806276740782c89d77fda
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 1f8c5dff000d96b66273a0bf57dbf4d505c730cc
+Message-Id: <165203525965.974.16862885725044829572.pr-tracker-bot@kernel.org>
+Date:   Sun, 08 May 2022 18:40:59 +0000
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 05:57:18AM -0700, Joe Perches wrote:
-> > diff --git a/drivers/char/random.c b/drivers/char/random.c
-> []
-> > @@ -72,16 +72,16 @@
-> []
-> > -/* Various types of waiters for crng_init->2 transition. */
-> > +static enum {
-> > +	CRNG_EMPTY = 0, /* Little to no entropy collected */
-> > +	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
-> > +	CRNG_READY = 2  /* Fully iniitalized with POOL_READY_BITS collected */
-> 
-> typo: initialized
+The pull request you sent on Sun,  8 May 2022 14:05:19 +0200 (CEST):
 
-Thanks, will do.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git core-urgent-2022-05-08
 
-> 
-> >  enum {
-> >  	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
-> > -	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
-> > -	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
-> > +	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
-> > +	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
-> 
-> Seems odd to use a divisor with an enum
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/1f8c5dff000d96b66273a0bf57dbf4d505c730cc
 
-Why? The constants are defined in terms of other constants.
+Thank you!
 
-Jason
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
