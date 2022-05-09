@@ -2,263 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D42D6C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3BFC47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236688AbiEIHxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
+        id S236676AbiEIHxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:53:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236268AbiEIHjF (ORCPT
+        with ESMTP id S235773AbiEIHo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:39:05 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1A1E8
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:35:11 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id t5so15186028edw.11
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:35:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6jbURD8Ey2jd/vwDhR1u6Z9PNW187Y1F9ebai4/UsoU=;
-        b=L74itdn5Wcx/56Pz2s1h8uLsLuSZhFw0Z98BIInddU6cGZRn0/kl5pwPoWyNvnhm3m
-         vwVUWJsUGJwVSsy3ob82PnHB7WVgTowC/+TDjuzwyPXHjePgr6qadNIXDCVt4n5EVaLm
-         T3uXj/kmBzdJVjy63+STw5j3OHd/7srnA4DBs5c7ZaDYu8+onYOveOpqfCnWFWbsiJKG
-         mMsxNmwWouQpVZAW19AkVU/nMrve3qEtgUrZ1nNoJ6D+TgaBl1gy+pCmlN8ym7fqYauY
-         pkKrNO7RaXfR7qCTju5FKt4YSAZbD0t8/wEM5fAybnXyGljplV5MWNrPUtkvmboeIorO
-         v0jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6jbURD8Ey2jd/vwDhR1u6Z9PNW187Y1F9ebai4/UsoU=;
-        b=plIjwAssam50oENagZf7Sodjb7itWXq6YgIkCffu3VqHmPWtcR9RP1BM1b4ewLmHta
-         v3J64uXuaYjQo86DQXHBTyKkLrcOH1o0sk9rVLCVpVUSAjqFbyGwD94iNZc/vFUKF+uH
-         efrLio/WbOAaCiDPpm7AYOMeohFyXrILLcSglLY0aZ5fn96bQEdwMyy/X8iZyM4Crzys
-         uVTYilrJOKVyzRU9A+ch1zhDymihN1SwFa9mCan6gxkFgK43wmvX8w7KUCGMKry99CW9
-         yTM2SOTtAiPx6KStKVpWPmM2HjQK0El83NAjM7r41RURguIhiQsOJiQQUz8bfYqkO8vq
-         RM1A==
-X-Gm-Message-State: AOAM5305XrLJdQYDwYgC0X5C7jrcjYRtwN55XlYJBE9eFvGsRmtYTrkI
-        XuO2FV22txajQDH7DXwhXOUJYw==
-X-Google-Smtp-Source: ABdhPJzYO8cmNC9uBKCClx5X3DrATjSonDW6UXPxBkrSLm3jIm2wX91BBa+d8YB3/zGFnWnOLUhhZA==
-X-Received: by 2002:aa7:d416:0:b0:425:f5c7:d633 with SMTP id z22-20020aa7d416000000b00425f5c7d633mr15808452edq.105.1652081708825;
-        Mon, 09 May 2022 00:35:08 -0700 (PDT)
-Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ze11-20020a170906ef8b00b006f3ef214e43sm4773108ejb.169.2022.05.09.00.35.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:35:08 -0700 (PDT)
-Message-ID: <46bc32df-e4e8-ac47-426d-8056714f0d5c@linaro.org>
-Date:   Mon, 9 May 2022 09:35:07 +0200
+        Mon, 9 May 2022 03:44:59 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAB5140C9;
+        Mon,  9 May 2022 00:41:05 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCgX6lg_1652082052;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCgX6lg_1652082052)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 09 May 2022 15:40:53 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+Subject: [PATCH v11 15/22] erofs: register fscache context for primary data blob
+Date:   Mon,  9 May 2022 15:40:21 +0800
+Message-Id: <20220509074028.74954-16-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
+References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 3/3] dt-bindings: mediatek: add ethdr definition for
- mt8195
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     airlied@linux.ie, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
-        nancy.lin@mediatek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
- <20220509044302.27878-4-rex-bc.chen@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220509044302.27878-4-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/05/2022 06:43, Rex-BC Chen wrote:
-> From: "Nancy.Lin" <nancy.lin@mediatek.com>
-> 
-> Add vdosys1 ETHDR definition.
-> 
-> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../display/mediatek/mediatek,ethdr.yaml      | 191 ++++++++++++++++++
->  1 file changed, 191 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-> new file mode 100644
-> index 000000000000..65f22fba9fed
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-> @@ -0,0 +1,191 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/mediatek/mediatek,ethdr.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MediaTek Ethdr Device Tree Bindings
+Registers fscache context for primary data blob. Also move the
+initialization of s_op and related fields forward, since anonymous
+inode will be allocated under the super block when registering the
+fscache context.
 
-s/Device Tree Bindings//
+Something worth mentioning about the cleanup routine.
 
-You need to add some description of a device. What is a Ethdr?
+1. The fscache context will instantiate anonymous inodes under the super
+block. Release these anonymous inodes when .put_super() is called, or
+we'll get "VFS: Busy inodes after unmount." warning.
 
-> +
-> +maintainers:
-> +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> +  - Philipp Zabel <p.zabel@pengutronix.de>
-> +
-> +description:
-> +  ETHDR is designed for HDR video and graphics conversion in the external display path.
-> +  It handles multiple HDR input types and performs tone mapping, color space/color
-> +  format conversion, and then combine different layers, output the required HDR or
-> +  SDR signal to the subsequent display path. This engine is composed of two video
-> +  frontends, two graphic frontends, one video backend and a mixer. ETHDR has two
-> +  DMA function blocks, DS and ADL. These two function blocks read the pre-programmed
-> +  registers from DRAM and set them to HW in the v-blanking period.
+2. The fscache context is initialized prior to the root inode. If
+.kill_sb() is called when mount failed, .put_super() won't be called
+when root inode has not been initialized yet. Thus .kill_sb() shall
+also contain the cleanup routine.
 
-Block does not look like wrapped at 80.
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+---
+ fs/erofs/internal.h |  1 +
+ fs/erofs/super.c    | 15 +++++++++++----
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
-> +
-> +properties:
-> +  compatible:
-> +    items:
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index 5867cb63fd74..386658416159 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -155,6 +155,7 @@ struct erofs_sb_info {
+ 
+ 	/* fscache support */
+ 	struct fscache_volume *volume;
++	struct erofs_fscache *s_fscache;
+ };
+ 
+ #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index fd8daa447237..61dc900295f9 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -589,6 +589,9 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 	int err;
+ 
+ 	sb->s_magic = EROFS_SUPER_MAGIC;
++	sb->s_flags |= SB_RDONLY | SB_NOATIME;
++	sb->s_maxbytes = MAX_LFS_FILESIZE;
++	sb->s_op = &erofs_sops;
+ 
+ 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
+ 	if (!sbi)
+@@ -606,6 +609,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 		err = erofs_fscache_register_fs(sb);
+ 		if (err)
+ 			return err;
++
++		err = erofs_fscache_register_cookie(sb, &sbi->s_fscache,
++						    sbi->opt.fsid, true);
++		if (err)
++			return err;
+ 	} else {
+ 		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
+ 			erofs_err(sb, "failed to set erofs blksize");
+@@ -628,11 +636,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 			clear_opt(&sbi->opt, DAX_ALWAYS);
+ 		}
+ 	}
+-	sb->s_flags |= SB_RDONLY | SB_NOATIME;
+-	sb->s_maxbytes = MAX_LFS_FILESIZE;
+-	sb->s_time_gran = 1;
+ 
+-	sb->s_op = &erofs_sops;
++	sb->s_time_gran = 1;
+ 	sb->s_xattr = erofs_xattr_handlers;
+ 
+ 	if (test_opt(&sbi->opt, POSIX_ACL))
+@@ -772,6 +777,7 @@ static void erofs_kill_sb(struct super_block *sb)
+ 
+ 	erofs_free_dev_context(sbi->devs);
+ 	fs_put_dax(sbi->dax_dev);
++	erofs_fscache_unregister_cookie(&sbi->s_fscache);
+ 	erofs_fscache_unregister_fs(sb);
+ 	kfree(sbi);
+ 	sb->s_fs_info = NULL;
+@@ -790,6 +796,7 @@ static void erofs_put_super(struct super_block *sb)
+ 	iput(sbi->managed_cache);
+ 	sbi->managed_cache = NULL;
+ #endif
++	erofs_fscache_unregister_cookie(&sbi->s_fscache);
+ }
+ 
+ static struct file_system_type erofs_fs_type = {
+-- 
+2.27.0
 
-One item, so no items.
-
-> +      - const: mediatek,mt8195-disp-ethdr
-> +
-> +  reg:
-> +    maxItems: 7
-> +
-> +  reg-names:
-> +    items:
-> +      - const: mixer
-> +      - const: vdo_fe0
-> +      - const: vdo_fe1
-> +      - const: gfx_fe0
-> +      - const: gfx_fe1
-> +      - const: vdo_be
-> +      - const: adl_ds
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  iommus:
-> +    description: The compatible property is DMA function blocks.
-
-I don't understand this at all.
-
-> +      Should point to the respective IOMMU block with master port as argument,
-> +      see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for
-> +      details.
-
-Just skip the description, it's same everywhere.
-
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  clocks:
-> +    items:
-> +      - description: mixer clock
-> +      - description: video frontend 0 clock
-> +      - description: video frontend 1 clock
-> +      - description: graphic frontend 0 clock
-> +      - description: graphic frontend 1 clock
-> +      - description: video backend clock
-> +      - description: autodownload and menuload clock
-> +      - description: video frontend 0 async clock
-> +      - description: video frontend 1 async clock
-> +      - description: graphic frontend 0 async clock
-> +      - description: graphic frontend 1 async clock
-> +      - description: video backend async clock
-> +      - description: ethdr top clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: mixer
-> +      - const: vdo_fe0
-> +      - const: vdo_fe1
-> +      - const: gfx_fe0
-> +      - const: gfx_fe1
-> +      - const: vdo_be
-> +      - const: adl_ds
-> +      - const: vdo_fe0_async
-> +      - const: vdo_fe1_async
-> +      - const: gfx_fe0_async
-> +      - const: gfx_fe1_async
-> +      - const: vdo_be_async
-> +      - const: ethdr_top
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +  resets:
-> +    items:
-> +      - description: video frontend 0 async reset
-> +      - description: video frontend 1 async reset
-> +      - description: graphic frontend 0 async reset
-> +      - description: graphic frontend 1 async reset
-> +      - description: video backend async reset
-> +
-> +  reset-names:
-> +    items:
-> +      - const: vdo_fe0_async
-> +      - const: vdo_fe1_async
-> +      - const: gfx_fe0_async
-> +      - const: gfx_fe1_async
-> +      - const: vdo_be_async
-> +
-> +  mediatek,gce-client-reg:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    description: The register of display function block to be set by gce.
-> +      There are 4 arguments in this property, gce node, subsys id, offset and
-> +      register size. The subsys id is defined in the gce header of each chips
-> +      include/include/dt-bindings/gce/<chip>-gce.h, mapping to the register of
-> +      display function block.
-> +    items:
-> +      items:
-> +        - description: phandle of GCE
-> +        - description: GCE subsys id
-> +        - description: register offset
-> +        - description: register size
-> +    minItems: 7
-> +    maxItems: 7
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - interrupts
-> +  - power-domains
-> +  - resets
-> +  - mediatek,gce-client-reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/mt8195-clk.h>
-> +    #include <dt-bindings/gce/mt8195-gce.h>
-> +    #include <dt-bindings/memory/mt8195-memory-port.h>
-> +    #include <dt-bindings/power/mt8195-power.h>
-> +    #include <dt-bindings/reset/mt8195-resets.h>
-> +
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        disp_ethdr@1c114000 {
-
-No underscores in node name. Generic node names, so display-controller?
-
-
-Best regards,
-Krzysztof
