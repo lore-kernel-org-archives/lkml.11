@@ -2,101 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57278C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234340AbiEIMZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
+        id S234361AbiEIMZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234301AbiEIMY6 (ORCPT
+        with ESMTP id S234252AbiEIMZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:24:58 -0400
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDED2555A8;
-        Mon,  9 May 2022 05:21:04 -0700 (PDT)
-Received: by mail-ot1-f47.google.com with SMTP id k25-20020a056830169900b00605f215e55dso9967759otr.13;
-        Mon, 09 May 2022 05:21:04 -0700 (PDT)
+        Mon, 9 May 2022 08:25:00 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6551D2555B5;
+        Mon,  9 May 2022 05:21:06 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-deb9295679so14476302fac.6;
+        Mon, 09 May 2022 05:21:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=sv2cI5/IIfv5TA9/D1vZuscnav6gHINQOSxljIH5MXs=;
-        b=p/8CkiD6LEAAQPqLNBI2d7HTpuvCZPtmpx0DF5nQok9lBdglM2tM/hFDS31DaN2DTg
-         KiztTXc8s5dLA8afMmYJ10phYBjCh3tTdTczLbWvqZdzRIhV/Y0SDsDBenGAHWYOGDFf
-         Ee5Oqv2DTPZCiN9upPudZMlkg49Y186Q2zzZmQRAJeUiqXSGBk9keps/1hHtpLwinWyx
-         3b15IDgURnIDobvdwdd/CyY5UPAf1x0kTMcCteRjgLGSsELKrE030Ei5+DG1RtcUzM7o
-         QvKg/8KEsVadnOqxK7He6seRYK4xX/eGJdU/fgwDLsq2CpYS1kALPQz5QV8E5oNE9beT
-         0bBw==
-X-Gm-Message-State: AOAM533X5Bo7UHwc+M4rJkR1n0FCPvHHtL0APWqmKtPFfdYNYj6LZvdg
-        2e7QfLw18Izzau8H641yVw==
-X-Google-Smtp-Source: ABdhPJzmgTfUp6EHG/A94h+NBN2R5QfBMhZFGUuuka9lsHg+u9WLwv5BWtw2aG+NwSAp98BLFiz3Zg==
-X-Received: by 2002:a9d:74d8:0:b0:606:42dc:5ce3 with SMTP id a24-20020a9d74d8000000b0060642dc5ce3mr5735048otl.303.1652098863902;
-        Mon, 09 May 2022 05:21:03 -0700 (PDT)
+        bh=1YMoFaBHhMjLkXPx9UtGpLV3eh41Hk7kM5z0duwbKfM=;
+        b=bUqgAB7+NzHB3P95FOidshZiFaQ9QrWVfMt2ul3PKRd1UHWPDBdPzj3Y0hk+peWLzq
+         Ek/k4+pZYIzn6OZoU+/d1I9Ca67xDPatf5MqEEreWcWO9tw8kIzoWxuJUmDMOn+3fY7A
+         Cf2vMgxgKnu5Mt7oX9ziKGBKST9c9FATehHlxKVb36klt0fXYGOazX+Lyh7R5AWdWx+K
+         /uwQypb9T8xCY9r4DrXKAHrjxQ9g1Os3l2/UvRPI0BNdKnkloBzbgnODOtyIzQV6yEG/
+         foh9WtrHkbLbxD8G9MS4WbsnrIWbiV5IJhBoTQRSSBBUT7urkM/7WJmN8UqAWEF2Sk+F
+         aaKQ==
+X-Gm-Message-State: AOAM530RChHgwjnn4qgUjveU8RRL8A8bsHedomu2N0rKl652u+XBaJQa
+        7UkkgQIRJTM+mAsVCGlmbg==
+X-Google-Smtp-Source: ABdhPJxrxqCw4xcwtmH1NwK0lTIRVic4gXA59v04MV73GhVQGdzYIMA1pMp2y/BEu14fL+6T/pBi9A==
+X-Received: by 2002:a05:6871:5cb:b0:ed:b5ed:667d with SMTP id v11-20020a05687105cb00b000edb5ed667dmr7068789oan.47.1652098865669;
+        Mon, 09 May 2022 05:21:05 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 52-20020a9d0eb7000000b0060603221241sm4571643otj.17.2022.05.09.05.21.02
+        by smtp.gmail.com with ESMTPSA id d131-20020aca3689000000b003266a9846c0sm4303562oia.17.2022.05.09.05.21.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:21:03 -0700 (PDT)
-Received: (nullmailer pid 3576229 invoked by uid 1000);
+        Mon, 09 May 2022 05:21:04 -0700 (PDT)
+Received: (nullmailer pid 3576235 invoked by uid 1000);
         Mon, 09 May 2022 12:20:58 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     airlied@linux.ie, robh+dt@kernel.org,
-        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
-        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, jason-jh.lin@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        nancy.lin@mediatek.com, linux-mediatek@lists.infradead.org
-In-Reply-To: <20220509044302.27878-2-rex-bc.chen@mediatek.com>
-References: <20220509044302.27878-1-rex-bc.chen@mediatek.com> <20220509044302.27878-2-rex-bc.chen@mediatek.com>
-Subject: Re: [PATCH v2 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
+To:     Sibi Sankar <quic_sibis@quicinc.com>
+Cc:     mka@chromium.org, swboyd@chromium.org,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        mathieu.poirier@linaro.org, krzysztof.kozlowski@canonical.com,
+        agross@kernel.org, dianders@chromium.org, ohad@wizery.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        evgreen@chromium.org
+In-Reply-To: <1652082798-5855-2-git-send-email-quic_sibis@quicinc.com>
+References: <1652082798-5855-1-git-send-email-quic_sibis@quicinc.com> <1652082798-5855-2-git-send-email-quic_sibis@quicinc.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: remoteproc: qcom: Add SC7280 MSS bindings
 Date:   Mon, 09 May 2022 07:20:58 -0500
-Message-Id: <1652098858.557372.3576228.nullmailer@robh.at.kernel.org>
+Message-Id: <1652098858.589911.3576234.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 09 May 2022 12:43:00 +0800, Rex-BC Chen wrote:
-> From: "Nancy.Lin" <nancy.lin@mediatek.com>
+On Mon, 09 May 2022 13:23:17 +0530, Sibi Sankar wrote:
+> Add MSS PIL loading bindings for SC7280 SoCs.
 > 
-> Add vdosys1 RDMA definition.
-> 
-> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
 > ---
->  .../display/mediatek/mediatek,mdp-rdma.yaml   | 94 +++++++++++++++++++
->  1 file changed, 94 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+>  .../bindings/remoteproc/qcom,sc7280-mss-pil.yaml   | 261 +++++++++++++++++++++
+>  1 file changed, 261 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dts:27:18: fatal error: dt-bindings/memory/mt8195-memory-port.h: No such file or directory
-   27 |         #include <dt-bindings/memory/mt8195-memory-port.h>
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1401: dt_binding_check] Error 2
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
+remoteproc@4080000: clock-names:1: 'snoc_axi' was expected
+	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+remoteproc@4080000: clock-names:2: 'offline' was expected
+	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+remoteproc@4080000: 'interconnects' is a required property
+	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+remoteproc@4080000: reset-names:1: 'pdc_sync' was expected
+	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
+	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
+	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
 
