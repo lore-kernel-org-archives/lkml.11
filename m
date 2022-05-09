@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00858C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E49AC3527B
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbiEIFtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        id S234544AbiEIFuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235011AbiEIFqf (ORCPT
+        with ESMTP id S235336AbiEIFr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:46:35 -0400
+        Mon, 9 May 2022 01:47:57 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0792615E746
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:42:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459A0126C3A
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:44:04 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KxVKZ1snjz9sW1;
-        Mon,  9 May 2022 07:36:50 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KxVKn0kMLz9sWH;
+        Mon,  9 May 2022 07:37:01 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 7KM8SCAmtaN8; Mon,  9 May 2022 07:36:50 +0200 (CEST)
+        with ESMTP id G2G3Rqetc9sH; Mon,  9 May 2022 07:37:01 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF61W9z9sW5;
-        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKH4kVxz9sWK;
+        Mon,  9 May 2022 07:36:35 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C5DC38B76D;
-        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E1418B763;
+        Mon,  9 May 2022 07:36:35 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id KUMmZ8YwXu2A; Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        with ESMTP id DRe330hselgB; Mon,  9 May 2022 07:36:35 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 700BE8B77E;
-        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5BE688B76E;
+        Mon,  9 May 2022 07:36:35 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aSip1591215
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aV6N1591291
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 9 May 2022 07:36:28 +0200
+        Mon, 9 May 2022 07:36:31 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aSXm1591214;
-        Mon, 9 May 2022 07:36:28 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aVO01591290;
+        Mon, 9 May 2022 07:36:31 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -50,91 +50,87 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         naveen.n.rao@linux.vnet.ibm.com
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 02/25] powerpc/ftrace: Remove redundant create_branch() calls
-Date:   Mon,  9 May 2022 07:36:00 +0200
-Message-Id: <aa45fbad0b4b7493080835d8276c0cb4ce146503.1652074503.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v3 21/25] powerpc/ftrace: Don't use copy_from_kernel_nofault() in module_trampoline_target()
+Date:   Mon,  9 May 2022 07:36:19 +0200
+Message-Id: <c55559103e014b7863161559d340e8e9484eaaa6.1652074503.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074581; l=2368; s=20211009; h=from:subject:message-id; bh=92KxuX0pLpQCITr7vgjlWnrEBj5V6cm1CJL4gIXJC9A=; b=P/AWRwH7skYub8t+ORIyGISWSRXUZdLajW1CEaI3+PeSm1R/TwnZ/Q+9vApeitoRcpcaqYOGH/tq wbUnYj5dAYKNXm0WKBGoJs4YoOfrvbQMr9PqYAyZVFNc2ughK44y
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=2705; s=20211009; h=from:subject:message-id; bh=CfrUCzqErjkJ1BZ8LHw9+4wpcEnd2IhUoh9LhAGXY+w=; b=YOzklA9WshRXJoWz/vL2ydfXuPpqPlkb1zNRY5YKGdK2hfy+hK1QunRD+f/fAduTLVNB0cMdrOMz q7Ayb0u+CU3mt9WoSRNIqPyy501HRL4jnIi1SU5DDCNOvoRDIVoV
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit d5937db114e4 ("powerpc/code-patching: Fix patch_branch()
-return on out-of-range failure") patch_branch() fails with -ERANGE
-when trying to branch out of range.
+module_trampoline_target() is quite a hot path used when
+activating/deactivating function tracer.
 
-No need to perform the test twice. Remove redundant create_branch()
-calls.
+Avoid the heavy copy_from_kernel_nofault() by doing four calls
+to copy_inst_from_kernel_nofault().
+
+Use __copy_inst_from_kernel_nofault() for the 3 last calls. First call
+is done to copy_from_kernel_nofault() to check address is within
+kernel space. No risk to wrap out the top of kernel space because the
+last page is never mapped so if address is in last page the first copy
+will fails and the other ones will never be performed.
+
+And also make it notrace just like all functions that call it.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/kernel/trace/ftrace.c | 20 --------------------
- 1 file changed, 20 deletions(-)
+v3: Use ppc_inst_t to fix sparse warnings and split trampoline verification in one line per instruction.
+---
+ arch/powerpc/kernel/module_32.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
-diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
-index 7a266fd469b7..3ce3697e8a7c 100644
---- a/arch/powerpc/kernel/trace/ftrace.c
-+++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -301,7 +301,6 @@ static int setup_mcount_compiler_tramp(unsigned long tramp)
- 	int i;
- 	ppc_inst_t op;
- 	unsigned long ptr;
--	ppc_inst_t instr;
- 	static unsigned long ftrace_plt_tramps[NUM_FTRACE_TRAMPS];
+diff --git a/arch/powerpc/kernel/module_32.c b/arch/powerpc/kernel/module_32.c
+index a0432ef46967..715a42f383d0 100644
+--- a/arch/powerpc/kernel/module_32.c
++++ b/arch/powerpc/kernel/module_32.c
+@@ -289,23 +289,32 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
+ }
  
- 	/* Is this a known long jump tramp? */
-@@ -344,12 +343,6 @@ static int setup_mcount_compiler_tramp(unsigned long tramp)
- #else
- 	ptr = ppc_global_function_entry((void *)ftrace_caller);
- #endif
--	if (create_branch(&instr, (void *)tramp, ptr, 0)) {
--		pr_debug("%ps is not reachable from existing mcount tramp\n",
--				(void *)ptr);
--		return -1;
--	}
--
- 	if (patch_branch((u32 *)tramp, ptr, 0)) {
- 		pr_debug("REL24 out of range!\n");
- 		return -1;
-@@ -490,7 +483,6 @@ static int
- __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
+ #ifdef CONFIG_DYNAMIC_FTRACE
+-int module_trampoline_target(struct module *mod, unsigned long addr,
+-			     unsigned long *target)
++notrace int module_trampoline_target(struct module *mod, unsigned long addr,
++				     unsigned long *target)
  {
- 	ppc_inst_t op[2];
--	ppc_inst_t instr;
- 	void *ip = (void *)rec->ip;
- 	unsigned long entry, ptr, tramp;
- 	struct module *mod = rec->arch.mod;
-@@ -539,12 +531,6 @@ __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 		return -EINVAL;
- 	}
+-	unsigned int jmp[4];
++	ppc_inst_t jmp[4];
  
--	/* Ensure branch is within 24 bits */
--	if (create_branch(&instr, ip, tramp, BRANCH_SET_LINK)) {
--		pr_err("Branch out of range\n");
--		return -EINVAL;
--	}
--
- 	if (patch_branch(ip, tramp, BRANCH_SET_LINK)) {
- 		pr_err("REL24 out of range!\n");
- 		return -EINVAL;
-@@ -770,12 +756,6 @@ __ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
- 		return -EINVAL;
- 	}
+ 	/* Find where the trampoline jumps to */
+-	if (copy_from_kernel_nofault(jmp, (void *)addr, sizeof(jmp)))
++	if (copy_inst_from_kernel_nofault(jmp, (void *)addr))
++		return -EFAULT;
++	if (__copy_inst_from_kernel_nofault(jmp + 1, (void *)addr + 4))
++		return -EFAULT;
++	if (__copy_inst_from_kernel_nofault(jmp + 2, (void *)addr + 8))
++		return -EFAULT;
++	if (__copy_inst_from_kernel_nofault(jmp + 3, (void *)addr + 12))
+ 		return -EFAULT;
  
--	/* Ensure branch is within 24 bits */
--	if (create_branch(&op, (u32 *)ip, tramp, BRANCH_SET_LINK)) {
--		pr_err("Branch out of range\n");
--		return -EINVAL;
--	}
--
- 	if (patch_branch((u32 *)ip, tramp, BRANCH_SET_LINK)) {
- 		pr_err("REL24 out of range!\n");
+ 	/* verify that this is what we expect it to be */
+-	if ((jmp[0] & 0xffff0000) != PPC_RAW_LIS(_R12, 0) ||
+-	    (jmp[1] & 0xffff0000) != PPC_RAW_ADDI(_R12, _R12, 0) ||
+-	    jmp[2] != PPC_RAW_MTCTR(_R12) ||
+-	    jmp[3] != PPC_RAW_BCTR())
++	if ((ppc_inst_val(jmp[0]) & 0xffff0000) != PPC_RAW_LIS(_R12, 0))
++		return -EINVAL;
++	if ((ppc_inst_val(jmp[1]) & 0xffff0000) != PPC_RAW_ADDI(_R12, _R12, 0))
++		return -EINVAL;
++	if (ppc_inst_val(jmp[2]) != PPC_RAW_MTCTR(_R12))
++		return -EINVAL;
++	if (ppc_inst_val(jmp[3]) != PPC_RAW_BCTR())
  		return -EINVAL;
+ 
+-	addr = (jmp[1] & 0xffff) | ((jmp[0] & 0xffff) << 16);
++	addr = (ppc_inst_val(jmp[1]) & 0xffff) | ((ppc_inst_val(jmp[0]) & 0xffff) << 16);
+ 	if (addr & 0x8000)
+ 		addr -= 0x10000;
+ 
 -- 
 2.35.1
 
