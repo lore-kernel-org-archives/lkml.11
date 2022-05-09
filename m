@@ -2,142 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E85C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DB4C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235725AbiEIHGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41844 "EHLO
+        id S235687AbiEIHGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234952AbiEIGxx (ORCPT
+        with ESMTP id S234888AbiEIG6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:53:53 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2121.outbound.protection.outlook.com [40.107.21.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D86419CEE1;
-        Sun,  8 May 2022 23:49:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mqbhZ1ibaVORcglk0NNC99YnI12/XQrY5LiBJl6EE3MXIsQkPe9FsYdYX37ytS5gihTAqZjdDPWahcvNzGJx5mj7WrTLDyjtySQI62CnibWDTlu92W+pxMrklVaWQg5NWpmTrp+Dm04rYFCjsOV34ic112DyKSN7SkCkPxIzj9y7WxqNtkU7ZVgkoKXvsqHDh+ECS2TDGUzXc07PqjxljU+Cs2NWP+bXXttX3sFzucHmzwdhoQr05DYVnQlDQd0gpB/KPshLYK9f5cP49MobXVhp6obxPtS+SKaBiiiVtTzcvLbUw6hqT1VH4apSc/RqLI/dG6LCKLLpJVkbBErOdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GLDuV2KrgenZkIPe4JZZX6YDLV+Fb0+07JQWbhDnbSY=;
- b=fOnxO5zCod/dAEfvi2iY4Q+4Da6WQWSsOiqhkhMl5hSJKJnV9hDjW25Cb3qeBOPkU8bNS38F8jx4qZXmybZ+hAKxY105V4Zr+ss5dMCZr0/LLdPime89XfopyhAbdD4laA0gXa+jHq4q0/UnU7zRXItSknf5KzoSaF/3oG9VL//qkxh9Lt5vGRVRNjmrL07GTqcK05xDGzwc3zD+kiwOegyXmpZPCbWzGwxtwFzbjHwOxA2p0BwYoW53IrfAneAaGdvTC/drbHzqdFcDgEsJCMGWzh23K95BwvKSAJjMRaLKTvQ0MTJBMbYPnvKu+ZatKZAeFDZxBFq5pCUV0lMCJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
+        Mon, 9 May 2022 02:58:17 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0BAE1A021F;
+        Sun,  8 May 2022 23:54:24 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id e24so12315385pjt.2;
+        Sun, 08 May 2022 23:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GLDuV2KrgenZkIPe4JZZX6YDLV+Fb0+07JQWbhDnbSY=;
- b=PwjlEA4qNoSEBmBF2B83MOYUx/3/MYafrd5HDHdKm4/mYaJzWmrjVlbS1LhhqqDVVDcbZaeJ1KSENvJI5/+3atPzdObNeU4MDOLUvWXuFBYXnf3NB7qBF4gGtR3IyaZkOrZh1JnuZlopsAOZCmxCeoWeX3e59RD/9U1NZXQqhBM=
-Received: from BE0P281CA0005.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::15) by
- DBAPR06MB7078.eurprd06.prod.outlook.com (2603:10a6:10:1ae::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.21; Mon, 9 May 2022 06:49:34 +0000
-Received: from HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:b10:a:cafe::8b) by BE0P281CA0005.outlook.office365.com
- (2603:10a6:b10:a::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
- Transport; Mon, 9 May 2022 06:49:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- HE1EUR02FT040.mail.protection.outlook.com (10.152.11.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 06:49:33 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qing-wu.Li@leica-geosystems.com.cn
-Cc:     linux-iio@vger.kernel.org
-Subject: [PATCH V4 2/5] iio: accel: sca3300: add define for temp channel for reuse.
-Date:   Mon,  9 May 2022 06:49:25 +0000
-Message-Id: <20220509064928.2352796-3-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3nKM/0/HHALognv0Zk99w+J+a8OnPMYc69HYC2U7ub8=;
+        b=VZhFu1YRYSVn4ASDKUESe/K4kQa+jbfHhigKuiywnYCBGKvwkROUChQtEH5e4CT3kB
+         jyJdt0I2jUHbZfXNZlh9vMH6t0PosGWRAVIP7mnrGwwokY8UnlH9io4pJtjjXe9uSBtO
+         zMe8tNqtOP60BWJNi1ANQCpYt2xBk0GeiXXGuK72l/R5if94NDurIofMwgbhvBfKTL+Z
+         932RrMo6wFho+5zbdKYfLhbTnB7C/2CN0Ne2Z5LQT6B5tBDai1LZH5HdCI8wR0iwYPHg
+         GeTz2PvccPMLDJjvlzWz2scnzy4gqe3qtF6EZEDSD6Nh6l8/Ngb9YwlowLkR7fk1ZwZo
+         rPaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3nKM/0/HHALognv0Zk99w+J+a8OnPMYc69HYC2U7ub8=;
+        b=QkFJwocQxecZtbADuCB4rJE8kXUVefg2ILfTHYQbg5Pj7xhGq9Q+8ykuDMdMYLK649
+         tSma0igbJIeno/cJSHQTxxNhofJo3qh7m6LRaQ4D/Ftt6hJuA4dkSRZcZLXceZWn+hy2
+         wq0j3m2l0UbB4Tt/ZyEYzIdZ4cYqf3nRIeRA+uvg3Y5oz1nljsyRDnCHHKJLvTbaHEHM
+         dNmUWTdkjEaZUd/25mkOVW3Mgw5noNSdEUNATAwXKZnfdOLII/Jmq7dqgeocUGZHdZFY
+         +aWT7kEzGgGji9HDjPIcxLwPOp6wUF/KRt69117MqOLQCSq2evbUcijxJAd4rGo8roub
+         hi9w==
+X-Gm-Message-State: AOAM531U9r/fWmHYrV+hYSWnvs3CUZBpTfSCNTm3toMq9H/EadXuF8Ok
+        VrrU5lOj0oe/S4BOmciDLBElFFim08A=
+X-Google-Smtp-Source: ABdhPJwZXCXGD14gg2tQpxyhNsz4kCz5ZWznUc2zu1b4qSh+GVoU+ggG8/BYGaelRCTO2lvFuGcq6g==
+X-Received: by 2002:a17:902:d490:b0:15e:b443:6852 with SMTP id c16-20020a170902d49000b0015eb4436852mr14888232plg.111.1652079264383;
+        Sun, 08 May 2022 23:54:24 -0700 (PDT)
+Received: from localhost (subs32-116-206-28-19.three.co.id. [116.206.28.19])
+        by smtp.gmail.com with ESMTPSA id t10-20020a62ea0a000000b0050dc762816asm2267902pfh.68.2022.05.08.23.54.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 23:54:23 -0700 (PDT)
+Date:   Mon, 9 May 2022 13:54:20 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Greear <greearb@candelatech.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next v3] net/core: Rephrase function description of
+ __dev_queue_xmit()
+Message-ID: <Yni6nBTq+0LrBvQN@debian.me>
+References: <20220507084643.18278-1-bagasdotme@gmail.com>
+ <0cf2306a-2218-2cd5-ad54-0d73e25680a7@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 02f8ef4b-9125-4415-bbcf-08da318813cd
-X-MS-TrafficTypeDiagnostic: DBAPR06MB7078:EE_
-X-Microsoft-Antispam-PRVS: <DBAPR06MB7078ED64C69D22CCF0A31C45D7C69@DBAPR06MB7078.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fKl4Lm42ZFBzJFAXEaPWv2k2FtrNotKTYEeFUNm8KrHxd64nAmK6L34YKRO23PamU/jt9rFuxaSVwB+/iR+mrkcjglg9mfaAeRbyTF1vpg5TNdxSkSRkEtPwapkceh9cmNelDqCcQGJvXfUNkuzlc3ZOpKeXbh3D1udnzuDpsjwwHJplfpeNpFvXuDt5qUE4OY2UgsCUTuUvdMphkfHqpgpwAHhcTMdHpPsB9ypyLT78TQs7F4IGHifWDmUFAdudz4Ny2K4W+VAuz3sDGQ7e7tEZS1aqsHC+nx/wupHt+ZFb9QOfmKVZJI/BYjqmkkRcJq2j4EwbnSJSaBPDb5E5CILkeAK3B8vJAGkB6heZlO0Knc2aIYbXJ4PFNREs2NlF93dxznVOaWPrTfS5PMRfcxu0H+nWg+TpiwY7DgNb5adgs7U2rzqUCf65YoDwyATDLO5pSMulerQEqUhzPFb75MS9fNOn9ZWH2ArkVB0UqcdO84xIPQQygU/ueJXdPfLnc0ufzjZtOBNI0ZfwFbNJ0efTMkwBjpK0HIHwElPmCOe2RNdJdZHdov52l8Fr/E0GwKdyIVfh1f0tNI77sTYpHw/giaCBk2S38OiKzGCrg6NJBmuuiEHBwwaVEGwQqDcsTU4tUIv4oo1a6FXvpPhACyPQnQ6GxyhHWsKQlZ/44yjUKdTYFGDREJYKMVTLErEJ
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(47076005)(40460700003)(508600001)(6512007)(336012)(956004)(26005)(36860700001)(6486002)(186003)(6666004)(86362001)(316002)(1076003)(6506007)(2906002)(5660300002)(36756003)(356005)(81166007)(118246002)(83380400001)(2616005)(82310400005)(70586007)(4326008)(70206006)(8676002)(36736006)(8936002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 06:49:33.9222
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 02f8ef4b-9125-4415-bbcf-08da318813cd
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR06MB7078
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0cf2306a-2218-2cd5-ad54-0d73e25680a7@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add define of SCA3300_TEMP_CHANNEL for reuse.
+On Sun, May 08, 2022 at 08:48:10PM +0900, Akira Yokosawa wrote:
+> So, appended below is my version of the fix with the answer to
+> Stephen's question, "I am not sure why this has turned up just now."
+> 
+> Stephen, Jakub, what do you think?
+> 
+>         Thanks, Akira
+> 
+> ----8<--------------
+> From: Akira Yokosawa <akiyks@gmail.com>
+> Subject: [PATCH -next] net/core: Hide __dev_queue_xmit()'s kernel-doc
+> 
+> Commit c526fd8f9f4f21 ("net: inline dev_queue_xmit()") added
+> export of __dev_queue_exit() to cope with inlining of its
+> wrapper functions dev_queue_xmit() and dev_queue_xmit_accel().
+> This made __dev_queue_exit()'s comment block visible to Sphinx
+> processing in "make htmldocs" because
+> Documentation/networking/kapi.rst has the directive of:
+> 
+>     .. kernel-doc:: net/core/dev.c
+>        :export:
+> 
+> Unfortunately, the kernel-doc style comment has a number of
+> issues when parsed as RestructuredText.  Stephen reported a
+> new warning message from "make htmldocs" caused by one of
+> such issues.
+> 
+> The leading "__" in the function name indicates that it is an
+> internal API and should not be widely used.
+> Exposing documentation of such a function in HTML and PDF
+> documentations does not make sense.
+> 
 
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
----
- drivers/iio/accel/sca3300.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+Oops, I don't see that internal API marker. Maybe we can add "Only
+public funtions should be added kernel-doc comments" note to
+Documentation/doc-guide/kernel-doc.rst?
 
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index f7ef8ecfd34a..ff16d2cc8c70 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -72,22 +72,24 @@ enum sca3300_scan_indexes {
- 	},								\
- }
- 
-+#define SCA3300_TEMP_CHANNEL(index, reg) {				\
-+		.type = IIO_TEMP,					\
-+		.address = reg,						\
-+		.scan_index = index,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 16,					\
-+			.storagebits = 16,				\
-+			.endianness = IIO_CPU,				\
-+		},							\
-+}
-+
- static const struct iio_chan_spec sca3300_channels[] = {
- 	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
- 	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
- 	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
--	{
--		.type = IIO_TEMP,
--		.address = 0x5,
--		.scan_index = SCA3300_TEMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.scan_type = {
--			.sign = 's',
--			.realbits = 16,
--			.storagebits = 16,
--			.endianness = IIO_CPU,
--		},
--	},
-+	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
- 	IIO_CHAN_SOFT_TIMESTAMP(4),
- };
- 
+> For the time being, hide the kernel-doc style comment from Sphinx
+> processing by removing the kernel-doc marker of "/**".
+> 
+> Proper kernel-doc comments should be added to the inlined
+> wrapper functions, which is deferred to those who are familiar
+> with those netdev APIs.
+> 
+
+Ah! Thanks for the explanation.
+
+Did you mean proper kernel-doc comments should be added to the wrapper
+functions that called this inlined method?
+
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Fixes: c526fd8f9f4f21 ("net: inline dev_queue_xmit()")
+> Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
+> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Pavel Begunkov <asml.silence@gmail.com>
+> ---
+>  net/core/dev.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index c2d73595a7c3..a97fd413d705 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4085,8 +4085,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+>  	return netdev_get_tx_queue(dev, queue_index);
+>  }
+>  
+> -/**
+> - *	__dev_queue_xmit - transmit a buffer
+> +/*	__dev_queue_xmit - transmit a buffer
+>   *	@skb: buffer to transmit
+>   *	@sb_dev: suboordinate device used for L2 forwarding offload
+>   *
+> -- 
+> 2.25.1
+> 
+
+I'm in favor of this patch. Thanks.
+
 -- 
-2.25.1
-
+An old man doll... just what I always wanted! - Clara
