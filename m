@@ -2,97 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E2C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233757AbiEIKEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S230233AbiEIKJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238474AbiEIKCy (ORCPT
+        with ESMTP id S229671AbiEIKJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:02:54 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1376526AEC
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:58:59 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 9 May 2022 06:09:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534D92655E5;
+        Mon,  9 May 2022 03:05:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 901421F9BB;
-        Mon,  9 May 2022 09:58:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1652090338; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=t3Nw8WzaK1PoevHun3ShSThFnKV+M2vU5e2JQiidvDw=;
-        b=CXXG+hQMBOphUH1gcr22Ve/aXotZ1hFxM02RPzbepKQ7S00eaBYD5MWx1g6XREZLxWb/89
-        D230tqg7UVI/dAh7GNBLQFqaFjpSYpbQ8edBQ+6JtyqonQHIiyP7LXfljBD/fr1boB3AYJ
-        cMj9c7F5Xb0p9GhS/Q7FlR/csFrsYfg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1652090338;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=t3Nw8WzaK1PoevHun3ShSThFnKV+M2vU5e2JQiidvDw=;
-        b=LYmXchS2Vpa+xW5lYWRGgNfp5aHMwIbNr5po8M8YhkXu2NelWmtihaGQyoQ70zDc7hco9E
-        FYtT2Xtp/b3wU5AA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CF73E132C0;
-        Mon,  9 May 2022 09:58:57 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 2hE5L+HleGJobwAAMHmgww
-        (envelope-from <osalvador@suse.de>); Mon, 09 May 2022 09:58:57 +0000
-Date:   Mon, 9 May 2022 11:58:56 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     HORIGUCHI =?utf-8?B?TkFPWUEo5aCA5Y+jIOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>, David Hildenbrand <david@redhat.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 0/4] mm, hwpoison: improve handling workload
- related to hugetlb and memory_hotplug
-Message-ID: <Ynjl4JmLXkA47U8T@localhost.localdomain>
-References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
- <54399815-10fe-9d43-7ada-7ddb55e798cb@redhat.com>
- <20220427122049.GA3918978@hori.linux.bs1.fc.nec.co.jp>
- <bb1caf48-7e9d-61bf-e0dc-72fcc0228f28@redhat.com>
- <20220509072902.GB123646@hori.linux.bs1.fc.nec.co.jp>
- <6a5d31a3-c27f-f6d9-78bb-d6bf69547887@huawei.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA255B810B6;
+        Mon,  9 May 2022 10:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 49070C385B0;
+        Mon,  9 May 2022 10:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652090412;
+        bh=29mSpAua4b8hjk9GKvTkGUR9JajuXItC18hWIP0Js8A=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=O11DO6mYOO600sMRMllIbjLkarWSnk5FMiBm79/PWIWaAuiYSyCCavJbhm0hg+KzO
+         DQhvNtMZW5ILPkNUbD5QfiTkLpLy2r8rN0C4RFyBUFqWqEyq0PHK/vo4GSiPM9XEIO
+         4ftwcJxqiiW+g9c41Dk/7ixHMPjSBQ+V+3VYAvp/yAkWglySpqoylz3rCT7ifKJ5rR
+         9jfF5PMeSRvJMI1TDFZyug/E5Oyzv3EXur/Pryk6tj+c9MaiGqWVnUMDvtCgduQBMS
+         u/c0O76qUzl4o/VEiQ5Id0B0eKAcdigpVH/e0S5/6MdV5VVSjbqPFjPWauHcBka19r
+         eYmpP52r2ieow==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 30B4DE85D8A;
+        Mon,  9 May 2022 10:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a5d31a3-c27f-f6d9-78bb-d6bf69547887@huawei.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v6 1/2] net: fix wrong network header length
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165209041219.866.7810964831911496184.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 May 2022 10:00:12 +0000
+References: <20220505054850.4878-1-lina.wang@mediatek.com>
+In-Reply-To: <20220505054850.4878-1-lina.wang@mediatek.com>
+To:     Lina Wang <lina.wang@mediatek.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        shuah@kernel.org, matthias.bgg@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, hawk@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, edumazet@google.com,
+        willemb@google.com, maze@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, llvm@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 05:04:54PM +0800, Miaohe Lin wrote:
-> >> So that leaves us with either
-> >>
-> >> 1) Fail offlining -> no need to care about reonlining
+Hello:
+
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 5 May 2022 13:48:49 +0800 you wrote:
+> When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+> several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+> ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+> network_header\transport_header\mac_header have been updated as ipv4 acts,
+> but other skbs in frag_list didnot update anything, just ipv6 packets.
 > 
-> Maybe fail offlining will be a better alternative as we can get rid of many races
-> between memory failure and memory offline? But no strong opinion. :)
+> udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+> frag_list and make sure right udp payload is delivered to user space.
+> Unfortunately, other skbs in frag_list who are still ipv6 packets are
+> updated like the first skb and will have wrong transport header length.
+> 
+> [...]
 
-If taking care of those races is not an herculean effort, I'd go with
-allowing offlining + disallow re-onlining.
-Mainly because memory RAS stuff.
+Here is the summary with links:
+  - [v6,1/2] net: fix wrong network header length
+    https://git.kernel.org/netdev/net/c/cf3ab8d4a797
+  - [v6,2/2] selftests net: add UDP GRO fraglist + bpf self-tests
+    (no matching commit)
 
-Now, to the re-onlining thing, we'll have to come up with a way to check
-whether a section contains hwpoisoned pages, so we do not have to go
-and check every single page, as that will be really suboptimal.
-
-
+You are awesome, thank you!
 -- 
-Oscar Salvador
-SUSE Labs
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
