@@ -2,89 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED12C4707F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFFCC47080
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237508AbiEIJdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
+        id S237564AbiEIJdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237866AbiEIJHu (ORCPT
+        with ESMTP id S237479AbiEII6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:07:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D2CE1D48FC
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:03:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652086981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IZWmOiuaMkr/oRX9NDrjL5j4xPsId6VhCCnU0WGnrBE=;
-        b=fE3QBRI6vsxEXvrsJ1eMoEOiOjj6w13LGHVAHg1z5tVlIU7UVPy0tnbwFdxdeLeHdhDAnh
-        wzN438EINz3RpqMfM4uFZ3wU/VffI8Xn6SBPJslGRL8rzywsJwbMeXGXrnPgzar50aVNZV
-        z51JkcwRygTS3GIrF09sHXJCHkevCoI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-op7goU-BMXiz97w0QUB7Cw-1; Mon, 09 May 2022 05:02:56 -0400
-X-MC-Unique: op7goU-BMXiz97w0QUB7Cw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4E62B803D46;
-        Mon,  9 May 2022 09:02:56 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-12-243.pek2.redhat.com [10.72.12.243])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BBA6740CF8EC;
-        Mon,  9 May 2022 09:02:50 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        peter.maydell@linaro.org, armbru@redhat.com,
-        Jason Wang <jasowang@redhat.com>
-Subject: [PATCH] bpftool: declare generator name
-Date:   Mon,  9 May 2022 17:02:47 +0800
-Message-Id: <20220509090247.5457-1-jasowang@redhat.com>
+        Mon, 9 May 2022 04:58:51 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EF61B2145;
+        Mon,  9 May 2022 01:54:58 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxZfr4KTXzGpfv;
+        Mon,  9 May 2022 16:52:04 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:54:51 +0800
+Subject: Re: [PATCH v2] MM: handle THP in swap_*page_fs() - count_vm_events()
+To:     NeilBrown <neilb@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Christoph Hellwig <hch@lst.de>, <linux-nfs@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+References: <165146746627.24404.2324091720943354711@noble.neil.brown.name>
+ <165146948934.24404.5909750610552745025@noble.neil.brown.name>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <37653eca-e82e-62aa-6829-7413cb844b75@huawei.com>
+Date:   Mon, 9 May 2022 16:54:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <165146948934.24404.5909750610552745025@noble.neil.brown.name>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most code generators declare its name so did this for bfptool.
+On 2022/5/2 13:31, NeilBrown wrote:
+> 
+> We need to use count_swpout_vm_event() for sio_write_complete() to get
+> correct counting.
+> 
+> Note that THP swap in (if it ever happens) is current accounted 1 for
+> each page, whether HUGE or normal.  This is different from swap-out
+> accounting.
 
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- tools/bpf/bpftool/gen.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Agree, there is no THP swap-in now.
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index b4695df2ea3d..c59d8878fee0 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -744,7 +744,7 @@ static int do_skeleton(int argc, char **argv)
- 		codegen("\
- 		\n\
- 		/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */   \n\
--		/* THIS FILE IS AUTOGENERATED! */			    \n\
-+		/* THIS FILE IS AUTOGENERATED BY BPFTOOL! */		    \n\
- 		#ifndef %2$s						    \n\
- 		#define %2$s						    \n\
- 									    \n\
-@@ -762,7 +762,7 @@ static int do_skeleton(int argc, char **argv)
- 		\n\
- 		/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */   \n\
- 									    \n\
--		/* THIS FILE IS AUTOGENERATED! */			    \n\
-+		/* THIS FILE IS AUTOGENERATED BY BPFTOOL! */		    \n\
- 		#ifndef %2$s						    \n\
- 		#define %2$s						    \n\
- 									    \n\
--- 
-2.25.1
+> 
+> This patch should be squashed into
+>     MM: handle THP in swap_*page_fs()
+> 
+
+This patch looks good to me. Thanks!
+
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+
+> Reported-by: Miaohe Lin <linmiaohe@huawei.com>
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> ---
+>  mm/page_io.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/page_io.c b/mm/page_io.c
+> index d636a3531cad..1b8075ef3418 100644
+> --- a/mm/page_io.c
+> +++ b/mm/page_io.c
+> @@ -280,8 +280,10 @@ static void sio_write_complete(struct kiocb *iocb, long ret)
+>  			set_page_dirty(page);
+>  			ClearPageReclaim(page);
+>  		}
+> -	} else
+> -		count_vm_events(PSWPOUT, sio->pages);
+> +	} else {
+> +		for (p = 0; p < sio->pages; p++)
+> +			count_swpout_vm_event(sio->bvec[p].bv_page);
+> +	}
+>  
+>  	for (p = 0; p < sio->pages; p++)
+>  		end_page_writeback(sio->bvec[p].bv_page);
+> 
 
