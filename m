@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2872C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 477B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234140AbiEIK1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        id S229767AbiEIK1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiEIK06 (ORCPT
+        with ESMTP id S232385AbiEIK07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:26:58 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372D228E4CD;
-        Mon,  9 May 2022 03:22:19 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id e24so12743308pjt.2;
-        Mon, 09 May 2022 03:22:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5dV2FPN7PIa/uNEp+Ct0krf8WyX1xQjO91HcqOH/26U=;
-        b=HaX8OjAyKk5UjP7m+w5IbTSKrKFgFl5+MMz9H6ScoXld7N6QmitNPAxf4G1Sv/9DPr
-         xFzl3L0OdQ+t/vJIz5PeYTnRVPpXjKLfV0QS2s3AiWHhpEfckyvd8al7Xl+FOSqyGSom
-         24cZZjEpM5FOq1yV24w2RvI8EtbjePfK6R8cpeVWNWvKQJxqPCGDKFH2KbrS7Pr4uEma
-         cFbBOCktn0aJif1PtIzAlCpH+QoIi5WeARPG5nmWCvV4oS6509GAoDKCIvuCuPH3B+Xu
-         U0LgruRSW1V53e0J1qmZJnC/zDpcPqljgQPo6n9uUEX5pJBov+8AFmdB3BAhisOQZhc0
-         ohEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5dV2FPN7PIa/uNEp+Ct0krf8WyX1xQjO91HcqOH/26U=;
-        b=Oxa9RyKC9ynDqzZ/vk0MdF1iR1ueNKFQoJkUg6CTDU9MMB8s0+JtFq+B+8xhxDXycE
-         whm5ip8VtysyXa+gY+YqU6KLKF4nzzVrVoJNGHSJaiyMmVAwDLquoXDwClutQgauhuq9
-         Qs7vVExuaywpoGNV3vcu1LnDlhncSswG3C9HE6uw9xqftrhzNI/iNEQMjEO7Ei46BsuN
-         3MdlAueEjdtvuYUGACC5rSJ0szjY97eFZSmrmKs5i89AQiSRKCisMmPL6d0EpDO/+G2Y
-         PjkcJg5DNPeqUXtnWGk46UlJ2mXavZpGiSWFcely9LjmrvuUsqjQPmbhP8YklECkfgtC
-         UYtg==
-X-Gm-Message-State: AOAM53177RkXAwAklvz6nbV3bUZv/a3opmKSnbo616cBf3Iofv188K+m
-        CQpI5gX4GBWIiarTpl74gEK4y2Xmyk5FOA==
-X-Google-Smtp-Source: ABdhPJx4nRwsvEWhM/JKnxCAdMzjTdkhTq77E7F0zcu7mP/+6VupUTNx+NoLFgzIPefHR16nV20P0g==
-X-Received: by 2002:a17:90b:3ecd:b0:1dc:945e:41b1 with SMTP id rm13-20020a17090b3ecd00b001dc945e41b1mr17222115pjb.208.1652091737152;
-        Mon, 09 May 2022 03:22:17 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.83])
-        by smtp.gmail.com with ESMTPSA id p17-20020a170902b09100b0015ee985a54csm6688891plr.56.2022.05.09.03.22.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 03:22:16 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] KVM: x86/pmu: Ignore pmu->global_ctrl check if vPMU doesn't support global_ctrl
-Date:   Mon,  9 May 2022 18:22:02 +0800
-Message-Id: <20220509102204.62389-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 9 May 2022 06:26:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4ADB31E7815
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:22:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652091747;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PsTBPUPQ0O3bhvSB3QVk8Bq0LJrPpwn+o+Q6zeFi2gM=;
+        b=GzdPtV+B+lktmAyymo4Aebx8TBrJ0tKf8mJwjldHgSp7yUdh7Y8U9Ls5to4F91E6aMfpJ0
+        UDmVIo44Qy7xcGC9AjsS7v/qGOY5Yjogabugl8IJHv5NVsE8iMRkErqX4/B4Lwr/ADGhJa
+        lkFn3Is8wIQ0rJ4B+ubcpvzBqeD/cZc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-J8BWomqPO9KX5EAituMuWw-1; Mon, 09 May 2022 06:22:26 -0400
+X-MC-Unique: J8BWomqPO9KX5EAituMuWw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D568803D7B;
+        Mon,  9 May 2022 10:22:25 +0000 (UTC)
+Received: from starship (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BD8542166B4A;
+        Mon,  9 May 2022 10:22:19 +0000 (UTC)
+Message-ID: <916f8d9c18d264d120d4ed7101583f4f22f66622.camel@redhat.com>
+Subject: Re: [PATCH v4 09/15] KVM: SVM: Refresh AVIC configuration when
+ changing APIC mode
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Mon, 09 May 2022 13:22:17 +0300
+In-Reply-To: <20220508023930.12881-10-suravee.suthikulpanit@amd.com>
+References: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
+         <20220508023930.12881-10-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Sat, 2022-05-07 at 21:39 -0500, Suravee Suthikulpanit wrote:
+> AMD AVIC can support xAPIC and x2APIC virtualization,
+> which requires changing x2APIC bit VMCB and MSR intercepton
+> for x2APIC MSRs. Therefore, call avic_refresh_apicv_exec_ctrl()
+> to refresh configuration accordingly.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/kvm/svm/avic.c | 12 ++++++++++++
+>  arch/x86/kvm/svm/svm.c  |  1 +
+>  2 files changed, 13 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 16ce2d50efac..a82981722018 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -691,6 +691,18 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+>  	avic_handle_ldr_update(vcpu);
+>  }
+>  
+> +void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
+> +{
+> +	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
+> +		return;
+> +
+> +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
+> +		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
+> +		return;
+> +	}
+> +	avic_refresh_apicv_exec_ctrl(vcpu);
+> +}
+> +
+>  static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
+>  {
+>  	int ret = 0;
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 314628b6bff4..9066568fd19d 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4692,6 +4692,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+>  	.enable_nmi_window = svm_enable_nmi_window,
+>  	.enable_irq_window = svm_enable_irq_window,
+>  	.update_cr8_intercept = svm_update_cr8_intercept,
+> +	.set_virtual_apic_mode = avic_set_virtual_apic_mode,
+>  	.refresh_apicv_exec_ctrl = avic_refresh_apicv_exec_ctrl,
+>  	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
+>  	.apicv_post_state_restore = avic_apicv_post_state_restore,
 
-MSR_CORE_PERF_GLOBAL_CTRL is introduced as part of Architecture PMU V2,
-as indicated by Intel SDM 19.2.2 and the intel_is_valid_msr() function.
+Looks good as well!
 
-So in the absence of global_ctrl support, all PMCs are enabled as AMD does.
+This code can also be removed in the future as optimization,a
+and do everything in avic_refresh_apicv_exec_ctrl instead.
+No need to do this now though.
 
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/kvm/vmx/pmu_intel.c | 3 +++
- 1 file changed, 3 insertions(+)
+I need to understand the APICv KVM's code better to understand if
+this is worth it.
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index b82b6709d7a8..cff03baf8921 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -98,6 +98,9 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 
-+	if (pmu->version < 2)
-+		return true;
-+
- 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
- }
- 
--- 
-2.36.1
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+
+Best regards,
+	Maxim Levitsky
 
