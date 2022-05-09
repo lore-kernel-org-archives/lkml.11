@@ -2,96 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 432CCC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CA4C352A1
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238477AbiEIJgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
+        id S237741AbiEIJe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237359AbiEII60 (ORCPT
+        with ESMTP id S238299AbiEIJOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:58:26 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 386951FB2CC;
-        Mon,  9 May 2022 01:54:33 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF85F1042;
-        Mon,  9 May 2022 01:54:32 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.3.22])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 203253F66F;
-        Mon,  9 May 2022 01:54:28 -0700 (PDT)
-Date:   Mon, 9 May 2022 09:54:21 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     maz@kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org,
-        Octavian Purdila <octavian.purdila@nxp.com>,
-        linux-kernel@vger.kernel.org, aou@eecs.berkeley.edu,
-        catalin.marinas@arm.com, deanbo422@gmail.com, green.hu@gmail.com,
-        guoren@kernel.org, jonas@southpole.se, kernelfans@gmail.com,
-        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        nickhu@andestech.com, palmer@dabbelt.com, paul.walmsley@sifive.com,
-        shorne@gmail.com, stefan.kristiansson@saunalahti.fi,
-        tglx@linutronix.de, tsbogend@alpha.franken.de, vgupta@kernel.org,
-        vladimir.murzin@arm.com, will@kernel.org
-Subject: Re: [PATCH v2 17/17] irq: remove handle_domain_{irq,nmi}()
-Message-ID: <YnjWvbzn8ox+f2Y2@FVFF77S0Q05N>
-References: <20211026092504.27071-1-mark.rutland@arm.com>
- <20211026092504.27071-18-mark.rutland@arm.com>
- <20220506203242.GA1855@wunner.de>
+        Mon, 9 May 2022 05:14:00 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9822815C1A9;
+        Mon,  9 May 2022 02:10:03 -0700 (PDT)
+X-UUID: 1a766c39edaa4673846f6ba34c0961f1-20220509
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:e102bd00-85ef-4f45-9674-7388458bf2a3,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:5849bb16-2e53-443e-b81a-655c13977218,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 1a766c39edaa4673846f6ba34c0961f1-20220509
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <sam.shih@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 572550781; Mon, 09 May 2022 17:09:57 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 9 May 2022 17:09:56 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 9 May 2022 17:09:56 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 9 May 2022 17:09:56 +0800
+From:   Sam Shih <sam.shih@mediatek.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Ryder Lee <ryder.lee@kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     John Crispin <john@phrozen.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sam Shih <sam.shih@mediatek.com>
+Subject: [PATCH 0/1] Update compatible string for MT7986 ethsys
+Date:   Mon, 9 May 2022 17:09:38 +0800
+Message-ID: <20220509090939.845-1-sam.shih@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220506203242.GA1855@wunner.de>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 10:32:42PM +0200, Lukas Wunner wrote:
-> On Tue, Oct 26, 2021 at 10:25:04AM +0100, Mark Rutland wrote:
-> > Now that entry code handles IRQ entry (including setting the IRQ regs)
-> > before calling irqchip code, irqchip code can safely call
-> > generic_handle_domain_irq(), and there's no functional reason for it to
-> > call handle_domain_irq().
-> > 
-> > Let's cement this split of responsibility and remove handle_domain_irq()
-> > entirely, updating irqchip drivers to call generic_handle_domain_irq().
-> > 
-> > For consistency, handle_domain_nmi() is similarly removed and replaced
-> > with a generic_handle_domain_nmi() function which also does not perform
-> > any entry logic.
-> > 
-> > Previously handle_domain_{irq,nmi}() had a WARN_ON() which would fire
-> > when they were called in an inappropriate context. So that we can
-> > identify similar issues going forward, similar WARN_ON_ONCE() logic is
-> > added to the generic_handle_*() functions, and comments are updated for
-> > clarity and consistency.
-> [...]
-> >  int generic_handle_domain_irq(struct irq_domain *domain, unsigned int hwirq)
-> >  {
-> > +	WARN_ON_ONCE(!in_irq());
-> >  	return handle_irq_desc(irq_resolve_mapping(domain, hwirq));
-> >  }
-> >  EXPORT_SYMBOL_GPL(generic_handle_domain_irq);
-> 
-> Why isn't the WARN_ON_ONCE() conditional on handle_enforce_irqctx()?
-> (See handle_irq_desc() and c16816acd086.)
+Update compatible string of mt7986 ethsys clock driver to fit the
+devicetree bindings document.
 
-I did this for consistency with the in_nmi() check in
-generic_handle_domain_nmi(); I was unaware of commit c16816acd086 and
-IRQD_HANDLE_ENFORCE_IRQCTX.
+Sam Shih (1):
+  clk: mediatek: update compatible string for MT7986 ethsys
 
-I'll have ot leave it to Marc and Thomas as to what we should do there.
+ drivers/clk/mediatek/clk-mt7986-eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I believe the above change causes a regression in drivers/gpio/gpio-dln2.c
-> such that a gratuitous WARN splat is now emitted.
+-- 
+2.18.0
 
-Do you mean you beleive that from inspection, or are you actually seeing this
-go wrong in practice?
-
-If it's the latter, are you able to give a copy of the dmesg splat?
-
-Thanks,
-Mark.
