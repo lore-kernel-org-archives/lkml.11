@@ -2,245 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E3DC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EACBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbiEIKrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
+        id S231512AbiEIKse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbiEIKro (ORCPT
+        with ESMTP id S231185AbiEIKs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:47:44 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062452CFE8A
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:42:08 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id j6so25907907ejc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 03:42:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JivA9lag35NY9StRFNW9wke9LTJ6pmcL9zBt3wJOnU0=;
-        b=ebaX/LiG6h3ghMGqzXvvTtDfpdIdzRUdMsxKFM94Yy8+E12Sr3DvvX192yCt7N9eaf
-         Wo9pgDs/hq2TtDMw+I3gIbpC/iPByRUlD0nnpcj4K1aFZluap+o4rT1jKW+lRxQsY/lB
-         YImjtFV5Y2N37SSLo40zlepq4inIK4viPucbc0ucPvd7yuhvC8VBxM/aIiJCdan0EQpi
-         6z1b1qtItWLP5Qj6D5HtJCSXIcPHecK/zY6vkBDdaHTstIFF7DwctSp6Chp8sucFqYXG
-         VMDK/pAURSFkWRz0RMVESZltCFl2iav0O54VA6a9Shnscry122w8SMGNoJAYQvVobcnx
-         qpBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JivA9lag35NY9StRFNW9wke9LTJ6pmcL9zBt3wJOnU0=;
-        b=beAAxqAE8BBnpNZmqGcBdLPXmhJ7Vb4xR58EVWwFk3HU0kPJ6OJHzyNPDXsO9DQWEv
-         knR2AlgFjbzR+VUB0HHUEIOostJzOm5uBebqWfDhfAwYharcrkCqVYHHbSCResX28J9r
-         wrQ8nTCLJO4c0VaLy5B1JqIkN5cgJVaNZrOv00kCqLCl1SScWNe00372tG3F/2oYXM1Y
-         wWC3UPgSmkWgDLjuphJyb3NonUGbQxpH/SwMmKrRxQqDrF32ELsYTtPfDlnnXIWlDW0M
-         1UjvKnu5nkB/G5/OanS22WA0nVUjqsKTjmAPyDgQVR9RqBXAxkqUoab02Liry1WeYXLO
-         s6ig==
-X-Gm-Message-State: AOAM532t1+fzmrb3GMH1eZhFvPNYZ2YnRAaLBKQpzy9dOp3eQcaL5Jy1
-        nJJM9aMoAtqC7jWpdeY6tGbMJA==
-X-Google-Smtp-Source: ABdhPJyydy8/hiqqh2G8YhKauvC+LWx8dzSKJTUfCcLfOe3cv7c+z2fSoNuVxciYHs95+Iin63Zlig==
-X-Received: by 2002:a17:906:559:b0:6f3:8ba6:39c8 with SMTP id k25-20020a170906055900b006f38ba639c8mr14043662eja.486.1652092684369;
-        Mon, 09 May 2022 03:38:04 -0700 (PDT)
-Received: from [192.168.0.243] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z12-20020a170906714c00b006f3ef214dfdsm4907874ejj.99.2022.05.09.03.38.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 03:38:03 -0700 (PDT)
-Message-ID: <dea39b1f-0091-2690-7f07-108d07ef9f3c@linaro.org>
-Date:   Mon, 9 May 2022 12:38:02 +0200
+        Mon, 9 May 2022 06:48:27 -0400
+X-Greylist: delayed 837 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 03:43:36 PDT
+Received: from smtp.dbxyz.space (constantine.dbxyz.space [IPv6:2001:19f0:5801:2cd::100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE3CF2CF285;
+        Mon,  9 May 2022 03:43:33 -0700 (PDT)
+Date:   Mon, 9 May 2022 20:20:31 +1000
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=dropbear.xyz;
+        s=202004; t=1652091632;
+        bh=3zD69nrHAktkpTKFutEwYOSsRHajHgFDe+9rh8XQpuI=;
+        h=Date:From:To:Subject:From;
+        b=tup1bIwVPl0WxW5/6un4amNbnCVGUUQ3RABKvKlix0WP12QSN0etB5a1SwinOkHbE
+         Sw0jJCkyWEbhsneivwAP5tkoqRk8By362rpNn2E/5Rbo99YCVAsvkXlVZ5O8tYUPTw
+         cZ3g9LZ5MzJ1HA2Fkvf1DskNV5W9qx3m0CIIM4A8=
+From:   Craig Small <csmall@dropbear.xyz>
+To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: procfs: mnt namespace behaviour with block devices (resend)
+Message-ID: <Ynjq7yN+r6sibyUd@dropbear.xyz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH v2 4/6] PM: opp: allow control of multiple clocks
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org
-References: <20220411154347.491396-1-krzysztof.kozlowski@linaro.org>
- <20220411154347.491396-5-krzysztof.kozlowski@linaro.org>
- <20220425072710.v6gwo4gu3aouezg4@vireshk-i7>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220425072710.v6gwo4gu3aouezg4@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/04/2022 09:27, Viresh Kumar wrote:
-> On 11-04-22, 17:43, Krzysztof Kozlowski wrote:
->> Devices might need to control several clocks when scaling the frequency
->> and voltage.  Example is the Universal Flash Storage (UFS) which scales
->> several independent clocks with change of performance levels.
->>
->> Add parsing of multiple clocks and clock names
-> 
-> This part is fine, the OPP core should be able to do this.
+(resending as plain text as the first got bounced)
 
-Sorry for late reply, I think I my filters archived it or I missed it.
+Hi,
+  I'm the maintainer of the psmisc package that provides system tools
+for things like fuser and killall. I am trying to establish if
+something I have found with the proc filesystem is as intended
+(knowing why would be nice) or if it's a strange corner-case bug.
 
-> 
->> and scale all of them,
-> 
-> This is tricky as the OPP core can't really assume the order in which the clocks
-> needs to be programmed. We had the same problem with multiple regulators and the
-> same is left for drivers to do via the custom-api.
-> 
-> Either we can take the same route here, and let platforms add their own OPP
-> drivers which can handle this, Or hide this all behind a basic device clock's
-> driver, which you get with clk_get(dev, NULL).
+Apologies to the non-procfs maintainers but these two lists are what
+MAINTAINER said to go to. If you could CC me on replies that would be
+great.
 
-For my use case, the order of scaling will be the same as in previous
-implementation, because UFS drivers just got bunch of clocks with
-freq-table-hz property and were scaling in DT order.
+The proc file descriptor for a block device mounted in a different
+namespace will show the device id of that different namespace and not
+the device id of the process stat()ing the file.
 
-If drivers need something better, they can always provide custom-opp
-thus replacing my method. My implementation here does not restrict them.
+The issue came up in fuser not finding certain processes that were
+directly accessing a block device, see
+https://gitlab.com/psmisc/psmisc/-/issues/39 Programs such as lsof are
+caught by this too.
 
-For the drivers where the order does not matter, why forcing each driver
-to provide its own implementation of clock scaling? Isn't shared generic
-PM OPP code a way to remove code duplication?
+My question is: When I am in the bash mount namespace (4026531840 below)
+then shouldn't all the device IDs be from that namespace? In other
+words, the device id of the dereferenced symlink and what it points to
+are the same (device id 5) and not symlink has 44 and /dev/dm-8 has 5.
 
-> 
->> diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-> 
->> +static int _generic_set_opp_clks_only(struct device *dev,
->> +				      struct opp_table *opp_table,
->> +				      struct dev_pm_opp *opp)
->> +{
->> +	int i, ret;
->> +
->> +	if (!opp_table->clks)
->> +		return 0;
->> +
->> +	for (i = 0; i < opp_table->clk_count; i++) {
->> +		if (opp->rates[i]) {
-> 
-> This should mean that we can disable that clock and it isn't required.
+I get that if I could look at the device IDs in qemu or use nsenter to
+switch to its namespace, then the device should be 44 for the symlink
+and device (which it is and seems correct to me).
 
-No, it does not mean that. The DT might provide several clocks which
-only some are important for frequency scaling. All others just need to
-be enabled.
+How to replicate
+=============
+# uname -a
+Linux elmo 5.16.0-5-amd64 #1 SMP PREEMPT Debian 5.16.14-1 (2022-03-15)
+x86_64 GNU/Linux
 
-Maybe you prefer to skip getting such clocks in PM OPP?
+The easiest way to replicate this is to make a qemu virtual machine and
+have it mount a block device. I suspect there are other ways, but I
+don't have many things that mount a device and switch namespaces. The
+qemu process (here it is 136775) will have a different mount namespace.
 
-> 
->> +			ret = _generic_set_opp_clk_only(dev, opp_table->clks[i],
->> +							opp->rates[i]);
->> +			if (ret) {
->> +				dev_err(dev, "%s: failed to set clock %pC rate: %d\n",
->> +					__func__, opp_table->clks[i], ret);
->> +				return ret;
->> +			}
->> +		}
->> +	}
->> +
->> +	return 0;
->> +}
-> 
-> As said earlier, this won't work in the core.
-> 
->> +
->>  static int _generic_set_opp_regulator(struct opp_table *opp_table,
->>  				      struct device *dev,
->>  				      struct dev_pm_opp *opp,
->> @@ -796,7 +835,7 @@ static int _generic_set_opp_regulator(struct opp_table *opp_table,
->>  	}
->>  
->>  	/* Change frequency */
->> -	ret = _generic_set_opp_clk_only(dev, opp_table->clk, freq);
->> +	ret = _generic_set_opp_clks_only(dev, opp_table, opp);
->>  	if (ret)
->>  		goto restore_voltage;
->>  
->> @@ -820,7 +859,7 @@ static int _generic_set_opp_regulator(struct opp_table *opp_table,
->>  	return 0;
->>  
->>  restore_freq:
->> -	if (_generic_set_opp_clk_only(dev, opp_table->clk, old_opp->rate))
->> +	if (_generic_set_opp_clks_only(dev, opp_table, old_opp))
->>  		dev_err(dev, "%s: failed to restore old-freq (%lu Hz)\n",
->>  			__func__, old_opp->rate);
->>  restore_voltage:
->> @@ -880,7 +919,7 @@ static int _set_opp_custom(const struct opp_table *opp_table,
-> 
-> This is where we can handle it in your case, if you don't want to hide it behind
-> a clk driver.
-> 
->>  	}
->>  
->>  	data->regulators = opp_table->regulators;
->> -	data->clk = opp_table->clk;
->> +	data->clk = (opp_table->clks ? opp_table->clks[0] : NULL);
->>  	data->dev = dev;
->>  	data->old_opp.rate = old_opp->rate;
->>  	data->new_opp.rate = freq;
->> @@ -969,8 +1008,8 @@ static void _find_current_opp(struct device *dev, struct opp_table *opp_table)
-> 
-> I think this routine breaks as soon as we add support for multiple clocks.
-> clks[0]'s frequency can be same for multiple OPPs and this won't get you the
-> right OPP then.
+# ps -o pid,mntns,comm $$ 136775
+    PID      MNTNS COMMAND
+ 136775 4026532762 qemu-system-x86
+ 142359 4026531840 bash
 
-I don't think so and this was raised also by Stephen - only the first
-clock is considered the one used for all PM OPP frequency operations,
-like get ceil/floor.
+File descriptor 23 is what qemu is using to mount the block device
+# ls -l /proc/136775/fd/23
+lrwx------ 1 libvirt-qemu libvirt-qemu 64 Apr 12 16:34
+/proc/136775/fd/23 -> /dev/dm-8
 
-The assumption (which might need better documentation) is that first
-clock frequency is the main one:
-1. It is still in opp->rate field, so it is used everywhere when OPPs
-are compared/checked for rates.
-1. Usually is used also in opp-table nodes names.
+However, the dereferenced symlink and where the symlink points to show
+different data.
 
-The logical explanation is that devices has some main operating
-frequency, e.g. the core clock, and this determines the performance. In
-the same time such device might not be able to scale this one core clock
-independently from others, therefore this set of patches.
+# stat -L /proc/136775/fd/23
+  File: /proc/136775/fd/23
+  Size: 0         Blocks: 0          IO Block: 4096   block special file
+Device: 2ch/44d Inode: 9           Links: 1     Device type: fd,8
+Access: (0660/brw-rw----)  Uid: (64055/libvirt-qemu)   Gid: (64055/libvirt-qemu)
+Access: 2022-04-12 16:34:25.687147886 +1000
+Modify: 2022-04-12 16:34:25.519151533 +1000
+Change: 2022-04-12 16:34:25.595149882 +1000
+ Birth: -
 
-> 
->>  	struct dev_pm_opp *opp = ERR_PTR(-ENODEV);
->>  	unsigned long freq;
->>  
->> -	if (!IS_ERR(opp_table->clk)) {
->> -		freq = clk_get_rate(opp_table->clk);
->> +	if (opp_table->clks && !IS_ERR(opp_table->clks[0])) {
->> +		freq = clk_get_rate(opp_table->clks[0]);
->>  		opp = _find_freq_ceil(opp_table, &freq);
->>  	}
->>  
->> @@ -1070,7 +1109,7 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
->>  						 scaling_down);
->>  	} else {
->>  		/* Only frequency scaling */
->> -		ret = _generic_set_opp_clk_only(dev, opp_table->clk, freq);
->> +		ret = _generic_set_opp_clks_only(dev, opp_table, opp);
->>  	}
->>  
->>  	if (ret)
->> @@ -1135,11 +1174,15 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
-> 
-> This should have a BUG or WARN _ON() now if clock count is more than one. This
-> routine can't be called unless custom handler is available.
-> 
-> I skipped rest of the code as we need to work/decide on the design first.
+# stat /dev/dm-8
+  File: /dev/dm-8
+  Size: 0         Blocks: 0          IO Block: 4096   block special file
+Device: 5h/5d Inode: 348         Links: 1     Device type: fd,8
+Access: (0660/brw-rw----)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-04-12 16:15:12.684434884 +1000
+Modify: 2022-04-12 16:15:12.684434884 +1000
+Change: 2022-04-12 16:15:12.684434884 +1000
+ Birth: -
 
+If we change to the qemu process' mount namespace then we do see that
+/dev/dm-8 has the same device/inode as the symlink.
 
+# nsenter -m -t 136775 stat /dev/dm-8
+  File: /dev/dm-8
+  Size: 0         Blocks: 0          IO Block: 4096   block special file
+Device: 2ch/44d Inode: 9           Links: 1     Device type: fd,8
+Access: (0660/brw-rw----)  Uid: (64055/libvirt-qemu)   Gid: (64055/libvirt-qemu)
+Access: 2022-04-12 16:34:25.687147886 +1000
+Modify: 2022-04-12 16:34:25.519151533 +1000
+Change: 2022-04-12 16:34:25.595149882 +1000
+ Birth: -
 
-Best regards,
-Krzysztof
+Thanks for your time.
+
+ - Craig
