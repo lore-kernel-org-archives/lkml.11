@@ -2,98 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbiEIDN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 23:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
+        id S231535AbiEIDRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 23:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbiEIDKg (ORCPT
+        with ESMTP id S231424AbiEIDPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 23:10:36 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565F7326C3
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:06:44 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id y3so10131716qtn.8
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 20:06:44 -0700 (PDT)
+        Sun, 8 May 2022 23:15:23 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F67586AEF;
+        Sun,  8 May 2022 20:11:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=oRfD8M5O9dWN8GNUtDEivgmOVQxQcyA5r2ya1J7njDo=;
-        b=e05uXAgTwF0xDilgxFWvqR309UtyqBCC7ohv87z+ckDcJu3lT7jMRCoN8U9d75uj8L
-         rtchWV+3trkObIcMl8VZI/aJqGbiquMXzsiYothqRnZcMx8hfsmSS9TE3ap6S5zHNRsu
-         NALYp91n0Ogd3XDw713pwnQsoL2cUPzmny6t+AL0ESnGcOZIZsnQ0IiRVdqYv8Q53ADr
-         Rft3QClBRgPOd9F7bLpt6+Q8m2IZACF2MKEGKCwV9kNz64CpbgELNwq5tkpHeMlYgMLD
-         oNxxEL/5Fzfl8O8M+QYax+A+SVI6E/luf2UBqmKW0pES4StHHfHCasmBr0Uvx+EyOE4d
-         +/PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=oRfD8M5O9dWN8GNUtDEivgmOVQxQcyA5r2ya1J7njDo=;
-        b=RtkopCiQUH5Tk1NPL63rSul7By6fK5rvstAHn8H9jgUG30En3Jm73srnStZkBS8xgu
-         I3UoB+wKjYbSkv/fagXL4X3pecoxh5MQLB5d3kBgtHvPHOvL2JbDytMeQweFDYbP4W0z
-         XlzsBJk/JNwgkASGeo/FERHbwHKe008sDtiRKcTPlcjjXQacZ2aUzyukWYH8dW9TsbIy
-         I676Pvx/BIUG2nzGCZmE0EdKjxMOY2BeIsqVOSh23fnY92A2cKIofkZSl3agdVzdzEYH
-         dnA+Tp3VUmJi0rFEEz86o9M3Dc60v3OZpm1kybspqoe37/3tkv9HAOZ7eOYYa13mQvvL
-         Ve6w==
-X-Gm-Message-State: AOAM53330MTvlt5zTOoTlp88BUBY08TDadFO2hDfWZ6s+Fs4YJkQQ17i
-        7C39azGvNqsnSjRg0atunBMcyUmS3XtKCIuLRrU=
-X-Google-Smtp-Source: ABdhPJxfowAA4sAPSA2yE4MWE/avUDcEwPILW9ic1+JvHWVco0LrWJwbX6vAhrFcwak0k9V2Y9zjPXsihltAhlL2IUE=
-X-Received: by 2002:a05:622a:4d1:b0:2f3:d1c7:b31f with SMTP id
- q17-20020a05622a04d100b002f3d1c7b31fmr7486618qtx.163.1652065603428; Sun, 08
- May 2022 20:06:43 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652065890; x=1683601890;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=p8urheBXbOU7HRdMjgj249wzbQxrt5Hj0ai6+bM7SsU=;
+  b=m0BEsNOyJ2zLwDXAUvQawRsU05SLRNNp3/hzwQNQIy09ww3mA8LfRzhD
+   MCBjm1CqSVZyeAiG0Gamwwso16bamP2RmRy9TCPlscTyYou57nkCzzBKc
+   gmvgpNeat7b3jztDpW9ubYkzGxO7RcQ4vKI5CD2QjGipPqR4TgN8PmM6a
+   M=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 08 May 2022 20:11:30 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 20:11:28 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 8 May 2022 20:11:28 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 8 May 2022 20:11:24 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <sboyd@kernel.org>, <agross@kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <mathieu.poirier@linaro.org>,
+        <mka@chromium.org>, Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [PATCH] remoteproc: sysmon: Wait for SSCTL service to come up
+Date:   Mon, 9 May 2022 08:41:07 +0530
+Message-ID: <1652065867-5669-1-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <202205042019.gOXJsH4f-lkp@intel.com> <CAHp75Vf9wUOKpxa5q8=tJNju_3uzTMbEGcQxAr_f14c_wp-jAQ@mail.gmail.com>
-In-Reply-To: <CAHp75Vf9wUOKpxa5q8=tJNju_3uzTMbEGcQxAr_f14c_wp-jAQ@mail.gmail.com>
-Reply-To: cwchoi00@gmail.com
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-Date:   Mon, 9 May 2022 12:06:07 +0900
-Message-ID: <CAGTfZH2Z1aFChMdkg1Quc5UceQuB5+QF2HzzPx8gX5Tk+_U3Jw@mail.gmail.com>
-Subject: Re: [chanwoo:devfreq-testing 5/5] include/linux/list.h:638:9:
- warning: this 'for' clause does not guard...
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 11:58 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Wed, May 4, 2022 at 7:02 PM kernel test robot <lkp@intel.com> wrote:
-> >
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git devfreq-testing
-> > head:   40eaf97ddb3a7e661942296ccf192af0edd3d77d
-> > commit: 40eaf97ddb3a7e661942296ccf192af0edd3d77d [5/5] PM / devfreq: Use cpufreq_policy instead of NR_CPU
-> > config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220504/202205042019.gOXJsH4f-lkp@intel.com/config)
-> > compiler: mips-linux-gcc (GCC) 11.3.0
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/commit/?id=40eaf97ddb3a7e661942296ccf192af0edd3d77d
-> >         git remote add chanwoo https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
-> >         git fetch --no-tags chanwoo devfreq-testing
-> >         git checkout 40eaf97ddb3a7e661942296ccf192af0edd3d77d
-> >         # save the config file
-> >         mkdir build_dir && cp config build_dir/.config
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
->
-> Seems like LIST_HEAD_INIT() calls in the above mentioned patch miss the &.
+The SSCTL service comes up after a finite time when the remote Q6 comes
+out of reset. Any graceful shutdowns requested during this period will
+be a NOP and abrupt tearing down of the glink channel might lead to pending
+transactions on the remote Q6 side and will ultimately lead to a fatal
+error. Fix this by waiting for the SSCTL service when a graceful shutdown
+is requested.
 
-I had already fixed this build issue and then updated them to devfreq-testing.
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/commit/?h=devfreq-testing&id=2fc72863d5a5d21e7a7c8da9fdab7c67554a9ab6
+Fixes: 1fb82ee806d1 ("remoteproc: qcom: Introduce sysmon")
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+---
+ drivers/remoteproc/qcom_sysmon.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Thanks for checking.
-
+diff --git a/drivers/remoteproc/qcom_sysmon.c b/drivers/remoteproc/qcom_sysmon.c
+index 9fca81492863..a9f04dd83ab6 100644
+--- a/drivers/remoteproc/qcom_sysmon.c
++++ b/drivers/remoteproc/qcom_sysmon.c
+@@ -41,6 +41,7 @@ struct qcom_sysmon {
+ 	struct completion comp;
+ 	struct completion ind_comp;
+ 	struct completion shutdown_comp;
++	struct completion ssctl_comp;
+ 	struct mutex lock;
+ 
+ 	bool ssr_ack;
+@@ -445,6 +446,8 @@ static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
+ 
+ 	svc->priv = sysmon;
+ 
++	complete(&sysmon->ssctl_comp);
++
+ 	return 0;
+ }
+ 
+@@ -501,6 +504,7 @@ static int sysmon_start(struct rproc_subdev *subdev)
+ 		.ssr_event = SSCTL_SSR_EVENT_AFTER_POWERUP
+ 	};
+ 
++	reinit_completion(&sysmon->ssctl_comp);
+ 	mutex_lock(&sysmon->state_lock);
+ 	sysmon->state = SSCTL_SSR_EVENT_AFTER_POWERUP;
+ 	blocking_notifier_call_chain(&sysmon_notifiers, 0, (void *)&event);
+@@ -545,6 +549,11 @@ static void sysmon_stop(struct rproc_subdev *subdev, bool crashed)
+ 	if (crashed)
+ 		return;
+ 
++	if (sysmon->ssctl_instance) {
++		if (!wait_for_completion_timeout(&sysmon->ssctl_comp, HZ / 2))
++			dev_err(sysmon->dev, "timeout waiting for ssctl service\n");
++	}
++
+ 	if (sysmon->ssctl_version)
+ 		sysmon->shutdown_acked = ssctl_request_shutdown(sysmon);
+ 	else if (sysmon->ept)
+@@ -631,6 +640,7 @@ struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
+ 	init_completion(&sysmon->comp);
+ 	init_completion(&sysmon->ind_comp);
+ 	init_completion(&sysmon->shutdown_comp);
++	init_completion(&sysmon->ssctl_comp);
+ 	mutex_init(&sysmon->lock);
+ 	mutex_init(&sysmon->state_lock);
+ 
 -- 
-Best Regards,
-Chanwoo Choi
+2.7.4
+
