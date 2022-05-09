@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E45ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiEIMZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
+        id S234358AbiEIMZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234252AbiEIMZA (ORCPT
+        with ESMTP id S234314AbiEIMZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:25:00 -0400
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6551D2555B5;
-        Mon,  9 May 2022 05:21:06 -0700 (PDT)
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-deb9295679so14476302fac.6;
-        Mon, 09 May 2022 05:21:06 -0700 (PDT)
+        Mon, 9 May 2022 08:25:01 -0400
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08152573E3;
+        Mon,  9 May 2022 05:21:07 -0700 (PDT)
+Received: by mail-oi1-f169.google.com with SMTP id v65so14916826oig.10;
+        Mon, 09 May 2022 05:21:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=1YMoFaBHhMjLkXPx9UtGpLV3eh41Hk7kM5z0duwbKfM=;
-        b=bUqgAB7+NzHB3P95FOidshZiFaQ9QrWVfMt2ul3PKRd1UHWPDBdPzj3Y0hk+peWLzq
-         Ek/k4+pZYIzn6OZoU+/d1I9Ca67xDPatf5MqEEreWcWO9tw8kIzoWxuJUmDMOn+3fY7A
-         Cf2vMgxgKnu5Mt7oX9ziKGBKST9c9FATehHlxKVb36klt0fXYGOazX+Lyh7R5AWdWx+K
-         /uwQypb9T8xCY9r4DrXKAHrjxQ9g1Os3l2/UvRPI0BNdKnkloBzbgnODOtyIzQV6yEG/
-         foh9WtrHkbLbxD8G9MS4WbsnrIWbiV5IJhBoTQRSSBBUT7urkM/7WJmN8UqAWEF2Sk+F
-         aaKQ==
-X-Gm-Message-State: AOAM530RChHgwjnn4qgUjveU8RRL8A8bsHedomu2N0rKl652u+XBaJQa
-        7UkkgQIRJTM+mAsVCGlmbg==
-X-Google-Smtp-Source: ABdhPJxrxqCw4xcwtmH1NwK0lTIRVic4gXA59v04MV73GhVQGdzYIMA1pMp2y/BEu14fL+6T/pBi9A==
-X-Received: by 2002:a05:6871:5cb:b0:ed:b5ed:667d with SMTP id v11-20020a05687105cb00b000edb5ed667dmr7068789oan.47.1652098865669;
-        Mon, 09 May 2022 05:21:05 -0700 (PDT)
+        bh=eaGt5OyolhplGC6uOu4KJBZNOPQ6VU39njlT+3mB1VQ=;
+        b=a4YiBcQT29zWFdXUbOLhZeGpuX434Hlp4O+8xXADEcJ52B/HT5N0JvVyckFg01leww
+         J8Ko6q9FsCiswpGhrRRBXqx3ZH9k0ZKd0s70K4ljzUThfNDwbE+YKNV5VspFCdXme6R3
+         ANGFjswnuJD1EMZKc3VvZoX08GYvac+NUC1vLE/V6AIEW0kndrASS9k2fRr8YHrNjvah
+         3M+Pmr3znA7B30kgwEcZrTluOxEJH2n/M5bcRuXr7unEN/rt7XVKdbc1So52zsbi1W4J
+         dI4PJZnkMuX6jQaTliw0UWD6NVYIE/XOtKq41CFu2PvHLfGkhNZ3p4OxAYY0rSDZzPtY
+         0Gwg==
+X-Gm-Message-State: AOAM530B078SMYZnJAfM4g9by561p4XG8GE1+uN8AvUq1d2QCUhWDl3V
+        4Kw1at4bZx4x0qByw7F8pbCGrwX7Hg==
+X-Google-Smtp-Source: ABdhPJzk6aBwaYU1fUd7SMLss146WuFEPgsGy12u0eTEobAY+83Gk+1qrXHoH6d1k/T7lx1IxVyHOg==
+X-Received: by 2002:a05:6808:10d6:b0:326:d4b2:83b with SMTP id s22-20020a05680810d600b00326d4b2083bmr1150047ois.92.1652098867014;
+        Mon, 09 May 2022 05:21:07 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id d131-20020aca3689000000b003266a9846c0sm4303562oia.17.2022.05.09.05.21.04
+        by smtp.gmail.com with ESMTPSA id l21-20020a544515000000b00325cda1ffb8sm4241847oil.55.2022.05.09.05.21.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:21:04 -0700 (PDT)
-Received: (nullmailer pid 3576235 invoked by uid 1000);
+        Mon, 09 May 2022 05:21:06 -0700 (PDT)
+Received: (nullmailer pid 3576233 invoked by uid 1000);
         Mon, 09 May 2022 12:20:58 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Sibi Sankar <quic_sibis@quicinc.com>
-Cc:     mka@chromium.org, swboyd@chromium.org,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        mathieu.poirier@linaro.org, krzysztof.kozlowski@canonical.com,
-        agross@kernel.org, dianders@chromium.org, ohad@wizery.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        evgreen@chromium.org
-In-Reply-To: <1652082798-5855-2-git-send-email-quic_sibis@quicinc.com>
-References: <1652082798-5855-1-git-send-email-quic_sibis@quicinc.com> <1652082798-5855-2-git-send-email-quic_sibis@quicinc.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: remoteproc: qcom: Add SC7280 MSS bindings
+To:     Sebastian Ene <sebastianene@google.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, maz@kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        will@kernel.org, qperret@google.com, linux-kernel@vger.kernel.org,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>
+In-Reply-To: <20220509091103.2220604-2-sebastianene@google.com>
+References: <20220509091103.2220604-1-sebastianene@google.com> <20220509091103.2220604-2-sebastianene@google.com>
+Subject: Re: [PATCH v5 1/2] dt-bindings: vcpu_stall_detector: Add qemu,vcpu-stall-detector compatible
 Date:   Mon, 09 May 2022 07:20:58 -0500
-Message-Id: <1652098858.589911.3576234.nullmailer@robh.at.kernel.org>
+Message-Id: <1652098858.579388.3576232.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 09 May 2022 13:23:17 +0530, Sibi Sankar wrote:
-> Add MSS PIL loading bindings for SC7280 SoCs.
+On Mon, 09 May 2022 09:11:04 +0000, Sebastian Ene wrote:
+> The VCPU stall detection mechanism allows to configure the expiration
+> duration and the internal counter clock frequency measured in Hz.
+> Add these properties in the schema.
 > 
-> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+> While this is a memory mapped virtual device, it is expected to be loaded
+> when the DT contains the compatible: "qemu,vcpu-stall-detector" node.
+> In a protected VM we trust the generated DT nodes and we don't rely on
+> the host to present the hardware peripherals.
+> 
+> Signed-off-by: Sebastian Ene <sebastianene@google.com>
 > ---
->  .../bindings/remoteproc/qcom,sc7280-mss-pil.yaml   | 261 +++++++++++++++++++++
->  1 file changed, 261 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+>  .../bindings/misc/vcpu_stall_detector.yaml    | 47 +++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+yamllint warnings/errors:
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml: properties:timeout-sec: '$ref' should not be valid under {'const': '$ref'}
+	hint: Standard unit suffix properties don't need a type $ref
+	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml: ignoring, error in schema: properties: timeout-sec
+Documentation/devicetree/bindings/misc/vcpu_stall_detector.example.dtb:0:0: /example-0/vmwdt@9030000: failed to match any schema with compatible: ['qemu,vcpu-stall-detector']
 
+doc reference errors (make refcheckdocs):
 
-remoteproc@4080000: clock-names:1: 'snoc_axi' was expected
-	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
+See https://patchwork.ozlabs.org/patch/
 
-remoteproc@4080000: clock-names:2: 'offline' was expected
-	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-remoteproc@4080000: 'interconnects' is a required property
-	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-remoteproc@4080000: reset-names:1: 'pdc_sync' was expected
-	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
