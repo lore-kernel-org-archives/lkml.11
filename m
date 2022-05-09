@@ -2,189 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3299DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E59C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbiEIKDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
+        id S233216AbiEIKDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232099AbiEIJxl (ORCPT
+        with ESMTP id S232991AbiEIKAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:53:41 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0631.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A81C229232;
-        Mon,  9 May 2022 02:49:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IHj3mI+S5XPwTE/GlAlCyr/gd2rnkNmyr27mSKSeTKbg42eLans9zF5RaKN8hW6Q6xiRzu4OSLR/hzRkSABDHpLVOAR8z9hX72KZPxMeCJUs1y+lb13Rlk1RnNtNbueDtyDbnUUCoFNl/XyFsxJZQza9W/GPMtLwBLAjODXLbdpP+k9TOoRb+o35jwF9LO7eysLymcFSKD0fB7DKavl/8kyokwivOd5WFMGT7OYeGpZf9X0iKFicd2kMmXl+eZprwWYlA6twEjJnIuOfvM2JHSYFBRg3qinRczxO1+MC1FD1A19HxNzPFePpX9hTSJ0jQ9NxXYF8cMBuxpyppHNljA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ip0mRyuhTr9hIOFtbzqhroARC+gojYgKNMJf1XeMrWE=;
- b=KO6bQGvv9SNEC60jNd3LisRdqu+dJIpK1Jda01a0QYQx4zuYU4mi7SqKOndrKOWDM9Av4ZEzPF8CONThBIb1mU3N4b+Dv1OBlyjaBxOOCw9bChfnN4JUltVlEB8vDv1My3jTOInNuVUaiISYUl+YHJJVd9bYLMLkId2ZyN2GhQfcKtb8okYG3NnrK9/97iIM9iBhu5Fid3A/uqns6NGguU7kebDyMJ8jloztJyC4SuME72dF3nfI7+YLLYqPCKrd2W9TZQYXmVTkeqAlwxXXCe1PltRsOim/OhW4rZgIHRp4LpurDzcrqwL/vkop+YkKO9dryCrI0hyy4wRVYDGMNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wolfvision.net; dmarc=pass action=none
- header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ip0mRyuhTr9hIOFtbzqhroARC+gojYgKNMJf1XeMrWE=;
- b=itZGvdN51IZ3p5QTgHx6C/X7g8LXawFpmGyKfRA6n8nS7vU3R7SPapLFYtxCRmMzgnIu+NU7cXKZAEXfNE12rihBCrwkTOIV1mCo9KKdYkFc9R9JllljHQWbhIHjcRBAo3cq5BhO+/h1uo53r4x9/sJSAgfOW14ZsCunb/NwML8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=wolfvision.net;
-Received: from DBBPR08MB4348.eurprd08.prod.outlook.com (2603:10a6:10:cc::10)
- by VI1PR08MB3423.eurprd08.prod.outlook.com (2603:10a6:803:7c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Mon, 9 May
- 2022 09:49:11 +0000
-Received: from DBBPR08MB4348.eurprd08.prod.outlook.com
- ([fe80::fdf6:eff9:d68:ea9]) by DBBPR08MB4348.eurprd08.prod.outlook.com
- ([fe80::fdf6:eff9:d68:ea9%5]) with mapi id 15.20.5227.023; Mon, 9 May 2022
- 09:49:10 +0000
-Message-ID: <aecc866c-685b-8def-a197-d1246070aa54@wolfvision.net>
-Date:   Mon, 9 May 2022 11:49:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] arm64: dts: rockchip: enable otg/drd operation of
- usb_host0_xhci in rk3568
-Content-Language: en-US
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liang Chen <cl@rock-chips.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-References: <20220502064551.202613-1-michael.riesch@wolfvision.net>
- <CAMdYzYrChKVwuGj=VEc=T4Gez-Bs647GxaeMsdbgvU_6p3FeEg@mail.gmail.com>
-From:   Michael Riesch <michael.riesch@wolfvision.net>
-In-Reply-To: <CAMdYzYrChKVwuGj=VEc=T4Gez-Bs647GxaeMsdbgvU_6p3FeEg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR0P278CA0184.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:44::19) To DBBPR08MB4348.eurprd08.prod.outlook.com
- (2603:10a6:10:cc::10)
+        Mon, 9 May 2022 06:00:44 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E9B179F17;
+        Mon,  9 May 2022 02:56:46 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2499pIYY027995;
+        Mon, 9 May 2022 09:55:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=ecbswQepaBbmZmYaheJEFCLm/1V+YM5cliMGmxJLUqE=;
+ b=ff/dkOuh5G8ZE0XW8fMPvkm5L8VE1m7lxK2JXTS7s4td+TfapnRIVh2IM8ZgqxYc0Lu2
+ fj4xbyPwdaDCoksn00iPO3xNrRs7WjWYOX6IPKlWrm9XLEaH1cS/YigBPkb7VNzrFL3O
+ R0S8ZQXLbNvA8ITwWuDY2MlarbS7rjk+to23isBPT+QmuW9MqehShPOD2F1VLAvWQ7zC
+ P5dGrIyTJlNIWCzi+WFaC1Iq7tpG93bSdyngTn3FnmzhgvXaN7YYbHxHjWBfkmHYLFdP
+ UyGT9maS2lVHLJUz6XJpn4aGVxyO3ekiYF8zsmyApyIwc7Dy/jDtbLDlzuiwdtjX938c YA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fy0pk82gw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 May 2022 09:55:42 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2499qSDx007521;
+        Mon, 9 May 2022 09:55:40 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3fwgd8tanm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 May 2022 09:55:40 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2499tbCA44761580
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 9 May 2022 09:55:37 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6FC3DA4051;
+        Mon,  9 May 2022 09:55:37 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 24999A4055;
+        Mon,  9 May 2022 09:55:37 +0000 (GMT)
+Received: from osiris (unknown [9.145.14.3])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon,  9 May 2022 09:55:37 +0000 (GMT)
+Date:   Mon, 9 May 2022 11:55:35 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: Re: [PATCH 1/2] entry: Rename arch_check_user_regs() to
+ arch_enter_from_user_mode()
+Message-ID: <YnjlF8tTWt0yA5xm@osiris>
+References: <20220504062351.2954280-1-tmricht@linux.ibm.com>
+ <20220504062351.2954280-2-tmricht@linux.ibm.com>
+ <YnV3iljKUM0Fqw/F@hirez.programming.kicks-ass.net>
+ <yt9dsfpjgrba.fsf@linux.ibm.com>
+ <20220509070831.GD76023@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7d3285f8-b303-44a4-9c61-08da31a12aa9
-X-MS-TrafficTypeDiagnostic: VI1PR08MB3423:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR08MB342370401AEF73DA75CF4D8BF2C69@VI1PR08MB3423.eurprd08.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cTUsexml5xqsrtcUotKy9Sk2i8+A3vdsn5Xrm8Q9fvP0OkE6f0evYY63P8uCbu9W/yU/Vied4KI2l6qAGj236+idMWfbWi5chWCwwzxUhAv8Il1E9ZXeyHdyTgMx5qkuOu+nJ1tAWxT4oinSAhXjLToGJBr8K72E/8a+YjEGuXoyZPpdYMltUEDdaN+t8QUKcJYv7zFpy1ix4Hor8aCg8kVVyHO0fYuvsq8qvKywChrUxypjks0fgxFllWf+umj3O51ZI/tYmyVEqz141XRgKSBIritC2E35y1c9p/s0ZMsRodI/dBJfprJRzWSp++U1sSav6PEe37fkQ3zdm5IZA1eOs1SYagt6JLZ4AumLyNnQDnWR5WJ/RX0e+7KtxtX+Wlf3RsbGTYtGBdQCiWbsQ8MPZcUWUBqX7rvphZU44rT2AyGkWt1guCH+EON+yWw6LzLxTCI9QyDCy1WDWSmki/JNWXhktCqSI8m44pFSeSLO4Bq3ExtBz0y84IJqbK5Ii7/oILAD3bX/QxbYntJj2v1MZtNwgiSMY9uMougJwhZMgIK+qN1jpTlFTbE9ZUdt0QLvp8r5GEgRZ7HMCtcJTWMvH5bcXR/ChSw6I+InQHfCxfc2sCZ+pkAjjsk5vWjNDqnFive7EGHBY4datwC+47C0XG4T4W7/E0KXpKBQ060P3j8TDKTSaNdMD3gTBagjIxinzAmpui14kb8Hufrtq4y2sWGRwm+B/fwTcB3Ga08=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR08MB4348.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(4326008)(6506007)(316002)(186003)(53546011)(2906002)(7416002)(6512007)(66556008)(66476007)(6916009)(8676002)(66946007)(54906003)(31686004)(508600001)(6486002)(52116002)(2616005)(83380400001)(5660300002)(31696002)(8936002)(86362001)(44832011)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S2lhRnM5UFdRZnVxZVhvRGs4TWF4NTB0ZkdOU2o0RFl1cUpieDNhaDNHbVRw?=
- =?utf-8?B?YWZZaUtGbUQ1c2NWRklwb0NKeExHd2kvK0hCdytJS29hbk9udWdkVEFnL3RQ?=
- =?utf-8?B?aUhJbHNYQWZzbVE5SHNPVEZCd1YrVDdQT203MUprY1NScWd6TllUU2hVcS9l?=
- =?utf-8?B?TzlWQXBXRnM2MExHei9nTElsbVVjS2JjMkpSV1IxbFN6WExuU0RTekd0aUNU?=
- =?utf-8?B?SmF4ZTBVWDB5TjRuRTJOWmhXdWZ0WlNPUTBaem9pRklNd0E2V0N5cU43b3Fs?=
- =?utf-8?B?UEdEVGQ4OTFsaGVyQkVPS0QxcU9TTEkyODBWWUpOYVdvaU1OK3dBUTFWanI0?=
- =?utf-8?B?dGtkeDlsdEdtT25xK0NLbVFUYU1FZzZ1SjhYY2JZWFRHcVZwYXhHbDliQTBK?=
- =?utf-8?B?dkd3YTIxSXA3ZWFYZ1lQWkhwZjIzdkdpa2hkOTdPUTRGTC9wWHlFb0VVZmY4?=
- =?utf-8?B?ZHJhZVp4QXpUM1FBcFJCbWJkMmpHeG1lWFk5M3FqaUxpbVRwdisxQnB5SUtX?=
- =?utf-8?B?azJ6RXh0MkNvYlhTWSt1TlpUSTNjbVBESHdnejhQMnVtMnB5QlQ1eHpoZmo0?=
- =?utf-8?B?UFFaNk1xL2FFZkRmNUN2MFFTSXBHcjhCU0F5ek11TmVicFVBWTJPVWZiU1JB?=
- =?utf-8?B?bVBIY1Q4NEtGb092YTNpVXJnVktQT3creFJ2bE51VjJMYjBLZmQ2TDVudkFP?=
- =?utf-8?B?SkZxSUlmeW51RkZqYm9SeXViMUtyYWcydzFabTJVS09NLzEwUlRVZlNwNkhq?=
- =?utf-8?B?cEJCVmNUMWtzSWk2akU2QWwxQlF3c3czTGZHcDM0ZTVDbHIrbHJFOHY0WGJq?=
- =?utf-8?B?c1FJQW9HMzFXNllyOFNSSElXQnB3WFMzVW5xME8vMHg2dXljUnRySUV0V2xP?=
- =?utf-8?B?OUFxYVFVRThQNGxXU0h2L0tiZGZFdWN2ZXQzYjE5NVJnTldKZTdLVUoxK1hR?=
- =?utf-8?B?U3hBWEZ2ZlVqeG1hVk9pOTlIQnNwYzBWZm1CTnpuU0l0SVJzRTYzMEFpdkRs?=
- =?utf-8?B?bHprV0pCdkN2cHk1Z3diNURjb3V2RGtjZHRTZTZ3ejU2YVh5eVI2L3pnMysv?=
- =?utf-8?B?UmFhOVJkQWQwaGp6WFVqMUtRZ09hZFlXbXY5dHFJUG1Ta09RczRlcDlGaUNl?=
- =?utf-8?B?QlBwOHpVSW5hS1R6NjBiNnhxYlNXV0dGdXo0OTdScENjbmE0ZnBBSEFGK0hx?=
- =?utf-8?B?VjVXY1M0Y3lxZFVwRFBCUEsxL0xqbUpKbEdrdEgrdHB0d1ZMTU5wTkVMeHMx?=
- =?utf-8?B?Qmp2Y3B2K1JaRkhZdWxVMFpGa3VIeVRtOXBTd3lxeUZxb2c4WlR2YkRqejFp?=
- =?utf-8?B?MTB5KytEUjZrb1g4VEtJZjhDdWRRSGxQbEh0Y0FSTXNOOCtZQ3M3SWpaeU9E?=
- =?utf-8?B?UFpYb1RCTjdiUk5LZnV6am1iSXQ0YzJuK0owK0pQVkYwWnZlL2RRWDZMMGt0?=
- =?utf-8?B?OU5sTFdLeEdPYTZEbEZnWXRiQjVKVXhlNWswTjhHZW9TNkFETkJpbmUxVFl3?=
- =?utf-8?B?VUZrRXk2Z1cxOGkxbzRWcW5vZnpzTFlyQVFneGM3UGFRaVhlbnpTWlExZG5n?=
- =?utf-8?B?RElYc3JTTlZuZUJTMkNaN0dSSk5jSVNVcHBBMWdkRXgwZTZTZnF6QjdXR2x3?=
- =?utf-8?B?T05xY1Y2eFlrRmdqa2FyQWdiZXAvekVyQWdZcFBlbTVMdFJ1V0xPWnRmNmky?=
- =?utf-8?B?VUVjQVQ3M09aTEk0bHgxTkVKaVlxVmx0d3ZONGVWaVdPeFVEU1VUb3FIVjB3?=
- =?utf-8?B?c0I4RVNrZUVSR01aVk5yQk8zV1lwbEYvSWdERDVrcy9zNzhUV3N1YWdEUEtE?=
- =?utf-8?B?VU4zWXNkTGRITkNxcTFicEFVWXI2QkJ3alhGaTRMMkVWbVZMcnRkR3dnWStm?=
- =?utf-8?B?R2MrOFMrMTVLVXZMMm1vOWFnY1RhNytIeDJUNjhwVG5uajlXd2lJYThkUCt0?=
- =?utf-8?B?NDhJaGdZbEhqV3JpZGplU1IzRVBySGoxaTFtNHl0NmJhMjJWWVpRRlpTZ3F5?=
- =?utf-8?B?ZnMrN1F0Q1pTYUhqanAvSUZ6dHJYNjFQaXA2QlNqV1k1RC85NmR4L04rVm1h?=
- =?utf-8?B?alM2V2I3QUxYL2I5OUhRK2FYRFJkcXNzQ3JsTlJtYktnTzA2cU9sN1Z3UEJQ?=
- =?utf-8?B?RUR1MWlKRnNaUzZiT0ZxTkFBTzVQWHRFNS9MNkZuNk1hZzllVGZ2SWU3emI5?=
- =?utf-8?B?NTdLSGpxcit5OFFpelZaZTJPSTVPcmVmMmQvWHhQSjZRRGxTVHdsZWFBNnpK?=
- =?utf-8?B?QlZQVDhGbFE3MVZjYUJadWNORG5uUnBWeitDc0hLSGJEL1EzYU1NbHBUbG5m?=
- =?utf-8?B?RllONFplemxsWHRRL0dvZitZbUNLU01tU1hjZitUMkt1M21PdkFOaHlOS2U4?=
- =?utf-8?Q?MA+1vgO0ay2g0bxRGPRTdLo9TtZh+ZL4lxMnjgjEdGszb?=
-X-MS-Exchange-AntiSpam-MessageData-1: i7jmXHfOwptdShIRVb09G/+icEZlmHAazizBQ4fbXyqFbQx6MQqjnZdf
-X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d3285f8-b303-44a4-9c61-08da31a12aa9
-X-MS-Exchange-CrossTenant-AuthSource: DBBPR08MB4348.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 09:49:10.3631
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dq3ggTC7gaTvTv8U4N4/VEFxt33Tyk3qq4K8USbv8AAl8v8J6f1z8RhUIsyEEOgDxpDXPEqeWTN2Hv2k6WSsFg57bRmVV00DTuZMEcXzOhQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3423
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509070831.GD76023@worktop.programming.kicks-ass.net>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: JM9ILrzA7QLMYMp9JogK1Js5HVVfpunW
+X-Proofpoint-GUID: JM9ILrzA7QLMYMp9JogK1Js5HVVfpunW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-09_03,2022-05-09_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 lowpriorityscore=0 impostorscore=0 adultscore=0
+ spamscore=0 phishscore=0 suspectscore=0 mlxscore=0 mlxlogscore=888
+ bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205090054
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Peter,
-
-On 5/2/22 11:54, Peter Geis wrote:
-> On Mon, May 2, 2022 at 2:46 AM Michael Riesch
-> <michael.riesch@wolfvision.net> wrote:
->>
->> This USB 3.0 controller of the Rockchip RK3568 is capable of OTG/DRD
->> operation. Enable it in the device tree.
+On Mon, May 09, 2022 at 09:08:31AM +0200, Peter Zijlstra wrote:
+> On Mon, May 09, 2022 at 08:20:41AM +0200, Sven Schnelle wrote:
+> > Peter Zijlstra <peterz@infradead.org> writes:
+> > 
+> > > On Wed, May 04, 2022 at 08:23:50AM +0200, Thomas Richter wrote:
+> > >> From: Sven Schnelle <svens@linux.ibm.com>
+> > >> 
+> > >> arch_check_user_regs() is used at the moment to verify that struct pt_regs
+> > >> contains valid values when entering the kernel from userspace. s390 needs
+> > >> a place in the generic entry code to modify a cpu data structure when
+> > >> switching from userspace to kernel mode. As arch_check_user_regs() is
+> > >> exactly this, rename it to arch_enter_from_user_mode().
+> > >> 
+> > >> Cc: Thomas Gleixner <tglx@linutronix.de>
+> > >> Cc: Peter Zijlstra <peterz@infradead.org>
+> > >> Cc: Andy Lutomirski <luto@kernel.org>
+> > >> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+> > >> ---
+> > >
+> > > With the note that NMI doesn't (necessarily) call this..
+> > >
+> > > Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > 
+> > How about:
+> > 
+> > "When entering the kernel from userspace, arch_check_user_regs() is
+> >  used to verify that struct pt_regs contains valid values. Note that
+> >  the NMI codepath doesn't call this function. s390 needs a place in the
+> >  generic entry code to modify a cpu data structure when switching from
+> >  userspace to kernel mode. As arch_check_user_regs() is exactly this,
+> >  rename it to arch_enter_from_user_mode()."
 > 
-> I think I missed a conversation here, the xhci0 controller is the otg
-> port for both rk3566 and rk3568. The only difference is on rk3566 it
-> is a usb2 only controller, where on rk3568 it is also a usb3
-> controller. It was set to host only because my original phy patches
-> didn't support otg mode. Since then Samuel's series fixed that.
-> 
-> Your original patch was correct.
+> Sure, thanks!
 
-I have already replied to v1, but at this point I would like to
- - thank you for pointing this out
- - and send a friendly reminder to Heiko: please apply v1 of this
-   patch :-)
+Merged into commit message, and applied both patches to s390 tree.
 
-Thanks and best regards,
-Michael
-
-> 
-> Always,
-> Peter
-> 
->>
->> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
->> ---
->> v2:
->>  - As pointed out by Nicolas, this is RK3568 specific. Moved change to
->>    rk3568.dtsi.
->>
->>  arch/arm64/boot/dts/rockchip/rk3568.dtsi | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
->> index 5eafddf62edc..bbfe8f3d68b7 100644
->> --- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
->> +++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
->> @@ -134,6 +134,7 @@ power-domain@RK3568_PD_PIPE {
->>  };
->>
->>  &usb_host0_xhci {
->> +       dr_mode = "otg";
->>         phys = <&usb2phy0_otg>, <&combphy0 PHY_TYPE_USB3>;
->>         phy-names = "usb2-phy", "usb3-phy";
->>  };
->> --
->> 2.30.2
+Thanks!
