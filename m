@@ -2,70 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20170C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236648AbiEIOKH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54702 "EHLO
+        id S236965AbiEIOMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236600AbiEIOKF (ORCPT
+        with ESMTP id S236927AbiEIOMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:10:05 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D8C15FE0E;
-        Mon,  9 May 2022 07:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652105171; x=1683641171;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=UkLhGz8IQfm7ReY4/G4McTKAELe6u5h1t8AUYe2t5BU=;
-  b=eFxMes57Aa9JFhMmzsynIQ/P4jdqp7U2t0uhdTbG4OWIWr0HxEzINUto
-   RxflbV8z4+d3/xjN18yRgJLU5CUpFhlOXISDsEe1yqeJlJywgWVuNx0ai
-   vyHV612s43yj66+6GYMQK+1UTz0dYlEw0RC225tT4Or0AQ9K+uacoEg0T
-   G1KNGQJlIlki+Vd+MuMi20Db9xCgwK3nuQB5kPY3A51aAl3pEP0hgeug8
-   C+nJ70BWcVFcRlYtkl5Hvg0plSnMk4kIKxrowIo49PRzcmigBdIhfQOCm
-   2bxoTjmtYw38qrJ67DgEDWakOEaZanGQwcAMiUkxRwUGKg+WrL5AVxFro
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="256594106"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="256594106"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:06:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="696561273"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga004.jf.intel.com with ESMTP; 09 May 2022 07:06:10 -0700
-Received: from [10.252.208.70] (kliang2-MOBL.ccr.corp.intel.com [10.252.208.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 0F2A85807C8;
-        Mon,  9 May 2022 07:06:08 -0700 (PDT)
-Message-ID: <59e62b5b-beed-daef-971b-864a41928446@linux.intel.com>
-Date:   Mon, 9 May 2022 10:06:07 -0400
+        Mon, 9 May 2022 10:12:16 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAFD227825
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:08:21 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id k2so19619048wrd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 07:08:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CN3/TIblunEmTfTGTQQLjlPKeiSgXjQJ0JkChiazJpI=;
+        b=fjYKWuFAh2nxD9f1IzYEzZEyT5Y44vxrJFNg3JmmakmsiDJvkYXqaIewg0v8eB0EP5
+         iFAdYV7t0QdxBhlxtHkmlH8852MdyAEiFRDyolFRoQNO7jPjctJkG6odoS6FCwQtOB4o
+         LfykkBZJ/l27KcFVpyeg6FTe8e1BeOCThxd9a30eSZcqF9GhFAHP+ZKsKV7jqOYBwA38
+         j717LSyDNerwm1FWO7seDdqmMPlAMusOldFOBKxw5zG1Dg7ICP8DEJ6WOkvKotzUyc4L
+         biurZGHal+JDwRCZzA5dT30fumVytXFvd96gKmxivJh4Kq1Mxd0z2utdXpXTaoXktD+Z
+         d82Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CN3/TIblunEmTfTGTQQLjlPKeiSgXjQJ0JkChiazJpI=;
+        b=RRU0vb5cjT5D4xY0yzYQ0dnSbjJRWEVKE44jGReVI/qRR8uPkzEUcU9kKZSccMH587
+         lO13Rv/YGMQGNjgopnJYD0521VH9jBVZOEnlXkua5selzSd5NG7uzKWtcllyDiGlm4uF
+         u1DXTrav9QR+PJ7Vj+qFUsQlqK/YIEeRHSjIZ2dOUjOi505ODPTPzYtA5e+oMVtgpz0j
+         9+ZIR5HfxWIp+HbzTVAvdHYXK69HhXf9SrhiqRbUjLiXNobIdlaX9MeD/7kEiJfxuqDe
+         +Qg3P041GnJB+tKSEOdCZV+W1jodc5bxrl9Mtj2N/oa7JuVjiQKS2/KNt+qz/JifoW9X
+         qFXA==
+X-Gm-Message-State: AOAM532UVEEdPOmX3UTqp3pJ4UiPRI8utOrSHz2HFx/QrLsyHb1O+co5
+        TklRtkSwp0Inw//ykvhP6jrgKw==
+X-Google-Smtp-Source: ABdhPJyrM1S7nbR0Cl1V0XFRvhXAm3F8I6t0KELsVJLnGWEV4yBOC6N5aFBvRrp6sKKjF6xyFF71Fg==
+X-Received: by 2002:adf:de83:0:b0:20a:cbb5:903a with SMTP id w3-20020adfde83000000b0020acbb5903amr13753816wrl.544.1652105299332;
+        Mon, 09 May 2022 07:08:19 -0700 (PDT)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id s6-20020adfea86000000b0020c5253d907sm11401610wrm.83.2022.05.09.07.08.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 07:08:18 -0700 (PDT)
+Message-ID: <fd355232-c5e3-ba1b-801d-526ee6f04946@linaro.org>
+Date:   Mon, 9 May 2022 15:08:16 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v11 08/16] KVM: x86/pmu: Refactor code to support guest
- Arch LBR
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] soundwire: qcom: adjust autoenumeration timeout
 Content-Language: en-US
-To:     "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "like.xu.linux@gmail.com" <like.xu.linux@gmail.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "Wang, Wei W" <wei.w.wang@intel.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220506033305.5135-1-weijiang.yang@intel.com>
- <20220506033305.5135-9-weijiang.yang@intel.com>
- <ce4fe0e1-357c-9e8d-67f7-f065ccbe3851@linux.intel.com>
- <d2e14530-f3c1-53c9-dd03-95ea2c1bf3f1@intel.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <d2e14530-f3c1-53c9-dd03-95ea2c1bf3f1@intel.com>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        vkoul@kernel.org
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        bard.liao@intel.com,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+References: <20220506084705.18525-1-srinivas.kandagatla@linaro.org>
+ <725af523-d144-e373-e09b-fb48b3afb9ed@linux.intel.com>
+ <8643d266-7108-2440-43e1-c51b829ba481@linaro.org>
+ <d9646029-29b1-d71b-d1f5-b33267888e3c@linux.intel.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <d9646029-29b1-d71b-d1f5-b33267888e3c@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -74,220 +75,162 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 5/6/2022 10:32 PM, Yang, Weijiang wrote:
+On 09/05/2022 14:31, Pierre-Louis Bossart wrote:
 > 
-> On 5/6/2022 11:03 PM, Liang, Kan wrote:
->> On 5/5/2022 11:32 PM, Yang Weijiang wrote:
->>
->>    bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
->> @@ -199,12 +203,20 @@ static bool intel_pmu_is_valid_lbr_msr(struct 
->> kvm_vcpu *vcpu, u32 index)
->>            return ret;
->>        }
->> -    ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS) ||
->> -        (index >= records->from && index < records->from + 
->> records->nr) ||
->> -        (index >= records->to && index < records->to + records->nr);
->> +    if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
->> +        ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS);
->> +
->> Shouldn't we return immediately if (ret == true)?
->> Keep checking if (!ret) looks uncommon.
->>
->> Actually we probably don't need the ret in this function.
->>
->>     if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) &&
->>         ((index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS)))
->>         return true;
->>
->>> +    if (!ret) {
->>> +        ret = (index >= records->from &&
->>> +               index < records->from + records->nr) ||
->>> +              (index >= records->to &&
->>> +               index < records->to + records->nr);
->>> +    }
->>     if ((index >= records->from &&
->>         index < records->from + records->nr) ||
->>         (index >= records->to &&
->>         index < records->to + records->nr))
->>         return true;
->>
->>> -    if (!ret && records->info)
->>> -        ret = (index >= records->info && index < records->info + 
->>> records->nr);
->>> +    if (!ret && records->info) {
->>> +        ret = (index >= records->info &&
->>> +               index < records->info + records->nr);
->>> +    }
->>     if (records->info &&
->>         (index >= records->info && index < records->info + records->nr)
->>         return true;
->>
->>     return false;
->> Sorry, I didn't notice it in the previous review.
 > 
-> Thanks Kan, so I'll modify this function as below (keeping other part 
-> unchanged):
+> On 5/7/22 01:52, Srinivas Kandagatla wrote:
+>> Thanks Pierre,
+>>
+>> On 06/05/2022 15:13, Pierre-Louis Bossart wrote:
+>>>
+>>>
+>>> On 5/6/22 03:47, Srinivas Kandagatla wrote:
+>>>> Currently timeout for autoenumeration during probe and bus reset is
+>>>> set to
+>>>> 2 secs which is really a big value. This can have an adverse effect on
+>>>> boot time if the slave device is not ready/reset.
+>>>> This was the case with wcd938x which was not reset yet but we spent 2
+>>>> secs waiting in the soundwire controller probe. Reduce this time to
+>>>> 1/10 of Hz which should be good enough time to finish autoenumeration
+>>>> if any slaves are available on the bus.
+>>>
+>>> Humm, now that I think of it I am not sure what reducing the timeout
+>>> does.
+>>>
+>>> It's clear that autoenumeration should be very fast, but if there is
+>>> nothing to enumerate what would happen then? It seems that reducing the
+>>> timeout value only forces an inconsistent configuration to be exposed
+>>> earlier, but that would not result in a functional change where the
+>>> missing device would magically appear, would it? Is this change mainly
+>>> to make the tests fail faster? If the 'slave device is not ready/reset',
+>>> is there a recovery mechanism to recheck later?
+>>>
+>>> Would you mind clarifying what happens after the timeout, and why the
+>>> timeout would happen in the first place?
+>>
+>> This issue is mostly present/seen with WCD938x codec due to its Linux
+>> device model.
+>> WCD938x Codec has 3 Linux component drivers
+>> 1. TX Component (A soundwire device connected to TX Soundwire Master)
+>> 2. RX Component (A soundwire device connected to RX Soundwire Master)
+>> 3. Master Component (Linux component framework master for (1) and  (2)
+>> and registers ASoC codec)
+>>
+>> Also we have only one reset for (1) and (2).
+>>
+>> reset line is handled by (3)
+>> There are two possibilities when the WCD938x reset can happen,
+>>
+>> 1. If reset happens earlier than probing (1) and (2) which is best case.
+>>
+>>
+>> 2. if reset happens after (1) and (2) are probed then SoundWire TX and
+>> RX master will have spend 2 + 2 secs waiting, Which is a long time out
+>> Hence the patch.
+>>
+>> TBH, the 2 sec timeout value was just a random number which I added at
+>> the start, we had to come up with some sensible value over the time
+>> anyway for that.
+>>
+>> You could say why do we need wait itself in the first place.
+>>
+>> The reason we need wait in first place is because, there is a danger of
+>> codec accessing registers even before enumeration is finished. Because
+>> most of the ASoC codec registration happens as part of codec/component
+>> driver probe function rather than status callback.
+>>
+>> I hope this answers your questions.
 > 
->  From 642d5e05e8a8578e75531632d714cec5976ab9ac Mon Sep 17 00:00:00 2001
-> From: Yang Weijiang <weijiang.yang@intel.com>
-> Date: Thu, 8 Jul 2021 23:51:02 +0800
-> Subject: [PATCH] KVM: x86/pmu: Refactor code to support guest Arch LBR
 > 
-> Take account of Arch LBR when do sanity checks before program
-> vPMU for guest. Pass through Arch LBR recording MSRs to guest
-> to gain better performance. Note, Arch LBR and Legacy LBR support
-> are mutually exclusive, i.e., they're not both available on one
-> platform.
+> Humm, not really.
 > 
-> Co-developed-by: Like Xu <like.xu@linux.intel.com>
-> Signed-off-by: Like Xu <like.xu@linux.intel.com>
-> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-> ---
+> First, you're using this TIMEOUT_MS value in 3 unrelated places, and
+> using 2 different struct completion, which means there are side effects
+> beyond autoenumeration.
 
-This one looks good to me.
+2 of these 3 are autoenum ones, one is in probe path and other in bus 
+reset path during pm.
 
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+The final one is broadcast timeout, new timeout value should be okay for 
+that too, given that we need 10ms timeout.
 
-Thanks,
-Kan
->   arch/x86/kvm/vmx/pmu_intel.c | 47 +++++++++++++++++++++++++-----------
->   arch/x86/kvm/vmx/vmx.c       |  3 +++
->   2 files changed, 36 insertions(+), 14 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-> index aa36d2072b91..306ce7ac9934 100644
-> --- a/arch/x86/kvm/vmx/pmu_intel.c
-> +++ b/arch/x86/kvm/vmx/pmu_intel.c
-> @@ -170,12 +170,16 @@ static inline struct kvm_pmc *get_fw_gp_pmc(struct 
-> kvm_pmu *pmu, u32 msr)
+> qcom.c-         /*
 > 
->   bool intel_pmu_lbr_is_compatible(struct kvm_vcpu *vcpu)
->   {
-> +       if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-> +               return guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
-> +
->          /*
->           * As a first step, a guest could only enable LBR feature if its
->           * cpu model is the same as the host because the LBR registers
->           * would be pass-through to the guest and they're model specific.
->           */
-> -       return boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
-> +       return !boot_cpu_has(X86_FEATURE_ARCH_LBR) &&
-> +               boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
->   }
+> qcom.c-          * sleep for 10ms for MSM soundwire variant to allow
+> broadcast
 > 
->   bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
-> @@ -188,25 +192,28 @@ bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
->   static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
->   {
->          struct x86_pmu_lbr *records = vcpu_to_lbr_records(vcpu);
-> -       bool ret = false;
+> qcom.c-          * command to complete.
 > 
->          if (!intel_pmu_lbr_is_enabled(vcpu))
-> -               return ret;
-> +               return false;
+> qcom.c-          */
 > 
->          if (index == MSR_ARCH_LBR_DEPTH || index == MSR_ARCH_LBR_CTL) {
-> -               if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-> -                       ret = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
-> -               return ret;
-> +               return kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
-> +                      guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
->          }
+> qcom.c-         ret = wait_for_completion_timeout(&swrm->broadcast,
 > 
-> -       ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS) ||
-> -               (index >= records->from && index < records->from + 
-> records->nr) ||
-> -               (index >= records->to && index < records->to + 
-> records->nr);
-> +       if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) &&
-> +           (index == MSR_LBR_SELECT || index == MSR_LBR_TOS))
-> +               return true;
+> qcom.c:                                   msecs_to_jiffies(TIMEOUT_MS));
 > 
-> -       if (!ret && records->info)
-> -               ret = (index >= records->info && index < records->info + 
-> records->nr);
-> +       if ((index >= records->from && index < records->from + 
-> records->nr) ||
-> +           (index >= records->to && index < records->to + records->nr))
-> +               return true;
+> --
 > 
-> -       return ret;
-> +       if (records->info && index >= records->info &&
-> +           index < records->info + records->nr)
-> +               return true;
-> +
-> +       return false;
->   }
+> qcom.c-         goto err_clk;
 > 
->   static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
-> @@ -742,6 +749,9 @@ static void vmx_update_intercept_for_lbr_msrs(struct 
-> kvm_vcpu *vcpu, bool set)
->                          vmx_set_intercept_for_msr(vcpu, lbr->info + i, 
-> MSR_TYPE_RW, set);
->          }
+> qcom.c- }
 > 
-> +       if (guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
-> +               return;
-> +
->          vmx_set_intercept_for_msr(vcpu, MSR_LBR_SELECT, MSR_TYPE_RW, set);
->          vmx_set_intercept_for_msr(vcpu, MSR_LBR_TOS, MSR_TYPE_RW, set);
->   }
-> @@ -782,10 +792,13 @@ void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu)
->   {
->          struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
->          struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
-> +       bool lbr_enable = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) ?
-> +               (vmcs_read64(GUEST_IA32_LBR_CTL) & ARCH_LBR_CTL_LBREN) :
-> +               (vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR);
+> qcom.c-
 > 
->          if (!lbr_desc->event) {
->                  vmx_disable_lbr_msrs_passthrough(vcpu);
-> -               if (vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR)
-> +               if (lbr_enable)
->                          goto warn;
->                  if (test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use))
->                          goto warn;
-> @@ -802,13 +815,19 @@ void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu)
->          return;
+> qcom.c- qcom_swrm_init(ctrl);
 > 
->   warn:
-> +       if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-> +               wrmsrl(MSR_ARCH_LBR_DEPTH, lbr_desc->records.nr);
->          pr_warn_ratelimited("kvm: vcpu-%d: fail to passthrough LBR.\n",
->                  vcpu->vcpu_id);
->   }
+> qcom.c- wait_for_completion_timeout(&ctrl->enumeration,
 > 
->   static void intel_pmu_cleanup(struct kvm_vcpu *vcpu)
->   {
-> -       if (!(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR))
-> +       bool lbr_enable = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) ?
-> +               (vmcs_read64(GUEST_IA32_LBR_CTL) & ARCH_LBR_CTL_LBREN) :
-> +               (vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR);
-> +
-> +       if (!lbr_enable)
->                  intel_pmu_release_guest_lbr_event(vcpu);
->   }
+> qcom.c:                             msecs_to_jiffies(TIMEOUT_MS));
 > 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index b6bc7d97e4b4..98e56a909c01 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -573,6 +573,9 @@ static bool is_valid_passthrough_msr(u32 msr)
->          case MSR_LBR_NHM_TO ... MSR_LBR_NHM_TO + 31:
->          case MSR_LBR_CORE_FROM ... MSR_LBR_CORE_FROM + 8:
->          case MSR_LBR_CORE_TO ... MSR_LBR_CORE_TO + 8:
-> +       case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
-> +       case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
-> +       case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
->                  /* LBR MSRs. These are handled in 
-> vmx_update_intercept_for_lbr_msrs() */
->                  return true;
->          }
-> -- 
-> 2.27.0
+> --
 > 
->> Thanks,
->> Kan
->>
+> qcom.c-         if (!swrm_wait_for_frame_gen_enabled(ctrl))
+> 
+> qcom.c-                 dev_err(ctrl->dev, "link failed to connect\n");
+> 
+> qcom.c-
+> 
+> qcom.c-         /* wait for hw enumeration to complete */
+> 
+> qcom.c-         wait_for_completion_timeout(&ctrl->enumeration,
+> 
+> qcom.c:                                   msecs_to_jiffies(TIMEOUT_MS)); >
+> 
+> And then I don't get what you do on a timeout. in the enumeration part,
+
+We can't do much on the timeout.
+
+> the timeout value is not checked for, so I guess enumeration proceeds
+> without the hardware being available? That seems to contradict the
+> assertion that you don't want to access registers before the hardware is
+> properly initialized.
+
+Even if enumeration timeout, we will not access the registers because 
+the ASoC codec is not registered yet from WCD938x component master.
+
+> 
+> And then on broadcast you have this error handling:
+> 
+> 		ret = wait_for_completion_timeout(&swrm->broadcast,
+> 						  msecs_to_jiffies(TIMEOUT_MS));
+> 		if (!ret)
+> 			ret = SDW_CMD_IGNORED;
+> 		else
+> 			ret = SDW_CMD_OK;
+> 
+> Which is equally confusing since SDW_CMD_IGNORED is really an error, and
+> the bus layer does not really handle it well - not to mention that I
+> vaguely recall the qcom hardware having its own definition of IGNORED?
+QCom hardware alteast the version based on which this driver was written 
+did not have any support to report errors type back on register read/writes.
+
+In this case a broad cast read or write did not generate a complete 
+interrupt its assumed that its ignored, as there is no way to say if its 
+error or ignored.
+
+--srini
+
+
+
+
+> 
