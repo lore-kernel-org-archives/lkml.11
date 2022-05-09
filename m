@@ -2,112 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232926AbiEIFpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
+        id S233257AbiEIFoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235196AbiEIFna (ORCPT
+        with ESMTP id S231927AbiEIFhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:43:30 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C7F13FD5E
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:39:36 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KxVKK4tNXz9sT7;
-        Mon,  9 May 2022 07:36:37 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id FPwFrJmwv649; Mon,  9 May 2022 07:36:37 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF4hxJz9sTN;
-        Mon,  9 May 2022 07:36:33 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E74A8B770;
-        Mon,  9 May 2022 07:36:33 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id ZYcdwSDnGbSn; Mon,  9 May 2022 07:36:33 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 45B878B773;
-        Mon,  9 May 2022 07:36:33 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aVqV1591287
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 9 May 2022 07:36:31 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aV8a1591286;
-        Mon, 9 May 2022 07:36:31 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        naveen.n.rao@linux.vnet.ibm.com
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 20/25] powerpc/inst: Add __copy_inst_from_kernel_nofault()
-Date:   Mon,  9 May 2022 07:36:18 +0200
-Message-Id: <1f3702890d6dbd64702b61834753bcc96851c18c.1652074503.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
-References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
+        Mon, 9 May 2022 01:37:45 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B921550EF
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:33:47 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id t6so17815055wra.4
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 22:33:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PLUNZth0Gzu0RXkdCxlC7YsvIKkko3pZWci/8TjWfsg=;
+        b=1fEjcPA9ZwqimNLicimZh7D54btJlReV6ttUi5sPPHZnlucnlayki28FnMUzJ/QL9Y
+         M3c5KF+PPpNktxtj878OD+pC4SkuQy2P6dLZQYUe2Cujk0Gb7K/0i0a8L3+IV/hrdY4w
+         clL8WGuArZLzgWuOlj6y5KUXWtm0lP97uo8OZdfkDmwLMoLvksx9f6ufrBVKNZkXmh5d
+         nyuQNHzTw/00jpMFdO8AU/V3rp4KrVfb5sHGTxhTXdr+wSJhwyUxsMYI6zF73msEMXuS
+         oNnwgVMaQmo1HLNVjh1tA9fH8g64Xjq73hzz8gXkMiEDk3tyUN8wHgrRYsJh1psS5+Rt
+         GXfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PLUNZth0Gzu0RXkdCxlC7YsvIKkko3pZWci/8TjWfsg=;
+        b=rDScGcW3BC95VMIyaEZMGhUBSeW+0dAS6hRjuRF0NCGRHoBszMWz4L/wq4IoEu0hXQ
+         31p6cXTlcLQwA21t41bJzU/nnzZG/weMfeJTV2q3zrK5lCICCu5bQJkV+BPCuv4u7Aro
+         0QQTXsC9amyQSM8jldrOhChttNtB5O3ITSfNi4EfDmgKgAVe//BrFyA/UNhESLoGHhJt
+         PPXFXW0x86Qh7k/UhZ1ynFjX93vJFT3+HXOeMhq5kUZU9NZsCPAAto8PFywMNBRKNk93
+         28tzteRrn+AlqxYS1WGvfz6glW6k93uZfqQ3FgxUgi9tg34pOHnDbLTGapKO8DOP/U2f
+         ulqQ==
+X-Gm-Message-State: AOAM533XYtG3HZNAL0aJuPlidyfnVW7eh9xzY9iV6PPynP6ySornEmgr
+        9VrRZ0+9hLhqgCGpjdt2SB+6YPcYnFPG11IlujU9KQ==
+X-Google-Smtp-Source: ABdhPJwm5HiGVrJo6H6A2ZwkRwo0cXAPq+C8yDH3Ar/UxfL9RCxY1/yZPp8l+hlWdvpp1E/Vv7lPAPz1K2H2BhU6/ug=
+X-Received: by 2002:a05:6000:12d1:b0:20a:d901:3828 with SMTP id
+ l17-20020a05600012d100b0020ad9013828mr11892146wrx.313.1652074425312; Sun, 08
+ May 2022 22:33:45 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=1534; s=20211009; h=from:subject:message-id; bh=uNUWZzzzPfrKXF6jD9unCulUYAF0cNf3EZC4MAgTHXc=; b=FrAE5/ZTxKUxlACNTbwIuVUFM//TtMPyfgYdKe5iiMoA7Aa65TRgGdY5GTk77k5AJ1bezEwzfA55 wjI9bKlVCxkjBMqMMbYXD+DOJL79X4UWX3vvkawyFLWyCX4KXdZC
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+References: <20220420112450.155624-1-apatel@ventanamicro.com>
+ <20220420112450.155624-6-apatel@ventanamicro.com> <CAOnJCU+yd7hqauHRYwnPqNKEgfy5FK06ezR64aH0Hm2AcNNadw@mail.gmail.com>
+In-Reply-To: <CAOnJCU+yd7hqauHRYwnPqNKEgfy5FK06ezR64aH0Hm2AcNNadw@mail.gmail.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Mon, 9 May 2022 11:03:34 +0530
+Message-ID: <CAAhSdy1vwQ6BmjzvSuJHc8V37U78PPjGS19+XEQHHqE1=nQRpg@mail.gmail.com>
+Subject: Re: [PATCH v2 5/7] RISC-V: KVM: Reduce KVM_MAX_VCPUS value
+To:     Atish Patra <atishp@atishpatra.org>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        KVM General <kvm@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
+        <kvm-riscv@lists.infradead.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On the same model as get_user() versus __get_user(),
-introduce __copy_inst_from_kernel_nofault() which doesn't
-check address.
+On Wed, May 4, 2022 at 7:45 AM Atish Patra <atishp@atishpatra.org> wrote:
+>
+> On Wed, Apr 20, 2022 at 4:25 AM Anup Patel <apatel@ventanamicro.com> wrote:
+> >
+> > Currently, the KVM_MAX_VCPUS value is 16384 for RV64 and 128
+> > for RV32.
+> >
+> > The KVM_MAX_VCPUS value is too high for RV64 and too low for
+> > RV32 compared to other architectures (e.g. x86 sets it to 1024
+> > and ARM64 sets it to 512). The too high value of KVM_MAX_VCPUS
+> > on RV64 also leads to VCPU mask on stack consuming 2KB.
+> >
+> > We set KVM_MAX_VCPUS to 1024 for both RV64 and RV32 to be
+> > aligned other architectures.
+> >
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  arch/riscv/include/asm/kvm_host.h | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >
+> > diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
+> > index 806f74dc0bfc..61d8b40e3d82 100644
+> > --- a/arch/riscv/include/asm/kvm_host.h
+> > +++ b/arch/riscv/include/asm/kvm_host.h
+> > @@ -16,8 +16,7 @@
+> >  #include <asm/kvm_vcpu_fp.h>
+> >  #include <asm/kvm_vcpu_timer.h>
+> >
+> > -#define KVM_MAX_VCPUS                  \
+> > -       ((HGATP_VMID_MASK >> HGATP_VMID_SHIFT) + 1)
+> > +#define KVM_MAX_VCPUS                  1024
+> >
+> >  #define KVM_HALT_POLL_NS_DEFAULT       500000
+> >
+> > --
+> > 2.25.1
+> >
+>
+> Reviewed-by: Atish Patra <atishp@rivosinc.com>
 
-To be used by callers that have already checked that the adress
-is a kernel address.
+Queued this patch for 5.19
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/include/asm/inst.h | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+Thanks,
+Anup
 
-diff --git a/arch/powerpc/include/asm/inst.h b/arch/powerpc/include/asm/inst.h
-index 80b6d74146c6..b49aae9f6f27 100644
---- a/arch/powerpc/include/asm/inst.h
-+++ b/arch/powerpc/include/asm/inst.h
-@@ -158,13 +158,10 @@ static inline char *__ppc_inst_as_str(char str[PPC_INST_STR_LEN], ppc_inst_t x)
- 	__str;				\
- })
- 
--static inline int copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
-+static inline int __copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
- {
- 	unsigned int val, suffix;
- 
--	if (unlikely(!is_kernel_addr((unsigned long)src)))
--		return -ERANGE;
--
- /* See https://github.com/ClangBuiltLinux/linux/issues/1521 */
- #if defined(CONFIG_CC_IS_CLANG) && CONFIG_CLANG_VERSION < 140000
- 	val = suffix = 0;
-@@ -181,4 +178,12 @@ static inline int copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
- 	return -EFAULT;
- }
- 
-+static inline int copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
-+{
-+	if (unlikely(!is_kernel_addr((unsigned long)src)))
-+		return -ERANGE;
-+
-+	return __copy_inst_from_kernel_nofault(inst, src);
-+}
-+
- #endif /* _ASM_POWERPC_INST_H */
--- 
-2.35.1
-
+>
+> --
+> Regards,
+> Atish
