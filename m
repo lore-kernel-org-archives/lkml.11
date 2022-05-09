@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B134C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA18C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233717AbiEIKYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
+        id S231915AbiEIKYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234304AbiEIKWp (ORCPT
+        with ESMTP id S233788AbiEIKYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:22:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F26EA1F63B6
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:18:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652091528;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/QPwJnuZ70Zhpy7RtoX+N5eDUlR9SN6vN0Pbo4IGuzI=;
-        b=AC3EWERGEH+NYrciOOGpr+AlfDO3z0RGTRmjT9RnC9tojhown3r+fQjpXc30mThr74RwgJ
-        PY+GCGuz6lcLwEGuy4/2riuiy6CQtVMsKgqrBVpRHuQLOiNmaeZeCF1qoNxoy2GDgyWabJ
-        Kg6q5Nw8ap+d1jTBp2veDK7Y6XsjXJw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-54-sDfIAtb-PKi1nfbOIyKVzg-1; Mon, 09 May 2022 06:18:45 -0400
-X-MC-Unique: sDfIAtb-PKi1nfbOIyKVzg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 9 May 2022 06:24:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E420285AD0;
+        Mon,  9 May 2022 03:20:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DDFC857D00;
-        Mon,  9 May 2022 10:18:44 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5939742D4C8;
-        Mon,  9 May 2022 10:18:42 +0000 (UTC)
-Message-ID: <b553737e9f7b587cd1ce598e276c1c9117fa2a98.camel@redhat.com>
-Subject: Re: [PATCH v4 08/15] KVM: x86: Deactivate APICv on vCPU with APIC
- disabled
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Mon, 09 May 2022 13:18:41 +0300
-In-Reply-To: <20220508023930.12881-9-suravee.suthikulpanit@amd.com>
-References: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
-         <20220508023930.12881-9-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82AA3B810F2;
+        Mon,  9 May 2022 10:04:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4BAC385AB;
+        Mon,  9 May 2022 10:04:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652090663;
+        bh=KRAr8NAr9HEhffjgiwK4Uw60pEgav6/jUA27cwEshUw=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=lnp1a43fnuMuxe/CY86/uHJMx+9RQ310fGLR4bv866phL0rSFo+n/duplpgIqZ566
+         qd+Iliuv5LFd1W+h3GV3o1DyoJppsCfpOMJyxbaTHbAjLSG13T+yQBu4T0OwND7HVL
+         Kli8QiYQdG77pMR/YNwimqzl7+028JaxkMxM9scYRKxXoe1QVSQnsnKjhwvIClGIIh
+         8XYAjgehQ84qaQTjwYIu1Lf9OMfK3PEHfna+mcMDRMPkzPKc62fnGWHdEUbiy97OA1
+         I010isfobv2am5LZy3U6Pu1M+YKcMirXPxc1aXoo4qb+At0OE+tjD/+NNdvStgFKdZ
+         /4M31cGqBx9Ag==
+Received: by mail-ua1-f51.google.com with SMTP id ay15so5241514uab.9;
+        Mon, 09 May 2022 03:04:23 -0700 (PDT)
+X-Gm-Message-State: AOAM530h/+zOOmcrXHtlqDvsG4MSqqzeWv7iQetGjrTtSbgDmEH1emZT
+        UQJ0Ol5WnZpuXXZREQyWMz8uIuCXJpcgwSlayAE=
+X-Google-Smtp-Source: ABdhPJze9Bj2vif80pdU9vnKaat0koYohXFjUE9PaOAFIxquVtTO15k2qJPF8nmLMdZuTxk4Wl6LoraCGSJ0kxfq0rU=
+X-Received: by 2002:ab0:77d5:0:b0:352:42d7:88c2 with SMTP id
+ y21-20020ab077d5000000b0035242d788c2mr7385929uar.1.1652090662208; Mon, 09 May
+ 2022 03:04:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Received: by 2002:a59:b691:0:b0:2ae:8ec8:872b with HTTP; Mon, 9 May 2022
+ 03:04:21 -0700 (PDT)
+In-Reply-To: <YnVagPnKc+SDnkP/@linutronix.de>
+References: <YnVagPnKc+SDnkP/@linutronix.de>
+From:   Frederic Weisbecker <frederic@kernel.org>
+Date:   Mon, 9 May 2022 12:04:21 +0200
+X-Gmail-Original-Message-ID: <CAFTL4hxoGnTkXs4O4_L2bZafFjFJOPUH+U+h__zsfYOhLpsSGQ@mail.gmail.com>
+Message-ID: <CAFTL4hxoGnTkXs4O4_L2bZafFjFJOPUH+U+h__zsfYOhLpsSGQ@mail.gmail.com>
+Subject: Re: [ANNOUNCE] v5.18-rc5-rt5
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-05-07 at 21:39 -0500, Suravee Suthikulpanit wrote:
-> APICv should be deactivated on vCPU that has APIC disabled.
-> Therefore, call kvm_vcpu_update_apicv() when changing
-> APIC mode, and add additional check for APIC disable mode
-> when determine APICV activation,
-> 
-> Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/lapic.c | 4 +++-
->  arch/x86/kvm/x86.c   | 4 +++-
->  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-> index 8b8c4a905976..680824d7aa0d 100644
-> --- a/arch/x86/kvm/lapic.c
-> +++ b/arch/x86/kvm/lapic.c
-> @@ -2346,8 +2346,10 @@ void kvm_lapic_set_base(struct kvm_vcpu *vcpu, u64 value)
->  	if (((old_value ^ value) & X2APIC_ENABLE) && (value & X2APIC_ENABLE))
->  		kvm_apic_set_x2apic_id(apic, vcpu->vcpu_id);
->  
-> -	if ((old_value ^ value) & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE))
-> +	if ((old_value ^ value) & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE)) {
-> +		kvm_vcpu_update_apicv(vcpu);
->  		static_call_cond(kvm_x86_set_virtual_apic_mode)(vcpu);
+2022-05-06 19:27 UTC+02:00, Sebastian Andrzej Siewior <bigeasy@linutronix.de>:
+> Dear RT folks!
+>
+> I'm pleased to announce the v5.18-rc5-rt5 patch set.
+>
+> Changes since v5.18-rc5-rt4:
+>
+>   - Replace the ptrace patch with v4 of Eric W. Biederman's rework plus
+>     a smaller patch on top to get it to work.
+>
+>   - Drop get_cpu_light from the series:
+>
+>     - Replace the crypto/cryptd patch with an alternative version.
+>
+>     - Replace the nfs/sunrpc patch with an alternative version.
+>
+>     - Replace the vmalloc related patch with an alternative version.
+>
+>     - Replace the block-mq related patch with an alternative version.
+>
+>     - Replace the scsi/fcoe patch with two patches by Davidlohr Bueso plus
+>       two additional patches in order to tackle two remaining issues in
+>       that area.
+>
+>   - Drop the preempt-disable -> migrate-disable replacement in kvm on
+>     arm64. It seems no longer to be needed.
+>
+>   - Drop the "delay sending signals in atomic context" on x86/arm64. It
+>     is not needed to send a SIGTRAP for a breakpoint on x86 (the
+>     original motivation). Lets see if something else pops up. This might
+>     break ARM64 in that regard and will be investigated in a follow up
+>     release.
+>
+> Known issues
+>      - Valentin Schneider reported a few splats on ARM64, see
 
-As futher optimization, we might even get rid of .set_virtual_apic_mode
-and do all of this in kvm_vcpu_update_apicv.
-But no need to this now.
+Please don't ignore
+https://lore.kernel.org/all/20220405010752.1347437-1-frederic@kernel.org/
+and https://lore.kernel.org/all/20220405010752.1347437-2-frederic@kernel.org/
 
+Especially the second patch fixes a pretty serious issue!
 
-> +	}
->  
->  	apic->base_address = apic->vcpu->arch.apic_base &
->  			     MSR_IA32_APICBASE_BASE;
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 8ee8c91fa762..77e49892dea1 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -9836,7 +9836,9 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
->  
->  	down_read(&vcpu->kvm->arch.apicv_update_lock);
->  
-> -	activate = kvm_vcpu_apicv_activated(vcpu);
-> +	/* Do not activate APICV when APIC is disabled */
-> +	activate = kvm_vcpu_apicv_activated(vcpu) &&
-> +		   (kvm_get_apic_mode(vcpu) != LAPIC_MODE_DISABLED);
->  
->  	if (vcpu->arch.apicv_active == activate)
->  		goto out;
-
-Looks good!
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
-
+Thanks.
