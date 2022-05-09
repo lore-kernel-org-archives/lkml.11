@@ -2,146 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C76C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8835FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233088AbiEIJym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
+        id S233391AbiEIJyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238665AbiEIJjz (ORCPT
+        with ESMTP id S236152AbiEIJnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:39:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B7618C06D;
-        Mon,  9 May 2022 02:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652088961; x=1683624961;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JULdTGBTfThIZcRLutbTwErm+tkVZJR7XHUyFQtfHus=;
-  b=I7KHiNxYzLnjnhp3L39e9Rbks2p6eiKRG0gNap7+/972wyozBhr4qQ8y
-   6qWauqHGCyGpHCWgKWTBLwShlMv4+cgw0S0Z+9cGu9GFV3Xrme6jlolVG
-   yHnz05zCDkXweBZHjra0Qsuu4KbyQ/LFPDhpqpKRvK68n4YEjEkW3DQDc
-   1WgjnEyqbSWNA1LH8Dnn/U/X+ecH/XtzEKBGZjmsnLwiUl/c7NPSqc7Yr
-   dZUpfsanIZj208oiX+uHDuJkZdRalHwKhXzzEGgBTVgI6+IWfu5aFLaiC
-   zEJcv7opiKNPSnQLE3QZxEwd0rN3U7m06aIR7++fh/60Sq9vUVOrYxjpB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="249533352"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="249533352"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:35:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="564969629"
-Received: from mfuent2x-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.220.67])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:35:14 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 3/3] termbits.h: Remove posix_types.h include
-Date:   Mon,  9 May 2022 12:34:46 +0300
-Message-Id: <20220509093446.6677-4-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220509093446.6677-1-ilpo.jarvinen@linux.intel.com>
-References: <20220509093446.6677-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 9 May 2022 05:43:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7AF1E6549;
+        Mon,  9 May 2022 02:39:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3D7EB810B2;
+        Mon,  9 May 2022 09:38:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739E3C385AB;
+        Mon,  9 May 2022 09:38:50 +0000 (UTC)
+Message-ID: <fa57eef5-19ee-4328-99b0-403571f59e56@xs4all.nl>
+Date:   Mon, 9 May 2022 11:38:48 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2] media: Add P010LE video format
+Content-Language: en-US
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jernej.skrabec@gmail.com, p.zabel@pengutronix.de,
+        nicolas@ndufresne.ca, kernel@collabora.com,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>
+References: <20220421124349.452404-1-benjamin.gaignard@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220421124349.452404-1-benjamin.gaignard@collabora.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Nothing in termbits seems to require anything from linux/posix_types.h.
+Hi Benjamin,
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- arch/alpha/include/uapi/asm/termbits.h  | 2 --
- arch/mips/include/uapi/asm/termbits.h   | 2 --
- arch/parisc/include/uapi/asm/termbits.h | 2 --
- arch/sparc/include/uapi/asm/termbits.h  | 2 --
- include/uapi/asm-generic/termbits.h     | 2 --
- 5 files changed, 10 deletions(-)
+On 4/21/22 14:43, Benjamin Gaignard wrote:
+> P010LE is a YUV format with 16-bits per pixel with interleaved UV.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> ---
+> version 2:
+> - Fix Hans's remarks
+> - Add 'LE' suffix to pixel name since P010BE can also exist
 
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index 735e9ffe2795..f1290b22072b 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -2,8 +2,6 @@
- #ifndef _ALPHA_TERMBITS_H
- #define _ALPHA_TERMBITS_H
- 
--#include <linux/posix_types.h>
--
- #include <asm-generic/termbits-common.h>
- 
- typedef unsigned int	tcflag_t;
-diff --git a/arch/mips/include/uapi/asm/termbits.h b/arch/mips/include/uapi/asm/termbits.h
-index 8fa3e79d4f94..1eb60903d6f0 100644
---- a/arch/mips/include/uapi/asm/termbits.h
-+++ b/arch/mips/include/uapi/asm/termbits.h
-@@ -11,8 +11,6 @@
- #ifndef _ASM_TERMBITS_H
- #define _ASM_TERMBITS_H
- 
--#include <linux/posix_types.h>
--
- #include <asm-generic/termbits-common.h>
- 
- typedef unsigned int	tcflag_t;
-diff --git a/arch/parisc/include/uapi/asm/termbits.h b/arch/parisc/include/uapi/asm/termbits.h
-index d72c5ebf3a3a..3a8938d26fb4 100644
---- a/arch/parisc/include/uapi/asm/termbits.h
-+++ b/arch/parisc/include/uapi/asm/termbits.h
-@@ -2,8 +2,6 @@
- #ifndef __ARCH_PARISC_TERMBITS_H__
- #define __ARCH_PARISC_TERMBITS_H__
- 
--#include <linux/posix_types.h>
--
- #include <asm-generic/termbits-common.h>
- 
- typedef unsigned int	tcflag_t;
-diff --git a/arch/sparc/include/uapi/asm/termbits.h b/arch/sparc/include/uapi/asm/termbits.h
-index cfcc4e07ce51..4321322701fc 100644
---- a/arch/sparc/include/uapi/asm/termbits.h
-+++ b/arch/sparc/include/uapi/asm/termbits.h
-@@ -2,8 +2,6 @@
- #ifndef _UAPI_SPARC_TERMBITS_H
- #define _UAPI_SPARC_TERMBITS_H
- 
--#include <linux/posix_types.h>
--
- #include <asm-generic/termbits-common.h>
- 
- #if defined(__sparc__) && defined(__arch64__)
-diff --git a/include/uapi/asm-generic/termbits.h b/include/uapi/asm-generic/termbits.h
-index c92179563289..890ef29053e2 100644
---- a/include/uapi/asm-generic/termbits.h
-+++ b/include/uapi/asm-generic/termbits.h
-@@ -2,8 +2,6 @@
- #ifndef __ASM_GENERIC_TERMBITS_H
- #define __ASM_GENERIC_TERMBITS_H
- 
--#include <linux/posix_types.h>
--
- #include <asm-generic/termbits-common.h>
- 
- typedef unsigned int	tcflag_t;
--- 
-2.30.2
+I don't think you should do this. By default formats are little endian,
+unless explicitly stated otherwise. So big endian formats typically
+have a _BE suffix, and they use v4l2_fourcc_be() instead of v4l2_fourcc().
 
+This format is standard little endian, so I would just drop the LE bit.
+
+> 
+>  .../media/v4l/pixfmt-yuv-planar.rst           | 53 +++++++++++++++++++
+>  drivers/media/v4l2-core/v4l2-common.c         |  1 +
+>  drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
+>  include/uapi/linux/videodev2.h                |  1 +
+>  4 files changed, 56 insertions(+)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+> index 8dff5906639b..b9dd4f376fe3 100644
+> --- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+> +++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+> @@ -109,6 +109,13 @@ All components are stored with the same number of bits per component.
+>        - Cb, Cr
+>        - No
+>        - 16x16 tiles
+> +    * - V4L2_PIX_FMT_P010LE
+> +      - 'P010'
+> +      - 16
+> +      - 4:2:0
+> +      - Cb, Cr
+> +      - No
+> +      - Linear
+>      * - V4L2_PIX_FMT_NV16
+>        - 'NV16'
+>        - 8
+> @@ -171,6 +178,7 @@ horizontally.
+>  .. _V4L2-PIX-FMT-NV21:
+>  .. _V4L2-PIX-FMT-NV12M:
+>  .. _V4L2-PIX-FMT-NV21M:
+> +.. _V4L2-PIX-FMT-P010LE:
+>  
+>  NV12, NV21, NV12M and NV21M
+>  ---------------------------
+> @@ -519,6 +527,51 @@ number of lines as the luma plane.
+>        - Cb\ :sub:`33`
+>        - Cr\ :sub:`33`
+>  
+> +.. _V4L2_PIX_FMT_P010LE:
+> +
+> +P010LE
+> +------
+> +
+> +Like NV12 with 16 bits per component, data in the 10 high bits, zeros in the 6 low bits, arranged in little endian order
+
+Here it is fine to mention little endian, it's just the fourcc name I have a problem with.
+
+Regards,
+
+	Hans
+
+
+> +
+> +.. flat-table:: Sample 4x4 P010LE Image
+> +    :header-rows:  0
+> +    :stub-columns: 0
+> +
+> +    * - start + 0:
+> +      - Y'\ :sub:`00`
+> +      - Y'\ :sub:`01`
+> +      - Y'\ :sub:`02`
+> +      - Y'\ :sub:`03`
+> +    * - start + 8:
+> +      - Y'\ :sub:`10`
+> +      - Y'\ :sub:`11`
+> +      - Y'\ :sub:`12`
+> +      - Y'\ :sub:`13`
+> +    * - start + 16:
+> +      - Y'\ :sub:`20`
+> +      - Y'\ :sub:`21`
+> +      - Y'\ :sub:`22`
+> +      - Y'\ :sub:`23`
+> +    * - start + 24:
+> +      - Y'\ :sub:`30`
+> +      - Y'\ :sub:`31`
+> +      - Y'\ :sub:`32`
+> +      - Y'\ :sub:`33`
+> +    * - start + 32:
+> +      - Cb\ :sub:`00`
+> +      - Cr\ :sub:`00`
+> +      - Cb\ :sub:`01`
+> +      - Cr\ :sub:`01`
+> +    * - start + 40:
+> +      - Cb\ :sub:`10`
+> +      - Cr\ :sub:`10`
+> +      - Cb\ :sub:`11`
+> +      - Cr\ :sub:`11`
+> +
+> +.. raw:: latex
+> +
+> +    \endgroup
+>  
+>  Fully Planar YUV Formats
+>  ========================
+> diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
+> index df34b2a283bc..bc73526c41b9 100644
+> --- a/drivers/media/v4l2-core/v4l2-common.c
+> +++ b/drivers/media/v4l2-core/v4l2-common.c
+> @@ -266,6 +266,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
+>  		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+>  		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
+>  		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
+> +		{ .format = V4L2_PIX_FMT_P010LE,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+>  
+>  		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
+>  		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
+> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+> index 96e307fe3aab..2ba3440099d0 100644
+> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+> @@ -1301,6 +1301,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+>  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
+>  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
+>  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
+> +	case V4L2_PIX_FMT_P010LE:	descr = "16-bit Y/CrCb 4:2:0"; break;
+>  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
+>  	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
+>  	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
+> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+> index 4c09969e7112..92822a80a12e 100644
+> --- a/include/uapi/linux/videodev2.h
+> +++ b/include/uapi/linux/videodev2.h
+> @@ -601,6 +601,7 @@ struct v4l2_pix_format {
+>  #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
+>  #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+>  #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
+> +#define V4L2_PIX_FMT_P010LE  v4l2_fourcc('P', '0', '1', '0') /* 16  Y/CbCr 4:2:0 16-bit per pixel, little endian*/
+>  
+>  /* two non contiguous planes - one Y, one Cr + Cb interleaved  */
+>  #define V4L2_PIX_FMT_NV12M   v4l2_fourcc('N', 'M', '1', '2') /* 12  Y/CbCr 4:2:0  */
