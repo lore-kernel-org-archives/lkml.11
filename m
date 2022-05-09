@@ -2,82 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB73C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0647EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235249AbiEINNB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
+        id S235268AbiEINNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235241AbiEINM6 (ORCPT
+        with ESMTP id S235234AbiEINNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:12:58 -0400
-Received: from outbound-smtp25.blacknight.com (outbound-smtp25.blacknight.com [81.17.249.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347D82A5EB7
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:09:00 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp25.blacknight.com (Postfix) with ESMTPS id 7B153CABF1
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:08:59 +0100 (IST)
-Received: (qmail 18876 invoked from network); 9 May 2022 13:08:59 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 9 May 2022 13:08:59 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 4/6] mm/page_alloc: Remove unnecessary page == NULL check in rmqueue
-Date:   Mon,  9 May 2022 14:08:03 +0100
-Message-Id: <20220509130805.20335-5-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220509130805.20335-1-mgorman@techsingularity.net>
-References: <20220509130805.20335-1-mgorman@techsingularity.net>
+        Mon, 9 May 2022 09:13:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90C1E2A7688
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652101742;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9C8drEYqngKOm3nncV9RRJ4ZJYInBOQKfqINsG0BQFA=;
+        b=WTWlWkUqRPMyTrEfzmeQjHaZBU3j8KbueY6mLhWF8iNg8r787smSwLsTQnuRBH+0Rxef7k
+        s9d8BEd8lPoKeiLE7lsBSizdEL3W9o5FfDMxjf45oIlc9AjTbGpNHe4JpjvkU0W7jJjqoZ
+        5heN4khFypWH8x7QU77gK7JWIszfUEo=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-115-KQMTzUUtOm211bSr8Hp74w-1; Mon, 09 May 2022 09:09:01 -0400
+X-MC-Unique: KQMTzUUtOm211bSr8Hp74w-1
+Received: by mail-wm1-f71.google.com with SMTP id p24-20020a1c5458000000b003945d2ffc6eso4242201wmi.5
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 06:09:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9C8drEYqngKOm3nncV9RRJ4ZJYInBOQKfqINsG0BQFA=;
+        b=5bkqkXyOKJAGjUdybF+wTQNzOVg6Komt8WHVc+VEH87J/eIzn4xsh5uomTdsNIq+Ve
+         paFSZTw5/2l/qAIybqOf3ymcglZyDQfa9292SbDAVsKnp5pFqxLkzyrBTeBBv3OCYCIF
+         bWmu41bJzmpvOuGiyBtu7s7ENgQgM4lBWj5ZGhM+GpoMnb6n7JzmxWgSR8bhZYbuQE/L
+         pqVEGPHifKQajaRPgtgbabJPK/iddXsz4jhMJI2drJPg765/raV03GkPMmqWCQvYqMcv
+         tXy2T9tc747ojqQpqMoQy7kqCaUsN2UoGzW95R1c+2g5YVvWij8LGR/gOEPhzjWg+MMy
+         4ipg==
+X-Gm-Message-State: AOAM530lmi/gsoIB/xN0+oOIdULuvizle2epBZ7pQ0vRDDKRd182SWqn
+        KNf5LTpxid8RnzMWgBIZHmyXBBbPBQHoJ7XVaOl/a+ZGbUki34PU03iK6W+s+MLEdYnSJeR4c/9
+        1m4OSmA3rb46yGtclI4ZrYDNmgu3V+bRvzCjAdYDGMbK70UJwjjAQAyUPs8QVc1G4qSWtCVgOnC
+        k=
+X-Received: by 2002:a05:6000:1869:b0:20c:5362:1295 with SMTP id d9-20020a056000186900b0020c53621295mr14079759wri.700.1652101740457;
+        Mon, 09 May 2022 06:09:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyDG6lbGPaq84WzEwCdXcOkQUQu+pRyyBz43QQu3IUWtgwSbAp0rMkkKwCQUS43pMkFMDHl0A==
+X-Received: by 2002:a05:6000:1869:b0:20c:5362:1295 with SMTP id d9-20020a056000186900b0020c53621295mr14079728wri.700.1652101740162;
+        Mon, 09 May 2022 06:09:00 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id z22-20020a05600c0a1600b003942a244eddsm13120297wmp.34.2022.05.09.06.08.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 06:08:59 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org
+Subject: [PATCH] drm/todo: Add entry for converting kselftests to kunit
+Date:   Mon,  9 May 2022 15:08:46 +0200
+Message-Id: <20220509130846.694397-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The VM_BUG_ON check for a valid page can be avoided with a simple
-change in the flow. The ZONE_BOOSTED_WATERMARK is unlikely in general
-and even more unlikely if the page allocation failed so mark the
-branch unlikely.
+Many of the kselftests in DRM can be converted to kunit tests instead,
+since that framework is more suitable for unit testing.
 
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Suggested-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
- mm/page_alloc.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 4c1acf666056..dc0fdeb3795c 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3765,17 +3765,18 @@ struct page *rmqueue(struct zone *preferred_zone,
+ Documentation/gpu/todo.rst | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/Documentation/gpu/todo.rst b/Documentation/gpu/todo.rst
+index 10bfb50908d1..513b20ccef1e 100644
+--- a/Documentation/gpu/todo.rst
++++ b/Documentation/gpu/todo.rst
+@@ -617,6 +617,17 @@ Contact: Javier Martinez Canillas <javierm@redhat.com>
  
- 	page = rmqueue_buddy(preferred_zone, zone, order, alloc_flags,
- 							migratetype);
--	if (unlikely(!page))
--		return NULL;
+ Level: Intermediate
  
- out:
- 	/* Separate test+clear to avoid unnecessary atomics */
--	if (test_bit(ZONE_BOOSTED_WATERMARK, &zone->flags)) {
-+	if (unlikely(test_bit(ZONE_BOOSTED_WATERMARK, &zone->flags))) {
- 		clear_bit(ZONE_BOOSTED_WATERMARK, &zone->flags);
- 		wakeup_kswapd(zone, 0, 0, zone_idx(zone));
- 	}
- 
--	VM_BUG_ON_PAGE(page && bad_range(zone, page), page);
-+	if (unlikely(!page))
-+		return NULL;
++Convert Kernel Selftests (kselftest) to KUnit tests when appropriate
++--------------------------------------------------------------------
 +
-+	VM_BUG_ON_PAGE(bad_range(zone, page), page);
- 	return page;
- }
++Many of the `Kselftest <https://www.kernel.org/doc/html/latest/dev-tools/kselftest.html>`_
++tests in DRM could be converted to Kunit tests instead, since that framework
++is more suitable for unit testing.
++
++Contact: Javier Martinez Canillas <javierm@redhat.com>
++
++Level: Starter
++
+ Enable trinity for DRM
+ ----------------------
  
 -- 
-2.34.1
+2.35.1
 
