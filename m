@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6737DC47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1287C38161
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236753AbiEIHx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
+        id S236801AbiEIHyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235576AbiEIHo5 (ORCPT
+        with ESMTP id S234790AbiEIHow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:44:57 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD17B17050;
-        Mon,  9 May 2022 00:41:02 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCfxsZ3_1652082046;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCfxsZ3_1652082046)
+        Mon, 9 May 2022 03:44:52 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31BC14022;
+        Mon,  9 May 2022 00:40:57 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R481e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCfaIjH_1652082033;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCfaIjH_1652082033)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 09 May 2022 15:40:47 +0800
+          Mon, 09 May 2022 15:40:34 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -30,9 +30,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
         zhujia.zj@bytedance.com
-Subject: [PATCH v11 11/22] erofs: register fscache volume
-Date:   Mon,  9 May 2022 15:40:17 +0800
-Message-Id: <20220509074028.74954-12-jefflexu@linux.alibaba.com>
+Subject: [PATCH v11 03/22] cachefiles: unbind cachefiles gracefully in on-demand mode
+Date:   Mon,  9 May 2022 15:40:09 +0800
+Message-Id: <20220509074028.74954-4-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
@@ -42,160 +42,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A new fscache based mode is going to be introduced for erofs, in which
-case on-demand read semantics is implemented through fscache.
+Add a refcount to avoid the deadlock in on-demand read mode. The
+on-demand read mode will pin the corresponding cachefiles object for
+each anonymous fd. The cachefiles object is unpinned when the anonymous
+fd gets closed. When the user daemon exits and the fd of
+"/dev/cachefiles" device node gets closed, it will wait for all
+cahcefiles objects getting withdrawn. Then if there's any anonymous fd
+getting closed after the fd of the device node, the user daemon will
+hang forever, waiting for all objects getting withdrawn.
 
-As the first step, register fscache volume for each erofs filesystem.
-That means, data blobs can not be shared among erofs filesystems. In the
-following iteration, we are going to introduce the domain semantics, in
-which case several erofs filesystems can belong to one domain, and data
-blobs can be shared among these erofs filesystems of one domain.
+To fix this, add a refcount indicating if there's any object pinned by
+anonymous fds. The cachefiles cache gets unbound and withdrawn when the
+refcount is decreased to 0. It won't change the behaviour of the
+original mode, in which case the cachefiles cache gets unbound and
+withdrawn as long as the fd of the device node gets closed.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 ---
- fs/erofs/Kconfig    | 10 ++++++++++
- fs/erofs/Makefile   |  1 +
- fs/erofs/fscache.c  | 37 +++++++++++++++++++++++++++++++++++++
- fs/erofs/internal.h | 16 ++++++++++++++++
- fs/erofs/super.c    |  5 +++++
- 5 files changed, 69 insertions(+)
- create mode 100644 fs/erofs/fscache.c
+ fs/cachefiles/daemon.c   | 19 ++++++++++++++++---
+ fs/cachefiles/internal.h |  3 +++
+ fs/cachefiles/ondemand.c |  3 +++
+ 3 files changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/fs/erofs/Kconfig b/fs/erofs/Kconfig
-index f57255ab88ed..85490370e0ca 100644
---- a/fs/erofs/Kconfig
-+++ b/fs/erofs/Kconfig
-@@ -98,3 +98,13 @@ config EROFS_FS_ZIP_LZMA
- 	  systems will be readable without selecting this option.
+diff --git a/fs/cachefiles/daemon.c b/fs/cachefiles/daemon.c
+index d5417da7f792..5b1d0642c749 100644
+--- a/fs/cachefiles/daemon.c
++++ b/fs/cachefiles/daemon.c
+@@ -111,6 +111,7 @@ static int cachefiles_daemon_open(struct inode *inode, struct file *file)
+ 	INIT_LIST_HEAD(&cache->volumes);
+ 	INIT_LIST_HEAD(&cache->object_list);
+ 	spin_lock_init(&cache->object_list_lock);
++	refcount_set(&cache->unbind_pincount, 1);
+ 	xa_init_flags(&cache->reqs, XA_FLAGS_ALLOC);
+ 	xa_init_flags(&cache->ondemand_ids, XA_FLAGS_ALLOC1);
  
- 	  If unsure, say N.
-+
-+config EROFS_FS_ONDEMAND
-+	bool "EROFS fscache-based on-demand read support"
-+	depends on CACHEFILES_ONDEMAND && (EROFS_FS=m && FSCACHE || EROFS_FS=y && FSCACHE=y)
-+	default n
-+	help
-+	  This permits EROFS to use fscache-backed data blobs with on-demand
-+	  read support.
-+
-+	  If unsure, say N.
-diff --git a/fs/erofs/Makefile b/fs/erofs/Makefile
-index 8a3317e38e5a..99bbc597a3e9 100644
---- a/fs/erofs/Makefile
-+++ b/fs/erofs/Makefile
-@@ -5,3 +5,4 @@ erofs-objs := super.o inode.o data.o namei.o dir.o utils.o pcpubuf.o sysfs.o
- erofs-$(CONFIG_EROFS_FS_XATTR) += xattr.o
- erofs-$(CONFIG_EROFS_FS_ZIP) += decompressor.o zmap.o zdata.o
- erofs-$(CONFIG_EROFS_FS_ZIP_LZMA) += decompressor_lzma.o
-+erofs-$(CONFIG_EROFS_FS_ONDEMAND) += fscache.o
-diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-new file mode 100644
-index 000000000000..7a6d0239ebb1
---- /dev/null
-+++ b/fs/erofs/fscache.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2022, Alibaba Cloud
-+ */
-+#include <linux/fscache.h>
-+#include "internal.h"
-+
-+int erofs_fscache_register_fs(struct super_block *sb)
+@@ -164,6 +165,20 @@ static void cachefiles_flush_reqs(struct cachefiles_cache *cache)
+ 	xa_destroy(&cache->ondemand_ids);
+ }
+ 
++void cachefiles_put_unbind_pincount(struct cachefiles_cache *cache)
 +{
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+	struct fscache_volume *volume;
-+	char *name;
-+	int ret = 0;
-+
-+	name = kasprintf(GFP_KERNEL, "erofs,%s", sbi->opt.fsid);
-+	if (!name)
-+		return -ENOMEM;
-+
-+	volume = fscache_acquire_volume(name, NULL, NULL, 0);
-+	if (IS_ERR_OR_NULL(volume)) {
-+		erofs_err(sb, "failed to register volume for %s", name);
-+		ret = volume ? PTR_ERR(volume) : -EOPNOTSUPP;
-+		volume = NULL;
++	if (refcount_dec_and_test(&cache->unbind_pincount)) {
++		cachefiles_daemon_unbind(cache);
++		cachefiles_open = 0;
++		kfree(cache);
 +	}
-+
-+	sbi->volume = volume;
-+	kfree(name);
-+	return ret;
 +}
 +
-+void erofs_fscache_unregister_fs(struct super_block *sb)
++void cachefiles_get_unbind_pincount(struct cachefiles_cache *cache)
 +{
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+
-+	fscache_relinquish_volume(sbi->volume, NULL, false);
-+	sbi->volume = NULL;
++	refcount_inc(&cache->unbind_pincount);
 +}
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 05a97533b1e9..e4f6a13f161f 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -74,6 +74,7 @@ struct erofs_mount_opts {
- 	unsigned int max_sync_decompress_pages;
- #endif
- 	unsigned int mount_opt;
-+	char *fsid;
- };
- 
- struct erofs_dev_context {
-@@ -146,6 +147,9 @@ struct erofs_sb_info {
- 	/* sysfs support */
- 	struct kobject s_kobj;		/* /sys/fs/erofs/<devname> */
- 	struct completion s_kobj_unregister;
 +
-+	/* fscache support */
-+	struct fscache_volume *volume;
- };
+ /*
+  * Release a cache.
+  */
+@@ -179,14 +194,12 @@ static int cachefiles_daemon_release(struct inode *inode, struct file *file)
  
- #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
-@@ -618,6 +622,18 @@ static inline int z_erofs_load_lzma_config(struct super_block *sb,
+ 	if (cachefiles_in_ondemand_mode(cache))
+ 		cachefiles_flush_reqs(cache);
+-	cachefiles_daemon_unbind(cache);
+ 
+ 	/* clean up the control file interface */
+ 	cache->cachefilesd = NULL;
+ 	file->private_data = NULL;
+-	cachefiles_open = 0;
+ 
+-	kfree(cache);
++	cachefiles_put_unbind_pincount(cache);
+ 
+ 	_leave("");
+ 	return 0;
+diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
+index 4f5150a96849..e5c612888f84 100644
+--- a/fs/cachefiles/internal.h
++++ b/fs/cachefiles/internal.h
+@@ -109,6 +109,7 @@ struct cachefiles_cache {
+ 	char				*rootdirname;	/* name of cache root directory */
+ 	char				*secctx;	/* LSM security context */
+ 	char				*tag;		/* cache binding tag */
++	refcount_t			unbind_pincount;/* refcount to do daemon unbind */
+ 	struct xarray			reqs;		/* xarray of pending on-demand requests */
+ 	struct xarray			ondemand_ids;	/* xarray for ondemand_id allocation */
+ 	u32				ondemand_id_next;
+@@ -171,6 +172,8 @@ extern int cachefiles_has_space(struct cachefiles_cache *cache,
+  * daemon.c
+  */
+ extern const struct file_operations cachefiles_daemon_fops;
++extern void cachefiles_get_unbind_pincount(struct cachefiles_cache *cache);
++extern void cachefiles_put_unbind_pincount(struct cachefiles_cache *cache);
+ 
+ /*
+  * error_inject.c
+diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
+index 64fc312b16d3..7946ee6c40be 100644
+--- a/fs/cachefiles/ondemand.c
++++ b/fs/cachefiles/ondemand.c
+@@ -14,6 +14,7 @@ static int cachefiles_ondemand_fd_release(struct inode *inode,
+ 	object->ondemand_id = CACHEFILES_ONDEMAND_ID_CLOSED;
+ 	xa_erase(&cache->ondemand_ids, object_id);
+ 	cachefiles_put_object(object, cachefiles_obj_put_ondemand_fd);
++	cachefiles_put_unbind_pincount(cache);
+ 	return 0;
  }
- #endif	/* !CONFIG_EROFS_FS_ZIP */
  
-+/* fscache.c */
-+#ifdef CONFIG_EROFS_FS_ONDEMAND
-+int erofs_fscache_register_fs(struct super_block *sb);
-+void erofs_fscache_unregister_fs(struct super_block *sb);
-+#else
-+static inline int erofs_fscache_register_fs(struct super_block *sb)
-+{
-+	return 0;
-+}
-+static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
-+#endif
+@@ -169,6 +170,8 @@ static int cachefiles_ondemand_get_fd(struct cachefiles_req *req)
+ 	load->fd = fd;
+ 	req->msg.object_id = object_id;
+ 	object->ondemand_id = object_id;
 +
- #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
++	cachefiles_get_unbind_pincount(cache);
+ 	return 0;
  
- #endif	/* __EROFS_INTERNAL_H */
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 724d5ff0d78c..fd8daa447237 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -602,6 +602,10 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 	if (erofs_is_fscache_mode(sb)) {
- 		sb->s_blocksize = EROFS_BLKSIZ;
- 		sb->s_blocksize_bits = LOG_BLOCK_SIZE;
-+
-+		err = erofs_fscache_register_fs(sb);
-+		if (err)
-+			return err;
- 	} else {
- 		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
- 			erofs_err(sb, "failed to set erofs blksize");
-@@ -768,6 +772,7 @@ static void erofs_kill_sb(struct super_block *sb)
- 
- 	erofs_free_dev_context(sbi->devs);
- 	fs_put_dax(sbi->dax_dev);
-+	erofs_fscache_unregister_fs(sb);
- 	kfree(sbi);
- 	sb->s_fs_info = NULL;
- }
+ err_put_fd:
 -- 
 2.27.0
 
