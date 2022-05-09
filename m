@@ -2,162 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D188C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD18AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbiEIK07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        id S230061AbiEIK1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiEIK04 (ORCPT
+        with ESMTP id S230495AbiEIK04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 9 May 2022 06:26:56 -0400
-X-Greylist: delayed 4582 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 03:22:23 PDT
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDD4F1E82D4;
-        Mon,  9 May 2022 03:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Db/iq
-        a+253Uz6WJEAvaq4jwDE9d5l6k1aN989gVLNoc=; b=mFNgGO4UK1QxCfcbBK6Li
-        7A+PwHlzV7pXmxWpGTAfKK9Q90Mcod3iKYaWfXg6lmKKjDBM0c+wj6UVHzrlOQqU
-        o94FczeRntA+T9ydshi5urP8chudubmbrBMnyyp+PLClbizN66EO4+g7NZIbWx6/
-        FFExzith2u6eVt8FhZBQs4=
-Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.19])
-        by smtp13 (Coremail) with SMTP id EcCowAC3XVJ11XhiB7GXBg--.12552S2;
-        Mon, 09 May 2022 16:48:54 +0800 (CST)
-From:   qianfanguijin@163.com
-To:     linux-sunxi@lists.linux.dev
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        qianfan Zhao <qianfanguijin@163.com>
-Subject: [PATCH v1] drivers: cpufreq: sun8i-r40: Add cpufreq support
-Date:   Mon,  9 May 2022 16:48:53 +0800
-Message-Id: <20220509084853.17068-1-qianfanguijin@163.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74661E82E6;
+        Mon,  9 May 2022 03:22:23 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so12260506pji.3;
+        Mon, 09 May 2022 03:22:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GpexFT3cmOpZS03q8Gk3wk4dGtIN5IPvNZieqnqQxgE=;
+        b=fm6AP48k7Syr3gtiKAoNERuqbBnT2obwNYpuQpOJ8lE6VOL1uefilnWUStVkPOyX+8
+         SmNDcy/T6dMTpWFTT4AzFXGYDRM8mCzQEr4+dn1XSQD+/SqksIlqnevPSXgqtzqKhTON
+         +XLczgSnMIWgXbeBdh/JK1GkKmuKxtL4L80srpHQFceCHJuzdhG+6bi2aFm7qWNqU1Z5
+         REMMfIDbSzAKjQ1m/ealTfWS/O9slmj0xUHrj0f2clhnJF5XCksDY84kDtwMxvSYICk2
+         WGF9miG6Z88uX+G4FW2cTWSgJkaiRvZCHq1jFI/BILev1rzAyO4bljyAO2T1ad8OuwlD
+         6lVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GpexFT3cmOpZS03q8Gk3wk4dGtIN5IPvNZieqnqQxgE=;
+        b=Umuv1P5sbVAEJehd+qo1Rj7g0PNIPIuB9S/mJ/w0Yyya9z04I+r9eIYQL/HNJM1X7T
+         nhQT6zUEnditWrb1sowEDTbKPCb+f1yUhFco2/zKDdF7q9yFvrUGCzT7A3b4xm9c8Lb0
+         lEUQBJOMFIDe42DtfTmx7WobBde6Le2bdmiWuSUQSc40Fo38iF6xFMl7XVt5cE+e6xzB
+         A6Os+Lnp2BN5MGdP7MDCu+FrsOyTGFxKd1OXa5jj1ncrUfut849WQrMX01I+DsFlskim
+         Jq7Pk1yIGOwhAypgp45llF/s4pXDerytLXzxnA7rZSBsDHat4gLk0bEztTZgieSZTdtw
+         1Ngw==
+X-Gm-Message-State: AOAM530g1Z789nkZIJMrFwqxYApFckcSJE27AN5wK0zAdbQvRmFA05DX
+        4Kr/Bp5EMMMUC49BEzpYbMk=
+X-Google-Smtp-Source: ABdhPJyGme3e7qug68sji3gWYynenUI6rZaZfqCl6PpR+bfc1b9x7PgiEsGIYzW5dxX8efgS7jL/7Q==
+X-Received: by 2002:a17:903:210:b0:15e:f139:f901 with SMTP id r16-20020a170903021000b0015ef139f901mr13948009plh.66.1652091741845;
+        Mon, 09 May 2022 03:22:21 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.83])
+        by smtp.gmail.com with ESMTPSA id p17-20020a170902b09100b0015ee985a54csm6688891plr.56.2022.05.09.03.22.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 03:22:21 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] KVM: x86/pmu: Drop redundant-clumsy-asymmetric PERFCTR_CORE MSRs handling
+Date:   Mon,  9 May 2022 18:22:04 +0800
+Message-Id: <20220509102204.62389-3-likexu@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220509102204.62389-1-likexu@tencent.com>
+References: <20220509102204.62389-1-likexu@tencent.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowAC3XVJ11XhiB7GXBg--.12552S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxGF1kJr4DCr13tr1DZw1rCrg_yoW5XFWfpr
-        4UKayFkF4rWr12vw1aqr40qF1rGa9Y9FW5Jr17C3yxKr90qF90qFyxtFyYkFyDWr17X3yS
-        qrs8tryIkw1kA3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zN9aPUUUUUU=
-X-Originating-IP: [218.201.129.19]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbCqRT77V0DfTNCMQACsK
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: qianfan Zhao <qianfanguijin@163.com>
+From: Like Xu <likexu@tencent.com>
 
-OPP table value is get from allwinner lichee 3.10 kernel.
+In commit c51eb52b8f98 ("KVM: x86: Add support for AMD Core Perf Extension
+in guest"), the entry "case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5 " is
+introduced asymmetrically into kvm_get_msr_common(), ignoring the set part.
 
-Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+The missing guest PERFCTR_CORE cpuid check from the above commit leads to
+the commit c28fa560c5bb ("KVM: x86/vPMU: Forbid reading from MSR_F15H_PERF
+MSRs when guest doesn't have X86_FEATURE_PERFCTR_CORE"), but it simply
+duplicates the default entry at the end of the switch statement explicitly.
+
+Removing the PERFCTR_CORE MSRs entry in kvm_get_msr_common() thoroughly
+would be more maintainable, as we did for the same group of MSRs in the
+kvm_set_msr_common() at the very beginning when the feature was enabled.
+
+Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- arch/arm/boot/dts/sun8i-r40.dtsi     | 47 ++++++++++++++++++++++++++++
- drivers/cpufreq/cpufreq-dt-platdev.c |  1 +
- 2 files changed, 48 insertions(+)
+ arch/x86/kvm/x86.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
-index 291f4784e86c..90de119095fa 100644
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-@@ -54,6 +54,41 @@ / {
- 	#size-cells = <1>;
- 	interrupt-parent = <&gic>;
- 
-+	cpu0_opp_table: opp_table0 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+
-+		opp-720000000 {
-+			opp-hz = /bits/ 64 <720000000>;
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-912000000 {
-+			opp-hz = /bits/ 64 <912000000>;
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-1008000000 {
-+			opp-hz = /bits/ 64 <1008000000>;
-+			opp-microvolt = <1160000 1160000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-1104000000 {
-+			opp-hz = /bits/ 64 <1104000000>;
-+			opp-microvolt = <1240000 1240000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+
-+		opp-1200000000 {
-+			opp-hz = /bits/ 64 <1200000000>;
-+			opp-microvolt = <1300000 1300000 1300000>;
-+			clock-latency-ns = <2000000>;
-+		};
-+	};
-+
- 	clocks {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -84,24 +119,36 @@ cpu0: cpu@0 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <0>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
-+			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 
- 		cpu1: cpu@1 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <1>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
-+			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 
- 		cpu2: cpu@2 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <2>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
-+			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 
- 		cpu3: cpu@3 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <3>;
-+			clocks = <&ccu CLK_CPU>;
-+			clock-names = "cpu";
-+			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 	};
- 
-diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
-index ca1d103ec449..971a99219d4d 100644
---- a/drivers/cpufreq/cpufreq-dt-platdev.c
-+++ b/drivers/cpufreq/cpufreq-dt-platdev.c
-@@ -26,6 +26,7 @@ static const struct of_device_id allowlist[] __initconst = {
- 	{ .compatible = "allwinner,sun8i-a23", },
- 	{ .compatible = "allwinner,sun8i-a83t", },
- 	{ .compatible = "allwinner,sun8i-h3", },
-+	{ .compatible = "allwinner,sun8i-r40", },
- 
- 	{ .compatible = "apm,xgene-shadowcat", },
- 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4790f0d7d40b..2b9089701ef5 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3841,13 +3841,6 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	case MSR_DRAM_ENERGY_STATUS:	/* DRAM controller */
+ 		msr_info->data = 0;
+ 		break;
+-	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
+-		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
+-			return kvm_pmu_get_msr(vcpu, msr_info);
+-		if (!msr_info->host_initiated)
+-			return 1;
+-		msr_info->data = 0;
+-		break;
+ 	case MSR_K7_EVNTSEL0 ... MSR_K7_EVNTSEL3:
+ 	case MSR_K7_PERFCTR0 ... MSR_K7_PERFCTR3:
+ 	case MSR_P6_PERFCTR0 ... MSR_P6_PERFCTR1:
 -- 
-2.25.1
+2.36.1
 
