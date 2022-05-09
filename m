@@ -2,99 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B25C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E32C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236679AbiEIOHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        id S236569AbiEIOHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236533AbiEIOHW (ORCPT
+        with ESMTP id S236578AbiEIOHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:07:22 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC722655C5
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:03:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652105008; x=1683641008;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wRg20se85xJotz7rbGkd/WepRqWjswHgMGSblsVcHGk=;
-  b=LWsGQIeEJBORs/7SA4tEZR0T4REIBthCO6Kpari96gePCeHj/dMJJzPq
-   zxoBoFNfLAqNS6xliw7edCjeFApd97Iy/t5bN0e7JmbZmQc4abHL+MQLj
-   kI8ZM0KfRwoaGvJdlgwLM9qDgiikqHqeQgIRTrIrumwpIqJdzxpiRt7qg
-   Z3hFpqPlzAOjKPErgg5WG4u8SmF7ZzC/PeOWaSAE/goLESiSa1PuuDnFs
-   nToXUSJqXe0qF3OHCCoHoFDLLR4vGqmGdhWdnCdG7UJjlUVFJLZ8Ob5rr
-   4H47yisWzfIz7rPi5A0ifvG2Qgtf3uWxXYLsebZyoEYeAvUwQEZcOfd85
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="268723237"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="268723237"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:03:02 -0700
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="710535731"
-Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:03:00 -0700
-Date:   Mon, 9 May 2022 22:01:13 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: WARNING: modpost: vmlinux.o(.text+0xa76d36): Section mismatch in
- reference from the function rtc_update_irq() to the variable .init.text:.L0
-Message-ID: <YnkeqQrMZrqkAZAP@rli9-dbox>
-References: <202205090847.j9NvIYxI-lkp@intel.com>
+        Mon, 9 May 2022 10:07:36 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADC72701BE
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:03:41 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652105019;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GqbJqls16FNy0vugLmt3uGKWWGVnEjYiGmRysMH1yNs=;
+        b=tvslSlziDv2t2phpzE4lNj+wrzJgX67KxhCt1FuyD1ceg6sJFkBlxDhpRcOusXD3vCH1GO
+        rrwBIOqwLBE/09DZS1RWIEpRUyzO4Ylxq9wypMWnCjV9KtGMgRRbEooy5Av5VpyEFRGz5A
+        ZhYHIWm3yehXFdD4iBjXd6R7PU5v8T6fgojfu0Xj9/TcO08hmV7QXMv6URnVkVzfzFLPYQ
+        nCVwI6uHnWtOiluEEbY/QZ0aJobXPwV6uKRnLdA5YA8RqQpeGlC+MXbMXss77eJLujwtT7
+        ZzQK/ggooLf32/huA0pdmI4dXrznLN0honUiqbA/ZsXU29EKPlPPYg33zHC8PA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652105019;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GqbJqls16FNy0vugLmt3uGKWWGVnEjYiGmRysMH1yNs=;
+        b=B+umBlaN/4/EfvGP0sahg2ByBcjgBKcjCmDqM6xwlN4Jeh/lEDpTcEWCOSnSQddUEZRznA
+        Ju1piRkbSamhYbAA==
+To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        x86@kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>, Andi Kleen <ak@linux.intel.com>,
+        Stephane Eranian <eranian@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Ricardo Neri <ricardo.neri@intel.com>,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 22/29] x86/watchdog/hardlockup: Add an HPET-based
+ hardlockup detector
+In-Reply-To: <20220506000008.30892-23-ricardo.neri-calderon@linux.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-23-ricardo.neri-calderon@linux.intel.com>
+Date:   Mon, 09 May 2022 16:03:39 +0200
+Message-ID: <877d6uref8.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205090847.j9NvIYxI-lkp@intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 08:14:44AM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
-> commit: 170f37d6aa6ad4582eefd7459015de79e244536e block: Do not call folio_next() on an unreferenced folio
-> date:   4 days ago
-> config: riscv-randconfig-r042-20220509 (https://download.01.org/0day-ci/archive/20220509/202205090847.j9NvIYxI-lkp@intel.com/config)
-> compiler: riscv32-linux-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=170f37d6aa6ad4582eefd7459015de79e244536e
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout 170f37d6aa6ad4582eefd7459015de79e244536e
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>, old ones prefixed by <<):
+On Thu, May 05 2022 at 17:00, Ricardo Neri wrote:
+> +	if (is_hpet_hld_interrupt(hdata)) {
+> +		/*
+> +		 * Kick the timer first. If the HPET channel is periodic, it
+> +		 * helps to reduce the delta between the expected TSC value and
+> +		 * its actual value the next time the HPET channel fires.
+> +		 */
+> +		kick_timer(hdata, !(hdata->has_periodic));
+> +
+> +		if (cpumask_weight(hld_data->monitored_cpumask) > 1) {
+> +			/*
+> +			 * Since we cannot know the source of an NMI, the best
+> +			 * we can do is to use a flag to indicate to all online
+> +			 * CPUs that they will get an NMI and that the source of
+> +			 * that NMI is the hardlockup detector. Offline CPUs
+> +			 * also receive the NMI but they ignore it.
+> +			 *
+> +			 * Even though we are in NMI context, we have concluded
+> +			 * that the NMI came from the HPET channel assigned to
+> +			 * the detector, an event that is infrequent and only
+> +			 * occurs in the handling CPU. There should not be races
+> +			 * with other NMIs.
+> +			 */
+> +			cpumask_copy(hld_data->inspect_cpumask,
+> +				     cpu_online_mask);
+> +
+> +			/* If we are here, IPI shorthands are enabled. */
+> +			apic->send_IPI_allbutself(NMI_VECTOR);
 
-Sorry, kindly ignore this report, which is a false positive. We will
-block such report in future.
+So if the monitored cpumask is a subset of online CPUs, which is the
+case when isolation features are enabled, then you still send NMIs to
+those isolated CPUs. I'm sure the isolation folks will be enthused.
 
-> 
-> >> WARNING: modpost: vmlinux.o(.text+0xa76d36): Section mismatch in reference from the function rtc_update_irq() to the variable .init.text:.L0
-> The function rtc_update_irq() references
-> the variable __init .L0 .
-> This is often because rtc_update_irq lacks a __init
-> annotation or the annotation of .L0 is wrong.
-> 
-> Note: the below error/warnings can be found in parent commit:
-> << WARNING: modpost: vmlinux.o(.text+0xa7418e): Section mismatch in reference from the function rtc_month_days() to the variable .init.setup:__setup_root_delay_setup
-> << WARNING: modpost: vmlinux.o(.text+0xb2080e): Section mismatch in reference from the function thermal_zone_device_unregister() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0xb34ff0): Section mismatch in reference from the function btintel_enter_mfg() to the variable .init.text:.LBB18955
-> << WARNING: modpost: vmlinux.o(.text+0xb5964e): Section mismatch in reference from the function cpuidle_switch_governor() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0xbacbfa): Section mismatch in reference from the function comedi_buf_map_get() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in reference from the variable .L0 to the variable .debug_str:.LASF1100
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+Thanks,
+
+        tglx
