@@ -2,73 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3402C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3487C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236683AbiEIN5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
+        id S236546AbiEIN6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236626AbiEIN5V (ORCPT
+        with ESMTP id S236657AbiEIN6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:57:21 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CCB2EA22;
-        Mon,  9 May 2022 06:53:26 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KxjKB65bGz1JC0K;
-        Mon,  9 May 2022 21:52:14 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 21:53:24 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 21:53:24 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-media@vger.kernel.org>
-CC:     <mchehab@kernel.org>, <hverkuil-cisco@xs4all.nl>,
-        <robert.foss@linaro.org>, <bryan.odonoghue@linaro.org>,
-        <vladimir.zapolskiy@linaro.org>
-Subject: [PATCH] media: camss: csid: fix wrong size passed to devm_kmalloc_array()
-Date:   Mon, 9 May 2022 22:04:59 +0800
-Message-ID: <20220509140459.1361628-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 9 May 2022 09:58:49 -0400
+Received: from relay.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEED1DE571;
+        Mon,  9 May 2022 06:54:54 -0700 (PDT)
+Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id 71EF221114;
+        Mon,  9 May 2022 13:54:53 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id 55AAE2002C;
+        Mon,  9 May 2022 13:54:52 +0000 (UTC)
+Message-ID: <5e44ef1302b722d3bf7fafe55111e76f7173e6be.camel@perches.com>
+Subject: Re: [PATCH] staging: drivers: hid: hid-asus.c: Optimized input
+ logic for keys
+From:   Joe Perches <joe@perches.com>
+To:     Johan Boger <jb@ip.fi>, jikos@kernel.org
+Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 09 May 2022 06:54:51 -0700
+In-Reply-To: <20220509100258.24764-1-jb@ip.fi>
+References: <20220509100258.24764-1-jb@ip.fi>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: uikmp1cmopecb6ysxgrm8uthrk5qbnkd
+X-Rspamd-Server: rspamout08
+X-Rspamd-Queue-Id: 55AAE2002C
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19siEZ6i90BjYKhTg3/vNQyMSOLpCRnlsQ=
+X-HE-Tag: 1652104492-339497
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'supplies' is a pointer, the real size of struct regulator_bulk_data
-should be pass to devm_kmalloc_array().
+On Mon, 2022-05-09 at 12:02 +0200, Johan Boger wrote:
+> Instead of calling asus_map_key_clear() function in each case,
+> we now set a temporary value and clear it after default.
+> Patch was checked by checkpatch and adjusted accordingly.
 
-Fixes: 0d8140179715 ("media: camss: Add regulator_bulk support")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/media/platform/qcom/camss/camss-csid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch subject is not correct.  This is not a staging patch.
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csid.c b/drivers/media/platform/qcom/camss/camss-csid.c
-index f993f349b66b..80628801cf09 100644
---- a/drivers/media/platform/qcom/camss/camss-csid.c
-+++ b/drivers/media/platform/qcom/camss/camss-csid.c
-@@ -666,7 +666,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
- 	if (csid->num_supplies) {
- 		csid->supplies = devm_kmalloc_array(camss->dev,
- 						    csid->num_supplies,
--						    sizeof(csid->supplies),
-+						    sizeof(*csid->supplies),
- 						    GFP_KERNEL);
- 		if (!csid->supplies)
- 			return -ENOMEM;
--- 
-2.25.1
+Your commit message is also incomplete as this is modifying comments,
+changing whitespace, and changing brace styles.
+
+and IMO:
+
+Either use a single line case style like:
+
+	case foo: statement; break;
+
+or use a multiple line case style like:
+
+	case foo:
+		statement;
+		break;
+
+but please do not use a mixed case one line and statement; break;
+on another like:
+
+	case foo:
+		statement; break;
+
+Please remember checkpatch is only a guide, it's not the last word
+on style where every message it emits requires an actual code change.
+
+btw: there are _many_ single line case uses in the kernel
+
+$ git grep  -P 'case\s+\w+\s*:\s*\w+' -- '*.[ch]' | wc -l
+7581
+
+
 
