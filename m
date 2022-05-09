@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238528AbiEIPuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        id S238536AbiEIPuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238507AbiEIPtt (ORCPT
+        with ESMTP id S238517AbiEIPtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 9 May 2022 11:49:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FAEF21
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:45:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FEC3EA88
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:45:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 25036CE19A3
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFB82C385B2;
-        Mon,  9 May 2022 15:45:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 163F7B8172F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3729C385AE;
+        Mon,  9 May 2022 15:45:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652111141;
-        bh=CrQ0/ckWEfkQpNpOlG4urFcVG9MU01f9luLgk3xayCw=;
+        s=k20201202; t=1652111146;
+        bh=+ri0BCQo8aTMYSl+J6NJ61kJS7xKTHp40FlfBs7hKl0=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=IN9glv31dJR7fqENxy/LCDLC2pYcHK+AF0DM3+q+KDWhAym3fbo0tp048BRPR/IHt
-         1TMwlaey9GDbWC+x7VVcNY99YleePiKoD8PkeGX1VzKCGKh1ArehVAbgobMumRROQC
-         eozZYfroUnnA4I21SZKXRcbAURT+cUGD3Na3rJW8UjnN+7HnTdbGAHUh6uSA+r4NFj
-         5L5nTQt+LPFkjOSNmeREoFMhUUFXh1z3IC+yKdItaKvZKj2gR7P66FaePUZz6crOtC
-         7PMKpPN/VjoqI0qxGAMWpUkKFQ8V/NQXiHhj2hnKONLzo5D7kp3rWmH11ZUCvh/Ju0
-         dFR0iJvOhATdQ==
+        b=o2uBT/CcMwG2eToTf6sxro/YVEvhhGh6rDiRFNA+71Bc7xT7yjErEhqeXTg+WdsTc
+         C4cGuZ954gAvO+foCuBuJ5KGv828k1iOOUHIrpK64OlV354gJ7y5/oJg57USGzV4kt
+         G6mEZrQRMh0VD0rlVBEf71p9nP08nRbmC/zGAxL430vTyDGsmb9iJw5bwtUnOiN38l
+         N7IV4vc3QvjcWpGeTH5Wgtt/RROi6zhxlVNmXgh8gByvJGFyIfQge2O7pYGFE3yvnU
+         9EuiXyLfrDJ9Egmg21GoO+hANczrfjvVidbsp0IYOkIAQoj7qwXlZ0f1Cn7Y2Lt4oy
+         xblz5XGl2WdRg==
 From:   Mark Brown <broonie@kernel.org>
-To:     lgirdwood@gmail.com, cgel.zte@gmail.com
-Cc:     chi.minghao@zte.com.cn, zealci@zte.com.cn,
-        linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220505021808.54337-1-chi.minghao@zte.com.cn>
-References: <20220505021808.54337-1-chi.minghao@zte.com.cn>
-Subject: Re: [PATCH] ASoC: mediatek: simplify the return expression of mtk_dai_pcm_prepare()
-Message-Id: <165211113943.774487.12508036435286420554.b4-ty@kernel.org>
-Date:   Mon, 09 May 2022 16:45:39 +0100
+To:     marex@denx.de, linux-kernel@vger.kernel.org
+Cc:     lkp@intel.com, dan.carpenter@oracle.com
+In-Reply-To: <20220509003035.225272-1-marex@denx.de>
+References: <20220509003035.225272-1-marex@denx.de>
+Subject: Re: [PATCH] regmap: Add missing map->bus check
+Message-Id: <165211114563.774560.685568820972872583.b4-ty@kernel.org>
+Date:   Mon, 09 May 2022 16:45:45 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,21 +47,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 02:18:08 +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Simplify the return expression.
+On Mon, 9 May 2022 02:30:35 +0200, Marek Vasut wrote:
+> The map->bus can be NULL here, add the missing NULL pointer check.
 > 
 > 
 
 Applied to
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
 
 Thanks!
 
-[1/1] ASoC: mediatek: simplify the return expression of mtk_dai_pcm_prepare()
-      commit: 74eaa8126f50e52a19f055eed002cc76cf3122dc
+[1/1] regmap: Add missing map->bus check
+      commit: 5c422f0b970d287efa864b8390a02face404db5d
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
