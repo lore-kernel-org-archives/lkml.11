@@ -2,129 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F503C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233489AbiEIKUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43454 "EHLO
+        id S233074AbiEIKUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233445AbiEIKUd (ORCPT
+        with ESMTP id S233162AbiEIKUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:20:33 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C608174939;
-        Mon,  9 May 2022 03:16:17 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4C0E61063;
-        Mon,  9 May 2022 03:16:13 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3D4073F66F;
-        Mon,  9 May 2022 03:16:12 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, will@kernel.org, bhelgaas@google.com,
-        robh@kernel.org
-Cc:     iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iommu/dma: Explicitly sort PCI DMA windows
-Date:   Mon,  9 May 2022 11:16:08 +0100
-Message-Id: <35661036a7e4160850895f9b37f35408b6a29f2f.1652091160.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.35.3.dirty
+        Mon, 9 May 2022 06:20:39 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573FADF2B;
+        Mon,  9 May 2022 03:16:37 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B098321C1C;
+        Mon,  9 May 2022 10:00:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652090433; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EnVbGbF3CiTcycSBZO/loerdaCBwAlV6olMPMO9R0Qs=;
+        b=crXHB0LGP0sk30wzd0kWaM5SpjARbCCh70lfRoTsVFXEIuaZcoMvyMb1tID3C62z31gqYe
+        yQ7D8QfaK+pJpNbEPL+K5d78N02gEkqfCsXBVAgUwGGbsSMibVYHliBh+Lr3X45ftFpA+w
+        keJFS3J/goZuc+Z0vjcFJEU3EQEGDXE=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0B1902C141;
+        Mon,  9 May 2022 10:00:31 +0000 (UTC)
+Date:   Mon, 9 May 2022 12:00:28 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, william.kucharski@oracle.com,
+        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
+        songmuchun@bytedance.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+Message-ID: <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+ <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Originally, creating the dma_ranges resource list in pre-sorted fashion
-was the simplest and most efficient way to enforce the order required by
-iova_reserve_pci_windows(). However since then at least one PCI host
-driver is now re-sorting the list for its own probe-time processing,
-which doesn't seem entirely unreasonable, so that basic assumption no
-longer holds. Make iommu-dma robust and get the sort order it needs by
-explicitly sorting, which means we can also save the effort at creation
-time and just build the list in whatever natural order the DT had.
+On Sat 07-05-22 02:05:25, CGEL wrote:
+[...]
+> If there are many containers to run on one host, and some of them have high
+> performance requirements, administrator could turn on thp for them:
+> # docker run -it --thp-enabled=always
+> Then all the processes in those containers will always use thp.
+> While other containers turn off thp by:
+> # docker run -it --thp-enabled=never
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+I do not know. The THP config space is already too confusing and complex
+and this just adds on top. E.g. is the behavior of the knob
+hierarchical? What is the policy if parent memcg says madivise while
+child says always? How does the per-application configuration aligns
+with all that (e.g. memcg policy madivise but application says never via
+prctl while still uses some madvised - e.g. via library).
 
-v2: Clean up now-unused local variable
+> By doing this we could promote important containers's performance with less
+> footprint of thp.
 
- drivers/iommu/dma-iommu.c | 13 ++++++++++++-
- drivers/pci/of.c          |  8 +-------
- 2 files changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09f6e1c0f9c0..d05538af4fe9 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -20,6 +20,7 @@
- #include <linux/iommu.h>
- #include <linux/iova.h>
- #include <linux/irq.h>
-+#include <linux/list_sort.h>
- #include <linux/mm.h>
- #include <linux/mutex.h>
- #include <linux/pci.h>
-@@ -414,6 +415,15 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
- 	return 0;
- }
- 
-+static int iommu_dma_ranges_sort(void *priv, const struct list_head *a,
-+		const struct list_head *b)
-+{
-+	struct resource_entry *res_a = list_entry(a, typeof(*res_a), node);
-+	struct resource_entry *res_b = list_entry(b, typeof(*res_b), node);
-+
-+	return res_a->res->start > res_b->res->start;
-+}
-+
- static int iova_reserve_pci_windows(struct pci_dev *dev,
- 		struct iova_domain *iovad)
- {
-@@ -432,6 +442,7 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
- 	}
- 
- 	/* Get reserved DMA windows from host bridge */
-+	list_sort(NULL, &bridge->dma_ranges, iommu_dma_ranges_sort);
- 	resource_list_for_each_entry(window, &bridge->dma_ranges) {
- 		end = window->res->start - window->offset;
- resv_iova:
-@@ -440,7 +451,7 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
- 			hi = iova_pfn(iovad, end);
- 			reserve_iova(iovad, lo, hi);
- 		} else if (end < start) {
--			/* dma_ranges list should be sorted */
-+			/* DMA ranges should be non-overlapping */
- 			dev_err(&dev->dev,
- 				"Failed to reserve IOVA [%pa-%pa]\n",
- 				&start, &end);
-diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-index cb2e8351c2cc..8f0ebaf9ae85 100644
---- a/drivers/pci/of.c
-+++ b/drivers/pci/of.c
-@@ -369,7 +369,6 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
- 
- 	dev_dbg(dev, "Parsing dma-ranges property...\n");
- 	for_each_of_pci_range(&parser, &range) {
--		struct resource_entry *entry;
- 		/*
- 		 * If we failed translation or got a zero-sized region
- 		 * then skip this range
-@@ -393,12 +392,7 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
- 			goto failed;
- 		}
- 
--		/* Keep the resource list sorted */
--		resource_list_for_each_entry(entry, ib_resources)
--			if (entry->res->start > res->start)
--				break;
--
--		pci_add_resource_offset(&entry->node, res,
-+		pci_add_resource_offset(ib_resources, res,
- 					res->start - range.pci_addr);
- 	}
- 
+Do we really want to provide something like THP based QoS? To me it
+sounds like a bad idea and if the justification is "it might be useful"
+then I would say no. So you really need to come with a very good usecase
+to promote this further.
 -- 
-2.35.3.dirty
-
+Michal Hocko
+SUSE Labs
