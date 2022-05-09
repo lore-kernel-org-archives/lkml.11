@@ -2,74 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D868BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbiEIGTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        id S234524AbiEIGUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbiEIGSg (ORCPT
+        with ESMTP id S235754AbiEIGLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:18:36 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58C4BEABA6
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:14:43 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id D8E8D1E80D70;
-        Mon,  9 May 2022 14:09:34 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id BwKUcw5aKpyv; Mon,  9 May 2022 14:09:32 +0800 (CST)
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: zhounan@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 1B6711E80D6B;
-        Mon,  9 May 2022 14:09:32 +0800 (CST)
-From:   Zhou nan <zhounan@nfschina.com>
-To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com
-Cc:     linux-kernel@vger.kernel.org, Zhou nan <zhounan@nfschina.com>
-Subject: [PATCH] x86: It seems possible to optimize the code format
-Date:   Mon,  9 May 2022 14:14:09 +0800
-Message-Id: <20220509061409.29083-1-zhounan@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Mon, 9 May 2022 02:11:03 -0400
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813AB13C099
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:07:09 -0700 (PDT)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 3EE71201342;
+        Mon,  9 May 2022 06:07:07 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id D6B4F80822; Mon,  9 May 2022 08:06:03 +0200 (CEST)
+Date:   Mon, 9 May 2022 08:06:03 +0200
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>
+Subject: Re: [PATCH v2] random: use symbolic constants for crng_init states
+Message-ID: <YnivSwI+IczXnJ4q@owl.dominikbrodowski.net>
+References: <Ynf8qMmN+AAofKMy@zx2c4.com>
+ <20220508173610.151998-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220508173610.151998-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It seems possible to optimize the code format
+Am Sun, May 08, 2022 at 07:36:10PM +0200 schrieb Jason A. Donenfeld:
+> crng_init represents a state machine, with three states, and various
+> rules for transitions. For the longest time, we've been managing these
+> with "0", "1", and "2", and expecting people to figure it out. To make
+> the code more obvious, replace these with proper enum values
+> representing the transition, and then redocument what each of these
+> states mean.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Joe Perches <joe@perches.com>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Signed-off-by: Zhou nan <zhounan@nfschina.com>
----
- arch/x86/kvm/mmu/tdp_mmu.c | 3 +++
- 1 file changed, 3 insertions(+)
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 922b06bf4b94..a4ab6aee4db2 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -743,6 +743,7 @@ static u64 __tdp_mmu_set_spte(struct kvm *kvm, int as_id, tdp_ptep_t sptep,
- 
- 	if (record_acc_track)
- 		handle_changed_spte_acc_track(old_spte, new_spte, level);
-+
- 	if (record_dirty_log)
- 		handle_changed_spte_dirty_log(kvm, as_id, gfn, old_spte,
- 					      new_spte, level);
-@@ -1149,8 +1150,10 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
- 
- 	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
- 	list_add(&sp->link, &kvm->arch.tdp_mmu_pages);
-+
- 	if (account_nx)
- 		account_huge_nx_page(kvm, sp);
-+
- 	spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
- 
- 	return 0;
--- 
-2.18.2
-
+Thanks,
+	Dominik
