@@ -2,170 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C022FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240069AbiEISRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 14:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S240079AbiEISSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 14:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240152AbiEISQ1 (ORCPT
+        with ESMTP id S240071AbiEISSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 14:16:27 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FF750E25;
-        Mon,  9 May 2022 11:12:31 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C0A7021C78;
-        Mon,  9 May 2022 18:12:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1652119949; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Mon, 9 May 2022 14:18:03 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2B115A748;
+        Mon,  9 May 2022 11:14:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1652120038; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aVJNDHCPrYhpEGCKd4JONsO07ZViNqzGwhPYmef++R4=;
-        b=uWjotg7DlK2IwQ44cWHWT50Mi/jim+8nrl7L4a7tT5jUzDfRkhN4OWHmHtpqrLvSkb23gv
-        WQcN8EhrfYp0HjxfF7GcOTiZt/RK/5CSDd4hIDjLQPBa0gKoEE9qBT3CJVxSGOyUg5/P5c
-        MGk/1xIzVXDnztT6B/p7bPNbPzoqbvg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1652119949;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aVJNDHCPrYhpEGCKd4JONsO07ZViNqzGwhPYmef++R4=;
-        b=A5itkYGR9XpFHdq8IcUWHentxTaXeKhi2HSeLtKxoXjheR3u2JVX7N5PIqN9O3HNm7YKnU
-        pNY/iHPEFhcVGcDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9497013AA5;
-        Mon,  9 May 2022 18:12:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id TUrdIo1ZeWLhYAAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Mon, 09 May 2022 18:12:29 +0000
-Message-ID: <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
-Date:   Mon, 9 May 2022 20:12:28 +0200
+        bh=Q08TgslIn6eORzOBSw1hAVwzwQyEcKAc7I4FfWcW9U8=;
+        b=XlgMzX49aN+IcfB28mMSy7oQaPsYX+vLvJo9a/o1HEoaIUjNEFKdsOKQIRnOuGpty5YLjx
+        PukijtE/cS9ziOHmw3xP38S5GeHzhDF7IkvK5M1kANVQbopmExcjOVvZfRnJ5KTQo47jHQ
+        YIqy9G63Aw/2vCMvJBs7qibxslg9VAA=
+Date:   Mon, 09 May 2022 19:13:47 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: Question about SC16IS752 device tree.
+To:     Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Cc:     jringle@gridpoint.com, shc_work@mail.ru,
+        Rob Herring <robh@kernel.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-serial@vger.kernel.org,
+        linux-mips <linux-mips@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Message-Id: <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net>
+In-Reply-To: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
+References: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
- fb_release()
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@intel.com>
-References: <20220505215947.364694-1-javierm@redhat.com>
- <20220505220413.365977-1-javierm@redhat.com>
- <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
- <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
- <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
- <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------Y4cdGtjzag3yXAAgKVCxRy2T"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------Y4cdGtjzag3yXAAgKVCxRy2T
-Content-Type: multipart/mixed; boundary="------------0FWf6gk9D6ci0RGqpyJQqk10";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Javier Martinez Canillas <javierm@redhat.com>,
- Andrzej Hajda <andrzej.hajda@intel.com>, linux-kernel@vger.kernel.org
-Cc: linux-fbdev@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
- Daniel Vetter <daniel.vetter@intel.com>
-Message-ID: <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
-Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
- fb_release()
-References: <20220505215947.364694-1-javierm@redhat.com>
- <20220505220413.365977-1-javierm@redhat.com>
- <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
- <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
- <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
- <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
-In-Reply-To: <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
+Hi Zhou,
 
---------------0FWf6gk9D6ci0RGqpyJQqk10
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Le mar., mai 10 2022 at 02:08:28 +0800, Zhou Yanjie=20
+<zhouyanjie@wanyeetech.com> a =E9crit :
+> Hi folks,
+>=20
+> I encountered a problem when using the SC16IS752 to expand the serial=20
+> port.
+> I connected two Bluetooth modules to the two serial ports extended by=20
+> the
+> SC16IS752. The device tree is as follows:
+>=20
+> &ssi0 {
+>     status =3D "okay";
+>=20
+>     num-cs =3D <2>;
+>=20
+>     pinctrl-names =3D "default";
+>     pinctrl-0 =3D <&pins_ssi0>;
+>=20
+>     sc16is752: expander@0 {
+>         compatible =3D "nxp,sc16is752";
+>         reg =3D <0>; /* CE0 */
+>=20
+>         spi-rx-bus-width =3D <1>;
+>         spi-tx-bus-width =3D <1>;
+>         spi-max-frequency =3D <6000000>;
+>=20
+>         clocks =3D <&exclk_sc16is752>;
+>=20
+>         interrupt-parent =3D <&gpb>;
+>         interrupts =3D <18 IRQ_TYPE_EDGE_FALLING>;
+>=20
+>         gpio-controller;
+>         #gpio-cells =3D <2>;
+>=20
+>         bluetooth@0 {
+>             compatible =3D "brcm,bcm43438-bt";
+>             max-speed =3D <1000000>;
+>=20
+>             device-wakeup-gpios =3D <&gpc 26 GPIO_ACTIVE_HIGH>;
+>             reset-gpios =3D <&gpb 17 GPIO_ACTIVE_LOW>;
+>         };
+>=20
+>         bluetooth@1 {
+>             compatible =3D "brcm,bcm43438-bt";
+>=20
+>             device-wakeup-gpios =3D <&gpc 28 GPIO_ACTIVE_HIGH>;
+>             reset-gpios =3D <&gpb 19 GPIO_ACTIVE_LOW>;
+>         };
+>     };
+> };
+>=20
+>=20
+>=20
+> There are the following error messages after startup:
+>=20
+> [    0.548417] serial serial0-0: controller busy
+> [    0.553572] serial serial0-0: failure adding device. status -EBUSY
+> [    0.559764] serial serial0: tty port ttySC0 registered
+> [    0.565545] spi0.0: ttySC1 at I/O 0x1 (irq =3D 18, base_baud =3D=20
+> 3000000) is a SC16IS752
+> [    0.573987] serial serial1-0: controller busy
+> [    0.578351] serial serial1-0: failure adding device. status -EBUSY
+> [    0.585003] serial serial1: tty port ttySC1 registered
+>=20
+> And only the module connected to the first serial port (ttySC0) can=20
+> work normally.
 
-SGkgSmF2aWVyDQoNCkFtIDA5LjA1LjIyIHVtIDE4OjMzIHNjaHJpZWIgSmF2aWVyIE1hcnRp
-bmV6IENhbmlsbGFzOg0KPiBPbiA1LzkvMjIgMTc6NTEsIEFuZHJ6ZWogSGFqZGEgd3JvdGU6
-DQo+IA0KPiBbc25pcF0NCj4gDQo+Pj4+PiArDQo+Pj4+IFJlZ2FyZGluZyBkcm06DQo+Pj4+
-IFdoYXQgYWJvdXQgZHJtX2ZiX2hlbHBlcl9maW5pPyBJdCBjYWxscyBhbHNvIGZyYW1lYnVm
-ZmVyX3JlbGVhc2UgYW5kIGlzDQo+Pj4+IGNhbGxlZCBvZnRlbiBmcm9tIF9yZW1vdmUgcGF0
-aHMgKGNoZWNrZWQgaW50ZWwvcmFkZW9uL25vdXZlYXUpLiBJIGd1ZXNzDQo+Pj4+IGl0IHNo
-b3VsZCBiZSBmaXhlZCBhcyB3ZWxsLiBEbyB5b3UgcGxhbiB0byBmaXggaXQ/DQo+Pj4+DQo+
-Pj4gSSB0aGluayB5b3UgYXJlIGNvcnJlY3QuIE1heWJlIHdlIG5lZWQgc29tZXRoaW5nIGxp
-a2UgdGhlIGZvbGxvd2luZz8NCj4+Pg0KPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9k
-cm0vZHJtX2ZiX2hlbHBlci5jIGIvZHJpdmVycy9ncHUvZHJtL2RybV9mYl9oZWxwZXIuYw0K
-Pj4+IGluZGV4IGQyNjVhNzMzMTNjOS4uYjA5NTk4ZjdhZjI4IDEwMDY0NA0KPj4+IC0tLSBh
-L2RyaXZlcnMvZ3B1L2RybS9kcm1fZmJfaGVscGVyLmMNCj4+PiArKysgYi9kcml2ZXJzL2dw
-dS9kcm0vZHJtX2ZiX2hlbHBlci5jDQo+Pj4gQEAgLTYzMSw3ICs2MzEsNiBAQCB2b2lkIGRy
-bV9mYl9oZWxwZXJfZmluaShzdHJ1Y3QgZHJtX2ZiX2hlbHBlciAqZmJfaGVscGVyKQ0KPj4+
-ICAgICAgICAgICBpZiAoaW5mbykgew0KPj4+ICAgICAgICAgICAgICAgICAgIGlmIChpbmZv
-LT5jbWFwLmxlbikNCj4+PiAgICAgICAgICAgICAgICAgICAgICAgICAgIGZiX2RlYWxsb2Nf
-Y21hcCgmaW5mby0+Y21hcCk7DQo+Pj4gLSAgICAgICAgICAgICAgIGZyYW1lYnVmZmVyX3Jl
-bGVhc2UoaW5mbyk7DQo+Pg0KPj4gV2hhdCBhYm91dCBjbWFwPyBJIGFtIG5vdCBhbiBmYiBl
-eHBlcnQsIGJ1dCBJTU8gY21hcCBjYW4gYmUgYWNjZXNzZWQNCj4+IGZyb20gdXNlcnNwYWNl
-IGFzIHdlbGwuDQo+Pg0KPiANCj4gSSBhY3R1YWxseSB0aG91Z2h0IGFib3V0IHRoZSBzYW1l
-IGJ1dCB0aGVuIHJlbWVtYmVyZWQgd2hhdCBEYW5pZWwgc2FpZCBpbiBbMF0NCj4gKEFGQUlV
-IGF0IGxlYXN0KSB0aGF0IHRoZXNlIHNob3VsZCBiZSBkb25lIGluIC5yZW1vdmUoKSBzbyB0
-aGUgY3VycmVudCBjb2RlDQo+IGxvb2tzIGxpa2UgbWF0Y2hlcyB0aGF0IGFuZCBvbmx5IGZy
-YW1lYnVmZmVyX3JlbGVhc2UoKSBzaG91bGQgYmUgbW92ZWQuDQo+IA0KPiBGb3IgdmVzYWZi
-IGEgcHJldmlvdXMgcGF0Y2ggcHJvcG9zZWQgdG8gYWxzbyBtb3ZlIGEgcmVsZWFzZV9yZWdp
-b24oKSBjYWxsIHRvDQo+IC5mYl9kZXN0cm95KCkgYW5kIERhbmllbCBhbHNvIHNhaWQgdGhh
-dCBpdCB3YXMgaWZmeSBhbmQgc2hvdWxkbid0IGJlIGRvbmUgWzFdLg0KPiANCj4gQnV0IEkn
-bSBhbHNvIG5vdCBmYiBleHBlcnQgc28gaGFwcHkgdG8gbW92ZSBmYl9kZWFsbG9jX2NtYXAo
-KSBhcyB3ZWxsIGlmIHRoYXQNCj4gaXMgdGhlIGNvcnJlY3QgdGhpbmcgdG8gZG8uDQoNClRo
-ZSBjbWFwIGRhdGEgc3RydWN0dXJlIGlzIHNvZnR3YXJlIHN0YXRlIHRoYXQgY2FuIGJlIGFj
-Y2Vzc2VkIHZpYSBpY290bCANCmFzIGxvbmcgYXMgdGhlIGRldmZpbGUgaXMgb3Blbi4gRHJp
-dmVycyB1cGRhdGUgdGhlIGhhcmR3YXJlIGZyb20gaXQuIFNlZSANClsxXS4gIE1vdmluZyB0
-aGF0IGNsZWFudXAgaW50byBmYl9kZXN0cm95IHNlZW1zIGFwcHJvcHJpYXRlIHRvIG1lLg0K
-DQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQpbMV0gDQpodHRwczovL2VsaXhpci5ib290bGlu
-LmNvbS9saW51eC92NS4xNy42L3NvdXJjZS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJj
-bWFwLmMjTDIzMQ0KDQo+IA0KPiBbMF06IGh0dHBzOi8vd3d3LnNwaW5pY3MubmV0L2xpc3Rz
-L2RyaS1kZXZlbC9tc2czNDYyNTcuaHRtbA0KPiBbMV06IGh0dHBzOi8vd3d3LnNwaW5pY3Mu
-bmV0L2xpc3RzL2RyaS1kZXZlbC9tc2czNDYyNjEuaHRtbA0KPiANCg0KLS0gDQpUaG9tYXMg
-WmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBT
-b2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcs
-IEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVy
-OiBJdm8gVG90ZXYNCg==
+I can't say for sure that it's your problem, but your bluetooth nodes=20
+are missing "reg" properties.
 
---------------0FWf6gk9D6ci0RGqpyJQqk10--
+Cheers,
+-Paul
 
---------------Y4cdGtjzag3yXAAgKVCxRy2T
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+>=20
+>=20
+>=20
+> If I change the device tree to:
+>=20
+> &ssi0 {
+>     status =3D "okay";
+>=20
+>     num-cs =3D <2>;
+>=20
+>     pinctrl-names =3D "default";
+>     pinctrl-0 =3D <&pins_ssi0>;
+>=20
+>     sc16is752: expander@0 {
+>         compatible =3D "nxp,sc16is752";
+>         reg =3D <0>; /* CE0 */
+>=20
+>         spi-rx-bus-width =3D <1>;
+>         spi-tx-bus-width =3D <1>;
+>         spi-max-frequency =3D <6000000>;
+>=20
+>         clocks =3D <&exclk_sc16is752>;
+>=20
+>         interrupt-parent =3D <&gpb>;
+>         interrupts =3D <18 IRQ_TYPE_EDGE_FALLING>;
+>=20
+>         gpio-controller;
+>         #gpio-cells =3D <2>;
+>=20
+>         bluetooth@0 {
+>             compatible =3D "brcm,bcm43438-bt";
+>             max-speed =3D <1000000>;
+>=20
+>             device-wakeup-gpios =3D <&gpc 26 GPIO_ACTIVE_HIGH>;
+>             reset-gpios =3D <&gpb 17 GPIO_ACTIVE_LOW>;
+>         };
+>     };
+> };
+>=20
+> Then there will be no error message, and the module connected to the=20
+> first
+> serial port (ttySC0) can also work normally.
+>=20
+>=20
+>=20
+> After tracing, the problem seems to be in "serdev_device_add()" (line=20
+> 111) of
+> "drivers/tty/serdev/core.c":
+>=20
+> int serdev_device_add(struct serdev_device *serdev)
+> {
+>     struct serdev_controller *ctrl =3D serdev->ctrl;
+>     struct device *parent =3D serdev->dev.parent;
+>     int err;
+>=20
+>     dev_set_name(&serdev->dev, "%s-%d", dev_name(parent), serdev->nr);
+>=20
+>     /* Only a single slave device is currently supported. */
+>     if (ctrl->serdev) {
+>         dev_err(&serdev->dev, "controller busy\n");
+>         return -EBUSY;
+>     }
+>     ctrl->serdev =3D serdev;
+>=20
+>     err =3D device_add(&serdev->dev);
+>     if (err < 0) {
+>         dev_err(&serdev->dev, "Can't add %s, status %pe\n",
+>             dev_name(&serdev->dev), ERR_PTR(err));
+>         goto err_clear_serdev;
+>     }
+>=20
+>     dev_dbg(&serdev->dev, "device %s registered\n",=20
+> dev_name(&serdev->dev));
+>=20
+>     return 0;
+>=20
+> err_clear_serdev:
+>     ctrl->serdev =3D NULL;
+>     return err;
+> }
+> EXPORT_SYMBOL_GPL(serdev_device_add);
+>=20
+>=20
+>=20
+> Is there any way to correctly describe the device mounted on the=20
+> second
+> serial port (ttySC1) in the device tree? Or how do I need to modify=20
+> the
+> "drivers/tty/serdev/core.c" to make the SC16IS752 still work properly
+> with two child nodes mounted?
+>=20
+> Thanks and beset regards!
 
------BEGIN PGP SIGNATURE-----
 
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJ5WYwFAwAAAAAACgkQlh/E3EQov+D3
-oRAAwhcWj+xF2+5wjrKlJ+fOT7Ya14ZtuAsZGX3eGUPFbPJgVrwBuLARp6cxL16bgX91/oRodc24
-6Oxua0woQBDG9Y5P3rw6Z2Xx1Z7TgubZ/1RNYvg/VKuIkYOETnYX3nu/zjOzxlPuI4f3KHM3NB0A
-WSZnIQ3P8UNndkJC+Q40khcaalFhYQtcGm65ROrqF80I6seXrs5St9az3df1Ea8caLhebMkAALVY
-jwx2fQMh3aaXuEVWs/QwtfXTSf9pXZKESlMJA7wsJMKSlFE1No5vryPd57CrbLQlbNieFElX0W3e
-apvf37cCjE3M+nWPGlFq59SAVWY2MXLS7So9/GAlzeuSpaZyTZ05joIX1yOadIonwlZsa7lGrjH7
-1xUW6CJvxRUSauw6HmcYa2eEK3jv1Mt2yitGhBm87E8dALIAVvmmTLiudakJ24SQ2I4y8V0R5jFI
-UmTaR5QsNHT3MHKemojaA23CdnAu1EBWoOFa0qGuvdzFbsib3LNXfT2/rMtVf1MCGXv5Qqda8gx5
-9TLUiXpQSD2ALqhpmqLSBAh/CJ0VEfSHGP9C6eNurwiOrOq+VTmQ5pv8fzTbJmFN8HjmT9tWnexp
-WJKChQ7ZxhcnI0ETqKQR05j5PiXtZ96kTV1D9z0y8UFvhAnVzbW0yjKtTsdbsbmpjUGYIMmu8Zx7
-4J8=
-=xG2O
------END PGP SIGNATURE-----
-
---------------Y4cdGtjzag3yXAAgKVCxRy2T--
