@@ -2,58 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E832BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236746AbiEIOOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
+        id S236847AbiEIOP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236692AbiEIOOE (ORCPT
+        with ESMTP id S236766AbiEIOP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:14:04 -0400
-X-Greylist: delayed 460 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 07:10:08 PDT
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0145D2B165A;
-        Mon,  9 May 2022 07:10:08 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4KxjXd4Q4kz9sSm;
-        Mon,  9 May 2022 16:02:09 +0200 (CEST)
-From:   public@timruffing.de
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, public@timruffing.de
-Subject: Re: [PATCH v2] Revert "fbdev: Make fb_release() return -ENODEV if fbdev was unregistered"
-Date:   Mon,  9 May 2022 16:01:49 +0200
-Message-Id: <20220509140149.34734-1-public@timruffing.de>
-In-Reply-To: <642f515e-aa71-7c90-a715-e49dcf12baee@redhat.com>
-References: <642f515e-aa71-7c90-a715-e49dcf12baee@redhat.com>
+        Mon, 9 May 2022 10:15:26 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E11AB122B53;
+        Mon,  9 May 2022 07:11:31 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B709068AFE; Mon,  9 May 2022 16:11:24 +0200 (CEST)
+Date:   Mon, 9 May 2022 16:11:22 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Conor.Dooley@microchip.com
+Cc:     sfr@canb.auug.org.au, linux-next@vger.kernel.org, hch@lst.de,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: linux-next: Tree for May 3
+Message-ID: <20220509141122.GA14555@lst.de>
+References: <20220503172926.08215c77@canb.auug.org.au> <3f94c9a8-c927-5cc0-7d67-4b21c3d9dbaf@microchip.com> <9a424be9-380f-f99c-4126-25a00eba0271@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9a424be9-380f-f99c-4126-25a00eba0271@microchip.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for this patch. Do you think this can be backported to LTS 5.17.y and
-5.15.y, which are still buggy? It's not a big deal for me but others might
-profit.
+On Mon, May 09, 2022 at 01:33:07PM +0000, Conor.Dooley@microchip.com wrote:
+> @Christoph, I know /nothing/ about swiotlb, so if you have any
+> suggestions for debugging that you would like me to try, let me
+> know please.
 
-Background:
-The patch solves a regression from 5.17.1 to 5.17.2 or 5.15.32 and
-5.15.33 I was about to report. On my Thinkpad T570, I got random "BUG", "Oops"
-or even panics when during booting with efifb and plymouthd (and then sometimes
-also problems when shutting down because). I had bisected the issue to commit
-27599aacbaef. I could provide more info but I don't think it's necessary given
-that either aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a or your better patch now
-fixes the issue (I tested both, both work for me).
+Hi Conor,
 
-Best,
-Tim Ruffing
+sorry for dropping this on the flor.  I was at LSF/MM least week and
+my plan to go through my backlog today didn't go to plan as I unepectedly
+spent half the day at doctors appointments.
 
+The commit looks like a somewhat unusual culprit for a boot failure,
+so any chance you could do another manual verifiation pass where
+you checkout 6424e31b1c05 and then the commit before it (i.e. as
+git checkout 6424e31b1c05^) to make sure it really is this commits?
+Some of the commits around it just seems like more likely culprits to
+me, so I'd like to really be 100% sure here.  In the meantime I'll
+look through the patch.  Also you don't happen to have earlycon support
+on this plaform to see if there are any interesting messages on the
+serial console?
