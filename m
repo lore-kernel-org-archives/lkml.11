@@ -2,137 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A360C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFDDC352AA
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236705AbiEIHxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
+        id S236726AbiEIHxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235802AbiEIHm1 (ORCPT
+        with ESMTP id S234913AbiEIHox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:42:27 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCA419C397;
-        Mon,  9 May 2022 00:38:30 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 8B45041385;
-        Mon,  9 May 2022 07:37:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1652081847;
-        bh=BGdQS7GDt72NyKsTP48y7ylwYoRPiomJUKtDk9kD5KI=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=APTuzxakfgtwQV4qWpjpID7To9ihg0LEQfJO+iSozdAPobUQA3OmkO5dM13Z8tXIr
-         uyKI8TGKfVF7ZRPaq0tL2ipecAozQlsWseqk7zYXVCpHkf/Jl+N/PyNhOExN0ghUgo
-         wYWD40D3zKb3MPDSslzTiFdfTWLyH3SQW1x9e8ZaJz6AKkiWoAQI6gDK8OYECZh/Uq
-         vbtFM/J8vIqJ+4C57R7qE4Qna+fUPWIoufYy9KcVzcM7LacNd8oIktY/eoK5xW9iSR
-         cNv2+Pr3rHSrc7QRMihpFMBjjG/gtRW81P5QIGWGtdqgZY4PKZqVCL8msKGFINT3Ms
-         /be0ReZS7CmiQ==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     bhelgaas@google.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Rajat Jain <rajatja@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI:ASPM: Remove pcie_aspm_pm_state_change()
-Date:   Mon,  9 May 2022 15:36:37 +0800
-Message-Id: <20220509073639.2048236-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 9 May 2022 03:44:53 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D549C17050;
+        Mon,  9 May 2022 00:40:58 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCgwz9P_1652082038;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCgwz9P_1652082038)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 09 May 2022 15:40:39 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+Subject: [PATCH v11 06/22] cachefiles: enable on-demand read mode
+Date:   Mon,  9 May 2022 15:40:12 +0800
+Message-Id: <20220509074028.74954-7-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
+References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pcie_aspm_pm_state_change() was introduced at the inception of PCIe
-ASPM code.
+Enable on-demand read mode by adding an optional parameter to the "bind"
+command.
 
-However, it can cause some issues. For instance, when ASPM config is
-changed via sysfs, those changes won't persist across power state change
-because pcie_aspm_pm_state_change() overwrites them.
+On-demand mode will be turned on when this parameter is "ondemand", i.e.
+"bind ondemand". Otherwise cachefiles will work in the original mode.
 
-In addition to that, if the driver is to restore L1ss [1] after system
-resume, the restored states will also be overwritten by
-pcie_aspm_pm_state_change().
-
-So remove pcie_aspm_pm_state_change() for now, if there's any hardware
-really needs it to function, a quirk can be used instead.
-
-[1] https://lore.kernel.org/linux-pci/20220201123536.12962-1-vidyas@nvidia.com/
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- drivers/pci/pci.c       |  3 ---
- drivers/pci/pci.h       |  2 --
- drivers/pci/pcie/aspm.c | 19 -------------------
- 3 files changed, 24 deletions(-)
+ fs/cachefiles/daemon.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 9ecce435fb3f1..d09f7b60ee4dc 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -1181,9 +1181,6 @@ static int pci_raw_set_power_state(struct pci_dev *dev, pci_power_t state)
- 	if (need_restore)
- 		pci_restore_bars(dev);
+diff --git a/fs/cachefiles/daemon.c b/fs/cachefiles/daemon.c
+index 5b1d0642c749..aa4efcabb5e3 100644
+--- a/fs/cachefiles/daemon.c
++++ b/fs/cachefiles/daemon.c
+@@ -755,11 +755,6 @@ static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
+ 	    cache->brun_percent  >= 100)
+ 		return -ERANGE;
  
--	if (dev->bus->self)
--		pcie_aspm_pm_state_change(dev->bus->self);
+-	if (*args) {
+-		pr_err("'bind' command doesn't take an argument\n");
+-		return -EINVAL;
+-	}
 -
- 	return 0;
- }
+ 	if (!cache->rootdirname) {
+ 		pr_err("No cache directory specified\n");
+ 		return -EINVAL;
+@@ -771,6 +766,18 @@ static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
+ 		return -EBUSY;
+ 	}
  
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index 3d60cabde1a15..86a19f293d4ad 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -560,12 +560,10 @@ bool pcie_wait_for_link(struct pci_dev *pdev, bool active);
- #ifdef CONFIG_PCIEASPM
- void pcie_aspm_init_link_state(struct pci_dev *pdev);
- void pcie_aspm_exit_link_state(struct pci_dev *pdev);
--void pcie_aspm_pm_state_change(struct pci_dev *pdev);
- void pcie_aspm_powersave_config_link(struct pci_dev *pdev);
- #else
- static inline void pcie_aspm_init_link_state(struct pci_dev *pdev) { }
- static inline void pcie_aspm_exit_link_state(struct pci_dev *pdev) { }
--static inline void pcie_aspm_pm_state_change(struct pci_dev *pdev) { }
- static inline void pcie_aspm_powersave_config_link(struct pci_dev *pdev) { }
- #endif
- 
-diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index a96b7424c9bc8..7f76a5875feb4 100644
---- a/drivers/pci/pcie/aspm.c
-+++ b/drivers/pci/pcie/aspm.c
-@@ -1012,25 +1012,6 @@ void pcie_aspm_exit_link_state(struct pci_dev *pdev)
- 	up_read(&pci_bus_sem);
- }
- 
--/* @pdev: the root port or switch downstream port */
--void pcie_aspm_pm_state_change(struct pci_dev *pdev)
--{
--	struct pcie_link_state *link = pdev->link_state;
--
--	if (aspm_disabled || !link)
--		return;
--	/*
--	 * Devices changed PM state, we should recheck if latency
--	 * meets all functions' requirement
--	 */
--	down_read(&pci_bus_sem);
--	mutex_lock(&aspm_lock);
--	pcie_update_aspm_capable(link->root);
--	pcie_config_aspm_path(link);
--	mutex_unlock(&aspm_lock);
--	up_read(&pci_bus_sem);
--}
--
- void pcie_aspm_powersave_config_link(struct pci_dev *pdev)
- {
- 	struct pcie_link_state *link = pdev->link_state;
++	if (IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND)) {
++		if (!strcmp(args, "ondemand")) {
++			set_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
++		} else if (*args) {
++			pr_err("Invalid argument to the 'bind' command\n");
++			return -EINVAL;
++		}
++	} else if (*args) {
++		pr_err("'bind' command doesn't take an argument\n");
++		return -EINVAL;
++	}
++
+ 	/* Make sure we have copies of the tag string */
+ 	if (!cache->tag) {
+ 		/*
 -- 
-2.34.1
+2.27.0
 
