@@ -2,124 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE0EC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11514C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbiEIHZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50576 "EHLO
+        id S236102AbiEIHZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236096AbiEIHK1 (ORCPT
+        with ESMTP id S236665AbiEIHMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:10:27 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79A3129C46;
-        Mon,  9 May 2022 00:06:19 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id n18so13020782plg.5;
-        Mon, 09 May 2022 00:06:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TpYwJcXRaIAY1k5rPDvLOqhWDmi+BbqeQlb+s24HDcw=;
-        b=Vis/qG7syPrRj7MJmr6XusGF1w0FsYmjRQUKo6AxzIX9iTBhKUjgYVt9/JJ5VKV5OB
-         dhGhVmgLhyzSqajb4MCy+yNTpoOYteyKktq+Q47v2xLAo9dskJU6W2j5Bl8jSLm1cGKw
-         i+PxumYQ+2RGd7w6j12wwg5S8balfnuUsBxjDB52+olz7KM8lC43LRUpxBSm6ligrDSO
-         He3RCMi36ZQgrys5AK2JZusAfQzytIywDuKyKcLA/6ErbTVVX3LjLkMqlEn1i8XHQAOJ
-         9mksis1hjztmQy7GTasflBTkR5t2yxS3qOO2asvVYuJRwZpkiA02sZBhfIggI4cIpBI2
-         Rs6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TpYwJcXRaIAY1k5rPDvLOqhWDmi+BbqeQlb+s24HDcw=;
-        b=aObjCDqQZ/sQEk6BFpA0w5z4qWurcWW+brXEBW7Tr3Ub5fEjzpF8P4hKeS1E2isA5x
-         UcqyB+P8JUXyMEjjngk5tVWpQhMyv41tO3TfuMVZvtrW1/2GkeaYz0gmtkTkVU2Qk8QO
-         JdDIzbCfffJtsGmekPkq5Buq9sgnDlkcnCkWSYoYU1LBS2hceWAXlzetnRMFoe9kjN8L
-         AtPUDjTxKgUwmA+VRyMVYb1HV6rcysqw7EJNiFT7T7XsHa8264HXaOAt/4AJfBQkTa1U
-         j0sLomTvsovSpb0OJsYtLPE7wuEERa5IDGfKlsaPDwl1YLExGbJulFvCF5ozZEIKTA4I
-         eG9w==
-X-Gm-Message-State: AOAM531k2Y4ATqjOM6QUktIzrTfxScCFZCndwBuFAkxED+x5qriQGM4K
-        dL4FExeYXRLNzCNnfRbv00Q=
-X-Google-Smtp-Source: ABdhPJwMFMWeKl+V8HsC0r0UdnVtNqwrvhckrl6oIpafBmg/UzA8AVCYLe6eHSuPGqYHGYs8PBntSA==
-X-Received: by 2002:a17:90b:3686:b0:1dd:1c31:50cb with SMTP id mj6-20020a17090b368600b001dd1c3150cbmr3286453pjb.203.1652079941283;
-        Mon, 09 May 2022 00:05:41 -0700 (PDT)
-Received: from [192.168.255.10] ([203.205.141.86])
-        by smtp.gmail.com with ESMTPSA id i6-20020a170902cf0600b0015e8d4eb2e1sm6250768plg.299.2022.05.09.00.05.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:05:40 -0700 (PDT)
-Message-ID: <c313e9c9-97eb-8273-5bb7-553692e8e2f5@gmail.com>
-Date:   Mon, 9 May 2022 15:05:33 +0800
+        Mon, 9 May 2022 03:12:42 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA1E185C86;
+        Mon,  9 May 2022 00:08:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wBYJb025r/PmjnCJ2jgNM6Uu8wmuFqp0g2HraO+Rbss=; b=DvztEdZlncnAAApMh0zkmsqJ5K
+        v7XcB/Nhdc1Se73DIYdf4e3R7gJTyb1yfyt0Qs20V+V+zDYYldBS1zKx6kZTt1glnEfoBJH25N2uF
+        FEOg6hDS84YylnT7SlSGu2PXmBMApV1fx/M+BDgkE8eiwKMqF5sMTVoRqS/R8s/p9+7RmF/XLArYk
+        gdcd4Qt0ngsj/pcnMjnSuqR4PaVEOBkBr7+877T9JEOHFzzcOS9HzeSAW148vcGuQrRHnsvYFdqSP
+        17xS97WpxKH32HJPDde+cD4yZwFjlyPFPWWXn4TpcpDXCiYgwUb7hdg+91EVmwSU2PKtF1QtYIS8C
+        ve6mOR5g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nnxVR-00CUSx-NY; Mon, 09 May 2022 07:08:34 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5E258980E93; Mon,  9 May 2022 09:08:31 +0200 (CEST)
+Date:   Mon, 9 May 2022 09:08:31 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: Re: [PATCH 1/2] entry: Rename arch_check_user_regs() to
+ arch_enter_from_user_mode()
+Message-ID: <20220509070831.GD76023@worktop.programming.kicks-ass.net>
+References: <20220504062351.2954280-1-tmricht@linux.ibm.com>
+ <20220504062351.2954280-2-tmricht@linux.ibm.com>
+ <YnV3iljKUM0Fqw/F@hirez.programming.kicks-ass.net>
+ <yt9dsfpjgrba.fsf@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH v4 5/7] perf/x86/amd/core: Add PerfMonV2 counter control
-Content-Language: en-US
-To:     Sandipan Das <sandipan.das@amd.com>
-Cc:     peterz@infradead.org, bp@alien8.de, dave.hansen@linux.intel.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        pbonzini@redhat.com, jmattson@google.com, eranian@google.com,
-        puwen@hygon.cn, ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, x86@kernel.org
-References: <cover.1651058600.git.sandipan.das@amd.com>
- <5c30d99af03fff90e2fc3165755d18d14bdb229f.1651058600.git.sandipan.das@amd.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-In-Reply-To: <5c30d99af03fff90e2fc3165755d18d14bdb229f.1651058600.git.sandipan.das@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yt9dsfpjgrba.fsf@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/4/2022 7:31 pm, Sandipan Das wrote:
+On Mon, May 09, 2022 at 08:20:41AM +0200, Sven Schnelle wrote:
+> Peter Zijlstra <peterz@infradead.org> writes:
+> 
+> > On Wed, May 04, 2022 at 08:23:50AM +0200, Thomas Richter wrote:
+> >> From: Sven Schnelle <svens@linux.ibm.com>
+> >> 
+> >> arch_check_user_regs() is used at the moment to verify that struct pt_regs
+> >> contains valid values when entering the kernel from userspace. s390 needs
+> >> a place in the generic entry code to modify a cpu data structure when
+> >> switching from userspace to kernel mode. As arch_check_user_regs() is
+> >> exactly this, rename it to arch_enter_from_user_mode().
+> >> 
+> >> Cc: Thomas Gleixner <tglx@linutronix.de>
+> >> Cc: Peter Zijlstra <peterz@infradead.org>
+> >> Cc: Andy Lutomirski <luto@kernel.org>
+> >> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+> >> ---
+> >
+> > With the note that NMI doesn't (necessarily) call this..
+> >
+> > Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> 
+> How about:
+> 
+> "When entering the kernel from userspace, arch_check_user_regs() is
+>  used to verify that struct pt_regs contains valid values. Note that
+>  the NMI codepath doesn't call this function. s390 needs a place in the
+>  generic entry code to modify a cpu data structure when switching from
+>  userspace to kernel mode. As arch_check_user_regs() is exactly this,
+>  rename it to arch_enter_from_user_mode()."
 
->   static void amd_pmu_add_event(struct perf_event *event)
->   {
->   	if (needs_branch_stack(event))
-> @@ -1216,6 +1251,11 @@ static int __init amd_core_pmu_init(void)
->   		x86_pmu.num_counters = ebx.split.num_core_pmc;
->   
->   		amd_pmu_global_cntr_mask = (1ULL << x86_pmu.num_counters) - 1;
-> +
-> +		/* Update PMC handling functions */
-> +		x86_pmu.enable_all = amd_pmu_v2_enable_all;
-> +		x86_pmu.disable_all = amd_pmu_v2_disable_all;
-> +		x86_pmu.enable = amd_pmu_v2_enable_event;
->   	}
-
-Considering the below part of code also run on the PerfMonV2 host
-
-whatever the guest PMU version, how about updating these two use cases as well 
-in this patch ?
-
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 262e39a85031..2f7c62e46314 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -1469,8 +1469,8 @@ void amd_pmu_enable_virt(void)
-         cpuc->perf_ctr_virt_mask = 0;
-
-         /* Reload all events */
--       amd_pmu_disable_all();
--       x86_pmu_enable_all(0);
-+       amd_pmu.disable_all();
-+       amd_pmu.enable_all(0);
-  }
-  EXPORT_SYMBOL_GPL(amd_pmu_enable_virt);
-
-@@ -1487,7 +1487,7 @@ void amd_pmu_disable_virt(void)
-         cpuc->perf_ctr_virt_mask = AMD64_EVENTSEL_HOSTONLY;
-
-         /* Reload all events */
--       amd_pmu_disable_all();
--       x86_pmu_enable_all(0);
-+       amd_pmu.disable_all();
-+       amd_pmu.enable_all(0);
-  }
-  EXPORT_SYMBOL_GPL(amd_pmu_disable_virt);
-
+Sure, thanks!
