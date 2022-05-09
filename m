@@ -2,128 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E555C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235985AbiEIN0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
+        id S235715AbiEIN1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235676AbiEINY7 (ORCPT
+        with ESMTP id S236485AbiEIN04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:24:59 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB211154;
-        Mon,  9 May 2022 06:20:44 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 484E824001A;
-        Mon,  9 May 2022 13:20:41 +0000 (UTC)
+        Mon, 9 May 2022 09:26:56 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D34C1EF08F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:22:19 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 09BA9FF80B;
+        Mon,  9 May 2022 13:22:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652102443;
+        t=1652102527;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iKAHzFQJQMsOLZ9RTifEhkd3BF0P8O3YNGW6RUqPM4g=;
-        b=N/fKwszjz3aaapXkc8sQtLq3mfE219aPhEo0ODqYWXrWKTFqY9wzdo3aBnc8w4Rgo9huXe
-        IGCYUk80RzoGHzxS31Cg8F4k/BotixBndvTkogxMfcO4TBDYqIvlN7tOBSNxW0L2knZ0fY
-        eVJUtnHXUgrjXPyqqFOuQ+I6b2uiCA6AxdxCV53HhQ2VeD2vdZQFS/pNzL2j1lZTdoLhat
-        fDZd6ZLoE/DtToModbcL5I9GgoeLFh2Bnul7qAVkhVAvtwPIRmAZMQRxLnqwu/CBrqq5eH
-        iGVdbcIbD6gaCrbLR23l9fTRFbbOusBJ6+0bRO8lEoDXARiic2TJb71xTCnPcQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 09/12] ARM: dts: r9a06g032: describe MII converter
-Date:   Mon,  9 May 2022 15:18:57 +0200
-Message-Id: <20220509131900.7840-10-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220509131900.7840-1-clement.leger@bootlin.com>
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
+        bh=hYp7UicfNVk2h+W1pXimL0ouEnlIcPeVZRFiE+KGNmw=;
+        b=DsCwXUrGLw7y5zT5ouJuJWAeYpKIYpXbGHRDWJA7femeBQDHbG38oetPYUw3F00wlrT5hA
+        VcQrgquobqCorxlWCNKgeTRDf+N++i8i3lqwcMvz+tZ4ftG95MIW5eW6yblJgbEye4wQq5
+        xsFNvm4q7vlBhJIa78qcUFtPBVV+TEyQr0FU6Av4X/xlUOFotnoPOtbX5HnfWxmu99UD08
+        7X0m3XpmJh1j9FLBPeEJzhA4UW206mGQGN8CZbu7XrhnCkvBAwZXagc5QgnfbmMTqKNNF9
+        /OR3WM4s8BomEyozov5Ah8lQHad3DKQTwCw2je9wtvGRsaJm1qCmXeQUB2Tjkw==
+Date:   Mon, 9 May 2022 15:22:05 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     Conor Culhane <conor.culhane@silvaco.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+        zhengkui_guo@outlook.com
+Subject: Re: [PATCH] i3c: master: svc: fix returnvar.cocci warning
+Message-ID: <20220509152205.5e6432e1@xps13>
+In-Reply-To: <20220504164901.9622-1-guozhengkui@vivo.com>
+References: <20220504164901.9622-1-guozhengkui@vivo.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the MII converter node which describes the MII converter that is
-present on the RZ/N1 SoC.
+Hi,
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- arch/arm/boot/dts/r9a06g032.dtsi | 38 ++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+guozhengkui@vivo.com wrote on Thu,  5 May 2022 00:49:01 +0800:
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 20286433d3c6..ada5b1db0790 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -201,6 +201,44 @@ nand_controller: nand-controller@40102000 {
- 			status = "disabled";
- 		};
- 
-+		eth_miic: eth-miic@44030000 {
-+			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0x44030000 0x10000>;
-+			clocks = <&sysctrl R9A06G032_CLK_MII_REF>,
-+				 <&sysctrl R9A06G032_CLK_RGMII_REF>,
-+				 <&sysctrl R9A06G032_CLK_RMII_REF>,
-+				 <&sysctrl R9A06G032_HCLK_SWITCH_RG>;
-+			power-domains = <&sysctrl>;
-+			status = "disabled";
-+
-+			mii_conv1: mii-conv@1 {
-+				reg = <1>;
-+				status = "disabled";
-+			};
-+
-+			mii_conv2: mii-conv@2 {
-+				reg = <2>;
-+				status = "disabled";
-+			};
-+
-+			mii_conv3: mii-conv@3 {
-+				reg = <3>;
-+				status = "disabled";
-+			};
-+
-+			mii_conv4: mii-conv@4 {
-+				reg = <4>;
-+				status = "disabled";
-+			};
-+
-+			mii_conv5: mii-conv@5 {
-+				reg = <5>;
-+				status = "disabled";
-+			};
-+		};
-+
- 		gic: interrupt-controller@44101000 {
- 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
- 			interrupt-controller;
--- 
-2.36.0
+> Fix the following coccicheck warning:
+>=20
+> drivers/i3c/master/svc-i3c-master.c:1600:5-8:
+> Unneeded variable: "ret". Return "0" on line 1605.
+>=20
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> ---
+>  drivers/i3c/master/svc-i3c-master.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/i3c/master/svc-i3c-master.c b/drivers/i3c/master/svc=
+-i3c-master.c
+> index 7550dad64ecf..d6e9ed74cdcf 100644
+> --- a/drivers/i3c/master/svc-i3c-master.c
+> +++ b/drivers/i3c/master/svc-i3c-master.c
+> @@ -1597,12 +1597,11 @@ static int __maybe_unused svc_i3c_runtime_suspend=
+(struct device *dev)
+>  static int __maybe_unused svc_i3c_runtime_resume(struct device *dev)
+>  {
+>  	struct svc_i3c_master *master =3D dev_get_drvdata(dev);
+> -	int ret =3D 0;
+> =20
+>  	pinctrl_pm_select_default_state(dev);
+>  	svc_i3c_master_prepare_clks(master);
+> =20
+> -	return ret;
+> +	return 0;
+>  }
+> =20
+>  static const struct dev_pm_ops svc_i3c_pm_ops =3D {
 
+Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+Thanks,
+Miqu=C3=A8l
