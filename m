@@ -2,275 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBD8C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50510C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbiEIFiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
+        id S233706AbiEIFiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234330AbiEIF3c (ORCPT
+        with ESMTP id S234188AbiEIFeU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:29:32 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD78261B
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:25:39 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id o12-20020a1c4d0c000000b00393fbe2973dso10103430wmh.2
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 22:25:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C5XQ3hyloMLLLndWdB5WuxNpqTy9IY4sqDd7KReZqGs=;
-        b=8RiGiBo+uASe2nrpMeEYKuUlERVz2sxygUTXvTS8ZfE21z62USL/imBvv9O1oDc/KK
-         HafKoNK0ndDOWOsrPW2HXF2zZ1Xc4dK+zU6TiAXakwPyB1rEJAIrdpMW9/+V/KZdkGVv
-         Nkpcqhmg5TsD7CHqGQukBZ14MgdwAtzWy228sARUW/+86BivOJ/K0oyKdoEdxQEidxjH
-         vW095C/5DO/vWVCVodXsGKTPYNKms03cv2Zn+FAVLNSW5qMz9NXxlyliStrX81KD0p9n
-         /XmWLZ5tHOrfEdD/ro+T6jQ21AoX6Wz8O8zwnxgJJ5nGyZiU0K9YHc/kWVeTK8XidRKh
-         u6Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C5XQ3hyloMLLLndWdB5WuxNpqTy9IY4sqDd7KReZqGs=;
-        b=LaDqqTm4YI7TjU0PKW0rChNl4CdHY3cBCAnHEgwMEMGRvQFCc82ALaJK4nc4EGKwrO
-         MMXSDl8vq2zhAgwJw3EJhUP7450M+zUN+qSSPJ9TBnF3PtW7nSxWPfEFuiK/gytsejcl
-         FsGF+bnULmbykefO20dtgfxZhvqGipUpycp+wMesWjaxsMqFq67dzs/J355Qsyr0CXET
-         9cb9rFEtuCW1QAGTskCdKv1uzX16bPodznaAF+H1nx4Ov4MaJg/RtJkAp8KuopQpPy1U
-         nmO83goTB15NSGughxWclEin2kPMSXUIfGSNKcWa2jCv8C4ZV4ynHx7RkIB6vKTIvIOj
-         E+bA==
-X-Gm-Message-State: AOAM533IjGGyo3Dn6DFIZJpm6+1Azt5hK+VQdmUCzlYf1f/Ay+f2u2Ve
-        pkGlPEgZ1fT4XUmuSGix2+4QQxT7FTiFIOQCRDMTkQ==
-X-Google-Smtp-Source: ABdhPJxHSZExdSWviiroriTDm831/Jlr/IS7vqQiuq680DL3bLAGu7DJ3UApThrZkmb5ekR7dSqjOv0IKm/PinsyNQE=
-X-Received: by 2002:a05:600c:4fd5:b0:394:55ae:32c7 with SMTP id
- o21-20020a05600c4fd500b0039455ae32c7mr20935325wmq.73.1652073937743; Sun, 08
- May 2022 22:25:37 -0700 (PDT)
+        Mon, 9 May 2022 01:34:20 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2080381A3;
+        Sun,  8 May 2022 22:30:26 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nnvyO-0007xl-7n; Mon, 09 May 2022 07:30:20 +0200
+Message-ID: <cbf8a730-a169-f2e9-3041-e530dfe42ad6@leemhuis.info>
+Date:   Mon, 9 May 2022 07:30:19 +0200
 MIME-Version: 1.0
-References: <20220422150519.3818093-1-atishp@rivosinc.com>
-In-Reply-To: <20220422150519.3818093-1-atishp@rivosinc.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 9 May 2022 10:55:26 +0530
-Message-ID: <CAAhSdy0QW7o9f0_Nqx7KwHtn2Kh4Z-zURZQ2qt--L7Dc8cYnTg@mail.gmail.com>
-Subject: Re: [v2 PATCH] RISC-V: KVM: Introduce ISA extension register
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     KVM General <kvm@vger.kernel.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
-        <kvm-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: regression v5.13..v5.15: USB hub stopped working -- DMAR fault
+ when connected usb hub
+Content-Language: en-US
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     =?UTF-8?Q?Piotr_Pi=c3=b3rkowski?= <qba100@gmail.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <237660ea-794e-8347-4e1a-869ccef9ba3c@leemhuis.info>
+In-Reply-To: <237660ea-794e-8347-4e1a-869ccef9ba3c@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1652074227;303e07b4;
+X-HE-SMSGID: 1nnvyO-0007xl-7n
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 8:38 PM Atish Patra <atishp@rivosinc.com> wrote:
->
-> Currently, there is no provision for vmm (qemu-kvm or kvmtool) to
-> query about multiple-letter ISA extensions. The config register
-> is only used for base single letter ISA extensions.
->
-> A new ISA extension register is added that will allow the vmm
-> to query about any ISA extension one at a time. It is enabled for
-> both single letter or multi-letter ISA extensions. The ISA extension
-> register is useful to if the vmm requires to retrieve/set single
-> extension while the config register should be used if all the base
-> ISA extension required to retrieve or set.
->
-> For any multi-letter ISA extensions, the new register interface
-> must be used.
->
-> Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> ---
-> Changes from v1->v2:
-> 1. Sending the patch separate from sstc series as it is unrelated.
-> 2. Removed few redundant lines.
->
-> The kvm tool patches can be found here.
->
-> https://github.com/atishp04/kvmtool/tree/sstc_v2
->
-> ---
->  arch/riscv/include/uapi/asm/kvm.h | 20 +++++++
->  arch/riscv/kvm/vcpu.c             | 98 +++++++++++++++++++++++++++++++
->  2 files changed, 118 insertions(+)
->
-> diff --git a/arch/riscv/include/uapi/asm/kvm.h b/arch/riscv/include/uapi/asm/kvm.h
-> index f808ad1ce500..92bd469e2ba6 100644
-> --- a/arch/riscv/include/uapi/asm/kvm.h
-> +++ b/arch/riscv/include/uapi/asm/kvm.h
-> @@ -82,6 +82,23 @@ struct kvm_riscv_timer {
->         __u64 state;
->  };
->
-> +/**
-> + * ISA extension IDs specific to KVM. This is not the same as the host ISA
-> + * extension IDs as that is internal to the host and should not be exposed
-> + * to the guest. This should always be contiguous to keep the mapping simple
-> + * in KVM implementation.
-> + */
-> +enum KVM_RISCV_ISA_EXT_ID {
-> +       KVM_RISCV_ISA_EXT_A = 0,
-> +       KVM_RISCV_ISA_EXT_C,
-> +       KVM_RISCV_ISA_EXT_D,
-> +       KVM_RISCV_ISA_EXT_F,
-> +       KVM_RISCV_ISA_EXT_H,
-> +       KVM_RISCV_ISA_EXT_I,
-> +       KVM_RISCV_ISA_EXT_M,
-> +       KVM_RISCV_ISA_EXT_MAX,
-> +};
-> +
->  /* Possible states for kvm_riscv_timer */
->  #define KVM_RISCV_TIMER_STATE_OFF      0
->  #define KVM_RISCV_TIMER_STATE_ON       1
-> @@ -123,6 +140,9 @@ struct kvm_riscv_timer {
->  #define KVM_REG_RISCV_FP_D_REG(name)   \
->                 (offsetof(struct __riscv_d_ext_state, name) / sizeof(__u64))
->
-> +/* ISA Extension registers are mapped as type 7 */
-> +#define KVM_REG_RISCV_ISA_EXT          (0x07 << KVM_REG_RISCV_TYPE_SHIFT)
-> +
->  #endif
->
->  #endif /* __LINUX_KVM_RISCV_H */
-> diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-> index aad430668bb4..93492eb292fd 100644
-> --- a/arch/riscv/kvm/vcpu.c
-> +++ b/arch/riscv/kvm/vcpu.c
-> @@ -365,6 +365,100 @@ static int kvm_riscv_vcpu_set_reg_csr(struct kvm_vcpu *vcpu,
->         return 0;
->  }
->
-> +/* Mapping between KVM ISA Extension ID & Host ISA extension ID */
-> +static unsigned long kvm_isa_ext_arr[] = {
-> +       RISCV_ISA_EXT_a,
-> +       RISCV_ISA_EXT_c,
-> +       RISCV_ISA_EXT_d,
-> +       RISCV_ISA_EXT_f,
-> +       RISCV_ISA_EXT_h,
-> +       RISCV_ISA_EXT_i,
-> +       RISCV_ISA_EXT_m,
-> +};
-> +
-> +static int kvm_riscv_vcpu_get_reg_isa_ext(struct kvm_vcpu *vcpu,
-> +                                         const struct kvm_one_reg *reg)
-> +{
-> +       unsigned long __user *uaddr =
-> +                       (unsigned long __user *)(unsigned long)reg->addr;
-> +       unsigned long reg_num = reg->id & ~(KVM_REG_ARCH_MASK |
-> +                                           KVM_REG_SIZE_MASK |
-> +                                           KVM_REG_RISCV_ISA_EXT);
-> +       unsigned long reg_val = 0;
-> +       unsigned long host_isa_ext;
-> +
-> +       if (KVM_REG_SIZE(reg->id) != sizeof(unsigned long))
-> +               return -EINVAL;
-> +
-> +       if (reg_num >= KVM_RISCV_ISA_EXT_MAX || reg_num >= ARRAY_SIZE(kvm_isa_ext_arr))
-> +               return -EINVAL;
-> +
-> +       host_isa_ext = kvm_isa_ext_arr[reg_num];
-> +       if (__riscv_isa_extension_available(NULL, host_isa_ext))
+Hi, this is your Linux kernel regression tracker.
 
-This should be "__riscv_isa_extension_available(vcpu->arch.isa, host_isa_ext)".
+@kernel developers: you might want to consider ignoring this, the
+reporter provided additional information in the ticket and it looks a
+lot like it's not a regression. For details see:
+https://bugzilla.kernel.org/show_bug.cgi?id=215906#c4
 
-> +               reg_val = 1; /* Mark the given extension as available */
-> +
-> +       if (copy_to_user(uaddr, &reg_val, KVM_REG_SIZE(reg->id)))
-> +               return -EFAULT;
-> +
-> +       return 0;
-> +}
-> +
-> +static int kvm_riscv_vcpu_set_reg_isa_ext(struct kvm_vcpu *vcpu,
-> +                                         const struct kvm_one_reg *reg)
-> +{
-> +       unsigned long __user *uaddr =
-> +                       (unsigned long __user *)(unsigned long)reg->addr;
-> +       unsigned long reg_num = reg->id & ~(KVM_REG_ARCH_MASK |
-> +                                           KVM_REG_SIZE_MASK |
-> +                                           KVM_REG_RISCV_ISA_EXT);
-> +       unsigned long reg_val;
-> +       unsigned long host_isa_ext;
-> +       unsigned long host_isa_ext_mask;
-> +
-> +       if (KVM_REG_SIZE(reg->id) != sizeof(unsigned long))
-> +               return -EINVAL;
-> +
-> +       if (reg_num >= KVM_RISCV_ISA_EXT_MAX || reg_num >= ARRAY_SIZE(kvm_isa_ext_arr))
-> +               return -EINVAL;
-> +
-> +       if (copy_from_user(&reg_val, uaddr, KVM_REG_SIZE(reg->id)))
-> +               return -EFAULT;
-> +
-> +       host_isa_ext = kvm_isa_ext_arr[reg_num];
-> +       if (!__riscv_isa_extension_available(NULL, host_isa_ext))
-> +               return  -EOPNOTSUPP;
-> +
-> +       if (host_isa_ext >= RISCV_ISA_EXT_BASE &&
-> +           host_isa_ext < RISCV_ISA_EXT_MAX) {
-> +               /** Multi-letter ISA extension. Currently there is no provision
-> +                * to enable/disable the multi-letter ISA extensions for guests.
-> +                * Return success if the request is to enable any ISA extension
-> +                * that is available in the hardware.
-> +                * Return -EOPNOTSUPP otherwise.
-> +                */
+Sorry for the noise.
 
-Use double-winged comment-block for multi-line comments.
+Ciao, Thorsten
 
-> +               if (!reg_val)
-> +                       return -EOPNOTSUPP;
-> +               else
-> +                       return 0;
-> +       }
-> +
-> +       /* Single letter base ISA extension */
-> +       if (!vcpu->arch.ran_atleast_once) {
-> +               host_isa_ext_mask = BIT_MASK(host_isa_ext);
-> +               if (!reg_val && (host_isa_ext_mask & KVM_RISCV_ISA_DISABLE_ALLOWED))
-> +                       vcpu->arch.isa &= ~host_isa_ext_mask;
-> +               else
-> +                       vcpu->arch.isa |= host_isa_ext_mask;
-> +               vcpu->arch.isa &= riscv_isa_extension_base(NULL);
-> +               vcpu->arch.isa &= KVM_RISCV_ISA_ALLOWED;
-> +               kvm_riscv_vcpu_fp_reset(vcpu);
-> +       } else {
-> +               return -EOPNOTSUPP;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  static int kvm_riscv_vcpu_set_reg(struct kvm_vcpu *vcpu,
->                                   const struct kvm_one_reg *reg)
->  {
-> @@ -382,6 +476,8 @@ static int kvm_riscv_vcpu_set_reg(struct kvm_vcpu *vcpu,
->         else if ((reg->id & KVM_REG_RISCV_TYPE_MASK) == KVM_REG_RISCV_FP_D)
->                 return kvm_riscv_vcpu_set_reg_fp(vcpu, reg,
->                                                  KVM_REG_RISCV_FP_D);
-> +       else if ((reg->id & KVM_REG_RISCV_TYPE_MASK) == KVM_REG_RISCV_ISA_EXT)
-> +               return kvm_riscv_vcpu_set_reg_isa_ext(vcpu, reg);
->
->         return -EINVAL;
->  }
-> @@ -403,6 +499,8 @@ static int kvm_riscv_vcpu_get_reg(struct kvm_vcpu *vcpu,
->         else if ((reg->id & KVM_REG_RISCV_TYPE_MASK) == KVM_REG_RISCV_FP_D)
->                 return kvm_riscv_vcpu_get_reg_fp(vcpu, reg,
->                                                  KVM_REG_RISCV_FP_D);
-> +       else if ((reg->id & KVM_REG_RISCV_TYPE_MASK) == KVM_REG_RISCV_ISA_EXT)
-> +               return kvm_riscv_vcpu_get_reg_isa_ext(vcpu, reg);
->
->         return -EINVAL;
->  }
-> --
-> 2.25.1
->
-
-Regards,
-Anup
+On 05.05.22 15:31, Thorsten Leemhuis wrote:
+> Hi, this is your Linux kernel regression tracker.
+> 
+> I noticed a regression report in bugzilla.kernel.org that afaics nobody
+> acted upon since it was reported about a week ago. That's why I decided
+> to forward it to a few maintainers and mailing lists. To quote from
+> https://bugzilla.kernel.org/show_bug.cgi?id=215906 :
+> 
+>> Since kernel 5.15 (with kernel 5.13 I see no problem) I have a problem with my USB hub. The device stops working shortly after starting the system.
+>> In dmesg log I see DMAR fault on usb controller
+>>
+>>
+>> [kwi27 22:03] usb 5-1.2: new high-speed USB device number 3 using xhci_hcd
+>> [  +0,100440] usb 5-1.2: New USB device found, idVendor=1a40, idProduct=0101, bcdDevice= 1.11
+>> [  +0,000004] usb 5-1.2: New USB device strings: Mfr=0, Product=1, SerialNumber=0
+>> [  +0,000002] usb 5-1.2: Product: USB 2.0 Hub
+>> [  +0,001002] hub 5-1.2:1.0: USB hub found
+>> [  +0,000133] hub 5-1.2:1.0: 4 ports detected
+>> [  +0,702453] usb 5-1.2.2: new full-speed USB device number 4 using xhci_hcd
+>> [  +0,471198] usb 5-1.2.2: New USB device found, idVendor=047f, idProduct=c025, bcdDevice= 1.35
+>> [  +0,000004] usb 5-1.2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+>> [  +0,000002] usb 5-1.2.2: Product: Plantronics C320-M
+>> [  +0,000001] usb 5-1.2.2: Manufacturer: Plantronics
+>> [  +0,000001] usb 5-1.2.2: SerialNumber: B13D8BE491B04E73AEB4C95E162DBE2B
+>> [  +0,255862] mc: Linux media interface: v0.10
+>> [  +0,001057] input: Plantronics Plantronics C320-M as /devices/pci0000:00/0000:00:1c.5/0000:04:00.0/usb5/5-1/5-1.2/5-1.2.2/5-1.2.2:1.3/0003:047F:C025.0004/input/input21
+>> [  +0,060275] plantronics 0003:047F:C025.0004: input,hiddev1,hidraw3: USB HID v1.11 Device [Plantronics Plantronics C320-M] on usb-0000:04:00.0-1.2.2/input3
+>> [  +0,859655] usb 5-1.2.2: Warning! Unlikely big volume range (=8192), cval->res is probably wrong.
+>> [  +0,000003] usb 5-1.2.2: [11] FU [Sidetone Playback Volume] ch = 1, val = 0/8192/1
+>> [  +0,584234] usbcore: registered new interface driver snd-usb-audio
+>> [  +0,229229] xhci_hcd 0000:04:00.0: WARNING: Host System Error
+>> [  +0,000014] DMAR: DRHD: handling fault status reg 2
+>> [  +0,000004] DMAR: [DMA Read NO_PASID] Request device [04:00.0] fault addr 0xfffca000 [fault reason 0x06] PTE Read access is not set
+>> [  +0,031993] xhci_hcd 0000:04:00.0: Host halt failed, -110
+>> [kwi27 22:04] xhci_hcd 0000:04:00.0: xHCI host not responding to stop endpoint command.
+>> [  +0,000003] xhci_hcd 0000:04:00.0: USBSTS: HSE EINT
+>> [  +0,032011] xhci_hcd 0000:04:00.0: Host halt failed, -110
+>> [  +0,000002] xhci_hcd 0000:04:00.0: xHCI host controller not responding, assume dead
+>> [  +0,000017] xhci_hcd 0000:04:00.0: HC died; cleaning up
+>> [  +0,000042] usb 5-1: USB disconnect, device number 2
+>> [  +0,000003] usb 5-1.2: USB disconnect, device number 3
+>> [  +0,000002] usb 5-1.2.2: USB disconnect, device number 4
+>> [  +0,000114] usb 5-1.2.2: 1:0: usb_set_interface failed (-110)
+>> [  +0,000016] usb 5-1.2.2: 1:1: usb_set_interface failed (-19)
+>> [  +0,000011] usb 5-1.2.2: 1:0: usb_set_interface failed (-19)
+> See the ticket for details and further comments. According to the latest
+> one the problem is still present in 5.18-rc5.
+> 
+> Was this issue discussed or even addressed somewhere already? Or does
+> anyone at least have a good idea what might be causing this problem?
+> @reporter: If neither is the case, you most likely will need to perform
+> a bisection with git to identify the change causing the problem.
+> 
+> Anyway, could one of the kernel developers among the recipients please
+> help with this? BTW, I was unsure where to send this to the DMA/IOMMU
+> maintainers or the USB/xhci maintainers. I settled for the latter; I
+> apologize in advance if that was the wrong choice.
+> 
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+> 
+> P.S.: As the Linux kernel's regression tracker I defsdal with a lot of
+> reports and sometimes miss something important when writing mails like
+> this. If that's the case here, don't hesitate to tell me in a public
+> reply, it's in everyone's interest to set the public record straight.
+> 
+> P.P.S: to get this tracked by the the Linux kernel regression tracking bot:
+> 
+> #regzbot introduced: v5.13..v5.15
+> #regzbot from: Piotr Piórkowski <qba100@gmail.com>
+> #regzbot title: usb/dma/iommu/???: USB hub stopped working -- DMAR fault
+> when connected usb hub
+> #regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215906
+> #regzbot monitor:
+> https://lore.kernel.org/all/bug-215906-208809@https.bugzilla.kernel.org%2F/
