@@ -2,109 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D03C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233304AbiEILx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        id S233345AbiEILyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233238AbiEILxz (ORCPT
+        with ESMTP id S233269AbiEILw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:53:55 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BE7233A60;
-        Mon,  9 May 2022 04:50:01 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d25so12028715pfo.10;
-        Mon, 09 May 2022 04:50:01 -0700 (PDT)
+        Mon, 9 May 2022 07:52:27 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBDA21AAA1
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:48:31 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2f7b815ac06so141067227b3.3
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=P8Pt48qpDGet0WO3ZKzHwCy7mbKSUJ/hQ+8osFnMYxw=;
-        b=Mz5DtpZT7eJ7E/sQndaERILByLw6Fh8Cb0uCLHC2jqIiIasnF30mUpf/BujTN+KEU7
-         wL93G7XaVrUzmUcbOz8Bnira9GvY8g51aHwbtV/gWUgBdISHGEaWFDwwlSPPqMQVnHoi
-         RrbtTIMr/jUNj/JjITw8S3tXf1C3iWJcaVdiHnrGDGhWa6fqJ4kVVRIQbIXdCI8Ng6JO
-         6jLTLzznBp6t3rREyZFuXByuSAM05e25sLPiVS4HXLrWwlJCIyWjnAS3DkTG93q28CbE
-         c9ktfxeVwphxBbcJRqG1yoNTMGFgLyueDnKtbT9B2Tm3F4Fz3UvBOGOQNOHmLIvwwxRq
-         qnVQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RD5UBc9Tp8nxPaMy9EtIkwGnYmwjmD8F//1MaTDPdS4=;
+        b=ZT7EyveKN4tEMbX9Dkz1rllst2CQaRkI2llk34jeTE80NYlapr/CVm+qZSp2amUWNy
+         3sF0B3aDQSsUt8vHz9wRxa9mY4g8Aymj9eGW3a0jXLx536XykNSFvcx+uesq1bbIXBOV
+         gE6y41hJfP45iQUXFAKLUmPrJHZ4VEXaY3s8xyEWMHAuMfsgtSdHPB5eFzAZ2/fuEoXO
+         UbVS4Ypn2MOaa3xt26SEGmPcG0CAUtyU4q31Rj+wHb7yq4/YPREmEGWTwRanO9Oq5e2i
+         0twRqgHTtPXl//9FtJlCwIV4hCEfKFleuegv8YDAh7WMU4QFOBLqeDnI7GK9c4NSksV9
+         TCQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=P8Pt48qpDGet0WO3ZKzHwCy7mbKSUJ/hQ+8osFnMYxw=;
-        b=C9D7ONLXldXZ9vix2Y5crxJA4znAkc9G4OHaPVwJ/budCbuHMz5FRzgNji+DGGBDIv
-         NPwJlLCEAZ96b/r0aoLynUMlgwTS0EtuEuZFlEaUKHI4pBj56MWQR5jotDyxLF5UHJWH
-         xUCuLM6GfWaoLs9sfBjR4nPREeOelQcgFrDaCopLoGM+rXt4LimhAL1ePAqXNgsvm9cl
-         nA1YTNORhMB1xhwAtQ1WIh9771ZKjnK3FN1SJjuUS9e3mFY00+GsBpScBQRYgFxxHRpU
-         Ro9QssV1yDXpSIQ4tqd3Qbm4bf50iWruFOCrXAQbKjTLgRjGdmbRcRBRhKv+Rx3NMnSt
-         y2Hg==
-X-Gm-Message-State: AOAM530olwVhdCe2jwKFN7MANGtwXaLeQU78hx3YLeHctYm5Y90RwjUG
-        2G3+M5Lzk0go//i7b3LTAF+jUKvqC0ZjO1+W
-X-Google-Smtp-Source: ABdhPJyKtWbdfxfuTYbyjipaToniwqfDmdzUjccHsrWp0pbRq7kPVBMCe3+tK5J2L98uV3ZTDaHNUA==
-X-Received: by 2002:a62:31c1:0:b0:50a:4909:2691 with SMTP id x184-20020a6231c1000000b0050a49092691mr15959938pfx.64.1652097001285;
-        Mon, 09 May 2022 04:50:01 -0700 (PDT)
-Received: from ?IPV6:2404:f801:0:6:8000::206? ([2404:f801:9000:18:efed::206])
-        by smtp.gmail.com with ESMTPSA id b2-20020a056a0002c200b0050dc7628143sm8299420pft.29.2022.05.09.04.49.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 04:50:00 -0700 (PDT)
-Message-ID: <419605e8-6275-8459-801e-979ea042e5d7@gmail.com>
-Date:   Mon, 9 May 2022 19:49:53 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RD5UBc9Tp8nxPaMy9EtIkwGnYmwjmD8F//1MaTDPdS4=;
+        b=LIhFMvDMvrEFzWnCO3oBS38ROZD6+SDlWz5pez4QD1TnUaIGME8sqc/Ni2WB+p5Jey
+         xBWNlKMSKbI98Ez0Oc251dMlRzrmA2PO6gbeLLHd4Zi2qkqZ6Z+sa+zKWzmDEjKZOnMW
+         8bngKoEKwjuc0KABuk3QipjAfWwnQgnVM+sD1RO8dYSEmifthh0FXlFAZxi985tCNwlQ
+         GtKfUTDGoX8fXPYqhG4bNR0kv2wj4+XqvFoxEIhHThnUMsL3ZWLwfldQCETm8BjTO7Fb
+         YSQj+YSS0KgtkWWswtYIxh4h6CpF8RD8NrYw6BHM1EUyRCopl8o1LZ6NUjbyUfzW5618
+         jSng==
+X-Gm-Message-State: AOAM531/zANv3PfLdp87g4t6Fb8kcHG8mDHidMRjTaOkbOfdBIUgznEL
+        9d3ErP9DtPwEHzJY79E0rj0VfYvqAZYxXwYf/epc+w==
+X-Google-Smtp-Source: ABdhPJzHzWjkwY2TT13Qf2WLxvQu1bcsQfixOklAup0qs85vi7n3/8pWUCANEvn8ywtnFm3S4xH89Fq1aRrd1AD9HCA=
+X-Received: by 2002:a0d:ddc6:0:b0:2f8:a506:a5c0 with SMTP id
+ g189-20020a0dddc6000000b002f8a506a5c0mr14457243ywe.140.1652096911136; Mon, 09
+ May 2022 04:48:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [RFC PATCH V2 0/2] swiotlb: Add child io tlb mem support
-Content-Language: en-US
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     hch@infradead.org, robin.murphy@arm.com
-Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        vkuznets@redhat.com, brijesh.singh@amd.com, konrad.wilk@oracle.com,
-        hch@lst.de, wei.liu@kernel.org, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
-        andi.kleen@intel.com, kirill.shutemov@intel.com,
-        m.szyprowski@samsung.com, michael.h.kelley@microsoft.com,
-        kys@microsoft.com
-References: <20220502125436.23607-1-ltykernel@gmail.com>
-Organization: Microsft
-In-Reply-To: <20220502125436.23607-1-ltykernel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220503151517.59115-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220503151517.59115-1-andriy.shevchenko@linux.intel.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 9 May 2022 13:48:20 +0200
+Message-ID: <CACRpkdZEeEX6qOxkG0AFih4bMXaFraUFchgOXEKDO9pEh=mGGA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] pinctrl: microchip-sgpio: Switch to use fwnode
+ instead of of_node
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Michael Walle <michael@walle.cc>,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/2/2022 8:54 PM, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> 
-> Traditionally swiotlb was not performance critical because it was only
-> used for slow devices. But in some setups, like TDX/SEV confidential
-> guests, all IO has to go through swiotlb. Currently swiotlb only has a
-> single lock. Under high IO load with multiple CPUs this can lead to
-> significant lock contention on the swiotlb lock.
-> 
-> This patch adds child IO TLB mem support to resolve spinlock overhead
-> among device's queues. Each device may allocate IO tlb mem and setup
-> child IO TLB mem according to queue number. The number child IO tlb
-> mem maybe set up equal with device queue number and this helps to resolve
-> swiotlb spinlock overhead among devices and queues.
-> 
-> Patch 2 introduces IO TLB Block concepts and swiotlb_device_allocate()
-> API to allocate per-device swiotlb bounce buffer. The new API Accepts
-> queue number as the number of child IO TLB mem to set up device's IO
-> TLB mem.
+On Tue, May 3, 2022 at 5:15 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 
-Gentile ping...
+> GPIO library now accepts fwnode as a firmware node, so
+> switch the driver to use it.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Thanks.
-> 
-> Tianyu Lan (2):
->    swiotlb: Add Child IO TLB mem support
->    Swiotlb: Add device bounce buffer allocation interface
-> 
->   include/linux/swiotlb.h |  40 ++++++
->   kernel/dma/swiotlb.c    | 290 ++++++++++++++++++++++++++++++++++++++--
->   2 files changed, 317 insertions(+), 13 deletions(-)
-> 
+Patch applied.
+
+Yours,
+Linus Walleij
