@@ -2,68 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233871AbiEIF20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
+        id S231572AbiEIFhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234268AbiEIFZs (ORCPT
+        with ESMTP id S233749AbiEIFbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:25:48 -0400
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCC9D5CCC;
-        Sun,  8 May 2022 22:21:51 -0700 (PDT)
-Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id 92F2430168;
-        Mon,  9 May 2022 05:20:05 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 9A38C20025;
-        Mon,  9 May 2022 05:20:02 +0000 (UTC)
-Message-ID: <b2039ae7a9b33b61ea96919da2c53cbc3bca0049.camel@perches.com>
-Subject: Re: [PATCH v6 4/4] thermal: k3_j72xx_bandgap: Add the bandgap
- driver support
-From:   Joe Perches <joe@perches.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
-        Keerthy <j-keerthy@ti.com>, robh+dt@kernel.org,
-        daniel.lezcano@linaro.org, rui.zhang@intel.com, amitk@kernel.org,
-        kristo@kernel.org, vigneshr@ti.com, krzysztof.kozlowski@linaro.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sun, 08 May 2022 22:20:02 -0700
-In-Reply-To: <202205030045.5GxgWkst-lkp@intel.com>
-References: <202205030045.5GxgWkst-lkp@intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 9 May 2022 01:31:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 414BF3ED34
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652074036;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eNbW88joc1WQormM6ug+550JQKLgPb1W/CR1qXZE5SQ=;
+        b=SLpt+2XVeBmkoZqUTY45/nhvjNePLKeNCG5wmW0Tr5BWsIrO9GE1EPkPeJApYndaAgwuHq
+        ZDsMNnfsBXXT2QTLpyovfVHWqyfjifc4vGt95pfHIamd/YjAdynzvHI1IZvjqdE5Db0+qm
+        nvvLEAOpiNN92WuRL9GZ0at66tUg8cA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-622-V-K_kfjLMYiiNSbbAzXMAA-1; Mon, 09 May 2022 01:27:10 -0400
+X-MC-Unique: V-K_kfjLMYiiNSbbAzXMAA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EAE7C85A5BE;
+        Mon,  9 May 2022 05:27:09 +0000 (UTC)
+Received: from localhost (ovpn-13-212.pek2.redhat.com [10.72.13.212])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8DAE62166B2F;
+        Mon,  9 May 2022 05:27:02 +0000 (UTC)
+Date:   Mon, 9 May 2022 13:26:59 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Sourabh Jain <sourabhjain@linux.ibm.com>
+Cc:     Eric DeVolder <eric.devolder@oracle.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v8 1/7] x86/crash: fix minor typo/bug in debug message
+Message-ID: <YnimI5cZWXKeNSHY@MiWiFi-R3L-srv>
+References: <20220505184603.1548-1-eric.devolder@oracle.com>
+ <20220505184603.1548-2-eric.devolder@oracle.com>
+ <72764a3c-8b8c-8652-945e-9b15f31cda15@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 9A38C20025
-X-Stat-Signature: d9zqnyyg63eizau1ckgb9u8dhfubqkb9
-X-Rspamd-Server: rspamout01
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/3ca4Q9WkkjlN21HSVOUaQ9HmljpP9naQ=
-X-HE-Tag: 1652073602-450815
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72764a3c-8b8c-8652-945e-9b15f31cda15@linux.ibm.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-04 at 11:00 +0300, Dan Carpenter wrote:
-> Hi Keerthy,
-[]
-> vim +/ref_table +521 drivers/thermal/k3_j72xx_bandgap.c
-[]
-> bb7f95a68cbaa1 Keerthy 2022-04-27  426  	ref_table = kzalloc(sizeof(*ref_table) * TABLE_SIZE, GFP_KERNEL);
-> bb7f95a68cbaa1 Keerthy 2022-04-27  427  	if (!ref_table) {
-> bb7f95a68cbaa1 Keerthy 2022-04-27  428  		ret = -ENOMEM;
-> bb7f95a68cbaa1 Keerthy 2022-04-27  429  		goto err_alloc;
-> bb7f95a68cbaa1 Keerthy 2022-04-27  430  	}
+On 05/09/22 at 10:46am, Sourabh Jain wrote:
+> 
+> On 06/05/22 00:15, Eric DeVolder wrote:
+> > The pr_debug() intends to display the memsz member, but the
+> > parameter is actually the bufsz member (which is already
+> > displayed). Correct this to display memsz value.
+> > 
+> > Signed-off-by: Eric DeVolder<eric.devolder@oracle.com>
+> > Reviewed-by: David Hildenbrand<david@redhat.com>
+> > Acked-by: Baoquan He<bhe@redhat.com>
+> > ---
+> >   arch/x86/kernel/crash.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+> > index e8326a8d1c5d..9730c88530fc 100644
+> > --- a/arch/x86/kernel/crash.c
+> > +++ b/arch/x86/kernel/crash.c
+> > @@ -407,7 +407,7 @@ int crash_load_segments(struct kimage *image)
+> >   	}
+> >   	image->elf_load_addr = kbuf.mem;
+> >   	pr_debug("Loaded ELF headers at 0x%lx bufsz=0x%lx memsz=0x%lx\n",
+> > -		 image->elf_load_addr, kbuf.bufsz, kbuf.bufsz);
+> > +		 image->elf_load_addr, kbuf.bufsz, kbuf.memsz);
+> > 
+> I think we can push this patch separately.
 
-devm_kcalloc
-
-> bb7f95a68cbaa1 Keerthy 2022-04-27  431  
-> bb7f95a68cbaa1 Keerthy 2022-04-27  432  	derived_table = devm_kzalloc(bgp->dev, sizeof(*derived_table) * TABLE_SIZE,
-> bb7f95a68cbaa1 Keerthy 2022-04-27  433  				     GFP_KERNEL);
-
-here too
-
+Boris has taken this into tip/x86/kdump.
 
