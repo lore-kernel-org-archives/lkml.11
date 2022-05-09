@@ -2,144 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B94C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432CCC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237357AbiEIJeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
+        id S238477AbiEIJgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237917AbiEIJII (ORCPT
+        with ESMTP id S237359AbiEII60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:08:08 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D601D737D
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:04:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652087053; x=1683623053;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WM3JFuf+XYcullGR01eKGb7NQo6CAvDdzpgDWQsXV8g=;
-  b=kPX4dKOfqtO/CoRb/NP6p3dWygLBnkyZ9uf/UxVZnWs5Ae/41zsdjrNK
-   8ONa+UluSl3mIIhOHQN2IKQHPr8VAgofmAgJi0KlXhOC5urQI/kbbP8Bx
-   aDQnj0XVUc50hnZke4NZpOAB+gQqMyXnY2M2D6+x/saTU4BatCABlGi6l
-   t3jf/vf1m8j2tRWImhuEnc934Jg+rU0QjJwDPR8ZqtJMdP7PzbtuZVvOe
-   HQLbI+tlt/x+UAttID29OZ92WRw+jeV9UkkuunS4TC/L4xdneeYR1GJHP
-   +xptJ2X471Giw9j1QWkl4FRFPLQYg3HI4L7Q1D75rnFs7sjXnsrjWO4GN
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="163213408"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 02:04:13 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 9 May 2022 02:04:12 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 02:04:11 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC:     <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 1/3] clocksource/drivers/timer-microchip-pit64b: remove suspend/resume ops for ce
-Date:   Mon, 9 May 2022 12:06:35 +0300
-Message-ID: <20220509090637.4058399-2-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220509090637.4058399-1-claudiu.beznea@microchip.com>
-References: <20220509090637.4058399-1-claudiu.beznea@microchip.com>
+        Mon, 9 May 2022 04:58:26 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 386951FB2CC;
+        Mon,  9 May 2022 01:54:33 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF85F1042;
+        Mon,  9 May 2022 01:54:32 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.3.22])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 203253F66F;
+        Mon,  9 May 2022 01:54:28 -0700 (PDT)
+Date:   Mon, 9 May 2022 09:54:21 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     maz@kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org,
+        Octavian Purdila <octavian.purdila@nxp.com>,
+        linux-kernel@vger.kernel.org, aou@eecs.berkeley.edu,
+        catalin.marinas@arm.com, deanbo422@gmail.com, green.hu@gmail.com,
+        guoren@kernel.org, jonas@southpole.se, kernelfans@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        nickhu@andestech.com, palmer@dabbelt.com, paul.walmsley@sifive.com,
+        shorne@gmail.com, stefan.kristiansson@saunalahti.fi,
+        tglx@linutronix.de, tsbogend@alpha.franken.de, vgupta@kernel.org,
+        vladimir.murzin@arm.com, will@kernel.org
+Subject: Re: [PATCH v2 17/17] irq: remove handle_domain_{irq,nmi}()
+Message-ID: <YnjWvbzn8ox+f2Y2@FVFF77S0Q05N>
+References: <20211026092504.27071-1-mark.rutland@arm.com>
+ <20211026092504.27071-18-mark.rutland@arm.com>
+ <20220506203242.GA1855@wunner.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506203242.GA1855@wunner.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove suspend and resume ops for clockevent and add set_state_oneshot()
-instead. Along with this mchp_pit64b_{suspend, resume}() were called on
-proper function to disable/enable clocks. This will allow disabling clocks
-for clockevent in case it is not selected as active clockevent.
+On Fri, May 06, 2022 at 10:32:42PM +0200, Lukas Wunner wrote:
+> On Tue, Oct 26, 2021 at 10:25:04AM +0100, Mark Rutland wrote:
+> > Now that entry code handles IRQ entry (including setting the IRQ regs)
+> > before calling irqchip code, irqchip code can safely call
+> > generic_handle_domain_irq(), and there's no functional reason for it to
+> > call handle_domain_irq().
+> > 
+> > Let's cement this split of responsibility and remove handle_domain_irq()
+> > entirely, updating irqchip drivers to call generic_handle_domain_irq().
+> > 
+> > For consistency, handle_domain_nmi() is similarly removed and replaced
+> > with a generic_handle_domain_nmi() function which also does not perform
+> > any entry logic.
+> > 
+> > Previously handle_domain_{irq,nmi}() had a WARN_ON() which would fire
+> > when they were called in an inappropriate context. So that we can
+> > identify similar issues going forward, similar WARN_ON_ONCE() logic is
+> > added to the generic_handle_*() functions, and comments are updated for
+> > clarity and consistency.
+> [...]
+> >  int generic_handle_domain_irq(struct irq_domain *domain, unsigned int hwirq)
+> >  {
+> > +	WARN_ON_ONCE(!in_irq());
+> >  	return handle_irq_desc(irq_resolve_mapping(domain, hwirq));
+> >  }
+> >  EXPORT_SYMBOL_GPL(generic_handle_domain_irq);
+> 
+> Why isn't the WARN_ON_ONCE() conditional on handle_enforce_irqctx()?
+> (See handle_irq_desc() and c16816acd086.)
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/clocksource/timer-microchip-pit64b.c | 30 +++++++++++---------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+I did this for consistency with the in_nmi() check in
+generic_handle_domain_nmi(); I was unaware of commit c16816acd086 and
+IRQD_HANDLE_ENFORCE_IRQCTX.
 
-diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
-index abce83d2f00b..b51259395ac3 100644
---- a/drivers/clocksource/timer-microchip-pit64b.c
-+++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -173,7 +173,8 @@ static int mchp_pit64b_clkevt_shutdown(struct clock_event_device *cedev)
- {
- 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
- 
--	writel_relaxed(MCHP_PIT64B_CR_SWRST, timer->base + MCHP_PIT64B_CR);
-+	if (!clockevent_state_detached(cedev))
-+		mchp_pit64b_suspend(timer);
- 
- 	return 0;
- }
-@@ -182,35 +183,37 @@ static int mchp_pit64b_clkevt_set_periodic(struct clock_event_device *cedev)
- {
- 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
- 
-+	if (clockevent_state_shutdown(cedev))
-+		mchp_pit64b_resume(timer);
-+
- 	mchp_pit64b_reset(timer, mchp_pit64b_ce_cycles, MCHP_PIT64B_MR_CONT,
- 			  MCHP_PIT64B_IER_PERIOD);
- 
- 	return 0;
- }
- 
--static int mchp_pit64b_clkevt_set_next_event(unsigned long evt,
--					     struct clock_event_device *cedev)
-+static int mchp_pit64b_clkevt_set_oneshot(struct clock_event_device *cedev)
- {
- 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
- 
--	mchp_pit64b_reset(timer, evt, MCHP_PIT64B_MR_ONE_SHOT,
-+	if (clockevent_state_shutdown(cedev))
-+		mchp_pit64b_resume(timer);
-+
-+	mchp_pit64b_reset(timer, mchp_pit64b_ce_cycles, MCHP_PIT64B_MR_ONE_SHOT,
- 			  MCHP_PIT64B_IER_PERIOD);
- 
- 	return 0;
- }
- 
--static void mchp_pit64b_clkevt_suspend(struct clock_event_device *cedev)
-+static int mchp_pit64b_clkevt_set_next_event(unsigned long evt,
-+					     struct clock_event_device *cedev)
- {
- 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
- 
--	mchp_pit64b_suspend(timer);
--}
--
--static void mchp_pit64b_clkevt_resume(struct clock_event_device *cedev)
--{
--	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
-+	mchp_pit64b_reset(timer, evt, MCHP_PIT64B_MR_ONE_SHOT,
-+			  MCHP_PIT64B_IER_PERIOD);
- 
--	mchp_pit64b_resume(timer);
-+	return 0;
- }
- 
- static irqreturn_t mchp_pit64b_interrupt(int irq, void *dev_id)
-@@ -395,9 +398,8 @@ static int __init mchp_pit64b_init_clkevt(struct mchp_pit64b_timer *timer,
- 	ce->clkevt.rating = 150;
- 	ce->clkevt.set_state_shutdown = mchp_pit64b_clkevt_shutdown;
- 	ce->clkevt.set_state_periodic = mchp_pit64b_clkevt_set_periodic;
-+	ce->clkevt.set_state_oneshot = mchp_pit64b_clkevt_set_oneshot;
- 	ce->clkevt.set_next_event = mchp_pit64b_clkevt_set_next_event;
--	ce->clkevt.suspend = mchp_pit64b_clkevt_suspend;
--	ce->clkevt.resume = mchp_pit64b_clkevt_resume;
- 	ce->clkevt.cpumask = cpumask_of(0);
- 	ce->clkevt.irq = irq;
- 
--- 
-2.34.1
+I'll have ot leave it to Marc and Thomas as to what we should do there.
 
+> I believe the above change causes a regression in drivers/gpio/gpio-dln2.c
+> such that a gratuitous WARN splat is now emitted.
+
+Do you mean you beleive that from inspection, or are you actually seeing this
+go wrong in practice?
+
+If it's the latter, are you able to give a copy of the dmesg splat?
+
+Thanks,
+Mark.
