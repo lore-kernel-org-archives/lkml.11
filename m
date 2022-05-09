@@ -2,427 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE078C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B39C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232369AbiEIKZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
+        id S233224AbiEIKZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiEIKY5 (ORCPT
+        with ESMTP id S229863AbiEIKZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:24:57 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB747403DC;
-        Mon,  9 May 2022 03:21:00 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 249AKW6L053311;
-        Mon, 9 May 2022 05:20:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1652091632;
-        bh=osMp8LaM7WxWl93D15Dd0t8zs0K59TXdoQKV0BTa4PI=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=vXxLcHDj0+RM+PGZlVA1xWmrQN0LMYwlUAKHxLL9UwSK+SkDUzgyTY2DBr8MOal06
-         qD1DSopPqv9VgyFfWFcRDrUvecWtMge6DWTXOgZuKCd/VQSxkqVRcjPvqe/rHd/zoD
-         AuCgzPVrTgZr2pFZlzYVJc1X98IbsEAO6kPDuYgU=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 249AKWFx123284
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 9 May 2022 05:20:32 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 9
- May 2022 05:20:31 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 9 May 2022 05:20:31 -0500
-Received: from [172.24.220.119] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 249AKPg8114930;
-        Mon, 9 May 2022 05:20:26 -0500
-Message-ID: <f674c56c-0621-f471-9517-5c349940d362@ti.com>
-Date:   Mon, 9 May 2022 15:50:24 +0530
+        Mon, 9 May 2022 06:25:03 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1BF93B019;
+        Mon,  9 May 2022 03:21:07 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A21EB1480;
+        Mon,  9 May 2022 03:02:28 -0700 (PDT)
+Received: from [10.57.1.248] (unknown [10.57.1.248])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4BFCF3F66F;
+        Mon,  9 May 2022 03:02:26 -0700 (PDT)
+Message-ID: <2e5e09f9-b71b-d936-e291-db8f94554b18@arm.com>
+Date:   Mon, 9 May 2022 11:02:23 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
-        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <robh+dt@kernel.org>, <afd@ti.com>
-References: <20220506052433.28087-1-p-mohan@ti.com>
- <20220506052433.28087-3-p-mohan@ti.com> <YnVQW7xpSWEE2/HP@lunn.ch>
-From:   Puranjay Mohan <p-mohan@ti.com>
-In-Reply-To: <YnVQW7xpSWEE2/HP@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: [PATCH 0/2] perf: ARM CoreSight PMU support
+To:     Will Deacon <will@kernel.org>,
+        Besar Wicaksono <bwicaksono@nvidia.com>
+Cc:     catalin.marinas@arm.com, mark.rutland@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org, sudeep.holla@arm.com,
+        thanu.rangarajan@arm.com, Michael.Williams@arm.com,
+        treding@nvidia.com, jonathanh@nvidia.com, vsethi@nvidia.com,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "Michael Williams (ATG)" <Michael.Williams@arm.com>
+References: <20220509002810.12412-1-bwicaksono@nvidia.com>
+ <20220509092843.GB26264@willie-the-truck>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220509092843.GB26264@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrew,
-Thanks for your comments.
+Cc: Mike Williams, Mathieu Poirier
 
-On 06/05/22 22:14, Andrew Lunn wrote:
->> +void icssg_config_ipg(struct prueth_emac *emac)
->> +{
->> +	struct prueth *prueth = emac->prueth;
->> +	int slice = prueth_emac_slice(emac);
->> +
->> +	switch (emac->speed) {
->> +	case SPEED_1000:
->> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_1G);
->> +		break;
->> +	case SPEED_100:
->> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_100M);
->> +		break;
->> +	default:
->> +		/* Other links speeds not supported */
->> +		pr_err("Unsupported link speed\n");
+On 09/05/2022 10:28, Will Deacon wrote:
+> On Sun, May 08, 2022 at 07:28:08PM -0500, Besar Wicaksono wrote:
+>> Add driver support for ARM CoreSight PMU device and event attributes for NVIDIA
+>> implementation. The code is based on ARM Coresight PMU architecture and ACPI ARM
+>> Performance Monitoring Unit table (APMT) specification below:
+>>   * ARM Coresight PMU:
+>>          https://developer.arm.com/documentation/ihi0091/latest
+>>   * APMT: https://developer.arm.com/documentation/den0117/latest
+>>
+>> Notes:
+>>   * There is a concern on the naming of the PMU device.
+>>     Currently the driver is probing "arm-coresight-pmu" device, however the APMT
+>>     spec supports different kinds of CoreSight PMU based implementation. So it is
+>>     open for discussion if the name can stay or a "generic" name is required.
+>>     Please see the following thread:
+>>     http://lists.infradead.org/pipermail/linux-arm-kernel/2022-May/740485.html
+>>
+>> Besar Wicaksono (2):
+>>    perf: coresight_pmu: Add support for ARM CoreSight PMU driver
+>>    perf: coresight_pmu: Add support for NVIDIA SCF and MCF attribute
+>>
+>>   arch/arm64/configs/defconfig                  |    1 +
+>>   drivers/perf/Kconfig                          |    2 +
+>>   drivers/perf/Makefile                         |    1 +
+>>   drivers/perf/coresight_pmu/Kconfig            |   10 +
+>>   drivers/perf/coresight_pmu/Makefile           |    7 +
+>>   .../perf/coresight_pmu/arm_coresight_pmu.c    | 1317 +++++++++++++++++
+>>   .../perf/coresight_pmu/arm_coresight_pmu.h    |  147 ++
+>>   .../coresight_pmu/arm_coresight_pmu_nvidia.c  |  300 ++++
+>>   .../coresight_pmu/arm_coresight_pmu_nvidia.h  |   17 +
+>>   9 files changed, 1802 insertions(+)
 > 
-> dev_err() or netdev_err(). You then get an idea which device somebody
-> is trying to configure into an unsupported mode.
+> How does this interact with all the stuff we have under
+> drivers/hwtracing/coresight/?
 
-I will use netdev_err() in next version.
+Absolutely zero, except for the name. The standard
+is named "CoreSight PMU" which is a bit unfortunate,
+given the only link, AFAIU, with the "CoreSight" architecture
+is the Lock Access Register(LAR). For reference, the
+drivers/hwtracing/coresight/ is purely "CoreSight" self-hosted
+tracing and the PMU is called "cs_etm" (expands to coresight etm).
+Otherwise the standard doesn't have anything to do with what
+exists already in the kernel.
 
-> 
-> checkpatch probably also warned about that?
+That said, I am concerned that the "coresight_pmu" is easily confused
+with what exists today. Given that this is more of a "PMU" standard
+for the IPs in the Arm world, it would be better to name it as such
+avoiding any confusion with the existing PMUs.
 
-unfortunately it didn't.
+One potential recommendation for the name is, "Arm PMU"  (The ACPI table 
+is named Arm PMU Table). But then that could be clashing with the 
+armv8_pmu :-(.
 
-> 
->> +static void icssg_init_emac_mode(struct prueth *prueth)
->> +{
->> +	u8 mac[ETH_ALEN] = { 0 };
->> +
->> +	if (prueth->emacs_initialized)
->> +		return;
->> +
->> +	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1, SMEM_VLAN_OFFSET_MASK, 0);
->> +	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
->> +	/* Clear host MAC address */
->> +	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
-> 
-> Seems an odd thing to do, set it to 00:00:00:00:00:00. You probably
-> want to add a comment why you do this odd thing.
+Some of the other options are :
 
-Actually, this is when the device is configured as a bridge, the host
-mac address has to be set to zero to while bringing it back to emac
-mode. I will add a comment to explain this.
+"Arm Generic PMU"
+"Arm Uncore PMU"
+"Arm PMU"
 
-
-> 
->> +int emac_set_port_state(struct prueth_emac *emac,
->> +			enum icssg_port_state_cmd cmd)
->> +{
->> +	struct icssg_r30_cmd *p;
->> +	int ret = -ETIMEDOUT;
->> +	int timeout = 10;
->> +	int i;
->> +
->> +	p = emac->dram.va + MGR_R30_CMD_OFFSET;
->> +
->> +	if (cmd >= ICSSG_EMAC_PORT_MAX_COMMANDS) {
->> +		netdev_err(emac->ndev, "invalid port command\n");
->> +		return -EINVAL;
->> +	}
->> +
->> +	/* only one command at a time allowed to firmware */
->> +	mutex_lock(&emac->cmd_lock);
->> +
->> +	for (i = 0; i < 4; i++)
->> +		writel(emac_r32_bitmask[cmd].cmd[i], &p->cmd[i]);
->> +
->> +	/* wait for done */
->> +	while (timeout) {
->> +		if (emac_r30_is_done(emac)) {
->> +			ret = 0;
->> +			break;
->> +		}
->> +
->> +		usleep_range(1000, 2000);
->> +		timeout--;
->> +	}
-> 
-> linux/iopoll.h
-
-will add in next version
+Suzuki
 
 > 
->> +void icssg_config_set_speed(struct prueth_emac *emac)
->> +{
->> +	u8 fw_speed;
->> +
->> +	switch (emac->speed) {
->> +	case SPEED_1000:
->> +		fw_speed = FW_LINK_SPEED_1G;
->> +		break;
->> +	case SPEED_100:
->> +		fw_speed = FW_LINK_SPEED_100M;
->> +		break;
->> +	default:
->> +		/* Other links speeds not supported */
->> +		pr_err("Unsupported link speed\n");
-> 
-> dev_err() or netdev_err().
-> 
-> 
->> +static int emac_get_link_ksettings(struct net_device *ndev,
->> +				   struct ethtool_link_ksettings *ecmd)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	phy_ethtool_ksettings_get(emac->phydev, ecmd);
->> +	return 0;
->> +}
-> 
-> phy_ethtool_get_link_ksettings().
-> 
-> You should keep phydev in ndev, not your priv structure.
+> Will
 
-Okay, I will make this change in the whole driver.
-
-> 
->> +
->> +static int emac_set_link_ksettings(struct net_device *ndev,
->> +				   const struct ethtool_link_ksettings *ecmd)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
-> 
-> phy_ethtool_set_link_ksettings()
-> 
->> +static int emac_nway_reset(struct net_device *ndev)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	return genphy_restart_aneg(emac->phydev);
-> 
-> phy_ethtool_nway_reset()
-> 
->> +static void emac_get_ethtool_stats(struct net_device *ndev,
->> +				   struct ethtool_stats *stats, u64 *data)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +	struct prueth *prueth = emac->prueth;
->> +	int i;
->> +	int slice = prueth_emac_slice(emac);
->> +	u32 base = stats_base[slice];
->> +	u32 val;
-> 
-> Reverse Christmas tree. Move i to the end. There are other places in
-> the driver you need to fix up as well.
-> 
->> +static int debug_level = -1;
->> +module_param(debug_level, int, 0644);
->> +MODULE_PARM_DESC(debug_level, "PRUETH debug level (NETIF_MSG bits)");
-> 
-> Module parameters are not liked any more. Yes, lots of drivers have
-> this one, but you have the ethtool setting, so you should not need
-> this.
-> 
->> +/* called back by PHY layer if there is change in link state of hw port*/
->> +static void emac_adjust_link(struct net_device *ndev)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +	struct phy_device *phydev = emac->phydev;
->> +	struct prueth *prueth = emac->prueth;
->> +	bool new_state = false;
->> +	unsigned long flags;
->> +
->> +	if (phydev->link) {
->> +		/* check the mode of operation - full/half duplex */
->> +		if (phydev->duplex != emac->duplex) {
->> +			new_state = true;
->> +			emac->duplex = phydev->duplex;
->> +		}
->> +		if (phydev->speed != emac->speed) {
->> +			new_state = true;
->> +			emac->speed = phydev->speed;
->> +		}
->> +		if (!emac->link) {
->> +			new_state = true;
->> +			emac->link = 1;
->> +		}
->> +	} else if (emac->link) {
->> +		new_state = true;
->> +		emac->link = 0;
->> +		/* defaults for no link */
->> +
->> +		/* f/w should support 100 & 1000 */
->> +		emac->speed = SPEED_1000;
->> +
->> +		/* half duplex may not supported by f/w */
->> +		emac->duplex = DUPLEX_FULL;
-> 
-> Why set speed and duplex when you have just lost the link? They are
-> meaningless until the link comes back.
-
-These were just the default values that we added.
-What do you suggest I put here?
-
-> 
->> +	}
->> +
->> +	if (new_state) {
->> +		phy_print_status(phydev);
->> +
->> +		/* update RGMII and MII configuration based on PHY negotiated
->> +		 * values
->> +		 */
->> +		if (emac->link) {
->> +			/* Set the RGMII cfg for gig en and full duplex */
->> +			icssg_update_rgmii_cfg(prueth->miig_rt, emac);
->> +
->> +			/* update the Tx IPG based on 100M/1G speed */
->> +			spin_lock_irqsave(&emac->lock, flags);
->> +			icssg_config_ipg(emac);
->> +			spin_unlock_irqrestore(&emac->lock, flags);
->> +			icssg_config_set_speed(emac);
->> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_FORWARD);
->> +
->> +		} else {
->> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_DISABLE);
->> +		}
->> +	}
->> +
->> +	if (emac->link) {
->> +		/* link ON */
->> +		netif_carrier_on(ndev);
-> 
-> phylib will do this for you.
-> 
->> +		/* reactivate the transmit queue */
->> +		netif_tx_wake_all_queues(ndev);
-> 
-> Not something you see other drivers do. Why is it here?
-> 
->> +	} else {
->> +		/* link OFF */
->> +		netif_carrier_off(ndev);
->> +		netif_tx_stop_all_queues(ndev);
-> 
-> Same as above, for both.
-> 
->> +static int emac_ndo_open(struct net_device *ndev)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +	int ret, i, num_data_chn = emac->tx_ch_num;
->> +	struct prueth *prueth = emac->prueth;
->> +	int slice = prueth_emac_slice(emac);
->> +	struct device *dev = prueth->dev;
->> +	int max_rx_flows;
->> +	int rx_flow;
->> +
->> +	/* clear SMEM and MSMC settings for all slices */
->> +	if (!prueth->emacs_initialized) {
->> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
->> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
->> +	}
->> +
->> +	/* set h/w MAC as user might have re-configured */
->> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
->> +
->> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
->> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
->> +
->> +	icssg_class_default(prueth->miig_rt, slice, 0);
->> +
->> +	netif_carrier_off(ndev);
-> 
-> It should default to off. phylib will turn it on for you when you get
-> link.
-> 
->> +static int emac_ndo_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	return phy_mii_ioctl(emac->phydev, ifr, cmd);
->> +}
-> 
-> phy_do_ioctl()
-> 
->> +extern const struct ethtool_ops icssg_ethtool_ops;
-> 
-> Should really by in a header file.
-> 
->> +static int prueth_probe(struct platform_device *pdev)
->> +{
->> +	struct prueth *prueth;
->> +	struct device *dev = &pdev->dev;
->> +	struct device_node *np = dev->of_node;
->> +	struct device_node *eth_ports_node;
->> +	struct device_node *eth_node;
->> +	struct device_node *eth0_node, *eth1_node;
->> +	const struct of_device_id *match;
->> +	struct pruss *pruss;
->> +	int i, ret;
->> +	u32 msmc_ram_size;
->> +	struct genpool_data_align gp_data = {
->> +		.align = SZ_64K,
->> +	};
->> +
->> +	match = of_match_device(prueth_dt_match, dev);
->> +	if (!match)
->> +		return -ENODEV;
->> +
->> +	prueth = devm_kzalloc(dev, sizeof(*prueth), GFP_KERNEL);
->> +	if (!prueth)
->> +		return -ENOMEM;
->> +
->> +	dev_set_drvdata(dev, prueth);
->> +	prueth->pdev = pdev;
->> +	prueth->pdata = *(const struct prueth_pdata *)match->data;
->> +
->> +	prueth->dev = dev;
->> +	eth_ports_node = of_get_child_by_name(np, "ethernet-ports");
->> +	if (!eth_ports_node)
->> +		return -ENOENT;
->> +
->> +	for_each_child_of_node(eth_ports_node, eth_node) {
->> +		u32 reg;
->> +
->> +		if (strcmp(eth_node->name, "port"))
->> +			continue;
->> +		ret = of_property_read_u32(eth_node, "reg", &reg);
->> +		if (ret < 0) {
->> +			dev_err(dev, "%pOF error reading port_id %d\n",
->> +				eth_node, ret);
->> +		}
->> +
->> +		if (reg == 0)
->> +			eth0_node = eth_node;
->> +		else if (reg == 1)
->> +			eth1_node = eth_node;
-> 
-> and if reg == 4
-> 
-> Or reg 0 appears twice?
-
-In both of the cases that you mentioned, the device tree schema check
-will fail, hence, we can safely assume that this will be 0 and 1 only.
-
-> 
->    Andrew
-
-Thanks,
-Puranjay Mohan
