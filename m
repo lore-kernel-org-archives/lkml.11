@@ -2,103 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A286C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA3CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233567AbiEIJzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
+        id S233698AbiEIJza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240009AbiEIJsE (ORCPT
+        with ESMTP id S235636AbiEIJnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:48:04 -0400
-Received: from smtp-1908.mail.infomaniak.ch (smtp-1908.mail.infomaniak.ch [IPv6:2001:1600:4:17::1908])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BC725E95
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:44:04 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Kxbpn59SKzMpyc1;
-        Mon,  9 May 2022 11:44:01 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Kxbpm2dG6zljsTk;
-        Mon,  9 May 2022 11:44:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1652089441;
-        bh=IFfFmj2+RkCP9G2Z76uXCcYYBbyAciGpIE19FbUTSso=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=IEGm/NO+iC7mfpMeM7kDDqb2BbcLTxaPn10tJd1KkeIhaOhQ0D/esgbepxz2l/IU7
-         Qdm7dVb4MxbAm+acN9SEZk9SpKbJ6jkOoNO1aUBDiByt5HJPYFyT/zVOG/Jd+wqmnp
-         lvaiGBEJQfL2IJW4dBcw7wm5F1fEKD74qlb7q/QQ=
-Message-ID: <0be9b4c6-3e32-3d18-1715-aaadd6324701@digikod.net>
-Date:   Mon, 9 May 2022 11:45:44 +0200
+        Mon, 9 May 2022 05:43:32 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0C81E05B8;
+        Mon,  9 May 2022 02:39:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=nLK8eWwMwyEnxqoOkhtH1DIuNWfIgfaMc34pifqEJGk=; b=SYBIrc5uYnZo9IAFVdZI26vEhj
+        Kar5mCVfxlcJW9ri5PuY0ZWsst8r8Fc3J1GnveaY0SUfAL1tzxXgfCCM6IVxpFGf3wnyvvY/T/SeL
+        xT6pCazVk/b+9d+o65UNUTJW90J2j32kRubdkxOt14L4e+q1ckFMWNohWSjyGUAF5/rFDSdv8XevD
+        gmD73r+JVQ3es/L7AtVBGiUf+gIDqQJCf0Gk/61hmDxgmraf2NdYMcdC4k6Rpf1iPoafiaVtf7DY1
+        EJSrEavNG1PW5KRGndOZB2IESYSNUbmr5JnaV9O4YSyXD/klu1A6R46uHqb8Yb+lhjS0tbo9PjeDw
+        G/FFTMwQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nnzqb-003JrU-On; Mon, 09 May 2022 09:38:33 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A07D9980E93; Mon,  9 May 2022 11:38:30 +0200 (CEST)
+Date:   Mon, 9 May 2022 11:38:30 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
+Message-ID: <20220509093830.GH76023@worktop.programming.kicks-ass.net>
+References: <20220507174628.2086373-1-song@kernel.org>
+ <20220509070437.GC76023@worktop.programming.kicks-ass.net>
+ <9FA1822F-76EE-4174-86DD-B20F1F8CE7FC@fb.com>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Paul Moore <paul@paul-moore.com>,
-        Shuah Khan <shuah@kernel.org>, Tom Rix <trix@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-security-module <linux-security-module@vger.kernel.org>
-References: <20220506160513.523257-1-mic@digikod.net>
- <CANiq72=SWen7sJxvQGD5N=ur-gpOiFGeHHfjegHxjaHfN_i95Q@mail.gmail.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v1 0/7] Landlock: Clean up coding style with clang-format
-In-Reply-To: <CANiq72=SWen7sJxvQGD5N=ur-gpOiFGeHHfjegHxjaHfN_i95Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9FA1822F-76EE-4174-86DD-B20F1F8CE7FC@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 09/05/2022 11:06, Miguel Ojeda wrote:
-> Hi Mickaël,
+On Mon, May 09, 2022 at 08:06:22AM +0000, Song Liu wrote:
 > 
-> (Answering in v1 since I want to quote something in this cover letter)
-
-There is only a v1 for this specific series, but other series (with 
-higher versions) are now relying on this one. ;)
-
 > 
-> On Fri, May 6, 2022 at 6:03 PM Mickaël Salaün <mic@digikod.net> wrote:
->>
->> I used a simple coding style for the initial Landlock code.  However,
->> this may be subject to different interpretations.  To avoid relying
->> on tacit knowledge or text editors for these kind of rules, let's
->> automate it as much as possible thanks to clang-format.  This makes the
->> code formatting simple, consistent and impersonal.
+> > On May 9, 2022, at 12:04 AM, Peter Zijlstra <peterz@infradead.org> wrote:
+> > 
+> > On Sat, May 07, 2022 at 10:46:28AM -0700, Song Liu wrote:
+> >> Busy kernel threads may block the transition of livepatch. Call
+> >> klp_try_switch_task from __cond_resched to make the transition easier.
+> > 
+> > What will a PREEMPT=y kernel do? How is it not a problem there, and if
+> > it is, this will not help that.
+> > 
+> > That is; I don't think this can be right.
 > 
-> Thanks for moving your subsystem to `clang-format`. I am glad you
-> found it useful.
+> I guess on PREEMPT=y kernel, we can simply preempt the long running 
+> kernel thread and check the transition? 
+
+This is not a guessing game.
+
+> In this case (PREEMPT=n), we see a long running kernel thread could not
+> finish the transition. It calls cond_resched() and gets rescheduled 
+> (moves among different cores). However, it never finishes the transition,
+> because live patch doesn’t get a chance to check the stack. 
 > 
->> Several versions of clang-format can be use but they may have (small)
->> different behaviors for undefined/new configuration parts.  After
->> testing different versions, I picked clang-format-14 which is relatively
->> new and fixes a bug present in version 11 to 13 (visible in the Landlock
->> formatted code).
-> 
-> Which was the bug?
+> Does this answer the question?
 
-You can check it by running clang-format-X on security/landlock/fs.c [1] 
-and you'll get different results for this hunk (only):
+Not really. There is no difference between an explicit preemption point
+(cond_resched) or an involuntary preemption point (PREEMPT=y).
 
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -688,7 +688,7 @@ static inline access_mask_t maybe_remove(const 
-struct dentry *const dentry)
-  	if (d_is_negative(dentry))
-  		return 0;
-  	return d_is_dir(dentry) ? LANDLOCK_ACCESS_FS_REMOVE_DIR :
--				  LANDLOCK_ACCESS_FS_REMOVE_FILE;
-+					LANDLOCK_ACCESS_FS_REMOVE_FILE;
-  }
-
-  /**
-
-
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=landlock-wip
+So unless you can *exactly* say why it isn't a problem on PREEMPT=y,
+none of this makes any sense.
