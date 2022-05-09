@@ -2,62 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA58BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233090AbiEIGar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
+        id S233427AbiEIGai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234925AbiEIGU5 (ORCPT
+        with ESMTP id S235417AbiEIGYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:20:57 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A819140C50;
-        Sun,  8 May 2022 23:17:01 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 69D2268AFE; Mon,  9 May 2022 08:16:57 +0200 (CEST)
-Date:   Mon, 9 May 2022 08:16:57 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: fully convert arm to use dma-direct
-Message-ID: <20220509061657.GB17190@lst.de>
-References: <20220421074204.1284072-1-hch@lst.de> <CACRpkdbdKBfmXGdyTm3T-MFAK30N-z4KH0k8eD8F7xaYUbDDhA@mail.gmail.com> <87pmkq7tmx.wl-maz@kernel.org>
+        Mon, 9 May 2022 02:24:52 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D8D2409E
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:20:58 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxWBz5BNhzXdkB;
+        Mon,  9 May 2022 14:16:11 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 14:20:56 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 14:20:56 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <tglx@linutronix.de>, <maz@kernel.org>
+Subject: [PATCH 3/3] irqchip/gic-v3: fix possible memory leak in gic_populate_ppi_part()
+Date:   Mon, 9 May 2022 14:32:06 +0800
+Message-ID: <20220509063206.3147124-3-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220509063206.3147124-1-yangyingliang@huawei.com>
+References: <20220509063206.3147124-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pmkq7tmx.wl-maz@kernel.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 01:06:14PM +0100, Marc Zyngier wrote:
-> > I think Marc Z has a Netwinder that he can test this on. Marc?
-> > I have one too, just not much in my office because of parental leave.
-> 
-> Finally found some time to hook the machine up and throw a new kernel
-> at it. Booted at its usual glacial speed, so FWIW:
-> 
-> Tested-by: Marc Zyngier <maz@kernel.org>
+'ppi_descs' should be freed in error path in gic_populate_ppi_part().
 
-Thanks.  I've not heard anything from Russell and we're pretty late
-in the merge window, so I'm tempted to wait until the next merge
-window.  I'd like to pull in ASAP for that though as I have other
-changes that are just waiting for it.
+Fixes: 52085d3f2028 ("irqchip/gic-v3: Dynamically allocate PPI partition descriptors")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/irqchip/irq-gic-v3.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 0e23dc8bafcf..3264fef89360 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -1871,11 +1871,11 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+ 	nr_parts = of_get_child_count(parts_node);
+ 
+ 	if (!nr_parts)
+-		goto out_put_node;
++		goto out_free_ppi_descs;
+ 
+ 	parts = kcalloc(nr_parts, sizeof(*parts), GFP_KERNEL);
+ 	if (WARN_ON(!parts))
+-		goto out_put_node;
++		goto out_free_ppi_descs;
+ 
+ 	for_each_child_of_node(parts_node, child_part) {
+ 		struct partition_affinity *part;
+@@ -1946,6 +1946,9 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+ 		gic_data.ppi_descs[i] = desc;
+ 	}
+ 
++out_free_ppi_descs:
++	kfree(gic_data.ppi_descs);
++	gic_data.ppi_descs = NULL;
+ out_put_node:
+ 	of_node_put(parts_node);
+ }
+-- 
+2.25.1
+
