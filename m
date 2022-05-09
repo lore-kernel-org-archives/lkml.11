@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F26C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C410AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233166AbiEIE5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 00:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        id S234125AbiEIE5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234323AbiEIEyK (ORCPT
+        with ESMTP id S234334AbiEIEyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 00:54:10 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2044.outbound.protection.outlook.com [40.107.236.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D42A1446;
-        Sun,  8 May 2022 21:50:17 -0700 (PDT)
+        Mon, 9 May 2022 00:54:37 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D1A27CFA;
+        Sun,  8 May 2022 21:50:44 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vwu1JFSJFESV2ZY0u1V2bGirvYqhXYqq8TiztFFlMoukMJCfjqPXGFKLUcH3UI2pw1xnezneY6fu/S3o5igX/HsYqu7UAeY3yrr6pB2LOdkpQLHFzmXGvU6eJQ+zgKPOQcXtIG8HefJaIDJY9M5jENWNfgk+aJqjEC2jGJL1lAM/CRZx1D8ayD3WM+SamkOq4g9gJCNCf+U4LTdagjJ3Riik63KrBQi+W95wDyYjVf3yTMWCqnkE2RCYNgjBToMZ2BN5ofmKjT3WG6DIUYfjqNJIdFpgTRdeCuzlNOYgt+LokwPEuQg6ZAYkwzCPjB5N6acZTN1TpYflBoaBcHSvCQ==
+ b=mTNi9VGt3laKTlgZWcCIpgyTe77O16vaLMhNHcoFdbjw+zBgt1K4S4cVLNCt6ceCXFCg4VkqsTbraHeksB54VbO2xyKe7UElXBAaEwwxPJtf2ueOQAzKSCC7XCuiIpPo6o50MwgV4r4T3CbQ6AJkmdbnhjBEQH81nRx3zSUYqIbEee95bGXCMs8LcyLfPlZR5J53o84LVGYqedxTk1WG3+QNiD4xL8UsCLT+U/2PFLgl+wHEX7lnvUH72xk54DGKx+PUHDq5+rWqEm3D4lb978AQfD2nRuKaqVZzbvd/El2VFuEZUcNLD89wIITx/d8MLRax7KlrBCAzhgqMm2YhZQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Xs+k5HhUJJ/Pgb+Ox3NwfAm79h933k7PrpYC0G0a4FM=;
- b=kgSS1gxyVYbm/Ehsize31zNDB0JBdwvsp8bjn1+89dI1yrjQeBrHbl8fCZMvPkrf7cExiP1Rxk+woXjJJEp2M5aQ/IqWPF4rGoi9v8QzGAM3S1iJGNuCCliqlqOyqhvLDUJC3MduR3KJwtHMRW28IwC01IWZ1ch8pCrkFSRt9U/60ru5L9mwbehBNYPBDwVIb/SptlmBeBcKV4qiDblQcBZ1b5cZoMjOUO6vQIbqJlZVqSOLqC94HBQD1e47MJEZplWL9pQ3nYwbsfA0j0FagtNNzJHNS2qUaMEeq93jrTuUOKaAPKFmf2TcSfDoZ0XVqVWVjl9p6pE3YKXUNbqM0w==
+ bh=8OOXXu6v5KPvB+r6zyrx9a4ZJj65cznCHut5dWhNESk=;
+ b=cdnF+82Kpa4T/4w7UnYDfktMtNMAPB8e7BYo9uSmUkr4GSpm+PzjovOPHW2uSzqU4vtzCjkzsfjgrspqReHjloADMOlr/ShEGzrNtrJBkyw7m3OwQ2oX3VKxRUCNOAF61xzuhMl1cZRcLqeN/UrCcZeAYnV10DaQKY//XcaB1HITMdajhynzbKSdRq6WWfSa8/BJ/e4OVxy/7ysGinXOl8ndly8TnMKw2HuyaINprUa40Thxjmp1+WPx1RXqHVeYvXAIQk2Q6xQRSVxYG0vhyPdnvtGBwN/EKfAJmGz6EftiXUPZSY9OnVpCftYwpE70fab/nsk5wViTEvfESBjWIw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xs+k5HhUJJ/Pgb+Ox3NwfAm79h933k7PrpYC0G0a4FM=;
- b=w6vPOjnTCpWQaE81V+FOX4wGoghyYy49Xh6/9URnv4Amya9uQSm6y3gOSKlFFveNuplmr4fFP5nU/Et6L41rlK+gN7/aRLD4/I66aeA/LNe2j2p5GUHGJmlOv0Xi/fzu4YWbzw3Pus0Nxh5l+o/a4gLcWkDtD/E/vYBmTar8CkQ=
-Received: from MW4PR04CA0108.namprd04.prod.outlook.com (2603:10b6:303:83::23)
- by DM5PR12MB1177.namprd12.prod.outlook.com (2603:10b6:3:6d::20) with
+ bh=8OOXXu6v5KPvB+r6zyrx9a4ZJj65cznCHut5dWhNESk=;
+ b=kgzlFbliQh3dYWdYqsAhpENJNrJbbpaGlS41tm+YsIVQa1NTnlqiJtj1cqXU1H6qY9Wp0/YgEQC6zGgWAX4O5i4c/2cdnpdPVAV2bnbjTloTT3FkI64aFgMtYe3u2+BP3tf7lJBZAk6n6w+GP3ApZzb3DFboMJPz+OqO/+0bHSg=
+Received: from BN8PR04CA0050.namprd04.prod.outlook.com (2603:10b6:408:d4::24)
+ by DM6PR12MB4124.namprd12.prod.outlook.com (2603:10b6:5:221::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Mon, 9 May
- 2022 04:50:13 +0000
-Received: from CO1NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:83:cafe::3e) by MW4PR04CA0108.outlook.office365.com
- (2603:10b6:303:83::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23 via Frontend
- Transport; Mon, 9 May 2022 04:50:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Mon, 9 May
+ 2022 04:50:38 +0000
+Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:d4:cafe::6b) by BN8PR04CA0050.outlook.office365.com
+ (2603:10b6:408:d4::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22 via Frontend
+ Transport; Mon, 9 May 2022 04:50:38 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +47,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT051.mail.protection.outlook.com (10.13.174.114) with Microsoft SMTP
+ BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 04:50:13 +0000
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 04:50:38 +0000
 Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 8 May
- 2022 23:50:04 -0500
+ 2022 23:50:29 -0500
 From:   Ravi Bangoria <ravi.bangoria@amd.com>
 To:     <peterz@infradead.org>, <acme@kernel.org>
 CC:     <ravi.bangoria@amd.com>, <rrichter@amd.com>, <mingo@redhat.com>,
@@ -66,9 +66,9 @@ CC:     <ravi.bangoria@amd.com>, <rrichter@amd.com>, <mingo@redhat.com>,
         <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
         <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH v2 2/8] perf/amd/ibs: Use ->is_visible callback for dynamic attributes
-Date:   Mon, 9 May 2022 10:19:08 +0530
-Message-ID: <20220509044914.1473-3-ravi.bangoria@amd.com>
+Subject: [PATCH v2 5/8] perf record ibs: Warn about sampling period skew
+Date:   Mon, 9 May 2022 10:19:11 +0530
+Message-ID: <20220509044914.1473-6-ravi.bangoria@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220509044914.1473-1-ravi.bangoria@amd.com>
 References: <20220509044914.1473-1-ravi.bangoria@amd.com>
@@ -80,191 +80,132 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1906eaf2-2396-49eb-38a7-08da3177676a
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1177:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB11770E5D75AF139B2DA4F7A7E0C69@DM5PR12MB1177.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 10322187-d6f5-4313-d871-08da3177768f
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4124:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB412470D962F367521B488BD6E0C69@DM6PR12MB4124.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: csd4dfIH4toiS1QpD+h2eYHaTAIw+m6aLXsgLKh8TYtyneoTMhXJ10AFtkTi0/5UbL5iSbGA8BPJCYx5lhnFv0x+FlHMhyWtwQ2+UwoYGgjCIwMhjgw0OiC2+/AQl64Z5oHgvrpUj9lyln21/LC5X4eoaGl7bqwtGwCAAwBCemqxjm+jyquhk/76lVvnXL39tM23cHVRZHjAQSi2L0kWmHV2oSzHUha5gTapo6W6dUni9HqZp17ATxut1y24/o1wrjfktAOSAZHmbjyw2pXS+uBLByTyID/VyxhXLAClrIskyegKsWoBunkDgAoSogcB+acUaP0tIFEP0ekaBCl05wIVDHL3PiM7glpa+EZsLTmfu/nS9hN2U7k5BEInyPavNmzWLN8KU+vqjHkpo5bMtMqmDodLsuuSDPts3lT4nKz+Us4IT7vOYqy1hUZVC19FxSr+MPIQ9hahsrTr93myKjLw9lPpTRNGb/gAEojUfCz0/qvBLcutTjQi1SIPSV6rNGy3cEPq0n0SRGDNDnQd1X/ubls3FAdyItB3fqCzPudTSdIb68Y+NzMq+NhgzDRzhv0G3m7NcKwBqPNCyccHqZZHrvnI8jmnCKnIoTwBTe0xoGs0qELGHgVfHFgvj/5EAjdEva4rVssoM5xC77K0fybHnP7D+IOsdg1TTEMHqRcmIFr8vzDSWrKbT9m+l4I39bz3GCIGycL+v3+Rv8Rq5g==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(2906002)(82310400005)(4326008)(110136005)(70206006)(70586007)(8676002)(54906003)(356005)(86362001)(81166007)(508600001)(316002)(8936002)(83380400001)(2616005)(5660300002)(1076003)(44832011)(426003)(47076005)(36756003)(7416002)(40460700003)(336012)(26005)(16526019)(186003)(36860700001)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: b7Q6mTGvKkZwFfXwXqgF8YwjQt1wMOZED57BIinjBLfqXFKF/zIgck2U22gN6wulTQyXen0AJyc/WIDLxNrZrZZoNT+UVCyoPtaBHyaFrP76KKVf57vfVhWsC+fYGjF8s+1IpvaCTHXRYrR/5knQQe8yTLYa/EBXuq4e5/lIQK8NMF+IuwUxG1ix4BORV2d1N8IkrnNxIGG1W7e3kT/p1gmaDRP5Bvj8G255Qf7It2jBmRh4GE9TzXNkfXqkJF0AumqrhwzxvPoBADKJLvwP7vceg0vFeOpPcfc4aMJRG3vp16FM9VmZ4jhIX0aKAhiRxpDm2uckRoOxviBfT9uQA/un64oyE4NkYrRDZfyDzTyz1A5s5YfuRgFRz50uhAelRy5G7pbwak97yqQmmKLWAMOfGsjLoQttAvhrwMICoD3sunok+Sd2MEelc4DSCtaIfOYdi5PS3xq8PwoQ+agcGyiF9D5R3Nmt/Q7ddzIHVWr4GgHLf9hLzw46C9EYAqV6RsHoyREVVxPvjR3+mw+g8mXg7sS8VM+wMR94UdDjKtqoAnxyAdMg9SuPO8neDR4iEjLCzCglQtVoNzFPvkqK/p7jAa7GgBpnKCq2Z4VtJY+UyCHr1KJ25X7BU14tcZw/V+BiV5rDcwXrDfYsID7RTXRBSuxoOmNJfHWlF9gN8S8GWERr9bOFveNN0QHqG0C+RAIe7Cn27L0Anpviyy4QOA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(83380400001)(16526019)(186003)(6666004)(36860700001)(7696005)(44832011)(26005)(1076003)(2616005)(2906002)(36756003)(47076005)(336012)(82310400005)(426003)(40460700003)(110136005)(356005)(5660300002)(86362001)(7416002)(508600001)(8936002)(54906003)(70206006)(70586007)(8676002)(4326008)(81166007)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 04:50:13.0355
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 04:50:38.5729
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1906eaf2-2396-49eb-38a7-08da3177676a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10322187-d6f5-4313-d871-08da3177768f
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT051.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1177
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4124
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, some attributes are added at build time whereas others
-at boot time depending on IBS pmu capabilities. Instead, we can
-just add all attribute groups at build time but hide individual
-group at boot time using more appropriate ->is_visible() callback.
+Samples without an L3 miss are discarded and counter is reset with
+random value (between 1-15 for fetch pmu and 1-127 for op pmu) when
+IBS L3 miss filtering is enabled. This causes a sampling period skew
+but there is no way to reconstruct aggregated sampling period. So
+print a warning at perf record if user sets l3missonly=1.
 
-Also, struct perf_ibs has bunch of fields for pmu attributes which
-just pass on the pointer, does not do anything else. Remove them.
+Ex:
+  # perf record -c 10000 -C 0 -e ibs_op/l3missonly=1/
+  WARNING: Hw internally resets sampling period when L3 Miss Filtering is enabled
+  and tagged operation does not cause L3 Miss. This causes sampling period skew.
 
 Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
 ---
- arch/x86/events/amd/ibs.c | 78 +++++++++++++++++++++++++++------------
- 1 file changed, 54 insertions(+), 24 deletions(-)
+ tools/perf/arch/x86/util/evsel.c | 34 ++++++++++++++++++++++++++++++++
+ tools/perf/util/evsel.c          |  7 +++++++
+ tools/perf/util/evsel.h          |  1 +
+ 3 files changed, 42 insertions(+)
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index 367ca899e6e8..785212b5dfd6 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -94,10 +94,6 @@ struct perf_ibs {
- 	unsigned int			fetch_ignore_if_zero_rip : 1;
- 	struct cpu_perf_ibs __percpu	*pcpu;
+diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
+index ac2899a25b7a..6399faa70a88 100644
+--- a/tools/perf/arch/x86/util/evsel.c
++++ b/tools/perf/arch/x86/util/evsel.c
+@@ -4,6 +4,8 @@
+ #include "util/evsel.h"
+ #include "util/env.h"
+ #include "linux/string.h"
++#include "util/pmu.h"
++#include "util/debug.h"
  
--	struct attribute		**format_attrs;
--	struct attribute_group		format_group;
--	const struct attribute_group	*attr_groups[2];
--
- 	u64				(*get_count)(u64 config);
- };
+ void arch_evsel__set_sample_weight(struct evsel *evsel)
+ {
+@@ -29,3 +31,35 @@ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr)
  
-@@ -518,16 +514,61 @@ static void perf_ibs_del(struct perf_event *event, int flags)
- 
- static void perf_ibs_read(struct perf_event *event) { }
- 
-+/*
-+ * We need to initialize with empty group if all attributes in the
-+ * group are dynamic.
-+ */
-+static struct attribute *attrs_empty[] = {
-+	NULL,
-+};
+ 	free(env.cpuid);
+ }
 +
-+static struct attribute_group empty_format_group = {
-+	.name = "format",
-+	.attrs = attrs_empty,
-+};
-+
-+static const struct attribute_group *empty_attr_groups[] = {
-+	&empty_format_group,
-+	NULL,
-+};
-+
- PMU_FORMAT_ATTR(rand_en,	"config:57");
- PMU_FORMAT_ATTR(cnt_ctl,	"config:19");
- 
--static struct attribute *ibs_fetch_format_attrs[] = {
-+static struct attribute *rand_en_attrs[] = {
- 	&format_attr_rand_en.attr,
- 	NULL,
- };
- 
--static struct attribute *ibs_op_format_attrs[] = {
--	NULL,	/* &format_attr_cnt_ctl.attr if IBS_CAPS_OPCNT */
-+static struct attribute_group group_rand_en = {
-+	.name = "format",
-+	.attrs = rand_en_attrs,
-+};
-+
-+static const struct attribute_group *fetch_attr_groups[] = {
-+	&group_rand_en,
-+	NULL,
-+};
-+
-+static umode_t
-+cnt_ctl_is_visible(struct kobject *kobj, struct attribute *attr, int i)
++static void ibs_l3miss_warn(void)
 +{
-+	return ibs_caps & IBS_CAPS_OPCNT ? attr->mode : 0;
++	pr_warning(
++"WARNING: Hw internally resets sampling period when L3 Miss Filtering is enabled\n"
++"and tagged operation does not cause L3 Miss. This causes sampling period skew.\n");
 +}
 +
-+static struct attribute *cnt_ctl_attrs[] = {
-+	&format_attr_cnt_ctl.attr,
-+	NULL,
-+};
++void arch_evsel__warn_ambiguity(struct evsel *evsel, struct perf_event_attr *attr)
++{
++	struct perf_env *env = evsel__env(evsel);
++	struct perf_pmu *evsel_pmu = evsel__find_pmu(evsel);
++	struct perf_pmu *ibs_fetch_pmu = perf_pmu__find("ibs_fetch");
++	struct perf_pmu *ibs_op_pmu = perf_pmu__find("ibs_op");
++	static int warned_once;
 +
-+static struct attribute_group group_cnt_ctl = {
-+	.name = "format",
-+	.attrs = cnt_ctl_attrs,
-+	.is_visible = cnt_ctl_is_visible,
-+};
++	if (warned_once || !perf_env__cpuid(env) || !env->cpuid ||
++	    !strstarts(env->cpuid, "AuthenticAMD") || !evsel_pmu)
++		return;
 +
-+static const struct attribute_group *op_attr_update[] = {
-+	&group_cnt_ctl,
- 	NULL,
- };
- 
-@@ -551,7 +592,6 @@ static struct perf_ibs perf_ibs_fetch = {
- 	.max_period		= IBS_FETCH_MAX_CNT << 4,
- 	.offset_mask		= { MSR_AMD64_IBSFETCH_REG_MASK },
- 	.offset_max		= MSR_AMD64_IBSFETCH_REG_COUNT,
--	.format_attrs		= ibs_fetch_format_attrs,
- 
- 	.get_count		= get_ibs_fetch_count,
- };
-@@ -577,7 +617,6 @@ static struct perf_ibs perf_ibs_op = {
- 	.max_period		= IBS_OP_MAX_CNT << 4,
- 	.offset_mask		= { MSR_AMD64_IBSOP_REG_MASK },
- 	.offset_max		= MSR_AMD64_IBSOP_REG_COUNT,
--	.format_attrs		= ibs_op_format_attrs,
- 
- 	.get_count		= get_ibs_op_count,
- };
-@@ -739,17 +778,6 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
- 
- 	perf_ibs->pcpu = pcpu;
- 
--	/* register attributes */
--	if (perf_ibs->format_attrs[0]) {
--		memset(&perf_ibs->format_group, 0, sizeof(perf_ibs->format_group));
--		perf_ibs->format_group.name	= "format";
--		perf_ibs->format_group.attrs	= perf_ibs->format_attrs;
--
--		memset(&perf_ibs->attr_groups, 0, sizeof(perf_ibs->attr_groups));
--		perf_ibs->attr_groups[0]	= &perf_ibs->format_group;
--		perf_ibs->pmu.attr_groups	= perf_ibs->attr_groups;
--	}
--
- 	ret = perf_pmu_register(&perf_ibs->pmu, name, -1);
- 	if (ret) {
- 		perf_ibs->pcpu = NULL;
-@@ -761,7 +789,6 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
- 
- static __init int perf_event_ibs_init(void)
++	if (ibs_fetch_pmu && ibs_fetch_pmu->type == evsel_pmu->type) {
++		if (attr->config & (1ULL << 59)) {
++			ibs_l3miss_warn();
++			warned_once = 1;
++		}
++	} else if (ibs_op_pmu && ibs_op_pmu->type == evsel_pmu->type) {
++		if (attr->config & (1ULL << 16)) {
++			ibs_l3miss_warn();
++			warned_once = 1;
++		}
++	}
++}
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index 2a1729e7aee4..4f8b72d4a521 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -1064,6 +1064,11 @@ void __weak arch_evsel__fixup_new_cycles(struct perf_event_attr *attr __maybe_un
  {
--	struct attribute **attr = ibs_op_format_attrs;
- 	int ret;
+ }
  
- 	/*
-@@ -774,14 +801,14 @@ static __init int perf_event_ibs_init(void)
- 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model < 0x10)
- 		perf_ibs_fetch.fetch_ignore_if_zero_rip = 1;
- 
-+	perf_ibs_fetch.pmu.attr_groups = fetch_attr_groups;
++void __weak arch_evsel__warn_ambiguity(struct evsel *evsel __maybe_unused,
++				       struct perf_event_attr *attr __maybe_unused)
++{
++}
 +
- 	ret = perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
- 	if (ret)
- 		return ret;
- 
--	if (ibs_caps & IBS_CAPS_OPCNT) {
-+	if (ibs_caps & IBS_CAPS_OPCNT)
- 		perf_ibs_op.config_mask |= IBS_OP_CNT_CTL;
--		*attr++ = &format_attr_cnt_ctl.attr;
--	}
- 
- 	if (ibs_caps & IBS_CAPS_OPCNTEXT) {
- 		perf_ibs_op.max_period  |= IBS_OP_MAX_CNT_EXT_MASK;
-@@ -789,6 +816,9 @@ static __init int perf_event_ibs_init(void)
- 		perf_ibs_op.cnt_mask    |= IBS_OP_MAX_CNT_EXT_MASK;
- 	}
- 
-+	perf_ibs_op.pmu.attr_groups = empty_attr_groups;
-+	perf_ibs_op.pmu.attr_update = op_attr_update;
+ static void evsel__set_default_freq_period(struct record_opts *opts,
+ 					   struct perf_event_attr *attr)
+ {
+@@ -1339,6 +1344,8 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
+ 	 */
+ 	if (evsel__is_dummy_event(evsel))
+ 		evsel__reset_sample_bit(evsel, BRANCH_STACK);
 +
- 	ret = perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
- 	if (ret)
- 		goto err_op;
++	arch_evsel__warn_ambiguity(evsel, attr);
+ }
+ 
+ int evsel__set_filter(struct evsel *evsel, const char *filter)
+diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
+index 041b42d33bf5..195ae30ec45b 100644
+--- a/tools/perf/util/evsel.h
++++ b/tools/perf/util/evsel.h
+@@ -281,6 +281,7 @@ void evsel__set_sample_id(struct evsel *evsel, bool use_sample_identifier);
+ 
+ void arch_evsel__set_sample_weight(struct evsel *evsel);
+ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr);
++void arch_evsel__warn_ambiguity(struct evsel *evsel, struct perf_event_attr *attr);
+ 
+ int evsel__set_filter(struct evsel *evsel, const char *filter);
+ int evsel__append_tp_filter(struct evsel *evsel, const char *filter);
 -- 
 2.27.0
 
