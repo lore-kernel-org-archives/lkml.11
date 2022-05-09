@@ -2,131 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55807C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2305C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235159AbiEINMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
+        id S235215AbiEINMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:12:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbiEINMe (ORCPT
+        with ESMTP id S235210AbiEINMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:12:34 -0400
-Received: from outbound-smtp47.blacknight.com (outbound-smtp47.blacknight.com [46.22.136.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4614B2A3BED
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:08:39 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp47.blacknight.com (Postfix) with ESMTPS id 1D72EFA7A8
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:08:38 +0100 (IST)
-Received: (qmail 18118 invoked from network); 9 May 2022 13:08:37 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 9 May 2022 13:08:37 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 2/6] mm/page_alloc: Use only one PCP list for THP-sized allocations
-Date:   Mon,  9 May 2022 14:08:01 +0100
-Message-Id: <20220509130805.20335-3-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220509130805.20335-1-mgorman@techsingularity.net>
-References: <20220509130805.20335-1-mgorman@techsingularity.net>
-MIME-Version: 1.0
+        Mon, 9 May 2022 09:12:36 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2079.outbound.protection.outlook.com [40.107.93.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6702A2F43;
+        Mon,  9 May 2022 06:08:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BpDKDQ90dG2N2e2aPh4OwqmhIJ6WdKThbU6XYTZPRTTQqGFBDD0nBPTBdT0WUF8lK0DzYlYtkZHSfOrFSOvwxtpOmaAMBsle1Vbt7Kkv2slaB8WDKS/Ssu+S552WWR3cuQoqGz6p8++bE7AIVUBEo1e1wGFCt1aoKA5u/Ag3SjsphT8HLt9A6CUN3rzkyS/XnCbx7+LUgt8TYkyPCwOAItVoSq7tWP/6/Y058DsVOddQUj41THgCpx2Rmh5SSurA9siXq0WfPynHG6q9FMVVX9jD+GqnAsrkKhpz5uPV7nX/q1j4H/K4kZcbn0ZwxCMvG77/h949OKZvexRtShZUQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lavdKApkZ8q2tFopxbvJKi6VXohi/Tg0mFm882ldXGE=;
+ b=gz8zB6J5xkRdPfUfj6TK+rSr/59WV8V7F3JZiomIQ+91OaoCSoXwhQoMTw3RJfqfpTEeriAP7aLaVsP0S+m+OV15pf+dCtnG7IrrBajGW0una/1TpjD0vWK4fALKjyrskrMccU2uHH0AQROI9I5zs24E89Ap00SnnylMhvuvw63AFUJCJ03tfj7oULG2b5E7irFhhc3xqwZG0/MDPefE/nmNay1xeszmkNglSXn3NYm70TpmgphBgm9TYSXmtz5okxg74w4unNup0mg7hzoL36K1WM+H98tu1dgKVFJS2GR0eJymbR8dXMPJXdyS6mi/y3srYIIlJEdaskMpB/c5VA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lavdKApkZ8q2tFopxbvJKi6VXohi/Tg0mFm882ldXGE=;
+ b=mtXS3pNZfj93bWv7gqtYyimC920LJmgIYZ+IvobOlgw7sHxX6rnOLF1lslCFieAdzNVTgeMVI6cEHqILPHR7ou9pTqddet6jNj3uiY3u8vvaa/602SzmPsfqJTk6ygs4qSyC1CpXZSWKnV2FZecF0WijFV6Qt1AqcqunGfi40ng=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5712.namprd12.prod.outlook.com (2603:10b6:510:1e3::13)
+ by CH2PR12MB4166.namprd12.prod.outlook.com (2603:10b6:610:78::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Mon, 9 May
+ 2022 13:08:35 +0000
+Received: from PH7PR12MB5712.namprd12.prod.outlook.com
+ ([fe80::8d3b:6561:8563:4f1b]) by PH7PR12MB5712.namprd12.prod.outlook.com
+ ([fe80::8d3b:6561:8563:4f1b%9]) with mapi id 15.20.5227.023; Mon, 9 May 2022
+ 13:08:35 +0000
+Message-ID: <96e41431-eb80-f61d-9ab9-c76cd9b6086a@amd.com>
+Date:   Mon, 9 May 2022 18:38:19 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v4 3/7] perf/x86/amd/core: Detect PerfMonV2 support
+Content-Language: en-US
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     peterz@infradead.org, bp@alien8.de, dave.hansen@linux.intel.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
+        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        pbonzini@redhat.com, jmattson@google.com, eranian@google.com,
+        puwen@hygon.cn, ananth.narayan@amd.com, ravi.bangoria@amd.com,
+        santosh.shukla@amd.com,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org, x86@kernel.org
+References: <cover.1651058600.git.sandipan.das@amd.com>
+ <8d3e23760726cf6647a98999e1fcd12a37f36a42.1651058600.git.sandipan.das@amd.com>
+ <78e001bd-42bd-5481-5a19-1a0bcca9a63c@gmail.com>
+From:   Sandipan Das <sandipan.das@amd.com>
+In-Reply-To: <78e001bd-42bd-5481-5a19-1a0bcca9a63c@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN3PR01CA0004.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:95::12) To PH7PR12MB5712.namprd12.prod.outlook.com
+ (2603:10b6:510:1e3::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 53dfc8a5-e2fc-4605-e437-08da31bd0621
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4166:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB4166C17BF4530C49DB555B798BC69@CH2PR12MB4166.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: a5r6Q9ppy6VX0TlktNSH8sK5iILmhoXftbotC0yKEClvgHvvC/U+o1GTb8Qnvag8hPOYRFPfjW8a7gFoNMvGdKwasJl7cyHSfJhoOMwdxPo7nqaF1VQt6QYh5palqzSyol8YLPUQBslQLwiRjMhZ8Cgpl0c8Gg0PTvOIASrWN0cSPy/8u8cRtatMzv7wwAr/5s86+z4XMYkNfDaJcMrSKiQwXJiTl4O7i4tianSXfJfxhbqtfkpp9K1qMSsjgy6mhCfhFWEsmKtCByHqNQUXt+2HzQM3BIU/F1IigFUCvqJ/9I+H17cCgpT2dUpF5IFWvoK3hJlV+a629SP2rdzkvmLPdN1EKW81qqNMsuTD0egMyhtjdJCUHm6mwALWZLbRgv4L8aGGZGh3Z8YNP78ZJjYcF1IPoVP997cFGFx86/NtvK48OAv1DO23OQuqVBbmdeDyt0Xkhwu2PWdzURM6YOyTXQYMdDqDO7fCd/skD0nBJ7w+NbJJSimGqbiA/JITSnWJgXhfoUPR2yTNCtTmoWO4uyzh2JRqbKkk0Q6MsSd2yacN4LaemKaHfvueoAqgr39XRycbVtPoBX+heDjT/0bBY7AuA62lApZjD7sCBZpUxgJ/knij03lR5Mev87n4KYJTjre7N0I2EfM0UFa6vCirDPh+Lljey21aPyIi92p/LZBKNIthag8VcGBcV1DeyH1Uk7xJrazE4dlqSAv5DAU4Z6bfcjvXaiL1G9mrYJ0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5712.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(5660300002)(7416002)(83380400001)(31696002)(2906002)(44832011)(4744005)(66556008)(66946007)(66476007)(4326008)(8676002)(38100700002)(316002)(31686004)(36756003)(8936002)(6486002)(186003)(508600001)(26005)(6916009)(6512007)(6666004)(53546011)(6506007)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VzdkR1VUUjdyZWxPVVF3SUNIUVdPTmcwNnRmMkF0RFNtdFFBNG8wMlU1RG9V?=
+ =?utf-8?B?K29qY24xYXVwazd5RFBUU3lzRjJpQzhzSTR5djZuQlI0ZmhHYUFsSFNrWXJm?=
+ =?utf-8?B?TDFFOFZiSlNzY0VKOEhjeFJDelZoZ2dHRmVJQmFhNy9PNm4yODFEa0hPN2t2?=
+ =?utf-8?B?ZGx2MU1PWkFIWXBaeU9OZGFFZnpRaXptcDkwVTljRVRRc3A3Tm1xT1MvRndr?=
+ =?utf-8?B?eC81U0hDRC9kZG1vKzZkclZ4dGlBYVpiMURteEVoYnQ5M2hyckFqMFZRYmN0?=
+ =?utf-8?B?UFBiUHU3WjVXdDh4REpud3RGWHpTZzJLQUxuQ2hHdGZkNHBLVUZkOWlVaHZq?=
+ =?utf-8?B?S2tXQitZNndQdTE5eC8xZFptamdXZ24rRlYyZzFIUnplVGJZbkhFUUFEcExh?=
+ =?utf-8?B?d1Vmb3VCUXBsL015dThYOWdhMHEzWllUUGVDRFZoQXdCTkFvUmRoNHR3ZHE5?=
+ =?utf-8?B?UGJPaWlHdmxHV1RINGNncWFXNWZXR0YrWUtUd2FsR0tWV2FYZTVTeTZDOTlT?=
+ =?utf-8?B?UlJzT2xmbUxaUVlSWmoxYk9XRnFKdDVlSkR2S2U1bXJnaVFrRElYcXR6anM2?=
+ =?utf-8?B?L2J1a005eUNUUTNqNWE5WHdYQW5SYjBmZkhKNHN3bmhtTVdLVU1JZW9FTG9C?=
+ =?utf-8?B?T0Y4OW1hbWxJYnhVc3dLWTE2TnFST01FeFBzNlh0NWRvaVV1ZTN6eTMwQXJX?=
+ =?utf-8?B?V0x3Nmt6YUFDSWdOMVNabnUyUW5wR1BMb25RSnlEU2Z2MUgzZFVsNnNkYXo2?=
+ =?utf-8?B?NEpON2gyeVRIaERXWVp3R3dWUmdCbG52QUQ3akt6S0Erdm9QRlZlaWhWNklO?=
+ =?utf-8?B?WDA1eG9ZTFAxWEczblJzVzh0U01YSDFTbGxSWk5vTE9QNWpZaWk0TkI0S3Y2?=
+ =?utf-8?B?VEl1L0lOOVZTU2Q2ekZlMFFNOVZzdWtOaGhnS1J1aUJyQW9UR09NZXdndWZa?=
+ =?utf-8?B?Z1ROMTYxN3AxVFVqaUVDM3RyRitOK3B2a01VQnF5RTA4Q3ZFbERYNVZwZytX?=
+ =?utf-8?B?d01jMEhCN1ltZmIwVFF0TkZlcnlxTmdkVDlyZmo4UEQzNTduekgrMUppN1Vh?=
+ =?utf-8?B?SGJXSWFBUnFKTGU0Y2RIQlNFWjN6VFAwN0ZEZnBrZkExVWNXYWpRd1V5NjR2?=
+ =?utf-8?B?N0toa2dkZjZxMlZDTk0yWFVjWU03dTVOcXVBcVpYU25WUmRnZ2JacVpYeHQy?=
+ =?utf-8?B?N01rNXQ3ZVN4YUpQYjRPSFVZVmN3TVdjcnZqdUIxZTIwUmExc0dWMkpuS2pq?=
+ =?utf-8?B?YmFzVzVqSmVNS2h4WC9ZOXdRS1VBdllBRDlDWDlCV3FvMEVsMjlRR2ord3R5?=
+ =?utf-8?B?K3pNMjhqendITzVPR2lRNTBGOC8rNGxhQXhYeW9sY05ha3ZLUlFSa01QY0hO?=
+ =?utf-8?B?TjJjcklQWlBFUk0xRUJWVWVQV1lYNVIzbjBQR01tRTQ2VlM1OW1qYnZ1YkNC?=
+ =?utf-8?B?dVlxbUZHbTR2NWNnbmZveXJHT0Nvc3c1OXltdzhrWk5pT0gzbloxeW5oVUxR?=
+ =?utf-8?B?R2VxZjJMYVpMMkpnbWJ0bFk0eVZYOW9hQjNBV2dCNzVHcUFRZUx6ckRjMk5u?=
+ =?utf-8?B?OWxvTmkvdkFVMDkxc2xadjI3QUJpZFVYODc5SDgyeWlGMDZmUit2ZEF2cVhj?=
+ =?utf-8?B?cXhkVTRpWGpnb3g1d0FkK2dGZGV2amhHdzFmZ01zOCtwaWIrNnVVL3ZIUkpp?=
+ =?utf-8?B?ZVVhdW5SaW91d2UyL0pMczJBSEc1M0hmNzQ0Umh0Wk5neDRsS3YveFc1UnBx?=
+ =?utf-8?B?cjVFSEYyUXVKOFlPcWNLMnB4VlJNVUg0bHNEU1FUdzlOQUFmc05oUjZGd1Rx?=
+ =?utf-8?B?M0sraU85NEgyelhFK3RONk83Q0F4MzlMY2E2MzloSGtBTzgySnN2N3luMlpk?=
+ =?utf-8?B?c1BpRjN4ZEw4R1pCTzQ5SU9OVnFOR21SSjZISVBhTzhJRjFmNzdvQ0dPemVn?=
+ =?utf-8?B?VXRpbXFNU3p5c3pDUnNzejBNNytORUJJaVpleXR0cVpiK3dMelZabS9EdktG?=
+ =?utf-8?B?blBESVVtR1VRcnBzQTA0TFYrQWRYK2hsK1d4SXR3cHZGOVpVemhTaml2cFk2?=
+ =?utf-8?B?SW1YOWRQN1FoUTVoZ3IyYWpIWGJmcG9ONEV4RXpIZjh4eDJoa1ZRdVVoTU15?=
+ =?utf-8?B?RSs0RFZCWDgvTDQvdVZ5d3dSV1RhblYyTCsxaU5laVhzUW45bXFRejQ1VG1D?=
+ =?utf-8?B?d2p1emVtZ2pneE9NbWYvU21JVm1HSjhmRUNxVWRSTERQWm5QcTBJY1ZTZ1BY?=
+ =?utf-8?B?VnRUemkxSXdBQ0xOTFV3UHBnelZQcGVpaGZ0WlZpd2JRdkl2VEFXbFVCWFFW?=
+ =?utf-8?B?c05GMmRLU21qaTFXaUxydXZUWUFUTnkycldTNklVSENBSmh5L2FRZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53dfc8a5-e2fc-4605-e437-08da31bd0621
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5712.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 13:08:35.2510
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SqRkgKOS94Q0fXRtNniSnP2AvlRFhLWASLwPDB1KizAJ4ULt8gtL0CFf+DFyEYWpLSl4Wtwnoej8O9Il1OCySQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4166
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The per_cpu_pages is cache-aligned on a standard x86-64 distribution
-configuration but a later patch will add a new field which would push
-the structure into the next cache line. Use only one list to store
-THP-sized pages on the per-cpu list. This assumes that the vast majority
-of THP-sized allocations are GFP_MOVABLE but even if it was another type,
-it would not contribute to serious fragmentation that potentially causes
-a later THP allocation failure. Align per_cpu_pages on the cacheline
-boundary to ensure there is no false cache sharing.
 
-After this patch, the structure sizing is;
+On 5/9/2022 6:31 PM, Like Xu wrote:
+> On 27/4/2022 7:31 pm, Sandipan Das wrote:
+> 
+>>       x86_pmu.num_counters    = AMD64_NUM_COUNTERS_CORE;
+> 
+> Thus boot_cpu_has(X86_FEATURE_PERFCTR_CORE) is true.
+> 
+>> +
+>> +    /* Check for Performance Monitoring v2 support */
+>> +    if (boot_cpu_has(X86_FEATURE_PERFMON_V2)) {
+>> +        /* Update PMU version for later usage */
+>> +        x86_pmu.version = 2;
+> 
+> Is it safe to assume that once AMD CPU has the PERFMON_V2 (or further) bit,
+> 
+> it must also have the PERFCTR_CORE bit set ?
+> 
 
-struct per_cpu_pages {
-        int                        count;                /*     0     4 */
-        int                        high;                 /*     4     4 */
-        int                        batch;                /*     8     4 */
-        short int                  free_factor;          /*    12     2 */
-        short int                  expire;               /*    14     2 */
-        struct list_head           lists[13];            /*    16   208 */
+Yes, always. There won't be a case where PERFCTR_CORE is absent
+but PERFMON_V2 is present.
 
-        /* size: 256, cachelines: 4, members: 6 */
-        /* padding: 32 */
-} __attribute__((__aligned__(64)));
-
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
----
- include/linux/mmzone.h | 11 +++++++----
- mm/page_alloc.c        |  4 ++--
- 2 files changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 962b14d403e8..abe530748de6 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -358,15 +358,18 @@ enum zone_watermarks {
- };
- 
- /*
-- * One per migratetype for each PAGE_ALLOC_COSTLY_ORDER plus one additional
-- * for pageblock size for THP if configured.
-+ * One per migratetype for each PAGE_ALLOC_COSTLY_ORDER. One additional list
-+ * for THP which will usually be GFP_MOVABLE. Even if it is another type,
-+ * it should not contribute to serious fragmentation causing THP allocation
-+ * failures.
-  */
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- #define NR_PCP_THP 1
- #else
- #define NR_PCP_THP 0
- #endif
--#define NR_PCP_LISTS (MIGRATE_PCPTYPES * (PAGE_ALLOC_COSTLY_ORDER + 1 + NR_PCP_THP))
-+#define NR_LOWORDER_PCP_LISTS (MIGRATE_PCPTYPES * (PAGE_ALLOC_COSTLY_ORDER + 1))
-+#define NR_PCP_LISTS (NR_LOWORDER_PCP_LISTS + NR_PCP_THP)
- 
- /*
-  * Shift to encode migratetype and order in the same integer, with order
-@@ -392,7 +395,7 @@ struct per_cpu_pages {
- 
- 	/* Lists of pages, one per migrate type stored on the pcp-lists */
- 	struct list_head lists[NR_PCP_LISTS];
--};
-+} ____cacheline_aligned_in_smp;
- 
- struct per_cpu_zonestat {
- #ifdef CONFIG_SMP
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 63976ad4b7f1..ed2deb93a758 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -648,7 +648,7 @@ static inline unsigned int order_to_pindex(int migratetype, int order)
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- 	if (order > PAGE_ALLOC_COSTLY_ORDER) {
- 		VM_BUG_ON(order != pageblock_order);
--		base = PAGE_ALLOC_COSTLY_ORDER + 1;
-+		return NR_LOWORDER_PCP_LISTS;
- 	}
- #else
- 	VM_BUG_ON(order > PAGE_ALLOC_COSTLY_ORDER);
-@@ -662,7 +662,7 @@ static inline int pindex_to_order(unsigned int pindex)
- 	int order = pindex / MIGRATE_PCPTYPES;
- 
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
--	if (order > PAGE_ALLOC_COSTLY_ORDER)
-+	if (pindex == NR_LOWORDER_PCP_LISTS)
- 		order = pageblock_order;
- #else
- 	VM_BUG_ON(order > PAGE_ALLOC_COSTLY_ORDER);
--- 
-2.34.1
-
+- Sandipan
