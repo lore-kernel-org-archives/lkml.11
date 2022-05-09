@@ -2,151 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A19C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0417C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240729AbiEIUEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 16:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        id S240776AbiEIUGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 16:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240708AbiEIUEm (ORCPT
+        with ESMTP id S240735AbiEIUGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 16:04:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F531CE2
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 13:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652126445;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gNTeuuELA3k+mm60Gr40WBmjicvf+wfPyLcRV/GayX4=;
-        b=bWybqTw6LQl9R0i/FdQAg2aRCWXb8dDxdmvX0BhB23ZINYKcho5JvNHdVDy3DeZwOyMquh
-        EIO8beXcH0bxK8dwT96a7TC+vVeImpobq/1xmX4SeWQz9tyvI3c29IHaJN+KD2m/bSwjso
-        3LHZtUwZL/9lhrpfOvLa7wTNSw5Y+UE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-600-eqPIGaDKNa6HZQ4EmhdgOw-1; Mon, 09 May 2022 16:00:44 -0400
-X-MC-Unique: eqPIGaDKNa6HZQ4EmhdgOw-1
-Received: by mail-wm1-f70.google.com with SMTP id t184-20020a1c46c1000000b00394209f54f1so4632443wma.4
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 13:00:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gNTeuuELA3k+mm60Gr40WBmjicvf+wfPyLcRV/GayX4=;
-        b=HzHrVd07jgkAZtqLOVYn/0nTrVJ6ZKpMq+8XIyTRb+JkgKGhBroTw8gV2XRu8w5Qqo
-         JDw1dASVkhjb3W2rT6Wa5l1rx60AugOGVTIfXNTfo4gnvckTVuQ9J5AT4hSm4gYemXnF
-         rX/MWPZvth4HuU5LD+A6Rwa1i8/E3dScZD7p+kzQ5kTL0cd+dGjcQ8Nb9ZIHJbAnkdJk
-         ftKL8US4zKNs1ACV5EHlQGzbhborZy0GFCnuJyfOt4yNbG3OVPYQtT8qUwFK3+614jud
-         N6nb2svpRtiAc/ie05NCJTdeoIUX/QynP3ptz4eV5XlHf6ioQ06aIITHtlG58Gj9ZR38
-         +oCw==
-X-Gm-Message-State: AOAM533FEY25MO/iJVTwozjJLhNoGmxv6a7nuNRKzl5+ay3gWaELj/Jf
-        1fIFZqZux0n0wCwByJAjGx0+h1w3TI7yVzQTaPyyNzfM4Bt6E/+9jgZA6n46QfSOALWwwssfbt/
-        GfE5mCKP3OQGzu63dFlm0ESDl
-X-Received: by 2002:a05:6000:1f0e:b0:20c:4fde:7e20 with SMTP id bv14-20020a0560001f0e00b0020c4fde7e20mr15545382wrb.532.1652126442992;
-        Mon, 09 May 2022 13:00:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyACMJm+r6tlK8VZGCgzdHoFW+ert1TBWVKzmQnKSqvFbAYevfQT5KjzCveN5b6GZInW/cO7g==
-X-Received: by 2002:a05:6000:1f0e:b0:20c:4fde:7e20 with SMTP id bv14-20020a0560001f0e00b0020c4fde7e20mr15545370wrb.532.1652126442776;
-        Mon, 09 May 2022 13:00:42 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id o41-20020a05600c512900b00394832af31csm1280992wms.0.2022.05.09.13.00.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 13:00:42 -0700 (PDT)
-Message-ID: <2c59cd79-76d4-7829-e1db-88bc31396c8a@redhat.com>
-Date:   Mon, 9 May 2022 22:00:41 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
- fb_release()
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@intel.com>
-References: <20220505215947.364694-1-javierm@redhat.com>
- <20220505220413.365977-1-javierm@redhat.com>
- <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
- <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
- <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
- <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
- <51254d3d-af8d-61b3-e8a2-8fd0e583e783@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <51254d3d-af8d-61b3-e8a2-8fd0e583e783@suse.de>
-Content-Type: text/plain; charset=UTF-8
+        Mon, 9 May 2022 16:06:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AABB1FE1E8
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 13:02:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9A67B818D0
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 20:02:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E8C1C385B2;
+        Mon,  9 May 2022 20:02:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652126564;
+        bh=UMOOB7YSujiMAdtG/QEVVPNAqwI1asrAIi+csk8CC7M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MEPtD8bChgy0mijeAFAlbSdzU2bmICfo+J3qJZWE1D1kjCVb3TXYogJztDE+InuvT
+         Q5Sm7CKHDmamp/l1rBY+alU2vuvVQe7WKmb05dPHpEmN+M6HHOz3GOoIYimgvPL8cT
+         SjbzrYGh6Vzn5arOQXy7QHqa8ljxgy5BFoGk8uZo=
+Date:   Mon, 9 May 2022 13:02:43 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v9 00/69] Maple Tree v9
+Message-Id: <20220509130243.b4de05da6a1c3e1acf57c8ba@linux-foundation.org>
+In-Reply-To: <20220509185524.p5hqqv6jqhql4sup@revolver>
+References: <20220504010716.661115-1-Liam.Howlett@oracle.com>
+        <20220505192518.72ae9ada349f2880ba90c3e9@linux-foundation.org>
+        <20220509185524.p5hqqv6jqhql4sup@revolver>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Thomas,
+On Mon, 9 May 2022 18:55:43 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
 
-On 5/9/22 20:32, Thomas Zimmermann wrote:
-> Hi
+> * Andrew Morton <akpm@linux-foundation.org> [220505 19:30]:
+> > On Wed, 4 May 2022 01:07:38 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
+> > 
+> > > Please merge this patch set into the mm tree.
+> > 
+> > Well that was kinda confusing ;)
 > 
-> Am 09.05.22 um 18:33 schrieb Javier Martinez Canillas:
->> On 5/9/22 17:51, Andrzej Hajda wrote:
->>
->> [snip]
->>
->>>>>> +
->>>>> Regarding drm:
->>>>> What about drm_fb_helper_fini? It calls also framebuffer_release and is
->>>>> called often from _remove paths (checked intel/radeon/nouveau). I guess
->>>>> it should be fixed as well. Do you plan to fix it?
->>>>>
->>>> I think you are correct. Maybe we need something like the following?
->>>>
->>>> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
->>>> index d265a73313c9..b09598f7af28 100644
->>>> --- a/drivers/gpu/drm/drm_fb_helper.c
->>>> +++ b/drivers/gpu/drm/drm_fb_helper.c
->>>> @@ -631,7 +631,6 @@ void drm_fb_helper_fini(struct drm_fb_helper *fb_helper)
->>>>           if (info) {
->>>>                   if (info->cmap.len)
->>>>                           fb_dealloc_cmap(&info->cmap);
->>>> -               framebuffer_release(info);
+> Yes, sorry about that mess.
 > 
-> After reviewing that code,  drm_fb_helper_fini() appears to be called 
-> from .fb_destroy (see drm_fbdev_release).  The code is hard to follow 
-> though.  If there another way of releasing the framebuffer here?
+> > 
+> > I have it all landed and compiling, thanks.  I'll suppress the usual
+> > added-to-mm emails - an armistice in my war against `d' keys.
+> > 
 > 
+> 
+> Which git branch will have these changes?
 
-Andrzej mentioned intel/radeon/nouveau as example, I only looked at i915
-and the call chain is the following as far as I can tell:
+mm-unstable, which is the "all hotfixes and all MM" branch.
 
-struct pci_driver i915_pci_driver = {
-...
-        .remove = i915_pci_remove,
-...
-};
+Current branch structure is
 
+master
+  mm-hotfixes-stable
+  mm-stable
+  mm-nonmm-stable
 
-i915_driver_remove
-  intel_modeset_driver_remove_noirq
-    intel_fbdev_fini
-      intel_fbdev_destroy
-        drm_fb_helper_fini
-          framebuffer_release
-              
-So my underdestanding is that if a program has the emulated fbdev device
-opened and the i915 module is removed, then a use-after-free would be
-triggered on drm_fbdev_fb_destroy() once the program closes the device:
+mm-hotfixes-unstable is mm-hotfixes-stable + hotfixes quilt
 
-drm_fbdev_fb_destroy
-  drm_fbdev_release(info->par); <-- info was already freed on .remove
+mm-unstable is mm-hotfixes-unstable + mm-stable + mm quilt
 
--- 
-Best regards,
+mm-nonmm-unstable is mm-nonmm-stable + nonmm quilt
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+mm-everything is mm-unstable + mm-nonmm-unstable
