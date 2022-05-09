@@ -2,68 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A546C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B72CC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233529AbiEIGkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
+        id S235941AbiEIGlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235520AbiEIGgK (ORCPT
+        with ESMTP id S235569AbiEIGgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:36:10 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6933142836;
-        Sun,  8 May 2022 23:32:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=jDAHALn3z0Emv+RGmX479eTK4G
-        TkPNPwyX6ucjzOI85+8H3QueAzXGbLUYDfEaUHHVsbZU/e0hr1Lz5vXKUYhR7P+cl+7ZL12iDj6Y5
-        OkOaOgHGZDQCx4NrGi7cbp/uecHLpDTMZqNd54+eNuluCp93IsXuau33dF9WDqqvECfh/pBWHktN5
-        H64KFA8elJFZUtTvkUZPQfodC94Gu76Tv121FTsCCfmYmcht3AXwhyx1oM48WCaP3EOI2k4IIGMA4
-        DAfYiU10yoTxDec4sp6qN+OfqhCT06RbgLPuydxhAf7Na+/KLsXuOktEYqlZSkyuPfaXFRejdTgEE
-        8bFe3qVQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nnwve-00Ch7b-DM; Mon, 09 May 2022 06:31:34 +0000
-Date:   Sun, 8 May 2022 23:31:34 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, x86@kernel.org,
-        linux-s390@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Oleksandr Tyshchenko <olekstysh@gmail.com>
-Subject: Re: [PATCH v3 2/2] virtio: replace
- arch_has_restricted_virtio_memory_access()
-Message-ID: <Yni1RtXtEQPwD5NZ@infradead.org>
-References: <20220504155703.13336-1-jgross@suse.com>
- <20220504155703.13336-3-jgross@suse.com>
+        Mon, 9 May 2022 02:36:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD02A1498C3
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:32:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D2861200
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C81C385A8;
+        Mon,  9 May 2022 06:32:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652077961;
+        bh=W8cliMtnerFoQoMHfNGdAtAdChXBgjuV4eR7fUqzKOY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IA6KqQVJ3CIq3NTuobW1jvzyf40OZMdh91dnvWDEEEwohjTjQTu7Ofas53PDBLySx
+         Fgk2yW7yy+wtiOACqXFvSQVqlCT1c2hqk4S/Up7e9e65AhYKHyzYsrEDi6L1zlEpDB
+         6ZaG6RCo/kdvofN03aSZOCez2B6WxoF5pSqXOMbLCi85Ba7CYJztcUMpLXrV5MufKF
+         UjKudBKl4OQengpKVDnzWrWvxECRjRi6/qrBhg60nuPoXTiAK/qFMfVyNKTyPEGDIL
+         M0leKhN4IPHnNe780Nsfspa+a8ghOLupciheuGD4cFxo7g6HObfTX9W1JWRPXLoSCP
+         moxEw927lLy2g==
+Date:   Mon, 9 May 2022 12:02:37 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bard Liao <yung-chuan.liao@linux.intel.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, srinivas.kandagatla@linaro.org,
+        pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
+        bard.liao@intel.com
+Subject: Re: [PATCH 0/5] soundwire: use pm_runtime_resume_and_get()
+Message-ID: <Yni1hdMzehYtSJM3@matsya>
+References: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504155703.13336-3-jgross@suse.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good:
+On 27-04-22, 07:56, Bard Liao wrote:
+> Use pm_runtime_resume_and_get() to replace the pm_runtime_get_sync() and
+> pm_runtime_put_noidle() pattern.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Applied, thanks
+
+-- 
+~Vinod
