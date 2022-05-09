@@ -2,124 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2651AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 16:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 130D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 16:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238993AbiEIQ1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 12:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
+        id S239017AbiEIQ1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 12:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238954AbiEIQ13 (ORCPT
+        with ESMTP id S238954AbiEIQ1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 12:27:29 -0400
+        Mon, 9 May 2022 12:27:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9712F267C1D;
-        Mon,  9 May 2022 09:23:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8571FC7FF;
+        Mon,  9 May 2022 09:23:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 364F861346;
-        Mon,  9 May 2022 16:23:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A05DC385AE;
-        Mon,  9 May 2022 16:23:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652113414;
-        bh=ngSvpw7u74fP7XgiM1AYbKle6d50YZH9faXKosWM2f4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lUuSPYt1TaoAj2CZqI7Kq5yFQJWR7KJGX7rG1/oY8+OTg5raGKO3gPZrwygB+7eSJ
-         /vaWJSKl/qc9+uq/hH4tdidB8iasb83hLVNVzewZ7veqgtriJfFIWcXDdTRJjwoW6r
-         gWapCevqld16l+YaF6/q2x3UqZZ+ro8CQDL7N5q0=
-Date:   Mon, 9 May 2022 18:23:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        USB mailing list <linux-usb@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [PATCH 4/4] USB: gadget: Add a new bus for gadgets
-Message-ID: <YnlAAxT5Lq0NvxX0@kroah.com>
-References: <YmSpdxaDNeC2BBOf@rowland.harvard.edu>
- <alpine.DEB.2.22.394.2205031209030.681336@ramsan.of.borg>
- <YnFCEn45XwDWM/9Y@rowland.harvard.edu>
- <CAMuHMdVDK0W0T3=+2c1E6wtwy5JTUemTGYyj3PFuVUhK++AzrA@mail.gmail.com>
- <YnFO0Qr8RY7peFCg@rowland.harvard.edu>
- <YnaR8LaaPTdLTiok@rowland.harvard.edu>
- <CAMuHMdUpOiHHMktPk_-NauDW2ufvGThnkFU7Pok376pM6OEyYw@mail.gmail.com>
- <Ynkh5eKtfxU+AyZX@rowland.harvard.edu>
- <CAMuHMdVi6jCi=tRBNjBodVcA48ygiqPACQcmHx+1HRYnArJ9tQ@mail.gmail.com>
- <YnktokC8Uk9j53yO@rowland.harvard.edu>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A86F261449;
+        Mon,  9 May 2022 16:23:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CE30C385AE;
+        Mon,  9 May 2022 16:23:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652113423;
+        bh=iC3L1mwdxdRv4+yqapYKlvqm98z/iTnxl7TCxRZjCrg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Lwh+hBiFGkXkVN4r2Q1e+8TZCAw15j7jVUgfyAoUe9I/Xr+kIzFp+Lo0kv7e6RSCr
+         OndQHjDXKARhmXni1Z7t3v24nNMx9PkIrY17uBfy8TO6hoepb8YR7D5f6QNR9druaI
+         ADuNSRBkty0MvAuAt67PNWekCzNNGvLiQkziHUX2pdWQc4xKYDPOiY8/K1lQQSnQLX
+         M4VyWca/fgTaFwUX78XaFgYhqC01rdsDe/xnzaDpPwQYjBsALRTDXc3/RrE//o6SBh
+         4PLolukSm0di4QANaIqBKXxgpd0s5LLWrzZrFUsMkB1kplX6CXcfZSIoXKbmVOO2mZ
+         9gKUUvOJgYqnQ==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1no6Ae-006xVP-FW; Mon, 09 May 2022 18:23:40 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Daniel Vetter" <daniel@ffwll.ch>,
+        "David Airlie" <airlied@linux.ie>,
+        "Greg KH" <gregkh@linuxfoundation.org>,
+        "Jaroslav Kysela" <perex@perex.cz>,
+        "Kai Vehmanen" <kai.vehmanen@intel.com>,
+        "Lucas De Marchi" <lucas.demarchi@intel.com>,
+        "Pierre-Louis Bossart" <pierre-louis.bossart@intel.com>,
+        "Takashi Iwai" <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        mauro.chehab@linux.intel.com
+Subject: [PATCH v6 1/4] module: drop prototype for non-existing __symbol_get_gpl()
+Date:   Mon,  9 May 2022 18:23:36 +0200
+Message-Id: <5f001015990a76c0da35a4c3cf08e457ec353ab2.1652113087.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <cover.1652113087.git.mchehab@kernel.org>
+References: <cover.1652113087.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnktokC8Uk9j53yO@rowland.harvard.edu>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:05:06AM -0400, Alan Stern wrote:
-> On Mon, May 09, 2022 at 04:42:01PM +0200, Geert Uytterhoeven wrote:
-> > Hi Alan,
-> > 
-> > On Mon, May 9, 2022 at 4:15 PM Alan Stern <stern@rowland.harvard.edu> wrote:
-> > > On Mon, May 09, 2022 at 09:46:25AM +0200, Geert Uytterhoeven wrote:
-> > > > > Geert:
-> > > > >
-> > > > > Can you test the patch below?  It ought to fix the problem (although it
-> > > >
-> > > > Thanks!
-> > > >
-> > > > root@h3-salvator-xs:~# ls -l /sys/bus/gadget/devices/
-> > > > total 0
-> > > > lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.0 ->
-> > > > ../../../devices/platform/soc/e659c000.usb/gadget.0
-> > > > lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.1 ->
-> > > > ../../../devices/platform/soc/ee020000.usb/gadget.1
-> > > > lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.2 ->
-> > > > ../../../devices/platform/soc/e6590000.usb/gadget.2
-> > > >
-> > > > Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > >
-> > > > LGTM, so
-> > > > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > >
-> > > Thanks!
-> > >
-> > > > > might end up causing other problems down the line...)
-> > > >
-> > > > Can you please elaborate? I'm not too familiar with UBS gadgets.
-> > >
-> > > I was concerned about the fact that changing the name of a file,
-> > > directory, or symbolic link in sysfs means changing a user API, and so
-> > > it might cause some existing programs to fail.  That would be a
-> > > regression.
-> > >
-> > > Perhaps the best way to work around the problem is to leave the name set
-> > > to "gadget" if the ID number is 0, while adding the ID number on to the
-> > > name if the value is > 0.  What do you think?
-> > 
-> > Oh, you mean the "gadget.N" subdirs, which are the targets of the
-> > symlinks above? These were indeed named "gadget" before.
-> > 
-> > Would it be possible to append the ".N" suffixes only to the actual
-> > symlinks, while keeping the target directory names unchanged?
-> > E.g. /sys/bus/gadget/devices/gadget.0 ->
-> > ../../../devices/platform/soc/e659c000.usb/gadget
-> 
-> No, it's not possible.  Or at least, not without significant changes to 
-> the driver core.  Besides, people expect these names to be the same.
+There's no such function, and __symbol_get() is already declared
+as GPL. So, this is likely a left-over.
 
-It should always be ok to change the names of devices as those are not
-going to be persistent / determinisitic.  It's the attributes of devices
-that are supposed to be used to determine those types of things.
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-So I think let's start out with the .N suffix for everything for now.
-I'll be glad to submit the fixed patch to the Android kernel build
-system to see what their testing comes back with to see if they happened
-to make any name assumptions as that's the largest user of this
-codebase.
+See [PATCH v6 0/4] at: https://lore.kernel.org/all/cover.1652113087.git.mchehab@kernel.org/
 
-thanks,
+ include/linux/module.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-greg k-h
+diff --git a/include/linux/module.h b/include/linux/module.h
+index ccfbaec82790..77961f5773b6 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -299,7 +299,6 @@ struct notifier_block;
+ extern int modules_disabled; /* for sysctl */
+ /* Get/put a kernel symbol (calls must be symmetric) */
+ void *__symbol_get(const char *symbol);
+-void *__symbol_get_gpl(const char *symbol);
+ #define symbol_get(x) ((typeof(&x))(__symbol_get(__stringify(x))))
+ 
+ /* modules using other modules: kdb wants to see this. */
+-- 
+2.35.3
+
