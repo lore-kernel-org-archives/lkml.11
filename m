@@ -2,117 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D431C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232493AbiEIDZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 23:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
+        id S232795AbiEIDZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 23:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232600AbiEIDUj (ORCPT
+        with ESMTP id S232859AbiEIDSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 23:20:39 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3B78D689
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:16:46 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id t13so10906393pgn.8
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 20:16:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=mGLnYbyWy3fukJswEp9IMLmfe70M5gIojdWHv7IthTA=;
-        b=auR+URWKiWFfJyG/fsqIQf0vnL6S0nPYypZ8QzJRZwQmiSPJyqbGlgNV1qJJrnNJb/
-         2MtWQaEjw8JHkrOHRI9b+f37Gu8ovmCtYLprcKH8BDVpVGqywxhbg0P4NlNgXxPq+MqJ
-         M4IrKCoJeKkGYljyjI1KVc9u0cRqD3KujEuEot3SQndNVKjsdLYO6ENwJLbk6Vwn06iJ
-         oFRf9SOJCR36gAjFDvoQhT9bxVwAmunRiqSAgFH3UE2UlJAlXdt/Cc8eJqGzRyumQPoI
-         VcwdvOtP6fvfM9lJ1oaDo/fVcf8mFk1z0toapKVrRo8hLQ8xghE8FiZqQ6xkelIwhN4E
-         DeKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mGLnYbyWy3fukJswEp9IMLmfe70M5gIojdWHv7IthTA=;
-        b=zjAtXY3bBbB0yRqHToKB39NebamdUw5S8JtzSBKmL9lAUHdWf+FLL4vBkPMgMeG3z0
-         apUC19hbfrI/dHz5+sJJC8Fs3akaAZwQvAQvk7akZZbHTUyM90i65qUTHOk6qc4EFch/
-         WpngcY3mh0BjFiEgl38Ad4NKgY00ZAMt0ai+reKbH3fk33w72wxdVkuwj0+wOCRWPSmw
-         PsgSAnViKLM9Oh8JRUo+NIIiy02HCTEFym4kEN4C21rfABg3bIE9ySK0dA9S9V4LAjzY
-         Fi1Dpn4xaSVCu0ZQmT1oWcBRpmMZO2YH2WOPYqRBXpPbjGByBKrtiPJPrh6rFUDaw3jO
-         norw==
-X-Gm-Message-State: AOAM5304XaGvDYL6I31qbc2oOvoLVa7xSfomco8I2Lvo1PrF2ssH3Uxl
-        FrTddEKSJpY1ninqFeiu/s1IIw==
-X-Google-Smtp-Source: ABdhPJzJK0vs7q/AKrPCsKyKNE9M0w84YFSVer5E+6oTuEGz+/2/BjRUesGm3oLMvYB/yIrIzU1SKA==
-X-Received: by 2002:a63:1904:0:b0:3c6:3fd3:4c28 with SMTP id z4-20020a631904000000b003c63fd34c28mr11551134pgl.308.1652066206426;
-        Sun, 08 May 2022 20:16:46 -0700 (PDT)
-Received: from [10.85.115.102] ([139.177.225.228])
-        by smtp.gmail.com with ESMTPSA id gi2-20020a17090b110200b001d952b8f728sm11531672pjb.2.2022.05.08.20.16.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 20:16:45 -0700 (PDT)
-Message-ID: <20b9822d-4a87-c868-1683-30b0a7e97777@bytedance.com>
-Date:   Mon, 9 May 2022 11:16:39 +0800
+        Sun, 8 May 2022 23:18:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92E783B37
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:14:32 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxR681W45zGpPt;
+        Mon,  9 May 2022 11:11:44 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 11:14:30 +0800
+Subject: Re: [PATCH v2 1/4] mm/migration: reduce the rcu lock duration
+To:     David Hildenbrand <david@redhat.com>
+CC:     <ying.huang@intel.com>, <hch@lst.de>, <dhowells@redhat.com>,
+        <cl@linux.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <akpm@linux-foundation.org>,
+        <mike.kravetz@oracle.com>, <naoya.horiguchi@nec.com>
+References: <20220425132723.34824-1-linmiaohe@huawei.com>
+ <20220425132723.34824-2-linmiaohe@huawei.com>
+ <eeda05fb-b0bb-3e1d-37e0-0021dd72e144@redhat.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <3cf42a6e-c13d-341d-00a0-876a61794273@huawei.com>
+Date:   Mon, 9 May 2022 11:14:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH v4 0/2] sched/core: Avoid obvious double update_rq_clock
- warning
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220430085843.62939-1-jiahao.os@bytedance.com>
-From:   Hao Jia <jiahao.os@bytedance.com>
-In-Reply-To: <20220430085843.62939-1-jiahao.os@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <eeda05fb-b0bb-3e1d-37e0-0021dd72e144@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Friendly ping...
+On 2022/4/29 17:54, David Hildenbrand wrote:
+> On 25.04.22 15:27, Miaohe Lin wrote:
+>> rcu_read_lock is required by grabbing the task refcount but it's not
+>> needed for ptrace_may_access. So we could release the rcu lock after
+>> task refcount is successfully grabbed to reduce the rcu holding time.
+>>
+>> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> Cc: Huang Ying <ying.huang@intel.com>
+>> Cc: David Howells <dhowells@redhat.com>
+>> Cc: Christoph Lameter <cl@linux.com>
+>> ---
+>>  mm/migrate.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/mm/migrate.c b/mm/migrate.c
+>> index b2678279eb43..b779646665fe 100644
+>> --- a/mm/migrate.c
+>> +++ b/mm/migrate.c
+>> @@ -1902,17 +1902,16 @@ static struct mm_struct *find_mm_struct(pid_t pid, nodemask_t *mem_nodes)
+>>  		return ERR_PTR(-ESRCH);
+>>  	}
+>>  	get_task_struct(task);
+>> +	rcu_read_unlock();
+>>  
+>>  	/*
+>>  	 * Check if this process has the right to modify the specified
+>>  	 * process. Use the regular "ptrace_may_access()" checks.
+>>  	 */
+>>  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
+>> -		rcu_read_unlock();
+>>  		mm = ERR_PTR(-EPERM);
+>>  		goto out;
+>>  	}
+>> -	rcu_read_unlock();
+>>  
+>>  	mm = ERR_PTR(security_task_movememory(task));
+>>  	if (IS_ERR(mm))
+> 
+> Similar pattern in:
+> 
+> mm/mempolicy.c:kernel_migrate_pages()
+> kernel/futex/syscalls.c:get_robust_list()
+> kernel/nsproxy.c:validate_nsset()
+> 
+> Exception:
+> 
+> sched/core_sched.c:sched_core_share_pid()
+> 
+> 
+> Should we unify -- i.e., adjust the remaining 3 as well?
+> 
 
-Hi Dietmar Eggemann & Peter Zijlstra,
-If you have time, please review these two patches.
-
-On 2022/4/30 Hao Jia wrote:
-> These two patches are about the kernel scheduler:
-> 
-> patch 1: fixed the issue that kernel may trigger WARN_DOUBLE_CLOCK warning.
-> patch 2: removed some no longer needed comments in the deadline scheduler
-> and cleaned up the code.
-> 
-> Thanks for suggestion from Dietmar Eggemann & Peter Zijlstra.
-> 
-> v3->v4:
->     - Modify some code formats and commit messages.
->     - Add Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com> for
->       patch 1.
->     - Add Reviewed-by: Daniel Bristot de Oliveira <bristot@redhat.com>
->       for patch 2.
-> 
-> v2->v3:
->     - Modify some descriptions and errors in the commit information.
->     - Fixed a bug that might trigger the WARN_DOUBLE_CLOCK warning in
->       migrate_task_rq_dl().
->     - Add Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com> for
->       patch 2.
-> 
-> v1->v2:
->     - Added double_rq_clock_clear_update inline helper to clear RQCF_UPDATED
->       of rq->clock_update_flags.
->     - split into two separate patches.
-> 
-> [v1] https://lore.kernel.org/lkml/20220418090929.54005-1-jiahao.os@bytedance.com/
-> [v2] https://lore.kernel.org/lkml/20220422090944.52618-1-jiahao.os@bytedance.com/
-> [v3] https://lore.kernel.org/all/20220427080014.18483-1-jiahao.os@bytedance.com/
-> 
-> Hao Jia (2):
->    sched/core: Avoid obvious double update_rq_clock warning
->    sched/deadline: Remove superfluous rq clock update in push_dl_task()
-> 
->   kernel/sched/core.c     |  6 +++---
->   kernel/sched/deadline.c | 13 ++++---------
->   kernel/sched/rt.c       |  5 +++--
->   kernel/sched/sched.h    | 28 ++++++++++++++++++++++++----
->   4 files changed, 34 insertions(+), 18 deletions(-)
-> 
+Sorry for late respond. I think it's fine to do all of this together. But this patch is indeed
+under verifying now. I will try to do that after verified. Thanks!
