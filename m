@@ -2,265 +2,459 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4584C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FA4C388F3
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237807AbiEII7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        id S237790AbiEII7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236989AbiEIIts (ORCPT
+        with ESMTP id S236385AbiEII1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:49:48 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F296619B3AF;
-        Mon,  9 May 2022 01:45:52 -0700 (PDT)
-X-UUID: b13aee952fc048978f6059a48e5462e1-20220509
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:7730f550-ca22-4d26-a3ed-1240a9238bbc,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:53
-X-CID-INFO: VERSION:1.1.4,REQID:7730f550-ca22-4d26-a3ed-1240a9238bbc,OB:0,LOB:
-        0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:53
-X-CID-META: VersionHash:faefae9,CLOUDID:c1f019b3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:f2f2a8b00f34,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: b13aee952fc048978f6059a48e5462e1-20220509
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1070502207; Mon, 09 May 2022 16:45:47 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 9 May 2022 16:45:46 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 9 May 2022 16:45:46 +0800
-Message-ID: <fbbbc7e6a951bdde648ddd896f1fa163dafa16f1.camel@mediatek.com>
-Subject: Re: [PATCH v2 1/3] dt-bindings: mediatek: add vdosys1 RDMA
- definition for mt8195
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-CC:     "airlied@linux.ie" <airlied@linux.ie>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "angelogioacchino.delregno@collabora.com" 
-        <angelogioacchino.delregno@collabora.com>,
-        Jason-JH Lin =?UTF-8?Q?=28=E6=9E=97=E7=9D=BF=E7=A5=A5=29?= 
-        <Jason-JH.Lin@mediatek.com>,
-        Nancy Lin =?UTF-8?Q?=28=E6=9E=97=E6=AC=A3=E8=9E=A2=29?= 
-        <Nancy.Lin@mediatek.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 9 May 2022 16:45:46 +0800
-In-Reply-To: <a5c9e7ad-c4b5-e757-cd6d-f79de47d1ff3@linaro.org>
-References: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
-         <20220509044302.27878-2-rex-bc.chen@mediatek.com>
-         <a5c9e7ad-c4b5-e757-cd6d-f79de47d1ff3@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 9 May 2022 04:27:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E071DA644
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:22:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE09BB80FD4
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:22:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35FB9C385A8;
+        Mon,  9 May 2022 08:22:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652084547;
+        bh=YQKd4gy5wpQWb8dzdW2lgVjfkMEgktknAKiuL/o1yXU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XZc8/egbbJSf0dQObANiQ8DbYqY4iTRwWvl3lYmuzCgkRc38WfnV1TaQpGkXsiJqY
+         uyM8fLORBSMiOfB7f7oq+JO+fZ3XiLL0O1VbSmLpmPEvx6ABpdWjUDe5VbvtxkJ6kY
+         9dti7ogZXrQd7w/CZcrXgbWB9/ikiWkqjh9egPSp4IMEn+2bz07Iuy9axOuJbhjlqX
+         tsTz27lvUGeH34hUtEC+NsX9g1Ox80yKG7k3G5jsCikXe3/wy3Z/M5xfBgqEXVOFkw
+         oVL+3QOCHjioFidnOB3ScdQHl+f/TssQ7+3PdWvt4adZ35CuYTgexvUwObYM7uNP1Z
+         ViJ67OKm3fIHg==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Tal Cohen <talcohen@habana.ai>
+Subject: [PATCH 3/3] habanalabs: add support for notification via eventfd
+Date:   Mon,  9 May 2022 11:22:18 +0300
+Message-Id: <20220509082218.956916-3-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220509082218.956916-1-ogabbay@kernel.org>
+References: <20220509082218.956916-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-09 at 15:31 +0800, Krzysztof Kozlowski wrote:
-> On 09/05/2022 06:43, Rex-BC Chen wrote:
-> > From: "Nancy.Lin" <nancy.lin@mediatek.com>
-> > 
-> > Add vdosys1 RDMA definition.
-> > 
-> > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> > Reviewed-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > ---
-> >  .../display/mediatek/mediatek,mdp-rdma.yaml   | 94
-> > +++++++++++++++++++
-> >  1 file changed, 94 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
-> > rdma.yaml
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
-> > rdma.yaml
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
-> > rdma.yaml
-> > new file mode 100644
-> > index 000000000000..ca31accb0a95
-> > --- /dev/null
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
-> > rdma.yaml
-> > @@ -0,0 +1,94 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: 
-> > https://urldefense.com/v3/__http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml*__;Iw!!CTRNKA9wMg0ARbw!x6pqRSLbN1fx6j57PKXCTTp8n7bulgpLzXS8uUh5vAIxkRKD8K6EqOopnFrXvT54LQXmIEDFFvPQzC4ldr1TddEeTw$
-> >  
-> > +$schema: 
-> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!x6pqRSLbN1fx6j57PKXCTTp8n7bulgpLzXS8uUh5vAIxkRKD8K6EqOopnFrXvT54LQXmIEDFFvPQzC4ldr3y-9sW3w$
-> >  
-> > +
-> > +title: MediaTek MDP RDMA
-> > +
-> > +maintainers:
-> > +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> > +  - Philipp Zabel <p.zabel@pengutronix.de>
-> > +
-> > +description:
-> > +  The MediaTek MDP RDMA stands for Read Direct Memory Access.
-> > +  It provides real time data to the back-end panel driver, such as
-> > DSI,
-> > +  DPI and DP_INTF.
-> > +  It contains one line buffer to store the sufficient pixel data.
-> > +  RDMA device node must be siblings to the central MMSYS_CONFIG
-> > node.
-> > +  For a description of the MMSYS_CONFIG binding, see
-> > +  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.ya
-> > ml for details.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> 
-> oneOf is not needed
-> 
-> > +      - items:
-> 
-> items not needed, you have only one item.
-> 
+From: Tal Cohen <talcohen@habana.ai>
 
-Hello Krzysztof,
+The driver will be able to send notification events towards
+a user process, using user's registered event file descriptor.
+The driver uses the notification mechanism to inform the
+user about an occurred event.
+A user thread can wait until a notification is received from
+the driver.
 
-Thanks for your review.
-ok, we will drop them.
+The driver stores the occurred event until the user reads it,
+using HL_INFO_GET_EVENTS - new ioctl opcode in the INFO ioctl.
 
-> > +          - const: mediatek,mt8195-vdo1-rdma
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  power-domains:
-> > +    description: A phandle and PM domain specifier as defined by
-> > bindings of
-> > +      the power controller specified by phandle. See
-> > +      Documentation/devicetree/bindings/power/power-domain.yaml
-> > for details.
-> 
-> Skip description, it's obvious. Instead maxItems.
-> 
+Gaudi specific implementation includes sending a notification
+on a TPC assertion event that is received from f/w.
 
-ok, we will fix it.
+Signed-off-by: Tal Cohen <talcohen@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+---
+ drivers/misc/habanalabs/common/device.c       | 52 +++++++++++++++
+ drivers/misc/habanalabs/common/habanalabs.h   | 40 ++++++++----
+ .../misc/habanalabs/common/habanalabs_drv.c   |  9 +++
+ .../misc/habanalabs/common/habanalabs_ioctl.c | 65 +++++++++++++++++++
+ drivers/misc/habanalabs/gaudi/gaudi.c         | 14 +++-
+ include/uapi/misc/habanalabs.h                | 15 +++++
+ 6 files changed, 182 insertions(+), 13 deletions(-)
 
-> > +
-> > +  clocks:
-> > +    items:
-> > +      - description: RDMA Clock
-> > +
-> > +  iommus:
-> > +    description:
-> > +      This property should point to the respective IOMMU block
-> > with master port as argument,
-> > +      see
-> > Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for
-> > details.
-> 
-> Skip description, it's obvious. Instead maxItems.
-> 
-
-ok, we will fix it.
-
-> > +
-> > +  mediatek,gce-client-reg:
-> > +    description:
-> > +      The register of display function block to be set by gce.
-> > There are 4 arguments,
-> > +      such as gce node, subsys id, offset and register size. The
-> > subsys id that is
-> > +      mapping to the register of display function blocks is
-> > defined in the gce header
-> > +      include/include/dt-bindings/gce/<chip>-gce.h of each chips.
-> 
-> Double "include" in the path.
-
-ok, we will fix it.
-
-> 
-> > +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> > +    items:
-> > +      items:
-> > +        - description: phandle of GCE
-> > +        - description: GCE subsys id
-> > +        - description: register offset
-> > +        - description: register size
-> > +    maxItems: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - power-domains
-> > +  - clocks
-> > +  - iommus
-> > +  - mediatek,gce-client-reg
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +    #include <dt-bindings/clock/mt8195-clk.h>
-> > +    #include <dt-bindings/power/mt8195-power.h>
-> > +    #include <dt-bindings/gce/mt8195-gce.h>
-> > +    #include <dt-bindings/memory/mt8195-memory-port.h>
-> > +
-> > +    soc {
-> > +        #address-cells = <2>;
-> > +        #size-cells = <2>;
-> > +
-> > +        vdo1_rdma0: mdp-rdma@1c104000 {
-> 
-> Generic node name. dma-controller (if it does not conflict with
-> dma-common.yaml schema)?
-
-We don't understand what dma-controller you are referring to? Can you
-help explain more? Thanks!
-
-BRs,
-Rex
-
-> 
-> > +            compatible = "mediatek,mt8195-vdo1-rdma";
-> > +            reg = <0 0x1c104000 0 0x1000>;
-> > +            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
-> > +            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
-> > +            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-> > +            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
-> > +            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX
-> > 0x4000 0x1000>;
-> > +        };
-> > +    };
-> 
-> 
-> Best regards,
-> Krzysztof
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index 15df89b31e1b..315510aaca35 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -285,6 +285,14 @@ static void hpriv_release(struct kref *ref)
+ 
+ 	hdev->compute_ctx_in_release = 0;
+ 
++	/* release the eventfd */
++	if (hpriv->notifier_event.eventfd) {
++		eventfd_ctx_put(hpriv->notifier_event.eventfd);
++		hpriv->notifier_event.eventfd = 0;
++	}
++
++	mutex_destroy(&hpriv->notifier_event.lock);
++
+ 	kfree(hpriv);
+ }
+ 
+@@ -355,6 +363,13 @@ static int hl_device_release_ctrl(struct inode *inode, struct file *filp)
+ 	list_del(&hpriv->dev_node);
+ 	mutex_unlock(&hdev->fpriv_ctrl_list_lock);
+ out:
++	/* release the eventfd */
++	if (hpriv->notifier_event.eventfd) {
++		eventfd_ctx_put(hpriv->notifier_event.eventfd);
++		hpriv->notifier_event.eventfd = 0;
++	}
++
++	mutex_destroy(&hpriv->notifier_event.lock);
+ 	put_pid(hpriv->taskpid);
+ 
+ 	kfree(hpriv);
+@@ -1506,6 +1521,43 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
+ 	return rc;
+ }
+ 
++static void hl_notifier_event_send(struct hl_notifier_event *notifier_event, u64 event)
++{
++	mutex_lock(&notifier_event->lock);
++	notifier_event->events_mask |= event;
++	if (notifier_event->eventfd)
++		eventfd_signal(notifier_event->eventfd, 1);
++
++	mutex_unlock(&notifier_event->lock);
++}
++
++/*
++ * hl_notifier_event_send_all - notify all user processes via eventfd
++ *
++ * @hdev: pointer to habanalabs device structure
++ * @event: the occurred event
++ * Returns 0 for success or an error on failure.
++ */
++void hl_notifier_event_send_all(struct hl_device *hdev, u64 event)
++{
++	struct hl_fpriv	*hpriv;
++
++	mutex_lock(&hdev->fpriv_list_lock);
++
++	list_for_each_entry(hpriv, &hdev->fpriv_list, dev_node)
++		hl_notifier_event_send(&hpriv->notifier_event, event);
++
++	mutex_unlock(&hdev->fpriv_list_lock);
++
++	/* control device */
++	mutex_lock(&hdev->fpriv_ctrl_list_lock);
++
++	list_for_each_entry(hpriv, &hdev->fpriv_ctrl_list, dev_node)
++		hl_notifier_event_send(&hpriv->notifier_event, event);
++
++	mutex_unlock(&hdev->fpriv_ctrl_list_lock);
++}
++
+ /*
+  * hl_device_init - main initialization function for habanalabs device
+  *
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 918e8a04acab..8977ec67dba7 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -21,6 +21,7 @@
+ #include <linux/hashtable.h>
+ #include <linux/debugfs.h>
+ #include <linux/rwsem.h>
++#include <linux/eventfd.h>
+ #include <linux/bitfield.h>
+ #include <linux/genalloc.h>
+ #include <linux/sched/signal.h>
+@@ -1932,6 +1933,18 @@ struct hl_debug_params {
+ 	bool enable;
+ };
+ 
++/**
++ * struct hl_notifier_event - holds the notifier data structure
++ * @eventfd: the event file descriptor to raise the notifications
++ * @lock: mutex lock to protect the notifier data flows
++ * @events_mask: indicates the bitmap events
++ */
++struct hl_notifier_event {
++	struct eventfd_ctx	*eventfd;
++	struct mutex		lock;
++	u64			events_mask;
++};
++
+ /*
+  * FILE PRIVATE STRUCTURE
+  */
+@@ -1943,24 +1956,25 @@ struct hl_debug_params {
+  * @taskpid: current process ID.
+  * @ctx: current executing context. TODO: remove for multiple ctx per process
+  * @ctx_mgr: context manager to handle multiple context for this FD.
+- * @cb_mgr: command buffer manager to handle multiple buffers for this FD.
+  * @mem_mgr: manager descriptor for memory exportable via mmap
++ * @notifier_event: notifier eventfd towards user process
+  * @debugfs_list: list of relevant ASIC debugfs.
+  * @dev_node: node in the device list of file private data
+  * @refcount: number of related contexts.
+  * @restore_phase_mutex: lock for context switch and restore phase.
+  */
+ struct hl_fpriv {
+-	struct hl_device	*hdev;
+-	struct file		*filp;
+-	struct pid		*taskpid;
+-	struct hl_ctx		*ctx;
+-	struct hl_ctx_mgr	ctx_mgr;
+-	struct hl_mem_mgr	mem_mgr;
+-	struct list_head	debugfs_list;
+-	struct list_head	dev_node;
+-	struct kref		refcount;
+-	struct mutex		restore_phase_mutex;
++	struct hl_device		*hdev;
++	struct file			*filp;
++	struct pid			*taskpid;
++	struct hl_ctx			*ctx;
++	struct hl_ctx_mgr		ctx_mgr;
++	struct hl_mem_mgr		mem_mgr;
++	struct hl_notifier_event	notifier_event;
++	struct list_head		debugfs_list;
++	struct list_head		dev_node;
++	struct kref			refcount;
++	struct mutex			restore_phase_mutex;
+ };
+ 
+ 
+@@ -2676,8 +2690,8 @@ struct hl_reset_info {
+  * @state_dump_specs: constants and dictionaries needed to dump system state.
+  * @multi_cs_completion: array of multi-CS completion.
+  * @clk_throttling: holds information about current/previous clock throttling events
+- * @reset_info: holds current device reset information.
+  * @last_error: holds information about last session in which CS timeout or razwi error occurred.
++ * @reset_info: holds current device reset information.
+  * @stream_master_qid_arr: pointer to array with QIDs of master streams.
+  * @fw_major_version: major version of current loaded preboot
+  * @dram_used_mem: current DRAM memory consumption.
+@@ -3071,6 +3085,8 @@ int hl_device_utilization(struct hl_device *hdev, u32 *utilization);
+ int hl_build_hwmon_channel_info(struct hl_device *hdev,
+ 		struct cpucp_sensor *sensors_arr);
+ 
++void hl_notifier_event_send_all(struct hl_device *hdev, u64 event);
++
+ int hl_sysfs_init(struct hl_device *hdev);
+ void hl_sysfs_fini(struct hl_device *hdev);
+ 
+diff --git a/drivers/misc/habanalabs/common/habanalabs_drv.c b/drivers/misc/habanalabs/common/habanalabs_drv.c
+index 1210de39d661..c97173e9507d 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_drv.c
++++ b/drivers/misc/habanalabs/common/habanalabs_drv.c
+@@ -134,6 +134,10 @@ int hl_device_open(struct inode *inode, struct file *filp)
+ 	hpriv->hdev = hdev;
+ 	filp->private_data = hpriv;
+ 	hpriv->filp = filp;
++	hpriv->notifier_event.events_mask = 0;
++	hpriv->notifier_event.eventfd = 0;
++
++	mutex_init(&hpriv->notifier_event.lock);
+ 	mutex_init(&hpriv->restore_phase_mutex);
+ 	kref_init(&hpriv->refcount);
+ 	nonseekable_open(inode, filp);
+@@ -208,6 +212,7 @@ int hl_device_open(struct inode *inode, struct file *filp)
+ 	hl_ctx_mgr_fini(hpriv->hdev, &hpriv->ctx_mgr);
+ 	filp->private_data = NULL;
+ 	mutex_destroy(&hpriv->restore_phase_mutex);
++	mutex_destroy(&hpriv->notifier_event.lock);
+ 	put_pid(hpriv->taskpid);
+ 
+ 	kfree(hpriv);
+@@ -241,6 +246,10 @@ int hl_device_open_ctrl(struct inode *inode, struct file *filp)
+ 	hpriv->hdev = hdev;
+ 	filp->private_data = hpriv;
+ 	hpriv->filp = filp;
++	hpriv->notifier_event.events_mask = 0;
++	hpriv->notifier_event.eventfd = 0;
++
++	mutex_init(&hpriv->notifier_event.lock);
+ 	nonseekable_open(inode, filp);
+ 
+ 	hpriv->taskpid = get_task_pid(current, PIDTYPE_PID);
+diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+index bfb5cfe68110..d1ef56a8d3ac 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
++++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+@@ -116,6 +116,25 @@ static int hw_events_info(struct hl_device *hdev, bool aggregate,
+ 	return copy_to_user(out, arr, min(max_size, size)) ? -EFAULT : 0;
+ }
+ 
++static int events_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
++{
++	int rc;
++	u32 max_size = args->return_size;
++	u64 events_mask;
++	void __user *out = (void __user *) (uintptr_t) args->return_pointer;
++
++	if ((max_size < sizeof(u64)) || (!out))
++		return -EINVAL;
++
++	mutex_lock(&hpriv->notifier_event.lock);
++	events_mask = hpriv->notifier_event.events_mask;
++	hpriv->notifier_event.events_mask = 0;
++	mutex_unlock(&hpriv->notifier_event.lock);
++
++	rc = copy_to_user(out, &events_mask, sizeof(u64));
++	return rc;
++}
++
+ static int dram_usage_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
+ {
+ 	struct hl_device *hdev = hpriv->hdev;
+@@ -614,6 +633,43 @@ static int dev_mem_alloc_page_sizes_info(struct hl_fpriv *hpriv, struct hl_info_
+ 	return copy_to_user(out, &info, min_t(size_t, max_size, sizeof(info))) ? -EFAULT : 0;
+ }
+ 
++static int eventfd_register(struct hl_fpriv *hpriv, struct hl_info_args *args)
++{
++	int rc;
++
++	/* check if there is already a registered on that process */
++	mutex_lock(&hpriv->notifier_event.lock);
++	if (hpriv->notifier_event.eventfd) {
++		mutex_unlock(&hpriv->notifier_event.lock);
++		return -EINVAL;
++	}
++
++	hpriv->notifier_event.eventfd = eventfd_ctx_fdget(args->eventfd);
++	if (IS_ERR(hpriv->notifier_event.eventfd)) {
++		rc = PTR_ERR(hpriv->notifier_event.eventfd);
++		hpriv->notifier_event.eventfd = 0;
++		mutex_unlock(&hpriv->notifier_event.lock);
++		return rc;
++	}
++
++	mutex_unlock(&hpriv->notifier_event.lock);
++	return 0;
++}
++
++static int eventfd_unregister(struct hl_fpriv *hpriv, struct hl_info_args *args)
++{
++	mutex_lock(&hpriv->notifier_event.lock);
++	if (!hpriv->notifier_event.eventfd) {
++		mutex_unlock(&hpriv->notifier_event.lock);
++		return -EINVAL;
++	}
++
++	eventfd_ctx_put(hpriv->notifier_event.eventfd);
++	hpriv->notifier_event.eventfd = 0;
++	mutex_unlock(&hpriv->notifier_event.lock);
++	return 0;
++}
++
+ static int _hl_info_ioctl(struct hl_fpriv *hpriv, void *data,
+ 				struct device *dev)
+ {
+@@ -667,6 +723,9 @@ static int _hl_info_ioctl(struct hl_fpriv *hpriv, void *data,
+ 	case HL_INFO_DEV_MEM_ALLOC_PAGE_SIZES:
+ 		return dev_mem_alloc_page_sizes_info(hpriv, args);
+ 
++	case HL_INFO_GET_EVENTS:
++		return events_info(hpriv, args);
++
+ 	default:
+ 		break;
+ 	}
+@@ -717,6 +776,12 @@ static int _hl_info_ioctl(struct hl_fpriv *hpriv, void *data,
+ 	case HL_INFO_DRAM_PENDING_ROWS:
+ 		return dram_pending_rows_info(hpriv, args);
+ 
++	case HL_INFO_REGISTER_EVENTFD:
++		return eventfd_register(hpriv, args);
++
++	case HL_INFO_UNREGISTER_EVENTFD:
++		return eventfd_unregister(hpriv, args);
++
+ 	default:
+ 		dev_err(dev, "Invalid request %d\n", args->op);
+ 		rc = -EINVAL;
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 08cd60300b4f..1c388537de33 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -7879,7 +7879,6 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
+ 	case GAUDI_EVENT_MMU_PAGE_FAULT:
+ 	case GAUDI_EVENT_MMU_WR_PERM:
+ 	case GAUDI_EVENT_RAZWI_OR_ADC:
+-	case GAUDI_EVENT_TPC0_QM ... GAUDI_EVENT_TPC7_QM:
+ 	case GAUDI_EVENT_MME0_QM ... GAUDI_EVENT_MME2_QM:
+ 	case GAUDI_EVENT_DMA0_QM ... GAUDI_EVENT_DMA7_QM:
+ 		fallthrough;
+@@ -7899,6 +7898,19 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
+ 		hl_fw_unmask_irq(hdev, event_type);
+ 		break;
+ 
++	case GAUDI_EVENT_TPC0_QM ... GAUDI_EVENT_TPC7_QM:
++		gaudi_print_irq_info(hdev, event_type, true);
++		gaudi_handle_qman_err(hdev, event_type);
++		hl_fw_unmask_irq(hdev, event_type);
++
++		/* In TPC QM event, notify on TPC assertion. While there isn't
++		 * a specific event for assertion yet, the FW generates QM event.
++		 * The SW upper layer will inspect an internal mapped area to indicate
++		 * if the event is a tpc assertion or tpc QM.
++		 */
++		hl_notifier_event_send_all(hdev, HL_NOTIFIER_EVENT_TPC_ASSERT);
++		break;
++
+ 	case GAUDI_EVENT_RAZWI_OR_ADC_SW:
+ 		gaudi_print_irq_info(hdev, event_type, true);
+ 		goto reset_device;
+diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
+index 3576bf2b4841..52540d5b4fc9 100644
+--- a/include/uapi/misc/habanalabs.h
++++ b/include/uapi/misc/habanalabs.h
+@@ -349,6 +349,9 @@ enum hl_server_type {
+  *                            Razwi initiator.
+  *                            Razwi cause, was it a page fault or MMU access error.
+  * HL_INFO_DEV_MEM_ALLOC_PAGE_SIZES - Retrieve valid page sizes for device memory allocation
++ * HL_INFO_REGISTER_EVENTFD   - Register eventfd for event notifications.
++ * HL_INFO_UNREGISTER_EVENTFD - Unregister eventfd
++ * HL_INFO_GET_EVENTS         - Retrieve the last occurred events
+  */
+ #define HL_INFO_HW_IP_INFO			0
+ #define HL_INFO_HW_EVENTS			1
+@@ -374,6 +377,9 @@ enum hl_server_type {
+ #define HL_INFO_CS_TIMEOUT_EVENT		24
+ #define HL_INFO_RAZWI_EVENT			25
+ #define HL_INFO_DEV_MEM_ALLOC_PAGE_SIZES	26
++#define HL_INFO_REGISTER_EVENTFD		28
++#define HL_INFO_UNREGISTER_EVENTFD		29
++#define HL_INFO_GET_EVENTS			30
+ 
+ #define HL_INFO_VERSION_MAX_LEN			128
+ #define HL_INFO_CARD_NAME_MAX_LEN		16
+@@ -679,6 +685,7 @@ enum gaudi_dcores {
+  * @period_ms: Period value, in milliseconds, for utilization rate in range 100ms - 1000ms in 100 ms
+  *             resolution. Currently not in use.
+  * @pll_index: Index as defined in hl_<asic type>_pll_index enumeration.
++ * @eventfd: event file descriptor for event notifications.
+  * @pad: Padding to 64 bit.
+  */
+ struct hl_info_args {
+@@ -691,6 +698,7 @@ struct hl_info_args {
+ 		__u32 ctx_id;
+ 		__u32 period_ms;
+ 		__u32 pll_index;
++		__u32 eventfd;
+ 	};
+ 
+ 	__u32 pad;
+@@ -1390,6 +1398,13 @@ struct hl_debug_args {
+ 	__u32 ctx_id;
+ };
+ 
++/*
++ * Notifier event values - for the notification mechanism and the HL_INFO_GET_EVENTS command
++ *
++ * HL_NOTIFIER_EVENT_TPC_ASSERT - Indicates TPC assert event
++ */
++#define HL_NOTIFIER_EVENT_TPC_ASSERT  (1 << 0)
++
+ /*
+  * Various information operations such as:
+  * - H/W IP information
+-- 
+2.25.1
 
