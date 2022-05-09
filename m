@@ -2,94 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE0CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB041C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239653AbiEIRTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 13:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
+        id S239494AbiEIRUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 13:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239592AbiEIRTI (ORCPT
+        with ESMTP id S239495AbiEIRUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 13:19:08 -0400
-X-Greylist: delayed 149 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 10:15:12 PDT
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BF3D6D;
-        Mon,  9 May 2022 10:15:10 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 72354AC7; Mon,  9 May 2022 12:15:09 -0500 (CDT)
-Date:   Mon, 9 May 2022 12:15:09 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org, Serge Hallyn <serge@hallyn.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 8/8] net: use new capable_or functionality
-Message-ID: <20220509171509.GB28406@mail.hallyn.com>
-References: <20220217145003.78982-2-cgzones@googlemail.com>
- <20220502160030.131168-1-cgzones@googlemail.com>
- <20220502160030.131168-7-cgzones@googlemail.com>
+        Mon, 9 May 2022 13:20:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B05D1862B1;
+        Mon,  9 May 2022 10:16:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABB8F6155C;
+        Mon,  9 May 2022 17:16:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E4DC385B1;
+        Mon,  9 May 2022 17:16:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652116594;
+        bh=VSzgCF1Rw8sMVNfysp7EwT6li5M6fLIKaI2QYnijb/0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=FSTsxsO1k3B5Qc/U+PoXFX+u19YKgFPoHZ0L6LSA5MOtkoPk3Xz548eE1KSBwA/Z+
+         MHmjBMYSfqEvDlhzasgnCqpvFxHmd9G+HtPxg/5G+XjW0RF7Cl/GeHZDYmaIZ3Nnmw
+         9hO0u7YtUlQFC+8kzyYKRmZUpZF62W4BgIfTlJgJnpbZo825OLTQUfKrBVIfOtmYP+
+         me741ygsBkakT00RU6qw02wJTcm6RA6QQelt5YUgt+2NSdWwmkqkwCV1tO/PvtqRqD
+         duKQVM/LRdAuRCSsnRlm2IyRUP2rfUb+OJYmSB4OHGnjY1qj0zxDPTnkSWFruEf85t
+         2NxGAzNjfwQgg==
+Date:   Mon, 9 May 2022 12:16:31 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     ryder.lee@mediatek.com, jianjun.wang@mediatek.com,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, p.zabel@pengutronix.de,
+        matthias.bgg@gmail.com, linux-pci@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com,
+        nfraprado@collabora.com
+Subject: Re: [PATCH] PCI: mediatek-gen3: Assert resets to ensure expected
+ init state
+Message-ID: <20220509171631.GA605998@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220502160030.131168-7-cgzones@googlemail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <e9839acf-e334-d73d-a0b3-57d951fb8796@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 06:00:29PM +0200, Christian Göttsche wrote:
-> Use the new added capable_or function in appropriate cases, where a task
-> is required to have any of two capabilities.
+On Mon, May 09, 2022 at 02:18:34PM +0200, AngeloGioacchino Del Regno wrote:
+> Il 04/04/22 16:48, AngeloGioacchino Del Regno ha scritto:
+> > The controller may have been left out of reset by the bootloader,
+> > in which case, before the powerup sequence, the controller will be
+> > found preconfigured with values that were set before booting the
+> > kernel: this produces a controller failure, with the result of
+> > a failure during the mtk_pcie_startup_port() sequence as the PCIe
+> > link never gets up.
+> > 
+> > To ensure that we get a clean start in an expected state, assert
+> > both the PHY and MAC resets before executing the controller
+> > power-up sequence.
+> > 
+> > Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
+> > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > 
-> Reorder CAP_SYS_ADMIN last.
+> Friendly ping for an important fix :-)
+
+d3bf75b579b9 appeared in v5.13-rc1 (May 2021, a year ago), so I assume
+this is important for v5.19, but not urgent enough to require being in
+v5.18.  Right?
+
+> > ---
+> >   drivers/pci/controller/pcie-mediatek-gen3.c | 8 ++++++++
+> >   1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+> > index f7048ea4c020..dccdfce12b1c 100644
+> > --- a/drivers/pci/controller/pcie-mediatek-gen3.c
+> > +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+> > @@ -838,6 +838,14 @@ static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
+> >   	if (err)
+> >   		return err;
+> > +	/*
+> > +	 * The controller may have been left out of reset by the bootloader
+> > +	 * so make sure that we get a clean start by asserting resets here.
+> > +	 */
+> > +	reset_control_assert(pcie->phy_reset);
+> > +	reset_control_assert(pcie->mac_reset);
+> > +	usleep_range(10, 20);
+> > +
+> >   	/* Don't touch the hardware registers before power up */
+> >   	err = mtk_pcie_power_up(pcie);
+> >   	if (err)
 > 
-> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-
-Thanks, for 2-8:
-
-Reviewed-by: Serge Hallyn <serge@hallyn.com>
-
-though I'd still like to talk about the name :)
-
-> ---
->  net/caif/caif_socket.c | 2 +-
->  net/unix/scm.c         | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
-> index 2b8892d502f7..60498148126c 100644
-> --- a/net/caif/caif_socket.c
-> +++ b/net/caif/caif_socket.c
-> @@ -1036,7 +1036,7 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
->  		.usersize = sizeof_field(struct caifsock, conn_req.param)
->  	};
->  
-> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_NET_ADMIN))
-> +	if (!capable_or(CAP_NET_ADMIN, CAP_SYS_ADMIN))
->  		return -EPERM;
->  	/*
->  	 * The sock->type specifies the socket type to use.
-> diff --git a/net/unix/scm.c b/net/unix/scm.c
-> index aa27a02478dc..821be80e6c85 100644
-> --- a/net/unix/scm.c
-> +++ b/net/unix/scm.c
-> @@ -99,7 +99,7 @@ static inline bool too_many_unix_fds(struct task_struct *p)
->  	struct user_struct *user = current_user();
->  
->  	if (unlikely(user->unix_inflight > task_rlimit(p, RLIMIT_NOFILE)))
-> -		return !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN);
-> +		return !capable_or(CAP_SYS_RESOURCE, CAP_SYS_ADMIN);
->  	return false;
->  }
->  
-> -- 
-> 2.36.0
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
