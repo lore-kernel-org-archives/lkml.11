@@ -2,103 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 517C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83754C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233251AbiEILu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
+        id S233300AbiEILvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbiEILuX (ORCPT
+        with ESMTP id S233332AbiEILvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:50:23 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CBC18430F
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:46:28 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id x18so19084227wrc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:46:28 -0700 (PDT)
+        Mon, 9 May 2022 07:51:21 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268D9187D9D
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:47:28 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id j2so24500416ybu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:47:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=misjj5JTB12DlyGFP9aFMSgV8RGVVP30IJPFNdnpF+w=;
-        b=vcm8ol+n0vdvHjNkmFysmqfoMdnJAXp0XlqQZH4Vey9RcGcNJYWaS3XbqMxl2oE5Ka
-         sdrAxxme+/ilEdnK5OjXbaxee9lypHPC6Gd51l99xsBDm+of2Ag4mLmqoI0FKRbADWD0
-         ydvpxq8FdJ2SfX123spAoSTnX8V6mldE3qgEdwODYSq+9hEg+xu+h9urKS4lhOg10ip/
-         JFOIFtCvPRUQ366h67ipFMukKFsmeK2MqkRPel8OaskasEol/nzbbGxPInvorMO1YBcs
-         HIngSiNh2hwhybpxoltaFRL7ZpWfXMWyOqQMtTijw0rWYE6lR/bDb33jywYpO4OjriOP
-         +0JQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5LnDm42XAjcK8nDEN/NXuMD8bqA9EbCRNmEicH0GdWc=;
+        b=VAdstAUP43Up/jD0RDAMS3ideC1ln27PV/yin1CnKnJoQdjgUr5RBybEz5k1zYCrUf
+         /XX1+kyc0WX7faMi7gMg2cb1evuHgfGQYTv2bWiw/ZoL20k5M0vuTG8aK/uSpBQlISkI
+         DPcv4ONb5N2/fr0trNGML6sGmBOekVdXj+ps7wRYdBn/2Vnh+Zuy1HY+ZWRpko97oO2b
+         AT/c11G0T1nuPirq97brndpEGIq4hGvmA5kEIfhY3f1cnQTygx2lRzbQ7EjVJeEe7ClY
+         JJOB+pU1lG7rZFXweRsWTlJamrCFfichkyxt2vYy3lyrvCTs+vSaWsq+1sICmQeDMiiQ
+         B1Zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=misjj5JTB12DlyGFP9aFMSgV8RGVVP30IJPFNdnpF+w=;
-        b=eYN71BwYGcXs62lanW/laLh97bM0yEy7p1QPEX8WOMzFTykv3R3rhYQ/OYcEUHoiyE
-         gT06hfUXEolOGfjJ5p8GcNQfJiHsHtjNFlhYd8x0rhwxa99/d2HvvoMRJ+NYGoi3sM88
-         Wp2JPgQDXFYkdT/cEKOm97xkcWIyfrrfRqapFOFMEKZy1ptT2PUyFBJdEzApyf6spc98
-         7gmTqtEnYjAywNz8K9kuvmLcAxeLmiZPNeLY/MVJyBsTetnEErviNz8ccpJQ0amzQpny
-         fiP9QaSV0p/qin5aR0W6buhf12VUlPilk4iN0d2is22jPTAxUN0F+qnexq2UvKrweJUg
-         VOKA==
-X-Gm-Message-State: AOAM5338LhP+V1P5XA6pW/753329tN+cJ3giKxPNe+Qj5dMbnMeP/r/V
-        MKxXpltlovt8LT5GjzJrztd/KA==
-X-Google-Smtp-Source: ABdhPJxUHknTccYYo0FBvjr+ROc0w77xQIpr0J50KwaOVb50UXG/NivSAf3PnGfF/UHaxiJloSJzOg==
-X-Received: by 2002:a05:6000:136b:b0:20a:c416:e914 with SMTP id q11-20020a056000136b00b0020ac416e914mr13382462wrz.167.1652096787075;
-        Mon, 09 May 2022 04:46:27 -0700 (PDT)
-Received: from [192.168.1.41] (176-182-171-101.abo.bbox.fr. [176.182.171.101])
-        by smtp.googlemail.com with ESMTPSA id b12-20020adfc74c000000b0020c5253d8e8sm11399633wrh.52.2022.05.09.04.46.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 04:46:26 -0700 (PDT)
-Message-ID: <a1d44fbb-c2a9-e422-8ce8-2a3982a75bb8@linaro.org>
-Date:   Mon, 9 May 2022 13:46:25 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5LnDm42XAjcK8nDEN/NXuMD8bqA9EbCRNmEicH0GdWc=;
+        b=R9xUYgZbt8vc1O30susg4ZiCUf0t7is0tgcfPCql/79lTxSCRN3laNfsbj1zhUm26y
+         SG6oSlnjdPvfaJtuj7ZBbA7UOhWIk52ju85YJu/Y5XSW4tGTH7byMikICy0879gByQ+L
+         vtABKUt8iEJbEAG0S/N6R0lZ113DJj1KOb2hMM/+py4oecoOSstsRrejbvLPBXIcY0r8
+         UJVGnAGm/iqX0E0dPFl6WZrnfz+LyrCO8PWEeCd1EtY0P/733PIDsopz8GAq3LTb9Q6t
+         64DOotmx3+TkE61wOsRb+G5PbAc5a9f5w7i1hKbkbRq9JjQ5nj1lVepnwwiahCY3UM4H
+         HOig==
+X-Gm-Message-State: AOAM5324aHiLov7tK9ZGX2hhY9l1hVKRs9QiM0i0pyrs4NKedn0Yln1p
+        ZI0JffCIGYxjCjy4NnivdiTZMIs1f48tGgRXYoB0wA71XLg=
+X-Google-Smtp-Source: ABdhPJwTJGQrHFFNChN09m0mf2VXZ34V205CWTzTBrXCLu804Op96doJDQ6HuN1C76VSotbuh6qiSkhoMMXJtlfMRCc=
+X-Received: by 2002:a25:aa94:0:b0:648:62f2:ef4e with SMTP id
+ t20-20020a25aa94000000b0064862f2ef4emr12359018ybi.626.1652096847403; Mon, 09
+ May 2022 04:47:27 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] clocksource/drivers/sp804: avoid error on multiple
- instances
-Content-Language: en-US
-To:     Andre Przywara <andre.przywara@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220506162522.3675399-1-andre.przywara@arm.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220506162522.3675399-1-andre.przywara@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220503151321.58800-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220503151321.58800-1-andriy.shevchenko@linux.intel.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 9 May 2022 13:47:16 +0200
+Message-ID: <CACRpkda7WoFKxV1p6vmcg9GmDuRPsednoZV5_hMov=OJ3EE2Vg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] pinctrl: equilibrium: Switch to use fwnode instead
+ of of_node
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/05/2022 18:25, Andre Przywara wrote:
-> When a machine sports more than one SP804 timer instance, we only bring
-> up the first one, since multiple timers of the same kind are not useful
-> to Linux. As this is intentional behaviour, we should not return an
-> error message, as we do today:
-> ===============
-> [    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-> ===============
-> 
-> Replace the -EINVAL return with a debug message and return 0 instead.
-> 
-> Also we do not reach the init function anymore if the DT node is
-> disabled (as this is now handled by OF_DECLARE), so remove the explicit
-> check for that case.
-> 
-> This fixes a long standing bogus error when booting ARM's fastmodels.
-> 
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> ---
+On Tue, May 3, 2022 at 5:13 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 
-Applied, thanks
+> GPIO library now accepts fwnode as a firmware node, so
+> switch the driver to use it.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
+Patch applied.
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Yours,
+Linus Walleij
