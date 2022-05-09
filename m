@@ -2,134 +2,462 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F8A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237582AbiEIOx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60450 "EHLO
+        id S237719AbiEIOyY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237061AbiEIOxU (ORCPT
+        with ESMTP id S237522AbiEIOyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:53:20 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEEE24D630;
-        Mon,  9 May 2022 07:49:24 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KxkTk0NJ3z67Yv4;
-        Mon,  9 May 2022 22:44:42 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:49:22 +0200
-Received: from [10.47.80.57] (10.47.80.57) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 15:49:21 +0100
-Message-ID: <fd2cdc06-5d88-306a-3ee1-7aef3e3b8921@huawei.com>
-Date:   Mon, 9 May 2022 15:50:33 +0100
+        Mon, 9 May 2022 10:54:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354E424DC42
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:50:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B823160BC1
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E39C385AE;
+        Mon,  9 May 2022 14:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652107823;
+        bh=sCik9b2J8z4qKhC7dJTlulosPrFpWgmIs+sNCU2Kixw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tAj9LYXqpEYM8NiDXcNHzW0AR62LHQcbbEAxj5YCpL4eg6K8XSlxL+1anuLD87v73
+         kOe9o1bqboH7LlhEd71U1E27lKgIbYXUJ716EeFcPncydU31ClogvplwrwzwQsFvXT
+         Ju5B/VFO36/d5lAMn55OZwMn+JBlUa7ke1owR+fTof2FXv3/yBI3eh43N+4Xq/peRY
+         bTY1o4p85YSAmllg/l9sMTRd2EXGfb5RuVbFVO9pbxTSWbcLVyRtVSxuJTomJIlVwW
+         7QhEDtBtjQ2KJgPSOPAEI3dyPV4yWBjQHqHOxzxqXFoZj7Brjx2rCg5gPF3PNJ9Jpv
+         aGDmrTLU6HYuQ==
+Date:   Mon, 9 May 2022 22:41:47 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com
+Subject: Re: [PATCH v2 2/4] riscv: introduce unified static key mechanism for
+ CPU features
+Message-ID: <YnkoKxaPbrTnZPQv@xhacker>
+References: <20220508160749.984-1-jszhang@kernel.org>
+ <20220508160749.984-3-jszhang@kernel.org>
+ <CAK9=C2Xinc6Y9ue+3ZOvKOOgru7wvJNcEPLvO4aZGuQqETXi2w@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From:   John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH 1/4] scsi: core: constify pointer to scsi_host_template
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Christoph Hellwig <hch@infradead.org>
-CC:     "Ewan D. Milne" <emilne@redhat.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Alim Akhtar" <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "Doug Gilbert" <dgilbert@interlog.com>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <james.smart@broadcom.com>
-References: <20220408103027.311624-1-krzysztof.kozlowski@linaro.org>
- <2a88a992-641a-b3ff-fe39-7a61fff87cb6@huawei.com>
- <4c3be5b6-50ef-9e9a-6cee-9642df943342@linaro.org>
- <7b3885e3-dbae-ff0b-21dc-c28d635d950b@huawei.com>
- <c121430b1b5c8f5816b2b42b9178d00889260c90.camel@redhat.com>
- <b6af3fe8-db9a-b5dc-199f-21c05d7664a2@huawei.com>
- <Yl+wJ7xSHzWmR+bR@infradead.org>
- <d09faf74-a52e-8d93-cf26-08b43b12c564@huawei.com>
- <24bfb681-faec-3567-3089-9cd5ee182710@linaro.org>
- <1bb53912-c5c3-7690-e82f-cf356ca87404@huawei.com>
- <6f28acde-2177-0bc7-b06d-c704153489c0@linaro.org>
- <4510c5dc-3d7d-fc5f-cb80-34da7dbaaa8e@huawei.com>
- <d01c29c1-bb5a-281d-ef71-9c7b39e28d23@linaro.org>
-In-Reply-To: <d01c29c1-bb5a-281d-ef71-9c7b39e28d23@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.80.57]
-X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAK9=C2Xinc6Y9ue+3ZOvKOOgru7wvJNcEPLvO4aZGuQqETXi2w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/05/2022 14:20, Krzysztof Kozlowski wrote:
-> On 09/05/2022 13:28, John Garry wrote:
->>
->> For some reason I cannot fetch your git due to "error: RPC failed ..."
->> which I think is a timeout. I seem to have this problem recently
->> whenever a linux.git clone has branches based on linux-next.git . Maybe
->> a git config issue for me...
+On Mon, May 09, 2022 at 09:17:10AM +0530, Anup Patel wrote:
+> On Sun, May 8, 2022 at 9:47 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+> >
+> > Currently, riscv has several features why may not be supported on all
+> > riscv platforms, for example, FPU, SV48 and so on. To support unified
+> > kernel Image style, we need to check whether the feature is suportted
+> > or not. If the check sits at hot code path, then performance will be
+> > impacted a lot. static key can be used to solve the issue. In the past
+> > FPU support has been converted to use static key mechanism. I believe
+> > we will have similar cases in the future.
 > 
-> Just to be sure - the link was not a git remote, but direct link for a
-> web browser. The repo is:
-> https://github.com/krzk/linux.git
-> branch: n/qcom-ufs-opp-cleanups-v2
+> It's not just FPU and Sv48. There are several others such as Svinval,
+> Vector, Svnapot, Svpbmt, and many many others.
 > 
+> Overall, I agree with the approach of using static key array but I
+> disagree with the semantics and the duplicate stuff being added.
+> 
+> Please see more comments below ..
+> 
+> >
+> > Similar as arm64 does(in fact, some code is borrowed from arm64), this
+> > patch tries to add an unified mechanism to use static keys for all
+> > the cpu features by implementing an array of default-false static keys
+> > and enabling them when detected. The cpus_have_*_cap() check uses the
+> > static keys if riscv_const_caps_ready is finalized, otherwise the
+> > compiler generates the bitmap test.
+> 
+> First of all, we should stop calling this a feature (like ARM does). Rather,
+> we should call these as isa extensions ("isaext") to align with the RISC-V
+> priv spec and RISC-V profiles spec. For all the ISA optionalities which do
+> not have distinct extension name, the RISC-V profiles spec is assigning
+> names to all such optionalities.
 
-OK, I'll double check. Regardless I'll sort my own IT issues :)
+Same as the reply a few minutes ago, the key problem here is do all
+CPU features belong to *ISA* extensions? For example, SV48, SV57 etc.
+I agree with Atish's comments here:
 
->>> However this does not solve the problem. The SHT has "module" which gets
->>> incremented/decremented. Exactly like in case of other drivers
->>> (driver->owner).
->>
->> Ah, I missed that this could be a problem. So we have this member to
->> stop the SCSI host driver being removed when we have disks mounted, etc.
->>
->> But isn't scsi_host_template.module just a pointer to the local driver
->> module data (and that data gets incremented/decremented)? I am looking
->> at the THIS_MODULE definition in export.h:
-> 
-> Yes, it is just a pointer, just like 'struct device_driver.owner' is.
-> 
->>
->> extern stuct module __this_module;
->> #define THIS_MODULE(&__this_module)
->>
->> However I do see scsi_device_dev_release(), which does:
->>
->> sdp->host->hostt->module = NULL
->>
->> I am not sure how necessary that really is. I would need to check further.
-> 
->>
->> Did you see if there other places which set hostt->module dynamically?
-> 
-> I think all SHT set it statically. 
+"I think the cpu feature is a superset of the ISA extension.
+cpu feature != ISA extension"
 
-Incidentally I did notice that the ata ahci driver does not set sht->module.
+https://lore.kernel.org/linux-riscv/CAHBxVyF65jC_wvxcD6bueqpCY8-Kbahu1yxsSoBmO1s15dGkSQ@mail.gmail.com/
 
-> Then it is being dynamically
-> incremented when needed and in scsi_device_dev_release() is being
-> nullified (as you mentioned above).
 > 
-> I guess this SHT->module is actually duplicating what most of drivers
-> (e.g. PCI, platform, USB) are doing. If I understand correctly, the
-> Scsi_Host is instantiated by the probe of a driver (pci_driver,
-> virtio_driver etc), therefore the SHT->module could be simply stored in
-> Scsi_Host.
+> Another issue with semantics is that this patch assumes all features are
+> enabled by default and we selectively disable it. This contrary to the
+> approach taken by existing arch/riscv/kernel/cpufeature.c which assumes
+> nothing is enabled by default and we selectively enable it.
 
-If you check scsi_device_dev_release(), we try to do a 'get' - if it 
-fails, then we nullify hostt->module. I think that is important as then 
-we call execute_in_process_context(), whose worker does the 'put'. 
-However, the 'put' will get upset if the refcnt was 0, which it would be 
-if the earlier 'get' fails - hence the nullify is to avoid that 
-possibility. So whatever you do needs to handle that. Details are in 
-f2b85040
+This is implementation related, can be modified in next version. From
+another side, assuming some feature enabled by default can result in
+trivial performance improvement for most platforms. For example, if
+most platforms are FPU capable, we'd better assume FPU enabled by default.
 
-Thanks,
-john
+> 
+> >
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> >  arch/riscv/Makefile                 |  3 +
+> >  arch/riscv/include/asm/cpufeature.h | 94 +++++++++++++++++++++++++++++
+> >  arch/riscv/kernel/cpufeature.c      | 23 +++++++
+> >  arch/riscv/tools/Makefile           | 22 +++++++
+> >  arch/riscv/tools/cpucaps            |  5 ++
+> >  arch/riscv/tools/gen-cpucaps.awk    | 40 ++++++++++++
+> >  6 files changed, 187 insertions(+)
+> >  create mode 100644 arch/riscv/include/asm/cpufeature.h
+> >  create mode 100644 arch/riscv/tools/Makefile
+> >  create mode 100644 arch/riscv/tools/cpucaps
+> >  create mode 100755 arch/riscv/tools/gen-cpucaps.awk
+> >
+> > diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> > index 7d81102cffd4..f4df67369d84 100644
+> > --- a/arch/riscv/Makefile
+> > +++ b/arch/riscv/Makefile
+> > @@ -154,3 +154,6 @@ PHONY += rv64_randconfig
+> >  rv64_randconfig:
+> >         $(Q)$(MAKE) KCONFIG_ALLCONFIG=$(srctree)/arch/riscv/configs/64-bit.config \
+> >                 -f $(srctree)/Makefile randconfig
+> > +
+> > +archprepare:
+> > +       $(Q)$(MAKE) $(build)=arch/riscv/tools kapi
+> > diff --git a/arch/riscv/include/asm/cpufeature.h b/arch/riscv/include/asm/cpufeature.h
+> > new file mode 100644
+> > index 000000000000..d80ddd2f3b49
+> > --- /dev/null
+> > +++ b/arch/riscv/include/asm/cpufeature.h
+> 
+> We don't need a separate header for this.
+> 
+> All this belongs to arch/riscv/include/asm/hwcap.h
+> 
+> > @@ -0,0 +1,94 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > +/*
+> > + * Copyright (C) 2014 Linaro Ltd. <ard.biesheuvel@linaro.org>
+> > + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> > + */
+> > +
+> > +#ifndef __ASM_CPUFEATURE_H
+> > +#define __ASM_CPUFEATURE_H
+> > +
+> > +#include <asm/cpucaps.h>
+> > +
+> > +#include <linux/bug.h>
+> > +#include <linux/jump_label.h>
+> > +#include <linux/kernel.h>
+> > +
+> > +extern DECLARE_BITMAP(cpu_hwcaps, RISCV_NCAPS);
+> 
+> This is a redundant bitmap. Please re-use "riscv_isa" bitmap for this
+> the ISA extensions.
+> 
+> > +extern struct static_key_false cpu_hwcap_keys[RISCV_NCAPS];
+> 
+> This should be called "riscv_isa_keys"
+> 
+> > +extern struct static_key_false riscv_const_caps_ready;
+> 
+> This should be called "riscv_isa_keys_ready".
+> 
+> > +
+> > +static __always_inline bool system_capabilities_finalized(void)
+> 
+> Another misaligned name. This should be called
+> "riscv_isa_keys_finalized()".
+> 
+> > +{
+> > +       return static_branch_likely(&riscv_const_caps_ready);
+> > +}
+> > +
+> > +/*
+> > + * Test for a capability with a runtime check.
+> > + *
+> > + * Before the capability is detected, this returns false.
+> > + */
+> > +static inline bool cpus_have_cap(unsigned int num)
+> > +{
+> > +       if (num >= RISCV_NCAPS)
+> > +               return false;
+> > +       return test_bit(num, cpu_hwcaps);
+> > +}
+> 
+> This should be called riscv_isa_have_extension() and it should
+> internally call "__riscv_isa_extension_available(NULL, num)".
+> 
+> > +
+> > +/*
+> > + * Test for a capability without a runtime check.
+> > + *
+> > + * Before capabilities are finalized, this returns false.
+> > + * After capabilities are finalized, this is patched to avoid a runtime check.
+> > + *
+> > + * @num must be a compile-time constant.
+> > + */
+> > +static __always_inline bool __cpus_have_const_cap(int num)
+> 
+> This should be named "__riscv_isa_have_const_extension()"
+> 
+> > +{
+> > +       if (num >= RISCV_NCAPS)
+> > +               return false;
+> > +       return static_branch_unlikely(&cpu_hwcap_keys[num]);
+> > +}
+> > +
+> > +/*
+> > + * Test for a capability without a runtime check.
+> > + *
+> > + * Before capabilities are finalized, this will BUG().
+> > + * After capabilities are finalized, this is patched to avoid a runtime check.
+> > + *
+> > + * @num must be a compile-time constant.
+> > + */
+> > +static __always_inline bool cpus_have_final_cap(int num)
+> 
+> This should be called "riscv_isa_have_final_extension()"
+> 
+> > +{
+> > +       if (system_capabilities_finalized())
+> > +               return __cpus_have_const_cap(num);
+> > +       else
+> > +               BUG();
+> > +}
+> > +
+> > +/*
+> > + * Test for a capability, possibly with a runtime check.
+> > + *
+> > + * Before capabilities are finalized, this behaves as cpus_have_cap().
+> > + * After capabilities are finalized, this is patched to avoid a runtime check.
+> > + *
+> > + * @num must be a compile-time constant.
+> > + */
+> > +static __always_inline bool cpus_have_const_cap(int num)
+> 
+> Same comment as above.
+> 
+> > +{
+> > +       if (system_capabilities_finalized())
+> > +               return __cpus_have_const_cap(num);
+> > +       else
+> > +               return cpus_have_cap(num);
+> > +}
+> > +
+> > +static inline void cpus_set_cap(unsigned int num)
+> 
+> Same comment as above.
+> 
+> > +{
+> > +       if (num >= RISCV_NCAPS) {
+> > +               pr_warn("Attempt to set an illegal CPU capability (%d >= %d)\n",
+> > +                       num, RISCV_NCAPS);
+> > +       } else {
+> > +               __set_bit(num, cpu_hwcaps);
+> > +       }
+> > +}
+> > +
+> > +#endif
+> > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> > index 1b2d42d7f589..e6c72cad0c1c 100644
+> > --- a/arch/riscv/kernel/cpufeature.c
+> > +++ b/arch/riscv/kernel/cpufeature.c
+> > @@ -9,6 +9,7 @@
+> >  #include <linux/bitmap.h>
+> >  #include <linux/ctype.h>
+> >  #include <linux/of.h>
+> > +#include <asm/cpufeature.h>
+> >  #include <asm/processor.h>
+> >  #include <asm/hwcap.h>
+> >  #include <asm/smp.h>
+> > @@ -25,6 +26,15 @@ static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+> >  __ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
+> >  #endif
+> >
+> > +DECLARE_BITMAP(cpu_hwcaps, RISCV_NCAPS);
+> > +EXPORT_SYMBOL(cpu_hwcaps);
+> 
+> Just like the previous comment. This is a redundant bitmap.
+> Please use "riscv_isa" bitmap for this purpose.
+> 
+> > +
+> > +DEFINE_STATIC_KEY_ARRAY_FALSE(cpu_hwcap_keys, RISCV_NCAPS);
+> > +EXPORT_SYMBOL(cpu_hwcap_keys);
+> > +
+> > +DEFINE_STATIC_KEY_FALSE(riscv_const_caps_ready);
+> > +EXPORT_SYMBOL(riscv_const_caps_ready);
+> 
+> Please see comments above.
+> 
+> > +
+> >  /**
+> >   * riscv_isa_extension_base() - Get base extension word
+> >   *
+> > @@ -62,6 +72,17 @@ bool __riscv_isa_extension_available(const unsigned long *isa_bitmap, int bit)
+> >  }
+> >  EXPORT_SYMBOL_GPL(__riscv_isa_extension_available);
+> >
+> > +static void __init enable_cpu_capabilities(void)
+> > +{
+> > +       int i;
+> > +
+> > +       for (i = 0; i < RISCV_NCAPS; i++) {
+> > +               if (!cpus_have_cap(i))
+> > +                       continue;
+> > +               static_branch_enable(&cpu_hwcap_keys[i]);
+> > +       }
+> > +}
+> > +
+> >  void __init riscv_fill_hwcap(void)
+> >  {
+> >         struct device_node *node;
+> > @@ -236,4 +257,6 @@ void __init riscv_fill_hwcap(void)
+> >         if (elf_hwcap & (COMPAT_HWCAP_ISA_F | COMPAT_HWCAP_ISA_D))
+> >                 static_branch_enable(&cpu_hwcap_fpu);
+> >  #endif
+> > +       enable_cpu_capabilities();
+> > +       static_branch_enable(&riscv_const_caps_ready);
+> >  }
+> > diff --git a/arch/riscv/tools/Makefile b/arch/riscv/tools/Makefile
+> > new file mode 100644
+> > index 000000000000..932b4fe5c768
+> > --- /dev/null
+> > +++ b/arch/riscv/tools/Makefile
+> > @@ -0,0 +1,22 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +
+> > +gen := arch/$(ARCH)/include/generated
+> > +kapi := $(gen)/asm
+> > +
+> > +kapi-hdrs-y := $(kapi)/cpucaps.h
+> > +
+> > +targets += $(addprefix ../../../,$(gen-y) $(kapi-hdrs-y))
+> > +
+> > +PHONY += kapi
+> > +
+> > +kapi:   $(kapi-hdrs-y) $(gen-y)
+> > +
+> > +# Create output directory if not already present
+> > +_dummy := $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
+> > +
+> > +quiet_cmd_gen_cpucaps = GEN     $@
+> > +      cmd_gen_cpucaps = mkdir -p $(dir $@) && \
+> > +                     $(AWK) -f $(filter-out $(PHONY),$^) > $@
+> > +
+> > +$(kapi)/cpucaps.h: $(src)/gen-cpucaps.awk $(src)/cpucaps FORCE
+> > +       $(call if_changed,gen_cpucaps)
+> > diff --git a/arch/riscv/tools/cpucaps b/arch/riscv/tools/cpucaps
+> > new file mode 100644
+> > index 000000000000..cb1ff2747859
+> > --- /dev/null
+> > +++ b/arch/riscv/tools/cpucaps
+> > @@ -0,0 +1,5 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +#
+> > +# Internal CPU capabilities constants, keep this list sorted
+> > +
+> > +HAS_NO_FPU
+> 
+> How can "No FPU" be a CPU capability ?
+> 
+> We have ISA extensions 'F' and 'D' which tells us whether an FPU is available
+> or not.
+> 
+> I think this file should be a table with two columns
+> "<lower_case_extension_name> <parsed_from_isa_string_yes_no>"
+> I this this file should look like this:
+> 
+> i yes
+> m yes
+> a yes
+> c yes
+> f yes
+> d yes
+> h yes
+> sv48 no
+> sv57 no
+> sstc yes
+> svinval yes
+> svpbmt yes
+> svnapot yes
+> sscofpmf yes
+> ...
+> 
+> > diff --git a/arch/riscv/tools/gen-cpucaps.awk b/arch/riscv/tools/gen-cpucaps.awk
+> > new file mode 100755
+> > index 000000000000..52a1e1b064ad
+> > --- /dev/null
+> > +++ b/arch/riscv/tools/gen-cpucaps.awk
+> > @@ -0,0 +1,40 @@
+> > +#!/bin/awk -f
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +# gen-cpucaps.awk: riscv cpucaps header generator
+> > +#
+> > +# Usage: awk -f gen-cpucaps.awk cpucaps.txt
+> > +
+> > +# Log an error and terminate
+> > +function fatal(msg) {
+> > +       print "Error at line " NR ": " msg > "/dev/stderr"
+> > +       exit 1
+> > +}
+> > +
+> > +# skip blank lines and comment lines
+> > +/^$/ { next }
+> > +/^#/ { next }
+> > +
+> > +BEGIN {
+> > +       print "#ifndef __ASM_CPUCAPS_H"
+> > +       print "#define __ASM_CPUCAPS_H"
+> > +       print ""
+> > +       print "/* Generated file - do not edit */"
+> > +       cap_num = 0
+> > +       print ""
+> > +}
+> > +
+> > +/^[vA-Z0-9_]+$/ {
+> > +       printf("#define RISCV_%-30s\t%d\n", $0, cap_num++)
+> > +       next
+> > +}
+> > +
+> > +END {
+> > +       printf("#define RISCV_NCAPS\t\t\t\t%d\n", cap_num)
+> > +       print ""
+> > +       print "#endif /* __ASM_CPUCAPS_H */"
+> > +}
+> 
+> This script need to change refer capabilities as extensions.
+> 
+> For every extension, there should be two defines.
+> For e.g. "sstc" extension should have following defines
+> #define RISCV_ISA_EXT_sstc <#num>
+> #define RISCV_ISA_EXT_FROMSTR_sstc <1|0>
+> 
+> > +
+> > +# Any lines not handled by previous rules are unexpected
+> > +{
+> > +       fatal("unhandled statement")
+> > +}
+> > --
+> > 2.34.1
+> >
+> 
+> Regards,
+> Anup
