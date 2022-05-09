@@ -2,171 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A039C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237017AbiEIOSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        id S237049AbiEIOSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236931AbiEIOSJ (ORCPT
+        with ESMTP id S236931AbiEIOSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:18:09 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA012216056;
-        Mon,  9 May 2022 07:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=21Vuf08H7s2roER44d4b0UgJl5trrJFyPVjW1sFjFZE=; b=ruDiqyoExl2jG8ttjj8Kva7F0Z
-        0gmy1ZjUnSZw1kESJcz3XDyEnMdDBnsUYP/IGGe7AdFcEsabz8oUBo80VtrFGlI8cQnzWF9UlpBBK
-        4aFG0PgEAjxrGpxgz2rOXDVYxrjQeGb+FiM0Mo8j9WOU5B7iKslK22FH7g8xu7/o+vhoBdIcLeTVq
-        TXR8EZtHjX3vb/+hbwrFc/UcTSPrqLuaLvGSeO7jUEfo1fKsk4NXM02lMULpMgFIGTd5/R8izOFMK
-        smJXU8ctgfXKSVE5XSrKVK5cDdrQAjusLpX81WYReyDmurYDvxkw6DQoXAKa1dqFr5Ui2vHbk0ezv
-        WsObUf8Q==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1no48z-000Acu-NN; Mon, 09 May 2022 16:13:50 +0200
-Message-ID: <f6def662-5742-b3a8-544f-bf15c636d83d@igalia.com>
-Date:   Mon, 9 May 2022 11:13:17 -0300
+        Mon, 9 May 2022 10:18:36 -0400
+X-Greylist: delayed 454 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 07:14:42 PDT
+Received: from sonata.ens-lyon.org (sonata.ens-lyon.org [140.77.166.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEA922D60E
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:14:42 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by sonata.ens-lyon.org (Postfix) with ESMTP id A4D7620194;
+        Mon,  9 May 2022 16:07:06 +0200 (CEST)
+Received: from sonata.ens-lyon.org ([127.0.0.1])
+        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id tYlx5t2-NAqj; Mon,  9 May 2022 16:07:06 +0200 (CEST)
+Received: from begin (nat-inria-interne-52-gw-01-bso.bordeaux.inria.fr [194.199.1.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by sonata.ens-lyon.org (Postfix) with ESMTPSA id 48AFA20180;
+        Mon,  9 May 2022 16:07:06 +0200 (CEST)
+Received: from samy by begin with local (Exim 4.95)
+        (envelope-from <samuel.thibault@ens-lyon.org>)
+        id 1no42T-002SDR-LT;
+        Mon, 09 May 2022 16:07:05 +0200
+Date:   Mon, 9 May 2022 16:07:05 +0200
+From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, speakup@linux-speakup.org
+Subject: Re: [PATCHv2] speakup: Generate speakupmap.h automatically
+Message-ID: <20220509140705.n3eei4r5ko6bbex4@begin>
+Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+        speakup@linux-speakup.org
+References: <20220430003934.fkua7vwoz6heigrp@begin>
+ <20220430073321.6b4lvrrt7buzh7dp@begin>
+ <YnkfeyobcOOgDGkH@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 10/30] alpha: Clean-up the panic notifier code
-Content-Language: en-US
-To:     Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, rth@gcc.gnu.org
-Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        bhe@redhat.com, kexec@lists.infradead.org,
-        linux-edac@vger.kernel.org, pmladek@suse.com,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-11-gpiccoli@igalia.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220427224924.592546-11-gpiccoli@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnkfeyobcOOgDGkH@kroah.com>
+Organization: I am not organized
+User-Agent: NeoMutt/20170609 (1.8.3)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 19:49, Guilherme G. Piccoli wrote:
-> The alpha panic notifier has some code issues, not following
-> the conventions of other notifiers. Also, it might halt the
-> machine but still it is set to run as early as possible, which
-> doesn't seem to be a good idea.
-> 
-> This patch cleans the code, and set the notifier to run as the
-> latest, following the same approach other architectures are doing.
-> Also, we remove the unnecessary include of a header already
-> included indirectly.
-> 
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: Richard Henderson <rth@twiddle.net>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> ---
->  arch/alpha/kernel/setup.c | 36 +++++++++++++++---------------------
->  1 file changed, 15 insertions(+), 21 deletions(-)
-> 
-> diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-> index b4fbbba30aa2..d88bdf852753 100644
-> --- a/arch/alpha/kernel/setup.c
-> +++ b/arch/alpha/kernel/setup.c
-> @@ -41,19 +41,11 @@
->  #include <linux/sysrq.h>
->  #include <linux/reboot.h>
->  #endif
-> -#include <linux/notifier.h>
->  #include <asm/setup.h>
->  #include <asm/io.h>
->  #include <linux/log2.h>
->  #include <linux/export.h>
->  
-> -static int alpha_panic_event(struct notifier_block *, unsigned long, void *);
-> -static struct notifier_block alpha_panic_block = {
-> -	alpha_panic_event,
-> -        NULL,
-> -        INT_MAX /* try to do it first */
-> -};
-> -
->  #include <linux/uaccess.h>
->  #include <asm/hwrpb.h>
->  #include <asm/dma.h>
-> @@ -435,6 +427,21 @@ static const struct sysrq_key_op srm_sysrq_reboot_op = {
->  };
->  #endif
->  
-> +static int alpha_panic_event(struct notifier_block *this,
-> +			     unsigned long event, void *ptr)
-> +{
-> +	/* If we are using SRM and serial console, just hard halt here. */
-> +	if (alpha_using_srm && srmcons_output)
-> +		__halt();
-> +
-> +	return NOTIFY_DONE;
-> +}
-> +
-> +static struct notifier_block alpha_panic_block = {
-> +	.notifier_call = alpha_panic_event,
-> +	.priority = INT_MIN, /* may not return, do it last */
-> +};
-> +
->  void __init
->  setup_arch(char **cmdline_p)
->  {
-> @@ -1427,19 +1434,6 @@ const struct seq_operations cpuinfo_op = {
->  	.show	= show_cpuinfo,
->  };
->  
-> -
-> -static int
-> -alpha_panic_event(struct notifier_block *this, unsigned long event, void *ptr)
-> -{
-> -#if 1
-> -	/* FIXME FIXME FIXME */
-> -	/* If we are using SRM and serial console, just hard halt here. */
-> -	if (alpha_using_srm && srmcons_output)
-> -		__halt();
-> -#endif
-> -        return NOTIFY_DONE;
-> -}
-> -
->  static __init int add_pcspkr(void)
->  {
->  	struct platform_device *pd;
+Hello,
 
+Greg KH, le lun. 09 mai 2022 16:04:43 +0200, a ecrit:
+> Any reason you can't add the code in utils.c into genmap.c and then
+> merge into makemapdata.c to make this a single .c file that does both
+> things?
 
-Hi folks, I'm updating Richard's email and re-sending the V1, any
-reviews are greatly appreciated!
+Yes: genmap is a tool that end-users can use without needing the Linux
+source code, while makemapdata needs it.
 
-Cheers,
+> And when this is applied, I get the following "extra" files in the tree
+> that need to be properly ignored, so I couldn't take this as-is anyway:
 
+Oh, right, I'll fix them.
 
-Guilherme
+Samuel
