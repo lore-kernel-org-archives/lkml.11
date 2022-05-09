@@ -2,275 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB41C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232916AbiEIEue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 00:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
+        id S233787AbiEIE4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234238AbiEIErI (ORCPT
+        with ESMTP id S234326AbiEIEyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 00:47:08 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3584212EA32;
-        Sun,  8 May 2022 21:43:14 -0700 (PDT)
-X-UUID: a22f57478c77418e9b920f22515aec06-20220509
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:daa9a479-9cc2-4e6b-b57a-f17312213faf,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:daa9a479-9cc2-4e6b-b57a-f17312213faf,OB:0,LOB:
-        0,IP:0,URL:25,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:01de0fb3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:09e05c1c7d1c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: a22f57478c77418e9b920f22515aec06-20220509
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2161867; Mon, 09 May 2022 12:43:05 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 9 May 2022 12:43:04 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 9 May 2022 12:43:04 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
-CC:     <airlied@linux.ie>, <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2 3/3] dt-bindings: mediatek: add ethdr definition for mt8195
-Date:   Mon, 9 May 2022 12:43:02 +0800
-Message-ID: <20220509044302.27878-4-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
-References: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
+        Mon, 9 May 2022 00:54:15 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2068.outbound.protection.outlook.com [40.107.236.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37374A1446;
+        Sun,  8 May 2022 21:50:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RUZ/4JxRHwGSv7JKRHsE9dUC2RCBwhDAF5kdcI0zXNqrGwg/mJgzugdpU6A8trb/u9lq9kq1kV+/xp3+OExCM12FIWMz45Upu4OQKTS/5wb+UtsVA7mTXlpQanRs1WQ76+LlrAzsIcDgvCv2RIiqsiN6fbYy6HQrFGXTrkCNfHgJYrwWgUeYe+dRHpAtQiAts2sielQKTxgplEy4Wn/QomiDghqvmf4s12Vc7eKNpgOLM/iFBUtCRlFZd6Va0Zx9BmL59Bn01+YMLZQwxYvlJ1MVrQ/lR8JwjHYt5JgnMUPeWUUBTcd0kI5ILvi2ywBqMsqAblYCnpONA/oGQ7p/0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7jfWMFg1bsD8010TgxLteIn1mWdzlbOQ8FtGemtHDn0=;
+ b=a/iA1rd+RWDSp3DG42qQj0qGxlJ+fJVabzDAALO9XukYMOOqYuQPcQ6Tb8QpmV3UY6kAyPf+i478WugPqFo1n4ZoIr1Hym8/ToePBDu0xyrgCP7YDbR8jAXwX5AMrKdD6R09MM60GO3Nx88gZgFNW5BXsSMrcHJ+1acshONbBZOgkkmWwQvWIsH2dB85+/HWCeZMAYu/ynuRfCTl0GGN49pZtPFodG4IM2XA+WUbVbyehCpiIq+gxwvdUnr35a2Q3JPtLvlS0YjfT91B3BxR7ONNPNquCrteV4y05TCCDwSX0Yw7M0Ut2N0nSQuZVr117CwUkI6v1FX5NO0YrnPs0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7jfWMFg1bsD8010TgxLteIn1mWdzlbOQ8FtGemtHDn0=;
+ b=ct/zlR2KgQCyuzs7LyadMxUJ27Jwk437WTgfNdCZ08KjqXqI1z9ONfMlvijw0W1p60OL/HbE2i6f5XUrb/DXCOP1IBTtdrc8Zscp0OJCY79KSOUEQG2KRGRfgpJ6td1cJkkmimRkhG2yeiXodXKXE8Y6dEJ7O3BMVax7FbkokiQ=
+Received: from BN9PR03CA0532.namprd03.prod.outlook.com (2603:10b6:408:131::27)
+ by BN6PR12MB1394.namprd12.prod.outlook.com (2603:10b6:404:1e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Mon, 9 May
+ 2022 04:50:20 +0000
+Received: from BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:131:cafe::cb) by BN9PR03CA0532.outlook.office365.com
+ (2603:10b6:408:131::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23 via Frontend
+ Transport; Mon, 9 May 2022 04:50:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT033.mail.protection.outlook.com (10.13.177.149) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 04:50:20 +0000
+Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 8 May
+ 2022 23:50:12 -0500
+From:   Ravi Bangoria <ravi.bangoria@amd.com>
+To:     <peterz@infradead.org>, <acme@kernel.org>
+CC:     <ravi.bangoria@amd.com>, <rrichter@amd.com>, <mingo@redhat.com>,
+        <mark.rutland@arm.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <tglx@linutronix.de>, <bp@alien8.de>, <irogers@google.com>,
+        <yao.jin@linux.intel.com>, <james.clark@arm.com>,
+        <leo.yan@linaro.org>, <kan.liang@linux.intel.com>,
+        <ak@linux.intel.com>, <eranian@google.com>,
+        <like.xu.linux@gmail.com>, <x86@kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
+        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
+Subject: [PATCH v2 3/8] perf/amd/ibs: Add support for L3 miss filtering
+Date:   Mon, 9 May 2022 10:19:09 +0530
+Message-ID: <20220509044914.1473-4-ravi.bangoria@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220509044914.1473-1-ravi.bangoria@amd.com>
+References: <20220509044914.1473-1-ravi.bangoria@amd.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-MTK:  N
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: be680c47-5f63-43eb-fce6-08da31776bd5
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1394:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1394C8035F9CE0DD532FFEE8E0C69@BN6PR12MB1394.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KR32KRux1Ho1hNo9uTiVJxftUhBdzaq/qY45JtZG0x6Qjdw9etRtkhKqnLtIjcRRGmgtNQGEoJ+IqxCISCeHmj+gvdY/OC2v1sAohFU0gxeqi38B+4xSlvYhmDRTY/RzrnZwHj0nmKIwuWrrXb/mXrbXaL3xka85cjffG83dSEk6GLGehXpkCwQ9RRnOAaWjExDh/SAkvKCynIeVVBWBX+JnDR6mKYFR0rUlth5rSJJ3abbtv0PqQTT1buewOWtyGfjWmAVKIgpv681oczB2CAT4EuJTOCIN9IM2StrXfFmxO9+vYObbfP83rGqoG/14YQJBNrMfiWI7ISsFAXX4uNpQS+RH5dhkJ6UPDLGv3haiqUfSTUD40zi797UcUR9W3/W3FEE3OydxfEhzZUawBEYuJ8Qa1IhgeSqnh9cOkTu8I4D7ol0W1sZHghZYckyP2HaKpwtl+VcdLC+utHGFCj35ofp4pAqxtqvNHBKI8qICBrnfq1oTDYtkVBh9qEvV8BOi3Xy31gVa/4iNYUtH6egYYesESguEBtKkPXZR6JkLoyDvHO+IUYCALk/dtVa1wE+LG2twxhPa07gzTmmN1mnIWdYA69/hEL/iOJ+BMBb/t1JnnlnG+OCR5LpQsqgYsgpPV9He5qrqtCV4nDBNbQxzymf4PHNA2O3vdukXjsCKMZM1tLO+ru6XSg5NtRkZ/SJxc+P2cv3yVDj6c+5ziA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(1076003)(8676002)(2616005)(70586007)(4326008)(83380400001)(70206006)(47076005)(426003)(336012)(186003)(508600001)(86362001)(6666004)(16526019)(26005)(316002)(82310400005)(54906003)(110136005)(7696005)(7416002)(81166007)(8936002)(36860700001)(40460700003)(356005)(36756003)(44832011)(2906002)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 04:50:20.5776
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: be680c47-5f63-43eb-fce6-08da31776bd5
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1394
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Nancy.Lin" <nancy.lin@mediatek.com>
+IBS L3 miss filtering works by tagging an instruction on IBS counter
+overflow and generating an NMI if the tagged instruction causes an L3
+miss. Samples without an L3 miss are discarded and counter is reset
+with random value (between 1-15 for fetch pmu and 1-127 for op pmu).
+This helps in reducing sampling overhead when user is interested only
+in such samples. One of the use case of such filtered samples is to
+feed data to page-migration daemon in tiered memory systems.
 
-Add vdosys1 ETHDR definition.
+Add support for L3 miss filtering in IBS driver via new pmu attribute
+"l3missonly". Example usage:
 
-Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+  # perf record -a -e ibs_op/l3missonly=1/ --raw-samples sleep 5
+
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
 ---
- .../display/mediatek/mediatek,ethdr.yaml      | 191 ++++++++++++++++++
- 1 file changed, 191 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+ arch/x86/events/amd/ibs.c         | 67 +++++++++++++++++++++++++++----
+ arch/x86/include/asm/perf_event.h |  3 ++
+ 2 files changed, 63 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-new file mode 100644
-index 000000000000..65f22fba9fed
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-@@ -0,0 +1,191 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/mediatek/mediatek,ethdr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
+index 785212b5dfd6..52d2eb9ff19a 100644
+--- a/arch/x86/events/amd/ibs.c
++++ b/arch/x86/events/amd/ibs.c
+@@ -534,22 +534,46 @@ static const struct attribute_group *empty_attr_groups[] = {
+ 
+ PMU_FORMAT_ATTR(rand_en,	"config:57");
+ PMU_FORMAT_ATTR(cnt_ctl,	"config:19");
++PMU_EVENT_ATTR_STRING(l3missonly, fetch_l3missonly, "config:59");
++PMU_EVENT_ATTR_STRING(l3missonly, op_l3missonly, "config:16");
 +
-+title: MediaTek Ethdr Device Tree Bindings
++static umode_t
++zen4_ibs_extensions_is_visible(struct kobject *kobj, struct attribute *attr, int i)
++{
++	return ibs_caps & IBS_CAPS_ZEN4IBSEXTENSIONS ? attr->mode : 0;
++}
+ 
+ static struct attribute *rand_en_attrs[] = {
+ 	&format_attr_rand_en.attr,
+ 	NULL,
+ };
+ 
++static struct attribute *fetch_l3missonly_attrs[] = {
++	&fetch_l3missonly.attr.attr,
++	NULL,
++};
 +
-+maintainers:
-+  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-+  - Philipp Zabel <p.zabel@pengutronix.de>
+ static struct attribute_group group_rand_en = {
+ 	.name = "format",
+ 	.attrs = rand_en_attrs,
+ };
+ 
++static struct attribute_group group_fetch_l3missonly = {
++	.name = "format",
++	.attrs = fetch_l3missonly_attrs,
++	.is_visible = zen4_ibs_extensions_is_visible,
++};
 +
-+description:
-+  ETHDR is designed for HDR video and graphics conversion in the external display path.
-+  It handles multiple HDR input types and performs tone mapping, color space/color
-+  format conversion, and then combine different layers, output the required HDR or
-+  SDR signal to the subsequent display path. This engine is composed of two video
-+  frontends, two graphic frontends, one video backend and a mixer. ETHDR has two
-+  DMA function blocks, DS and ADL. These two function blocks read the pre-programmed
-+  registers from DRAM and set them to HW in the v-blanking period.
+ static const struct attribute_group *fetch_attr_groups[] = {
+ 	&group_rand_en,
+ 	NULL,
+ };
+ 
++static const struct attribute_group *fetch_attr_update[] = {
++	&group_fetch_l3missonly,
++	NULL,
++};
 +
-+properties:
-+  compatible:
-+    items:
-+      - const: mediatek,mt8195-disp-ethdr
+ static umode_t
+ cnt_ctl_is_visible(struct kobject *kobj, struct attribute *attr, int i)
+ {
+@@ -561,14 +585,26 @@ static struct attribute *cnt_ctl_attrs[] = {
+ 	NULL,
+ };
+ 
++static struct attribute *op_l3missonly_attrs[] = {
++	&op_l3missonly.attr.attr,
++	NULL,
++};
 +
-+  reg:
-+    maxItems: 7
+ static struct attribute_group group_cnt_ctl = {
+ 	.name = "format",
+ 	.attrs = cnt_ctl_attrs,
+ 	.is_visible = cnt_ctl_is_visible,
+ };
+ 
++static struct attribute_group group_op_l3missonly = {
++	.name = "format",
++	.attrs = op_l3missonly_attrs,
++	.is_visible = zen4_ibs_extensions_is_visible,
++};
 +
-+  reg-names:
-+    items:
-+      - const: mixer
-+      - const: vdo_fe0
-+      - const: vdo_fe1
-+      - const: gfx_fe0
-+      - const: gfx_fe1
-+      - const: vdo_be
-+      - const: adl_ds
+ static const struct attribute_group *op_attr_update[] = {
+ 	&group_cnt_ctl,
++	&group_op_l3missonly,
+ 	NULL,
+ };
+ 
+@@ -787,10 +823,8 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
+ 	return ret;
+ }
+ 
+-static __init int perf_event_ibs_init(void)
++static __init int perf_ibs_fetch_init(void)
+ {
+-	int ret;
+-
+ 	/*
+ 	 * Some chips fail to reset the fetch count when it is written; instead
+ 	 * they need a 0-1 transition of IbsFetchEn.
+@@ -801,12 +835,17 @@ static __init int perf_event_ibs_init(void)
+ 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model < 0x10)
+ 		perf_ibs_fetch.fetch_ignore_if_zero_rip = 1;
+ 
++	if (ibs_caps & IBS_CAPS_ZEN4IBSEXTENSIONS)
++		perf_ibs_fetch.config_mask |= IBS_FETCH_L3MISSONLY;
 +
-+  interrupts:
-+    maxItems: 1
+ 	perf_ibs_fetch.pmu.attr_groups = fetch_attr_groups;
++	perf_ibs_fetch.pmu.attr_update = fetch_attr_update;
+ 
+-	ret = perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
+-	if (ret)
+-		return ret;
++	return perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
++}
+ 
++static __init int perf_ibs_op_init(void)
++{
+ 	if (ibs_caps & IBS_CAPS_OPCNT)
+ 		perf_ibs_op.config_mask |= IBS_OP_CNT_CTL;
+ 
+@@ -816,10 +855,24 @@ static __init int perf_event_ibs_init(void)
+ 		perf_ibs_op.cnt_mask    |= IBS_OP_MAX_CNT_EXT_MASK;
+ 	}
+ 
++	if (ibs_caps & IBS_CAPS_ZEN4IBSEXTENSIONS)
++		perf_ibs_op.config_mask |= IBS_OP_L3MISSONLY;
 +
-+  iommus:
-+    description: The compatible property is DMA function blocks.
-+      Should point to the respective IOMMU block with master port as argument,
-+      see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for
-+      details.
-+    minItems: 1
-+    maxItems: 2
+ 	perf_ibs_op.pmu.attr_groups = empty_attr_groups;
+ 	perf_ibs_op.pmu.attr_update = op_attr_update;
+ 
+-	ret = perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
++	return perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
++}
 +
-+  clocks:
-+    items:
-+      - description: mixer clock
-+      - description: video frontend 0 clock
-+      - description: video frontend 1 clock
-+      - description: graphic frontend 0 clock
-+      - description: graphic frontend 1 clock
-+      - description: video backend clock
-+      - description: autodownload and menuload clock
-+      - description: video frontend 0 async clock
-+      - description: video frontend 1 async clock
-+      - description: graphic frontend 0 async clock
-+      - description: graphic frontend 1 async clock
-+      - description: video backend async clock
-+      - description: ethdr top clock
++static __init int perf_event_ibs_init(void)
++{
++	int ret;
 +
-+  clock-names:
-+    items:
-+      - const: mixer
-+      - const: vdo_fe0
-+      - const: vdo_fe1
-+      - const: gfx_fe0
-+      - const: gfx_fe1
-+      - const: vdo_be
-+      - const: adl_ds
-+      - const: vdo_fe0_async
-+      - const: vdo_fe1_async
-+      - const: gfx_fe0_async
-+      - const: gfx_fe1_async
-+      - const: vdo_be_async
-+      - const: ethdr_top
++	ret = perf_ibs_fetch_init();
++	if (ret)
++		return ret;
 +
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    items:
-+      - description: video frontend 0 async reset
-+      - description: video frontend 1 async reset
-+      - description: graphic frontend 0 async reset
-+      - description: graphic frontend 1 async reset
-+      - description: video backend async reset
-+
-+  reset-names:
-+    items:
-+      - const: vdo_fe0_async
-+      - const: vdo_fe1_async
-+      - const: gfx_fe0_async
-+      - const: gfx_fe1_async
-+      - const: vdo_be_async
-+
-+  mediatek,gce-client-reg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: The register of display function block to be set by gce.
-+      There are 4 arguments in this property, gce node, subsys id, offset and
-+      register size. The subsys id is defined in the gce header of each chips
-+      include/include/dt-bindings/gce/<chip>-gce.h, mapping to the register of
-+      display function block.
-+    items:
-+      items:
-+        - description: phandle of GCE
-+        - description: GCE subsys id
-+        - description: register offset
-+        - description: register size
-+    minItems: 7
-+    maxItems: 7
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - power-domains
-+  - resets
-+  - mediatek,gce-client-reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/mt8195-clk.h>
-+    #include <dt-bindings/gce/mt8195-gce.h>
-+    #include <dt-bindings/memory/mt8195-memory-port.h>
-+    #include <dt-bindings/power/mt8195-power.h>
-+    #include <dt-bindings/reset/mt8195-resets.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        disp_ethdr@1c114000 {
-+                compatible = "mediatek,mt8195-disp-ethdr";
-+                reg = <0 0x1c114000 0 0x1000>,
-+                      <0 0x1c115000 0 0x1000>,
-+                      <0 0x1c117000 0 0x1000>,
-+                      <0 0x1c119000 0 0x1000>,
-+                      <0 0x1c11a000 0 0x1000>,
-+                      <0 0x1c11b000 0 0x1000>,
-+                      <0 0x1c11b000 0 0x1000>;
-+                reg-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
-+                            "vdo_be", "adl_ds";
-+                mediatek,gce-client-reg = <&gce0 SUBSYS_1c11XXXX 0x4000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0x5000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0x7000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0x9000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0xa000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0xb000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0xc000 0x1000>;
-+                clocks = <&vdosys1 CLK_VDO1_DISP_MIXER>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE0>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE1>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE0>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE1>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_BE>,
-+                         <&vdosys1 CLK_VDO1_26M_SLOW>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE0_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE1_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE0_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE1_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_BE_DL_ASYNC>,
-+                         <&topckgen CLK_TOP_ETHDR>;
-+                clock-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
-+                              "vdo_be", "adl_ds", "vdo_fe0_async", "vdo_fe1_async",
-+                              "gfx_fe0_async", "gfx_fe1_async","vdo_be_async",
-+                              "ethdr_top";
-+                power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+                iommus = <&iommu_vpp M4U_PORT_L3_HDR_DS>,
-+                         <&iommu_vpp M4U_PORT_L3_HDR_ADL>;
-+                interrupts = <GIC_SPI 517 IRQ_TYPE_LEVEL_HIGH 0>; /* disp mixer */
-+                resets = <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE0_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE1_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE0_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE1_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_BE_DL_ASYNC>;
-+                reset-names = "vdo_fe0_async", "vdo_fe1_async", "gfx_fe0_async",
-+                              "gfx_fe1_async", "vdo_be_async";
-+        };
-+    };
-+...
++	ret = perf_ibs_op_init();
+ 	if (ret)
+ 		goto err_op;
+ 
+diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+index b06e4c573add..a24b637a6e1d 100644
+--- a/arch/x86/include/asm/perf_event.h
++++ b/arch/x86/include/asm/perf_event.h
+@@ -391,6 +391,7 @@ struct pebs_xmm {
+ #define IBS_CAPS_OPBRNFUSE		(1U<<8)
+ #define IBS_CAPS_FETCHCTLEXTD		(1U<<9)
+ #define IBS_CAPS_OPDATA4		(1U<<10)
++#define IBS_CAPS_ZEN4IBSEXTENSIONS	(1U<<11)
+ 
+ #define IBS_CAPS_DEFAULT		(IBS_CAPS_AVAIL		\
+ 					 | IBS_CAPS_FETCHSAM	\
+@@ -404,6 +405,7 @@ struct pebs_xmm {
+ #define IBSCTL_LVT_OFFSET_MASK		0x0F
+ 
+ /* IBS fetch bits/masks */
++#define IBS_FETCH_L3MISSONLY	(1ULL<<59)
+ #define IBS_FETCH_RAND_EN	(1ULL<<57)
+ #define IBS_FETCH_VAL		(1ULL<<49)
+ #define IBS_FETCH_ENABLE	(1ULL<<48)
+@@ -420,6 +422,7 @@ struct pebs_xmm {
+ #define IBS_OP_CNT_CTL		(1ULL<<19)
+ #define IBS_OP_VAL		(1ULL<<18)
+ #define IBS_OP_ENABLE		(1ULL<<17)
++#define IBS_OP_L3MISSONLY	(1ULL<<16)
+ #define IBS_OP_MAX_CNT		0x0000FFFFULL
+ #define IBS_OP_MAX_CNT_EXT	0x007FFFFFULL	/* not a register bit mask */
+ #define IBS_OP_MAX_CNT_EXT_MASK	(0x7FULL<<20)	/* separate upper 7 bits */
 -- 
-2.18.0
+2.27.0
 
